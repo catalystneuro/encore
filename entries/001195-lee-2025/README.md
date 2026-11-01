@@ -10,16 +10,16 @@ Figures 1 to 5 and 8 are not in it.
 |---|---|
 | EPSPs and IPSPs at rest in the BNST, CeA and BLP (Figure 6D-F) | Reproduced |
 | Firing responses: BNST excited, CeA and BLP mixed (Figure 6G-I) | Partially reproduced |
-| EPSP amplitude differs by region, CeA above BLP (Figure 6J) | Reproduced, on an assumption |
-| IPSP trough differs by region (Figure 6K) | Not reproduced |
+| EPSP amplitude differs by region, CeA above BLP (Figure 6J) | Partially reproduced |
+| IPSP trough differs by region (Figure 6K) | Partially reproduced, on an assumption |
 | Responses survive TTX/4AP (Figure 6 supplement 1D-E) | Blocked: metadata insufficient |
 | CeA clusters: late-firing excited, regular-firing inhibited (Figure 6N-O) | Partially reproduced |
 | CeA clusters differ in their four properties | Reproduced |
 | BLP clusters: 93% of pyramidal inhibited, 62% of interneurons excited (Figure 6P-Q) | Partially reproduced |
 | BLP clusters differ in their four properties | Reproduced |
 | Voltage area differs between clusters (Figure 6 supplement 1J-K) | Reproduced |
-| Combined CeA and BLP clustering (Figure 6 supplement 1L-N) | Not reproduced |
-| Red light evokes larger ChrimsonR potentials than blue (Figure 7 supplement 1E-F) | Reproduced |
+| Combined CeA and BLP clustering (Figure 6 supplement 1L-N) | Not reproduced as the claims file asks; asked of a reader |
+| Red light evokes larger ChrimsonR potentials than blue (Figure 7 supplement 1E-F) | Reproduced, on an assumption |
 | Red-evoked potentials smaller during blue light (Figure 7 supplement 1H-I) | Partially reproduced |
 | In vivo imaging (eight claims, Figure 7 and its supplements) | Blocked: data missing |
 | Figures 1 to 5 and 8 (17 claims) | Blocked: data missing |
@@ -27,12 +27,14 @@ Figures 1 to 5 and 8 are not in it.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The files do not record when the light was on, so the notebook takes the time from the responses. The imaging
+The files do not record when the light was on, so the notebook takes the time from the responses. The
+threshold rule the claims file names for an EPSP or IPSP also finds one in many light-free windows, which the
+notebook measures. Three subjects are labelled female, where the paper used male mice only. The imaging
 files are stated at 25 Hz but match the behaviour videos only at the Methods' 20 Hz, hold about twice as many ROIs
 as the paper's cell counts, and describe another experiment in their virus and stimulus fields. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/001195-lee-2025-01.yaml`](../../attempts/001195-lee-2025-01.yaml).
 
-- `reproduce_lee_2025.ipynb`: the analysis. It takes about 15 minutes, most of it streaming the patch-clamp sweeps.
+- `reproduce_lee_2025.ipynb`: the analysis. It takes about 30 minutes, most of it streaming the patch-clamp sweeps.
 - `drn_ephys.py`: loading the patch-clamp files, the evoked potential, firing and baseline measures, and the
   Prism-style post hoc tests. Other notebooks on this dandiset can import it.

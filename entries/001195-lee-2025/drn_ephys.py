@@ -24,9 +24,14 @@ Where the parameters come from:
   following the onset of the first light pulse"), as the claims' criteria give them.
 - Detection of an EPSP or IPSP beyond K standard deviations of the 5 s baseline of the average
   trace, K = 2 or 3: the readings named in the criterion of fig6df-epsp-ipsp-at-rest.
+- CONTROL_ONSET_S, a light-free window 12 s after the light (baseline 12.5-17.5 s, "response"
+  17.5-23 s, before the test step some sweeps have at 24.5 s): the same detection run where no light
+  is given, to measure how often it detects noise (a check, not a method of the paper).
 - Sweeps at rest: current-clamp 30 s light sweeps with no holding current or a negative one
   (Methods: "In a minority of cells which showed spontaneous activity at the resting potential,
-  negative current was injected to hold the cell at a subthreshold potential"). Firing sweeps:
+  negative current was injected to hold the cell at a subthreshold potential"), and, as that
+  passage says the cells were subthreshold, only those with no action potential in the 5 s before
+  the light (`subthreshold`). Firing sweeps:
   the same protocol with a positive holding current (Methods: "constant positive current was
   injected to elicit consistent spontaneous action potentials").
 - IEI 5 s before and 5 s after the first pulse: Methods; 5.5 s before as a variant (Figure 6
@@ -39,7 +44,10 @@ Where the parameters come from:
 - Capacitance by the Q-method (Methods, ref. 138): the charge of the capacitive transient,
   integrated against the steady-state current, divided by the voltage step, here from the 5 mV
   square-pulse seal test (the only voltage-clamp test pulse in the files; the Methods describe a
-  5 mV, 250 ms step). A substitution, stated in the notebook.
+  5 mV, 250 ms step). A substitution, stated in the notebook. With no correction for the series and
+  membrane resistance, and the integration starting 10 samples before the edge, it reads low (42 pF
+  for a 50 pF cell with 15 MOhm series and 300 MOhm membrane resistance, in the verifier's test); the
+  bias is the same in every cell, so the clustering, which normalizes each feature, is little affected.
 """
 
 from __future__ import annotations
@@ -66,7 +74,8 @@ IEI_S = 5.0                   # Methods: IEI 5 s before and 5 s after
 IEI_BASELINE_VARIANT_S = 5.5  # Figure 6 supplement 1G legend
 SPIKE_THRESHOLD_MV = 0.0      # standard choice
 LIGHT_SWEEP_SAMPLES = 300_000
-READ_SAMPLES = int(12.0 * FS)    # to 12 s: the analysis window, and a control window 6 s after the light
+CONTROL_ONSET_S = LIGHT_ONSET_S + 12.0   # a light-free window: 5 s baseline and 5.5 s "response", 12-23 s
+READ_SAMPLES = int(23.0 * FS)    # to 23 s: the analysis window and the light-free window, before the test step at 24.5 s
 
 LIGHT_PROTOCOL = "Response to: episodic stimulation, 8*30Hz laser pulses, 5ms width, every 30s"
 RED_PROTOCOL = "Response to: episodic stimulation, 8*30Hz 635nm laser pulses, 10mW, 5ms width, every 30s"
@@ -135,6 +144,11 @@ def load_cell(path_url):
         "region": md["inferred_layer"][()].decode(),
         "targeted": md["targeted_layer"][()].decode(),
         "cell_id": md["cell_id"][()].decode(),
+        "sex": f["general/subject/sex"][()].decode(),
+        "session_description": f["session_description"][()].decode(),
+        "stimulus_types": [x.decode() for x in f["general/intracellular_ephys/sequential_recordings/stimulus_type"][:]],
+        "electrode_descriptions": sorted({f[f"general/intracellular_ephys/{k}/description"][()].decode()
+                                          for k in f["general/intracellular_ephys"] if k.startswith("electrode-")}),
         "sweeps": {},
         "hashes": [],
         "dropped": 0,
@@ -163,7 +177,7 @@ def load_cell(path_url):
             i, v = _read(g) * 1e12, _read(g1) * 1e3          # pA, mV
             rec = {"v": v, "i": i}
         else:
-            v = _read(g, READ_SAMPLES) * 1e3
+            v = (_read(g, READ_SAMPLES) * 1e3).astype(np.float32)
             rec = {"v": v, "desc": desc, "hold_pA": float(np.median(_read(g1, 2000)) * 1e12)}
         cell["hashes"].append(hashlib.sha1(g["data"][:5000].tobytes()).hexdigest())
         cell["sweeps"].setdefault(kind, []).append(rec)
@@ -207,8 +221,21 @@ def response_class(e):
     return "none"
 
 
+def valid(sweeps):
+    """The sweeps whose injected current (ch-1) is within +-10 nA. Outside it the recording failed: in the
+    one cell that has such sweeps (P10) their membrane potential is flat at 0 mV."""
+    return [s for s in sweeps if abs(s["hold_pA"]) < 1e4]
+
+
+def subthreshold(sweeps, onset=LIGHT_ONSET_S):
+    """The sweeps with no action potential in the 5 s before the light. Methods: at rest, cells "which
+    showed spontaneous activity at the resting potential" were held "at a subthreshold potential"."""
+    i0 = int(round(onset * FS))
+    return [s for s in sweeps if len(spike_times(s["v"][i0 - int(BASELINE_S * FS):i0])) == 0]
+
+
 def average(sweeps):
-    return np.mean([s["v"] for s in sweeps], axis=0)
+    return np.mean([s["v"] for s in sweeps], axis=0, dtype=np.float64)
 
 
 # ---------------------------------------------------------------- firing
