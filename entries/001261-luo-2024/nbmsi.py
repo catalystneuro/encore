@@ -16,31 +16,31 @@ github.com/nsdesai/patch_clamp_analysis at commit 17a3265d280392e73916faee31ee9c
 
 - Step onset and the 500 ms analysis window: the code (analysis_of_neurophysiology_data.m) finds
   the step from the largest current step and analyses only its first 500 ms. Here the onset is
-  read from each sweep's own stimulus.
+  read from each sweep's own stimulus, as the first sample of its longest run of non-zero current:
+  many sweeps also hold a short -20 pA test pulse, in some files 700 ms before the step.
 - Steps above 200 pA are left out: Methods 2.4, "a family of current steps (500 ms duration, -60
   to 200 pA amplitude)", and Methods 2.5 (16), "a current step between 0 and 200 pA". Some files
   also hold 250 and 300 pA steps; `max_rate_code`, the code's maximum over every step, is kept as a
   variant.
-- Most files hold, besides the steps, a short -20 pA pulse (50 or 100 ms, often late in the
-  sweep); pulses shorter than `MIN_STEP_MS` are left out as not part of the family of 500 ms
-  steps (Methods 2.4). The steps last 500 to 1100 ms; only the first 500 ms are analysed (code).
+- Most files hold, besides the steps, a short -20 pA pulse (50 or 100 ms), in the same sweep as a
+  step (1.3 s or more after its onset, or in 8 files 0.7 s before it) or alone in a sweep; a
+  sweep whose longest run of current is shorter than `MIN_STEP_MS` is left out as not part of the
+  family of 500 ms steps (Methods 2.4). The steps last 500 to 1100 ms; only the first 500 ms are analysed (code).
 - A step amplitude recorded more than once (several 200 pA sweeps in some files): a feature defined on one step uses the first sweep of that amplitude in
   recording order, an assumption (the paper gives one sweep per amplitude); `REPEAT` selects the
   other reading, the last sweep, and the notebook shows both. Counting features over all steps
   (rheobase, f-I curve, maximum rate) use every sweep, as the code does once it sorts the steps.
 - Spike detection: the code's findpeaks call (height >= 0 mV, prominence >= 30 mV, width <= 5 ms
   at half prominence, peaks >= 5 ms apart), with scipy.signal.find_peaks in place of MATLAB's.
+- Sag step: the -60 pA step, or the closest step below it, and the next step up when the response
+  is saturated (sagpotential.m; saturated read as 1000 or more consecutive identical samples).
 - Median filter of the sag (20 ms) and the fit of tau (a*exp(-t/tau) + c, from 2 ms after onset to
   the end of the step, start values as the code): the code (sagpotential.m, inputresistance.m).
 - AHP width (F14) with the Methods' window: the AHP minimum is the one of F12 (100 ms after the
-  threshold crossing); the level is threshold minus half the AHP amplitude (code); the width runs
-  from the first downward crossing of that level after the threshold crossing to the next upward
-  crossing, searched to the end of the step, and to the end of the step when there is none
-  (code). The search to the end of the step is an assumption: Methods (14) "the time difference at
-  half maximum of the first AHP" gives no window, and the paper's mean AHP width (178 ms, Results
-  3.1) is longer than the 100 ms of F12. `ahp_width_window` is the other reading: crossings
-  searched within the 100 ms only, and to the end of the step when the potential does not recross
-  there.
+  threshold crossing); the level is threshold minus half the AHP amplitude (code); the claims file
+  puts the window "as in F12", so the two crossings are searched within the 100 ms window, and the
+  width runs to the end of the step when the potential does not recross there (code).
+  `ahp_width_to_end`, a variant, searches the crossings to the end of the step.
 - Resting potential (F1): the files hold no sweep without bias current. Some file identifiers
   (the original file names) carry a resting potential ("RMP -49.4mV", "_-63mV"); `rmp_from_name`
   reads it, for the neurons that have one.
@@ -135,15 +135,42 @@ def load_file(asset):
     out["hash_first"] = hashlib.md5(sweeps[0]["v"].tobytes()).hexdigest()
     keep = []
     for s in sweeps:
-        nz = s["nz"]
-        amp = float(np.median(s["i"][nz])) if nz.size else 0.0
-        on = int(nz[0]) if nz.size else onset  # each sweep's own onset; a 0 pA sweep takes the file's
+        runs = stimulus_runs(s["i"])
+        main = max(runs, key=len) if runs else None  # the step: the longest run of non-zero current
+        amp = float(np.median(s["i"][main])) if main is not None else 0.0
+        on = int(main[0]) if main is not None else onset  # each sweep's own step; a 0 pA sweep takes the file's
+        others = [r for r in runs if r is not main]
         keep.append({"sweep_number": s["sweep_number"], "step": amp, "onset_s": on / FS,
-                     "duration_ms": nz.size * DT if nz.size else np.nan,
-                     "test_pulse": bool(nz.size and nz.size * DT < MIN_STEP_MS),
+                     "first_nonzero_s": s["nz"][0] / FS if s["nz"].size else np.nan,
+                     "duration_ms": len(main) * DT if main is not None else np.nan,
+                     "test_pulse": bool(main is not None and len(main) * DT < MIN_STEP_MS),
+                     "n_runs": len(runs),
+                     "pulse_to_step_ms": [(r[0] - on) * DT for r in others],
                      "v": (s["v"][on - pre: on + n_step] * 1000.0).astype(np.float64),
                      "baseline": float(np.mean(s["v"][on - int(10 / DT): on - int(1 / DT)]) * 1000)})
     out["sweeps"] = keep
+    return out
+
+
+def stimulus_runs(i):
+    """Runs of consecutive non-zero stimulus samples, as arrays of indices, in time order."""
+    nz = np.flatnonzero(i)
+    if nz.size == 0:
+        return []
+    return np.split(nz, np.flatnonzero(np.diff(nz) > 1) + 1)
+
+
+def raw_sweeps(path):
+    """Every sweep of one file, whole: voltage (mV) and stimulus (pA), for plots of the raw data."""
+    asset = next(a for a in assets() if a.path == path)
+    url = asset.get_content_url(follow_redirects=1, strip_query=True)
+    f = h5py.File(io.BytesIO(requests.get(url, timeout=300).content), "r")
+    acq, stim = f["acquisition"], f["stimulus/presentation"]
+    out = []
+    for name in sorted(acq):
+        g = acq[name]
+        v = g["data"][:] * float(g["data"].attrs.get("conversion", 1.0)) * 1000.0
+        out.append({"name": name, "v": v, "i": stim[g.attrs["stimulus_description"]]["data"][:]})
     return out
 
 
@@ -205,12 +232,19 @@ def features(cell, repeat="first"):
     r = {k: np.nan for k in FEATURES}
     r["rmp"] = rmp_from_name(cell["identifier"])
 
-    # sag, -60 pA step (code: sagpotential.m)
-    if SAG_STEP in one:
-        v = median_filter(one[SAG_STEP]["v"], size=int(20 / DT), mode="nearest")
-        half = n // 2
-        sag = np.max(v[pre + half: pre + n - 1]) - np.min(v[pre: pre + half + 1])
-        r["sag"] = max(sag, 0.0)
+    # sag, -60 pA step or the closest below it, the next step up if saturated (code: sagpotential.m)
+    sag_steps = sorted(st for st in one if st < 0)
+    below = [st for st in sag_steps if st <= SAG_STEP]
+    r["sag_step"] = np.nan
+    if below:
+        for st in sag_steps[sag_steps.index(below[-1]):]:
+            if not _saturated(one[st]["v"][pre: pre + n]):
+                r["sag_step"] = st
+                break
+    if not np.isnan(r["sag_step"]):
+        r["sag"] = _sag(one[r["sag_step"]]["v"], pre, n)
+    # variant: the -60 pA step whether saturated or not
+    r["sag_60"] = _sag(one[SAG_STEP]["v"], pre, n) if SAG_STEP in one else np.nan
 
     # input resistance and tau, -20 pA step (Methods; windows of inputresistance.m)
     if RIN_STEP in one:
@@ -218,7 +252,7 @@ def features(cell, repeat="first"):
         base = np.mean(v[pre - int(50 / DT): pre - int(5 / DT)])
         ss = np.mean(v[pre + n - int(100 / DT): pre + n])
         r["rin"] = (ss - base) / RIN_STEP * 1000.0
-        r["tau"] = _tau(v, pre, n)
+        r["tau"], r["tau_r2"] = _tau(v, pre, n, r2=True)
     r["rin_code"], r["tau_code"] = _rin_code(one, pre, n)
 
     # spikes per sweep over all steps <= 200 pA
@@ -242,8 +276,8 @@ def features(cell, repeat="first"):
                                  "upstroke", "downstroke", "downstroke_code"]})
     # AHP, Methods: rheobase step, 100 ms after threshold
     a = _ahp_methods(rheo_sw["v"][pre: pre + n], sp)
-    r["ahp_amp"], r["ahp_latency"], r["ahp_width"] = a
-    r["ahp_width_window"] = _ahp_width_window(rheo_sw["v"][pre: pre + n], sp)
+    r["ahp_amp"], r["ahp_latency"], r["ahp_width_to_end"] = a
+    r["ahp_width"] = _ahp_width_window(rheo_sw["v"][pre: pre + n], sp)
     a = _ahp_code([s for st, c, s in counts if st >= rheo_step], pre, n)
     r["ahp_amp_code"], r["ahp_latency_code"], r["ahp_width_code"] = a
 
@@ -269,16 +303,38 @@ def features(cell, repeat="first"):
     return r
 
 
-def _tau(v, pre, n):
-    """a*exp(-t/tau) + c from 2 ms after onset to the end of the step (inputresistance.m)."""
+def _sag(v, pre, n):
+    """sagpotential.m: trace median-filtered over 20 ms; maximum over the second half of the step
+    minus minimum over the first half, floored at 0."""
+    v = median_filter(v, size=int(20 / DT), mode="nearest")
+    half = n // 2
+    return max(np.max(v[pre + half: pre + n - 1]) - np.min(v[pre: pre + half + 1]), 0.0)
+
+
+def _saturated(v):
+    """sagpotential.m: a response is saturated when more than 1000 points are the same. Read here
+    as 1000 or more consecutive identical samples (the code's own test, the mode of the indices of
+    zero differences, can never exceed 1)."""
+    same = np.diff(v) == 0
+    if not same.any():
+        return False
+    edges = np.flatnonzero(np.diff(np.concatenate([[0], same.astype(int), [0]])))
+    return bool(np.max(edges[1::2] - edges[::2]) + 1 >= 1000)
+
+
+def _tau(v, pre, n, r2=False):
+    """a*exp(-t/tau) + c from 2 ms after onset to the end of the step (inputresistance.m); with
+    r2, also the fraction of the variance of the trace the fit explains."""
     y = v[pre + int(2 / DT): pre + n]
     t = np.arange(len(y)) * DT
+    f = lambda t, a, b, c: a * np.exp(-b * t) + c
     try:
-        p, _ = curve_fit(lambda t, a, b, c: a * np.exp(-b * t) + c, t, y,
-                         p0=[y[0] - y[-1], 0.1, y[-1]], maxfev=20000)
-        return 1.0 / p[1] if p[1] > 0 else np.nan
+        p, _ = curve_fit(f, t, y, p0=[y[0] - y[-1], 0.1, y[-1]], maxfev=20000)
+        tau = 1.0 / p[1] if p[1] > 0 else np.nan
+        fit_r2 = 1 - np.sum((y - f(t, *p)) ** 2) / np.sum((y - y.mean()) ** 2)
     except RuntimeError:
-        return np.nan
+        tau, fit_r2 = np.nan, np.nan
+    return (tau, fit_r2) if r2 else tau
 
 
 def _rin_code(one, pre, n):
@@ -338,8 +394,9 @@ def _spike_shape(v):
 
 
 def _ahp_methods(v, sp):
-    """F12 to F14 on the rheobase step: threshold minus the minimum in the 100 ms after the
-    threshold crossing; latency from the crossing; width at threshold minus half the amplitude."""
+    """F12 and F13 on the rheobase step: threshold minus the minimum in the 100 ms after the
+    threshold crossing; latency from the crossing. Also the variant of F14 with the crossings of
+    threshold minus half the amplitude searched to the end of the step (`ahp_width_to_end`)."""
     i0 = int(round(sp["th_ms"] / DT))
     win = v[i0: i0 + int(AHP_WINDOW_MS / DT)]
     imin = int(np.argmin(win))
@@ -357,8 +414,8 @@ def _ahp_methods(v, sp):
 
 
 def _ahp_width_window(v, sp):
-    """Variant of F14: the crossings searched only within the 100 ms window of F12; with no
-    upward crossing there, to the end of the step (the code's rule)."""
+    """F14 (claims file, "Window as in F12"): the crossings searched only within the 100 ms window
+    of F12; with no upward crossing there, to the end of the step (the code's rule)."""
     i0 = int(round(sp["th_ms"] / DT))
     w = int(AHP_WINDOW_MS / DT)
     win = v[i0: i0 + w]
@@ -453,14 +510,17 @@ def onset_contrast(cell, step=SAG_STEP):
 
 
 def ranksum_table(df, mask_a, mask_b, cols):
-    """Wilcoxon rank-sum (two-sided, scipy.stats.ranksums, normal approximation as MATLAB ranksum
-    uses for these sample sizes) per feature, NaN values dropped; mean +- SD (n - 1) per group."""
-    from scipy.stats import ranksums
+    """Wilcoxon rank-sum per feature as MATLAB ranksum computes it for these sample sizes (normal
+    approximation with the tie correction and the continuity correction; scipy's Mann-Whitney U
+    asymptotic test is the same test), two-sided, NaN values dropped; mean +- SD (n - 1) per
+    group."""
+    from scipy.stats import mannwhitneyu
     rows = []
     for c in cols:
         a = df.loc[mask_a, c].dropna().to_numpy(float)
         b = df.loc[mask_b, c].dropna().to_numpy(float)
-        p = ranksums(a, b).pvalue if len(a) > 1 and len(b) > 1 else np.nan
+        p = (mannwhitneyu(a, b, use_continuity=True, method="asymptotic").pvalue
+             if len(a) > 1 and len(b) > 1 else np.nan)
         rows.append({"feature": c, "n_a": len(a), "mean_a": a.mean() if len(a) else np.nan,
                      "sd_a": a.std(ddof=1) if len(a) > 1 else np.nan, "n_b": len(b),
                      "mean_b": b.mean() if len(b) else np.nan, "sd_b": b.std(ddof=1) if len(b) > 1 else np.nan,
@@ -498,17 +558,18 @@ def misclassified(E, y):
     return int(np.sum(LinearDiscriminantAnalysis().fit(E, y).predict(E) != y))
 
 
-def umap_separation(X, y, missing, seeds, n_perm, rng):
+def umap_separation(X, y, missing, seeds, n_perm, rng, n_neighbors=15, min_dist=0.3):
     """UMAP of the PCA components (Methods 2.8) for each seed; per seed the misclassified count and
     its permutation p (label permutations on the same embedding). UMAP parameters: n_neighbors 15
-    and min_dist 0.3, the defaults of Meehan's run_umap that the paper used (a standard choice)."""
+    and min_dist 0.3, the defaults of Meehan's run_umap that the paper used (a standard choice);
+    other values are a sensitivity check."""
     import umap
     Z, keep = prepare(X, missing)
     yk = np.asarray(y)[keep]
     P, k = pca_keep(Z)
     out = []
     for s in seeds:
-        E = umap.UMAP(n_neighbors=15, min_dist=0.3, random_state=int(s), n_jobs=1).fit_transform(P)
+        E = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, random_state=int(s), n_jobs=1).fit_transform(P)
         m = misclassified(E, yk)
         null = np.array([misclassified(E, rng.permutation(yk)) for _ in range(n_perm)])
         out.append({"seed": s, "n": len(yk), "pcs": k, "misclassified": m,
@@ -533,7 +594,15 @@ def lda_separation(X, y, missing, scale, n_shuffle, rng):
     acc = lda(Z, yk)
     lab = np.array([lda(Z, rng.permutation(yk)) for _ in range(n_shuffle)])
     feat = np.array([lda(np.column_stack([rng.permutation(c) for c in Z.T]), yk) for _ in range(n_shuffle)])
-    cv = cross_val_score(LinearDiscriminantAnalysis(), Z, yk,
+    # cross-validated: missing values and scaling fitted on the training folds only
+    from sklearn.impute import SimpleImputer
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler, FunctionTransformer
+    Xk = np.asarray(X, float)[keep]
+    pipe = make_pipeline(SimpleImputer(strategy="mean"),
+                         StandardScaler() if scale == "z" else FunctionTransformer(),
+                         LinearDiscriminantAnalysis())
+    cv = cross_val_score(pipe, Xk, yk,
                          cv=StratifiedKFold(10, shuffle=True, random_state=int(rng.integers(1 << 30)))).mean()
     return {"missing": missing, "scale": scale, "n": len(yk), "accuracy": acc, "cv10_accuracy": cv,
             "label_shuffle_95": np.quantile(lab, 0.95), "label_shuffle_max": lab.max(),
