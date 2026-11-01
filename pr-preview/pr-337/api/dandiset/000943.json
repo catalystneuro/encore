@@ -1,0 +1,1045 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000943",
+  "label": "DANDI:000943"
+ },
+ "page": "datasets/dandi/000943/",
+ "generated": "2026-11-01T23:43:26+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 31
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000943-clark-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000943",
+    "version": "0.240614.0754",
+    "doi": "10.48324/dandi.000943/0.240614.0754"
+   },
+   "key": "dandi:000943",
+   "label": "DANDI:000943",
+   "dataset_version": "0.240614.0754",
+   "paper": "10.7554/elife.89356",
+   "paper_title": "Task-anchored grid cell firing is selectively associated with successful path integration-dependent behaviour",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41232921901"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000943-clark-2024",
+   "entry_title": "Task-anchored grid cell firing and path integration (Clark and Nolan 2024)",
+   "description": "Surveys dandiset 000943, which holds the raw tetrode signal and position series of the open arena and virtual track sessions of Clark and Nolan (2024), checks its description against the values, and measures what testing the paper's claims would take. The dandiset holds no sorted units, which every claim needs, and sorting its 976 GB of raw signal does not fit the limits, so every claim is blocked.",
+   "notebooks": [
+    {
+     "path": "reproduce_clark_2024.ipynb",
+     "title": "Clark and Nolan (2024) on dandiset 000943, data check and size of the spike sorting",
+     "executed": "notebooks/000943-clark-2024/reproduce_clark_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "grid-cell-count",
+     "statement": "Of 1881 MEC neurons recorded in nine mice, 103 were classified as grid cells from their open arena firing, 11.4 +- 17.4 grid cells per mouse, 0.4 to 9.5% of each mouse's neurons.",
+     "source": "Results, paragraph 1; Supplementary file 1",
+     "quote": "we identified 103/1881 neurons as grid cells (11.4\u00b117.4 grid cells/mouse, range 0.4\u20139.5%, Supplementary file 1 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. Grid cells are then classified from each unit's open arena rate map with 1000 shuffles per unit, which also needs the units. Even with units, the open arena rate maps would rest on position columns whose meaning is inferred from their ranges (the nine columns are undescribed), and 18 of the 41 open arena sessions of M1, one of the paper's nine mice, span only 67.5 to 89.8 cm against the 100 x 100 cm arena the files describe, so a re-sort could still meet a metadata_insufficient block.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supp1-recording-summary",
+     "statement": "Per mouse, the numbers of cells, sessions, trials per session and grid cells are as in Supplementary file 1, in total 1881 cells and 215 sessions, with most grid cells from M11 (53) and M14 (26).",
+     "source": "Supplementary file 1",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Numbers from the table in Supplementary file 1; no sentence of the text states the per-mouse values.",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It also depends on grid-cell-count. The parts that need no units were compared in the data check, not as a test of the claim. The dandiset has 242 VR sessions on the 200 cm track with at least 10 trials for the nine mice (paper 215), 27 more, outside the claim's tolerance of 21.5; per mouse M1 11 (11), M3 30 (26), M6 21 (21), M7 28 (23), M10 25 (16), M11 35 (35), M12 28 (21), M13 27 (25), M14 37 (37), so five of nine are within 10% of the table and M3, M7, M10 and M12 exceed it by 15%, 22%, 56% and 33%. The mean over the nine mice of each mouse's mean trials per session is 183.9 (paper 179.1). The paper counts only sessions with kept units, which the dandiset cannot show, so the excess sessions may be sessions without kept units. Cells and grid cells per mouse need the units.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "grid-field-size-spacing",
+     "statement": "Grid cells had field sizes of 7.5 +- 3.3 cm and grid spacing of 72.5 +- 13.7 cm.",
+     "source": "Results, paragraph 1",
+     "quote": "These grid cells had field sizes of 7.5\u00b13.3 cm and grid spacing of 72.5\u00b113.7 cm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It also depends on grid-cell-count.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-session-level-classes",
+     "statement": "At the session level, 68 of 103 grid cells had periodogram peaks within 0.05 of an integer spatial frequency (task-anchored), 32 had peaks elsewhere (task-independent) and 3 had no peak above the false alarm threshold (aperiodic), over 61 sessions with 233 +- 135 trials per session.",
+     "source": "Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 2; Figure 2D-E",
+     "quote": "We found that 68 of 103 grid cells had peaks in their periodograms within 5% of an integer multiple of the spatial frequency of the track repetition ... By contrast, 32 of 103 grid cells had periodograms with peaks at frequencies outside 5% ... were rare (3/103)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-nongrid-classes",
+     "statement": "Among non-grid cells, the proportion with session-level task-anchored firing was similar to that of grid cells, task-independent periodic firing was rarer and aperiodic firing was more common.",
+     "source": "Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 2; Figure 2E",
+     "quote": "When we carried out similar analyses for non-grid cells, we found that the proportion of neurons with task-anchored firing was similar, but task-independent periodic firing was rarer, while aperiodic firing neurons were more common",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-spatial-information",
+     "statement": "Session-level task-anchored grid cells had higher spatial information scores on the track than task-independent grid cells.",
+     "source": "Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 3",
+     "quote": "These differences manifest as substantially higher spatial information scores, but similar average firing rates, for grid cells with session-level task-anchored firing compared with task-independent firing",
+     "statistics": [
+      {
+       "about": "effect of session-level class (TAG, TIG, AG)",
+       "test": "linear mixed model on log spatial information, ANOVA against null model",
+       "statistic": "\u03a72 = 9.54, DF = 2",
+       "p": 0.008,
+       "n": "103 grid cells"
+      },
+      {
+       "about": "TAG against TIG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = 2.815, DF = 73.6",
+       "p": 0.02
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-firing-rate-similar",
+     "statement": "Mean firing rates on the track did not differ between session-level task-anchored and task-independent grid cells.",
+     "source": "Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 3",
+     "quote": "These differences manifest as substantially higher spatial information scores, but similar average firing rates",
+     "statistics": [
+      {
+       "about": "TAG against TIG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = 0.562, DF = 4.12",
+       "p": 0.8
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-periodogram-features-similar",
+     "statement": "Periodogram peak power and peak width did not differ between task-anchored and task-independent grid cells.",
+     "source": "Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 3",
+     "quote": "Features of the periodogram such as peak power and peak width did not differ between task-anchored grid cells and task-independent grid cells",
+     "statistics": [
+      {
+       "about": "peak power, TAG against TIG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = 2.033, DF = 19.0",
+       "p": 0.13
+      },
+      {
+       "about": "peak width, TAG against TIG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = \u20131.029, DF = 3.27",
+       "p": 0.61
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-aperiodic-low-rate",
+     "statement": "Aperiodic grid cells had much lower mean firing rates than task-anchored or task-independent grid cells, suggesting their lack of periodicity reflects inactivity.",
+     "source": "Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 3",
+     "quote": "The aperiodic grid cells had much lower mean firing rates than the task-anchored grid or task-independent grid cells suggesting that their apparent lack of periodicity reflects inactivity",
+     "statistics": [
+      {
+       "about": "effect of session-level class on log firing rate",
+       "test": "linear mixed model, ANOVA against null model",
+       "statistic": "\u03a72 = 10.215, DF = 2",
+       "p": 0.006
+      },
+      {
+       "about": "TAG against AG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = 2.906, DF = 42.07",
+       "p": 0.02
+      },
+      {
+       "about": "TIG against AG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = 2.588, DF = 67.29",
+       "p": 0.03,
+       "n": "3 aperiodic grid cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-switching-within-session",
+     "statement": "For 26.2% of grid cells (27/103) the trial-level classification was consistently task-anchored or task-independent on more than 85% of trials, whereas for 73.8% (76/103) no single coding scheme accounted for more than 85% of trials.",
+     "source": "Results, Grid cells switch between task-anchored and task-independent firing, paragraph 2; Figure 3F",
+     "quote": "For 26.2% of grid cells (27/103) the classification was consistently (>85% of trials) task-anchored or task-independent ( Figure 3F ), whereas for 73.8% of grid cells (76/103) no single coding scheme accounted for more than 85% of trials",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-session-class-bias",
+     "statement": "Grid cells classified as task-anchored at the session level were biased towards high proportions of task-anchored trials, and session-level task-independent cells towards high proportions of task-independent trials, though many varied between trials.",
+     "source": "Results, Grid cells switch between task-anchored and task-independent firing, paragraph 2; Figure 3F",
+     "quote": "Grid cells identified as having task-anchored firing in our initial session-level analysis ( Figure 2 ) were biassed towards high proportions of task-anchored trials",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-trial-spatial-information",
+     "statement": "Within grid cells, spatial information was higher on trials classified as task-anchored than on trials classified as task-independent.",
+     "source": "Figure 3G; Results, Grid cells switch between task-anchored and task-independent firing, paragraph 3",
+     "quote": "This difference was associated with substantially lower spatial information scores for trials with task-independent firing, while mean firing rates were similar",
+     "statistics": [
+      {
+       "test": "linear mixed model on log spatial information, ANOVA against null model",
+       "statistic": "\u03a72 = 30.98, DF = 1",
+       "p": 1e-07,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-trial-firing-rate-similar",
+     "statement": "Mean firing rates of grid cells were similar on task-anchored and task-independent trials.",
+     "source": "Figure 3G",
+     "quote": "whereas the average firing rate was similar between task-anchored and task-independent trials (right)",
+     "statistics": [
+      {
+       "test": "linear mixed model on log firing rate, ANOVA against null model",
+       "statistic": "\u03a72 = 0.022, DF = 1",
+       "p": 0.88
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3s4-stable-cells",
+     "statement": "Grouping grid cells by a stable mode over trials (more than 85%), stable task-anchored cells had higher spatial information than stable task-independent cells while mean firing rates did not differ, as with the session-level grouping.",
+     "source": "Figure 3-figure supplement 4A-B; Results, Grid cells switch between task-anchored and task-independent firing, paragraph 2",
+     "quote": "Conclusions from this analysis are similar to those of Figure 2F",
+     "statistics": [
+      {
+       "about": "spatial information, effect of group",
+       "test": "linear mixed model on log spatial information, ANOVA against null model",
+       "statistic": "\u03a72 = 21.47, DF = 2",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "spatial information, TA against TI",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = 4.229, DF = 89.9",
+       "p": 0.0002
+      },
+      {
+       "about": "firing rate, TA against TI",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = \u20130.532, DF = 21.4",
+       "p": 0.86
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3s5-grid-vs-nongrid-modes",
+     "statement": "Grid cells spent more of a session in task-independent periodic firing than non-grid cells; the distributions of task-anchored, task-independent and aperiodic epochs differed between grid and non-grid cells.",
+     "source": "Figure 3-figure supplement 5B; Results, Grid cells switch between task-anchored and task-independent firing, paragraph 2",
+     "quote": "For non-grid cells, consistent with session-level analyses, we again found that a sub-population showed task-anchored firing at a trial level, while task-independent periodic firing was substantially less common than in the grid cell population",
+     "statistics": [
+      {
+       "about": "task-anchored epochs",
+       "test": "Kolmogorov-Smirnov test",
+       "statistic": "KS = 0.14",
+       "p": 0.035,
+       "n": "103 grid cells, 1778 non-grid cells"
+      },
+      {
+       "about": "task-independent epochs",
+       "test": "Kolmogorov-Smirnov test",
+       "statistic": "KS = 0.42",
+       "p": 1e-15,
+       "p_relation": "<"
+      },
+      {
+       "about": "aperiodic epochs",
+       "test": "Kolmogorov-Smirnov test",
+       "statistic": "KS = 0.38",
+       "p": 1e-12,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3s6-block-lengths",
+     "statement": "Periods of task-anchored or task-independent firing extended in blocks across multiple trials, with a distribution of block lengths that differed from that of trial-shuffled data.",
+     "source": "Figure 3-figure supplement 6B; Results, Grid cells switch between task-anchored and task-independent firing, paragraph 3",
+     "quote": "among all grid cells periods of task-anchored or task-independent firing extended in blocks across multiple trials, with the distribution of block lengths substantially different to that generated by shuffled data",
+     "statistics": [
+      {
+       "test": "Kolmogorov-Smirnov test",
+       "statistic": "KS = 0.066",
+       "p": 0.0003,
+       "n": "1765 blocks (data), 2359 blocks (shuffled)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3s7-trial-type-ratio",
+     "statement": "The percentage of beaconed trials in a session did not affect how often grid cells showed task-anchored coding.",
+     "source": "Figure 3-figure supplement 7B",
+     "quote": "The percentage of beaconed trials did not have a significant effect on the occurrence of task-anchored coding",
+     "statistics": [
+      {
+       "test": "ANOVA comparison of binomial GLMMs with and without % beaconed trials",
+       "statistic": "\u03a72 = 0.032, DF = 1",
+       "p": 0.95
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-grid-agreement-higher",
+     "statement": "Simultaneously recorded grid cells agreed strongly in their trial-by-trial firing mode, with agreement greater between grid cell pairs than between pairs involving non-grid cells, whose agreement was more variable and lower on average.",
+     "source": "Figure 4D-E; Results, Grid cells switch between task-anchored and task-independent firing, paragraph 4",
+     "quote": "Agreement was greater between grid cell pairs than between pairs involving non-grid cells",
+     "statistics": [
+      {
+       "about": "G-G against NG-NG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = \u201310.455, DF = 10,720",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "G-G against G-NG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = \u20138.415, DF = 10,710",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "NG-NG against G-NG",
+       "test": "pairwise comparison of estimated marginal means",
+       "statistic": "T = \u20136.853, DF = 10,352",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-agreement-above-shuffle",
+     "statement": "For grid-grid, non-grid-non-grid and grid-non-grid pairs, agreement in firing mode differed from that of shuffled trial classifications.",
+     "source": "Figure 4E legend",
+     "quote": "Agreement in the firing mode between each combination of grid (G) and non-grid (NG) cells and corresponding scores for the shuffled data (lower), and the difference between the shuffled and actual scores",
+     "statistics": [
+      {
+       "about": "G-G, data against shuffled",
+       "test": "generalised linear mixed model (beta), ANOVA",
+       "statistic": "\u03a72 = 58.89, DF = 1",
+       "p": 1e-13,
+       "p_relation": "<"
+      },
+      {
+       "about": "NG-NG, data against shuffled",
+       "test": "generalised linear mixed model (beta), ANOVA",
+       "statistic": "\u03a72 = 20.42, DF = 1",
+       "p": 1e-05,
+       "p_relation": "<"
+      },
+      {
+       "about": "G-NG, data against shuffled",
+       "test": "generalised linear mixed model (beta), ANOVA",
+       "statistic": "\u03a72 = 30.37, DF = 1",
+       "p": 1e-07,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-nongrid-spatial-information",
+     "statement": "The drop in spatial information when the grid population was task-independent, relative to when it was task-anchored, was greater for grid cells than for non-grid cells, which kept similar spatial information.",
+     "source": "Figure 4F; Results, Grid cells switch between task-anchored and task-independent firing, paragraph 4",
+     "quote": "Non-grid cells also differed from the grid cell population in that their activity maintained similar spatial information between trials when grid cells were task-anchored versus when they were task-independent",
+     "statistics": [
+      {
+       "about": "grid against non-grid difference",
+       "test": "linear mixed model, ANOVA against null model",
+       "statistic": "\u03a72 = 21.1, DF = 1",
+       "p": 1e-05,
+       "p_relation": "<"
+      },
+      {
+       "about": "grid cells against zero",
+       "test": "estimated marginal mean against zero",
+       "statistic": "T = 2.723, DF = 11.87",
+       "p": 0.018
+      },
+      {
+       "about": "non-grid cells against zero",
+       "test": "estimated marginal mean against zero",
+       "statistic": "T = \u20131.278, DF = 2.58",
+       "p": 0.3
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-stable-beaconed-similar",
+     "statement": "In sessions with stable grid codes, the proportion of hit trials on cued (beaconed) trials was similar whether grid firing was task-anchored or task-independent.",
+     "source": "Figure 6B; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 2",
+     "quote": "On cued trials the spatial organisation of stopping behaviour ( Figures 5C vs D and 6A ) and the proportion of hit trials ( Figure 6B ) was similar for both groups",
+     "statistics": [
+      {
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 2.70, DF = 1",
+       "p": 0.1
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-stable-uncued-reduced",
+     "statement": "In sessions with stable grid codes, the proportion of hit trials on non-beaconed and probe trials was substantially reduced when grid firing was task-independent.",
+     "source": "Figure 6B; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 2",
+     "quote": "while the proportion of hit trials was substantially reduced ( Figure 6B )",
+     "statistics": [
+      {
+       "about": "non-beaconed trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 5.24, DF = 1",
+       "p": 0.022
+      },
+      {
+       "about": "probe trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 4.55, DF = 1",
+       "p": 0.033
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-stable-stop-density",
+     "statement": "In sessions with stable grid codes, stopping on non-beaconed and probe trials was spatially organised around the reward zone when grid activity was task-anchored, but largely not when it was task-independent; on cued trials it was similar in both.",
+     "source": "Figure 6A; Figure 5C-D; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 2",
+     "quote": "on non-beaconed and probe trials stopping behaviour was clearly spatial when grid activity was task-anchored, but spatial organisation was largely absent when grid activity was task-independent",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-epochs-beaconed-similar",
+     "statement": "Over all sessions, at the trial level, the proportion of hits on beaconed trials was similar whether grid cells were task-anchored or task-independent.",
+     "source": "Figure 6D; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 3",
+     "quote": "On cued trials the spatial organisation of stopping behaviour ( Figures 5E\u2013F \u2013 6C ), and the proportion of hit trials ( Figure 6D ), was similar irrespective of whether grid cell fields were task-anchored or task-independent",
+     "statistics": [
+      {
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 2.84, DF = 1",
+       "p": 0.09
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-epochs-nonbeaconed-reduced",
+     "statement": "Over all sessions, at the trial level, the proportion of hits on non-beaconed trials was reduced when grid firing was task-independent.",
+     "source": "Figure 6D; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 3",
+     "quote": "and the proportion of successful trials was reduced compared with when grid firing was task-anchored ( Figure 6D )",
+     "statistics": [
+      {
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 10.14, DF = 1",
+       "p": 0.001
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-epochs-probe",
+     "statement": "On probe trials the proportion of hits was lower when grid firing was task-independent, though the paper's test for probe trials was not significant.",
+     "source": "Figure 6D; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 3",
+     "quote": "On average, spatial stopping behaviour was reduced on non-beaconed and probe trials during which grid firing was task-independent ( Figure 6C ), and the proportion of successful trials was reduced",
+     "statistics": [
+      {
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 1.70, DF = 1",
+       "p": 0.19
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-epoch-stop-density",
+     "statement": "Over all sessions, spatial stopping on non-beaconed and probe trials was reduced on trials when grid firing was task-independent, while on cued trials it was similar.",
+     "source": "Figure 6C; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 3",
+     "quote": "On average, spatial stopping behaviour was reduced on non-beaconed and probe trials during which grid firing was task-independent ( Figure 6C )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-hit-try-run",
+     "statement": "Task-anchored firing occurred on a greater proportion of non-beaconed and probe hit trials than task-independent firing, but on a smaller proportion of run trials.",
+     "source": "Figure 6E; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 4",
+     "quote": "task-anchored firing occurred on a greater proportion of non-beaconed and probe trials that were hits compared with task-independent firing, but on a smaller proportion of run trials",
+     "statistics": [
+      {
+       "about": "beaconed trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 4.49, DF = 2",
+       "p": 0.11
+      },
+      {
+       "about": "non-beaconed trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 7.75, DF = 2",
+       "p": 0.02
+      },
+      {
+       "about": "probe trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 5.40, DF = 2",
+       "p": 0.07
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6f-odds-ratio",
+     "statement": "The odds ratio for reward on task-anchored relative to task-independent trials was close to 1 when cues were available but much larger without cues.",
+     "source": "Figure 6F; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 4",
+     "quote": "the odds ratio for receipt of reward on task-anchored versus task-independent trials was close to 1 when cues were available, but was much larger in the absence of cues",
+     "statistics": [
+      {
+       "about": "beaconed trials",
+       "test": "odds ratio from binomial GLMM",
+       "p": 0.23
+      },
+      {
+       "about": "non-beaconed trials",
+       "test": "odds ratio from binomial GLMM",
+       "p": 0.001
+      },
+      {
+       "about": "probe trials",
+       "test": "odds ratio from binomial GLMM",
+       "p": 0.27
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6s1-speed-profiles",
+     "statement": "The differences in outcome between task-anchored and task-independent trials were not associated with differences in running speed profiles.",
+     "source": "Figure 6-figure supplement 1B; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 3",
+     "quote": "The differences in outcomes between task-anchored versus task-independent trials were not associated with differences in running speed profiles",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6s2-template-method",
+     "statement": "Classifying trials by correlation with a template of task-anchored firing also gave similar performance on cued trials but impaired performance on uncued trials when grid cells were not task-anchored.",
+     "source": "Figure 6-figure supplement 2F-H; Results, Task-anchored coding by grid cells is selectively associated with successful path integration-dependent reward localisation, paragraph 4",
+     "quote": "also indicated a similar behavioural performance on cued trials, but impaired performance on uncued trials when grid cells were in a task-independent mode",
+     "statistics": [
+      {
+       "about": "hits, beaconed trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 0.62, DF = 1",
+       "p": 0.43
+      },
+      {
+       "about": "hits, non-beaconed trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 6.43, DF = 1",
+       "p": 0.01
+      },
+      {
+       "about": "hits, probe trials",
+       "test": "binomial GLMM, ANOVA against null model",
+       "statistic": "\u03a72 = 3.52, DF = 1",
+       "p": 0.06
+      },
+      {
+       "about": "odds ratio, beaconed trials",
+       "test": "odds ratio from binomial GLMM",
+       "p": 0.4
+      },
+      {
+       "about": "odds ratio, non-beaconed trials",
+       "test": "odds ratio from binomial GLMM",
+       "p": 0.002
+      },
+      {
+       "about": "odds ratio, probe trials",
+       "test": "odds ratio from binomial GLMM",
+       "p": 0.04
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_clark_2024.ipynb",
+     "notes": "The dandiset holds no sorted units (no file has a units table or any processed data), and the claim needs single units. Making them as the paper did means streaming the raw signal of every recording day, sorting the open arena and VR recordings of a day together with MountainSort and curating the clusters by isolation, noise overlap and peak SNR (Methods, Spike sorting). Streaming alone, at the rate measured in the executed notebook (76.4 MB/s with 16 processes; it varies by several percent between runs), takes 2.3 h for the 638 GB of the recording days (478 files) of the 239 usable 200 cm VR sessions of the nine mice that have an open arena session the same day, which are a superset of the paper's 215 sessions (2.1 h when the size is scaled to 215 sessions), and 3.6 h for all 976 GB, against the protocol's limit of 60 min for a notebook (docs/protocol.md, Author, step 3); this is a lower bound, as sorting time comes on top and was not measured. The sort was not started. It depends on the grid cells of grid-cell-count and their spikes on the track. The behaviour the claim also needs (trial types, positions, and stops from speed below 4.7 cm/s) is in the VR position series; reward times are not stored, but a hit is defined by a stop in the reward zone, so the behaviour side could be computed. The trial-level grid classes cannot.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "None of the 734 files holds sorted units, a units table, a trials table, reward times or any processed data; each holds only the raw 16-channel tetrode signal (30 kHz) and a position series. Every claim of the paper rests on units sorted with MountainSort, so none can be tested without sorting about 976 GB of raw signal. The paper's data are deposited at Edinburgh DataShare (the paper's data availability statement); this attempt did not use or inspect them. The dandiset's variableMeasured lists only ElectrodeGroup and ElectricalSeries, which is accurate.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The position series has the same description in every file, \"position: cm, speed: cm/s, angle: degrees, trials: non-zero indexed, trial types: 0-beaconed, 1-nonbeaconed, 2-probe\". The VR files hold three columns (position, trial number, trial type) and no speed or angle; the open arena files hold nine columns and no trials.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The nine columns of the open arena position series are not named. From their ranges, columns 1 and 3 appear to be x and y in cm, 2 and 4 the same in camera pixels, 5 head direction in degrees, 7 speed in cm/s, 0 and 8 times in s; column 6 (session minima from 33.4, maxima up to 37,697) could not be identified.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The files describe a 100 x 100 cm open arena, and in most sessions the x and y columns span 88.0 to 103.7 cm, but in 38 open arena sessions, 18 of M1's 41 and 20 of M2's 21, they span only 67.5 to 89.8 cm, so either the arena was smaller in these sessions or the position scaling differs; the files do not say which.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Two VR files have position for only part of the raw recording, sub-M13 ses-M13-D27-2021-06-15-11-43-42 (687 s of 2168 s, 21 trials) and sub-M15 ses-M15-D5-2021-05-14-12-46-13 (881 s of 1779 s, 14 trials). In the other 353 VR files the position series ends within 0.1 s of the raw signal.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In open arena files the position series usually runs past the end of the raw signal, by a median 2.9 s (5th to 95th percentile 1.2 to 9.5 s), and in 20 of 379 files the two differ by more than 10 s (up to 451.9 s longer and 178.2 s shorter). The files do not say how the position was aligned to the raw signal (the data collection text describes LED pulses, which are not in the files).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds 12 mice, 379 open arena and 355 VR files, 29 of them on tracks longer than 200 cm; the paper uses nine mice and the 200 cm track. For the nine mice it has 242 usable 200 cm VR sessions (at least 10 trials) against the 215 of the paper's summary table, with more sessions than the table by more than 10% for M3 (30 against 26), M7 (28, 23), M10 (25, 16) and M12 (28, 21), and slightly more for M13 (27, 25). Nothing in the dandiset marks which sessions the paper used. 48 recording days have only an open arena file and 24 only a VR file.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier also queried the archive API for every asset's metadata. It gave blocked, too_large for all 31 claims, agreeing with the record, and said data_missing could be argued but too_large is defensible since the raw data are present. It found no misreading of the paper in the claims file that affects these blocks. Other changes in reply: the helper docstring now says 100 ms bins for the multi-unit check (it said 1 s); shifted_contrast no longer wraps labels around the window ends and uses the same sign convention as lagged_corr (on synthetic data where activity leads speed by 5 bins both now give +5; in the M3 and M12 VR sessions the best shift is now +2.0 s, next to the +1.8 s and +1.7 s correlation peaks, and the other counts of the clock check are unchanged); a new data-check cell prints general/notes, experiment_description and protocol of one VR and one open arena file, which show the 200 cm track statement, the 4.7 cm/s stop speed over 100 ms and the 100 x 100 cm open field; the summary cell count was already 31.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook, the helper module and the claims file, with the paper. The verifier agreed with blocked, too_large for all 31 claims, found no misreading of the paper in the claims file that affects these blocks, and listed sentences the printed outputs do not support. Other changes in reply: cell 8 now prints the position range of the 326 sessions on the 200 cm track (0 to 200.0 cm), which cell 9 cites; cell 12 now prints each column's smallest session minimum (column 6 from 33.4) and the largest gaps between position and raw signal ends (451.9 s longer, 178.2 s shorter), and the findings give these; the 26.5 GB pickle (combined_cohorts.pkl), which no output or paper passage supports, is removed from the findings, README and summary, which now say only that the paper's data are at Edinburgh DataShare, from the paper's data availability statement; the quoted position description keeps its colons; the README says the 638 GB covers a superset of the paper's sessions and gives the scaled 2.1 h; in round 1, the reviewed field now says no misreading that affects these blocks, and the responses give the 72.4 MB/s then printed and the 67.5 to 89.8 cm extent. The round-1 reasons are kept in the verifier's words; the cells they cite (6, 8 and 19) are those of the round-1 notebook, now cells 8, 10 and 21. The verifier could not check the protocol's 60-minute limit beyond the quotation, as docs/protocol.md is not among its materials; nothing changed for that.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000943-clark-2024",
+   "type": "reproduction",
+   "title": "Task-anchored grid cell firing and path integration (Clark and Nolan 2024)",
+   "description": "Surveys dandiset 000943, which holds the raw tetrode signal and position series of the open arena and virtual track sessions of Clark and Nolan (2024), checks its description against the values, and measures what testing the paper's claims would take. The dandiset holds no sorted units, which every claim needs, and sorting its 976 GB of raw signal does not fit the limits, so every claim is blocked.",
+   "datasets": [
+    "dandi:000943"
+   ],
+   "papers": [
+    "10.7554/elife.89356"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_clark_2024.ipynb",
+     "title": "Clark and Nolan (2024) on dandiset 000943, data check and size of the spike sorting",
+     "executed": "notebooks/000943-clark-2024/reproduce_clark_2024.html"
+    }
+   ]
+  }
+ ]
+}
