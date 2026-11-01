@@ -19,15 +19,15 @@ are not in it.
 | DRC cell responses do not differ by contrast (Fig. 2e) | Not reproduced |
 | LME: baseline PD predicts responses, evoked PD does not (Fig. 3b) | Reproduced |
 | LME: full model no better than null (Fig. 3c) | Not reproduced |
-| ZnT3-WT: contrast and ZX1 effects and their interaction (Fig. 4c) | Not reproduced |
-| ZnT3-WT: post hoc contrast and ZX1 effects (Fig. 4c) | Not reproduced |
+| ZnT3-WT: contrast and ZX1 effects and their interaction (Fig. 4c) | Blocked: methods underspecified |
+| ZnT3-WT: post hoc contrast and ZX1 effects (Fig. 4c) | Partially reproduced |
 | ZnT3-KO: no contrast or ZX1 effect on the intercept (Fig. 4f) | Blocked: methods underspecified |
-| ZnT3-KO: ZX1 still reduces the slope, less than in WT (Fig. 4f) | Blocked: methods underspecified |
+| ZnT3-KO: ZX1 still reduces the slope, less than in WT (Fig. 4f) | Not reproduced |
 | Figure 5 (three claims, widefield imaging) | Blocked: data missing |
-| Baseline PD drifts up in ZX1 and ACSF experiments alike (Fig. 6a) | Not reproduced |
+| Baseline PD drifts up in ZX1 and ACSF experiments alike (Fig. 6a) | Partially reproduced |
 | Contrast effect on intercept and slope after ACSF (Fig. 6b) | Partially reproduced |
-| No baseline-evoked PD correlation below 50% (Fig. 6c) | Reproduced |
-| Negative baseline-evoked correlation overall, none below 50% (Methods) | Partially reproduced |
+| No baseline-evoked PD correlation below 50% (Fig. 6c) | Blocked: methods underspecified |
+| Negative baseline-evoked correlation overall, none below 50% (Methods) | Blocked: methods underspecified |
 | ZnT3-KO slope below ZnT3-WT in high contrast (Fig. 6d) | Reproduced |
 | High-contrast peaks near 110% after ZX1 in WT and in KO (Discussion) | Reproduced |
 
@@ -36,10 +36,12 @@ reasoning and the differences from the paper's method.
 
 The files carry labels that name the paper's analyses, which identify most of the paper's groups. The
 pupil traces hold tracking failures that the Methods' cleaning does not remove, so the cleaning was
-extended (an assumption, with the paper's single pass shown as a variant). The attempt record, with the
+extended (an assumption, with the paper's single pass and the first round's cleaning shown as variants).
+Several of the Figure 4 and 6 outcomes change with the cleaning; the notebook's last section shows by how
+much. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/001256-cody-2024-01.yaml`](../../attempts/001256-cody-2024-01.yaml).
 
-- `reproduce_cody_2024.ipynb`: the analysis. It takes about two minutes, most of it streaming the files.
+- `reproduce_cody_2024.ipynb`: the analysis. It takes about three minutes, most of it streaming the files.
 - `zinc_pupil.py`: loading the trials, pupil cleaning and measures, dF/F and pure-tone responses, cell
   inclusion and the growth curve polynomials. Other notebooks on this dandiset can import it.

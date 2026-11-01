@@ -27,20 +27,24 @@ outcomes:
   measured: 318
   notes: Under the main reading (SD over time, responsive in both contrasts, peak window 2-2.8 s, maximum
     of the averaged trace) 318 cells are tone-responsive, within 295 plus or minus 29.5; the other inclusion
-    readings give 339, 215 and 241. Peak responses differ across the seven bins (Kruskal-Wallis H = 35.69,
-    p = 3.2e-06), largest in the 32-43% bin (15.15% dF/F) against 8.12 in the lowest and 13.08 in the
-    highest. All 32 readings give p from 2.2e-07 to 1.4e-04 and the same top bin. The bins are not independent
-    of mouse; the lowest bin holds cells of three mice. No trial is below 10% of animal max, so the two
-    bin-1 readings are the same.
+    readings give 339, 215 and 241. Peak responses differ across the seven bins (Kruskal-Wallis H = 51.83,
+    p = 2.0e-09), largest in the 21-32% bin (15.88% dF/F) against 8.12 in the lowest and 13.08 in the
+    highest. All 32 readings give p from 1.0e-10 to 7.3e-08 and the same top bin. Under the other cleanings
+    and without the ZnT3-WT mouse AA0335 the main reading gives p = 2.8e-10 to 3.2e-06 with an interior
+    top bin. The bins are not independent of mouse; the lowest bin holds cells of three mice. No trial
+    is below 10% of animal max, so the two bin-1 readings are the same.
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
-  - The FRA-mapping reading of cell inclusion cannot be run; mapping trials are in 5 of 30 files and one
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
+  - The FRA-mapping reading of cell inclusion cannot be run; mapping trials are in 7 of 30 files and one
     group A mouse.
   - Peak and response windows are half-open frame windows at 5 Hz, frames timed from the trial's first
     frame minus stimDelay (Methods, 2PCI processing and analysis).
@@ -50,7 +54,7 @@ outcomes:
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig1g-reliability-intermediate
   notes: Reliability differs across bins under all eight readings (two inclusion SDs, both or pooled contrasts,
-    Pearson or no mean removal), Kruskal-Wallis p = 1.0e-08 to 9.3e-07, with the highest mean in the 21-32%
+    Pearson or no mean removal), Kruskal-Wallis p = 1.1e-09 to 6.2e-07, with the highest mean in the 21-32%
     bin in every reading (Pearson, main inclusion, 0.766 against 0.633 in the lowest bin and 0.590 in
     the highest).
   deviations:
@@ -58,9 +62,12 @@ outcomes:
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - The 2-3.2 s window holds six frames at 5 Hz.
   assumed: true
 - claim: fig1h-cgc-largest-intermediate
@@ -70,15 +77,19 @@ outcomes:
   notes: Kruskal-Wallis p = 2.5e-17 to 1.1e-09 across the eight readings; the highest mean factor is in
     the 54-65% bin in seven readings and the 43-54% bin in one, never the first or last. Means are pulled
     by cells whose high-contrast peak is near or below 0 (factors from -109.5 to 37.8 in the main reading);
-    the medians also peak at 54-65% (1.34). The paper's figure has its maximum in the fourth bin (43-54%).
+    the medians also peak at 54-65% (1.34). The paper's figure has its maximum in the fourth bin (43-54%),
+    which the main reading gives without AA0335.
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   assumed: true
 - claim: fig1h-cgc-evident-all-bins
   outcome: not_reproduced
@@ -93,9 +104,12 @@ outcomes:
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   assumed: true
 - claim: fig1i-baseline-contrast-interaction
   outcome: reproduced
@@ -105,16 +119,20 @@ outcomes:
   notes: Keeping only cell-bins with both contrasts gives 1830 values (SD over time, both contrasts; 1932
     with contrasts pooled), within 1885 plus or minus 188.5. On these the bin effect is F = 38.07 to 41.12
     (p <= 1.0e-43) and the interaction F = 2.21 to 3.02 (p = 0.0061 to 0.040). Keeping every cell-bin-contrast
-    gives 2204 values (outside tolerance), bin F = 19.30 and interaction F = 5.41 (p = 1.5e-05). The bin
-    effect is larger than the paper's F = 10.74 in every reading.
+    gives 2185 or 2304 values (outside tolerance), interaction F = 4.52 to 4.97 (p <= 0.00015). The bin
+    effect is larger than the paper's F = 10.74 in every reading. Without AA0335 the main reading's interaction
+    p is 0.0046; with the Methods' single cleaning pass it is 0.17.
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   assumed: true
 - claim: fig1i-contrast-effect-intermediate-only
   outcome: not_reproduced
@@ -123,17 +141,20 @@ outcomes:
   notes: On the ANOVAs whose count is within tolerance (cell-bins with both contrasts), the 43-54% bin
     is not significant under either Bonferroni family (corrected p = 0.095 to 0.22 for 7 comparisons,
     1 for 91) and the 54-65% bin is the only significant one under both. With every cell-bin-contrast
-    (2204 values, outside the count tolerance) the 43-54% bin is significant (LOW 15.54 against HIGH 10.43%
-    dF/F; corrected p = 0.00017 for 7 and 0.0022 for 91) and is the only one under the 91-comparison family
-    in 13 of 16 readings, as the paper reports, while the 7-comparison family also flags 54-65%.
+    (2185 or 2304 values, outside the count tolerance) the 43-54% bin is significant (LOW 15.54 against
+    HIGH 10.43% dF/F; corrected p = 0.00016 for 7 and 0.0021 for 91) and is the only one under the 91-comparison
+    family in 13 of 16 readings, as the paper reports, while the 7-comparison family also flags 54-65%.
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - The post hoc test is a t test on the ANOVA's pooled error, Bonferroni corrected, as MATLAB multcompare
     does; the paper does not name the software.
   assumed: true
@@ -141,19 +162,24 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig2b-evoked-pd-whole-drc
-  notes: HIGH is above LOW under every reading but never significantly. Group A trials, 42 and 42 trials
-    from six mice, medians 109.10 against 105.61% (z = 1.109, p = 0.27); group B trials p = 0.55; A and
-    B pooled p = 0.096; per-mouse means p = 0.40 to 0.89. Only 84 of 211 group A trials have a baseline
-    below 50% of animal max. Without the 50% limit, group A gives z = 2.551, p = 0.011 (a variant). With
-    the paper's single cleaning pass the trial readings give p = 0.078 to 0.43.
+  notes: HIGH is above LOW under every reading but never significantly. Group A trials, 42 and 40 trials
+    from six mice, medians 109.10 against 105.05% (z = 1.336, p = 0.18); group B trials p = 0.40; A and
+    B pooled p = 0.054; per-mouse means p = 0.29 to 0.83. Only 82 of 209 group A trials have a baseline
+    below 50% of animal max. Without the 50% limit, group A gives z = 2.747, p = 0.0060 (a variant). With
+    the single cleaning pass the trial readings give p = 0.078 to 0.43, and with the round-1 cleaning
+    0.096 to 0.55. Without the ZnT3-WT mouse AA0335, group A trials give p = 0.028, which would make the
+    readings disagree.
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Group B is the twelve mice with CGC-assay trials before and after ZX1 (no label names it); the paper
     gives fourteen.
   assumed: true
@@ -162,9 +188,9 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig2c-evoked-pd-1-2s
-  notes: The readings disagree. With groups A and B pooled and trials as units HIGH exceeds LOW (109.49
-    against 104.47%, z = 2.581, p = 0.0098); group A alone (p = 0.12), group B alone (p = 0.16) and every
-    per-mouse reading (p = 0.27 to 0.63) are not significant. The criterion blocks the claim when readings
+  notes: The readings disagree. With groups A and B pooled and trials as units HIGH exceeds LOW (109.10
+    against 104.47%, z = 2.558, p = 0.011); group A alone (p = 0.099), group B alone (p = 0.16) and every
+    per-mouse reading (p = 0.23 to 0.57) are not significant. The criterion blocks the claim when readings
     differ. Question for the authors (finding methods_unavailable) which mice and which unit the Fig.
     2c test used.
   deviations:
@@ -172,22 +198,27 @@ outcomes:
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
 - claim: fig2e-drc-responses-no-difference
   outcome: not_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig2e-drc-responses-no-difference
   measured: 359
   notes: LOW and HIGH DRC responses over 0 to 2 s differ under every reading, in CTRL and after ZX1, LOW
-    below HIGH (median cell difference -1.19 to -1.51% dF/F; Wilcoxon rank sum z = -5.87 to -7.57, p =
-    3.7e-14 to 4.5e-09). Under the main inclusion reading 359 cells in CTRL and 363 after ZX1 from 12
-    mice (two ZnT3-KO); without the KO mice the result is the same. The counts (209 to 375) are all outside
-    520 plus or minus 52. The test is the paper's; the effect it finds is about 1.3% dF/F.
+    below HIGH (median cell difference -1.05 to -2.03% dF/F; Wilcoxon rank sum z = -4.94 to -7.57, p =
+    3.7e-14 to 7.7e-07). Under the main inclusion reading 359 cells in CTRL and 363 after ZX1 from 12
+    mice (two ZnT3-KO); without the KO mice, and with the six C57BL6/J mice only, the result is the same.
+    The counts (149 to 375) are all outside 520 plus or minus 52. The test is the paper's; the effect
+    it finds is about 1 to 2% dF/F.
   deviations:
   - Group B is the twelve mice with CGC-assay trials before and after ZX1 (six C57BL6/J, four ZnT3-WT,
-    two ZnT3-KO); the paper gives fourteen C57BL6/J mice. Variants without the KO mice are shown.
+    two ZnT3-KO); the paper gives fourteen C57BL6/J mice. Variants without the KO mice and with the C57BL6/J
+    mice only are shown.
   - Cells are segmented separately before and after ZX1 in most files, so inclusion is decided within
     each condition.
   - Whether the files' fluorescence is neuropil-corrected (FISSA, scaled by 0.8) is not stated; it is
@@ -196,18 +227,23 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig3b-lme-coefficients
-  notes: In all eight fits (cells responsive in both contrasts or all tone-responsive; all trials or below
-    50%; two peak windows) the baseline PD coefficient is significant (b = -0.102 to -0.179% dF/F per
-    % of max, p = 9.7e-05 to 0.0074), while evoked PD at 1-2 s (p = 0.13 to 0.29) and its interaction
-    with contrast (p = 0.55 to 0.98) are not. The paper does not give the sign of the baseline coefficient.
+  notes: In all sixteen fits (four cell inclusion readings, both contrasts or all tone-responsive cells
+    with either SD; all trials or below 50%; two peak windows) the baseline PD coefficient is significant
+    (b = -0.100 to -0.191% dF/F per % of max, p = 1.2e-04 to 0.032), while evoked PD at 1-2 s (p = 0.42
+    to 0.92) and its interaction with contrast (p = 0.22 to 0.72) are not. All fits converged. The paper
+    does not give the sign of the baseline coefficient. Without the ZnT3-WT mouse AA0335 the baseline
+    coefficient is not significant in the trials below 50% (p = 0.087, one fit).
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests
     from fitlme or lmer; with thousands of denominator df the p-values agree closely.
   - The random intercepts (1 | baseline_PD) and (1 | pupil_at_1-2s) group rows by per-trial values, so
@@ -218,37 +254,47 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig3c-lme-likelihood-ratio
-  notes: The likelihood ratio test of the full against the null model is significant in every fit (chi-squared
-    on 3 df, p = 0.0012 to 0.048), against the paper's p = 0.330. The full model carries the contrast
-    main effect, significant when all trials are used (b = -1.57 to -1.77, p = 0.016 to 0.034), which
-    accounts for part of the difference.
+  notes: With all trials the likelihood ratio test of the full against the null model is significant in
+    all eight fits (chi-squared on 3 df, p = 0.0013 to 0.015), against the paper's p = 0.330; with trials
+    below 50% it gives p = 0.041 to 0.17. The criterion asks for p >= 0.05 under each trial reading. The
+    full model carries the contrast main effect (b = -1.41 to -1.61, p = 0.030 to 0.060 with all trials
+    and SD over time), which accounts for part of the difference.
   deviations:
   - Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the
     paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used.
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Random intercepts as in fig3b-lme-coefficients.
   assumed: true
 - claim: fig4c-wt-contrast-zx1-effects
-  outcome: not_reproduced
+  outcome: blocked
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig4c-wt-contrast-zx1-effects
-  notes: 361 ZnT3-WT trials below 50% (7581 rows; the paper's denominator df are about 7920). Across the
-    four model and coding readings, the contrast intercept is significant under reference coding only
-    (p = 0.017; sum coding p = 0.057), the contrast slope under one reading (p = 0.036), the ZX1 intercept
-    under none (p >= 0.47), the ZX1 slope under all (p <= 0.0033), and the contrast by ZX1 interaction
-    under none (z = -1.15, p = 0.25). At most three of five terms, never the interaction, so no reading
-    meets the full or partial criterion. Mean traces at 2 s, CTRL HIGH 111.9 against LOW 109.1%; ZX1 HIGH
-    107.5 against LOW 108.4%.
+  notes: 328 ZnT3-WT trials below 50% (6888 rows; the paper's denominator df are about 7920). Under reference
+    coding all five terms are significant in both models (contrast intercept b = 2.48, p = 6.3e-09; contrast
+    slope p = 0.049 and 0.0029; ZX1 intercept b = 1.25, p = 0.010; ZX1 slope b = -8.24 and -4.96, p =
+    4.0e-08 and 0.017; contrast by ZX1 b = -2.76, p = 3.0e-05). Under sum coding the ZX1 intercept is
+    not significant (p = 0.72) and in the full factorial nor is the contrast slope (p = 0.12), so four
+    and three terms pass. Every reading meets at least the partial criterion, two the full one; the criterion
+    treats a disagreement between readings as methods_underspecified. Reference coding is the default
+    of both fitlme and lmer, which the Methods name. With the round-1 cleaning one to three terms pass
+    and the interaction does not (p = 0.25), so the outcome rests on the cleaning. Mean traces at 2 s,
+    CTRL HIGH 113.2 against LOW 108.5%; ZX1 HIGH 106.9 against LOW 109.1%.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
@@ -258,20 +304,30 @@ outcomes:
     four M.
   - Orthogonal polynomials with unit-norm columns over the 21 samples from 0 to 2 s (R poly()), as the
     claims file says.
-  assumed: true
+  - Fits use several optimizers and keep the converged fit with the highest finite likelihood; lbfgs alone
+    stopped at a degenerate point (infinite likelihood, intercept 0, subject variance 0) in some fits
+    in the first round.
+  blocked_by: methods_underspecified
 - claim: fig4-wt-posthoc
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig4-wt-posthoc
-  notes: At the cell means (time polynomials at 0), HIGH exceeds LOW in CTRL by 1.018% (Tukey p = 0.079),
-    and ZX1 neither lowers HIGH (-0.418, p = 0.84) nor changes LOW (0.346, p = 0.89); the same under all
-    four readings.
+  notes: At the cell means (time polynomials at 0), HIGH exceeds LOW in CTRL by 2.48% (Tukey p = 3.9e-08)
+    and not after ZX1 (-0.28, p = 0.95), and ZX1 lowers HIGH (-1.51, p = 0.015), but ZX1 also raises LOW
+    (1.25, p = 0.0496), which the criterion requires not to be significant, and the ZX1 effect on HIGH
+    is weaker than the paper's p < 0.0001. Three of four parts hold; the fourth fails at the threshold.
+    The same under all four readings, so the coding disagreement that blocks fig4c-wt-contrast-zx1-effects
+    does not bear on it. With the round-1 cleaning HIGH minus LOW in CTRL is not significant (p = 0.078)
+    and ZX1 has no effect (p = 0.83 and 0.89).
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
@@ -283,44 +339,51 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig4f-ko-no-contrast-effect
-  notes: 181 ZnT3-KO trials below 50% (3801 rows, against about 4500). The contrast intercept (p = 0.39
-    to 0.58), ZX1 intercept (p = 0.18 to 0.30) and contrast by ZX1 (p = 0.91) terms are not significant
-    under any reading, but the contrast slope is significant in three of four (z = 2.63 to 2.74, p = 0.0062
-    to 0.0086) and not under the full factorial with reference coding (p = 0.245). The criterion treats
+  notes: 176 ZnT3-KO trials below 50% (3696 rows, against about 4500). The contrast intercept (p = 0.32
+    to 0.74), ZX1 intercept (p = 0.26 to 0.30) and contrast by ZX1 (p = 0.58) terms are not significant
+    under any reading, but the contrast slope is significant in three of four (z = 2.60 to 2.66, p = 0.0078
+    to 0.0095) and not under the full factorial with reference coding (p = 0.18). The criterion treats
     a disagreement between model readings as methods_underspecified. With the paper's single cleaning
-    pass the contrast intercept (p = 8.9e-06) and contrast by ZX1 (p = 0.040) terms are significant under
-    the written model. Question for the authors (finding methods_unavailable) on the model formula and
-    coding.
+    pass no reading has all four terms non-significant. Question for the authors (finding methods_unavailable)
+    on the model formula and coding.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
   - Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests
     from fitlme or lmer; with thousands of denominator df the p-values agree closely.
 - claim: fig4f-ko-zx1-slope
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: not_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig4f-ko-zx1-slope
-  notes: Depends on fig4f-ko-no-contrast-effect, which is blocked, so it is blocked for the same reason.
-    The analysis ran; the KO ZX1 slope term is negative but not significant under any reading (b = -0.547
-    to -3.133, p = 0.20 to 0.52), the KO weight is less than half the WT weight in magnitude in three
-    of four readings, and neither weight is near the expected values (WT -3.84 to -7.68 against -1.41),
-    so the paper's polynomial scaling differs from unit-norm columns.
+  notes: 'The criterion is evaluated under each of the four model and coding readings and none meets it:
+    the KO ZX1 slope term is negative but not significant (b = -0.85 to -3.18, p = 0.20 to 0.33). The
+    KO weight is less than half the WT weight in magnitude in three of four readings, and neither weight
+    is near the expected values (KO -0.85 to -3.18 against -0.64; WT -4.12 to -8.24 against -1.41), so
+    the paper''s polynomial scaling differs from unit-norm columns. The disagreement that blocks fig4f-ko-no-contrast-effect
+    does not bear on this claim, since its criterion fails under every reading; in the first round it
+    was blocked through that dependency.'
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
+  assumed: true
 - claim: fig5-contralateral-zx1-increases
   outcome: blocked
   blocked_by: data_missing
@@ -336,20 +399,25 @@ outcomes:
   blocked_by: data_missing
   notes: The red-channel widefield images are not in the dandiset; its imaging is two-photon GCaMP only.
 - claim: fig6a-baseline-pd-drift
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig6a-baseline-pd-drift
-  notes: Baseline PD rises with recording time in both experiments. ZX1 readings, (a) groups C and D 0.123
-    per minute (95% CI 0.098 to 0.148), (b) C 0.130 (0.098 to 0.161), (c) B, C and D 0.136 (0.113 to 0.159),
-    (d) the eleven mice labelled ZX1_uBasePupilPctMax_wEpoch 0.194 (0.162 to 0.225), all p <= 2.8e-15;
-    ACSF 0.326 (0.281 to 0.371), p = 1.9e-34. The ACSF interval overlaps none of the ZX1 intervals, which
-    the criterion requires. Per-mouse slopes range from -0.349 to 0.776.
+  notes: Baseline PD rises with recording time in both experiments. ZX1 readings, (a) groups C and D 0.131
+    per minute (95% CI 0.107 to 0.155), (b) C 0.141 (0.111 to 0.171), (c) B, C and D 0.165 (0.145 to 0.185),
+    (d) the eleven mice labelled ZX1_uBasePupilPctMax_wEpoch 0.229 (0.203 to 0.255), all p <= 7.7e-19;
+    ACSF 0.351 (0.304 to 0.398), p = 4.3e-35. Both drifts are present, as reported, and readings (a) and
+    (b) lie inside the paper's ZX1 interval, but the ACSF interval overlaps none of the ZX1 intervals,
+    which the criterion requires, and lies above the paper's ACSF interval; no cleaning variant gives
+    an overlap. Per-mouse slopes range from -0.349 to 0.776.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Recording time is taken from the .tif creation times, since the stimulus table's starting times wrap
     by 24 h for trials recorded before the reference file.
   - Trials are CGC-assay and DRC trials; mapping and LED trials are left out, as their baseline epochs
@@ -359,17 +427,21 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig6b-acsf-contrast-effect
-  notes: The contrast intercept effect holds after ACSF under every reading (ACSF trials only, b = 4.05%
-    HIGH above LOW, p = 2.8e-05; trials before and after, contrast term p = 0.00056 to 0.0015), but the
-    contrast slope does not (p = 0.070 with ACSF trials only; 0.27 to 0.83 with both). Only 35 ACSF trials
-    (735 rows, against about 2560) are below 50%. At the cell means HIGH minus LOW is 3.97 in CTRL (Tukey
-    p = 0.0032) and 3.03 after ACSF (p = 0.37).
+  notes: The contrast intercept effect holds after ACSF under every reading (ACSF trials only, b = 4.40%
+    HIGH above LOW, p = 1.5e-05; trials before and after, contrast term p = 3.7e-05 with reference and
+    9.0e-10 with sum coding, and HIGH minus LOW within ACSF 4.17 at the cell means, Tukey p = 2.6e-05),
+    but the contrast slope does not under any reading (p = 0.11 with ACSF trials only; 0.066 to 0.51 with
+    both). Only 33 ACSF trials (693 rows) and 100 trials before and after (2100 rows, against about 2560)
+    are below 50%.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
@@ -377,85 +449,104 @@ outcomes:
     from fitlme or lmer; with thousands of denominator df the p-values agree closely.
   assumed: true
 - claim: fig6c-no-baseline-evoked-correlation
-  outcome: reproduced
+  outcome: blocked
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig6c-no-baseline-evoked-correlation
-  measured: 262
-  notes: Of the claims file's readings, group B (CGC-assay trials before and after ZX1) matches the count
-    (262 responses below 50%) and gives r = -0.111, p = 0.072, not significant as the paper reports (r
-    = -0.0928, p = 0.1537). The files' pupilBaseline_vs_evoked mice, DRC CTRL trials, also match (222,
-    r = 0.030, p = 0.66) and agree. Below-50% correlations over all 16 readings range from -0.270 to 0.067;
-    5 are significant.
+  notes: 'No reading the claims file lists (groups A, B before ZX1, C, D, F; CTRL or all trials) has a
+    count below 50% within 240 plus or minus 24 (they range from 67 to 328), and they disagree: group
+    D, all trials, gives r = -0.273, p = 0.00025, and the other eight p = 0.076 to 0.70. The criterion
+    then gives methods_underspecified. One added reading, all CGC-assay trials of group B before and after
+    ZX1, matches the count (230) and gives r = 0.0096, p = 0.88, as the paper reports. Which reading matches
+    depends on the cleaning: with the round-1 cleaning group B, all trials, has 262 (p = 0.072); with
+    the single pass group C, CTRL (250, p = 0.032) and group D, all trials (233, p = 0.00095) match.'
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
-  assumed: true
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
+  - 'Two kinds of reading are added to the claims file''s list and marked in the notebook: group B with
+    its trials after ZX1, and the mice the files label pupilBaseline_vs_evoked. The outcome is decided
+    on the listed readings.'
+  blocked_by: methods_underspecified
 - claim: methods-baseline-evoked-correlation
-  outcome: partially_reproduced
+  outcome: blocked
   notebook: reproduce_cody_2024.ipynb
   output: claim:methods-baseline-evoked-correlation
-  measured:
-  - -0.218
-  - 598
-  - 379
-  notes: No reading of the claims file matches both counts, and they disagree. The files' label pupilBaseline_vs_evoked
-    names the mice of this analysis; its DRC trials, CTRL and ZX1, give 598 responses (within 626 plus
-    or minus 62.6) and 379 below 50% (within 384 plus or minus 38.4). Over all responses r = -0.218 (p
-    = 7.4e-08), negative and significant but weaker than -0.35 and outside its tolerance; below 50% r
-    = 0.067 (p = 0.20), not significant as reported. The 0-2 s and 0-8 s windows give the same picture.
+  notes: No reading matches both counts (626 plus or minus 62.6 and 384 plus or minus 38.4), listed or
+    added. The closest, the eleven mice labelled pupilBaseline_vs_evoked with DRC trials before and after
+    ZX1, has 563 responses (just under 563.4) and 330 below 50% (r = -0.277 and 0.045, p = 0.42 below
+    50%). Over all responses r ranges from -0.213 to -0.422 (within -0.35 plus or minus 0.035 for groups
+    A and F, all trials), and below 50% group D, all trials, is significant (p = 0.00025) while the others
+    are not, so the readings disagree and the criterion gives methods_underspecified. Under no cleaning
+    variant does a reading match both counts. In the first round the label reading matched both counts
+    under the round-1 cleaning (598 and 379, r = -0.218) and was adopted as an assumption.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
-  - Assumption. The data set is the eleven mice the files label pupilBaseline_vs_evoked, DRC trials before
-    and after ZX1, the only reading whose counts match both reported counts; the claims file's readings
-    (groups A to F) match neither pair of counts. Under the criterion's own readings the claim would be
-    methods_underspecified.
-  assumed: true
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
+  - 'Two kinds of reading are added to the claims file''s list and marked in the notebook: group B with
+    its trials after ZX1, and the mice the files label pupilBaseline_vs_evoked. The outcome is decided
+    on the listed readings.'
+  blocked_by: methods_underspecified
 - claim: fig6d-ko-reduced-high-contrast
   outcome: reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig6d-ko-reduced-high-contrast
-  notes: 144 CTRL high-contrast trials of 16 mice below 50% (3024 rows, against about 3870). The genotype
-    by tPoly1 term is negative (b = -6.50 with reference coding, z = -2.73, p = 0.0063; same test under
+  notes: 134 CTRL high-contrast trials of 16 mice below 50% (2814 rows, against about 3870). The genotype
+    by tPoly1 term is negative (b = -7.51 with reference coding, z = -3.47, p = 0.00052; same test under
     sum coding), so the KO slope is below the WT slope. The genotype intercept is not significant (p =
-    0.58). The mean KO trace rises faster at first and is below WT from 1.2 s (109.4 against 111.9% at
-    2 s).
+    0.39). Both fits converged with a subject variance of 45.4. The mean KO trace rises faster at first
+    and is below WT from 1.2 s (109.8 against 113.2% at 2 s). With the Methods' single cleaning pass the
+    term is not significant (b = -3.24, p = 0.20).
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
   - Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests
     from fitlme or lmer; with thousands of denominator df the p-values agree closely.
+  - Fits use several optimizers and keep the converged fit with the highest finite likelihood; in the
+    first round lbfgs stopped at a degenerate point here (infinite likelihood, subject variance 0, genotype
+    intercept -52.5 with p = 1).
   assumed: true
 - claim: discussion-zx1-wt-like-ko
   outcome: reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:discussion-zx1-wt-like-ko
   measured:
-  - 10.42
-  - 10.84
-  notes: The mean high-contrast trace peaks 10.42% above baseline in ZnT3-WT after ZX1 (70 trials) and
-    10.84% in ZnT3-KO CTRL (49 trials; 10.83 with ZX1 pooled), all within 10 plus or minus 2.5. The measure
-    separates conditions poorly; WT CTRL high contrast (11.94) and WT low contrast (9.38 and 10.63) fall
-    in the same interval. The statement's second part (both contrasts resemble low contrast) is not tested
-    by the criterion; fig4-wt-posthoc covers it and was not reproduced.
+  - 10.49
+  - 11.17
+  notes: The mean high-contrast trace peaks 10.49% above baseline in ZnT3-WT after ZX1 (67 trials) and
+    11.17% in ZnT3-KO CTRL (47 trials; 10.93 with ZX1 pooled), all within 10 plus or minus 2.5. The WT
+    CTRL high-contrast peak (13.23) is outside the interval, but WT low contrast (9.76 and 10.01) falls
+    inside it, so the measure separates conditions only in part. The statement's second part (both contrasts
+    resemble low contrast) is not tested by the criterion; fig4-wt-posthoc covers it and was partially
+    reproduced.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
-    in, so a Hampel spike filter was added, the derivative step repeated, and trials with more than half
-    their frames missing dropped. This sets each animal's maximum PD, hence baseline PD in % of maximum
-    and the 50% selection. The single pass is shown as a variant in the notebook.
+    in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their
+    frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames
+    dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step
+    was added after the first verification round, because runs of tracking failures in AA0319 and AA0334
+    set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50%
+    selection. The round-1 cleaning and the single pass are shown as variants in the notebook.
   - Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast
     after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to
     2 s lie in the first block.
@@ -467,10 +558,12 @@ findings:
     so the three Figure 5 claims cannot be tested.
 - kind: other
   statement: The pupil radius series hold tracking failures, single frames and runs at 3 to 1e6 times
-    the pupil size, often next to dropped frames (68 trials have a maximum above three times their median).
-    The DeepLabCut points and likelihoods that the Methods use to drop frames are not deposited, and the
-    Methods' single derivative pass does not remove these failures, so each animal's maximum PD, and every
-    baseline in % of maximum, depends on how they are cleaned.
+    the pupil size, often next to dropped frames (68 trials have a maximum above three times their median;
+    118 trials step by more than a factor 2 between consecutive tracked frames). In AA0319 and AA0334
+    the failures also come as runs at a second level (130 to 160 against a pupil of about 25) that a spike
+    filter does not remove. The DeepLabCut points and likelihoods that the Methods use to drop frames
+    are not deposited, and the Methods' single derivative pass does not remove these failures, so each
+    animal's maximum PD, and every baseline in % of maximum, depends on how they are cleaned.
 - kind: metadata_error
   statement: Every pupil_radius series's description names one TwoPhotonSeries (the file's last, for example
     TwoPhotonSeries_036), not its own; the series can be matched to its trial only through the .tif file
@@ -495,7 +588,7 @@ findings:
     fourteen C57BL6/J mice for Fig. 2d, e.
 - kind: metadata_insufficient
   statement: No label identifies the mice of Fig. 2d, e, and the FRA mapping trials used to select cells
-    are in only 5 of 30 files. Whether the RoiResponseSeries are neuropil-corrected is not stated (unit
+    are in only 7 of 30 files. Whether the RoiResponseSeries are neuropil-corrected is not stated (unit
     lumens, description 'motion corrected ROIs'). The pupil radius has unit 'na' and no spatial scale.
 - kind: methods_unavailable
   statement: Question for the authors on Fig. 2c. Which mice (the eight of Figs. 1-3, the fourteen of
@@ -515,5 +608,201 @@ findings:
     beyond the 6 SD derivative step? This sets each animal's maximum PD and the 50% selection.
 - kind: methods_unavailable
   statement: Question for the authors on the Methods' correlation (r(624) = -0.35). Which trials does
-    it use? Only the mice labelled pupilBaseline_vs_evoked, DRC trials before and after ZX1, match both
-    counts (598 and 379), and there r = -0.218.
+    it use? No group and trial set here matches both counts (626 and 384); the closest, the mice labelled
+    pupilBaseline_vs_evoked with DRC trials before and after ZX1, has 563 and 330, and r = -0.277. The
+    same question holds for Fig. 6c (240 responses).
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write
+    the notebook)
+  reviewed: 'The handover of the first run: the executed notebook with the conclusions and summary removed,
+    the helper module and the claims file; the verifier also checked the archive''s file list and metadata
+    for the blocked claims.'
+  results:
+  - claim: fig1f-tone-response-inverse-u
+    agrees: true
+    outcome: reproduced
+    reason: Kruskal-Wallis p is 2e-7 to 1e-4 in all 32 readings, and the top bin is 32-43 every time.
+      Only one inclusion reading gives a count within tolerance, 318 cells; the others give 339, 215 and
+      241, against 295 plus or minus 29.5.
+    response: No change of outcome. With the revised cleaning the top bin is 21-32 in all 32 readings
+      (p = 1.0e-10 to 7.3e-08); the main reading is also shown under the round-1 cleaning, the single
+      pass and without AA0335.
+  - claim: fig1g-reliability-intermediate
+    agrees: true
+    outcome: reproduced
+    reason: p is 1e-8 to 9e-7 in all 8 readings, and the top bin is always 21-32, which is interior.
+    response: No change of outcome; numbers updated (p = 1.1e-09 to 6.2e-07).
+  - claim: fig1h-cgc-largest-intermediate
+    agrees: true
+    outcome: reproduced
+    reason: p is 3e-17 to 1e-9, and the top bin by mean is interior in all 8 readings. The top bin is
+      54-65 in 7 of the 8, not the paper's 43-54. The means are driven by outliers; factors range from
+      -109 to 38, and some HIGH peaks are 0 or below.
+    response: No change of outcome. The notes say the main reading has its top bin at 43-54, as in the
+      paper, when AA0335 is left out.
+  - claim: fig1h-cgc-evident-all-bins
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading is significant in all 7 bins. Bin 32-43 has a mean near 1.0 and p = 0.2 to 0.9
+      under every test.
+    response: No change.
+  - claim: fig1i-baseline-contrast-interaction
+    agrees: true
+    outcome: reproduced
+    reason: Counts are within tolerance only for the values_in = both readings with SD over time (1830
+      and 1932 values). Under those, p_bin < 1e-43 and p_int = 0.006 to 0.040.
+    response: No change of outcome. Group A without AA0335 (point 5) gives an interaction p of 0.0046
+      on the main reading; the single pass gives 0.17, stated in the notes.
+  - claim: fig1i-contrast-effect-intermediate-only
+    agrees: true
+    outcome: not_reproduced
+    reason: On the ANOVA readings whose counts match, both Bonferroni families flag only 54-65; 43-54
+      is not significant (p_bonf7 = 0.10 to 0.22). The all readings, whose counts do not match, would
+      give methods_underspecified, because the families disagree there.
+    response: No change.
+  - claim: fig2b-evoked-pd-whole-drc
+    agrees: true
+    outcome: not_reproduced
+    reason: All 6 group-by-unit readings have p >= 0.096. Only the variant without the 50% limit is significant
+      (p = 0.011).
+    response: No change of outcome; under the revised cleaning the readings give p = 0.054 to 0.83. The
+      notes add that without AA0335 group A trials give p = 0.028.
+  - claim: fig2c-evoked-pd-1-2s
+    agrees: true
+    outcome: blocked
+    reason: Group A+B pooled by trials gives p = 0.0098; the other 5 readings give p = 0.12 to 0.63. The
+      criterion assigns this outcome when readings disagree.
+    response: No change; pooled trials now p = 0.011, the others 0.099 to 0.57.
+  - claim: fig2e-drc-responses-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: HIGH > LOW at p = 1e-9 to 1e-14 in every reading, with a median difference of about -1.3%
+      dF/F. Cell counts (225 to 375) are never within 520 plus or minus 52. Group B is 12 mice of mixed
+      genotype, against the paper's 14 C57BL6/J.
+    response: No change of outcome. A reading with the six C57BL6/J mice of group B only was added (point
+      6); it gives the same result (p <= 7.7e-07).
+  - claim: fig3b-lme-coefficients
+    agrees: true
+    outcome: reproduced
+    reason: Baseline PD p = 1e-4 to 7e-3 in every reading. Evoked PD p = 0.13 to 0.29 and the interaction
+      p = 0.56 to 0.98.
+    response: No change of outcome. The SD-across-trials inclusion readings were added (point 7), giving
+      sixteen fits; baseline p = 1.2e-04 to 0.032, evoked 0.42 to 0.92, interaction 0.22 to 0.72. The
+      notes say that without AA0335 the baseline term is not significant below 50% (p = 0.087).
+  - claim: fig3c-lme-likelihood-ratio
+    agrees: true
+    outcome: not_reproduced
+    reason: LRT p = 0.0012 to 0.048 in all 8 readings. The effect comes mainly from the contrast term,
+      which the null model leaves out, as the paper's Methods also state.
+    response: No change of outcome. With sixteen fits, all-trial readings give p = 0.0013 to 0.015 and
+      below-50% readings 0.041 to 0.17; the criterion fails under the all-trials reading.
+  - claim: fig4c-wt-contrast-zx1-effects
+    agrees: true
+    outcome: not_reproduced
+    reason: contrast x ZX1 has p of about 0.25 in every reading. Only 1 to 3 of the 5 terms are significant,
+      so even the partial condition fails.
+    response: Outcome changed to blocked (methods_underspecified). After the revised cleaning (point 2)
+      the reference-coding readings have all five terms significant (interaction p = 3.0e-05) and the
+      sum-coding readings four and three, so the readings disagree, which the criterion makes methods_underspecified.
+      The round-1 numbers the verifier judged are kept as a variant (one to three terms, interaction p
+      = 0.25). The fits now use several optimizers and print diagnostics (point 4).
+  - claim: fig4-wt-posthoc
+    agrees: true
+    outcome: not_reproduced
+    reason: HIGH-LOW in CTRL has Tukey p = 0.078. ZX1 on HIGH has p = 0.83.
+    response: Outcome changed to partially_reproduced. Under the revised cleaning HIGH exceeds LOW in
+      CTRL (p = 3.9e-08) and not in ZX1 (p = 0.95), ZX1 lowers HIGH (p = 0.015), but ZX1 also raises LOW
+      (p = 0.0496), which the criterion excludes. The cell means now include the intercept (point 4).
+      Under the round-1 cleaning the verifier's numbers stand (variant).
+  - claim: fig4f-ko-no-contrast-effect
+    agrees: true
+    outcome: blocked
+    reason: The contrast slope is significant (p = 0.006 to 0.009) in 3 of 4 readings. In the full factorial
+      with reference coding it is not (p = 0.245).
+    response: No change; now p = 0.0078 to 0.0095 in three readings and 0.18 in the fourth.
+  - claim: fig4f-ko-zx1-slope
+    agrees: false
+    outcome: not_reproduced
+    reason: The notebook marks this blocked, but its own criterion can be evaluated. The KO ZX1 slope
+      has p = 0.20 to 0.52 in all 4 readings. Neither weight is within tolerance, KO -0.55 to -3.1 against
+      -0.64, WT -3.8 to -7.7 against -1.41.
+    response: Outcome changed to not_reproduced, as the verifier says. The criterion is evaluated under
+      every model reading in the notebook and fails under each (KO p = 0.20 to 0.33), so the reading disagreement
+      that blocks the claim it depends on does not bear on it.
+  - claim: fig5-contralateral-zx1-increases
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the API, 30 files, all behavior+image+ophys two-photon/pupil sessions. variableMeasured
+      lists only TwoPhotonSeries, PupilTracking and related items. No asset metadata mentions widefield
+      imaging or a cannula, and no session label points to a Fig. 5 analysis.
+    response: No change.
+  - claim: fig5-ipsilateral-zx1-reduces
+    agrees: true
+    outcome: blocked
+    reason: Same as above.
+    response: No change.
+  - claim: fig5c-no-dye-in-other-hemisphere
+    agrees: true
+    outcome: blocked
+    reason: Same as above. The two-photon red channel, if present, is ipsilateral to the injection, so
+      it does not test this claim.
+    response: No change.
+  - claim: fig6a-baseline-pd-drift
+    agrees: false
+    outcome: partially_reproduced
+    reason: Both slopes are positive with p < 1e-15. The ZX1 slopes (0.12 to 0.19) lie within the paper's
+      ZX1 CI. But the ACSF slope is 0.326 (CI 0.28 to 0.37), above the paper's ACSF CI, and it overlaps
+      no ZX1 CI. The criterion has no partial outcome; read strictly, this is not_reproduced.
+    response: 'Outcome changed to partially_reproduced, as the verifier gives: the drift is present in
+      both experiments and only the overlap fails. Revised numbers, ZX1 0.131 to 0.229, ACSF 0.351 (0.304
+      to 0.398); no cleaning variant gives an overlap.'
+  - claim: fig6b-acsf-contrast-effect
+    agrees: false
+    outcome: not_reproduced
+    reason: The contrast slope is not significant in any reading, p = 0.07 for (a), 0.27 to 0.83 for (b).
+      In reading (b), the within-ACSF HIGH-LOW contrast has p = 0.37. Only reading (b) has a row count
+      (2604) that matches the df.
+    response: Outcome kept as partially_reproduced, and the disagreement recorded. Under the revised cleaning
+      the contrast intercept effect holds under every reading, including within ACSF in reading (b) (HIGH
+      minus LOW 4.17, Tukey p = 2.6e-05, where it was p = 0.37 before), while the slope effect fails under
+      every reading (p = 0.066 to 0.51). Half of the claim holds throughout. The row count of reading
+      (b) is now 2100.
+  - claim: fig6c-no-baseline-evoked-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Two readings match the count, B all (n = 262, p = 0.072) and the pupilBaseline_vs_evoked label,
+      DRC CTRL (n = 222, p = 0.66). They agree. This is fragile; C CTRL misses the count by one trial
+      (215) and has p = 0.011.
+    response: Outcome changed to blocked (methods_underspecified). Both matching readings were added beyond
+      the claims file's list (point 9), which the notebook now marks. Under the revised cleaning no listed
+      reading matches the count, and group D, all trials, is significant (p = 0.00025) while the others
+      are not, so the criterion gives methods_underspecified. The correlations are shown under every cleaning
+      variant (point 3).
+  - claim: methods-baseline-evoked-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Only the label reading, DRC all, matches both counts (598 and 379). There r_all = -0.218,
+      p = 7e-8, which is outside -0.35 plus or minus 0.035, while the correlation below 50% is not significant
+      (p = 0.20). Using the claims file's readings only, none match both counts and they disagree, which
+      would give methods_underspecified.
+    response: Outcome changed to blocked (methods_underspecified). Under the revised cleaning no reading,
+      listed or added, matches both counts (the label reading has 563 and 330), and the listed readings
+      disagree, as the verifier notes they would.
+  - claim: fig6d-ko-reduced-high-contrast
+    agrees: true
+    outcome: reproduced
+    reason: tPoly1 x genotype has b = -6.5 (KO below WT), p = 0.006, under both codings. Rows are 3024
+      against about 3870.
+    response: No change of outcome. The degenerate fit (point 4) is replaced by a converged one with subject
+      variance 45.4 and genotype intercept p = 0.39; the slope term is b = -7.51, p = 0.00052. With the
+      single pass it is not significant (p = 0.20), stated in the notes.
+  - claim: discussion-zx1-wt-like-ko
+    agrees: true
+    outcome: reproduced
+    reason: Peak rise is 10.4 for WT after ZX1 and 10.8 for KO under both readings, all within 10 plus
+      or minus 2.5. The test cannot discriminate, though; WT CTRL HIGH (11.9) and both LOW sets also pass.
+    response: No change of outcome. Under the revised cleaning WT CTRL HIGH (13.23) falls outside the
+      interval while both LOW sets still pass, which the notes say. Point 10 is a weak criterion, not
+      a misreading of the paper, so no question was added.

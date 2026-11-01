@@ -29,7 +29,9 @@ Where the parameters come from:
   a > 6 SD outlier, interpolate missing points linearly, low-pass filter (third order Butterworth,
   3 Hz). The filter is run zero-phase (`filtfilt`), a standard choice the claims file names. The
   files hold the pupil radius; the radius is proportional to the diameter, so % baseline and %
-  animal max are the same for both.
+  animal max are the same for both. Steps added to the Methods' cleaning are assumptions, described
+  in `clean_pupil` and `pupil_measures` (spike filter, repeated derivative step, trials with more than
+  half their frames missing or with a step by more than a factor 2 between tracked frames dropped).
 - Evoked pupil (Methods): trace / mean over -4 to 0 s x 100. Baseline PD in % animal max: trace as
   % of the animal's maximum over all its sound trials (the paper: "the animal's maximum PD during
   the experiment"), averaged over -4 to 0 s.
@@ -50,6 +52,7 @@ import numpy as np
 import pandas as pd
 import remfile
 import requests
+import statsmodels.formula.api as smf
 from scipy.signal import butter, filtfilt
 
 DANDISET_ID = "001256"
@@ -213,11 +216,33 @@ def clean_pupil(p, max_pass=10, spike_filter=True, max_missing=0.5):
     return filtfilt(_B, _A, p)
 
 
-def pupil_measures(trials, **clean):
-    """Add cleaned pupil, baseline PD (% animal max), and evoked windows to sound trials."""
+def n_jumps(p, ratio=2.0):
+    """Number of steps between consecutive tracked frames (NaN frames skipped) by more than a
+    factor `ratio` up or down. At 10 Hz a real pupil does not double or halve its radius in one
+    frame, so such a step is a tracking failure (the circle fitted to something else)."""
+    p = np.asarray(p, float)
+    q = p[np.isfinite(p) & (p > 0)]
+    if len(q) < 2:
+        return 0
+    r = q[1:] / q[:-1]
+    return int(((r > ratio) | (r < 1 / ratio)).sum())
+
+
+def pupil_measures(trials, jump_ratio=2.0, **clean):
+    """Add cleaned pupil, baseline PD (% animal max), and evoked windows to sound trials.
+
+    With `jump_ratio` (assumption, not in the paper), trials whose raw trace holds a step by more
+    than that factor between consecutive tracked frames (`n_jumps`) are dropped before the
+    animal's maximum is taken. In two mice (AA0319, AA0334) the tracking failures come as runs at
+    a second level (130 to 160 against a pupil of about 25) that neither the derivative step nor
+    the spike filter removes, and that would set the animal's maximum. `jump_ratio=None` keeps
+    every trial (the cleaning of the first round of this attempt)."""
     tr = trials[trials.pupil.notna()].copy()
     # a pupil series must have two video frames per two-photon frame (10 and 5 Hz)
     tr = tr[tr.pupil.map(len) == 2 * tr.nFrames.astype(int)]
+    tr["n_jumps"] = tr.pupil.map(lambda p: n_jumps(p, jump_ratio or 2.0))
+    if jump_ratio is not None:
+        tr = tr[tr.n_jumps == 0]
     tr["pclean"] = [clean_pupil(p, **clean) for p in tr.pupil]
     tr = tr[tr.pclean.notna()].copy()
     animal_max = tr.groupby("subject").pclean.apply(lambda s: max(np.max(x) for x in s))
@@ -366,3 +391,29 @@ def gca_long(tr, extra=()):
             d[c] = r[c]
         rows.append(d)
     return pd.concat(rows, ignore_index=True)
+
+
+def fit_lme(formula, data, groups, reml=True, **kw):
+    """statsmodels MixedLM with a random intercept per `groups`, fitted with several optimizers;
+    the fit with the highest finite likelihood among the converged ones is kept. lbfgs alone can
+    stop at a degenerate point (log-likelihood inf, intercept 0, group variance 0) on these data.
+    Returns the fit and a dict of diagnostics (optimizer, converged, group variance, boundary)."""
+    import warnings
+    best, notes = None, {}
+    for method in ("powell", "nm", "lbfgs", "bfgs"):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            try:
+                r = smf.mixedlm(formula, data, groups=data[groups], **kw).fit(reml=reml, method=method, maxiter=5000)
+            except Exception:
+                continue
+        if not np.isfinite(r.llf):
+            continue
+        key = (bool(r.converged), r.llf)
+        if best is None or key > (bool(best.converged), best.llf):
+            best = r
+            notes = {"optimizer": method, "converged": bool(r.converged),
+                     "group_var": float(r.cov_re.iloc[0, 0]),
+                     "boundary": bool(r.cov_re.iloc[0, 0] < 1e-6),
+                     "warnings": len(w)}
+    return best, notes
