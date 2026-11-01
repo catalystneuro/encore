@@ -399,3 +399,14 @@ missed but the comparison found are marked `found: on_prompt`; outcomes that
 differ get a reason. Finding statements no longer carry the comparison in
 their opening words.
 
+
+## Protocol pilot-13 (2026-10-31): a notebook may take an hour
+
+CI used to fail a notebook that took more than 30 minutes, and the limit was
+shaping results more than it should. Authors cut shuffles and fits short to
+stay under it (000447, 000678), split analyses across notebooks (000467),
+dropped neurons (000579) or recorded claims as `too_large` (000458, 000248),
+and 000673's verifier-2 run failed when its LFP notebook took 42 minutes. The
+limit is now 60 minutes a notebook (`tools/entry.py --max-minutes`), with CI's
+run job raised to 240 minutes to fit an entry's notebooks. The aim stays
+under ten minutes, and the author's time budget is unchanged.
