@@ -1,0 +1,199 @@
+schema_version: 2
+id: 001025-pakhomov-2023-01
+dataset:
+  archive: dandi
+  id: "001025"
+  version: 0.240605.1826
+  doi: 10.48324/dandi.001025/0.240605.1826
+paper: doi:10.1016/j.bioelechem.2023.108437
+date: 2026-11-01
+entry: 001025-pakhomov-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41258746541
+outcomes:
+- claim: fig4-unipolar-strongest
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only monolayer images. The confocal time-lapse images of single cells
+    between two electrodes (Section 2.2) are not in it, nor in any other dandiset that cites the
+    paper (000686, 000875, 001027 and 001028 hold monolayer images of Figures 5, 6, 8 and 9); a
+    search of DANDI for the lab's other dandisets found none that holds them.
+- claim: fig4-bipolar-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4-unipolar-strongest; the single-cell time-lapse data are not public on DANDI.
+- claim: fig5a-center-enhanced-without-rotation
+  outcome: blocked
+  blocked_by: other
+  notes: No dish of this dandiset received 40 packets or 40 trains from e1; its 21 images are the
+    1Px4 and 10Px4 treatments of Figure 7. The Figure 5 images appear to be in dandiset 000686
+    ("Focusing electroporation to the center of a quadrupole electrode array by interference of
+    unipolar pulses"), which cites the same paper and is a target of its own; the claims file
+    gives this claim as data from this dataset, so it is not tested here.
+- claim: fig5bc-rotation-focuses-center
+  outcome: blocked
+  blocked_by: other
+  notes: No 1Px40 or 1Tx40 dishes in this dandiset; see fig5a-center-enhanced-without-rotation
+    (dandiset 000686).
+- claim: fig6a-more-packets-more-uptake
+  outcome: blocked
+  blocked_by: other
+  notes: This dandiset has no 5Px4 dishes, and its 1Px4 and 10Px4 dishes are on different arrays
+    (small and large, from the electrode spacing), so no packet-number series on one array. The
+    Figure 6 images appear to be in dandiset 000875 ("Influence of unipolar pulse packet quantity
+    on centering the electroporation effect"), which cites the same paper and is a target of its
+    own.
+- claim: fig6b-normalized-center-by-packets
+  outcome: blocked
+  blocked_by: other
+  notes: As fig6a-more-packets-more-uptake (dandiset 000875).
+- claim: fig7a-amplitude-scales-uptake
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig7a-amplitude-scales-uptake
+  measured:
+  - 5.99
+  - 5.65
+  - 7.25
+  notes: Without background subtraction, as the criterion fixes, the 5.6 over 2.4 kV ratios of dish
+    means under the main reading are 5.99 at the most peripheral ROI, 5.65 half-way and 7.25 at the
+    centre (4 dishes at 2.4 kV, 3 at 5.6 kV). Over all 36 readings they range from 5.11 to 10.91,
+    5.31 to 6.15 and 5.88 to 7.71, and none is within tolerance. Leaving out any one 2.4 kV dish
+    changes them by at most 0.59. With the median inside the electrode footprints subtracted (150.7
+    a.u. on average at 2.4 kV, 375.9 at 5.6 kV), a variant the criterion excludes, the main reading
+    gives 13.37, 15.87 and 15.16 (two of three within tolerance) and 2 of 36 readings put all three
+    within tolerance. The outcome turns on whether an offset was removed, which the paper does not
+    say.
+  deviations:
+  - The paper measured the ROIs in MetaMorph with the electrode positions known; the dandiset holds
+    no ROIs or electrode positions, so the electrodes are found by fitting four dark disks to each
+    image and the ROIs are placed from their centre (overlays in the notebook).
+  - The pixel size is not in the dataset. Main reading 0.65 um, from the ORCA-Flash4.0 camera and
+    10x objective the files name; variant 0.591 um, the scale at which the large array's mean
+    diagonal is 8.4 mm (Section 3.5). All 36 readings give the same outcome.
+  - ROI width across the diagonal is not given (Section 2.4); square ROIs are used, a choice that
+    changes only how many pixels are averaged.
+  - The dandiset has 4 dishes at 2.4 kV where Figure 7 states n = 3; all four are used and each
+    leave-one-out is shown.
+- claim: fig7b-targeting-independent-of-amplitude
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig7b-targeting-independent-of-amplitude
+  notes: Under the main reading 1 of 20 voltage pairs differs at p < 0.05, the normalised centre at
+    2.4 kV (108.6%) against 4.8 kV (136.9%), p = 0.0037; no half-way pair differs (smallest p =
+    0.12). The readings disagree, 22 of 72 (36 layouts by 2 normalisations) give no significant
+    pair and 50 give one to five. With 20 uncorrected tests and no effect, at least one p below
+    0.05 is expected with probability 0.64, so this is weak evidence against the absence; the
+    normalised centre means lie between 108.6% and 136.9% across the five voltages. With the
+    footprint background subtracted (a variant) the main reading finds no pair (smallest p = 0.18),
+    and 59 of 72 readings find none. Over all ROIs of the folded profile, 23 of 220 tests are below
+    0.05.
+  deviations:
+  - Assumed the main reading of the ROI layout (camera pixel size, 92 ROIs over both diagonals,
+    both diagonals averaged, one ROI centred on the array centre, raw ROI means, normalisation to
+    the mean of the end ROIs). The paper leaves each of these open (Section 2.4; claims file,
+    opening comment); the reasons are given in the notebook (the Fig. 5B legend averages both
+    diagonals for rotated packets, the Methods give one ROI count, the paper reports measured
+    values, and with the camera scale the ROI span ends outside the electrode footprints). The
+    outcome rests on it, as 22 of 72 readings find no difference.
+  - Electrode detection, pixel size and ROI width as for fig7a-amplitude-scales-uptake.
+  - The voltages (2.4, 3.2, 4.0, 4.8 and 5.6 kV) are taken from the dataset, as the criterion says;
+    2.4 kV has 4 dishes where the paper states n = 3.
+- claim: fig7cd-holds-for-large-array
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig7cd-holds-for-large-array
+  notes: The dandiset holds two voltages for the large array with 10Px4, 4.8 kV (2 dishes) and 6.4
+    kV (3 dishes). Under the main reading the normalised centre is 232.6% against 126.0%, p =
+    0.0494, and the half-way values do not differ (94.8% against 46.8%, p = 0.16). 62 of 72 readings
+    find no difference, so the outcome rests on the main reading and a two-dish group. The a.u.
+    values rise from 4.8 to 6.4 kV at all three positions (ratios 3.53 at the periphery, 1.89
+    half-way, 2.00 at the centre).
+  deviations:
+  - Only two voltages, one with 2 dishes, where the paper shows Figure 7C and 7D with n = 3 and
+    voltages marked in the figure; the others are not in the dandiset.
+  - Assumed the main reading of the ROI layout, as for fig7b-targeting-independent-of-amplitude;
+    the outcome rests on it.
+- claim: discussion-independent-of-array-size
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:discussion-independent-of-array-size
+  notes: The criterion requires fig7b-targeting-independent-of-amplitude and
+    fig7cd-holds-for-large-array to be reproduced; neither is, under the main reading. The folded
+    normalised profiles reach a centre of 109.5% to 140.1% on the small array (1Px4) and 145.0% to
+    212.3% on the large one (10Px4); the two arrays received different packet numbers, so array
+    size is not isolated.
+  deviations:
+  - Rests on the main reading assumed for the two claims it depends on.
+- claim: fig8a-packets-differ-near-electrodes
+  outcome: blocked
+  blocked_by: other
+  notes: All dishes of this dandiset received Packet 2; no Packet 1 or Packet 3 dishes. The Figure 8
+    images appear to be in dandiset 001027 ("CANCAN focusing of electroporation in a quadrupole
+    array by different pulsing protocols"), which cites the same paper and is a target of its own.
+    The 4.0 kV 1Px4 dishes here may be the Packet 2 group of Figure 8, but the comparison needs the
+    other packets.
+- claim: fig8b-packet2-best-targeting
+  outcome: blocked
+  blocked_by: other
+  notes: As fig8a-packets-differ-near-electrodes (dandiset 001027).
+- claim: fig9-gap-boosts-targeting
+  outcome: blocked
+  blocked_by: other
+  notes: No dish of this dandiset was treated with the array above the monolayer. The Figure 9
+    images appear to be in dandiset 001028 ("CANCAN focusing of electroporation in 3D"), which
+    cites the same paper. The 6.4 kV 10Px4 large-array dishes here match the 0 mm condition, but
+    the gaps are missing.
+- claim: fig9c-restricted-to-center
+  outcome: blocked
+  blocked_by: other
+  notes: As fig9-gap-boosts-targeting (dandiset 001028).
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the 21 monolayer images of Figure 7. The images of Figures 5,
+    6, 8 and 9 are in four other dandisets that cite the same paper (000686, 000875, 001027 and
+    001028), which the dandiset does not mention, and the single-cell time-lapse data of Figure 4
+    are in no dandiset that cites the paper.
+- kind: metadata_insufficient
+  statement: No pixel size is given (the ImageSeries resolution attribute is 96 or 1, not a pixel
+    size), the array (small or large) is not stated, and the electrode positions, the electrode
+    labels e1 to e4 and the paper's ROI measurements are not included. The array can be inferred
+    from the electrode spacing, and it matches the protocol in every file.
+- kind: metadata_insufficient
+  statement: 7 of the 21 files name no detector, objective or channel, and the 5 large-array files
+    hold a second channel labelled DAPI that the paper does not describe.
+- kind: metadata_error
+  statement: Subject ids do not identify dishes. sub-15 and sub-25 each hold two dishes imaged on
+    different days under different protocols (2.4 kV 1Px4 and 4.8 kV 10Px4; 5.6 kV and 3.2 kV
+    1Px4), so the archive counts 19 subjects for 21 dishes, while each dish was used in one
+    experiment (Section 2.1).
+- kind: selection_undocumented
+  statement: Figure 7 states n = 3 for every voltage. The dandiset has 4 dishes at 2.4 kV, 3 at
+    3.2, 4.0, 4.8 and 5.6 kV on the small array, and for the large array only 4.8 kV (2 dishes) and
+    6.4 kV (3 dishes). Which 2.4 kV dish the paper left out, and the other large-array voltages, are
+    not documented.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Was a background (camera offset or the intensity of
+    unlabelled regions) subtracted from the ROI values before the fold changes of Section 3.3 and the
+    normalisations of Figure 7? The images have a dark floor of 33 to 81 a.u. that varies between
+    dishes and sessions. Without subtraction the 5.6 over 2.4 kV ratios here are 5.7 to 7.3, against
+    15.5 to 16.8 in the paper; with the median of the electrode footprints subtracted they are 13.4
+    to 15.9.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the 92 and 224 ROIs laid out (per diagonal
+    or over both, their width, which diagonals for Figure 7), what is the pixel size of the stitched
+    images, and is the 8.4 mm diagonal of the large array measured between electrode centres? Under
+    the readings these allow, the voltage comparisons of Figure 7B and 7D find a significant pair in
+    50 of 72 and 10 of 72 readings, so the outcomes of fig7b and fig7cd rest on the reading assumed.
