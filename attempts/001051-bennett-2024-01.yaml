@@ -398,17 +398,17 @@ outcomes:
     one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
     only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig7cd-mop-coupling
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig7cd-mop-coupling
-  notes: 'Under E2 in all 8 combinations MOp is significantly coherent with PO (+0.15 to +0.20) and SSp (+0.19 to
-    +0.25) and not with LP, and the CCGs of PO and SSp peak at 0 to 20 ms (0.20 to 0.33) against 0.03 to 0.06 for
-    LP and VISl. Parts with fewer than 25 events are untested, not counted as not significant: under E1 PO, and
-    under L1 and under L2 E1 VISl. Every part is tested only under L2 E2 (4 combinations), where all hold (VISl
-    +0.005 and +0.027, q 0.89 and 0.34). No tested part contradicts the claim in any of the 16 combinations. Both
-    verifiers would block the claim as methods underspecified because the E1 readings cannot test PO and so do
-    not give reproduced; the verified outcome is kept, as round 2 cannot change it, and a change to blocked (methods
-    underspecified) is proposed.'
+  notes: 'The criterion needs MOp-PO to be significantly coherent. Under E1 (8 of 16 combinations) PO is untested
+    (fewer than 25 events), so coherence_part is False there. Under E2 in all 8 combinations MOp is significantly
+    coherent with PO (+0.15 to +0.20) and SSp (+0.19 to +0.25) and not with LP, and the CCGs of PO and SSp peak at
+    0 to 20 ms (0.20 to 0.33) against 0.03 to 0.06 for LP and VISl. VISl is untested under L1 and under L2 E1, and
+    coherence_part counts an untested VISl as passing, so every part is tested and holds only under L2 E2 (4 combinations;
+    VISl +0.005 and +0.027, q 0.89 and 0.34). The readings disagree, which the claims file''s header makes methods
+    underspecified. Changed from reproduced after verification round 3 agreed with the change proposed after round 2.'
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
     (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
@@ -417,16 +417,8 @@ outcomes:
     code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
     one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
     only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
-  - Under E1 the PO part, and under L1 and L2 E1 the VISl part, are untested (fewer than 25 events); the outcome
-    rests on the combinations where the parts could be tested, all four parts only under L2 E2.
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The claims file judges every alpha claim under each combination of the open readings and makes it methods
-      underspecified when they disagree. Its criterion needs MOp-PO to be significant; under E1 (8 of 16 combinations)
-      PO is untested, so coherence_part is False there (notebook, fig7cd-mop-coupling table) and those readings do
-      not give reproduced, while all 8 E2 combinations do. That no tested part contradicts the claim is not the criterion's
-      test. Proposed after verification round 2, whose verifier, like round 1's, would block the claim.
+  - Under E1 the PO part, and under L1 and L2 E1 the VISl part, are untested (fewer than 25 events); all four parts
+    are tested only under L2 E2 (4 of the 16 combinations).
 - claim: fig7e-lags-straddle-zero
   outcome: not_reproduced
   notebook: reproduce_bennett_2024.ipynb
@@ -523,32 +515,21 @@ outcomes:
     claims file names as a variant; the effect holds with both. Noise CP units now have RF p values, so the variant
     splits them by RF as the code does.
 - claim: fig8d-response-latencies
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig8d-response-latencies
-  measured:
-  - 16
-  - 20
   notes: With latency as the first time the population mean reaches half its peak (b), CP-RF lags VISp by 16 ms
-    and CP-noRF lags CP-RF by 20 ms, within 20 +- 5, with the Methods' QC and with the code's filter alike. With
-    the time of peak (a) the lags are 34 and 9 ms under both filters. The readings disagree; half-peak latency is
-    adopted, as the paper speaks of response onsets lagging ("slower responses") and peak times of broad CP responses
-    are poorly defined. Question for the authors - which latency measure was used. Both verifiers would block
-    the claim as methods underspecified, as the paper's wording does not pick a measure; the outcome is kept, resting
-    on the assumption, as round 2 cannot change it, and a change to blocked (methods underspecified) is proposed.
+    and CP-noRF lags CP-RF by 20 ms, within 20 +- 5; with the time of peak (a) the lags are 34 and 9 ms, outside.
+    Both filters (the Methods' QC and the code's) give the same values. The paper says only that CP-RF lagged VISp
+    by about 20 ms and that CP-noRF had slower responses, and gives no latency definition; the claims file lists
+    both readings without preferring either. The readings give different outcomes and nothing in the paper picks
+    one, so the claim is methods underspecified. Half-peak latency had been adopted as an assumption after it was
+    seen to match; changed from reproduced after verification round 3 agreed with the change proposed after round
+    2. Question for the authors - which latency measure was used.
   deviations:
-  - Assumed - latency as the half-peak time of the population mean (reading b); the paper gives no measure.
-  assumed: true
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The paper says only that the response time course of CP-RF lagged VISp by about 20 ms and that CP-noRF
-      had slower responses (Results, Fine-scale alpha rhythm coupling between visual cortex and striatum, paragraph
-      3), which does not pick an onset measure over a peak measure. The claims file lists both readings without
-      preferring either, and half-peak was adopted after it was seen to match. The readings give different outcomes
-      (half-peak lags 16 and 20 ms, peak lags 34 and 9 ms) and no basis in the paper picks one, so the assumption
-      is not defensible and the claim is methods underspecified. Proposed after verification round 2, whose verifier,
-      like round 1's, would block the claim.
+  - Both latency readings of the claims file were run, half-peak time of the population mean (b) and time of the
+    population peak (a); the paper gives no measure.
 - claim: fig8e-cp-rf-more-modulated
   outcome: reproduced
   notebook: reproduce_bennett_2024.ipynb
@@ -624,8 +605,8 @@ findings:
     fig7f-visp-network, fig7f-mop-network and fig8f-cp-rf-higher-coherence depend on these choices; the code's choices
     reproduce the 439 events of Figure 8F.
 - kind: methods_unavailable
-  statement: Please state the latency measure of Figure 8D (half-peak time was assumed here; the time of peak gives
-    other lags), the fit, its window and the normalisation behind the 25 to 30 min recovery time constant of Figure
+  statement: Please state the latency measure of Figure 8D (half-peak time and time of peak give different lags, so the
+    claim is blocked here), the fit, its window and the normalisation behind the 25 to 30 min recovery time constant of Figure
     S4I (fits here give 35 to 36 min over 77 min and longer time constants over shorter windows), and the windows
     and row normalisation of Figure S6F.
 verifications:
@@ -1274,3 +1255,37 @@ verifications:
     reason: Agreed. Every Result sentence, the Summary and the README were checked against the printed outputs, and apart
       from the sentences quoted in the report they agree with them.
     response: No change needed.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The two changes of outcome proposed after round 2 (fig7cd-mop-coupling and fig8d-response-latencies)
+    and the analysis behind them in the re-executed notebook, with the claims file and the paper. The verifier agreed
+    with both.
+  results:
+  - claim: fig7cd-mop-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with blocked, methods_underspecified. The criterion''s reproduced needs MOp-PO to be significant
+      with positive coherence; in all 8 E1 combinations PO is absent and coherence_part is False. The E2 combinations
+      meet it (PO +0.147 to +0.195, SSp +0.187 to +0.259, LP not significant in any of the 16; CCGs of PO and SSp peak
+      at 0 to 20 ms with heights 0.199 to 0.329 against 0.029 to 0.062 for LP and VISl). So the readings disagree,
+      and the claims file''s header makes the claim methods_underspecified. The record overstates the E2 count: cell
+      78''s coherence_part treats VISl being absent as passing but PO being absent as failing, and under L1 E2 VISl
+      is never tested, so every part is tested and holds only under L2 E2, 4 of the 16 combinations. This strengthens
+      the case for blocking. No choice was tuned to the result.'
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. The notebook's result, the
+      notes, the Summary and the README now say that every part is tested and holds only under L2 E2, and that coherence_part
+      counts an untested VISl as passing. The SSp range under E2 stays +0.19 to +0.25 (cell 78); the verifier's +0.259
+      is from an E1 combination.
+  - claim: fig8d-response-latencies
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with blocked, methods_underspecified. Time of the population peak gives VISp 48 ms, CP-RF 82 ms
+      and CP-noRF 91 ms, lags 34 and 9 ms, both outside 20 +- 5 ms; the time the mean first reaches half its peak gives
+      38, 54 and 74 ms, lags 16 and 20 ms, both inside; the two unit filters give identical results. The paper does
+      not pick a measure, and a search of its text finds no latency definition. The claims file lists both readings
+      without preferring either. Half-peak was adopted after it was seen to match; the readings give opposite outcomes,
+      so the claim is methods_underspecified, not reproduced on an assumption.'
+    response: Outcome changed to blocked (methods_underspecified); the proposal, the assumption flag, the measured values
+      and the assumption deviation are removed, and a deviation says both readings were run. The notebook's result,
+      the notes, the Summary, the README and the methods_unavailable finding say this.

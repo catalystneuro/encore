@@ -11,12 +11,14 @@ surgery, imaging, histology, MRI and optogenetics material of Figures 3, 5 and 6
 | Scale, units and areas per session, penetration, unit drift, QC fraction, yield and firing rate across days, VBN yield drop, RF fraction, visual responses across days (10 claims) | Reproduced |
 | Insertions per mouse (holes not testable), behaviour across days | Partially reproduced |
 | QC metrics comparable to the 5-mm window, recovery time constant after insertion | Not reproduced |
-| Alpha events: MOp higher frequency, VISp offset locking, MOp coupling (all parts testable only under one reading; a change to blocked, methods underspecified, is proposed) | Reproduced |
+| Alpha events: MOp higher frequency, VISp offset locking | Reproduced |
 | Alpha events: low arousal (direction holds, size differs) | Partially reproduced |
 | Alpha events: replay correlation, lags straddling zero, no hippocampal engagement | Not reproduced |
 | Alpha events: VISp coupling, VISp and MOp networks, CP-RF coherence | Blocked: methods underspecified (the readings of the random-time coherence and area labels disagree) |
+| Alpha events: MOp coupling | Blocked: methods underspecified (MOp-PO coupling holds under one event rule and cannot be tested under the other) |
 | Striatum: CP-RF location (dorsal yes, medial no); larger response (holds, but the unit counts match only with the code's filter) | Partially reproduced |
-| Striatum: latencies (assumed half-peak; a change to blocked, methods underspecified, is proposed), modulation at troughs | Reproduced |
+| Striatum: modulation at troughs | Reproduced |
+| Striatum: response latencies | Blocked: methods underspecified (half-peak and peak latencies give different outcomes; the paper picks neither) |
 | Figure 3, 4B trajectories, 4C, 4F, S3D, S4D to S4H, Figures 5 and 6 (16 claims) | Blocked: data missing, metadata insufficient or methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
