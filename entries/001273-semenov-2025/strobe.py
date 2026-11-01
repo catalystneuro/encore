@@ -17,8 +17,8 @@ Where the parameters come from:
   160 images)". `FRAME_US` and the nominal pulse window `NOMINAL_ONSET` to `NOMINAL_ONSET +
   PULSE_FRAMES` follow it. Files recorded "in a backward manner" are stored in acquisition order,
   so in reverse time; `load_experiment` reverses them (the notebook shows the data support this).
-  The onset used in the fits is estimated from the data in the notebook; the nominal one is a
-  variant.
+  The fits use the nominal onset (frame 20); the notebook estimates the onset of each experiment
+  from the data and repeats the fits with it as a variant.
 - Dim first frames. The first image acquired in most files is about half as bright as the rest,
   and a few other frames are as dim. Frames whose mean is below `DIM_FRACTION` of the file's
   median frame mean are dropped. A standard choice: the paper does not mention them, and they are
@@ -36,6 +36,7 @@ Where the parameters come from:
   pulse stimulation), a standard choice; the claims file's ROIs are "within the cell". The ROIs themselves are not in the dataset; they are rebuilt under the two
   readings of the claims file (O1): (a) a 12 x 12 pixel square centred on the extreme pixel of
   each sign within the cell, (b) the pixels within the cell beyond half the extreme of each sign.
+  A variant of (a), "a_clip", keeps only the pixels of the square that lie within the cell.
 - dF. Methods: "The average of measurements before the pulse was taken as F0, and the optical TMP
   changes in each frame were expressed as dF = 100% x (F - F0) / F0", per replicate, then the mean
   and SEM over replicates ("experiments were repeated to determine the mean dF for every
@@ -109,6 +110,7 @@ def read_metadata(asset):
             "amplitude_v": float(amp.group(1).replace(",", ".")) if amp else np.nan,
             "direction": re.search(r"in a (\w+) manner", desc).group(1),
             "electrode_axis": axis,
+            "description": desc,
             "electrode_text": (re.search(r"Electrode[s]? [^.]*\.", desc) or [None])[0],
             "shape": tuple(s["data"].shape), "dtype": str(s["data"].dtype),
             "rate_hz": float(s["starting_time"].attrs["rate"]),
@@ -198,6 +200,8 @@ def rois(ratio, mask):
         sq = np.zeros_like(mask)
         sq[max(px[0] - half, 0):px[0] + half, max(px[1] - half, 0):px[1] + half] = True
         out[f"a_{name}"] = sq
+    out["a_clip_dep"] = out["a_dep"] & mask
+    out["a_clip_hyp"] = out["a_hyp"] & mask
     out["b_dep"] = mask & (r > r[dep_px] / 2)
     out["b_hyp"] = mask & (r < r[hyp_px] / 2)
     return out
@@ -290,7 +294,7 @@ def estimate_onset(trace):
 
 def process_experiment(files, onset_for_ratio=NOMINAL_ONSET):
     """Everything later steps need from one experiment, so its images can be released: the
-    RATIO image (downsampled for display), the cell mask, the ROI centres and sizes, the
+    RATIO image and the cell mask (also downsampled for display), the ROI centres and sizes, the
     replicate traces for each ROI reading (unscaled and frame-scaled), and the frames dropped."""
     x, dim, frame_means, digests = load_experiment(files)
     control, _, ratio = ratio_image(x, onset_for_ratio)
@@ -300,10 +304,11 @@ def process_experiment(files, onset_for_ratio=NOMINAL_ONSET):
            "mask_px": int(mask.sum()), "dep_px": r["dep_px"], "hyp_px": r["hyp_px"],
            "dep_extreme": r["dep_extreme"], "hyp_extreme": r["hyp_extreme"],
            "ratio_small": r["ratio"][::4, ::4].copy(), "control_small": control[::4, ::4].copy(),
-           "mask_small": mask[::4, ::4].copy(), "traces": {}, "roi_px": {}}
+           "mask_small": mask[::4, ::4].copy(), "ratio": r["ratio"].astype(np.float32), "mask": mask,
+           "traces": {}, "roi_px": {}}
     yy, xx = np.nonzero(mask)
     out["centroid"] = (float(yy.mean()), float(xx.mean()))
-    for reading in ("a", "b"):
+    for reading in ("a", "b", "a_clip"):
         for pole in ("dep", "hyp"):
             roi = r[f"{reading}_{pole}"]
             out["roi_px"][(reading, pole)] = int(roi.sum())

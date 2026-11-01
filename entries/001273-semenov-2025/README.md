@@ -26,7 +26,7 @@ laser-flash fluctuations), no cell shape or orientation groups, and the electrod
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001273-semenov-2025-01.yaml`](../../attempts/001273-semenov-2025-01.yaml).
 
-- `reproduce_semenov_2025.ipynb`: the analysis. It takes about 23 minutes, nearly all of it
+- `reproduce_semenov_2025.ipynb`: the analysis. It takes about 25 minutes, nearly all of it
   streaming the 10 GB of images.
 - `elsewhere_001030.ipynb`: the Figure 3C claim, on the 2-s sine wave sessions of dandiset 001030
   (about a minute).

@@ -27,8 +27,13 @@ Where the parameters come from:
   subtracting a trace without APs". The only session without APs under both detection readings
   is used as that trace (chosen in the notebook from the data).
 - AP detection. The claims file's readings (fig1-pure-sine-excites-all): (a) a peak above 5% dF,
-  (b) a rise of at least 5% dF within 5 ms. Peaks are at least 5 ms apart, and for (a) stand at
-  least `PROMINENCE` above their surroundings (standard choices; APs last about 10 ms, Methods).
+  (b) a rise of at least 5% dF within 5 ms. The trace is first smoothed with a running mean of
+  `SMOOTH_FRAMES` frames (about 1 ms), and for (a) a peak must stand at least the detection level
+  above its surroundings (its prominence), so that noise on a depolarized plateau is not counted.
+  Peaks are at least 5 ms apart. These are standard choices: APs "lasted about 10 ms" (Methods),
+  so a 1-ms mean keeps them and removes one-frame excursions. The first run used no smoothing and a
+  prominence of `FIRST_RUN_PROMINENCE`; on a plateau above 5% that counted noise peaks as APs (the
+  verifier's round-1 report), and it is kept as a variant.
 """
 
 from __future__ import annotations
@@ -41,6 +46,7 @@ from concurrent.futures import ThreadPoolExecutor
 import h5py
 import numpy as np
 import remfile
+from scipy.ndimage import uniform_filter1d
 from scipy.signal import find_peaks
 
 DANDISET_ID = "001030"
@@ -54,7 +60,8 @@ RAMP_S = 0.25             # session description: ramped "during the initial 0.25
 AP_LEVEL = 5.0            # % dF, Methods (APs peaked at more than 5% dF)
 RISE_WINDOW_S = 0.005     # claims file, reading (b)
 MIN_SEPARATION_S = 0.005  # standard choice
-PROMINENCE = 2.5          # % dF, standard choice for reading (a)
+SMOOTH_FRAMES = 3         # standard choice: running mean over about 1 ms before detection
+FIRST_RUN_PROMINENCE = 2.5  # % dF, the first run's prominence for reading (a), a variant
 S1_DANDISET, S1_VERSION = "001272", "0.250805.1358"
 S1_STIM_START_S = 0.05    # Methods, Recording of the optical APs
 S1_STIM_S = 0.25
@@ -104,14 +111,15 @@ def delta_f(frame_means, fs=FS, stim_start_s=STIM_START_S):
     return 100 * (f - f0) / f0
 
 
-def detect(dF, reading, fs=FS, level=None):
+def detect(dF, reading, fs=FS, level=None, smooth=SMOOTH_FRAMES, prominence=None):
     """Frames of the AP peaks under reading "a" or "b" (and "c", a peak above `level`, used for the
-    5 SD reading of the Di-8-ANEPPS claim)."""
-    x = np.where(np.isnan(dF), 0.0, dF)
+    5 SD reading of the Di-8-ANEPPS claim). For "a" and "c" the prominence is the detection level
+    unless given; `smooth=1, prominence=FIRST_RUN_PROMINENCE` is the first run's detector."""
+    x = uniform_filter1d(np.where(np.isnan(dF), 0.0, dF), smooth)
     sep = int(round(MIN_SEPARATION_S * fs))
     if reading in ("a", "c"):
         height = AP_LEVEL if reading == "a" else level
-        peaks, _ = find_peaks(x, height=height, distance=sep, prominence=PROMINENCE)
+        peaks, _ = find_peaks(x, height=height, distance=sep, prominence=prominence or height)
     else:
         w = int(round(RISE_WINDOW_S * fs))
         padded = np.concatenate([np.full(w, x[0]), x])
