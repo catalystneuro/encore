@@ -1,0 +1,356 @@
+{
+ "dataset": {
+  "archive": "figshare",
+  "id": "26877211",
+  "label": "FIGSHARE:26877211"
+ },
+ "page": "datasets/figshare/26877211/",
+ "generated": "2026-11-01T22:01:06+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 1,
+  "not_reproduced": 2,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "figshare-26877211-ocagli-2024-01",
+   "dataset": {
+    "archive": "figshare",
+    "id": "26877211",
+    "version": "1",
+    "doi": "10.6084/m9.figshare.26877211.v1"
+   },
+   "key": "figshare:26877211",
+   "label": "FIGSHARE:26877211",
+   "dataset_version": "1",
+   "paper": "10.1038/s41597-024-04294-w",
+   "paper_title": null,
+   "date": "2026-10-27",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/40572006592"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "figshare-26877211-ocagli-2024",
+   "entry_title": "The JECFA portal index (Ocagli et al. 2024)",
+   "description": "Tests the findings of Ocagli et al. (2024) on Figshare item 26877211, version 1, which holds the table scraped from the JECFA portal in May 2024 as an RDS file and a CSV file. It checks the row count and fields, the cleaning to unique pages, the availability of each field (Table 1), the counts by evaluation year and functional class (Table 2), the content of the unknowns, the most frequent FAS codes, and the count of pages with a JECFA name. The manual validation of 700 pages is not deposited.",
+   "notebooks": [
+    {
+     "path": "reproduce_ocagli_2024.ipynb",
+     "title": "Reproducing Ocagli et al. (2024) from Figshare item 26877211",
+     "executed": "notebooks/figshare-26877211-ocagli-2024/reproduce_ocagli_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "data-records-rows",
+     "statement": "The deposited dataframe is the JECFA index of May 2024, with 6552 rows and the fields of Table 1.",
+     "source": "Data Records, paragraphs 1 and 2",
+     "quote": "As of May 2024, the final dataframe consists of 6552 rows. The RDS file contains a structured data frame to reflect the fields described in Table 1 of the manuscript",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "jecfa.rds has 6552 rows and 17 columns, one for each field of Table 1, named as in R/process_df.R in lower case with \".\" replaced by \"_\". JECFA.csv holds the same 6552 rows and 17 columns, with no differing cell. The MD5 of both files read matches the archive's computed_md5. The columns R/add_metadata.R adds are absent, so the deposit is the output of process_df.R. The \"May 2024\" date cannot be checked from the files, which carry no scrape date.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "unique-pages",
+     "statement": "The 6552 scraped entries, cleaned of the duplicates of page 6316 and of test pages, give 6549 unique pages.",
+     "source": "Methods, Web-scraping, paragraph 2",
+     "quote": "We validated the effectiveness of this method by identifying 6552 entries, which were then cleaned to remove duplicates of (E)-N-[2-(1,3-BENZODIOXOL-5-YL)ETHYL]-3- (3,4-DIMETHOXYPHENYL)PROP-2-ENAMIDE ... and test pages, resulting in 6549",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "D1 (distinct URLs) gives 6552, 3 from 6549 and outside the tolerance of 2, as no URL is repeated. D2 (distinct JECFA names less page 5883) and D3 (rows less page 5883 and less the second row of page 6316's chemical) give 6550, within tolerance. Page 6316's chemical appears twice, at pages 6316 (name only) and 6319 (full record); page 5883 is named TEST and carries nothing else. The paper's 6549 is reached, for example, by removing both rows of that chemical with the test page (the one variant tested).",
+     "deviations": [
+      "The criterion's readings D1 to D3 are all run; measured is the first that matches (D2). D1 does not match."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-availability",
+     "statement": "The share of pages carrying each Table 1 field is 100% for URL and JECFA name, 82% chemical names, 79% synonyms, 35% CAS number, 71% JECFA number, 65% FEMA number, 46% COE number, 98% functional class, 98% evaluation year, 97% report and its link, 93% Tox monograph and its link, 92% specification and its link, and 93% FAS.",
+     "source": "Methods, Web-scraping, paragraph 3; Table 1, column Availability (%)",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Numbers from Table 1, column Availability (%), titled \"Common content of most JECFA pages\"; no sentence of the text states them.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "Over all 6552 rows (U1 and U2 are the same, as no URL repeats), 16 of 17 shares are within tolerance with the deposited fas column (reading A), FAS being 81.38% against 93% (lower bound 83.7%), and 17 of 17 with fas after the step of R/add_metadata.R (reading B, 86.74%). Over the 6550 rows left after cleaning, no share moves by more than 0.05 points. Rounded to whole numbers 12 of 17 equal Table 1 (Chemical names 83, Synonyms 78, Report and its link 98 differ by one point, FAS by 12 under A). Counting the 752 empty fas strings as present gives 92.86%, which suggests Table 1 counted every non-NA value; the claims file's reading E counts them as absent. The outcome rests on 16 of 17 under A, or 17 under B, and does not depend on how the empty strings are counted.",
+     "deviations": [
+      "The criterion names the FAS column of both process_df.R and add_metadata.R; the deposit holds the first. Both are run (A and B), and both give reproduced."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-evaluation-year",
+     "statement": "By evaluation year, 2357 evaluations fall in 1958 to 2000 (37%), 3099 in 2000 to 2010 (48%), 778 in 2010 to 2020 (12%) and 200 in 2020 to 2023 (3.1%), with 118 unknown.",
+     "source": "Data Records, paragraph 3; Table 2, Evaluation year",
+     "quote": "For the evaluation year, from 1958 to 2000 there were 2,356 evaluations, representing 37% of the total. Between 2000 and 2010, the number of evaluations increased significantly to 3,099 (48% of the total)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "The four bins and the unknowns equal Table 2 exactly; shares are over the 6434 rows with a year. Counts are compared with the claims file's tolerances (236, 310, 78, 20 and 12). All years lie between 1958 and 2023. The text's 2,356 for the first bin differs by one from Table 2 and from the data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-functional-class",
+     "statement": "Most substances are flavouring agents, 4635 (72%), followed by food additives 1453 (23%), veterinary drugs 277 (4.3%) and food contaminants 77 (1.2%), with 110 unknown.",
+     "source": "Data Records, paragraph 3; Table 2, Functional Class",
+     "quote": "In terms of functional class, the majority of the evaluated substances were flavoring agents, with 4,635 substances comprising 72% of the total",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "The counts equal Table 2 exactly; shares are over the 6442 rows with a class. Every functional_class string starts with one of the four class names (the data spell \"Flavouring Agent\"), so none is left unmatched. Flavouring agents are the largest class.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "unknowns-name-only",
+     "statement": "The records with unknown class or year have only the JECFA name, without chemical names or other information.",
+     "source": "Data Records, paragraph 3",
+     "quote": "The unknowns have only the JECFA name without associated compound names or additional information.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "95 rows carry only a URL and a JECFA name, and each of them has both class and year unknown. They are 95 of 110 rows with an unknown class (86.4%) and 95 of 118 with an unknown year (80.5%), both below the criterion's 90%. The criterion states only when the claim is reproduced, so the outcome is not reproduced (changed from partially reproduced after verification round 1). The other 15 rows with an unknown class carry a year, a report and identifiers; 13 of them lie between pages 6385 and 6450 and 13 were evaluated in 2008. The other 23 with an unknown year all carry a functional class (13 food additives, 9 food contaminants, 1 flavouring agent), 15 of them chemical names and 14 synonyms; 11 of them are pages 6476 to 6533. The statement holds exactly for the 95 rows unknown on both class and year. Whether \"the unknowns\" means those rows is asked of a reader in questions/figshare-26877211.yaml; the claim is tested as the claims file has it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fas-codes",
+     "statement": "Almost all 85 FAS codes are referenced, and FAS 40, 42, 44, 46, 48, 50 and 52 together account for 50% of the records.",
+     "source": "Data Records, paragraph 4",
+     "quote": "Although almost all 85 FAS codes are referenced, the ones collectively accounting for 50% of the records are 40, 42, 44, 46, 48, 50, and 52",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "The seven named codes hold 3036 rows, 46.34% of all 6552 rows (F1, within 5 points of 50%) under both FAS readings; over the rows with a FAS code (F2) 56.94% with the deposited column (A, outside tolerance) and 53.42% after add_metadata.R (B, within). They are not the seven most frequent; FAS 59 (351 rows) and FAS 54 (287) are more frequent than FAS 52 (286) under both readings, and FAS 60 (353) too under B; the named codes rank 1 to 6 and 9 (A) or 10 (B). The deposited column has 81 distinct non-empty values, which meets the 77 the criterion takes for \"almost all 85\", and 73 after add_metadata.R, which does not. The 81 include malformed values (eight such as \"77 JECFA 86\", five decimals such as \"67.29\", and \"617\") and \"86\", above 85. Counting only whole numbers from 1 to 85 gives 66 codes (A) and 71 (B), both below 77, so \"almost all 85\" does not hold under a cleaned reading; codes 2, 3, 4, 7, 9, 11, 61, 63, 66, 76, 79, 81, 84 and 85 are absent under both. The criterion sets the outcome by the share and the ranking, so this does not change it.",
+     "deviations": [
+      "The criterion names the FAS column of both process_df.R and add_metadata.R; the deposit holds the first. Both are run (A and B), and both give partially reproduced."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "validation-failures",
+     "statement": "In a manual check of 700 random pages, scraped and manually read values disagreed only for Report (0.6%), Report sourcelink (0.9%), Tox monograph sourcelink (5.3%) and Specification sourcelink (0.2%).",
+     "source": "Technical Validation, paragraph 1",
+     "quote": "we observed minimal discrepancies, notably in only four contents across web pages that display the following percentages. Report (0.6%), Report sourcelink (0.9%), Tox Monograph sourcelink (5.3%), Specification sourcelink (0.2%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The test needs the manual extraction of the 700 sampled pages, entered in REDCap at the University of Padova. It is not among the item's two files (the scraped table as RDS and CSV), not in the paper's GitHub repository at commit 2d8a5340, and the paper names no other place for it. The portal has changed since May 2024, so the check cannot be repeated on the pages as scraped.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "portal-search-count",
+     "statement": "A search of the JECFA portal by first character returned 6547 items, in line with the pages carrying a JECFA name (6551 less a duplicate and a test page).",
+     "source": "Technical Validation, paragraphs 2 and 3",
+     "quote": "The search functionality of the portal for chemicals by the first character yielded 6,547 items. This number aligns with the number of websites containing at least a JECFA name (n = 6,551 minus a duplicate and a test page)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_ocagli_2024.ipynb",
+     "notes": "The portal's 6547 is outside data, not public in its May 2024 state, and is not tested. In the dataset all 6552 rows carry a JECFA name, within the tolerance of the paper's 6551 but one more. After the cleaning of unique-pages, D2 and D3 give 6550, 3 more than 6547 and outside the margin of 2 the criterion takes for \"aligns\"; D1 gives 6552. The paper's own numbers (6551 less 2 is 6549) are within 2 of 6547; the one extra row in the deposit is what puts the count outside. The data do not explain the gap between 6552 and 6551; leaving out the test page, named \"TEST\", gives 6551, but the paper then removes the test page again. Removing both rows of page 6316's chemical with the test page gives 6549, within 2 of 6547, but that is none of the readings D1 to D3 and is not used. The criterion states only when the dataset's part is reproduced and gives no partial level; one of its two conditions fails, so the dataset's part is not reproduced, read as for unknowns-name-only. The portal part stays untested. The outcome was partially reproduced until verification round 3, which agreed with the change. The margin of 2 is the claims file's choice and puts the paper's own 6549 against 6547 at its edge, so this outcome rests on one row. No measured value is given, as the first expected value (the portal count) cannot be measured.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The manual extraction of 700 portal pages used for the Technical Validation (REDCap, University of Padova) is not deposited, so the discrepancy rates of the validation cannot be checked.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods say the 6552 scraped entries were cleaned of a duplicate and a test page to 6549 unique pages, and Data Records says each entry corresponds to a unique chemical, but the deposited table holds all 6552 rows, including the test page 5883 (named TEST, with no other field) and page 6316, a name-only stub of the chemical whose full record is page 6319.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The item's description calls FAS a \"FAO/WHO Food Additive Specification identifier\". The column is the number of the Food Additives Series toxicological monograph, derived from the Tox monograph by R/process_df.R in every row, as the paper's Table 1 describes it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The deposited fas column, from R/process_df.R, is empty for 355 rows whose Tox monograph is a FAS monograph (339 FAS 60, 10 FAS 74, 2 FAS 27, 4 written \"FAS79\"), which its \"^FAS \" pattern misses; 349 of the 752 empty values have a Tox monograph starting with the stray characters '\">'. It holds 752 empty strings beside 468 NA, and some values keep a session or page (\"77 JECFA 86\", \"67.29\", \"617\"). R/add_metadata.R repairs part of this but its output is not deposited. With empty strings counted as absent the FAS share is 81.4%, against 93% in Table 1.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Table 1 describes the COE number as assigned by the Codex Alimentarius Commission; the item's description calls it the Council of Europe number. COE numbers are present for 3022 flavouring agents and 9 food additives and for no other class, which is consistent with the Council of Europe numbering of flavourings, not with Codex.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Scraped values carry formatting residue. 602 report, 349 Tox monograph and 398 specification values start with '\">' (the Usage Notes mention this for Report); 33 FEMA numbers are plain integers padded with spaces; 31 JECFA numbers are not plain integers (\"506a,b\", \"632.1\"); 46 of 2127 plain CAS numbers fail the CAS check digit, and 190 CAS values hold several numbers or notes.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1: the executed notebook of the author run (commit 1823efd9c, unchanged by the author-answers run) with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the Figshare API for the item's versions and tested the helper functions on synthetic inputs. Report transcripts/figshare-26877211/verifier-1-report.md.",
+     "agreed": 8,
+     "of": 9,
+     "disagreements": [
+      {
+       "claim": "unknowns-name-only",
+       "outcome": "not_reproduced",
+       "reason": "Only 86.4% (95 of 110) of unknown-class rows and 80.5% (95 of 118) of unknown-year rows are name-only, both below the criterion's 90%, and the criterion has no partial level. The statement holds exactly only for the 95 rows that are unknown on both class and year. The paper's sentence fits those 95 rows; the 90% threshold applied to each set separately was chosen by the claims file, and the claim fails because of that choice. The notebook does not print the page ids of the 15 unknown-class and 23 unknown-year rows that are not name-only, so it could not be checked whether they are clustered or are scraping artefacts."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2: the full executed notebook of the author-revise-1 run (commit f052d987a), with the conclusion cells, the summary, the README and this record, the helper module, the claims file and the paper. Report transcripts/figshare-26877211/verifier-2-report.md.",
+     "agreed": 8,
+     "of": 9,
+     "disagreements": [
+      {
+       "claim": "portal-search-count",
+       "outcome": "not_reproduced",
+       "reason": "The criterion says only when the dataset's part is reproduced. For unknowns-name-only the record reads that kind of criterion as \"not reproduced when not met\"; here it records \"partially reproduced\" for the same situation. The condition that holds (6552 within 655 of 6551) is the loose one; the condition that fails (\"aligns\", within 2) is what the claim says. Applied consistently, the dataset's part is not reproduced, with the portal part blocked. The verifier accepted \"partially reproduced\" in round 1 and now thinks that was wrong; the choice of a partial level is an assumption the record does not state."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3: the proposed change of outcome for portal-search-count in the record of the author-revise-2 run (commit 3deb21bc0), with the executed notebook (cells 23, 42 and 43), the helper module, the claims file and the paper. Report transcripts/figshare-26877211/verifier-3-report.md.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "figshare-26877211-ocagli-2024",
+   "type": "reproduction",
+   "title": "The JECFA portal index (Ocagli et al. 2024)",
+   "description": "Tests the findings of Ocagli et al. (2024) on Figshare item 26877211, version 1, which holds the table scraped from the JECFA portal in May 2024 as an RDS file and a CSV file. It checks the row count and fields, the cleaning to unique pages, the availability of each field (Table 1), the counts by evaluation year and functional class (Table 2), the content of the unknowns, the most frequent FAS codes, and the count of pages with a JECFA name. The manual validation of 700 pages is not deposited.",
+   "datasets": [
+    "figshare:26877211"
+   ],
+   "papers": [
+    "10.1038/s41597-024-04294-w"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_ocagli_2024.ipynb",
+     "title": "Reproducing Ocagli et al. (2024) from Figshare item 26877211",
+     "executed": "notebooks/figshare-26877211-ocagli-2024/reproduce_ocagli_2024.html"
+    }
+   ]
+  }
+ ]
+}
