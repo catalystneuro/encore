@@ -18,8 +18,11 @@ reasoning and the differences from the paper's method.
 
 The files labelled Protocol 3 (8 phases with 5-us delays) show the focusing the paper reports for
 Packet 2 (8 phases without delays), and the files labelled Protocol 2 behave as its Packet 3. With
-the two labels exchanged, the order of Figure 8B appears. The files give no pixel size and do not
-identify the electrodes. The attempt record, with the reasons and the differences from the paper's
+the two labels exchanged, the order of Figure 8B appears; each file's description defines the
+protocols as the paper defines the packets, so whether the deposit or the figure is mislabelled is
+unresolved. The Packet 1 dishes were imaged on another day with about twice the background, and the
+files record no exposure or gain, so the fig8a-equal-center-uptake failure may rest on a difference
+between imaging days. The files give no pixel size and do not identify the electrodes. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001027-pakhomov-2023-01.yaml`](../../attempts/001027-pakhomov-2023-01.yaml).
 
 - `reproduce_pakhomov_2023.ipynb`: the analysis. It takes about five minutes, most of it streaming
