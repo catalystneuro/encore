@@ -49,10 +49,13 @@ import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
+from pathlib import Path
+
 import h5py
 import numpy as np
 import pandas as pd
 import remfile
+import yaml
 from scipy import ndimage, signal
 
 DANDISET_ID = "001271"
@@ -67,6 +70,27 @@ STIM_S = 0.250       # Figure S2 legend, F3
 N_FRAMES = 1200
 LAST_WINDOW_S = 0.100  # O4, the last 100 ms of the stimulus
 CHANGE_GAP_MIN = 3.0   # assumption, see the module docstring
+CLAIMS_FILE = Path(__file__).resolve().parents[2] / "claims" / "001271" / "10.1016-j.xcrp.2025.102660.yaml"
+
+
+def show_claim(claim_id=None):
+    """Print a claim's statement and criterion from the claims file this entry tests, or with no
+    id the header's fixed details and readings, so that each test can be read beside its criterion."""
+    if not CLAIMS_FILE.is_file():
+        print(f"claims file not found at {CLAIMS_FILE}")
+        return
+    text = CLAIMS_FILE.read_text()
+    if claim_id is None:
+        head = [l[2:] for l in text.splitlines() if l.startswith("#")]
+        start = next(i for i, l in enumerate(head) if l.startswith("Method details fixed"))
+        print(f"{CLAIMS_FILE.parent.name}/{CLAIMS_FILE.name}, header:")
+        print("\n".join(head[start:]))
+        return
+    claim = {c["id"]: c for c in yaml.safe_load(text)["claims"]}[claim_id]
+    print(f"{CLAIMS_FILE.parent.name}/{CLAIMS_FILE.name}, {claim_id}")
+    for key in ("statement", "expected", "criterion", "where"):
+        if key in claim:
+            print(f"\n{key}: {claim[key]}")
 
 
 def list_assets(dandiset=DANDISET_ID, version=DANDISET_VERSION):
