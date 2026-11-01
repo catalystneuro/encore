@@ -22,7 +22,8 @@ pulses) and its thermometry are not in this dandiset.
 | Center YP shows no effect of packet rate | Reproduced |
 | YP at 6 and 7 mm declines with packet rate | Reproduced |
 | FWHM falls from about 4 mm at 1 Hz to about 2 mm at higher rates | Partially reproduced |
-| Figures 4C (log fit), 5 and 6 (eight claims) | Blocked: in other dandisets |
+| Figure 4C log fit | Blocked: no 1 kHz or 10 kHz wells in this or the three other dandisets citing the paper |
+| Figures 5 and 6 (seven claims) | Blocked: in other dandisets (DANDI:001277, 001284) |
 | Heating (Figure 2) and field simulation (Figure 1E) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -30,14 +31,18 @@ reasoning and the differences from the paper's method.
 
 The files give no electrode positions; the pixel size, 1.625 um, is only in OME-XML appended to each
 image description. The analysis finds the electrode footprints in each image by fitting a square of the
-paper's size, and places the paper's ROIs along the diagonals from its center. Three outcomes rest on
+paper's size, and places the paper's ROIs along the diagonals from its center. Four outcomes rest on
 choices the paper leaves open: which wells can be placed (the CT26 slope of Figure 7B reaches
-p < 0.001 with three left-out wells added) and which electrode footprint gives the background (the
-two ratio claims fall in range under some single footprints). The
+p < 0.001 with three left-out wells added, for fits to individual experiments), which electrode
+footprint gives the background (the two ratio claims fall in range under some single footprints), and
+the spacing of the ROIs along the diagonal (the 1-burst FWHM claim holds with 0.5 mm spacing, not
+with 1 mm). Two blocked claims carry proposed changes for a third verification round: the Figure 4C
+log fit to data missing, and the Figure 5C claim to reproduced, with the camera offset as the Hoechst
+background. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001276-silkuniene-2025-01.yaml`](../../attempts/001276-silkuniene-2025-01.yaml).
 
-- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes about 25 minutes, most of it streaming
+- `reproduce_silkuniene_2025.ipynb`: the analysis. It took 15 minutes in the last run, most of it streaming
   the 54 YO-PRO-1 images (19 GB).
 - `cancan.py`: streaming and binning the images, locating the electrode array, the ROI profiles and
   the Lorentzian fit. Other notebooks on this dandiset can import it.

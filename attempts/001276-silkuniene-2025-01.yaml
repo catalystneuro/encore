@@ -48,7 +48,10 @@ outcomes:
     disagree by 0.5 mm or more, or the free side is off by more than 4%); this drops one CT26
     2-burst well and two CHO 1-burst wells. The paper placed ROIs by eye and reports no exclusion.
     The variant with these wells placed at the angle of their plate and day is shown and changes
-    this outcome.
+    this outcome. The corner contrast does not set the left-out wells apart (several wells used have
+    smallest corner contrasts of 0.000 to 0.044, the left-out ones 0.013 to 0.045); what sets them
+    apart is that their own image does not fix the square, so the variant takes its angle from other
+    wells. Which wells the paper used is open.
   - Assumed, the background is the median over the four footprints of 3 ROIs in each, where Methods
     2.5 places 3 ROIs "within a footprint of an electrode" without saying which; no footprint has a
     better claim, and the median does not rest on that pick. Each single footprint is shown as a
@@ -145,8 +148,9 @@ outcomes:
     means and 52.1 as the mean of per-experiment ratios, just above the 36 to 44 tolerance; at 7 mm
     it is 10.7 and 12.5. Per-experiment ratios at 6 mm span 17.9 to 81.9. The roughly 4-fold stronger
     field near the electrodes is a model output not in the dataset and is not tested. The outcome
-    rests on the background. With the upper-left footprint the 6 mm ratios are 35.75 and 38.41, with
-    the upper-right one 40.38 and 68.86, so single footprints put a reading in 36 to 44; over the 1024
+    rests on the background. With the upper-left footprint the 6 mm ratios are 35.75 (group means,
+    just below 36) and 38.41 (mean of ratios), with the upper-right one 40.38 and 68.86, so single
+    footprints put some readings in 36 to 44 (38.41 and 40.38); over the 1024
     ways of taking one footprint per well, 34% put the group-mean ratio in range and 42% at least one
     reading. With the left-out well P1_20240627_B1 added (YP 207 a.u. at 6 mm), the ratios are 25.57
     and 44.23.
@@ -239,9 +243,19 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Needs the 1 kHz and 10 kHz wells, which are not in this dandiset (its only packet rates are
-    0.2 MHz and 1 Hz, from the descriptions of all 108 files). DANDI:001047, which cites the same
-    paper, holds a packet-rate series (its description names 1 Hz and 0.2 MHz); whether it holds 1 kHz
-    and 10 kHz was not established. The claims file names no data outside this dandiset.
+    0.2 MHz and 1 Hz, from the descriptions of all 108 files). The notebook now searches the archive
+    metadata of the three other dandisets citing the paper, and of each of their assets (DANDI:001047
+    0.250701.1609, 88 assets; 001277 0.250701.1610, 49 assets; 001284 0.250701.1610, 84 assets). None
+    names a kHz frequency; the frequencies named are 1 Hz and 0.2 MHz, and 0.14 and 0.4 MHz in the
+    dandiset metadata of 001277. So the 1 kHz and 10 kHz data are not public in these dandisets, and
+    the block is for missing data; the change of blocked_by is proposed.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The 1 kHz and 10 kHz wells the claim needs are in none of the four dandisets citing the
+      paper; the notebook's search of the archive metadata of 001047, 001277 and 001284 and all their
+      assets finds no kHz frequency. Nothing shows them public elsewhere, so `other`, which rested on
+      a rate series in DANDI:001047, is not supported, as the verifier said in round 2.
 - claim: fig5-raised-electrodes-weaker-center
   outcome: blocked
   blocked_by: other
@@ -265,16 +279,26 @@ outcomes:
 - claim: fig5c-irreversible-center
   outcome: blocked
   blocked_by: other
-  notes: The Hoechst part of the criterion stands for the paper's check that cells inside the
-    footprint were still present after exposure. The paper made it on the Pr samples, which "were
-    also re-imaged for Hoechst fluorescence, to check for possible cell loss due to detachment"
-    (Methods 2.4), and Hoechst "proved that cells were still present and the lack of YP staining was
-    not a result of cell detachment" (Results 3.2). This dandiset holds Hoechst images taken before
-    exposure only; DANDI:001284 appears to hold the Fig. 5 series. The paper also defines no Hoechst
-    background, so the reference level is open as well. Shown for reference on the CT26 0.2 MHz 2
-    bursts (x4) wells. The YP part holds (center 1985 a.u., 1030 at 1 mm and at most 244 from 2 to 7
-    mm). Before exposure, Hoechst inside every footprint is 0.74 to 0.99 times the monolayer level and
-    20 to 60 times the camera offset (53.5 a.u.), so cells were present there before exposure.
+  notes: Computed on the CT26 0.2 MHz 2 bursts (x4) wells. The YP part holds (center 1985 a.u., 1030
+    at 1 mm and at most 244 from 2 to 7 mm). Hoechst inside every footprint is 20 to 60 times the
+    camera offset (53.5 a.u.) and 0.74 to 0.99 times the monolayer level. The criterion does not say
+    when the Hoechst image was taken and the paper defines no Hoechst background. With the camera
+    offset as the background (assumed, the level of an image with no dye; the footprint, where the
+    paper takes the YP background, is here the place tested), both parts hold under the criterion as
+    written. The dandiset's Hoechst images were taken before exposure, where the paper's check was
+    made after it on the Pr samples, which "were also re-imaged for Hoechst fluorescence, to check for
+    possible cell loss due to detachment" (Methods 2.4; Results 3.2); whether the criterion should
+    require post-exposure images is asked of a reader in questions/001276.yaml. The verified outcome,
+    blocked, is kept and the change is proposed.
+  proposed:
+    outcome: reproduced
+    reason: The criterion asks only that center YP exceed YP at every distance from 2 to 7 mm and that
+      Hoechst inside the footprint be above background; it does not require post-exposure images.
+      Both hold (center 1985 a.u. against at most 244; footprint Hoechst 20 to 60 times the camera
+      offset, 0.74 to 0.99 of the monolayer). The outcome rests on the camera offset as the Hoechst
+      background, an assumption, and any reference below 0.74 of the monolayer gives the same result.
+      The earlier block added a requirement, post-exposure images, that the criterion does not state;
+      that gap is now a question for a reader.
 - claim: fig6b-900ns-peak-not-significant
   outcome: blocked
   blocked_by: other
@@ -305,7 +329,7 @@ findings:
     a packet rate of 1 Hz. The paper's 1 kHz and 10 kHz rates, raised electrodes, propidium images,
     post-exposure Hoechst, 300 and 900 ns pulses and thermometry are not in it. Three other dandisets
     citing the paper (001047, 001277, 001284) appear to hold several of these series, but 001276 does
-    not point to them.
+    not point to them. None of the four names a 1 kHz or 10 kHz rate in its archive metadata.
 - kind: metadata_insufficient
   statement: The files give no electrode positions and no ROI coordinates. Pixel size (1.625 um),
     exposure (200 ms for YO-PRO-1, 600 ms for Hoechst) and stage position are only in OME-XML
@@ -339,8 +363,9 @@ findings:
     figures are reproduced. The background footprint decides whether the 40 to 50-fold and 40-fold
     ratios are reproduced, since YP near the electrodes is about as small as the spread between
     footprints. Question for the authors, what ROI spacing and fit range were used for the FWHM
-    values of Fig. 7, which footprint gave the background in each image, and which wells of the
-    dandiset form each group.
+    values of Fig. 7, which footprint gave the background in each image, which wells of the
+    dandiset form each group, and what background the Hoechst intensity inside the footprints was
+    compared with (Fig. 5C).
 verifications:
 - date: 2026-11-01
   kind: agent
@@ -362,7 +387,8 @@ verifications:
       and day, shown in a figure, and added as a variant. With them the CT26 p is 0.00098
       (individual experiments) and 0.059 (group means), which would make the claim reproduced. The
       outcome is kept, marked as resting on the exclusion (assumed), since the left-out well's
-      footprints are not found and its corner contrast is below the median of the wells used. The
+      footprints are not found (a reason given here about its corner contrast was withdrawn in round
+      2). The
       CT26 p under each single-footprint background (0.0011 to 0.0015) is shown too.
   - claim: fig7b-ct26-saturation
     agrees: true
@@ -537,4 +563,160 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Blocked, data_missing. Simulation output; the model is not public and not in the dataset.
+    response: No change.
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the revised run, with its conclusions and summary, the helper
+    module, the claims file, the README and this attempt record, with the paper.
+  results:
+  - claim: fig7be-center-linear-with-bursts
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated. The CT26 p is 0.0013 without well P1_20240627_B1 and 0.00098 with
+      it, under reading (a), so the outcome turns on that one well. Leaving it out is reasonable, but
+      the stated reason is weak; the left-out wells' corner contrast does not separate them from the
+      used ones (P1_20240827_B3 at 0.000, P1_20240702_A2 at 0.004, P1_20240813_B2 at 0.027,
+      P2_20240821_B2 at 0.036 and P1_20240918_B3 at 0.044). The assumption should be kept with a
+      correct justification, or stated as open.
+    response: The corner-contrast reason is withdrawn from the notebook, the deviation and the round-1
+      response. The justification now given is that the left-out wells' own images do not fix the
+      square (the two fits disagree, by 1.22 to 4.25 mm in center), so their variant placement takes
+      its angle from other wells; leaving them out is stated as an assumption and which wells the
+      paper used as open. Outcome unchanged.
+  - claim: fig7b-ct26-saturation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Saturation is now ruled out; at most 5.4e-4 of the pixels in any diagonal ROI are at full
+      scale, and none at the center.
+    response: No change.
+  - claim: fig7cf-fwhm-with-bursts
+    agrees: true
+    outcome: reproduced
+    reason: Both parts hold in 2 of the 12 readings. The pass is fragile, and the record now says so.
+    response: No change.
+  - claim: fig7-sharpest-peak-one-burst
+    agrees: true
+    outcome: reproduced
+    reason: The 0.5 mm spacing assumption is stated and reasonable. At 1 mm spacing the outcome would be
+      partial.
+    response: The README now names the ROI spacing among the choices outcomes rest on, and counts four
+      such outcomes. No change of outcome.
+  - claim: fig7-offtarget-40-50-fold
+    agrees: true
+    outcome: not_reproduced
+    reason: The median background is stated as an assumption and is reasonable. With one footprint per
+      well, 62.5% of the 64 combinations put a 6 mm reading in range, so the data do not settle this
+      claim.
+    response: No change; the notes already give this dependence.
+  - claim: fig7-cho-replicates-ct26
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig4b-40-fold-at-02mhz
+    agrees: true
+    outcome: not_reproduced
+    reason: The assumption is stated and reasonable. With one footprint per well, 42.3% of the 1024
+      combinations put a reading in range. The mean-of-ratios reading is unstable, -11.90 with the
+      lower-right footprint and 140.53 with the lower-left one. The conclusion's "with the upper-left
+      footprint the ratio at 6 mm is 35.75 and 38.41 ... so single footprints put it in range" is not
+      supported, as 35.75 is outside 36 to 44.
+    response: The conclusion and the notes now say that 35.75 (group means) is just below 36 and that
+      the readings in range are 38.41 and 40.38. No change of outcome.
+  - claim: fig3a-cancan-center-enhanced
+    agrees: false
+    outcome: not_reproduced
+    reason: The control is the half of the claim that makes it a contrast, and it fails; the control's
+      center is its brightest point (2275 against 1837 to 2085 a.u.). The CANCAN half is tested on only
+      2 of 4 rates. Without the protocol in front of it the verifier cannot rule out "holds only in
+      part".
+    response: Outcome kept as partially reproduced, with the disagreement recorded, and the conclusion
+      cell now states it. The claim has two parts and the criterion names no partial case; the CANCAN
+      part holds on both rates present and the control part fails, which the protocol describes as
+      holding only in part.
+  - claim: fig3bc-lorentzian-profile
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3bc-offtarget-deviation-falls-with-rate
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig4b-center-no-rate-effect
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig4b-near-electrode-rate-decline
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig4c-fwhm-decreases-with-rate
+    agrees: true
+    outcome: partially_reproduced
+    response: No change.
+  - claim: fig4c-log-dependence
+    agrees: true
+    outcome: blocked
+    reason: Blocked, yes, but the "other" category is not supported. The record itself says that
+      whether DANDI:001047 holds 1 kHz and 10 kHz "was not established", and that its description names
+      only 1 Hz and 0.2 MHz. Unless that is shown, this is data_missing.
+    response: The notebook now searches the archive metadata of DANDI:001047, 001277 and 001284 and of
+      all their assets; none names a kHz frequency. The verified block is kept and the change of
+      blocked_by to data_missing is proposed for round 3. The header, summary and README no longer say
+      a rate series in 001047 holds these data.
+  - claim: fig5-raised-electrodes-weaker-center
+    agrees: true
+    outcome: blocked
+    reason: Dandisets 001284 and 001277 describe these series. The verifier could not check the
+      protocol's definition of "other".
+    response: No change.
+  - claim: fig5b-pr-gaussian-yp-lorentzian
+    agrees: true
+    outcome: blocked
+    reason: As fig5-raised-electrodes-weaker-center.
+    response: No change.
+  - claim: fig5-yp-spot-slightly-larger-than-pr
+    agrees: true
+    outcome: blocked
+    reason: As fig5-raised-electrodes-weaker-center.
+    response: No change.
+  - claim: fig5c-irreversible-center
+    agrees: false
+    outcome: blocked
+    reason: The criterion asks only that Hoechst inside the footprint be "above background" and does
+      not require post-exposure images. Hoechst is in every footprint at 20 to 60 times the camera
+      offset and 0.74 to 0.99 of the monolayer, and the YP part holds. The only block the claims file
+      supports is the undefined reference level, which makes this methods_underspecified; the
+      alternative is reproduced, with the camera offset as an assumed reference. The author's point
+      that the paper's Hoechst check was made after exposure is a fair reading of the paper and
+      suggests the criterion omits the timing; it should be reported that way, not decided by adding a
+      requirement to the test.
+    response: The verified outcome, blocked, is kept, and a change to reproduced is proposed for round
+      3, with the camera offset as the Hoechst background, an assumption (any reference below 0.74 of
+      the monolayer gives the same result); a defensible choice exists, so methods_underspecified is
+      not proposed. The timing is added to questions/001276.yaml as a question for a reader, and the
+      Hoechst reference to the methods_unavailable finding.
+  - claim: fig6b-900ns-peak-not-significant
+    agrees: true
+    outcome: blocked
+    reason: As fig5-raised-electrodes-weaker-center.
+    response: No change.
+  - claim: fig6c-normalized-decline-similar
+    agrees: true
+    outcome: blocked
+    reason: As fig5-raised-electrodes-weaker-center.
+    response: No change.
+  - claim: fig6d-fwhm-sharper-longer-pulses
+    agrees: true
+    outcome: blocked
+    reason: As fig5-raised-electrodes-weaker-center.
+    response: No change.
+  - claim: fig2-heating-below-44c
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig1e-field-simulation
+    agrees: true
+    outcome: blocked
     response: No change.

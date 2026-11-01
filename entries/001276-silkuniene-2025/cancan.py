@@ -154,6 +154,31 @@ def load_metadata(assets: list[dict], workers: int = 16) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values(["subject", "channel", "path"]).reset_index(drop=True)
 
 
+# Other dandisets of the lab that cite the paper, at their most recent published versions.
+OTHER_DANDISETS = {"001047": "0.250701.1609", "001277": "0.250701.1610", "001284": "0.250701.1610"}
+RATE_RE = re.compile(r"(\d+(?:\.\d+)?)\s*(kHz|MHz|Hz)\b")
+
+
+def packet_rates(dandiset_id: str, version: str, workers: int = 16) -> dict:
+    """Frequencies named in a dandiset's metadata and in the archive metadata of each of its assets.
+
+    Reads the archive's metadata only, not the files. Returns the number of assets and, for each
+    frequency (normalized, e.g. "0.2MHz"), the number of assets whose metadata names it.
+    """
+    client = DandiAPIClient()
+    ds = client.get_dandiset(dandiset_id, version)
+    assets = list(ds.get_assets())
+    with ThreadPoolExecutor(workers) as ex:
+        texts = list(ex.map(lambda a: str(a.get_raw_metadata()), assets))
+    per_asset = {}
+    for t in texts:
+        for f in {"".join(m) for m in RATE_RE.findall(t)}:
+            per_asset[f] = per_asset.get(f, 0) + 1
+    in_dandiset = sorted({"".join(m) for m in RATE_RE.findall(str(ds.get_raw_metadata()))})
+    return {"dandiset": dandiset_id, "version": version, "assets": len(assets),
+            "rates_in_assets": per_asset, "rates_in_dandiset_metadata": in_dandiset}
+
+
 # ---------------------------------------------------------------- streaming the images
 
 _session = requests.Session()
