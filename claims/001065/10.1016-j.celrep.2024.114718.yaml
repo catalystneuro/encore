@@ -98,6 +98,23 @@ dataset:
   id: "001065"
 paper: doi:10.1016/j.celrep.2024.114718
 claims:
+# --- Link (added by the author of attempt 001065-dembrow-2024-01, protocol Author step 1.4) --
+- id: link-cells
+  kind: link
+  statement: The dandiset's files are the cells of the paper's per-cell tables, which supply the
+    area, preparation and subclass labels, and the features computed here from the recordings
+    agree with the values in those tables.
+  source: The paper's code, Zenodo record 13749343 (L5_physiology_121223.csv,
+    lockdown_physiology_072623.csv, MCx.pkl, TCx.pkl)
+  data: with_labels
+  criterion: Records are matched by the file's electrode cell_id against the tables' cell_name.
+    The link holds (reproduced) when every file matches a table row, the file's subject and
+    species agree with the table's Donor and Species for at least 99% of matched cells, and the
+    median over the 39 features computed here of the Spearman correlation with the table's value
+    is at least 0.9; it holds in part (partially reproduced) when every file matches but either
+    agreement is lower, and fails when files cannot be matched. The fraction of table rows
+    absent from the dataset is reported, and for the cells of MCx.pkl and TCx.pkl the spike
+    counts of the 200 pA series are compared with the pickles'.
 # --- Cohort -------------------------------------------------------------------------------
 - id: cohort-animals
   statement: Tissue came from 58 macaques, 23 male and 35 female, 48 Macaca nemestrina and 10
@@ -196,6 +213,8 @@ claims:
     neurons ( Figure 3A ) and had little overlap with non-L5 ET neurons. This separation did not
     depend upon slice preparation type
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     The embedding as in STAR Methods, Physiology UMAP and classification, and
     UMAPprojections_020724.ipynb: the 40 features of the code's list; cells with more than 75%
@@ -241,6 +260,8 @@ claims:
     tolerance: 9.38
     unit: percent
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     Training cells are QC-passing Patch-seq samples and CS neurons (labelled L5 ET); subclasses
     with 5 or fewer cells are dropped (classifier_features_070523.ipynb), leaving L5 ET, L5 IT,
@@ -263,6 +284,7 @@ claims:
     (sPC) of physiology features
   data: with_labels
   depends_on:
+  - link-cells
   - fig3e-classifier-accuracy
   criterion: Sparse PCA with 8 components, alpha 7, random_state 0 on the preprocessed features
     (classifier_features_070523.ipynb), then the procedure of fig3e-classifier-accuracy on
@@ -277,6 +299,8 @@ claims:
   quote: While preparation type and cortical area contributed to some variance, effect sizes, on
     average, were largest for neuronal projection type
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     Cells with a subclass (transcriptomic, CS, or predicted by the classifier trained on all
     labelled cells; predicted_subclass in L5_physiology_121223.csv), projection class L5 ET
@@ -295,6 +319,7 @@ claims:
     properties and HCN conductance (resonant frequency, input resistance, and 3dB cutoff).
   data: with_labels
   depends_on:
+  - link-cells
   - fig3h-projection-largest-effect
   criterion: From the ANOVAs of fig3h-projection-largest-effect, the features whose projection
     effect has BH-corrected p at most 0.05 (the code corrects across the 40 features for each
@@ -311,6 +336,7 @@ claims:
     non-L5 ET neurons regardless of other factors
   data: with_labels
   depends_on:
+  - link-cells
   - fig3h-projection-largest-effect
   criterion: Resonant frequency as defined in the opening comment, on the cells of Figure 4C (147
     L5 ET and 177 non-ET with the feature). Reproduced when the projection effect in the
@@ -326,6 +352,7 @@ claims:
     173) in both the MCx and TCx.
   data: with_labels
   depends_on:
+  - link-cells
   - fig3h-projection-largest-effect
   criterion: Maximum input resistance as defined in the opening comment, on 145 L5 ET and 173
     non-ET cells. Reproduced when the projection effect of the three-way ANOVA has
@@ -342,6 +369,7 @@ claims:
     preparations
   data: with_labels
   depends_on:
+  - link-cells
   - fig3h-projection-largest-effect
   criterion: Max dV/dt, min dV/dt and half-width of the first spike at rheobase of the 1 s steps,
     as defined in the opening comment; Figure 4G has 148 L5 ET and 176 non-ET cells. For each
@@ -357,6 +385,7 @@ claims:
     were strongly different between L5 ET and non-ET neurons in one area and not the other
   data: with_labels
   depends_on:
+  - link-cells
   - fig3h-projection-largest-effect
   criterion: A claim stated as small effect sizes, not as a test. From the three-way ANOVAs of
     fig3h, the projection by area interaction effect size of each feature. The paper gives no
@@ -372,6 +401,8 @@ claims:
     the factors revealed no significant effects of species on any of the 40 physiological
     features extracted for analysis.
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     A claim of absence on the paper's test, a four-way ANOVA per feature. The code for it was
     not deposited. Taken from the code's other ANOVAs: OLS with all interactions, type II sums
@@ -395,6 +426,8 @@ claims:
     corrected: FDR (Benjamini-Hochberg)
     n: TCx L5 ET neurons of two types (ET_1 n = 25, ET_2 n = 19, Figure S3H)
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     A claim of absence. TCx L5 ET neurons with a t-type from the MTG mapping
     (cluster_Corr_label_MTG in cell_list_L5.csv), the types with enough cells (Figure S3H names
@@ -617,6 +650,8 @@ claims:
   quote: This analysis revealed substantial cross-areal variation in subthreshold and
     suprathreshold properties
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     L5 ET neurons as in the code (predicted_subclass L5 ET, L5ET_121223.csv; Figure 6 has 77
     or 78 MCx and 70 TCx cells). For each of the 40 features, OLS on area, preparation and
@@ -637,6 +672,7 @@ claims:
     L5 ET neurons in the MCx compared to the TCx
   data: with_labels
   depends_on:
+  - link-cells
   - fig6a-area-variation
   criterion: From the two-way ANOVAs of fig6a, the area effects for resonant frequency (77 MCx, 70
     TCx in Figure 6B) and 3 dB cutoff. Reproduced when both have BH-corrected p < 0.05 with
@@ -652,6 +688,7 @@ claims:
     exhibited faster, more symmetrical ... action potentials compared to those in the TCx
   data: with_labels
   depends_on:
+  - link-cells
   - fig6a-area-variation
   criterion: >-
     The Figure 6D and 6E legend says the opposite for the fAHP and for symmetry ("TCx ... have
@@ -677,6 +714,7 @@ claims:
     n: 76 MCx and 68 TCx L5 ET neurons
   data: with_labels
   depends_on:
+  - link-cells
   - fig6a-area-variation
   criterion: The legend does not say which input resistance; the code's corrected area p is
     0.0033 for steady-state (SSRn) and 0.0081 for maximum input resistance (MaxRn), so SSRn
@@ -695,6 +733,7 @@ claims:
     n: 78 MCx and 70 TCx L5 ET neurons
   data: with_labels
   depends_on:
+  - link-cells
   - fig6a-area-variation
   criterion: Rheobase as the lowest 1 s step amplitude that evokes a spike (the code's
     threshold_current; its corrected area p is 0.049). Reproduced when the area effect has
@@ -713,6 +752,7 @@ claims:
     n: 78 MCx and 70 TCx L5 ET neurons
   data: with_labels
   depends_on:
+  - link-cells
   - fig6a-area-variation
   criterion: A claim of absence on the paper's test, the area effect of the two-way ANOVA with BH
     correction across features. Maximum gain as in the code, the largest step-to-step
@@ -729,6 +769,7 @@ claims:
     in MCx L5 ET neurons
   data: with_labels
   depends_on:
+  - link-cells
   - fig6a-area-variation
   criterion: >-
     The paper quantifies the bursts through the slopes of the maximum instantaneous rate
@@ -755,6 +796,8 @@ claims:
     value: 1.0
     tolerance: 0.1
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     Cells: the L5 ET neurons recorded with 1 s steps increasing by 200 pA up to 4 nA (STAR
     Methods), 42 MCx and 26 TCx (keys of MCx.pkl and TCx.pkl). Per cell the maximum over
@@ -774,6 +817,7 @@ claims:
     n: 42 MCx and 26 TCx L5 ET neurons
   data: with_labels
   depends_on:
+  - link-cells
   - figs6c-mcx-higher-max-rate
   criterion: A claim of absence on the paper's test. Per cell the maximum over all steps of the
     maximum instantaneous rate 1/ISI(min); Welch t-test (ExtendedFI.ipynb printed 243.8 Hz TCx
@@ -798,6 +842,7 @@ claims:
     tolerance: 1.4
   data: with_labels
   depends_on:
+  - link-cells
   - figs6c-mcx-higher-max-rate
   criterion: Block is "a negative slope in the average rate FI curves" (STAR Methods). The readings
     are (a) any decrease of spike count from one step to the next; (b) the spike count at the
@@ -826,6 +871,7 @@ claims:
     tolerance: 0.202
   data: with_labels
   depends_on:
+  - link-cells
   - figs6c-mcx-higher-max-rate
   criterion: >-
     Per cell, the step with the most spikes; at that step the ratio of the half-width of the
@@ -857,6 +903,7 @@ claims:
     tolerance: 0.169
   data: with_labels
   depends_on:
+  - link-cells
   - figs6c-mcx-higher-max-rate
   criterion: As fig6j-spike-width-ratio, for the ratio of max dV/dt of the last to the first
     spike (ExtendedFI.ipynb printed 0.221 TCx and 0.520 MCx, p 3.2e-10, d 1.69). The values
@@ -875,6 +922,8 @@ claims:
     p_relation: "<"
     n: MCx 273 observations from 64 cells, TCx 131 observations from 65 cells
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     Sweeps of the 10 s steps with at least 10 spikes; spikes in the first 100 ms excluded; CV
     = SD/mean of the ISIs (STAR Methods); each sweep is an observation. The second factor of
@@ -921,6 +970,8 @@ claims:
     value: 0.32
     tolerance: 0.032
   data: with_labels
+  depends_on:
+  - link-cells
   criterion: >-
     Method from STAR Methods (the R code was not deposited): sweeps of the 10 s steps with at
     least one spike and at most 200; interspike segments from the return to baseline after
@@ -966,6 +1017,7 @@ claims:
     tolerance: 0.004
   data: with_labels
   depends_on:
+  - link-cells
   - fig7-oscillation-frequency-vm
   criterion: Method as fig7-oscillation-frequency-vm, with the spline-fitted FFT peak strength.
     Reproduced when the MCx correlation is positive with p < 0.001 and the TCx correlation is
@@ -983,6 +1035,7 @@ claims:
     n: 55 neurons with and 64 without blockers
   data: with_labels
   depends_on:
+  - link-cells
   - fig7-oscillation-frequency-vm
   criterion: Blockers (DNQX with d-APV and gabazine or picrotoxin) per cell from the recording
     metadata. Oscillation frequency as in fig7-oscillation-frequency-vm. The legend bins by
@@ -1015,6 +1068,7 @@ claims:
     tolerance: 0.063
   data: with_labels
   depends_on:
+  - link-cells
   - fig7-oscillation-frequency-vm
   criterion: Modal firing rate is the most common value of 1/ISI over the 10 s step (STAR
     Methods); the binning of instantaneous rates to find a mode is not given (readings, both
@@ -1039,6 +1093,7 @@ claims:
     unit: Hz
   data: with_labels
   depends_on:
+  - link-cells
   - fig7l-firing-tracks-oscillation
   criterion: Over the 10 s sweeps that contain at least one ISI longer than 650 ms, the largest
     modal firing rate per area, modal rate as in fig7l. The TCx value is a bound in the paper
