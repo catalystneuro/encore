@@ -16,8 +16,10 @@ subclass labels come from the per-cell tables of the paper's code on Zenodo, mat
 | CS neurons lie only among L5 ET neurons in the UMAP | Not reproduced |
 | The largest projection effects are subthreshold features; interactions with area are small | Not reproduced |
 | No effect of species | Reproduced |
+| No physiological difference between the two TCx L5 ET types | Reproduced |
 | MCx and TCx L5 ET neurons differ (resonance, fAHP, symmetry, input resistance, instantaneous FI slopes) | Reproduced |
 | MCx L5 ET neurons need more current to fire | Not reproduced |
+| The average-rate FI slope (maximum gain) does not differ between areas | Reproduced |
 | Firing to 4 nA: higher MCx spike counts, equal instantaneous rates, upstroke ratio | Reproduced |
 | Depolarization block in TCx; spike width ratio | Partially reproduced; not reproduced |
 | Irregular firing and subthreshold oscillations (Figure 7, six claims) | Four partially reproduced, one not reproduced, one reproduced |

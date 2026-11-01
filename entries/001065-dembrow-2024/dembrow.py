@@ -156,29 +156,34 @@ def drug_mentions(asset_id, words=("dnqx", "apv", "gabazine", "picrotoxin", "dru
     """Where a file mentions a drug (added after verification round 1, to see whether the files
     record when blockers were applied): the user comment, the comments of each sweep and the
     textual values of the MIES lab notebook, searched for the words given (case ignored).
-    Returns the number of sweeps whose comments mention one, and the words found anywhere."""
+    Returns the number of sweeps whose comments mention one, the words found anywhere, and for
+    each hit where it is and up to 60 characters of text on either side (added after
+    verification round 2)."""
     f = h5py.File(remfile.File(s3_url(asset_id)), "r")
-    found, nsw = set(), 0
-    def scan(text):
+    found, nsw, ctx = set(), 0, []
+    def scan(text, where):
         t = str(text).lower()
         hit = {w for w in words if w in t}
         found.update(hit)
+        for w in sorted(hit):
+            i = t.index(w)
+            ctx.append((where, str(text)[max(0, i - 60):i + len(w) + 60].replace("\n", " ")))
         return bool(hit)
     for dev in f.get("general/user_comment", {}):
         g = f["general/user_comment"][dev]
         for k in g:
-            scan(g[k][()])
+            scan(g[k][()], f"user_comment/{dev}/{k}")
     for k in f["acquisition"]:
-        if scan(f["acquisition"][k].attrs.get("comments", "")):
+        if scan(f["acquisition"][k].attrs.get("comments", ""), f"acquisition/{k}"):
             nsw += 1
     for dev in f.get("general/labnotebook", {}):
         tv = f["general/labnotebook"][dev].get("textualValues")
         if tv is not None:
             vals = tv[()].astype(str).ravel()
             for v in set(vals):
-                scan(v)
+                scan(v, f"labnotebook/{dev}/textualValues")
     f.close()
-    return nsw, sorted(found)
+    return nsw, sorted(found), ctx
 
 
 def runs(sweeps, p):
