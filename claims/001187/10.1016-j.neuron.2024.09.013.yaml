@@ -81,10 +81,17 @@
 # O, outlier neurons. Methods (Statistics), applied before each test: neurons with no spikes in a
 #   tested condition (the baseline included) are removed, and so are neurons whose value differs by
 #   more than 3 SD from the mean across all neurons and tested conditions (O-M: per neuron and
-#   condition value, removed when outside mean +- 3 SD of all such values). For the GLMs the code
-#   instead removes neurons whose mean normalized maintenance rate (over all their rows) exceeds 3 SD
-#   of the neuron means, without centring and on the upper side only (O-C). The Methods rule is the
-#   main reading and the code's a variant shown beside it, as protocol step 2 asks.
+#   condition value, removed when outside mean +- 3 SD of all such values). O-M is the rule for the
+#   permutation t-tests. The same sentence covers the GLMs (it follows "or mixed-effects GLMs
+#   (fitglme.m in MATLAB)"), but a GLM with a continuous term has no condition values to compare.
+#   The code, the paper's implementation of the Fig. 3a GLM, settles what the value is: each neuron's
+#   mean normalized rate over all its rows (NWB_computeGLM.m). It then removes neurons whose mean
+#   exceeds 3 SD of the neuron means, without centring and on the upper side only (O-C), where the
+#   Methods say "±3 SD from the mean". For the GLMs of Figures 2 and 3, which use the category
+#   neurons' maintenance or encoding rates as the code does, the main reading is O-G: the neuron
+#   means of the code, removed when outside the mean +- 3 SD of the neuron means; O-C is a variant
+#   shown beside it, as protocol step 2 asks, and O-M is not a reading. Neurons with a zero baseline
+#   are removed under all three (the "no spikes" part of the rule). The GLMs of Figure 4 keep O-M.
 # G, mixed-effects GLM. fitglme with a normal distribution, identity link and Laplace fit (maximum
 #   likelihood), random intercepts for patient and for neuron nested in patient, the formula
 #   FR ~ fixed effects + (1 | patientID) + (1 | patientID:neuronID) (Results, Category neurons
@@ -412,7 +419,7 @@ claims:
     rating; confidence recoded as the Methods say (forgotten sure 1, unsure 2, guessing 3; remembered
     guessing 1, unsure 2, sure 3; the code maps 4, 5, 6 to 1, 2, 3 and keeps 1, 2, 3, which is the
     same under L); FR ~ LTMacc * conf * area with the random effects of G, area with amygdala as
-    reference so that the interactions are hippocampus minus amygdala. Outliers O-M for the main
+    reference so that the interactions are hippocampus minus amygdala. Outliers O-G for the main
     result, O-C (the code) shown as a variant. Reproduced when the three interactions with area have
     p < 0.05 with the reported signs and betas within tolerance, and the main effects and the LTMacc
     by conf interaction have p >= 0.05; partially reproduced when the three interactions hold in sign
@@ -443,7 +450,7 @@ claims:
   - {quantity: confidence by LTM accuracy beta, value: -30.80, tolerance: 3.08}
   criterion: The table of fig3a-area-interactions restricted to hippocampal category neurons, FR ~
     LTMacc * conf with the random effects of G (the Fig. 3a code with the area term dropped, as the
-    text says the analysis was "repeated ... in each area separately"). Outliers O-M, with O-C as a
+    text says the analysis was "repeated ... in each area separately"). Outliers O-G, with O-C as a
     variant; O applied over both areas together as in Fig. 3a (a) or within the hippocampus (b), the
     text not saying which. Reproduced when, under the readings, the three effects have p < 0.05 with
     the reported signs and betas within tolerance; partially reproduced when the three hold in sign
