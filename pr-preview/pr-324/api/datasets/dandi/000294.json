@@ -1,0 +1,670 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000294",
+  "label": "DANDI:000294"
+ },
+ "page": "datasets/dandi/000294/",
+ "generated": "2026-11-01T13:41:33+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 5
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 5,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 7
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000294-buccino-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000294",
+    "version": "0.260528.0854",
+    "doi": "10.48324/dandi.000294/0.260528.0854"
+   },
+   "key": "dandi:000294",
+   "label": "DANDI:000294",
+   "dataset_version": "0.260528.0854",
+   "paper": "10.1162/neco_a_01672",
+   "paper_title": null,
+   "date": "2026-10-29",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/40970564195"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000294-buccino-2024",
+   "entry_title": "Patch-clamp and HD-MEA recordings of two cultured neurons (Buccino et al. 2024)",
+   "description": "Tests the findings of Buccino et al. (2024) on dandiset 000294, which holds simultaneous patch-clamp and high-density microelectrode array recordings of two cultured rat cortical neurons stimulated with the eCode protocols. It checks the runs, the stimulus protocols, the holding potential, the extracellular spike amplitude and the recording rates, and, from the paper's code repository, the reconstructed morphologies, the ground-truth model's rheobase, AP initiation and template, and the feature counts. The model fits are too large to run here.",
+   "notebooks": [
+    {
+     "path": "reproduce_buccino_2024.ipynb",
+     "title": "Reproducing Buccino et al. (2024) from dandiset 000294",
+     "executed": "notebooks/000294-buccino-2024/reproduce_buccino_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "recordings-two-cells-runs",
+     "statement": "The experimental data are simultaneous patch-clamp and HD-MEA recordings of two cultured neurons, each stimulated with the eCode protocols repeated in four to six runs of about 200 s.",
+     "source": "Results 3.3, paragraph 1; Methods 5.2, last paragraph, and 5.6.5",
+     "quote": "We acquired paired patch-clamp and extracellular signals from two cells of cortical cultures in embryonic rats ... The eCode protocols were repeated during four to six runs (each run lasted approximately 200 s)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "Two NWB files, one neuron each; cell 1 (sub-3148, the code's cell1_211006_3148) has 5 runs and cell 2 (sub-3436, cell1_211011_3436) 4. The median run lasts 195.8 s from the first to the last patch sample (195.7 to 195.8 s, the same span as each run's MEA series). The runs are those the code used; cell 2's runs 3 to 6 are stored as run1 to run4, and the descriptions of its MEA series keep the original numbers.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ecode-protocol-structure",
+     "statement": "Each run applies the eCode protocols with the sweep numbers, step durations and amplitudes (in percent of the estimated rheobase) that the Methods list.",
+     "source": "Methods 5.2",
+     "quote": "IDthresh: The purpose of this protocol was to finely screen the current levels to correctly reestimate Irheo before processing. It consisted of 21 sweeps with a 270 ms square pulse of increasing amplitudes from 50% to 130% with step increments of 4%",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "In all 9 runs, all eight protocols are present with 21, 2, 11, 11, 6, 4, 4 and 1 sweeps (IDthres, firepattern, IV, IDrest, APWaveform, HyperDepol, sAHP, PosCheops). Step durations measured on the timestamps are within 0.1 ms of 270, 3600, 3000, 1350, 50, 450 and 270, and 250, 225 and 450 ms; the PosCheops ramps rise in 3925 to 3975, 1965 to 1988 and 1307 to 1322 ms measured from 5 pA above holding. Against the IDthres scale (120.4 to 120.8 pA for cell 1, 301.2 to 301.7 pA for cell 2) every amplitude is within 1.2 percentage points of its stated percentage. IV has 11 steps from -140 to 60% (reading a); reading (b), 9 steps to 20%, does not match the sweep count.",
+     "deviations": [
+      "The 0% IV step of reading (a) has no relative tolerance; 10% of the IV increment (2% of the scale) was used. Its measured level is within 2% of holding in every run.",
+      "APWaveform's sweep count (6) and PosCheops' (1) are not stated in the Methods; 6 is the number of amplitudes from 200 to 350% by 30%."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "holding-potential",
+     "statement": "The holding current was set so that the read-out membrane potential was about -70 mV, which is about -84 mV after liquid junction potential correction.",
+     "source": "Methods 5.6.5, paragraph 1; Methods 5.2",
+     "quote": "the holding current was manually adjusted to obtain a resting membrane potential of around -70 mV (note that with LJP correction, this corresponds to -84 mV)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "The median pre-stimulus membrane potential is -69.54 mV for cell 1 (given as measured) and -69.12 mV for cell 2, over 300 and 240 sweeps, within -70 +/- 7 mV (reading a). Run medians range from -71.0 to -66.6 mV. Neither cell is within -84 +/- 8.4 mV (reading b); the files do not say whether the voltages are corrected for the junction potential, and reading (b) failing does not show that they are not. The window before the code's ton gives the same values to within 0.1 mV. Whether the criterion's window should end at the code's ton or at the onset in the files is asked of a reader (questions/000294.yaml).",
+     "deviations": [
+      "The pre-stimulus window ends at the first change of the injected current found in each sweep (350 ms for most protocols), which in these files is 50 ms before the code's ton (400 ms for IDrest); the window ending at the code's ton is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "extracellular-spikes-above-50uv",
+     "statement": "Only cells whose extracellular spikes were at least 50 uV were kept, so both recorded cells show extracellular spikes of 50 uV or more.",
+     "source": "Methods 5.6.5, paragraph 1",
+     "quote": "We discarded cells with extracellular spikes lower than 50 \u03bcV",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "With the template method on the run with the most channels after denoising (cell 1 run 4, 561 channels; cell 2 run 1, 545), the largest channel reaches a negative peak of 217.0 uV (peak-to-peak 274.0 uV) for cell 1 and 159.2 uV (192.2 uV) for cell 2; the smaller, cell 2's, is given as measured. Every run of both cells is above 50 uV under both readings (negative peaks 159.2 to 218.0 uV). 125 to 217 patch spikes per run outside PosCheops, 92 to 98% of waveforms kept by the 2 SD rule. The code's mean template is higher by up to 13.6 uV (negative peak) and 13.7 uV (peak-to-peak). The largest channel of cell 1 is the channel the export notebook plots (ch885); for cell 2 that notebook plots ch384, adjacent to the largest channel found here (156.8 uV). The patch and MEA clocks stay aligned within sweeps; all 1616 spikes have their MEA trough 0.15 to 0.70 ms before the patch peak, none at the +/- 2 ms edge of the search, with medians of -0.35 to -0.25 ms in every window of the sweep up to 4.5 s, and per-run slopes of -0.003 to 0.023 ms per s of sweep, against the 20.4 ms per s a clock mismatch of 20 against 20.41 kHz would give.",
+     "deviations": [
+      "The band-pass filter is applied forward and backward (sosfiltfilt), the default of the code's filtering library; the Methods give only the order and cut-offs. A standard choice that cannot move amplitudes of 159 uV and more below 50 uV."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "mea-electrodes-and-rates",
+     "statement": "The HD-MEA recorded more than 500 electrodes near the pipette simultaneously, out of at most 1024, at 20 kHz, and the patch signal was digitized at 20 kHz.",
+     "source": "Results 3.1, paragraph 2; Methods 5.6.2 and 5.6.5",
+     "quote": "The patch-clamp and the HD-MEA systems were synchronized so that we could simultaneously acquire the patch-clamp readout and the extracellular signals from more 500 electrodes in proximity of the patch pipette",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "The MEA recorded 678 (cell 1) and 675 (cell 2) electrodes, above 500 and at most 1024, at 20000 Hz in every run. The patch timestamps are at 20000 Hz only for IDthres; firepattern, IV, IDrest, HyperDepol, sAHP and PosCheops are at 20408.2 Hz (49 us intervals) and APWaveform at 125000 Hz (8 us), neither 20 nor 200 kHz. The intervals are exact within each sweep and the step durations measured on them are the nominal ones, so they are the sampling of the deposited data. The electrode and MEA parts hold; the patch rate, with tolerance 0, does not. The criterion has no partial clause; partially_reproduced is used because the claim holds in part (electrodes and MEA rate) and fails in part (patch rate). Whether APWaveform at 125 kHz fits the paper's \"typically 200 kHz\" is asked of a reader (questions/000294.yaml); it cannot change the outcome, since six protocols at 20.41 kHz already fail.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "culture-age",
+     "statement": "The cultured cells were recorded between days in vitro 18 and 24.",
+     "source": "Methods 5.6.3, paragraph 2; Results 3.3, paragraphs 1 and 2",
+     "quote": "All experiments were conducted between days in vitro (DIVs) 18 and 24",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The NWB subject has only subject_id, species and description (\"Rat cortical embryonic cell culture\"); neither the files nor the dandiset's metadata give an age, a date of birth or plating, or days in vitro. The session dates (2021-10-06 and 2021-10-11) are 5 days apart, which fits either reading but does not give the age.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-ais-from-dendrite",
+     "statement": "In both cells the axon initial segment does not leave the soma but a dendrite (an axon-bearing dendrite).",
+     "source": "Results 3.3, paragraph 2; Figure 6",
+     "quote": "Moreover, for both cells, the AIS did not originate directly from the soma but from one of the dendrites, which is termed an axon-bearing dendrite (ABD",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "In the repository's morphology_corrected.swc of both cells, the single AIS path (type 4, 184 and 192 points) starts from a dendrite point (type 3), 42.9 and 39.1 um from the soma point, and the axon (type 2) starts from the AIS. The NeuroMorpho.org copies were not used.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "NeuroMorpho.org Buccino_Hierlemann_Cell1 and Buccino_Hierlemann_Cell2; GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/<cell>/morphology_corrected.swc",
+     "proposed": null
+    },
+    {
+     "claim": "gt-rheobase",
+     "statement": "The ground-truth model's rheobase, estimated with a 270 ms step, is 150 pA.",
+     "source": "Results 3.2, paragraph 4",
+     "quote": "All current amplitudes were computed with respect to the neuron's rheobase current (estimated using a 270 ms step). For our groundtruth model, the rheobase current was 150 pA",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "With the ground-truth notebook's series (from 0.15 nA by 0.005 nA), the first step, 150 pA, fires one spike in the 270 ms step. Because that series starts at the stated value, a series from 0.10 nA was also run; the model first fires at 140 pA, also within 150 +/- 15 pA. The code's own compute_rheobase_for_model on the LFPy cell model gives the same 150 and 140 pA. The repository's IDrest 300% step of 0.45 nA implies the same 150 pA scale.",
+     "deviations": [
+      "Simulated with BluePyOpt 1.14.26 (NEURON 9) on the repository's model definition, in place of BluePyOpt 1.13.88; the main series uses its NEURON simulator, and the code's compute_rheobase_for_model on its LFPy simulator, as the notebook uses, is shown and agrees."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais (model) and notebooks/ground-truth/1-generate-ecode-protocols-and-features-hay_ais.ipynb",
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-ap-initiates-distal-ais",
+     "statement": "In the ground-truth model the action potential starts in the distal AIS and travels back toward the soma.",
+     "source": "Figure 3B; Results 3.2, paragraph 2",
+     "quote": "The AP is initiated at the distal end of the AIS and travels back toward the soma",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "Run as 7-AIS-test.ipynb runs it (the repository's IDrest_300 protocol with the AIS recordings on the LFPy cell model, get_peak_cutout over 12 spikes, first and last left out). The code's cut-outs have 0.05 ms samples. At the sample the distal and middle AIS tie under both readings (-0.35 ms at -20 mV, -0.25 ms at the peak, from the somatic peak sample), and the soma follows 0.15 and 0.25 ms later. Between samples (linear crossing, parabolic peak) the distal AIS leads the middle by 0.0042 and 0.0202 ms. A fixed-step run (dt 0.005 ms) of the whole protocol times each of the 12 spikes; the distal AIS leads the middle by 0.0051 to 0.0070 ms at the crossing and 0.020 to 0.025 ms at the peak, and the middle leads the soma by 0.162 to 0.168 and 0.23 to 0.24 ms, in 12 of 12 spikes. The order distal, middle, soma holds under both readings at every resolution that separates the two AIS points.",
+     "deviations": [
+      "Assumed. The paper does not say how the initiation site is read from Figure 3B (Results 3.2, \"The AP is initiated at the distal end of the AIS and travels back toward the soma\"), nor at what resolution. The times are read between the 0.05 ms samples of the code's cut-outs and checked on a fixed-step run at 0.005 ms, because a 0.05 ms grid cannot order two points 15 um apart that the simulation separates by 5 to 7 us; read at the sample, the two AIS points tie under both readings and the claim's strict order would not be met.",
+      "Simulated with BluePyOpt 1.14.26 in place of 1.13.88; the code's protocol, recordings and get_peak_cutout run unchanged on its LFPy simulator. The fixed-step check uses its NEURON simulator (dt 0.005 ms, a standard choice)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais and notebooks/ground-truth/7-AIS-test.ipynb",
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-largest-channel-at-ais",
+     "statement": "On the simulated 80-electrode MEA, the largest extracellular signal is on the electrode closest to the AIS.",
+     "source": "Figure 3A; Results 3.2, paragraph 3",
+     "quote": "The red trace depicts the signal with the largest amplitude, which appears on the electrode closest to the AIS",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "The template recomputed with the code (IDrest 300%, calculate_eap with get_extra_kwargs, the code's planar probe, LFPy cell model) matches the repository's template.npy with correlation 0.99992 and an RMS difference of 1.3% of the template; with the probe moved by 2 or 5 um the difference rises to 6.6 to 16.1%, so the file was simulated in the frame of the LFPyCellModel. In that frame the AIS segment midpoints run from (11.8, -1.0) to (13.8, -28.3) um and its midpoint is (12.6, -13.7) um. The nearest electrode is channel 43 at (25, -25) um, 16.8 um away against 39.3 um for the next, and it is the nearest electrode to every AIS segment. Channel 43 has the largest peak-to-peak and the largest negative peak of the repository's template. The second-largest peak-to-peak, 0.939 of the largest, is channel 24 at (-25, 25) um, 54.0 um from the AIS midpoint; moving the probe by 2 um in x makes channel 24 the largest, so the largest channel depends on the placement, which the match to the file fixes.",
+     "deviations": [
+      "The AIS is placed with the segment midpoints of the instantiated LFPyCellModel (BluePyOpt 1.14.26, LFPy 2.3.7), where LFPy puts the soma midpoint at the origin. In the first round it was placed from NEURON's 3D points relative to the mean soma point, which puts the AIS midpoint at (1.7, -23.4) um, about 14 um off; that placement also gives channel 43 as nearest (23.3 um, next 26.8 um) and is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais/fitting",
+     "proposed": null
+    },
+    {
+     "claim": "table1-feature-counts",
+     "statement": "For the ground-truth model, the soma strategy uses 76 intracellular features; all adds 11 extracellular features (87), sections adds 33 (109), and single adds 77 (153).",
+     "source": "Table 1; Results 3.2, paragraph 6",
+     "quote": "A total of 76 intracellular features were extracted from these selected protocols ... the all strategy ... adds 11 extracellular features (total = 87). The sections strategy added 33 (three sections times 11 extracellular features), and the single strategy added 77 features",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_buccino_2024.ipynb",
+     "notes": "The code's create_evaluator for hay_ais has 76 intracellular objectives for every strategy and 0, 11, 33 and 77 extracellular ones, totals 76, 87, 109 and 153; the feature files features_BPO_<strategy>.json give the same counts. The Methods' 79 is the count of the six training protocols' features in features.json before the code drops the three sag features of IV -20%.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais/fitting/efeatures",
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-strategy-balance",
+     "statement": "On the ground-truth model, soma, all and sections give good intracellular fitness and single worse; single gives the best extracellular fitness and soma the worst.",
+     "source": "Figure 4A; Results 3.2, paragraph 7",
+     "quote": "While the soma, all, and sections strategies appeared to yield low scores (i.e., better fitness) for intracellular features, the single strategy produced solutions with worse intracellular fitness. Conversely, the single strategy yielded the best performance with respect to extracellular features, while the worst performance was achieved by using the soma strategy",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs 10 optimizations per strategy of 600 generations of 20 offspring (480,000 evaluations for the four strategies). In the run recorded, one evaluation of the six training protocols on the released ground-truth model takes 12.2 s intracellularly (NEURON simulator) and 20.5 s with the extracellular signals (the code's evaluator for the all strategy on the LFPy simulator), so at least 2457 CPU hours, 614 hours on the 4 cores of the runner, against a 30-minute notebook limit and a 5-hour run. The timing varies with the runner's load; the run reviewed in round 2 printed 8.0 and 14.3 s and 1699 CPU hours. No optimization results are in the repository. The code's evaluators do build and run in the locked environment (table1-feature-counts), so time is the only obstacle.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and notebooks/ground-truth",
+     "proposed": null
+    },
+    {
+     "claim": "gt-intracellular-scores",
+     "statement": "Over the ten seeds, the ground-truth fits reach intracellular scores of 62.8 +/- 13.6 for soma and 59.3 +/- 17.0 for all.",
+     "source": "Results 3.3, paragraph 3",
+     "quote": "(intracellular score: GT fitting: 62.8 \u00b1 13.6 for soma and 59.3 \u00b1 17.0 for all",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the ground-truth optimizations; see fig4a-strategy-balance for the estimate.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and notebooks/ground-truth",
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-hyperdepol-only-single",
+     "statement": "In validation, only the single strategy reproduces that the ground-truth model fires no spike in the depolarizing phase of HyperDepol -160% and one at HyperDepol -40%; soma, all and sections fire at -160%.",
+     "source": "Figure 4C; Results 3.2, paragraph 8",
+     "quote": "the soma, all, and sections strategies failed to reproduce the absence of spikes observed in the depolarization phase (second row: HyperDepol (\u2212160%). Only the single ... strategy correctly did not generate a spike for HyperDepol (\u2212160%) and did generate one for HyperDepol (\u221240%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The ground-truth part is computed. In the validation run of the code's evaluator the ground truth fires no spike in the 700 to 970 ms depolarizing phase of HyperDepol -160% (and -120%) and one at -40% (and -80%), as the criterion expects of it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and notebooks/ground-truth",
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-intra-no-difference",
+     "statement": "On validation protocols (86 intracellular features), the best solutions of the four strategies do not differ in intracellular feature scores.",
+     "source": "Figure 4B, left; Results 3.2, paragraph 8",
+     "quote": "No significant differences were ... detected across strategies (post hoc Mann-Whitney tests with Holm p-value correction)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The validation evaluator of 4-optimization-performance.ipynb has 110 objectives and 86 distinct feature names, the 86 features the claim states.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and notebooks/ground-truth",
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-extra-better-than-soma",
+     "statement": "On extracellular features computed on all 80 electrodes (796 features), all three extracellular strategies score significantly better than the soma strategy.",
+     "source": "Figure 4B, right; Results 3.2, paragraph 8",
+     "quote": "All strategies making use of extracellular data significantly outperformed the soma strategy (post hoc Mann-Whitney tests with Holm p-value correction: soma VS all - p < 10\u22125, soma VS sections - p < 10\u22125, soma VS single - p < 10\u22125",
+     "statistics": [
+      {
+       "about": "soma against all",
+       "test": "post hoc Mann-Whitney test",
+       "p": 1e-05,
+       "p_relation": "<",
+       "corrected": "Holm",
+       "n": "796 extracellular features per strategy"
+      },
+      {
+       "about": "soma against sections",
+       "test": "post hoc Mann-Whitney test",
+       "p": 1e-05,
+       "p_relation": "<",
+       "corrected": "Holm",
+       "n": "796 extracellular features per strategy"
+      },
+      {
+       "about": "soma against single",
+       "test": "post hoc Mann-Whitney test",
+       "p": 1e-05,
+       "p_relation": "<",
+       "corrected": "Holm",
+       "n": "796 extracellular features per strategy"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The extracellular features of the ground truth's firepattern 120% template, computed as 4-optimization-performance.ipynb does, are 11 kinds on 80 electrodes, 880, of which 800 are finite (recovery_slope is not finite on any electrode); the claim states 796, and 800 is within its tolerance of 80.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and notebooks/ground-truth",
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-templates-better-than-soma",
+     "statement": "The extracellular strategies fit the ground-truth template better on almost all electrodes, while the soma solution fails to capture the extracellular signals on many channels.",
+     "source": "Figure 4D; Results 3.2, paragraph 8",
+     "quote": "It is evident at first glance that the three extracellular strategies achieve a better fit for almost all electrodes, while the solution from the soma strategy ... failed to capture the complex dynamics of extracellular signals in many recording channels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and notebooks/ground-truth",
+     "proposed": null
+    },
+    {
+     "claim": "fig5-ap-distribution",
+     "statement": "Across the neuron, the all strategy gives lower AP waveform errors than the soma strategy at every tested location, and all extracellular strategies beat soma at every dendritic location.",
+     "source": "Figure 5; Results 3.2, paragraph 9",
+     "quote": "For all tested locations, the all strategy produces lower errors than the strategy. For all dendritic locations (both apical and basal), all extracellular strategies (all, single, sections) outperform the soma strategy",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais and notebooks/ground-truth/5-AP-distribution.ipynb",
+     "proposed": null
+    },
+    {
+     "claim": "fig78a-soma-intra-all-extra",
+     "statement": "For both experimental cells, the soma strategy gives better intracellular scores and the all strategy better extracellular scores.",
+     "source": "Figures 7A and 8A; Results 3.3, paragraph 3",
+     "quote": "For both cell models, the application of the soma strategy yielded better intracellular scores, while the use of the all strategy resulted in better extracellular fitting",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs 10 optimizations of 600 generations of 20 offspring for soma and all on each cell, 480,000 evaluations; at the ground-truth model's cost in the run recorded (12.2 s per intracellular evaluation, 20.5 s with the extracellular signals), at least 2182 CPU hours, 546 hours on the 4 cores of the runner (1487 CPU hours in the run reviewed in round 2). The dataset holds what the fits need from the recordings (the patch sweeps of every protocol and the MEA data from which templates of 159 to 218 uV are computed here), and the linked runs are those the code used (recordings-two-cells-runs).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "experimental-intracellular-scores",
+     "statement": "Intracellular scores are 123.9 +/- 11.2 (soma) and 149.2 +/- 47.2 (all, one non-converging seed left out) for cell 1, and 152.8 +/- 9.22 (soma) and 177.6 +/- 20.4 (all) for cell 2, almost twice those of the ground-truth fits.",
+     "source": "Results 3.3, paragraph 3",
+     "quote": "cell 1 fitting: 123.9 \u00b1 11.2 for soma and 149.2 \u00b1 47.2 (excluding one seed that did not converge) for all; cell 2 fitting: 152.8 \u00b1 9.22 for soma and 177.6 \u00b1 20.4 for all",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the experimental optimizations; see fig78a-soma-intra-all-extra.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig78b-validation-spiking",
+     "statement": "The experimental cell models of both strategies reproduce the main features of the spiking patterns of the validation protocols, except the soma model's PosCheops 300% response in cell 2, so including extracellular features does not keep the optimization from finding acceptable models.",
+     "source": "Figures 7B and 8B; Results 3.3, paragraphs 3 and 6",
+     "quote": "the models fitted on the experimental data could reproduce the main features of the intracellular spiking patterns of the validation protocols (panels B, with the exception of the PosCheops (300%) response for the soma strategy in cell 2",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations. The reference of reading (a) is computed. Over runs, the recorded spike counts per sweep are, for cell 1 and cell 2, firepattern 12 to 15 and 0 to 1 (120%), 33 to 37 and 14 to 30 (200%); HyperDepol 0 in every sweep and run; sAHP 1 and 0 to 2, 2 to 3 and 3 to 5, 3 to 4 and 7 to 8, 4 and 8 to 10 (150 to 300%); PosCheops 76 to 90 and 52 to 80.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig78c-cell2-worse-extracellular",
+     "statement": "The simulated templates are qualitatively similar to the recorded ones, with mismatches mainly in cell 2, whose fits have higher extracellular scores than cell 1.",
+     "source": "Figures 7C and 8C, and 7A and 8A right; Results 3.3, paragraph 4",
+     "quote": "The worse fit of cell 2 with respect to cell 1 is also ... reflected by the overall higher extracellular scores",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-cell2-soma-underestimated",
+     "statement": "In the cell 2 all model, the template mismatch is explained by too small a somatic and too large an AIS contribution; the recorded positive upstroke near the basal dendrite coincides with the somatic negative current peak, and the initial negative phase with the AIS peak.",
+     "source": "Figure 10 legend; Results 3.3, paragraph 5",
+     "quote": "The upstroke of the experimental EAP close to the basal dendrite ... seems to coincide with the somatic negative peak ... The initial negative phase instead is time-locked to the AIS negative peak",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset's metadata name the paper by its title but link it to doi:10.1162/neco_a_01676, which Crossref gives as \"Energy Complexity of Convolutional Neural Networks\". The paper is doi:10.1162/neco_a_01672.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The CurrentClampSeries are stated in volts with conversion 1 but hold millivolts (-100 to +46), and the CurrentClampStimulusSeries are stated in amperes with conversion 1 but hold picoamperes (holding levels of 12 and -37, steps up to about 1000).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The patch timestamps are at 20.41 kHz (49 us) for every protocol except IDthres (20 kHz) and APWaveform (125 kHz, 8 us). The paper states digitization at 20 kHz, and APWaveform at high rates, typically 200 kHz. The intervals are regular and agree with the nominal step durations.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The icephys sequential recordings table leaves out the first sweep of every protocol after IDthres in each run and every PosCheops sweep (35 of 300 recordings for cell 1, 28 of 240 for cell 2), so the grouping tables do not describe the protocols. The protocol_name and run columns of the intracellular recordings table are complete.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No culture age, plating date or days in vitro is given in the files or the dandiset's metadata; the subject has only an id, a species and a description.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrodes table's x, y and z are empty (NaN), location is \"unknown\" and impedance -1; electrode positions are only in the custom columns rel_x and rel_y, without a description of their frame.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Cell 2's file holds runs 3 to 6 of the recording, renamed run1 to run4; only the descriptions of its MEA series and the paper's export notebook say so. Runs 1 and 2 of cell 2 are not deposited, and the dandiset does not say why.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In every run 117 to 132 of the 675 to 678 MEA channels are constant for at least one of ten one-second segments (the channels the paper's code removes before computing templates); the deposited series keep them, with nothing marking them.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In the deposited sweeps the stimulus starts 50 ms earlier than the timings of the paper's feature code (350 ms against ton 400 ms for IDrest, 450 against 500 for firepattern), so the code's timings cannot be applied to the files as they are.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Methods 5.2 describe IV as 11 steps from -140 to 20% by 20%, which is 9 steps; the data hold 11 steps from -140 to 60%.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Methods 5.4 give 79 intracellular features for optimization and Table 1 gives 76; the code's feature files have 79 before it drops three sag features of IV -20%, and 76 after.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For fig3b-ap-initiates-distal-ais, the paper does not say how the initiation site is read from Figure 3B or at what time resolution. The code's cut-outs (get_peak_cutout) are on a 0.05 ms grid, on which the distal and middle AIS tie at the -20 mV crossing and at the peak; they are ordered only between samples or in a finer simulation (5 to 7 us at the crossing, 20 to 25 us at the peak). Question for the authors - was the order read from a finer simulation than the plotted cut-outs?",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run, the executed notebook with the conclusions and summary removed, the helper modules and the claims file, with the paper under paper/. The verifier also read the dandiset's metadata in the archive.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the second run, with its conclusions and summary, the helper modules, the claims file, the README and this record, with the paper under paper/.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000294-buccino-2024",
+   "type": "reproduction",
+   "title": "Patch-clamp and HD-MEA recordings of two cultured neurons (Buccino et al. 2024)",
+   "description": "Tests the findings of Buccino et al. (2024) on dandiset 000294, which holds simultaneous patch-clamp and high-density microelectrode array recordings of two cultured rat cortical neurons stimulated with the eCode protocols. It checks the runs, the stimulus protocols, the holding potential, the extracellular spike amplitude and the recording rates, and, from the paper's code repository, the reconstructed morphologies, the ground-truth model's rheobase, AP initiation and template, and the feature counts. The model fits are too large to run here.",
+   "datasets": [
+    "dandi:000294"
+   ],
+   "papers": [
+    "10.1162/neco_a_01672"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_buccino_2024.ipynb",
+     "title": "Reproducing Buccino et al. (2024) from dandiset 000294",
+     "executed": "notebooks/000294-buccino-2024/reproduce_buccino_2024.html"
+    }
+   ]
+  }
+ ]
+}
