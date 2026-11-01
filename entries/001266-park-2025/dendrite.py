@@ -20,8 +20,9 @@ Where each parameter comes from:
 - Somatic spike threshold: claims file header, item (4), 5 times the robust s.d. (1.4826 MAD) of
   the filtered trace, with peaks at least 3 ms apart (a standard refractory choice).
 - dSpike threshold: claims file header, item (2), trough of the distal amplitude histogram
-  (here the minimum of a Gaussian kernel density between its two highest modes), with the
-  FWHM < 5 ms rule (Methods, Counting bAPs and dSpikes).
+  (here `first_min_threshold`, the first minimum of a Gaussian kernel density above its lowest
+  mode; an assumption, see its docstring), with the FWHM < 5 ms rule (Methods, Counting bAPs
+  and dSpikes). Where the density has one mode the threshold is undefined (nan).
 - bAP to distal event: claims file header, item (3), the distal peak within 5 ms after the
   somatic peak.
 - Distal region: trunk segments more than 300 µm from the soma along the traced trunk (Methods,
@@ -403,17 +404,27 @@ def bap_table(o, on, reading="median", window_s=(0.0, 0.06), distal_um=300.0, di
 
 
 def first_min_threshold(a, bw="scott", grid=1000):
-    """dSpike threshold: the first minimum of the amplitude density (Gaussian KDE) above its main
-    mode, the trough that closes the failure mode. Returns nan when there is none."""
+    """dSpike threshold: the first minimum of the amplitude density (Gaussian KDE) above its
+    lowest mode, the trough that closes the failure mode (claims file header, item 2, "a threshold
+    between the two modes"). The failure mode is the lowest-amplitude mode, not the highest, so
+    that a recording with more dSpikes than failures still gets its trough; density peaks lower
+    than a quarter of the highest (a few outlying amplitudes) are not counted as modes. Both
+    are assumptions: the paper set its thresholds by hand.
+
+    Returns nan when the density has a single mode: then no trough separates dSpikes from
+    failures, and the dSpike count of that recording is undefined (the notebook reports it as
+    such, not as zero dSpikes)."""
     a = np.asarray(a, float)
     if len(a) < 5 or np.ptp(a) == 0:
         return np.nan
     kde = stats.gaussian_kde(a, bw_method=bw)
     g = np.linspace(a.min(), a.max(), grid)
     y = kde(g)
-    main = int(np.argmax(y))
+    modes, _ = signal.find_peaks(y)
+    modes = modes[y[modes] >= 0.25 * y.max()]  # bumps of a few outlying amplitudes are not modes
+    low = int(modes[0]) if len(modes) else int(np.argmax(y))
     mins, _ = signal.find_peaks(-y)
-    mins = mins[mins > main]
+    mins = mins[mins > low]
     return (g[mins[0]] if len(mins) else np.nan)
 
 
