@@ -162,11 +162,11 @@ outcomes:
     stated; a standard choice).
 - claim: edf8fgh-frontal-controls
   outcome: blocked
-  blocked_by: too_large
+  blocked_by: other
   notebook: reproduce_daume_2024.ipynb
   output: claim:edf8fgh-frontal-controls
-  notes: Panels f and g need spike-field coherence, which was not run (timing under
-    fig3f-gamma-sfc-preferred). Panel h was run - with at least one incorrect trial, pre-SMA (204
+  notes: Panels f and g need spike-field coherence, which was not run in this attempt
+    (fig3f-gamma-sfc-preferred). Panel h was run - with at least one incorrect trial, pre-SMA (204
     neurons in Hz, 201 in % of baseline; paper 201) correct 2.91 against incorrect 3.07 Hz, p =
     0.039, and in % of baseline p = 0.54; dACC (183 and 180; paper 180) p = 0.83 and 0.71; vmPFC
     (202 and 201; paper 201) p = 0.60 and 0.97. In % of baseline, the reading adopted for the
@@ -232,8 +232,8 @@ outcomes:
     (0.93) do not. Under reading (b) the pre-SMA (12 channels, FDR p = 0.014) and dACC (8 channels,
     load 1 higher, FDR p = 0.014) differ and the amygdala does not (FDR p = 0.086). The pre-SMA has
     17 or 12 significant channels where the paper has 5, and load 1 is higher in only 3 of the 17.
-    The 17 channels come from six patients; four of sub-4 (session 37) have z values of 19 to 25 in
-    load 3 against 3.5 to 6.8 in load 1, and seven of sub-11 (session 3) are also higher in load 3.
+    The 17 channels come from six patients; four of sub-4 have z values of 19 to 25 in
+    load 3 against 3.5 to 6.8 in load 1, and seven of sub-11 are also higher in load 3.
     The effect does not rest on a few outliers alone - Wilcoxon p = 0.0011, and without the three
     channels of largest load 3 excess p = 0.0045 (reading a; under b, p = 0.059).
   deviations:
@@ -270,7 +270,7 @@ outcomes:
   output: claim:tables1-slow-fast-theta
   notes: Under all four combinations of band reading (A phase centres, B direct band filters) and
     artefact reading, both hippocampal high-gamma tests give p < 0.05 with load 1 higher (fast theta
-    t = -3.44, -3.26, -3.03, -2.50; slow theta t = -2.43, -2.21, -2.46, -2.22), but 8, 5, 6 and 6 of
+    t = -3.44, -3.27, -3.03, -2.50; slow theta t = -2.43, -2.21, -2.46, -2.22), but 8, 5, 6 and 6 of
     the 20 tests are significant, always including pre-SMA tests with load 3 higher, and under (a,
     A) also the hippocampal slow theta to low gamma test (t = -3.21). The pre-SMA fast theta to high
     gamma test, absent from Table S1, has 7 to 21 channels here.
@@ -281,20 +281,46 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_daume_2024_lfp.ipynb
   output: claim:fig2f-rt-single-trial-pac
-  notes: In no combination of artefact reading and single-trial PAC reading (O5) is the hippocampal
-    PAC term significant - (a, O5 a) estimate +23.8 (RT in s per unit MI), t = 1.15, p = 0.25; (a, O5
-    b) p = 0.64; (b, O5 a) -18.5, p = 0.19; (b, O5 b) p = 0.20; paper estimate -49.07, t = -4.01, p =
-    6e-5. The amygdala term reaches p = 0.046 under (a, O5 b); the vmPFC term is never significant.
-    Correct, clean trials of 144 hippocampal channels (16,103 trials) under (a). Variants under
-    reading (a) - with RTs below 10 s the hippocampal term is negative and not significant (O5 a, p =
-    0.16; O5 b, p = 0.094); with log10 RT it is negative under O5 (b) (t = -2.72, p = 0.0066) and not
-    under O5 (a) (p = 0.13). The claim's test is on RT itself (Table S2 gives the estimate in ms), so
-    the variants do not change the outcome.
+  notes: Refitted after round 2 with load 3 as the reference level, as Table S2 codes load (its load
+    term is named "Load1"), so the PAC term is the slope in load 3 trials. With RT in s under
+    artefact reading (a) (144 hippocampal channels, 16,103 correct clean trials), neither reading of
+    O5 meets the criterion - under O5 (a) the hippocampal term is -53.0, t = -2.43, p = 0.015, but
+    the amygdala term is also negative (p = 0.027); under O5 (b) the hippocampal term has p = 0.099.
+    RT in s does not fit Table S2 - its intercept is 1.70 (O5 a) against the paper's 0.38. With RT
+    z-scored over each session's correct trials the intercept is 0.28 and the Load1 term -0.32
+    (paper 0.38 and -0.48); under O5 (a) the hippocampal term is -49.39, t = -4.19, p = 2.8e-5
+    (paper -49.07, t = -4.01, p = 6e-5) but the amygdala term is -19.6, p = 0.015 (paper p = 0.48),
+    and under O5 (b) the hippocampal term is negative (p = 0.029) with amygdala p = 0.20 and vmPFC
+    p = 0.58, meeting the criterion. log10 RT splits the same way (O5 a, amygdala p = 0.036; O5 b,
+    hippocampus p = 0.0045, amygdala 0.22, vmPFC 0.87). With RTs below 10 s (87 trials dropped),
+    both readings meet the criterion (hippocampus p = 2.8e-7 and 0.00046; amygdala 0.097 and 0.097;
+    vmPFC 0.99 and 0.61). Under artefact reading (b) every response scale and both O5 readings meet
+    it (hippocampus p <= 0.031, amygdala >= 0.48, vmPFC >= 0.26). The slope in load 1 trials, which
+    the first coding tested, has p = 0.25 and 0.64 with RT in s. The verified outcome is kept; the
+    change is proposed below.
   deviations:
   - The single-trial PAC is not described (O5); both readings of the claims file were run. Mixed
     model fitted with statsmodels MixedLM (REML), random intercepts for patient and for channel
-    within patient, in place of MATLAB's fitglme. RTs are not trimmed (up to 16.8 s among these
-    trials), as the paper says nothing of trimming.
+    within patient, in place of MATLAB's fitglme. Load coded with load 3 as the reference
+    (Supplementary Table S2, "Load 1 are tested against load 3 trials", with a term named
+    "Load1").
+  - Table S2 gives no unit or transform for RT. RT is fitted in s (the claims file's reading), as
+    log10 RT and z-scored over each session's correct trials; the hippocampal trials under reading
+    (a) have RTs up to 56.3 s (87 above 10 s), and a variant drops RTs above 10 s. The paper states
+    no trimming.
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: With load 3 as the reference level, as Table S2 codes it, the outcome depends on the RT
+      scale, which the paper does not give. RT in s cannot give Table S2's intercept (1.70 here
+      against 0.38); RT z-scored within session gives 0.28 and a Load1 term of -0.32 (paper -0.48),
+      and a hippocampal term of -49.39, t = -4.19 (paper -49.07, t = -4.01), so it is the scale best
+      supported. On that scale, under the adopted artefact reading (a), O5 (a) fails only because
+      the amygdala term is also significant (p = 0.015) and O5 (b) meets the criterion; the
+      criterion makes such a disagreement methods_underspecified. log10 RT gives the same split,
+      and artefact reading (b) or RTs below 10 s meet the criterion under both readings. The
+      question of the RT transform is asked of the authors (findings) and the coding of the
+      criterion of a reader (questions/000673.yaml).
 - claim: edf3-hippocampus-pac-controls
   outcome: not_reproduced
   assumed: true
@@ -393,26 +419,27 @@ outcomes:
     exclusion of 58-62 and 118-122 Hz are standard choices.
 - claim: fig3f-gamma-sfc-preferred
   outcome: blocked
-  blocked_by: too_large
-  notes: Spike-field coherence (40 Morlet wavelets, 500 spike subsamples and 500 jittered surrogates
-    per neuron-channel pair and condition, cluster tests with 10,000 permutations) was not run. Timed on sub-26 session 1 while preparing (not run in a notebook) - the 40 wavelets take 0.27 s per channel, and for one neuron-channel pair, condition and load 500 spike subsamples take 0.016 s and 500 jittered surrogates with one subsample each 0.29 s, or about 8 s if each surrogate is averaged over 500 subsamples as the observed value is. With about 1,000 MTL pairs, two conditions, two loads and two readings of O8, the second form is about 18 CPU hours (over 4 hours on the 4 cores of the runner), beyond the 30-minute notebook limit; the first form (about 45 CPU minutes) would fit, but its cluster tests and ANOVAs were not written in this run for lack of time.
-    The data it needs (spikes, LFP, bundles inferred from location and coordinates) are in the
-    dataset.
+  blocked_by: other
+  notes: Not run in this attempt. Spike-field coherence (40 Morlet wavelets, 500 spike subsamples and
+    500 jittered surrogates per neuron-channel pair and condition, cluster tests with 10,000
+    permutations) was not written into a notebook, so no timing of it is shown and it is not blocked
+    as too large. The data it needs (spikes, LFP, bundles inferred from location and coordinates)
+    are in the dataset.
 - claim: fig3g-gamma-sfc-anova
   outcome: blocked
-  blocked_by: too_large
+  blocked_by: other
   notes: Depends on fig3f-gamma-sfc-preferred, which was not run.
 - claim: edf5d-sfc-high-gamma-power
   outcome: blocked
-  blocked_by: too_large
+  blocked_by: other
   notes: Depends on fig3f-gamma-sfc-preferred, which was not run.
 - claim: edf5c-theta-sfc-null
   outcome: blocked
-  blocked_by: too_large
+  blocked_by: other
   notes: Depends on fig3f-gamma-sfc-preferred, which was not run.
 - claim: edf5fg-gamma-sfc-all-channels-patients
   outcome: blocked
-  blocked_by: too_large
+  blocked_by: other
   notes: Depends on fig3f-gamma-sfc-preferred, which was not run.
 - claim: fig3h-pac-category-firing
   outcome: not_reproduced
@@ -421,21 +448,35 @@ outcomes:
   output: claim:fig3h-pac-category-firing
   notes: Under artefact reading (a), 166 hippocampal pairs of a category neuron and a significant PAC
     channel of its bundle (52 neurons, 15 patients; paper 151) and 450 amygdala pairs (paper 423).
-    The hippocampal spike count term is not positive with p < 0.05 under any reading - all correct
-    trials, O5 (a) estimate 1.6e-6, p = 0.15, O5 (b) -3.8e-4, p = 0.77; preferred trials, O5 (a)
-    -3.1e-6, p = 0.15, O5 (b) -0.0045, t = -2.44, p = 0.015, negative where the paper's is positive
-    (0.002, t = 2.40, p = 0.017). The amygdala term has p >= 0.21 under every reading, as in the
-    paper. Under artefact reading (b) (145 and 410 pairs) the hippocampal term is positive with p =
-    0.090 and 0.65 or negative (p = 0.70; preferred O5 b, p = 0.024). The SC x load interaction is
-    significant in the hippocampus under every reading (p <= 0.0025). The readings agree that the
-    claimed positive relation is absent, so the outcome is not reproduced.
+    Refitted after round 2 with load 3 as the reference level, as Table S3 codes load, so the SC
+    term is the slope in load 3 trials. The hippocampal SC term is positive with p < 0.05 under every
+    reading - all correct trials, O5 (a) t = 6.34, p = 2.3e-10, O5 (b) 0.0045, t = 3.09, p = 0.0020
+    (paper 0.002, t = 2.40, p = 0.017); preferred trials, O5 (a) t = 3.09, p = 0.0020, O5 (b) 0.0028,
+    t = 2.16, p = 0.031. The amygdala term has p >= 0.33 under every reading (paper p = 0.45). Under
+    O5 (b) on all trials the other terms are close to Table S3 - intercept -0.057 (paper -0.044),
+    Load1 0.078 (0.076), SC x Load1 -0.0049, p = 0.0002 (-0.004, p = 0.010). The slope in load 1
+    trials, which the first coding tested, is not positive (all trials O5 b, p = 0.77; preferred O5
+    b, -0.0045, p = 0.015), and neither is the paper's (0.002 - 0.004). Under artefact reading (b)
+    (145 and 410 pairs) the hippocampal term is positive with p <= 0.014 under three readings and p
+    = 0.056 under the fourth (preferred, O5 b); the amygdala term has p >= 0.32 (one of its fits did
+    not converge). The verified outcome is kept; the change is proposed below.
   deviations:
   - Pairs as in the criterion; the claim's depends_on (fig3f-gamma-sfc-preferred) names the SFC
     pairs, which are the same category neuron and PAC channel pairs, so the claim was run without
     the SFC. Bundles are the electrodes of a session with the same location and coordinates.
   - Mixed model fitted with statsmodels MixedLM (REML), random intercepts for patient and for pair
-    within patient, in place of fitglme. Artefact reading (a) assumed, as for
-    edf2b-hippocampus-load-patients; reading (b) gives the same outcome.
+    within patient, in place of fitglme, with load 3 as the reference level (Supplementary Table S3,
+    "Load 1 are tested against load 3 trials", with a term named "Load1"). Artefact reading (a)
+    assumed, as for edf2b-hippocampus-load-patients; under reading (b) one of the four readings has
+    p = 0.056.
+  proposed:
+    outcome: reproduced
+    reason: Coded as Table S3 codes load (load 3 the reference), the hippocampal SC term is positive
+      with p < 0.05 under all four readings of the criterion (p = 2.3e-10 to 0.031) and the amygdala
+      term has p >= 0.33, which meets the criterion; under O5 (b) the intercept, Load1 and
+      interaction terms are close to Table S3's. The first coding tested the load 1 slope, which is
+      not the paper's SC term. The outcome still rests on artefact reading (a); under reading (b) one
+      reading gives p = 0.056.
 - claim: pac-neuron-counts
   outcome: partially_reproduced
   notebook: reproduce_daume_2024_pac_neurons.ipynb
@@ -483,7 +524,9 @@ outcomes:
   output: claim:fig4c-pac-neuron-firing-single-trial-pac
   notes: Too few PAC neurons (8 hippocampal and 5 amygdala pairs). For the record, the hippocampal SC
     term is not significant (O5 a, p = 0.85; O5 b, p = 0.18) and the amygdala term gives p = 0.0496
-    and 0.041.
+    and 0.041. These fits code load with load 1 as the reference, so the SC term is the load 1 slope,
+    not the paper's (Table S4 codes load 3 as the reference); they were not refitted, as the claim is
+    blocked on the selection.
 - claim: fig4e-hippocampus-pac-neurons-accuracy
   outcome: blocked
   blocked_by: other
@@ -593,8 +636,8 @@ outcomes:
 findings:
 - kind: format_error
   statement: Spike times are not sorted in four units of two files. In sub-13 ses-1, units 6, 14 and
-    15 each jump back once by about 1,320 to 1,340 s, as if two spike trains had been concatenated;
-    in sub-22 ses-2, unit 10 steps back 24 times by up to 3.3 ms. The analysis sorts them, which
+    15 jump back by up to 1,319 to 1,339 s (units 6 and 15 once, unit 14 three times), as if two
+    spike trains had been concatenated; in sub-22 ses-2, unit 10 steps back 24 times by up to 3.3 ms. The analysis sorts them, which
     keeps the result of the paper's code (it selects spikes with logical masks).
 - kind: selection_undocumented
   statement: The files do not mark the LFP trials, channels or regions that the paper's artefact
@@ -642,8 +685,12 @@ findings:
     attempt assumed 2 to 150 Hz.
 - kind: methods_unavailable
   statement: Question for the authors - how is single-trial theta-gamma PAC computed for the
-    mixed-effects GLMs (Fig. 2f, 3h, 4c)? The MI of each trial's 0 to 2.5 s window, raw or
-    z-scored, gives no relation between hippocampal PAC and RT here.
+    mixed-effects GLMs (Fig. 2f, 3h, 4c), and is RT transformed in the model of Table S2? Table S3's
+    negative intercept (-0.044) rules out the raw MI as the response there, while Table S2's PAC
+    estimate (-49.07) fits the raw MI as the predictor with RT z-scored within session (-49.39
+    here). Table S2 gives no unit for RT, and RT in s gives an intercept of 1.70 against its 0.38.
+    With load 3 as the reference, the hippocampal relation to RT holds on z-scored or log RT, but
+    the amygdala term is also significant under the raw MI (p = 0.015).
 - kind: methods_unavailable
   statement: Question for the authors - which family is the FDR correction of the PAC neuron
     selection taken over, and what else differs from plot_PAC_neuron.m? Run as in that function on
@@ -1100,3 +1147,390 @@ verifications:
       not be confirmed from the API metadata.
     response: Kept blocked (other). Added a print of every file's units-table columns - waveform_mean
       (256 samples) is in 43 of the 44 files and waveforms in all 44.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks of the round-1 revision, with their conclusions and summaries,
+    the helper module, the attempt record and the claims file, with the paper. The verifier agreed with every outcome
+    but eight - fig2f-rt-single-trial-pac and fig3h-pac-category-firing (not established, as the GLMs code load
+    1 as the reference where Tables S2 and S3 code load 3), and six SFC claims it would block as not run, not as
+    too large. The revision after it changed no outcome; it proposes changes for fig2f-rt-single-trial-pac and fig3h-pac-category-firing.
+  results:
+  - claim: cohort-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig1d-rt-load
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig1d-accuracy-load
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: behaviour-overall-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: category-cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig3b-persistent-activity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs. Robustness note, not affecting the outcome - in % of baseline the sign-flip permutation
+      p-values are much smaller than the t values suggest (t = 2.26 with p = 0.0013); the % values are heavy-tailed,
+      so the statements that reading (b) alone reproduces in full lean on a few neurons.
+    response: No change to the outcome. The note is recorded here; the notebook prints both t and p.
+  - claim: edf4b-persistent-activity-by-area
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs. Robustness note - in % of baseline the hippocampus has t = 1.64 with p = 0.019; the %
+      values are heavy-tailed and the result leans on a few neurons.
+    response: No change to the outcome. The note is recorded here; the notebook prints both t and p.
+  - claim: fig3c-category-load
+    agrees: true
+    outcome: not_reproduced
+    reason: Now agreed. My round-1 partially reproduced was wrong under the criterion - in Hz the claim reproduces
+      fully, so the outcome depends only on the units chosen. The assumption (rates as % of baseline, O6 b) is reasonable
+      - only this reading gives the paper's frontal n exactly, 201, 180 and 201.
+    response: No change to the outcome.
+  - claim: fig3d-category-correct-incorrect
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The assumption (rates as % of baseline, O6 b) is reasonable - only this reading gives the paper's
+      frontal n exactly.
+    response: No change to the outcome.
+  - claim: category-no-rt-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf8fgh-frontal-controls
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but not as too large. By the record's own timing, the one-subsample surrogate form takes about
+      45 CPU minutes and would fit; the record says its cluster tests were not written in this run for lack of time.
+      The honest reason is other, not run. No notebook output shows the timings.
+    response: Changed blocked_by from too_large to other, as for fig3f-gamma-sfc-preferred (panels f and g need
+      the SFC, which was not run in this attempt), and removed the reference to the timing.
+  - claim: fig2a-theta-gamma-pac
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig2b-pac-channel-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig2c-hippocampus-load
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig2c-no-load-effect-other-areas
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs. Minor - sub-4 (session 37) and sub-11 (session 3) give list indices of the files as sessions;
+      both patients have only session 1.
+    response: No change to the outcome. Removed the session indices from the notebook's conclusion and the notes.
+  - claim: edf2b-hippocampus-load-patients
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The assumption (artefact reading a) is reasonable but thin - the only evidence is one channel,
+      where of the paper's 17 rejected trials reading (a) removes 4, all among them, and reading (b) removes 5 that
+      the paper kept. The outcome flips under reading (b).
+    response: No change. The tie-break still rests on the one channel whose rejected trials the paper's code publishes,
+      as the deviation says; no other channel's rejected trials are public, and the question is asked of the authors.
+  - claim: edf2c-low-gamma-no-load-effect
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: tables1-slow-fast-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs. Minor - the notes give -3.26 where the output is -3.2656, which rounds to -3.27.
+    response: No change to the outcome. Corrected the value to -3.27 in the notes.
+  - claim: fig2f-rt-single-trial-pac
+    agrees: false
+    reason: Not established. The model codes load with load 1 as the reference level, so the PAC term estimates
+      the slope in load 1 trials; Table S2 names its terms Load1 and PAC by Load1, so in the paper load 3 is the
+      reference (or the coding is by effects), and the paper's term is not the load 1 slope. The interaction is
+      significant here (p = 0.0075 under a, O5 a). The sentence that Table S2 gives the estimate in ms is unsupported
+      - Table S2 gives no unit, and its intercept of 0.38 and Load1 term of -0.48 cannot be raw RT in s or ms, so
+      the log10 RT variant (negative, p = 0.0066 under O5 b) cannot be dismissed on this ground. Minor - the printed
+      RT maximum of 16.8 s comes from the last data frame of the loop (reading b, vmPFC); the hippocampal reading
+      (a) set loses 87 trials when RTs above 10 s are dropped.
+    response: Refitted with load 3 as the reference level, as Table S2 codes load, printing the slopes in load 3
+      and load 1 trials, their average, the Load1, interaction and intercept terms, with RT in s, log10 RT and RT
+      z-scored within session, and RTs below 10 s; removed the ms sentence and corrected the RT maximum (56.3 s,
+      87 trials above 10 s). With RT in s neither O5 reading meets the criterion; z-scored RT fits Table S2 best
+      (intercept 0.28, hippocampal term -49.39, t = -4.19) and on it O5 (a) fails on the amygdala term (p = 0.015)
+      while O5 (b) meets the criterion. The verified outcome is kept, and a change to blocked (methods_underspecified)
+      is proposed. Asked a reader whether the criterion should fix the load coding and the RT scale, and the authors
+      (finding) for the RT transform.
+  - claim: edf3-hippocampus-pac-controls
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The assumption (artefact reading a) is reasonable but thin - it rests on one channel, and the
+      outcome flips under reading (b).
+    response: No change, for the reason given under edf2b-hippocampus-load-patients.
+  - claim: edf3a-kappa-load
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf3e-nesting
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The assumption (windows aligned on gamma peaks) is plausible, but departs from the Methods'
+      words; the question to the authors is filed. The outcome still rests on the alignment, as stated.
+    response: No change; the question to the authors stands.
+  - claim: edf3f-raw-mi-load
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The assumption (artefact reading a) is reasonable but thin - it rests on one channel, and the
+      outcome flips under reading (b).
+    response: No change, for the reason given under edf2b-hippocampus-load-patients.
+  - claim: methods-spectral-slope
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The assumption (2-150 Hz) is reasonable.
+    response: No change to the outcome.
+  - claim: fig3f-gamma-sfc-preferred
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but not as too large. By the record's own timing, the one-subsample surrogate form takes about
+      45 CPU minutes and would fit; the record says its cluster tests were not written in this run for lack of time.
+      The honest reason is other, not run. No notebook output shows the timings.
+    response: Changed blocked_by from too_large to other (not run in this attempt) and removed the timings from
+      the notes, as no output shows them. The outcome stays blocked; the SFC was not run in this revision either.
+  - claim: fig3g-gamma-sfc-anova
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but not as too large. By the record's own timing, the one-subsample surrogate form takes about
+      45 CPU minutes and would fit; the record says its cluster tests were not written in this run for lack of time.
+      The honest reason is other, not run. No notebook output shows the timings.
+    response: Changed blocked_by from too_large to other (not run in this attempt) and removed the timings from
+      the notes, as no output shows them. The outcome stays blocked; the SFC was not run in this revision either.
+  - claim: edf5d-sfc-high-gamma-power
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but not as too large. By the record's own timing, the one-subsample surrogate form takes about
+      45 CPU minutes and would fit; the record says its cluster tests were not written in this run for lack of time.
+      The honest reason is other, not run. No notebook output shows the timings.
+    response: Changed blocked_by from too_large to other (not run in this attempt) and removed the timings from
+      the notes, as no output shows them. The outcome stays blocked; the SFC was not run in this revision either.
+  - claim: edf5c-theta-sfc-null
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but not as too large. By the record's own timing, the one-subsample surrogate form takes about
+      45 CPU minutes and would fit; the record says its cluster tests were not written in this run for lack of time.
+      The honest reason is other, not run. No notebook output shows the timings.
+    response: Changed blocked_by from too_large to other (not run in this attempt) and removed the timings from
+      the notes, as no output shows them. The outcome stays blocked; the SFC was not run in this revision either.
+  - claim: edf5fg-gamma-sfc-all-channels-patients
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but not as too large. By the record's own timing, the one-subsample surrogate form takes about
+      45 CPU minutes and would fit; the record says its cluster tests were not written in this run for lack of time.
+      The honest reason is other, not run. No notebook output shows the timings.
+    response: Changed blocked_by from too_large to other (not run in this attempt) and removed the timings from
+      the notes, as no output shows them. The outcome stays blocked; the SFC was not run in this revision either.
+  - claim: fig3h-pac-category-firing
+    agrees: false
+    reason: Not established. The model codes load with load 1 as the reference, so the SC term estimates the slope
+      in load 1 trials, while Table S3 names its terms Load1 and SC by Load1. The interaction is significant (p
+      <= 0.0025 under every reading). From Table S3 the paper's own load 1 slope is 0.002 - 0.004 = -0.002, the
+      same sign as the notebook's -0.0045 (preferred trials, O5 b); the sentence calling it the opposite sign to
+      the paper's compares the notebook's load 1 slope with the paper's load 3 (or average) slope. The assumption
+      (reading a) is not decisive, as reading (b) gives the same result.
+    response: Refitted with load 3 as the reference level, as Table S3 codes load. The hippocampal SC term is then
+      positive with p < 0.05 under all four readings (p = 2.3e-10 to 0.031) and the amygdala term has p >= 0.33;
+      under O5 (b) the intercept, Load1 and interaction terms are close to Table S3's. Corrected the sign sentence.
+      The verified outcome is kept, and a change to reproduced is proposed; it rests on artefact reading (a), as
+      under (b) one reading gives p = 0.056.
+  - claim: pac-neuron-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs. The notebook's 'exceed every shuffled count but one' is not supported - the output (p
+      = 0.005; shuffle maxima 1 against 8 and 5) shows they exceed every shuffled count, as the record says. Per-area
+      uncorrected counts were added, but I cannot check the record's reading of plot_PAC_neuron.m, and the gap (8
+      and 5 against 79 and 163) is unexplained.
+    response: No change to the outcome. Removed 'but one' from the notebook. The gap is still unexplained; no further
+      cause was found in this revision, and the question of the FDR family and other differences is asked of the
+      authors.
+  - claim: pac-category-overlap
+    agrees: true
+    outcome: blocked
+    reason: Now agreed. This follows from my own problem 1 - 8 and 5 neurons cannot test the paper's populations.
+    response: No change; kept blocked (other).
+  - claim: edf7a-pac-neurons-no-category-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agreed; I accept the record's reason - it needs PAC neurons.
+    response: No change.
+  - claim: fig4c-pac-neuron-firing-single-trial-pac
+    agrees: true
+    outcome: blocked
+    reason: Now agreed. This follows from my own problem 1 - 8 and 5 neurons cannot test the paper's populations.
+      The same load coding as in fig2f and fig3h applies, but the claim is blocked anyway.
+    response: Kept blocked (other). The notes now say that its fits code load 1 as the reference, so they give the
+      load 1 slope; not refitted, as the claim is blocked on the selection.
+  - claim: fig4e-hippocampus-pac-neurons-accuracy
+    agrees: true
+    outcome: blocked
+    reason: Now agreed. This follows from my own problem 1 - 8 and 5 neurons cannot test the paper's populations.
+    response: No change; kept blocked (other).
+  - claim: fig4g-hippocampus-pac-neurons-load
+    agrees: true
+    outcome: blocked
+    reason: Now agreed. This follows from my own problem 1 - 8 and 5 neurons cannot test the paper's populations.
+    response: No change; kept blocked (other).
+  - claim: fig4-amygdala-pac-neurons
+    agrees: true
+    outcome: blocked
+    reason: Now agreed. This follows from my own problem 1 - 8 and 5 neurons cannot test the paper's populations.
+    response: No change; kept blocked (other).
+  - claim: edf7bc-pac-neuron-local-sfc
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig5b-hippocampus-vmpfc-theta-sfc-load
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig5cd-no-effect-category-amygdala
+    agrees: true
+    outcome: blocked
+    reason: Agreed; I accept the record's reason - it needs PAC neurons or cross-regional spike-field coherence.
+    response: No change.
+  - claim: fig5e-random-subsets
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig5f-theta-sfc-rt
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf8b-vmpfc-sfc-patients
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf8c-pac-against-category
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf8de-narrow-spiking
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6a-noise-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf9ef-non-category-pac-pairs
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6c-adding-pac-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6d-removing-pac-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6e-decoding-difference
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf9g-non-category-pac-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf9jk-amygdala-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6g-signal-noise-angle
+    agrees: true
+    outcome: blocked
+    reason: Agreed; I accept the record's reason - it needs PAC neurons.
+    response: No change.
+  - claim: fig6h-projection-variance
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6i-noise-correlations-rt
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: edf9hil-noise-correlations-rt-controls
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.
+  - claim: fig6j-specific-to-pac-pairs
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
+      matches the outputs.
+    response: No change to the outcome.

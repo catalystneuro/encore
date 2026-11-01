@@ -136,7 +136,8 @@ def load_session(asset: dict) -> dict:
     spikes = [st[a:b] for a, b in zip(starts, idx)]
     # Spike times are not sorted in a few units; the paper's code selects spikes with logical
     # masks, which do not depend on order, so sorting them keeps its result.
-    unsorted = {i: round(float(np.diff(sp).min()), 4) for i, sp in enumerate(spikes) if np.any(np.diff(sp) < 0)}
+    unsorted = {i: (round(float(np.diff(sp).min()), 4), int((np.diff(sp) < 0).sum()))
+                for i, sp in enumerate(spikes) if np.any(np.diff(sp) < 0)}
     spikes = [np.sort(sp) for sp in spikes]
     has_lfp = "LFPs" in f["acquisition"]
     lfp_el = f["acquisition/LFPs/electrodes"][:] if has_lfp else np.array([], int)
