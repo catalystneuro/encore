@@ -444,6 +444,11 @@ def test_link_claims_are_counted_apart_from_the_papers_findings():
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     assert site.outcome_counts(attempt, "link")["reproduced"] == 1
     assert "1 check that the dataset is the data behind the paper" in site.outside_note([attempt])
+    # The overview folds them into a details block that names each group and its count.
+    folded = site.outside_note([attempt], collapsed=True)
+    assert folded.startswith('<details class="separate">')
+    assert "claims using outside data (1) and checks of the link to the paper (1)</summary>" in folded
+    assert "<details" not in site.outside_note([attempt])
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
