@@ -7,10 +7,10 @@ ultrasound (tFUS) aimed at S1, M1 or POm.
 
 | Claim | Outcome |
 |---|---|
-| AC neurons respond during sonication to 1500 and 3000 Hz PRF and after it to 30, 1500, 3000 and 4500 Hz, least to 300 Hz (Fig. 11B) | Blocked: methods underspecified (the normalization readings disagree; none reproduces it) |
-| RSU and FSU counts in S1 and POm (Figs. 4 and 6; 2 claims) | Not reproduced (the POm unit totals are 36 to 44% above the paper's) |
-| RSU and FSU responses in S1 and POm (Figs. 4, 6 to 9; 22 claims) | Blocked: data missing |
-| Sham and CG1 control (Fig. 5) | Blocked: data missing |
+| AC neurons respond during sonication to 1500 and 3000 Hz PRF and after it to 30, 1500, 3000 and 4500 Hz, least to 300 Hz (Fig. 11B) | Blocked: methods underspecified (the readings of the normalization and the baseline sample give different outcomes; none reproduces it) |
+| RSU and FSU counts in S1 and POm (Figs. 4 and 6; 2 claims) | Not reproduced (the POm unit totals are 36 to 44% above the paper's under every selection of recordings by identifier) |
+| RSU and FSU responses in S1 and POm (Figs. 4, 6 to 9; 18 claims) and the two claims that depend on blocked claims (pathway-follows-local-prf, auditory-confound-low-prf); 20 claims | Blocked: data missing |
+| Sham and CG1 control (Fig. 5; 2 claims) | Blocked: data missing |
 | Directional and undirected spike time tiling coefficients (Figs. 10, 11C, 11D; 8 claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -19,7 +19,9 @@ reasoning and the differences from the paper's method.
 The paper splits units into regular-spiking (RSU) and fast-spiking (FSU) units by k-means on spike
 waveform measures. The files hold no waveforms, and their `celltype_label` column, described as 1 = RSU
 and 2 = FSU, is 0 for every unit, so every claim about RSU or FSU responses is blocked. The two count claims are
-judged on the area totals, which need no types. Most recordings are
+judged on the area totals, which need no types. The POm totals come within 10% of the paper's if two of the 10 POm rats are left
+out (9 of the 45 pairs) or if only units with more than 8000 spikes are counted, so the paper's unit
+selection may differ from the criterion's; the outcome follows the criterion as written. Most recordings are
 deposited twice; the notebook checks that the copies are identical and counts each once. No session is
 marked as sham or as tFUS aimed at CG1. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/000946-gao-2025-01.yaml`](../../attempts/000946-gao-2025-01.yaml).
