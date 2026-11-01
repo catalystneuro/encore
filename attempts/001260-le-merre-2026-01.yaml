@@ -1,0 +1,458 @@
+schema_version: 2
+id: 001260-le-merre-2026-01
+dataset:
+  archive: dandi
+  id: "001260"
+  version: 0.250911.0744
+  doi: 10.48324/dandi.001260/0.250911.0744
+paper: doi:10.1038/s41593-025-02190-z
+date: 2026-11-01
+entry: 001260-le-merre-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41306856088
+inputs:
+- what: Dandiset 000473, the 25 aversion recordings of dataset KI that 001260 lacks (the paper's Data
+    availability names both dandisets), read for the unit and recording counts of dataset-ki-counts
+    and fig1h-waveform-classes and the dataROI count of fig4b-dataroi-parcellation.
+  source: doi:10.48324/dandi.000473/0.230417.1502
+- what: The paper's per-unit metrics files (metrics_files.zip, for each unit's flatmap position, the
+    paper's quality flags and ww/nw labels), the flatmap polygons of the PFC subregions, the paper's
+    dataROIs and the 60 GaoROIs (flatmaps.zip), the Harris et al. 2019 hierarchy table
+    (hierarchy_summary_CreConf.xlsx) and the Gao et al. ROI hierarchy index (ROI_Gao_hierarchy_index.csv).
+  source: doi:10.5281/zenodo.14205018
+- what: Method details read from the paper's code (stimulus series per setting, the probe that gives
+    the sleep-like periods of each probe, SOM shape and training, Ward clustering and the cluster
+    relabelling, Harris table columns, tessellation size rule), as cited in the helper module.
+  source: https://github.com/hejDMC/pfcmap at commit 9ae52eddc47fbb590ef4e1b1949507334707a0f1
+outcomes:
+- claim: dataset-ki-counts
+  outcome: partially_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:dataset-ki-counts
+  measured:
+  - 20354
+  - 53.6
+  - 99
+  - 10900
+  notes: With 000473, dataset KI has the paper's 99 recordings and 53.6% of units in the PFC (52 ± 5.2
+    expected), but under reading (b) and the 12-epoch rule over active epochs 20,354 units (24,248 ±
+    2,425) and 10,900 PFC units (12,674 ± 1,267), both below tolerance. Counting all spontaneous
+    epochs gives 24,898 and 13,040, both within tolerance; the shortfall follows from the larger
+    share of sleep-like epochs found here. Reading (a) gives 4,820 (ISI violation column) or 13,917
+    (false positive column). 001260 alone holds 74 recordings and 14,564 such units, 48.4% PFC.
+  deviations:
+  - The counts use dandiset 000473 as well, as the criterion allows; 001260 alone holds 74 of the 99
+    recordings.
+  - The files carry no quality label; reading (b), all units with at least 12 active epochs of at
+    least 6 spikes, is the main one, as the paper's own flags on Zenodo pass 97% of units.
+- claim: fig1h-waveform-classes
+  outcome: partially_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig1h-waveform-classes
+  measured:
+  - 15894
+  - 3698
+  - 762
+  - 78.1
+  - 18.2
+  notes: On 001260 + 000473 (reading b) the fractions match (78.1% ww and 18.2% nw of all units, 81.1%
+    and 18.9% of ww plus nw), but the counts are below tolerance (15,894 ww, 3,698 nw, 762
+    unclassified), as the unit total is. The peak-to-trough histogram has modes at 0.26 and 0.64 ms
+    and a minimum at 0.36 ms.
+  deviations:
+  - Peak-to-trough durations are the dataset's Peak_to_Trough column; they agree within 0.001 ms with
+    the paper's Zenodo values for 95.1% of units.
+- claim: fig1i-nw-higher-metrics
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig1i-nw-higher-metrics
+  notes: nw minus ww is +0.235 in log10FR, +0.052 in B and +0.042 in M, p below 1e-76 for each, 11,209
+    ww and 2,752 nw units from 38 mice. Same sign in every setting and without units of log10FR < 0.1.
+  deviations:
+  - Mixed models fitted by REML in statsmodels and tested by the Wald test of the unit-type
+    coefficient; the paper's Kenward-Roger F test is not available there.
+  - Data of 001260 only (74 of 99 recordings).
+- claim: extfig1d-sleep-like-differ
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig1d-sleep-like-differ
+  notes: Sleep-like minus active in ww units is -0.027 in log10FR (p = 6.4e-07), +0.029 in B (p =
+    5.3e-64) and -0.013 in M (p = 2.6e-18), from 11,209 active and 10,381 sleep-like samples. With
+    the code's detector all three also differ (p ≤ 0.0012), log10FR with the opposite sign.
+  deviations:
+  - Sleep-like periods detected as the Methods state, from each probe's cortical units or the probe
+    the code's table names; the geometric mean is taken over bins with a positive rate. The code's
+    detector (troughs of 50 ms to 0.6 s, padding of 1 s only for groups of at least 3) is a variant.
+- claim: extfig1-epoch-counts
+  outcome: not_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig1-epoch-counts
+  measured:
+  - 20.2
+  - 180.5
+  - 125.5
+  - 10381
+  notes: Per probe recording, sleep-like time has a median 20.2% (IQR 8.4 to 33.0%), active epochs
+    180.5 and sleep-like epochs 125.5; per session 21.2%, 160 and 127.5. 12 of 74 recordings are more
+    than half sleep-like. The code's detector gives 8.7%, 203 and 83.5. 10,381 ww units have at least
+    12 sleep-like epochs, just below 11,599 ± 1,160, from 74 of the 99 recordings. In 000473 the
+    median sleep-like time is 23.9%.
+  deviations:
+  - Recording time is from the first to the last spike.
+- claim: extfig1f-burstiness-memory-uncorrelated
+  outcome: not_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig1f-burstiness-memory-uncorrelated
+  notes: By the paper's test, B ~ M + (1|Mouse) across 11,209 ww units, the slope is -0.19 with p =
+    1.7e-66. The effect is small, marginal R2 0.024 (Pearson r -0.17); with thousands of units a
+    small dependence is significant.
+  deviations:
+  - Wald test in statsmodels in place of the paper's test as implemented in Julia.
+- claim: fig2a-som-memory-burstiness
+  outcome: partially_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2a-som-memory-burstiness
+  notes: The gradients of B and log10FR across the ww SOM are at 110 degrees (part 1 holds). Of the top
+    10% memory nodes 3 of 43, and of the top 25% 23 of 107, lie in the top quartile of node B, where
+    the criterion asks for none (part 2 fails under both readings). The criterion defines no partial
+    outcome; partially reproduced is used as the claim holds in part, with both readings agreeing.
+  deviations:
+  - The SOM grid is 17 by 25 (425 nodes), as the code's shape rule gives from 400.
+- claim: fig2b-pfc-regular-territory
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2b-pfc-regular-territory
+  measured: 50.5
+  notes: PFC units are 50.5% of the 11,209 ww SOM units and hit all 425 nodes. Median B is -0.055 in
+    PFC against -0.023 elsewhere (Mann-Whitney p = 2.4e-32); M < 0 in 54.1% against 68.2% (chi-square
+    p = 3.6e-53). In the Aversion setting the B difference reverses (-0.105 against -0.111).
+- claim: fig2e-category-stability
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2e-category-stability
+  assumed: true
+  measured:
+  - 57.3
+  - 18.4
+  notes: Stability is 57.3% averaged over 13 transitions (59.4% for the pooled matrix), against 18.4%
+    from the marginals; each transition lies between 46.2% and 61.1%. With the code's minimum of 3
+    valid epochs per block it is 49.0% (chance 14.7%). Stability does not depend on the category
+    numbering.
+  deviations:
+  - Assumption. Inherent blocks are runs of the trials table's Block column (20 recordings, where its
+    runs have a median of at least 20 trials), runs of more than 75 epochs split in two; elsewhere
+    consecutive blocks of 50 onsets. The files do not say which settings had blocks, and in Detection
+    files the column holds the trial outcome. Blocks have a median of 25 valid epochs (paper 36).
+- claim: fig2f-low-rate-less-stable
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2f-low-rate-less-stable
+  notes: The outcome depends on which retrained cluster takes which category number (claims file,
+    G2), and the claims file blocks such a claim. Under the text-matched numbering (b) the mean
+    diagonal of P is 0.430 for categories 1 to 3, 7 and 8 against 0.691 for 4 to 6 (coincidence
+    diagonal agrees), while part 2 holds for 2 of 5 categories, so partially reproduced; under the
+    code's numbering (a) neither part holds (0.613 against 0.387). The question is for the paper's
+    authors (see findings).
+- claim: extfig3f-layer-enrichment
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig3f-layer-enrichment
+  notes: Under G2 b, L2/3 is significantly enriched in categories 6 and 8, L5 in category 2 and L6 in
+    category 1 (reproduced); under G2 a, L5 has no significant positive E-score in categories 1 to 3.
+    Blocked by the claims file's rule on G2.
+- claim: fig2g-pfc-regular-enrichment
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2g-pfc-regular-enrichment
+  notes: Under G2 b all six subregions are enriched in categories 1 to 3 under both readings and both
+    groupings (reproduced); under G2 a ACAd and ACAv are not (sums of E-scores -4.8 to -1.4), 4 of 6
+    (partially reproduced). Blocked by the claims file's rule on G2.
+- claim: fig2g-ila-pl-category1
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2g-ila-pl-category1
+  notes: Under G2 b, ILA (E = 8.7 to 9.1) and PL (6.0) are significantly enriched in category 1; under
+    G2 a, ILA is depleted (-3.0 to -3.1). Blocked as its outcome differs under G2, and as it depends on
+    fig2g-pfc-regular-enrichment.
+- claim: fig2g-bursty-orbl-mos-aiv
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2g-bursty-orbl-mos-aiv
+  notes: Under G2 b, ORBl (E = 3.6 to 3.7) and MOs (4.0 to 4.1) are enriched in category 8, AIv not
+    (P 0.07 to 0.11); under G2 a none is. Blocked as its outcome differs under G2.
+- claim: fig2g-th-hpf-bursty
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2g-th-hpf-bursty
+  notes: TH and HPF each have one significant positive E-score among categories 6 to 8 under both G2
+    readings (TH 7.1 to 7.3, HPF 3.8 to 4.0), so the criterion's reading (b) holds and reading (a),
+    all three, does not. The criterion blocks the claim when they differ.
+- claim: fig2i-ibl-replication
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the spontaneous blocks of the 303 IBL Passive recordings from the IBL Brain Wide Map,
+    spike-sorted per probe, to be fetched and processed. Not started in this run; fetching them would
+    not fit the run's five hours alongside the dataset KI analyses or the notebook's 60-minute limit.
+    It also depends on fig2g-pfc-regular-enrichment, which is blocked.
+- claim: extfig5g-nw-enrichment
+  outcome: not_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig5g-nw-enrichment
+  notes: The high-rate, lowest-burstiness nw category is 5 (median M 0.018) and the high-rate bursty
+    one 1. ILA (E = -0.5 to -0.6) and PL (-2.0 to -2.1) are not enriched in category 5, and ORBl is not
+    enriched in category 1 (E = 1.5, not significant), under both groupings. 21 regions have more than
+    20 nw units.
+- claim: fig2j-nw-ww-correspondence
+  outcome: partially_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig2j-nw-ww-correspondence
+  notes: Across 21 regions (9 in the paper) the mean r between ww categories 1 to 3 and the regular nw
+    category is -0.077 to -0.001, not positive, under every reading; the mean r between ww 7 and 8 and
+    the bursty nw category is positive but small (0.040 to 0.115). The criterion defines no partial
+    outcome; partially reproduced is used as one part holds under every reading, weakly.
+  deviations:
+  - More than 20 nw units per region (code's Nmin_maps) gives 21 regions, not 9.
+- claim: fig3a-harris-regular-positive
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig3a-harris-regular-positive
+  notes: Blocked because it depends on fig2g-pfc-regular-enrichment, which is blocked (protocol, Author,
+    step 1.5). As computed it is not reproduced under every reading. Across 15 cortical areas (17 in
+    the paper) category 2 correlates with the Harris score at r = 0.30 to 0.40 (p 0.14 to 0.28) under
+    G2 b and r = -0.17 to 0.05 under G2 a; without groups as the code does, r = 0.30 or 0.05.
+- claim: fig3b-harris-regular-positive-ibl
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs dataset IBL Passive projected on the SOM (see fig2i-ibl-replication), not started in
+    this run's time; also depends on fig2i-ibl-replication.
+- claim: fig3c-harris-bursty-negative
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig3c-harris-bursty-negative
+  notes: Under G2 b, categories 6 to 8 all correlate negatively with the Harris score (category 6 r =
+    -0.57 to -0.53, p 0.027 to 0.040), more strongly than 1 to 3 (reproduced for dataset KI); under G2
+    a category 6 is positive (r = 0.30 to 0.40). Blocked under G2 and as it depends on fig3a. The IBL
+    part was not tested.
+- claim: supptable5-no-hierarchy-within-pfc
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:supptable5-no-hierarchy-within-pfc
+  notes: Blocked because it depends on fig3a-harris-regular-positive, which is blocked. As computed the
+    absence holds under every reading; within the 11 PFC subregions no category correlates with the
+    Harris score at p < 0.05 (|r| ≤ 0.35, p ≥ 0.28).
+- claim: zenodo-unit-link
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:zenodo-unit-link
+  notes: All 20,374 units of 001260 match a record of the Zenodo metrics files by recording and unit
+    id. The location label agrees for 98.6% (283 differ, 207 of them in PL064_20200422-probe0) and the
+    ww/nw label for 97.0%; peak-to-trough agrees within 0.001 ms for 95.1%. The paper's quality flags
+    pass 19,808 units. All 9,408 units of 000473 have records too.
+- claim: fig4b-dataroi-parcellation
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig4b-dataroi-parcellation
+  measured: 38
+  notes: On dataset KI (001260 + 000473), 7,867 deep PFC ww units with a flatmap position give 38
+    dataROIs under either size bound (42 ± 4); the paper's tessellation on Zenodo has 42 polygons. On
+    001260 alone, 4,906 such units give 22 dataROIs, which the dataROI claims below use.
+  deviations:
+  - Uses 000473 for the count, as dataset KI is split across the two dandisets; the Zenodo flatmap
+    positions are an outside input (zenodo-unit-link).
+  - Units are assigned to subregions by the subregion polygons (code), which agree with the location
+    label for 87.7% of units; within a subregion, to the nearest cluster center. The k-means seed is
+    fixed (a standard choice).
+- claim: fig4cd-dataroi-enrichment
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig4cd-dataroi-enrichment
+  notes: Under both references, both groupings and both G2 readings, a dataROI in ILA and in PL is
+    significantly enriched in category 1 or 3, and one in MOs and in ORBl in category 7 or 8. ORBl is a
+    single dataROI (380 units), so the most ventral part is not tested.
+  deviations:
+  - 22 dataROIs from 001260 alone, against the paper's 42 from all of dataset KI.
+- claim: fig4e-activity-modules
+  outcome: partially_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig4e-activity-modules
+  notes: The two ILA dataROIs fall in one module under every reading, and three or four other modules
+    hold dataROIs of several subregions. The ILA module also holds two PL, one MOs and one ORBm
+    dataROI, so it is ILA-specific under neither reading. The criterion blocks the claim when the
+    ILA-specific part does not hold under both readings; it fails under both, so the readings agree,
+    and partially reproduced is recorded as the claim holds in part.
+  deviations:
+  - Only 2 ILA dataROIs in 001260.
+- claim: fig4g-gao-category1
+  outcome: not_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig4g-gao-category1
+  notes: Across 29 GaoROIs (30 in the paper), category 1 enrichment correlates with the Gao hierarchy
+    index at r = 0.20 to 0.33 (p 0.086 to 0.31) under every reading, positive but not significant.
+  deviations:
+  - Data of 001260 only.
+- claim: extfig7n-gao-category6
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig7n-gao-category6
+  notes: Under G2 b category 6 enrichment correlates negatively with the Gao hierarchy (r = -0.62 to
+    -0.54, p ≤ 0.0023, 29 GaoROIs); under G2 a r = 0.03 to 0.11. Blocked by the claims file's rule on G2.
+- claim: fig4g-pl-orbl-extremes
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig4g-pl-orbl-extremes
+  notes: The Gao table gives GaoROI 23 the lowest score and 5, 24, 3 and 2 the highest, not 19, 20 and
+    41. Under G2 b, 20 and 41 are among the three highest category 1 E-scores and the lowest is 6
+    (partially reproduced); under G2 a none of 19, 20 and 41 is in the top three and 23 is the lowest
+    in 6 of 8 readings. The outcome differs between readings.
+- claim: fig5b-tone-categories
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig5b-tone-categories
+  notes: Under both training readings the flat or negative category 8 is the largest among 5,232 PFC
+    deep ww units (3,114 and 3,788). The IQR of ZETA onsets of responsive units is 3.9 to 35.8 ms in
+    categories 1 to 4 and 90.7 to 284.4 ms in 5 to 7. Recordings keep a median 80 tone epochs (188 in
+    the paper), as more epochs are sleep-like here.
+  deviations:
+  - zetapy 4.1 no longer returns the onset latency; it is computed from zetapy's instantaneous rate as
+    the first crossing of half the peak height, as older zetapy versions did (a standard choice).
+    Seeds are fixed per unit; 57 of 5,232 units had too few tone epochs for ZETA.
+  - Working-memory recordings have no 10-kHz tones and are left out; 8 principal components explain
+    94.1% of the variance (Methods, over 95%).
+- claim: fig5cd-tone-maps-cross-subregions
+  outcome: partially_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig5cd-tone-maps-cross-subregions
+  notes: Under every reading ACAd and PL each have a dataROI significantly enriched in tone category 1,
+    ORBvl none; the dataROIs of three to five subregions fall in more than one of 4 tone modules. The
+    criterion defines no partial outcome; partially reproduced is used as the claim holds in part under
+    every reading.
+- claim: fig5e-tone-responsive-patches
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig5e-tone-responsive-patches
+  notes: 1,746 of 3,839 PFC deep ww units are responsive (ZETA P < 0.01). Enriched dataROIs lie in 5 (G1
+    a) or 6 (G1 b) subregions; ACAd and MOs (and PL under G1 a) hold both an enriched and a depleted
+    dataROI.
+- claim: fig5g-tuned-unit-counts
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the task data of 66 IBL recordings (16,148 PFC units) from the IBL Brain Wide Map and
+    2,000 within-condition shuffles per unit and variable. Not started in this run's time.
+- claim: fig5g-tuning-maps
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig5g-tuned-unit-counts (dataset IBL), not started.
+- claim: fig5h-choice-gao-hierarchy
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig5g-tuned-unit-counts (dataset IBL), not started.
+- claim: extfig9e-tone-responsive-no-hierarchy
+  outcome: reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:extfig9e-tone-responsive-no-hierarchy
+  notes: Across 25 GaoROIs (29 in the paper), enrichment in responsive units does not correlate with
+    the Gao hierarchy (r = 0.046, p = 0.83, or r = -0.002, p = 0.99).
+- claim: fig5i-map-similarity
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig5i-map-similarity
+  notes: Blocked because it depends on fig5g-tuned-unit-counts (dataset IBL). The dataset part was
+    computed and is not reproduced; the tone-responsiveness map is most similar to spontaneous category
+    1 (G2 a) or 5 (G2 b, the same cluster), cosine 0.34 or 0.46, never to category 8 (-0.02 to 0.07).
+- claim: fig5j-tone-responsive-high-rate
+  outcome: not_reproduced
+  notebook: reproduce_le_merre_2026.ipynb
+  output: claim:fig5j-tone-responsive-high-rate
+  measured: 3921
+  notes: Tone category 8 has a positive E-score in only 2 or 3 of the five low-rate spontaneous
+    categories under every reading (four required). The summed E-score of tone categories 1 to 7 is
+    positive in spontaneous 4, 5 and 6 only under G2 b with tone reading a; under G2 a it is negative in
+    category 6. 3,921 units have both categories (6,681 for all of dataset KI).
+- claim: fig5k-task-tuning-category4
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig5g-tuned-unit-counts and fig2i-ibl-replication (dataset IBL), not started.
+- claim: methods-settings-no-difference
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The paper names no test. As a variant in the notebook, Metric ~ Setting + (1|Mouse) for ww
+    units finds Aversion and Detection different from Passive in log10FR (p 0.002 and 0.041), Aversion
+    in B (p 9e-05), Context and Detection in M (p 0.0062 and 1.1e-05); marginal R2 0.019 to 0.043.
+findings:
+- kind: other
+  statement: Dataset KI is split across two dandisets. 001260 holds 74 recordings, 41 mice and 20,374
+    units; the other 25 recordings (25 mice, 9,408 units) are in 000473, whose title and metadata name
+    a different paper (Esr1+ hypothalamic-habenula neurons). Neither dandiset says it holds part of
+    dataset KI.
+- kind: selection_undocumented
+  statement: The two dandisets hold 29,782 units, the paper's count before its unit quality control,
+    and no field marks the 24,248 units the paper kept. The paper's quality flags are only in its
+    Zenodo metrics files.
+- kind: metadata_insufficient
+  statement: The units table's two-column `quality` is described only as "ISI violation, false
+    positive rate". Column 0 runs from 0 to 1.15e5 (median 2), so it is not the ISI violation ratio of
+    the Methods' threshold of 0.1, and its definition is not given.
+- kind: metadata_insufficient
+  statement: The behavioral setting of a recording is not a field; it can be read only from the
+    session description and keywords. The flatmap position of each unit and the paper's ww/nw labels
+    are not in the files and come from the paper's Zenodo record.
+- kind: metadata_error
+  statement: In Detection and Context files the trials columns `lick` and `valve` are described as
+    "sound amplitude"; in Detection files `Block` holds the trial outcome (miss, hit, correct
+    rejection, false alarm), not a block. In a Context file `sound` is False for all 524 trials though
+    524 tones were played. Every electrodes column is described as "my description".
+- kind: metadata_error
+  statement: For 283 of 20,374 units the location label in the files differs from the paper's Zenodo
+    metrics files (207 of them in PL064_20200422-probe0), and the ww/nw label from the paper's differs
+    for 3.0% of units when the Methods' thresholds are applied to the files' Peak_to_Trough.
+- kind: code_mismatch
+  statement: The Methods detect sleep-like troughs below 0.2 of the geometric mean for longer than 5 ms;
+    the code requires off periods of more than 50 ms and at most 0.6 s, pads only groups of at least 3
+    off periods by 1 s, fills free gaps of 1.5 s or less, and uses only PFC units with at least 75 of
+    them. Both give far more sleep-like time here (median 20.2% or 8.7%) than the paper's 6%.
+- kind: other
+  statement: Following the Methods, sleep-like periods take a median 20.2% of each recording of 001260
+    (6% in the paper), and 12 of 74 recordings are more than half sleep-like, although the paper says
+    recordings dominated by sleep-like states were excluded. Recordings keep a median 180.5 active
+    epochs against the paper's 227.
+- kind: paper_inconsistency
+  statement: The Methods require "≥4 ISIs in at least 12 separate 3-s epochs" for unit quality and
+    compute burstiness and memory in epochs "with at least six spikes (corresponding to at least four
+    ISIs)", though six spikes give five ISIs. The Methods also say 99 probes were lowered and 24
+    recordings excluded, while Data availability gives 99 recorded sessions, the number the two
+    dandisets hold.
+- kind: methods_unavailable
+  statement: Question for the authors. The paper numbers its spontaneous categories by its own Ward
+    clusters (code, a memory ranking and a fixed permutation) and describes them in words; it gives no
+    rule that carries the numbering to a retrained SOM. Under the code's rule and under a match to the
+    text's descriptions, the outcomes of 8 stability and enrichment claims differ, and they are blocked. Which rule
+    should a reanalysis use, or should units be projected on the trained SOM from Zenodo?
+- kind: methods_unavailable
+  statement: Question for the authors. Which test supports "firing metric distributions were not
+    significantly different across behavioral settings"? A mixed model with setting as a fixed effect
+    finds differences here (for example Aversion against Passive in B, p = 9e-05).
+- kind: methods_unavailable
+  statement: Question for the authors. Which recordings had an inherent block structure for the
+    stability analysis, and how is it stored in the files? The Block column holds block numbers in some
+    settings and the trial outcome in Detection.
