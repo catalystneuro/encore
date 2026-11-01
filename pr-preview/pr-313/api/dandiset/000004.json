@@ -1,0 +1,730 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000004",
+  "label": "DANDI:000004"
+ },
+ "page": "datasets/dandi/000004/",
+ "generated": "2026-11-01T02:07:02+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 10,
+  "partially_reproduced": 8,
+  "not_reproduced": 4,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000004-chandravadia-2020-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000004",
+    "version": "0.220126.1852",
+    "doi": "10.48324/dandi.000004/0.220126.1852"
+   },
+   "key": "dandi:000004",
+   "label": "DANDI:000004",
+   "dataset_version": "0.220126.1852",
+   "paper": "10.1038/s41597-020-0415-9",
+   "paper_title": "A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task",
+   "date": "2026-10-15",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-6"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/38752122282"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000004-chandravadia-2020",
+   "entry_title": "Human single neurons during a recognition memory task (Chandravadia et al. 2020)",
+   "description": "Tests the data descriptor of Chandravadia et al. (2020) on dandiset 000004, which holds 87 sessions of 59 epilepsy patients with single units from the amygdala and hippocampus during a new/old recognition task. It checks the files against the paper's description of the data records and subjects, and repeats the behavioural results (AUC, ROC asymmetry, accuracy by confidence) and the proportions of visually and memory selective cells of Figure 5.",
+   "notebooks": [
+    {
+     "path": "reproduce_chandravadia_2020.ipynb",
+     "title": "Reproducing Chandravadia et al. (2020) from dandiset 000004",
+     "executed": "notebooks/000004-chandravadia-2020/reproduce_chandravadia_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "counts-neurons-subjects",
+     "statement": "The dataset holds 1863 single neurons recorded from the medial temporal lobes of 59 subjects.",
+     "source": "Abstract; Technical Validation, proportion of selective cells, paragraph 3",
+     "quote": "we present a NWB-formatted dataset of 1863 single neurons recorded from the medial temporal lobes of 59 human subjects",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "1864 unit rows over 87 files (paper 1863, one more) and 59 subjects. With the 55 units of sessions 44 and 55 counted once, as their spike trains repeat those of sessions 43 and 54, 1809. Both readings are within tolerance. CS sessions hold 1787 units and TWH sessions 77. The paper gives no count per session or site, so the extra unit cannot be identified; no unit is empty (the fewest spikes is 22).",
+     "deviations": [
+      "The exact count differs from the paper's by one unit; the tolerance is the protocol's 10%."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "counts-sessions",
+     "statement": "The patients performed 87 sessions, listed by subject and session id in Online-only Table 1 (the Methods give 89).",
+     "source": "Methods, Subjects, paragraph 1; Online-only Table 1",
+     "quote": "In total, we recorded from patients across 89 sessions (see Online-only Table 1) ... Total Sessions: 87",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "The 87 (subject, session) pairs of the files equal those of Online-only Table 1, none missing and none extra. The Methods' 89 sessions disagree with the table and the files. Every task variant of the table corresponds to one stimulus set in the files.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-demographics",
+     "statement": "Online-only Table 1 gives the age and sex of every subject; there are 25 female and 34 male subjects.",
+     "source": "Online-only Table 1",
+     "quote": "Total Female: 25 ... Total Male: 34",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Age and sex match for 56 of 59 subjects. C24 is 57 in the files and 47 in the table, H33 is 30 and 29, and H48 is female aged 32 in the files and male aged 54 in the table. The files have 26 female and 33 male subjects (table 25 and 34), within tolerance. Each subject has one age and one sex across its files. The diagnosis text differs for 19 of 59 subjects. For 8 the files give a broader category; for 6 (H10, H16, H17, H19, C58, T89) they give Lateral Frontal, which adds Lateral to the table's Frontal except for H17 (Left Inferior Frontal in the table). Five differ in substance, C61 (Left Lateral Frontal in the files, Left Mesial Temporal in the table), C34 (Bilateral Independent Temporal against Bilateral Mesial Temporal), C56 and H51, where the files leave out part of the table's diagnosis (orbitofrontal, temporal), and T90, where they add Bilateral. All 87 files have the age and sex of their section in the code's session list, defineNOsessions_release.ini, as printed in the notebook.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task-structure",
+     "statement": "Each session has 100 encoding trials showing 100 novel images and 100 recognition trials, of which 50 show new and 50 old images, and the images come from 5 visual categories.",
+     "source": "Methods, Task, paragraph 1; Data Records, stimuli group, paragraph 1; Technical Validation, proportion of selective cells, paragraph 2",
+     "quote": "In the encoding phase, subjects were presented with 100 novel images ... in the recognition phase, subjects were presented with 50 \u201cnovel\u201d images and 50 \u201cold\u201d images ... (there are 5 different categories in each experiment)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "All 87 sessions have 100 recognition trials with 50 per label, 5 categories (ids and names) and one stored image per trial timestamped at its onset. 79 sessions have 100 encoding trials with 100 distinct images; sessions 18, 20, 21, 23, 26, 27 and 44 have 50 and session 123 has 97. In these eight sessions 2% to 48% of the images shown as old have no encoding trial in the file. The images are stored as one ImageSeries per file, not as stimuli_learn_x and stimuli_recog_x.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "new-old-label-coding",
+     "statement": "In the trials table, new_old_labels_recog is 0 for old stimuli (seen during encoding) and 1 for new stimuli.",
+     "source": "Data Records, interval group, paragraph 1",
+     "quote": "New_old_labels_recog provides the ground truth label of whether the trial showed a new or old stimulus during the recognition phase (0 is old, 1 is new).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "The labels are coded the other way. In 79 of 87 sessions every label-1 image and no label-0 image was shown during encoding; in no session do label-0 images match the encoding block. Label 1 draws \"old\" responses (4 to 6) more often than label 0 in 86 of 87 sessions (medians 0.70 and 0.24, sign test p = 1.1e-24). In the 8 sessions with short encoding blocks, 52% to 98% of the label-1 images are among the stored encoding trials and no label-0 image is. The paper's code reads 1 as old, and every analysis here does the same; with the stated coding the mean AUC is 0.247.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ttl-codes",
+     "statement": "The events stream holds the TTL markers 55, 1, 2, 3, 20 or 21, 31 to 36, 6 and 66 with the meanings of Table 1, and the events and experiment_ids streams have one entry each, in the same order.",
+     "source": "Data Records, acquisition group, paragraphs 1 and 2; Table 1",
+     "quote": "Both streams include the same number of entries in the same order. ... The following TTL values are used: Start of Experiment (55), Stimulus Onset (1), Stimulus Offset (2), Question Screen Onset (3), New/Old Response (20 or 21), Confidence of Response (31\u201336), End of Trial (6), End of Experiment (66).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Events and experiment_ids have the same length and timestamps in all 87 files, and 17019 of 17047 trials show the codes 1, 2, 3, a response and 6 in order. 78 files meet every condition. Codes not in Table 1 occur in sessions 43 (98, 99), 58 (23), 93 (99), 123 (0), 127 (0), 128 (4), 2001 (22, 23), 2002 (23) and 2003 (23). Seven files (sessions 92, 93, 96, 97, 99, 100, 101) have no start code 55 and session 2001 has a third end code 66; these do not enter the criterion. In every trial that shows the sequence the response is of its phase's kind (20 or 21 in learning, 31 to 36 in recognition), 17019 of 17019. In 6 files 1 to 18 trials have a response event that differs from the trials table's response_value; the analysis uses response_value.",
+     "deviations": [
+      "The criterion did not give a number for most files in a partial result; 78 of 87 was taken as most."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "experiment-ids",
+     "statement": "The learning block is labelled with one of 80, 83 or 88 and the recognition block with one of 81, 84 or 89.",
+     "source": "Data Records, acquisition group, paragraph 3; Table 2",
+     "quote": "The learning block is labeled with only one of the following: 80, 83, or 88, while the recognition block is labeled with only one of the following: 81, 84, or 89",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "83 of 87 files use the ids of Table 2. Session 55 uses 80 and 82, session 77 uses 81 and 82, and sessions 100 and 105 use 82 and 83 (learning and recognition, identified by their responses). The files' data_collection field states the same ids.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "session-dates",
+     "statement": "To protect patient information, session_start_time keeps only the year and month of the experiment, with the day set to the first of the month for all sessions.",
+     "source": "Data Records, structure of the NWB file, paragraph 2",
+     "quote": "in the field session_start_time, we set only the year and month of the experiment but defaulted the actual day of the experiment to the first of the month for all sessions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "86 of 87 files start on the first of a month; session 48 starts on 2010-03-13. Session 68 is dated 2000-01-01, outside the 2006 to 2019 span of the others.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-table",
+     "statement": "The units table holds spike_times, waveform_mean_encoding, waveform_mean_recognition (sampled at 100 kHz), origClusterID, SNR, IsolDist and electrodes, with one electrode per neuron.",
+     "source": "Data Records, units group, paragraph 1",
+     "quote": "We use the following columns: spike_times_index, spike_times, waveform_mean_encoding, waveform_mean_recognition, origClusterID, SNR, IsolDist, and electrodes. ... (sampled at 100 kHz) ... here this link is 1:1 since each neuron is only visible on one channel.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "All 87 files hold every column (IsolDist is named IsolationDist) and link each unit to one electrode. The stated waveform sampling rate is 98400 Hz, within tolerance of 100 kHz, with 256 samples. SNR is finite for 1778 of 1864 units (11 infinite, 75 NaN); the isolation distance is NaN for 493 units and above 1e4 for 4 (up to 8.08e+32). Spike times are not in increasing order for 13 units in sessions 21, 58, 68, 70, 73, 77 and 128, and units 35 and 37 of session 58 hold every spike time twice.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "electrodes-table",
+     "statement": "The electrodes table gives each electrode's brain area, MNI coordinates, impedance, the filter applied before spike sorting (300 to 3000 Hz) and the original hardware channel.",
+     "source": "Data Records, general group, paragraph 1; Methods, data acquisition, paragraph 1",
+     "quote": "General/extracellular_ephys contains information about the electrodes recorded from, including their location (brain area and coordinates), impedance, and filters used ... The origChannel (a custom column) refers to the hardware channel that was used to record from this electrode.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Location, filtering (300-3000Hz for all) and origChannel are filled for all 887 electrodes. The impedance column is stored as NaN (float64) for all 887. Coordinates are missing for 99 electrodes in sessions 7, 20, 21, 23, 24, 50, 52 and 2004; where given, the sign of x matches the hemisphere of the location for all 788.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "isi-criterion",
+     "statement": "Clusters were accepted as units only when fewer than 3% of their interspike intervals were shorter than 3 ms.",
+     "source": "Methods, data acquisition, paragraph 2",
+     "quote": "To classify the detected clusters as putative units, we assessed the following criteria: ... (3) violation of the refractory period (<3% of the spikes have an ISI of less than 3 ms)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "1858 of 1864 units (99.7%) have fewer than 3% of interspike intervals below 3 ms (median 0.19%). Six units are at or above 3%, four at or above 5% and two above 20% (maximum 50.1%); the two above 20% are the session 58 units whose spike times repeat. With the spike times as stored, 1860 units pass. All 77 TWH units pass.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-mtl-locations",
+     "statement": "All neurons were recorded from the medial temporal lobe, in the amygdala and the hippocampus.",
+     "source": "Abstract; Figure 5a",
+     "quote": "1863 single neurons recorded from the medial temporal lobes of 59 human subjects ... Summary of recording locations. ... (Pink: Amygdala, Yellow: Hippocampus).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "All 1864 units are on electrodes in the right amygdala (594), left amygdala (498), right hippocampus (407) or left hippocampus (365).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-auc-all",
+     "statement": "Subjects distinguished new from old images; the behavioural AUC averaged over all sessions is 0.74 \u00b1 0.10.",
+     "source": "Technical Validation, behaviour, paragraph 1; Figure 5b and 5c",
+     "quote": "We used the area under the curve (AUC) of the ROC to quantify the ability of subjects to successfully differentiate between new and old stimuli (Fig. 5b). The average AUC across all sessions was 0.74 \u00b1 0.10",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Mean AUC 0.753, SD 0.094 over 87 sessions (range 0.445 to 0.919; 6 sessions below 0.6, one at or below 0.5). Against chance (0.5), t = 25.1, p = 2.2e-41. With sessions 44 and 55 dropped, 0.754 and 0.095. Recomputed with the label coding the paper states (0 = old), the mean AUC is 0.247 (0.081 to 0.555).",
+     "deviations": [
+      "The tolerance of the mean is the stated spread (0.10), as the protocol prescribes; the spread itself was held to 10%."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-auc-sites",
+     "statement": "Performance was similar at the two study sites, with an average AUC of 0.74 \u00b1 0.09 for CS sessions and 0.69 \u00b1 0.13 for TWH sessions.",
+     "source": "Technical Validation, behaviour, paragraph 1; Figure 5c",
+     "quote": "performance was similar across the two study sites, with an average AUC for CS and TWH sessions of 0.74 \u00b1 0.09 and 0.69 \u00b1 0.13, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "CS 0.760 \u00b1 0.085 over 78 sessions and TWH 0.688 \u00b1 0.138 over 9, all within tolerance. Welch's t-test between sites p = 0.161 (difference 0.072).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-roc-asymmetric",
+     "statement": "The ROC curve is asymmetric (p < 0.05), as expected for declarative memory.",
+     "source": "Technical Validation, behaviour, paragraph 1; Figure 5b",
+     "quote": "Also, the shape of the ROC curve was asymmetric (Fig. 5b, p < 0.05), as expected for declarative memories",
+     "statistics": [
+      {
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Six sessions (59, 60, 93, 99, 119, 2008) have all five interior z(FA) or z(H) points equal, so their fitted slope is not an estimate (negative in four, 0 in one); they are left out. Over the other 81 sessions the z-ROC slope has mean 0.792, median 0.795, SD 0.289, and is below 1 in 64. One-sample t-test against 1, t = -6.49, p = 6.6e-09; Wilcoxon W = 487, p = 3.3e-08. With all 87 sessions, mean 0.726, below 1 in 70, t-test p = 1.631e-09, Wilcoxon p = 1.586e-09. The pooled ROC has slope 0.816. Per-session AUC and slopes are printed.",
+     "deviations": [
+      "The paper names no measure or test for asymmetry; the z-ROC slope of the paper's code and a t-test against 1 were fixed in the criterion.",
+      "Sessions whose interior z-ROC points do not allow a fit are left out of the mean and the tests, after the second verification round; all 87 sessions are a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-confidence-accuracy",
+     "statement": "Accuracy is significantly higher in high than in low confidence trials (P < 0.001, paired t test) across all sessions.",
+     "source": "Technical Validation, behaviour, paragraph 1; Figure 5d",
+     "quote": "Accuracy was significantly larger in high compared to low confidence trials (P < 0.001) (Fig. 5d) across all sessions.",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Fixed split, high 80.1% against low 60.9% over 84 sessions, high above low in 73, paired t-test p = 3.2e-16. Dynamic split, 78.3% against 60.4%, paired p = 1.2e-13. Sessions 93, 99 and 2008 have no responses in one group and are left out. The unpaired test of the code gives p = 3.4e-17 and 1.3e-15.",
+     "deviations": [
+      "Three sessions without responses in one confidence group are left out; the paper says all sessions."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "vs-cells-proportion",
+     "statement": "343 of the 1863 cells (18.4%) are visually selective, by a one-way ANOVA (P < 0.05) of the firing rate in recognition trials, in a 1 s window starting 200 ms after stimulus onset, across the 5 visual categories.",
+     "source": "Technical Validation, proportion of selective cells, paragraphs 2 and 3; Figure 5f",
+     "quote": "To select for VS cells, we performed a 1 \u00d7 5 ANOVA (one way, P < 0.05) ... Out of these 1863 cells (Fig. 5e), 343 cells qualified as VS cells (18.4%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Methods' window (200 to 1200 ms), 332 of 1864 units (17.8%), within tolerance. The code's window (200 to 1700 ms) gives 343 of 1864 (18.4%), the paper's count. Counting duplicated spike trains once, 326 of 1809 (18.0%). Shuffled categories give 4.7% (10 shuffles per unit). At p < 0.01, 8.6%; at p < 0.1, 25.6%. Among sessions with at least 20 units, 0.0% to 35.7%.",
+     "deviations": [
+      "The main result uses the Methods' 1 s window; the paper's code uses 1.5 s, shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ms-cells-proportion",
+     "statement": "146 of the 1863 cells (7.8%) are memory selective, by a two-tailed bootstrap comparison of mean firing rates (1,000 runs, P < 0.05) between the 50 novel and 50 familiar recognition trials in a 1 s window starting 200 ms after stimulus onset.",
+     "source": "Technical Validation, proportion of selective cells, paragraphs 2 and 3; Figure 5f",
+     "quote": "To select for an MS cell, we compared the firing rate between the 50 novel and 50 familiar trials during the retrieval period ... 146 cells qualified as MS cells (7.8%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "The Methods' test (all 50 new and 50 old trials, 200 to 1200 ms) selects 110 of 1864 units (5.9%), against the paper's 146 (7.8%). With labels shuffled (10 per unit, 18640 tests) 5.39% are selected (95% CI 5.07% to 5.73%); 110 is not distinguishable from this null (one-sided binomial p = 0.18) and only just above 5% (p = 0.044). A second bootstrap seed gives 118 (6.3%), also outside tolerance; 22 units are selected under one seed only. Correct trials only in the Methods' window give 143 and 140 under the two seeds, and the code's choices (correct trials only, 200 to 1700 ms) 147 and 149, all within tolerance (147 against 5%, p = 7.1e-08). With labels shuffled among the correct trials in the code's window the null is 5.58% (95% CI 5.26% to 5.92%), and 147 exceeds it (104.1 expected, one-sided binomial p = 2.5e-05). All trials in the code's window give 108 and 109. The paper's number therefore follows its code's restriction to correct trials, which the Methods do not mention, and the outcome comes from that disagreement, not from the data. It is judged on the Methods' procedure, as the protocol requires. Per-unit p-values of the 288 units selected under some reading or seed are printed.",
+     "deviations": [
+      "The paper's code restricts the test to correct trials and uses a 1.5 s window; the Methods describe all 50 and 50 trials and a 1 s window. The Methods give the main result.",
+      "The bootstrap uses the code's algorithm with a fixed seed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "dual-cells-proportion",
+     "statement": "26 cells (1.4%) are both visually and memory selective.",
+     "source": "Technical Validation, proportion of selective cells, paragraph 3; Figure 5f",
+     "quote": "26 cells qualified as both VS and MS cells (1.4%) (Fig. 5f).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Under the Methods' tests 12 of 1864 units (0.6%) are both VS and MS, against 19.6 expected if the two were independent and the paper's 26 (1.4%); 14 with the second bootstrap seed. The code's choices give 26 (1.4%) under both seeds. Counting duplicated spike trains once, 11 of 1809. As for ms-cells-proportion, the outcome comes from the Methods disagreeing with the code.",
+     "deviations": [
+      "Depends on ms-cells-proportion, whose main test follows the Methods and not the code."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-site-proportions",
+     "statement": "The percentages of VS, MS and dual cells are comparable between CS sessions (18.4%, 7.7% and 1.4%) and the new TWH sessions (19.4%, 10.4% and 1.3%).",
+     "source": "Technical Validation, proportion of selective cells, paragraph 3; Figure 5f (the values as written into plotFigure5.ipynb at commit 1d95162)",
+     "quote": "We found that the percentages of VS, MS, and dual VS/MS cells were comparable to previously reported percentages in our locally recorded dataset (Fig. 5f)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Fisher's exact test finds no difference between sites (VS p = 0.360, MS p = 0.215, dual p = 1.000). Under the Methods' tests CS has 17.6%, 5.8% and 0.7% and TWH 22.1%, 9.1% and 0.0%; only CS VS is within tolerance. The code's choices give CS 18.4%, 7.8% and 1.4% (328, 139 and 25 of 1787) and TWH 19.5%, 10.4% and 1.3% (15, 8 and 1 of 77), matching Figure 5f to within 0.1 point, so the partial outcome comes from the Methods disagreeing with the code. With 77 TWH units the 95% intervals of the TWH percentages are 13.4% to 33.0% (VS), 3.7% to 17.8% (MS) and 0.0% to 4.7% (dual), so the Fisher tests have little power.",
+     "deviations": [
+      "The paper names no test for \"comparable\"; Fisher's exact test was fixed in the criterion.",
+      "The expected values come from plotFigure5.ipynb, which writes them into the plot as constants."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "twh-sessions",
+     "statement": "The dataset includes 9 sessions from a new institution, Toronto Western Hospital.",
+     "source": "Technical Validation, proportion of selective cells, paragraph 3; Online-only Table 1",
+     "quote": "this dataset includes recordings from 23 new sessions, including 9 sessions from a new institution (Toronto Western Hospital, TWH)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Sessions 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 and 2011, from 8 subjects, with 77 units; all name Toronto Western Hospital as institution.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-example-vs-neuron",
+     "statement": "Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually selective, responding most to images of animals.",
+     "source": "Figure 4",
+     "quote": "An example VS neuron selective for the visual category of animals is shown at the bottom (The ID of this neuron 132-177-4-RA corresponds to: session ID \u2013 channel number \u2013 cell number \u2013 brain area).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "Session 132 has one unit on channel 177, at electrode row 4 in the right amygdala, which matches the label 132-177-4-RA. It is the file's unit at 0-based index 4 of 8, so the label's cell number equals both its electrode row and its 0-based unit index. ANOVA across categories p = 1.2e-22 (Methods' window) and 7.9e-19 (code's window); mean rate 6.75 Hz for animals against 0.25 to 0.85 Hz for the other four categories.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "previous-release-link",
+     "statement": "The sessions of the earlier release (Faraut et al. 2018) are found in this dandiset under the same subject, session id and task variant.",
+     "source": "Faraut et al. 2018, Scientific Data 5, 180010 (doi:10.1038/sdata.2018.10), Table 1",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "64 of the 65 sessions of Table 1 of Faraut et al. 2018 (98.5%) are in the dandiset by session id, all under the same subject and task variant. Session 98 of subject H48 is not; its section in the code's session list is commented out. Age and sex agree for 39 of the 42 matched subjects; C24, H33 and H48 differ, the same three that differ from Online-only Table 1, whose values the 2018 table shares.",
+     "deviations": [
+      "The claim was added after the first verification round, to link the earlier release's session list to the dandiset for previous-release-additions."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "previous-release-additions",
+     "statement": "Relative to the earlier release of this task's data (Faraut et al. 2018), this release adds 23 sessions, 17 subjects and 288 neurons.",
+     "source": "Background & Summary, paragraph 3; Technical Validation, proportion of selective cells, paragraph 3",
+     "quote": "we added 17 subjects and 288 neurons, including from a new study site, relative to our previously released dataset ... this dataset includes recordings from 23 new sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_chandravadia_2020.ipynb",
+     "notes": "The dandiset has 23 sessions not in the earlier list (14 CS, 9 TWH) from 17 subjects with no earlier session, the paper's numbers. The new sessions hold 325 units, outside the tolerance of 288; the sessions also in the earlier release hold 1539 units, where Faraut et al. 2018 gives 1576 neurons for 65 sessions. 1576 + 288 = 1864, the dandiset's unit count, so the paper's 288 matches a difference of totals and not a count of the new sessions. The differences of the stated totals are 22 sessions, 17 subjects and 287 neurons. The link holds for 64 of 65 earlier sessions; the missing session 98 does not change which sessions or subjects are new, and may account for part of the difference in the earlier sessions' unit count.",
+     "deviations": [
+      "The earlier release's session list is Table 1 of Faraut et al. 2018, not its Dryad archive, which refuses automated download (HTTP 403 on the file stream, and its API asks for a bearer token).",
+      "In the first version of this attempt the claim was blocked for want of the list; it was tested after the first verification round."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-example-vs-neuron",
+     "statement": "Neuron 144-140-3-RH (session 144, channel 140, cell 3, right hippocampus) is visually selective for phones.",
+     "source": "Figure 3",
+     "quote": "An example VS neuron selective for the visual category of phones is shown at the bottom (The ID of this neuron 144-140-3-RH corresponds to: session ID \u2013 channel number \u2013 cell number \u2013 brain area).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The neuron's session id, 144, is not among the dandiset's 87 sessions, nor in Online-only Table 1 or in the session list of the paper's code. The paper's demo script (python/export/demo/export.py, printed, not run) sets NOID 144 under the comment session 'TWH103_111918', and the code's session list gives subject T103 one section, session 2009. In session 2009 two units are on channel 140 in the right hippocampus (unit indices 1 and 2, both at electrode row 1, clusters 352 and 414); unit 2 is visually selective (ANOVA p = 1.3e-09) and fires most to phones. The Figure 4 neuron's cell number 4 is its electrode row and its 0-based unit index (its 1-based index is 5); under that convention the candidate is cell 2 or 1, not 3. With neither the cell number nor a recorded mapping of 144 to 2009, the neuron cannot be identified. The candidates and the cell-number test are printed in the notebook.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The new_old_labels_recog column is described in every file, and in the paper, as 0 for old and 1 for new stimuli. The data have 1 for old; label-1 images are those shown during encoding and draw most \"old\" responses. The paper's code reads it correctly, but a user following the description gets an AUC of 0.25.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Sessions 43 and 44 (subject H23) and sessions 54 and 55 (subject H42) hold identical spike trains for every unit, 23 and 32 units. In each pair the units are the same neurons, so 55 of the 1864 units are repeats and the paper's neuron count includes them twice. Session 55 also repeats session 54's learning block trial for trial and differs only in its recognition block.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Seven sessions (18, 20, 21, 23, 26, 27, 44) have 50 encoding trials and session 123 has 97, where the paper describes 100. Only 52% to 98% of the images later shown as old are in the stored encoding blocks of these sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Electrode impedance is empty for all 887 electrodes, though the paper lists it in the electrodes table. MNI coordinates are missing for 99 electrodes in 8 sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The isolation distance is NaN for 493 of 1864 units and implausibly large for 4 (up to 8.08e+32), and SNR is NaN for 75 units and infinite for 11.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "The spike times of 13 units in 7 sessions (21, 58, 68, 70, 73, 77, 128) are not in increasing order, and units 35 and 37 of session 58 hold every spike time twice, which doubles their firing rates and puts half their interspike intervals at zero.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Age or sex differ from the paper's Online-only Table 1 for three subjects (C24 57 against 47, H33 30 against 29, H48 female 32 against male 54). The files follow the code's session list; Table 1 of Faraut et al. 2018 gives the same values as Online-only Table 1.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Session 48 keeps the day of the experiment (2010-03-13) in session_start_time, where the paper says every day was set to the first of the month to protect patient information. Session 68 is dated 2000-01-01.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Experiment ids outside Table 2 are used in four files (sessions 55, 77, 100, 105), and event codes outside Table 1 (0, 4, 22, 23, 98, 99) occur in nine files. In six files 1 to 18 trials have a response event that differs from the trials table's response_value.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods state 89 sessions; Online-only Table 1 and the dandiset have 87. The paper gives 1863 neurons; the dandiset has 1864 unit rows.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods select memory selective cells by comparing all 50 novel and 50 familiar trials in a 1 s window. The paper's code uses correct trials only and a 200 to 1700 ms window for both selections. The paper's counts (343 VS, 146 MS, 26 dual) and Figure 5f follow the code; the Methods' procedure gives 332, 110 and 12.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "plotFigure5.ipynb, the notebook the code provides to reproduce Figure 5, writes the per-site percentages of Figure 5f into the plot as constants and does not compute them.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "The example neuron of Figure 3 is labelled as from session 144, which is not in the dandiset or in the paper's session list. The paper's code names NOID 144 as a recording of subject T103, whose one session in the dandiset is 2009, but nothing maps 144 to 2009.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Session 98 of subject H48, listed in the earlier release (Faraut et al. 2018, Table 1), is not in the dandiset or in Online-only Table 1; its section in the code's session list is commented out.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The 23 sessions that are new relative to the earlier release hold 325 units, where the paper says 288 neurons were added; 288 is the dandiset's 1864 units minus the earlier release's 1576.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The institution is written \"Hunigton Memorial Hospital\" in 28 files and \"Hunington Memorial Hospital\" in 6, and the device as \"Neuralynx-cheetah\" and \"Neuralynx-Cheetah\".",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text. The verifier checked the helper's copy of Online-only Table 1 against the paper, tested the helper functions on synthetic data (bootstrap_p, anova_p, zroc_slope, auc, window_rates) and compared bootstrap_p with bootstrapMeanEqualTest.m at commit 1d95162. Report in transcripts/000004/verifier-1-report.md.",
+     "agreed": 24,
+     "of": 24,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the revised run, with the conclusions and the summary, the helper module, the claims file and this record. The verifier downloaded the paper and Faraut et al. 2018, checked the helper's copy of Faraut 2018 Table 1 against the PDF (42 subjects, 65 session ids, no differences), and ran zroc_slope on a synthetic session answering only 1 and 6. Report in transcripts/000004/verifier-2-report.md. Its round-1 problem 4 (the shared clock shown for only 38 of 87 sessions) is tied to no claim; it records it as acknowledged and unchanged, and cell 10 states it.",
+     "agreed": 25,
+     "of": 25,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000004-chandravadia-2020",
+   "type": "reproduction",
+   "title": "Human single neurons during a recognition memory task (Chandravadia et al. 2020)",
+   "description": "Tests the data descriptor of Chandravadia et al. (2020) on dandiset 000004, which holds 87 sessions of 59 epilepsy patients with single units from the amygdala and hippocampus during a new/old recognition task. It checks the files against the paper's description of the data records and subjects, and repeats the behavioural results (AUC, ROC asymmetry, accuracy by confidence) and the proportions of visually and memory selective cells of Figure 5.",
+   "datasets": [
+    "dandi:000004"
+   ],
+   "papers": [
+    "10.1038/s41597-020-0415-9"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_chandravadia_2020.ipynb",
+     "title": "Reproducing Chandravadia et al. (2020) from dandiset 000004",
+     "executed": "notebooks/000004-chandravadia-2020/reproduce_chandravadia_2020.html"
+    }
+   ]
+  }
+ ]
+}
