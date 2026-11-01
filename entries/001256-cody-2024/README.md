@@ -19,8 +19,8 @@ are not in it.
 | DRC cell responses do not differ by contrast (Fig. 2e) | Not reproduced |
 | LME: baseline PD predicts responses, evoked PD does not (Fig. 3b) | Reproduced |
 | LME: full model no better than null (Fig. 3c) | Not reproduced |
-| ZnT3-WT: contrast and ZX1 effects and their interaction (Fig. 4c) | Blocked: methods underspecified (change to partially reproduced proposed) |
-| ZnT3-WT: post hoc contrast and ZX1 effects (Fig. 4c) | Partially reproduced (change to not reproduced proposed) |
+| ZnT3-WT: contrast and ZX1 effects and their interaction (Fig. 4c) | Partially reproduced |
+| ZnT3-WT: post hoc contrast and ZX1 effects (Fig. 4c) | Not reproduced |
 | ZnT3-KO: no contrast or ZX1 effect on the intercept (Fig. 4f) | Blocked: methods underspecified |
 | ZnT3-KO: ZX1 still reduces the slope, less than in WT (Fig. 4f) | Not reproduced |
 | Figure 5 (three claims, widefield imaging) | Blocked: data missing |

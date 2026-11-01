@@ -333,7 +333,7 @@ outcomes:
   - Random intercepts as in fig3b-lme-coefficients.
   assumed: true
 - claim: fig4c-wt-contrast-zx1-effects
-  outcome: blocked
+  outcome: partially_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig4c-wt-contrast-zx1-effects
   notes: 328 ZnT3-WT trials below 50% (6888 rows; the paper's denominator df are about 7920). Under reference
@@ -341,15 +341,15 @@ outcomes:
     slope p = 0.049 and 0.0029; ZX1 intercept b = 1.25, p = 0.010; ZX1 slope b = -8.24 and -4.96, p =
     4.0e-08 and 0.017; contrast by ZX1 b = -2.76, p = 3.0e-05). Under sum coding the ZX1 intercept is
     not significant (p = 0.72) and in the full factorial nor is the contrast slope (p = 0.12), so four
-    and three terms pass. Every reading meets at least the partial criterion, two the full one; the criterion
-    treats a disagreement between readings as methods_underspecified. Reference coding is the default
-    of both fitlme and lmer, which the Methods name. The partial condition holds under all four readings
-    with the main cleaning, with the narrower step rule (three or four terms, interaction p <= 0.00093)
-    and with the round-1 cleaning without AA0319 and AA0334, and under none with the round-1 cleaning
-    (interaction p = 0.25) or the single pass (p = 0.56), so the result rests on the cleaning. A change
-    to partially_reproduced is proposed. Mean traces at 2 s, CTRL HIGH 113.2 against LOW 108.5%; ZX1 HIGH
-    106.9 against LOW 109.1%. The outcome rests on the pupil cleaning (an assumption, see deviations);
-    the record's schema does not allow the assumed flag on a blocked outcome.
+    and three terms pass. Every reading meets the partial condition (the contrast by ZX1 term and at
+    least two main terms), two also the full one, so the readings agree on partially_reproduced and differ
+    only on whether the full condition also holds. Reference coding is the default of both fitlme and
+    lmer, which the Methods name. The partial condition holds under all four readings with the main cleaning,
+    with the narrower step rule (three or four terms, interaction p <= 0.00093) and with the round-1
+    cleaning without AA0319 and AA0334, and under none with the round-1 cleaning (interaction p = 0.25)
+    or the single pass (p = 0.56), so the outcome rests on the cleaning (an assumption, see deviations).
+    Changed from blocked after the third verification round. Mean traces at 2 s, CTRL HIGH 113.2 against
+    LOW 108.5%; ZX1 HIGH 106.9 against LOW 109.1%.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
@@ -374,31 +374,21 @@ outcomes:
   - Fits use several optimizers and keep the converged fit with the highest finite likelihood; lbfgs alone
     stopped at a degenerate point (infinite likelihood, intercept 0, subject variance 0) in some fits
     in the first round.
-  blocked_by: methods_underspecified
-  proposed:
-    outcome: partially_reproduced
-    reason: 'Every model and coding reading meets the partial condition (the contrast by ZX1 term and
-      at least two main terms, p < 0.05; terms passing 5, 5, 4 and 3, interaction p = 3.0e-05), and the
-      readings differ only on whether the full condition also holds. Read with its partial clause applying
-      under every reading, as the second verification reads it, the criterion gives partially_reproduced
-      and no disagreement at that level. The outcome rests on the cleaning (an assumption): the partial
-      condition holds under all four readings with the narrower step rule and with the round-1 cleaning
-      without AA0319 and AA0334, and under none with the round-1 cleaning or the single pass (notebook,
-      Fig. 4c conclusion and variants table). The proposed outcome would carry assumed true.'
+  assumed: true
 - claim: fig4-wt-posthoc
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_cody_2024.ipynb
   output: claim:fig4-wt-posthoc
   notes: At the cell means (time polynomials at 0), HIGH exceeds LOW in CTRL by 2.48% (Tukey p = 3.9e-08)
     and not after ZX1 (-0.28, p = 0.95), and ZX1 lowers HIGH (-1.51, p = 0.015), but ZX1 also raises LOW
     (1.25, p = 0.0496), which the criterion requires not to be significant, and the ZX1 effect on HIGH
     is weaker than the paper's p < 0.0001. Three of four parts hold; the fourth fails at the threshold,
-    and the criterion has no partial level. The same under all four readings, so the coding disagreement
-    that blocks fig4c-wt-contrast-zx1-effects does not bear on it. With the round-1 cleaning HIGH minus
+    and the criterion has no partial level, so it is not met. The same under all four readings. With the round-1 cleaning HIGH minus
     LOW in CTRL is not significant (p = 0.078) and ZX1 has no effect (p = 0.83 and 0.89); without AA0319
     and AA0334 under that cleaning ZX1 changes LOW (p = 0.00011) and not HIGH (p = 0.31); with the single
     pass HIGH and LOW also differ after ZX1 (p = 0.0045). Only with the narrower step rule are all four
-    parts met (p = 1.7e-05, 0.98, 0.00036 and 0.99). A change to not_reproduced is proposed.
+    parts met (p = 1.7e-05, 0.98, 0.00036 and 0.99), so the outcome rests on the main cleaning and on
+    a p-value at the threshold. Changed from partially_reproduced after the third verification round.
   deviations:
   - Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures
     (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these
@@ -417,15 +407,6 @@ outcomes:
   - Tukey adjustment over the six pairs from the studentized range with the residual df; emmeans is not
     used.
   assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: 'The criterion has no partial level and its part that ZX1 does not change LOW fails (Tukey
-      p = 0.0496), so under the main cleaning it is not met. The parts that hold are not robust: with
-      the round-1 cleaning HIGH minus LOW in CTRL is not significant (p = 0.078) and ZX1 has no effect;
-      without AA0319 and AA0334 under that cleaning ZX1 changes LOW (p = 0.00011) and not HIGH (p = 0.31);
-      with the single pass HIGH and LOW differ after ZX1 (p = 0.0045). Only the narrower step rule meets
-      all four parts, so the outcome rests on the cleaning (notebook, Fig. 4 post hoc conclusion and variants
-      table). The proposed outcome would carry assumed true.'
 - claim: fig4f-ko-no-contrast-effect
   outcome: blocked
   blocked_by: methods_underspecified
@@ -1121,3 +1102,46 @@ verifications:
     outcome: reproduced
     reason: 10.49 and 11.17, both within 10 plus or minus 2.5.
     response: No change.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3; same harness, separate context, did not write
+    the notebook)
+  reviewed: Round 3. The two proposed changes of outcome (fig4c-wt-contrast-zx1-effects, blocked to partially
+    reproduced; fig4-wt-posthoc, partially reproduced to not reproduced) and the analysis behind them
+    in the executed notebook after the round-2 revision (cells 43, 46 and 71), with the claims file and
+    the paper. Nothing else was reviewed. Report in transcripts/001256/verifier-3-report.md.
+  results:
+  - claim: fig4c-wt-contrast-zx1-effects
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 43 fits both model formulas under reference and sum coding on 328 trials (6888 rows);
+      all fits converged, subject variance 28.1. Terms with p < 0.05 per reading are 5, 5, 4 and 3, and
+      contrast by ZX1 has p = 3.0e-05 in all four, so every reading meets the partial condition and two
+      the full one. Cell 71 tests the criterion as written ("2 of 4; 4 of 4"). The readings agree on the
+      partial level, so with its partial clause applying under every reading, as the full clause does,
+      the criterion gives partially_reproduced; fig4f-ko-no-contrast-effect differs, since there the readings
+      disagree between reproduced and not_reproduced, and it rightly stays blocked. The partial condition
+      holds under the main cleaning, the narrower step rule and the round-1 cleaning without AA0319 and
+      AA0334, and fails under the round-1 cleaning (p = 0.25) and the single pass (p = 0.56), both of
+      which keep the tracking-failure maxima the cleaning exists to remove. The outcome rests on the cleaning,
+      and assumed true is right.'
+    response: Outcome changed to partially reproduced with assumed true, blocked_by and the proposal removed.
+      The notebook's conclusion, header and summary, the README and the attempt notes updated.
+  - claim: fig4-wt-posthoc
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 46 compares the cell means at tPoly = 0 with Tukey''s test; the four readings give the
+      same means and almost the same p-values (HIGH minus LOW in CTRL +2.48, p = 3.9e-08; after ZX1 -0.28,
+      p = 0.95; ZX1 on HIGH -1.51, p = 0.015; ZX1 on LOW +1.25, p = 0.0496). The residual df (about 6880)
+      against the paper''s about 7920 cannot move 0.0496 across 0.05. The criterion has no partial level
+      and its part that ZX1 does not change LOW fails, and cell 46 prints criterion met per reading [False,
+      False, False, False]. The main cleaning was fixed before the proposal and is the less favourable
+      to the claim; the round-1 cleaning, that cleaning without AA0319 and AA0334 and the single pass all
+      fail. The narrower step rule meets all four parts (p = 1.7e-05, 0.98, 0.00036 and 0.99) and answers
+      the round-2 criticism of the main rule, so the outcome rests on a p-value at the threshold and on
+      keeping the broader rule; assumed true is needed and the notes should keep saying the narrower rule
+      reproduces the claim. Four of five cleanings fail, the main one included, so not_reproduced.'
+    response: Outcome changed to not reproduced (assumed true kept) and the proposal removed. The notes
+      and the notebook's conclusion still say that the narrower step rule meets all four parts, and now
+      that the outcome rests on the main cleaning and on a p-value at the threshold. The summary and README
+      updated.
