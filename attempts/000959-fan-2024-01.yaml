@@ -1,0 +1,423 @@
+schema_version: 2
+id: 000959-fan-2024-01
+dataset:
+  archive: dandi
+  id: "000959"
+  version: 0.261020.0242
+  doi: 10.48324/dandi.000959/0.261020.0242
+paper: doi:10.1016/j.neuron.2024.05.004
+date: 2026-10-31
+entry: 000959-fan-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41252133262
+outcomes:
+- claim: design-days-per-area
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:design-days-per-area
+  measured:
+  - 15
+  - 12
+  - 5
+  notes: Days holding kept stimulation and sham trials are 15 per area for monkey L, 12 per area for
+    monkey T (Eyes) and 5 per area for monkey T (Mouth). Each day holds one region.
+- claim: design-sessions-per-day
+  outcome: partially_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:design-sessions-per-day
+  measured:
+  - 10.0
+  - 6.02
+  - 14.0
+  - 5.0
+  - 296.4
+  notes: Monkey L has 10.0 social runs per day (9 to 11) and 6.02 control runs (4 to 8); monkey T has
+    14 social runs on every one of its 36 Eyes days and 5 control runs. Runs hold 295.8 to 297.3 s of
+    valid samples (mean 296.4). All ranges hold, and three of four means; monkey L's control mean of
+    6.02 is outside 5 plus or minus 0.5, as 14 of its 45 days have 8 control runs. Monkey T's mean of
+    14 is within the tolerance of 15 but no Eyes day has 15 social runs (the Mouth days have 15).
+  deviations:
+  - A session of the paper is taken to be one file (one run); the valid run length is the span of
+    non-NaN samples of `t`.
+- claim: fig1e-stim-counts-comparable
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig1e-stim-counts-comparable
+  notes: Over the 12 rank-sum tests for stimulations and the 12 for shams, the smallest
+    FDR-corrected p is 0.908 and 0.942, so all exceed 0.90 as reported (smallest uncorrected 0.509
+    and 0.187). Kept trials per day average 116 to 125 per type and area.
+  deviations:
+  - Benjamini-Hochberg correction from statsmodels in place of dsp3.fdr, which the claims file
+    names; both implement the same procedure.
+- claim: figs1d-stim-counts-nonsocial
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:figs1d-stim-counts-nonsocial
+  notes: No FDR-corrected p is below 0.05 (smallest 0.108 for stimulations, 0.082 for shams). The
+    paper's "all p > 0.10" does not hold for two sham tests between the monkeys (OFC and dmPFC,
+    corrected 0.082, uncorrected 0.014 and 0.010); monkey T has more control trials per day (71 to
+    76) than monkey L (52 to 57).
+- claim: figs1e-eyes-more-than-face
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:figs1e-eyes-more-than-face
+  notes: Under both day counts (a, total; b, mean per run) and both event sets (M1-only and mutual,
+    M1-only), Eyes fixations exceed non-eye Face fixations for every area, corrected p from 1.1e-07 to
+    4.4e-05, all below 1e-4. Median day totals are 384 to 408 Eyes and 129 to 177 non-eye Face
+    fixations.
+  deviations:
+  - The events counted are not fixed by the claims file. M1's fixations in the ROI including the M1
+    side of mutual events are the main set, following the Methods' "total number of gaze fixations
+    ... of the stimulated monkey" (STAR Methods, Frequency of microstimulations and regions of
+    interest); M1-only events are shown and give the same outcome.
+  - The non-eye Face is the files' m1_neface table (with mutual_face for mutual events); the
+    notebook shows that m1_wholeface equals m1_eye plus m1_neface in every run.
+- claim: figs1e-eyes-vs-rdm-comparable
+  outcome: not_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:figs1e-eyes-vs-rdm-comparable
+  notes: Under reading (a), the day's total, which the criterion judges, Eyes fixations exceed RDM
+    fixations for every area (corrected p 0.00036, 0.000025 and 0.00041 for OFC, dmPFC and ACCg;
+    median differences 177, 202 and 241 per day). A day holds about twice as many social runs as
+    control runs (L 10 and 6, T 14 and 5), so day totals differ. Under the code's reading (b), the
+    mean per run, the counts are comparable (corrected p 0.40, 0.40 and 0.52), as the paper
+    reports; M1-only events give the same pattern under both readings.
+  deviations:
+  - The RDM fixations are the M1 events labelled Eyes in the Dot runs, whose Eyes ROI is the RDM
+    location ("same location and size as Eyes ROI", STAR Methods, Closed-loop microstimulation
+    protocol).
+- claim: fig2a-density-map-ofc
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2a-density-map-ofc
+  notes: The day-averaged OFC stimulation minus sham density summed over the whole Face squares is
+    7.47 (z-scored) and 0.0093 (by total), and over the Eyes squares 3.71 and 0.0046; it is positive
+    in each monkey under each normalisation. dmPFC (whole Face -2.46 and -0.0026) and ACCg (-2.55 and
+    -0.0048) are negative. 10,771 of 53,542 post-gaze fixations fall outside the 40-degree grid.
+  deviations:
+  - Fixations are the Methods reading (M1-only and mutual events). The grid is centred on each
+    run's Eyes ROI centre, and the ROI squares are those whose centres lie in the day's ROI
+    rectangle, a standard choice; pixels are converted with 27 cm at 50 cm over 768 pixels (claims
+    file, opening comment).
+- claim: fig2c-ofc-social-gaze-distance
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2c-ofc-social-gaze-distance
+  notes: Methods reading, median stimulation minus sham day difference -17.9 pixels (-0.70 degrees),
+    p = 0.00021 over 27 days; monkey L p = 0.0067 (paper 0.008), monkey T p = 0.016 (paper 0.002),
+    both negative. Code reading, p = 0.00013, 0.0067 and 0.0034. 1,270 of 19,474 social trials have
+    no fixation in the window and are left out of the day means.
+  deviations:
+  - The mutual events added in the Methods reading are the M1 side of mutual_wholeface, which holds
+    every mutual event (mutual_eye, mutual_face and mutual_mouth are subsets of it, shown in the
+    notebook); mutual events are defined only within the face, and m1_all holds no M1 side of a
+    mutual event.
+  - Each run's own ROIs are used, since three days were recalibrated between runs (08142019,
+    12102019, 12132019).
+- claim: fig2c-dmpfc-accg-no-distance-effect
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2c-dmpfc-accg-no-distance-effect
+  notes: dmPFC median day difference -6.5 pixels, p = 0.21; ACCg -4.9 pixels, p = 0.39 (paper 0.361
+    and 0.374). The code reading gives 0.29 and 0.29.
+- claim: fig2e-ofc-contralateral
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2e-ofc-contralateral
+  notes: Contralateral median effect -21.2 pixels, p = 0.00048; ipsilateral -12.3 pixels, p = 0.058;
+    contralateral against ipsilateral median -17.7 pixels, p = 0.046 (paper below 0.001, 0.068,
+    0.026). Per monkey, contralateral p = 0.018 (L) and 0.012 (T) (paper 0.015, 0.012); hemifield
+    difference p = 0.073 (L) and 0.30 (T) (paper 0.073, 0.204). The code reading gives 0.00038,
+    0.055 and 0.026. All 27 days have fixations in both hemifields.
+  deviations:
+  - The hemifield is computed from the centre of `roi_m2_face` as the claims file says; the files'
+    own laterality_label agrees for 99.98% of M1 events.
+- claim: fig2e-dmpfc-accg-no-hemifield-effect
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2e-dmpfc-accg-no-hemifield-effect
+  notes: dmPFC contralateral p = 0.48, ipsilateral 0.10, difference 0.22; ACCg 0.53, 0.53, 0.82
+    (paper 0.501, 0.149, 0.230 and 0.442, 0.517, 0.564). The code reading gives no p below 0.05
+    either (smallest 0.11).
+- claim: fig2f-nonsocial-no-distance-effect
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2f-nonsocial-no-distance-effect
+  notes: OFC median day difference -13.4 pixels, p = 0.22; dmPFC 1.7 pixels, p = 0.64; ACCg -5.7
+    pixels, p = 0.50 (paper 0.118, 0.719, 0.302). By monkey, dmPFC in monkey L gives p = 0.048
+    (distance larger after stimulation), outside the claim's test.
+  deviations:
+  - The RDM centre is the centre of each Dot run's `roi_m1_eyes`; the Dot runs hold M1 events only,
+    so the fixations are m1_all.
+- claim: fig2gh-nonsocial-no-hemifield-effect
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig2gh-nonsocial-no-hemifield-effect
+  notes: None of the nine tests over both monkeys gives p below 0.05; the smallest is OFC
+    contralateral, 0.16 (paper 0.097). By monkey, dmPFC contralateral in monkey L gives p = 0.035,
+    outside the claim's tests.
+  deviations:
+  - The Dot runs do not hold `roi_m2_face`; the hemifield reference is taken from the same day's
+    social runs, where it never varies within a day.
+- claim: methods-ofc-distance-longer-windows
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:methods-ofc-distance-longer-windows
+  notes: Within 2 s, both monkeys p = 0.0030, L 0.012, T 0.23; within 3 s, 0.0032, 0.0067 and 0.20
+    (paper 0.003, 0.008, 0.204 and 0.004, 0.007, 0.204), stimulation below sham in each. The code
+    reading gives the same pattern (2 s 0.0022, 0.010, 0.18; 3 s 0.0025, 0.0067, 0.15).
+- claim: methods-ofc-no-change-in-fixation-number
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:methods-ofc-no-change-in-fixation-number
+  notes: Under the code's reading (a), none of the 12 per-monkey tests (Eyes and whole Face, 1.5, 2
+    and 3 s) gives p below 0.05; the smallest is 0.12. Both monkeys combined, outside the claim,
+    give p = 0.025 for whole Face fixations within 1.5 s (0.044 more per trial after stimulation).
+    Under reading (b), M1-only and mutual events, monkey L gives p = 0.026 for the whole Face within
+    1.5 s, 1 of 12 tests.
+- claim: methods-ofc-longer-face-looking
+  outcome: partially_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:methods-ofc-longer-face-looking
+  measured:
+  - 52.8
+  - 65.07
+  - 46.23
+  - -14.68
+  - -2.15
+  - 12.23
+  notes: The tests hold with the code's M1-only events; OFC whole Face p = 0.0025 with stimulation
+    longer (L 0.0067, T 0.15), OFC Eyes p = 0.039, dmPFC 0.80, ACCg 0.93 (paper 0.003, 0.008,
+    0.129, 0.044, 0.683, 0.848). Under reading (a), the median of day differences, OFC whole Face is
+    52.8 ms (expected 48.9 plus or minus 4.89) and monkey L 65.1 ms (66.6 plus or minus 6.66),
+    within tolerance, monkey T 46.2 ms (39.5 plus or minus 3.95) is not; reading (b), the mean, gives
+    62.6, 85.3 and 34.3 ms, none within. dmPFC -14.7 ms matches -14.5; ACCg -2.2 ms against 3.4 and
+    OFC Eyes 12.2 ms against 16.5 do not. With M1-only and mutual events the OFC whole Face test
+    still holds (p = 0.030) but OFC Eyes does not (p = 0.19).
+- claim: methods-mouth-stimulation-no-effect
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:methods-mouth-stimulation-no-effect
+  notes: None of the 27 tests on the Mouth days gives p below 0.05. Social OFC, dmPFC and ACCg give
+    p = 1, 1 and 0.19 (paper 1, 1, 0.125), non-social 1, 0.125 and 0.19 (paper 1, 0.188, 0.188);
+    the hemifield tests give at least 0.0625. With 5 days per area the smallest two-sided exact
+    signed-rank p is 0.0625, so the paper's test cannot find an effect at 0.05 on these days.
+  deviations:
+  - The Mouth centre is the centre of each run's `roi_m1_mouth`, and the non-social centre that of
+    the Dot run's `roi_m1_mouth` (the RDM at the Mouth location); the files do not say whether the
+    Mouth rectangle is the one used online.
+- claim: methods-eyes-vs-mouth-bootstrap
+  outcome: not_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:methods-eyes-vs-mouth-bootstrap
+  notes: With all 27 OFC Eyes days, contralateral p = 0.078 (a, one-sided) and 0.156 (b, two-sided),
+    0.059 to 0.070 one-sided over five other seeds (paper 0.009); ipsilateral 0.30 and 0.59 (paper
+    0.724); both hemifields 0.043 and 0.086 (paper 0.799). With monkey T's 12 days, contralateral
+    0.037 and 0.074 (paper 0.005), ipsilateral 0.35 and 0.70, both hemifields 0.037 and 0.074
+    (paper 0.510). The Mouth medians are -6.3 (contralateral), -8.4 (ipsilateral) and -0.24 pixels
+    (both), the Eyes medians -21.2, -12.3 and -17.9. Neither reading gives significance for the
+    contralateral fixations alone; under (a) both hemifields combined is the comparison that is
+    significant, the reverse of the paper's pattern.
+  deviations:
+  - Seed 959 is a standard choice; five other seeds are shown.
+- claim: fig3b-ofc-inter-looking-interval
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig3b-ofc-inter-looking-interval
+  notes: OFC median day difference -0.069 s, p = 0.044 (paper 0.035); dmPFC p = 0.77, ACCg 0.34
+    (paper 0.792, 0.291); monkey L 0.25 and T 0.11 (paper 0.188, 0.092). The outcome is near the
+    threshold and depends on two details. 91 trials have a whole Face event that starts at the trial
+    sample itself; the criterion's "starts after it" leaves them out, and counting them as latency 0
+    gives OFC p = 0.058. M1-only events give OFC p = 0.0022 (T 0.0024).
+  deviations:
+  - An event "after" the trial must start later than the trial's own sample (criterion, "starts
+    after it"); 91 events that start on the trial sample, likely the triggering fixation as the
+    offline fixation detection saw it, are not counted. Whether the paper's code counts them is not
+    known; this is asked of the paper's authors in the findings.
+- claim: ili-nonsocial-no-effect
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:ili-nonsocial-no-effect
+  notes: OFC p = 0.70, dmPFC 0.13, ACCg 0.84 (paper 0.773, 0.080, 0.943). By monkey, dmPFC in monkey
+    T gives p = 0.034, outside the claim's test. 7,736 of 10,148 control trials have an interval.
+  deviations:
+  - The whole Face in the Dot runs is the files' m1_wholeface table of those runs.
+- claim: ili-missing-trials-41
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:ili-missing-trials-41
+  measured: 41.3
+  notes: Reading (a), over the 81 Eyes days, 41.3% (expected 41 plus or minus 4.1); reading (b),
+    over the 27 OFC days, 39.9%. Pooled over trials, 40.5%.
+- claim: figs3b-ili-trial-level
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:figs3b-ili-trial-level
+  notes: OFC median 1.19 s after stimulation against 1.36 s after sham, p = 0.017 (paper 0.010);
+    dmPFC p = 0.39, ACCg 0.62 (paper 0.301, 0.602); OFC monkey L 0.049 and T 0.14 (paper 0.026,
+    0.143).
+- claim: figs3c-reciprocation-day-level-none
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:figs3c-reciprocation-day-level-none
+  measured: 86.4
+  notes: OFC p = 0.11, dmPFC 0.56, ACCg 0.32 (paper 0.130, 0.701, 0.400). Trials with no M2-then-M1
+    sequence are 86.4% per day over the 81 days (reading a; expected 86 plus or minus 8.6) and 85.1%
+    over the OFC days. 2,689 of 19,474 trials have a latency; every day has one in each trial type.
+  deviations:
+  - A mutual event enters both lists, at M1's and at M2's own start times; ties keep the M1 event
+    first, a standard choice.
+- claim: fig3d-ofc-reciprocation-latency
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig3d-ofc-reciprocation-latency
+  notes: OFC median 0.84 s after stimulation against 1.01 s after sham, p = 0.023 (paper 0.011);
+    dmPFC p = 0.72, ACCg 0.36 (paper 0.777, 0.368); OFC monkey L 0.15 and T 0.078 (paper 0.074,
+    0.079).
+- claim: partner-monkey-unchanged
+  outcome: partially_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:partner-monkey-unchanged
+  notes: M2 social gaze distance, OFC p = 0.12, dmPFC 0.47, ACCg 0.062 (paper 0.118, 0.302, 0.064);
+    the M2-only reading gives 0.11, 0.37 and 0.069. M2 inter-looking interval, readings (a) and (b),
+    smallest p 0.19 (paper 1, 0.866, 0.249). M2 reciprocation latency, reading (b) from the trial
+    time, smallest p 0.46; reading (a), from the start of the M1 look (the mirror of M1's measure),
+    OFC 0.56, dmPFC 0.044 (median 0.11 s longer after stimulation), ACCg 0.99 (paper 0.665, 0.773,
+    0.701). The criterion asks that no test give p below 0.05 under every reading; 1 of 21 tests
+    does, so the claim holds for the distance and the interval and in part for the reciprocation
+    latency.
+  deviations:
+  - M2's distance is to the centre of `roi_m2_eyes` (M1's Eyes in M2's coordinates); the Methods
+    reading adds the M2 side of mutual whole Face events to m2_all.
+  - Reading (a) of the M2 inter-looking interval, start of the second minus start of the first M2
+    whole Face event in the window, follows the Results' "the latency between the second and first
+    whole Face events of M2"; reading (b), from the end of the first, is shown.
+  - The 188 M2 events whose gaze samples are all NaN have no position and are left out of the M2
+    distance.
+- claim: figs4a-causal-strength-no-stim-effect
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:figs4a-causal-strength-no-stim-effect
+  notes: The relative causal strength needs the causal decomposition of Yang, Peng and Huang (2018),
+    built on ensemble empirical mode decomposition. One EEMD of one 150-bin series with 100
+    ensembles takes about 1.0 s here (PyEMD) and yields 7 IMFs; with one decomposition of each
+    series and one per IMF of each series with that IMF removed, the claims file's reading (a), 1,000
+    ensembles, needs about 160 s per trial, or about 870 CPU hours for the 19,474 social trials (about 90
+    hours at a tenth of the ensembles). This is beyond the notebook limit and the run. The trials,
+    distances and epochs the analysis would use are all in the dataset.
+- claim: figs4b-causal-strength-no-epoch-effect
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on figs4a-causal-strength-no-stim-effect, blocked by the cost of the causal
+    decomposition. The epochs themselves are reproduced (epoch-days-76-of-81).
+- claim: epoch-days-76-of-81
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:epoch-days-76-of-81
+  measured: 76
+  notes: Counting kept stimulations (reading a), 76 of 81 days have at least 90, and the five others
+    are the days the code names, with the stated composition, 08122019 (L, OFC, 87), 12222021 (T,
+    OFC, 80), 11052021 and 12172021 (T, dmPFC, 64 and 67) and 11042021 (T, ACCg, 50). Counting all
+    stimulations delivered in social runs (reading b) gives 77; the L OFC day has 96.
+- claim: ofc-slope-unchanged-by-epoch
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on figs4a-causal-strength-no-stim-effect, blocked by the cost of the causal
+    decomposition.
+- claim: fig4c-dmpfc-slope-late-greater
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on ofc-slope-unchanged-by-epoch and the causal strengths, blocked by the cost of
+    the causal decomposition.
+- claim: fig4d-dmpfc-slope-permutation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4c-dmpfc-slope-late-greater and the causal strengths, blocked by the cost of
+    the causal decomposition.
+- claim: dmpfc-slope-positive
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4c-dmpfc-slope-late-greater and the causal strengths, blocked by the cost of
+    the causal decomposition.
+- claim: fig5a-trigger-duration-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig5a-trigger-duration-unchanged
+  notes: Under reading (a), M1-only and mutual Eyes events, the event in progress at the trial is
+    longer on stimulation trials for dmPFC (median day difference 31 ms, p = 0.019; paper 0.269),
+    not for OFC (8 ms, p = 0.61; paper 0.302). Reading (b), M1-only events, gives dmPFC 28 ms, p =
+    0.028 and OFC p = 0.36. ACCg, outside the claim, gives 0.30 and 0.13. 13,779 of 19,474 trials
+    fall inside an offline Eyes event under (a), 12,647 under (b); the others are left out.
+  deviations:
+  - The triggering fixation is taken as the offline (EyeMMV) Eyes event that contains the trial
+    time; the online fixation that triggered the trial is not in the files.
+- claim: fig5b-pupil-unchanged
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig5b-pupil-unchanged
+  notes: No 10-ms bin of the 70 gives p below 0.05 in any area; the smallest p are 0.31 (OFC), 0.51
+    (dmPFC) and 0.11 (ACCg). 2,198 of 19,474 social trials keep M1's gaze in the whole Face for 700
+    ms; all 27 days of each area have both trial types.
+  deviations:
+  - Pupil size is the raw file value (a.u.), averaged within 10-ms bins, without baseline
+    correction, as the Methods describe none.
+- claim: fig5cd-saccade-counts-unchanged
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The files hold fixation events but no saccade events. The paper detects saccades with the
+    unsupervised clustering method of Otero-Millan et al. (2014), distributed as MATLAB code, which
+    cannot run in this entry's locked Python environment; no Python implementation of it was found
+    to substitute without changing the method. The gaze traces needed are in the dataset.
+- claim: fig5e-h-saccade-kinematics-unchanged
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Depends on fig5cd-saccade-counts-unchanged; the saccade detection cannot be run here.
+findings:
+- kind: other
+  statement: The dataset holds 6.0 control (Dot) runs per day on average for monkey L (4 to 8; 14 of
+    45 days have 8), where the paper reports 5 on average, and 14 social runs on every Eyes day of
+    monkey T, where the paper reports 15 on average (14 to 15). Either some runs were not analysed in
+    the paper or the counts in the paper are off; the files do not say which runs the paper used.
+- kind: code_mismatch
+  statement: The Methods give the fixation counts of Figure S1E as the total per day, and the paper's
+    code takes the mean per session. Because a day has about twice as many social runs as control
+    runs, the Eyes against RDM comparison is significant for every area with day totals (corrected p
+    0.000025 to 0.00041) and comparable with means per run (0.40 to 0.52), as the paper reports.
+- kind: metadata_insufficient
+  statement: Neither the files nor the paper give the padding of the Eyes ROI (the Methods text has
+    the number missing), nor how fixation events were assigned to ROIs. 6% of the M1 Eyes events of
+    social runs and 11% of those of Dot runs have a mean gaze position outside the Eyes rectangle of
+    their file, and 3% and 10% of whole Face events outside the Face rectangle. The description of
+    `laterality_label` does not name its reference; it matches the centre of `roi_m2_face` for
+    99.98% of M1 events.
+- kind: metadata_insufficient
+  statement: The Dot (control) runs do not hold `roi_m2_face`, the reference of their hemifield
+    split, nor say that their `roi_m1_eyes` is the RDM stimulus; both are inferred, the first from
+    the same day's social runs and the second from the Methods.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For the inter-looking interval, does a whole Face
+    event that starts on the trial sample itself (91 trials; likely the triggering fixation as the
+    offline detection found it) count as the look back with latency 0? Counting it changes the OFC
+    day-level p from 0.044 to 0.058. And is the inter-looking interval taken over M1-only events or
+    M1-only and mutual events, as the Methods say (OFC p 0.0022 against 0.044)?
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Is M2's reciprocation latency measured from the start
+    of M1's look at M2 or from the trial time? Measured from M1's look, dmPFC gives p = 0.044; from
+    the trial, no area is below 0.46. And how is the p-value of the Eyes against Mouth bootstrap
+    computed (one- or two-sided, and which tail)?
+- kind: other
+  statement: Trial times fall inside an offline M1 event in the triggering ROI on 71% of social Eyes
+    trials and 62% of Dot Eyes trials, against 5 to 20% for times shifted by 0.5 to 2 s; this is
+    consistent with a shared clock of trials and events, and shows that about 30% of online
+    triggers do not coincide with an offline fixation in the ROI (65 of 954 social Eyes runs are
+    below 50%).
