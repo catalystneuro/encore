@@ -1,0 +1,124 @@
+I wrote the notes in `docs/pilot-notes/001256-cody-2024-01.md` and changed no other file. The `catalystneuro` field for 001256 in `targets/dandisets.json` is empty, so the second paragraph has no CatalystNeuro opening. Nothing is committed. Some untracked files that were already there (dotfiles, `.idea`, `.vscode`, `.mcp.json`, `scripts/`) should probably be kept out of the workflow's commit.
+
+# 001256, Cody et al. 2024
+
+Seven claims reproduced, three partially, seven not reproduced and seven
+blocked, all on the dataset. The first verification round agreed with 21 of
+the 24 outcomes as they stood and the second with 22, and a third round, held
+on the two changes of outcome proposed after the second, agreed with both. It
+pins version 0.241120.2150, the only published version; the paper cites none,
+and the draft has the same 30 assets. The paper, Cody, Kumar and Tzounopoulos,
+"Cortical Zinc Signaling Is Necessary for Changes in Mouse Pupil Diameter That
+Are Evoked by Background Sounds with Different Contrasts" in J. Neurosci.,
+images layer 2/3 neurons of right A1 with two-photon calcium imaging in awake
+head-fixed mice while filming the pupil, plays low- and high-contrast dynamic
+random chords (DRCs), with a pure tone for the contrast gain control (CGC)
+assay, and compares pupil and neuronal responses across baseline pupil
+diameter (PD), before and after ZX1 or ACSF injected into auditory cortex, and
+between ZnT3-WT and ZnT3-KO mice. The claims were written from the version of
+record, which has no supplement and links no code. The three Figure 5 claims
+are blocked as `data_missing`, the widefield imaging of the cannula mice not
+being in the dandiset; every other outcome but fig2e rests on an assumed pupil
+cleaning, since the Methods' single derivative pass leaves tracking failures
+in. The tone response, reliability and CGC factor peak at intermediate
+baseline PD (318 tone-responsive cells against 295 plus or minus 29.5,
+Kruskal-Wallis p = 2.0e-09), the baseline by contrast interaction of Fig. 1i
+reproduces on the 1830 cell-bins with both contrasts (interaction p = 0.0061
+to 0.040, 0.17 with the single pass), the Fig. 3b baseline PD coefficient is
+significant in all sixteen fits, the KO slope of Fig. 6d is below the WT slope
+(b = -7.51, p = 0.00052; p = 0.20 with the single pass), and the Discussion's
+peak of about 10% holds (10.49 and 11.17). `fig2b-evoked-pd-whole-drc` and
+`fig3b-lme-coefficients` rest on keeping the ZnT3-WT mouse AA0335 in group A,
+as the files' label does; without it fig2b's readings would disagree (p =
+0.028) and fig3b would be partial (p = 0.087). `fig4c-wt-contrast-zx1-effects`
+is partial, the contrast by ZX1 term significant (p = 3.0e-05) with 5, 5, 4
+and 3 terms passing under the four model and coding readings, and `fig6a` and
+`fig6b` are partial, the ACSF drift (0.351 per minute) overlapping no ZX1
+interval and the ACSF contrast slope never significant. The CGC factor is not
+above 1 in the 32-43% bin (p >= 0.17), the 43-54% bin is not the only one with
+a contrast effect on the ANOVAs within count tolerance, the evoked PD over the
+whole DRC is never significantly larger at high contrast (group A p = 0.18),
+the DRC responses differ by contrast (p = 3.7e-14 to 7.7e-07) where the paper
+finds none, the likelihood ratio test is significant with all trials (p =
+0.0013 to 0.015 against 0.330), the KO ZX1 slope is not significant (p = 0.20
+to 0.33), and `fig4-wt-posthoc` is not reproduced, ZX1 also raising LOW at p =
+0.0496, though the narrower step rule meets all four parts. `fig2c`,
+`fig4f-ko-no-contrast-effect`, `fig6c` and the Methods correlation are blocked as
+`methods_underspecified`, their readings disagreeing or none matching the
+counts; the schema does not allow `assumed` on a blocked outcome, so their
+notes say they rest on the cleaning. The author's first run gave 9 reproduced,
+2 partially, 8 not reproduced and 5 blocked, with fig4c, fig4-wt-posthoc and
+fig6a not reproduced, fig4f-ko-zx1-slope blocked through its dependency, fig6c
+reproduced and the Methods correlation partial on the files'
+pupilBaseline_vs_evoked label. The author asked a reader nothing, so the
+answer and author-answers runs changed nothing. Round 1 disagreed with
+fig4f-ko-zx1-slope, fig6a and fig6b, found that the cleaning left
+tracking-failure maxima in AA0319 (332.7 against a median of 28) and AA0334
+(162 against 26), that the fig6c and correlation readings were chosen by
+counts that depend on the cleaning, and that several mixed model fits were
+degenerate (the fig6d genotype intercept -52.5 with p = 1); in reply trials
+whose raw trace steps by more than a factor 2 were dropped (118 of 2113, in 15
+mice), fits were run with several optimizers, variants under the round-1
+cleaning, the single pass, without AA0319 and AA0334 and without AA0335 were
+added, fig4f-ko-zx1-slope became not reproduced and fig6a partial, fig4c,
+fig6c and the correlation became blocked and fig4-wt-posthoc partial, and
+fig6b was kept as partial with the disagreement recorded. Round 2 disagreed
+with fig4c and fig4-wt-posthoc, found that the step rule reaches beyond the
+two mice and that the outcomes of fig2b and fig3b rest on AA0335 without
+saying so, and found sentences the outputs did not support (two round-1
+numbers in the findings, "13 of 16" readings, "no cleaning variant gives an
+overlap" where only one ZX1 reading was checked, and a README sentence leaving
+out Figure 1), which were corrected and a narrower step rule, dropping 39
+trials in 6 mice, added as a variant; the two changes were proposed and round
+3 agreed, noting that fig4-wt-posthoc rests on a p-value at the threshold. The
+author's run took about 40 minutes (12:23 to 13:02 UTC) with nothing failing;
+statsmodels has no Satterthwaite F tests, so the mixed models use Wald z
+tests. The notebook ran in about 2 minutes at first, 176 s after the answer,
+160 s after round 1, about 3.5 min after round 2 and about 3 minutes after
+round 3.
+
+The pupil radius series hold tracking failures, single frames and runs at 3
+to 1e6 times the pupil size, often next to dropped frames (68 trials have a
+maximum above three times their median; 118 trials step by more than a factor
+2 between consecutive tracked frames), and in AA0319 and AA0334 runs at a
+second level (130 to 160 against a pupil of about 25) that a spike filter does
+not remove; the DeepLabCut points and likelihoods the Methods use to drop
+frames are not deposited, so each animal's maximum PD, every baseline in % of
+maximum and the 50% selection depend on how they are cleaned. The widefield
+imaging of Figure 5 is not in the dandiset, whose 30 files hold two-photon
+imaging and pupillometry only, and the paper names no other repository. Group
+sizes differ from the paper: ten mice are labelled pupilPTinContrast (four F,
+six M, one ZnT3-WT) where the paper gives eight C57BL6/J mice (four F, four
+M), pupil_contrast_ZnT3WT holds five F and five M where the paper gives six F
+and four M, and twelve mice have CGC-assay trials before and after ZX1 (two of
+them ZnT3-KO) where the paper gives fourteen C57BL6/J mice for Fig. 2d, e, no
+label naming that group. In the stimulus table starting_time is wrong by 24 h
+for 84 trials in seven files (AA0318, AA0319, AA0320, AA0322, AA0327, AA0330,
+AA0333), and the pupil and fluorescence series take the same starting times.
+Every pupil_radius series's description names one TwoPhotonSeries, the file's
+last, not its own, so a series is matched to its trial only through the .tif
+named in its comments, and 25 pupil series of DRC trials in seven files have
+the length of a mapping trial (1430 samples) or an LED trial (300 samples) in
+place of twice the trial's 170 frames. The DRCs without a tone switch contrast
+after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not
+describe, and the 32 ZX1 trials of AA0327 start the sound 10 s after the first
+frame. The FRA mapping trials used to select cells are in only 7 of 30 files,
+whether the RoiResponseSeries (unit lumens, "motion corrected ROIs") are
+neuropil-corrected is not stated, and the pupil radius has unit 'na' and no
+spatial scale. Questions are put to the paper's authors: which mice and which
+unit the Fig. 2c Wilcoxon test uses; the exact fixed-effect formula and coding
+of Fig. 4c, d, f; how the time polynomials are scaled, unit-norm polynomials
+giving a ZnT3-WT ZX1 slope weight of -4.12 to -8.24 against the reported
+-1.41; how tracking failures were handled beyond the 6 SD derivative step; and
+which trials the Methods correlation r(624) = -0.35 and Fig. 6c use.
+
+The author's points on the protocol: it does not say whether the criterion's
+rule or a reading the dataset's own label supports wins, and the label reading
+of the Methods correlation was adopted as an assumption; the schema forbids
+`assumed` on blocked outcomes and the protocol does not say how to report an
+analysis that ran, so the results went in the notes; a claim depending on a
+blocked claim was blocked although its own analysis ran; it is unclear whether
+a fix for artefacts the paper's method cannot handle is a deviation or an
+assumption, and it was recorded as both with the paper's method as a variant;
+and readings found in the data are not in the claims file, so they were run in
+addition and marked.
