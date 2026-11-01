@@ -147,18 +147,10 @@ outcomes:
     (''no description''); general/ has no notes, protocol, slices or pharmacology field. So the sweeps recorded after TTX/4AP
     cannot be told from the others. The files may hold them among the light sweeps.'
 - claim: fig6no-cea-clusters
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_lee_2025.ipynb
   output: claim:fig6no-cea-clusters
   measured: 27
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion reproduces the claim when every late-firing cell is excited and more than half of the other
-      cluster is inhibited, and it has no partial clause (the claims file gives one where it means one, as for fig6pq).
-      The first part fails in all 16 readings at 2 and 3 SD (2 or 3 inhibited and 3 without response data of 17 or 18 in the
-      late-firing cluster), and at 5 SD the second part fails too (3 of 9 or 10 inhibited). The readings agree, so the
-      criterion gives not reproduced, as the verifier said in both rounds (notebook, fig6no, the count of readings in
-      which each part holds).
   notes: All 16 readings (ramp ratio absolute or from deflections, sag steady state 100 or 200 ms, detection 2 or 3 SD,
     IEI reading a or b) give two clusters of 27 ChR2 CeA cells (the paper has 26), a late-firing cluster (mean firing delay
     415 ms, maximum frequency 32 Hz, sag 1.7 mV) and a regular-firing one (168 ms, 79 Hz, 5.7 mV). The late cluster is mostly
@@ -166,8 +158,9 @@ outcomes:
     IEI; C41 at 2 SD) and 3 without response data, so not every cell is excited as the criterion requires; 6 of 9 or 10
     regular-firing cells are inhibited, more than half. The readings agree; the first part of the criterion fails in all
     16 readings and the second holds in all 16. With 5 SD labels the late cluster has one inhibited cell (C53) and only
-    3 of 9 or 10 regular-firing cells are inhibited, so both parts fail. The cells come from 14 subjects. Not reproduced
-    is proposed (see proposed).
+    3 of 9 or 10 regular-firing cells are inhibited, so both parts fail. The cells come from 14 subjects. The criterion has
+    no partial clause and its first part fails in every reading, so the claim is not reproduced (agreed in verification
+    round 3).
   deviations:
   - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average responses
     start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only with other light protocols
@@ -1074,3 +1067,20 @@ verifications:
     outcome: blocked
     reason: Yes (data missing).
     response: No change.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome on fig6no-cea-clusters in the record of commit 1cfaaff9 (author-revise-2)
+    and the analysis behind it in the executed notebook (cells 31 and 32), with the claims file and the paper. agrees compares
+    its outcome with the proposed outcome.
+  results:
+  - claim: fig6no-cea-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: The claim passes only if every cell in the late-firing cluster is excited. That part fails in all 16 readings
+      the criterion asks for, and the readings agree, so no reading gives a passing result. The criterion has no partial
+      clause, unlike fig6pq, so the verified "partially reproduced" does not follow from it. It also reported a possible
+      misreading in the claims file, which turns the paper's late-firing cells "excited" into every cell of the cluster excited
+      while counting cells with no response data.
+    response: Changed to not reproduced, and the notebook, summary and README updated. The possible misreading is added to
+      questions/001195.yaml as a question for a reader; the claim is not changed.

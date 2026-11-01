@@ -13,7 +13,7 @@ Figures 1 to 5 and 8 are not in it.
 | EPSP amplitude differs by region, CeA above BLP (Figure 6J) | Partially reproduced |
 | IPSP trough differs by region (Figure 6K) | Partially reproduced, on an assumption |
 | Responses survive TTX/4AP (Figure 6 supplement 1D-E) | Blocked: metadata insufficient |
-| CeA clusters: late-firing excited, regular-firing inhibited (Figure 6N-O) | Partially reproduced; not reproduced is proposed |
+| CeA clusters: late-firing excited, regular-firing inhibited (Figure 6N-O) | Not reproduced; asked of a reader |
 | CeA clusters differ in their four properties | Reproduced |
 | BLP clusters: 93% of pyramidal inhibited, 62% of interneurons excited (Figure 6P-Q) | Partially reproduced |
 | BLP clusters differ in their four properties | Reproduced |
