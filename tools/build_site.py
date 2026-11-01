@@ -943,18 +943,28 @@ def progress_data(data: dict) -> dict:
     current = [a for atts in current_attempts(data).values() for a in atts]
     if not data["attempts"]:
         return {"days": [], "series": {}}
+    # Attempts are also counted by the protocol version they followed, oldest version first.
+    def protocol(a):
+        return (a.get("agent") or {}).get("protocol") or "not recorded"
+
+    def version_order(v):
+        m = re.fullmatch(r"([a-z]+)-(\d+)", v)
+        return (0, m[1], int(m[2])) if m else (1, v, 0)
+    protocols = sorted({protocol(a) for a in data["attempts"]}, key=version_order)
     start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
     series = {}
     for subset, keep in (("all", lambda d: True),):
-        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES}} for day in days}
+        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES},
+                     **{f"protocol:{v}": 0 for v in protocols}} for day in days}
         first_dandiset: dict = {}
         first_paper: dict = {}
         for a in data["attempts"]:
             if not keep(a["key"]):
                 continue
             new[a["date"]]["attempts"] += 1
+            new[a["date"]][f"protocol:{protocol(a)}"] += 1
             first_dandiset[a["key"]] = min(first_dandiset.get(a["key"], a["date"]), a["date"])
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
         for day in first_dandiset.values():
@@ -971,7 +981,8 @@ def progress_data(data: dict) -> dict:
             new[a["date"]]["findings"] += len(a["findings"])
         series[subset] = {k: [new[day][k] for day in days] for k in new[days[0]]}
     return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
-            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()}}
+            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()},
+            "protocols": protocols}
 
 
 def progress_panel(data: dict) -> str:
