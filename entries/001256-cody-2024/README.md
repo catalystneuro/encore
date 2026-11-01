@@ -19,8 +19,8 @@ are not in it.
 | DRC cell responses do not differ by contrast (Fig. 2e) | Not reproduced |
 | LME: baseline PD predicts responses, evoked PD does not (Fig. 3b) | Reproduced |
 | LME: full model no better than null (Fig. 3c) | Not reproduced |
-| ZnT3-WT: contrast and ZX1 effects and their interaction (Fig. 4c) | Blocked: methods underspecified |
-| ZnT3-WT: post hoc contrast and ZX1 effects (Fig. 4c) | Partially reproduced |
+| ZnT3-WT: contrast and ZX1 effects and their interaction (Fig. 4c) | Blocked: methods underspecified (change to partially reproduced proposed) |
+| ZnT3-WT: post hoc contrast and ZX1 effects (Fig. 4c) | Partially reproduced (change to not reproduced proposed) |
 | ZnT3-KO: no contrast or ZX1 effect on the intercept (Fig. 4f) | Blocked: methods underspecified |
 | ZnT3-KO: ZX1 still reduces the slope, less than in WT (Fig. 4f) | Not reproduced |
 | Figure 5 (three claims, widefield imaging) | Blocked: data missing |
@@ -37,8 +37,9 @@ reasoning and the differences from the paper's method.
 The files carry labels that name the paper's analyses, which identify most of the paper's groups. The
 pupil traces hold tracking failures that the Methods' cleaning does not remove, so the cleaning was
 extended (an assumption, with the paper's single pass and the first round's cleaning shown as variants).
-Several of the Figure 4 and 6 outcomes change with the cleaning; the notebook's last section shows by how
-much. The attempt record, with the
+Several of the Figure 1, 4 and 6 outcomes change with the cleaning (the Fig. 1i interaction, the Fig. 4
+effects and post hoc tests, Fig. 6c and Fig. 6d), and the Fig. 2b and 3b outcomes rest on keeping the
+ZnT3-WT mouse that the files put in group A; the notebook's last section shows by how much. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/001256-cody-2024-01.yaml`](../../attempts/001256-cody-2024-01.yaml).
 

@@ -228,7 +228,7 @@ def n_jumps(p, ratio=2.0):
     return int(((r > ratio) | (r < 1 / ratio)).sum())
 
 
-def pupil_measures(trials, jump_ratio=2.0, **clean):
+def pupil_measures(trials, jump_ratio=2.0, jump_after_filter=False, **clean):
     """Add cleaned pupil, baseline PD (% animal max), and evoked windows to sound trials.
 
     With `jump_ratio` (assumption, not in the paper), trials whose raw trace holds a step by more
@@ -236,11 +236,14 @@ def pupil_measures(trials, jump_ratio=2.0, **clean):
     animal's maximum is taken. In two mice (AA0319, AA0334) the tracking failures come as runs at
     a second level (130 to 160 against a pupil of about 25) that neither the derivative step nor
     the spike filter removes, and that would set the animal's maximum. `jump_ratio=None` keeps
-    every trial (the cleaning of the first round of this attempt)."""
+    every trial (the cleaning of the first round of this attempt). With `jump_after_filter` the steps
+    are counted on the trace after the Hampel filter, so a trial whose only fault is a spike the
+    filter removes is kept (a narrower form of the same assumption, run as a variant)."""
     tr = trials[trials.pupil.notna()].copy()
     # a pupil series must have two video frames per two-photon frame (10 and 5 Hz)
     tr = tr[tr.pupil.map(len) == 2 * tr.nFrames.astype(int)]
-    tr["n_jumps"] = tr.pupil.map(lambda p: n_jumps(p, jump_ratio or 2.0))
+    pre = (lambda p: hampel(np.asarray(p, float))) if jump_after_filter else (lambda p: p)
+    tr["n_jumps"] = tr.pupil.map(lambda p: n_jumps(pre(p), jump_ratio or 2.0))
     if jump_ratio is not None:
         tr = tr[tr.n_jumps == 0]
     tr["pclean"] = [clean_pupil(p, **clean) for p in tr.pupil]
