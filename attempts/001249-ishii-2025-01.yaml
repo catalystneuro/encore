@@ -1,0 +1,1007 @@
+schema_version: 2
+id: 001249-ishii-2025-01
+dataset:
+  archive: dandi
+  id: "001249"
+  version: 0.241109.2357
+  doi: 10.48324/dandi.001249/0.241109.2357
+paper: doi:10.7554/elife.91765
+date: '2026-11-01'
+entry: 001249-ishii-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41300910777
+inputs:
+- what: The authors' Figshare deposit, version 1, which holds the data of Figures 1, 3 to 7 and their
+    supplements (behavior tables, HCR per-cell table, calcium imaging traces and per-cell table, clustering
+    labels, chemogenetics tables). Every claim marked data elsewhere is tested on it; the MD5 of each
+    zip read is checked in the notebook.
+  source: doi:10.6084/m9.figshare.27642768.v1
+- what: The paper's analysis notebooks, read for method details the claims file and the Methods leave
+    open (columns tested, how per-animal values are formed, the clustering grid and elbow rule, the parameter
+    values).
+  source: https://github.com/stuberlab/Ishii-MPOA-Ejaculation-2023 at commit 4e98c4369ea0f6dcfc2648c561d43a4a235e5f15
+outcomes:
+- claim: fig2-density-link
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.
+    The grouping part of the link holds: the 14 brains match the 14 rows of the subject table in the Figure
+    2 zip on Figshare (meta/metainfo.csv) by name (Sniff_n, Mount_n and Ejaculation_n against sub-Sniff-n
+    and so on), and the dandiset''s groups (4 Sniff, 5 Mount, 5 Ejaculation) equal the Stim labels of
+    tdTomato_summary.csv (4 Appetitive, 5 Consummatory, 5 Post_ejaculatory). The density part, which decides
+    the outcome, was not run, as there are no densities from the dandiset to compare with the table''s.'
+- claim: fig2c-brain-wide-increase
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.'
+- claim: fig2ei-social-regions-higher
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.
+    Blocked also because it depends on fig2c-brain-wide-increase.'
+- claim: fig2-mpn-higher
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.
+    Blocked also because it depends on fig2c-brain-wide-increase.'
+- claim: fig2f-mpn-fourth-largest
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.
+    Blocked also because it depends on fig2c-brain-wide-increase.'
+- claim: fig2gh-consummatory-tendency
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.
+    Blocked also because it depends on fig2c-brain-wide-increase.'
+- claim: fig2s-dorsal-raphe
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'The dandiset holds only the raw light-sheet volumes (TRAP and background channel per brain,
+    uint16, uncompressed and unchunked), with no registration, segmentation, cell counts, atlas labels
+    or region volumes. The data check read one middle plane of every brain and measured streaming at 67.4
+    MB/s in the executed notebook (35.5 to 65.2 MB/s in earlier runs; the rate varies), so reading the
+    TRAP channels once (691 GB) takes 171 min and both channels (1382 GB, the background channel being
+    the one registered to the atlas) 342 min, over the 60 min a notebook may run (docs/protocol.md,
+    Author,
+    step 3; CI fails a notebook over sixty minutes) and over the time left in the run. Cheaper reads were
+    timed: full-width bands of rows stream at 20.4 MB/s and crops at 2.5 MB/s, and every 25th (or 10th)
+    background plane of all 14 brains, enough for a registration, takes 7 (17) min; but every Figure
+    2 claim corrects over a family of atlas regions that covers the brain (Benjamini-Hochberg over the
+    level-4 or level-6 regions, or the rank of the MPN among all regions), so each needs every region
+    of every brain segmented at full resolution, and reading only the regions named does not test them.
+    No registration (ClearMap), segmentation or density was computed. The segmentation would also need
+    the ilastik classifier, which is not deposited and which the Methods trained on manually labelled
+    chunks from four brains; this alone would block the claims as methods_underspecified, a second reason.
+    Blocked also because it depends on fig2c-brain-wide-increase.'
+- claim: fig1gh-transitions-isolation
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig1gh-transitions-isolation
+  notes: Isolation zone entries per 10 min 6.40 (control), 5.33 (pre), 1.79 (post); RM ANOVA F(2,16) =
+    10.888, p = 0.00104; Tukey post against pre p = 0.0142, control against post p = 0.0015. Average isolation
+    visit 47.1, 128.6 and 389.1 s; F(2,16) = 14.344, p = 0.00027; Tukey 0.0057 and 0.0004. All equal the
+    legend. Visits to either zone per 10 min give the same pattern (F = 6.714, p = 0.0076; 0.0210 and
+    0.0114). The total time in the isolation zone per 10 min, not the legend's quantity, does not differ
+    between pre and post (Tukey p = 0.777).
+  deviations:
+  - Transitions are the code's isolation zone entries per 10 min (Figure 1.ipynb); the legend's "transitions
+    between the zones" read as visits to either zone, counted from merge_df, is shown as a variant, since
+    the table's Number_of_Entry_per_10min is empty for the control trial.
+  - Average time in the isolation zone is the mean visit duration per animal and epoch from merge_df,
+    as Figure 1.ipynb computes it; the column Time_in_Isolation_zone_per_10min holds the same values.
+- claim: fig1i-latency-return
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig1i-latency-return
+  notes: Mean latency 438.3 s after ejaculation, 105.2 s after sniff, 159.5 s after mount; RM ANOVA F(2,16)
+    = 11.870, p = 0.000691; Tukey ejaculation against sniff p = 0.0016 and against mount p = 0.0077, as
+    in the legend. Four of nine ejaculation latencies and one mount latency are at the 600 s cap.
+- claim: fig1jm-behaviors-after-ejaculation
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig1jm-behaviors-after-ejaculation
+  notes: Mounting and intromission fall to 0 in all 9 mice (Wilcoxon p = 0.0039 exact, the legend's value);
+    grooming rises in 7 of 9 (3.50 to 13.54 per 10 min; p = 0.0234 exact, 0.0251 with the normal approximation
+    that gives the legend's 0.025061844); sniffing does not change (p = 0.652 exact, 0.594 approximate).
+    Pairing by row order, as the code does, gives the same p-values.
+  deviations:
+  - Pairs are matched by animal id, where the code pairs by row order; scipy 1.18 chooses exact or approximate
+    p-values itself, so both are shown.
+- claim: fig1nt-natural-estrus
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig1nt-natural-estrus
+  notes: Transitions F(2,10) = 7.542, p = 0.0101 (Tukey post against pre p = 0.0038); average isolation
+    time F(2,10) = 15.714, p = 0.00082; latency F(2,10) = 38.364, p = 2.04e-05. Sniffing, mounting and
+    intromission are lower after ejaculation in all 6 mice (p = 0.03125 exact, 0.0277 approximate); grooming
+    p = 0.4375 exact and 0.3452 approximate (the legend's value), not significant.
+- claim: fig1s1-experience
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig1s1-experience
+  notes: Pre-ejaculation epoch, 6 virgin and 6 experienced females. Isolation zone entries 2.42 against
+    6.36 per 10 min, Mann-Whitney p = 0.0411, so virgin females make fewer entries. Average isolation
+    visit 545.8 against 72.0 s from the visit table (p = 0.0411), and 582.4 against 72.0 s in the column
+    Figure S1.ipynb tests (p = 0.0260, the legend's value).
+  deviations:
+  - The legend's "average time spent in the isolation zone" is computed from the visit table (merge_df_virgin_SE.csv);
+    Figure S1.ipynb tests the column Time_in_Isolation_zone_per_10min, shown as the second reading. Both
+    are significant with virgin females higher.
+- claim: fig1s2-novel-male
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig1s2-novel-male
+  notes: Isolation zone entries fall from 2.33 to 0.43 per 10 min (6 of 7 lower, none higher), Wilcoxon
+    p = 0.0312 exact and 0.0273 approximate (the legend's 0.027281171). Average isolation visit 595.7
+    to 1627.8 s (6 of 7 higher), p = 0.0312 exact and 0.0277 approximate. The code's column, interaction
+    zone entries, gives the same p-values.
+  deviations:
+  - The legend (panel B) names entries into the isolation zone; Figure S2.ipynb tests Interaction_zone_entry.
+    The legend's column is the main reading and the code's a variant; they agree.
+- claim: fig3d-mpn-fos
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig3d-mpn-fos
+  notes: Recomputed from the per-cell HCR table (365002 cells, 10 mice). MPN Fos+ share 0.170 against
+    0.090, t(8) = -4.2709, Bonferroni p = 0.0136; MPA t(8) = -1.8413, p = 0.514; BNST, LPO, VLPO p = 1.
+    These equal the legend. The per-mouse means equal the deposited per-section table to 4e-10.
+- claim: fig3i-vgat-vglut2-fos
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig3i-vgat-vglut2-fos
+  notes: Exclusive populations (the code's table). Vgat Fos+ share 0.132 to 0.235, t(8) = -3.5361, Bonferroni
+    p = 0.0153; Vglut2 0.095 to 0.160, t(8) = -3.3885, p = 0.0190, the legend's values. After ejaculation
+    Vgat 0.235 against Vglut2 0.160 (no test, as in the paper). With inclusive populations both are significant
+    (0.0131, 0.0091) and Vgat stays higher (0.251 against 0.209).
+  deviations:
+  - The paper does not say whether a cell called both Vgat+ and Vglut2+ (5013 of 68807 MPN cells) belongs
+    to either population. The table Figure S5.ipynb reads counts only cells with one of the two, which
+    the per-cell data reproduce to 4e-10; this is followed, as the code settles what the Methods leave
+    open (protocol, reader step 2), and the inclusive populations are shown. The outcome is the same under
+    both.
+- claim: fig3jm-cell-types
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig3jm-cell-types
+  notes: Vgat subsets with Calcr (Bonferroni p = 0.0318), Gal (0.0174) and Prlr (0.0212) and the Vglut2
+    Calcr subset (0.0146) rise after ejaculation; the other Vglut2 subsets do not (0.104 to 0.822), so
+    the "only Calcr" part holds. Clusters Vglut2+ 0.0189, Vgat+ 0.0022, Gal+ 0.0265, Nts+ 0.377. All equal
+    the legend. Inclusive populations give the same pattern (Vglut2 Calcr 0.0044, other Vglut2 subsets
+    0.0706 to 0.413). The Calcr+ cluster has 4 post-ejaculatory mice, as one has no cell in it.
+  deviations:
+  - Exclusive Vgat and Vglut2 populations as in fig3i-vgat-vglut2-fos, with the inclusive ones shown.
+  - The cluster names come from the deposited Seurat table; the step that names the clusters is not in
+    the paper's code, so the clustering was not run again.
+- claim: fig4h-response-magnitude
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig4h-response-magnitude
+  notes: Vgat against Vglut2, Bonferroni over six; ejaculation 2.11 against 0.85, t(791) = 3.998, p =
+    0.00042; sniff t = 6.463, p = 1.08e-09; anogenital sniffing t = 6.644, p = 3.4e-10; mount t = 0.337
+    and intromission t = -0.320, p = 1. All equal the legend. Grooming t = -7.252, Vgat lower, against
+    the Results sentence, as the claims file notes; it is left out of the outcome. With the rescaled 200-frame
+    arrays the same three differ and mount does not (p = 0.106). The cells come from 6 Vgat and 4 Vglut2
+    mice; with animal means as units no behavior differs after Bonferroni correction (ejaculation 2.23
+    against 0.88, t = 1.483, p = 0.176; sniff p = 0.440; anogenital sniffing p = 0.141; grooming p = 0.019,
+    corrected 0.114), so the outcome rests on cells as units, as in the paper and the criterion. For the
+    five behaviors other than ejaculation the test checks the authors' deposited magnitudes, not a computation
+    from traces.
+  deviations:
+  - The ejaculation magnitude is recomputed from the -5 to +120 s trace (it equals the table to 5e-9).
+    For the other five behaviors the magnitudes come from the deposited table, because the traces the
+    Methods compute them from are not deposited; the deposited 200-frame arrays are rescaled and do not
+    give the table's magnitudes (r = 0.53 to 0.89).
+  - The Methods' exclusion of sniffs after the first mount could not be checked, as it happens before
+    the deposited table and the code that does it is not in the repository.
+- claim: fig4i-ejaculation-responders
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig4i-ejaculation-responders
+  measured:
+  - 184
+  - 35
+  - 29
+  - 1
+  notes: Ejaculation 184/522 Vgat against 35/271 Vglut2 (Bonferroni p = 1.5e-10), sniff 29/522 against
+    1/271 (p = 0.0017), the legend's counts and p-values. Every animal has ejaculation responders (5 to
+    55); 26 of the 29 Vgat sniff responders come from one animal (Vgat_4). With a threshold of 1.5 or
+    2.5 the Vgat proportion stays higher for both behaviors. With animals as units the ejaculation responder
+    fraction is 0.373 (Vgat) against 0.146 (Vglut2), t-test p = 0.104 and Mann-Whitney p = 0.038, and
+    the sniff fraction 0.050 against 0.007 (p = 0.46 and 0.694).
+  deviations:
+  - Magnitudes as in fig4h-response-magnitude.
+- claim: fig5-ejaculation-specific
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig5-ejaculation-specific
+  measured:
+  - 178
+  - 48
+  - 12
+  - 0.81
+  - 0.829
+  notes: Both readings give 178 ejaculation-specific, 48 mount-specific and 12 sniff-specific cells (the
+    legend's numbers; the Results' 177 and 46 are within tolerance), and the recomputed classes equal
+    the table's for all 793 cells. Specific shares of ejaculation responders, Vgat 149/184 = 0.810 and
+    Vglut2 29/35 = 0.829. Every animal has ejaculation-specific cells (2 to 44); the 12 sniff-specific
+    cells come from Vgat_3 (3) and Vgat_4 (9).
+- claim: fig5c-class-selectivity
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig5c-class-selectivity
+  notes: F(2,235) = 73.35 (sniff), 68.32 (mount), 15.72 (intromission), 12.34 (anogenital sniffing), 49.59
+    (ejaculation), the legend's values. Sniff cells exceed both other classes for sniff and ejaculation
+    cells for ejaculation (Tukey p at most 0.0001); mount cells exceed both for mount and exceed ejaculation
+    cells for intromission and anogenital sniffing (p < 0.0001); mount cells are below sniff cells for
+    sniff (0.459 against 2.504) and below ejaculation cells for ejaculation (-0.517 against 5.902).
+- claim: fig6c-decay-length
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig6c-decay-length
+  notes: Re-run on the reader's answer of 2026-11-01 (questions/001249.yaml), which added reading (c),
+    the time from the peak after onset to the first sample below 0 after it, to the criterion; the first
+    run of this attempt, on readings (a) and (b) only, gave not_reproduced. Under (c) Vgat responders
+    take 45.2 s against 20.9 s in Vglut2, t = 3.037, p = 0.0027 (paper t(217) = 3.040, p = 0.00266), and
+    (c) equals the deposited decay lengths for 207 of 219 cells (r = 1.000). The result rests on giving
+    the 44 cells that never fall below 0 after the peak (43 Vgat, 1 Vglut2; 31 in mouse Vgat_2) the full
+    120 s, as the deposited table does for all 44. Counting them as the time from the peak to the end
+    of the window gives 28.9 against 20.6 s (p = 0.111); leaving them out gives 22.4 against 18.0 s (p
+    = 0.299). Under (c) the rank-sum test gives p = 0.187 and the animal means 40.9 against 20.2 s (6
+    and 4 mice, p = 0.149). Reading (a), onset to the first sample below 0, gives 18.7 against 22.2 s,
+    t = -0.608, p = 0.544, and reading (b), total time below 0, 53.9 against 75.3 s, t = -2.641, p = 0.0089
+    (Vgat shorter). The authors are asked how the decay length is defined (finding). Reading (c) and the
+    table differ for 12 of the 219 responders (11 in Vgat_4, 1 in Vglut2_3); none is a cell that never
+    returns below 0, and the table is longer by 0.3 to 5.2 s in each. The outputs do not show which convention
+    gives these 12 values.
+  deviations:
+  - Decay length computed from the deposited -5 to +120 s ejaculation traces under the claims file's three
+    readings; the deposited precomputed values are shown as well.
+  - Assumed, the paper not saying it, that a trace that never falls below 0 after the peak has a decay
+    length of 120 s, the full window, because the deposited table (male_analysis_magnitude.csv, Ejaculation_decay_length_seconds)
+    holds 120 for each of the 44 such cells. The outcome depends on it; the time to the end of the window
+    and leaving the cells out are shown and give p = 0.111 and 0.299.
+- claim: fig6k-late-cluster-vgat
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig6k-late-cluster-vgat
+  measured:
+  - 0
+  - 37
+  notes: 4 components by the code's elbow rule (it keeps the components before the elbow); the silhouette
+    is largest at 5 clusters and 30 neighbours (0.474) for seeds 0 to 4, with labels equal to the deposited
+    ones (adjusted Rand 1.0). The late cluster (mean peak at 48.5 s, longest decay under readings a and
+    c) holds 37 of 184 Vgat and 0 of 35 Vglut2 cells, Bonferroni p = 0.0181; the fast cluster holds 16
+    of 35 Vglut2 against 26 of 184 Vgat cells, p = 6.8e-05, the legend's values. At the paper's stated
+    55 neighbours (silhouette 0.461, not 0.405) the late cluster holds 33 Vgat and 0 Vglut2 cells (p =
+    0.0328). The late cluster's 37 Vgat cells come from 5 of 6 Vgat mice, 27 from Vgat_2. The cluster
+    whose mean trace peaks earliest (1.9 s, against 5.8 s for type 1) holds 41/184 Vgat and 5/35 Vglut2
+    cells (Bonferroni p = 1); it is the paper's Type 5, the negative response type (46 cells, 41 Vgat and
+    5 Vglut2, in the Figure 6 legend), not a candidate fast type, while type 1 has the legend's 42 cells
+    (26 Vgat, 16 Vglut2) of the type the Results call fast response. At 55 neighbours
+    the late cluster's 33 Vgat cells are outside the tolerance of 37 +/- 3.7.
+  deviations:
+  - The clustering selects 30 neighbours, as the paper's code printed, where the Methods state 55; both
+    are shown.
+  - The code fixes no seed; seed 0 is a standard choice and seeds 1 to 4 give the same labels.
+  - The late cluster is identified as the one whose mean trace peaks latest. The fast cluster is type
+    1, the cluster with the largest mean 0 to 5 s response, because the code numbers the clusters that
+    way (reorder_clusters in Figure 5 Spectral clustering.ipynb, which averages frames before_frames to
+    2 x before_frames) and the paper's type numbers are the code's; the cluster whose mean peaks earliest
+    is shown as a variant. The paper's labels support the choice, as the Results call type 1 the fast
+    response type and type 5 the negative response type, and the Figure 6 legend's counts (Type 1, 42
+    cells, 26 Vgat and 16 Vglut2; Type 5, 46 cells, 41 and 5) are those of type 1 and of the
+    earliest-peak cluster.
+  - The number of components follows the code's elbow rule, np.argmin of the rotated scree plot used as
+    a count (transformed_data[:, :num_retained_pcs]), which keeps the components before the elbow; it
+    gives 4, the code's printed value and the Methods' number.
+- claim: fig7fg-activation-suppresses
+  outcome: partially_reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig7fg-activation-suppresses
+  notes: By the main reading, the rank-sum test with Bonferroni over four groups, post-ejaculatory hM3Dq
+    mice have fewer transitions on CNO (2.28 to 0.14 per 10 min, all 8 lower, p = 0.0076) and more isolation
+    time (all 8 higher, p = 0.0025), and no other group changes isolation time (0.163 to 1). The consummatory
+    hM3Dq group also has fewer transitions (2.13 to 0.31, 7 of 7 lower, p = 0.0157), so the "only" part
+    fails for transitions. The code's paired signed-rank test (variant) gives the legend's values, post-ejaculatory
+    0.03125 for both measures and consummatory 0.0625 and 0.125, under which the claim would be reproduced.
+    The rank-sum test ignores that the same mice are tested on saline and CNO. The round-1 verifier judged
+    the rank-sum main reading a misreading of the paper; it is asked of a reader (questions/001249.yaml)
+    and the claim is tested as the claims file has it.
+  deviations:
+  - Isolation time is run on both Duration_second, which the code tests, and Average_Isolation_zone_duration,
+    the legend's quantity; the latter is in frames for three groups (ratio 15) and seconds for the consummatory
+    group, which leaves the within-group tests unchanged. Both give the same p-values.
+- claim: fig7kl-activation-intromission
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig7kl-activation-intromission
+  notes: Post-ejaculatory hM3Dq, all 8 lower on CNO; intromission 5.5 to 0.25 (rank-sum Bonferroni p =
+    0.0026), receptive score 0.503 to 0.031 (p = 0.0033). Self-grooming 23.5 to 2.25 (p = 0.0103) and
+    mounting 18.0 to 1.25 (p = 0.0093) by the rank-sum test; 0.0625 for both by the code's exact signed-rank
+    test, the legend's value. The receptive score equals intromissions over mounts in all 39 rows with
+    mounts (legend L). The choice of test is asked of a reader with fig7fg-activation-suppresses; the
+    outcome is the same under both tests.
+- claim: fig7s1-mpn-proportion
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig7s1-mpn-proportion
+  measured:
+  - 0.743
+  - 0.124
+  notes: TRAP cell count F(2,24) = 0.3072, p = 0.7383; MPN proportion F(2,24) = 4.3335, p = 0.0247, Tukey
+    appetitive against post-ejaculatory p = 0.0471, all the legend's values. Vgat above Vglut2, unpaired
+    t(10) = 7.209, p = 2.9e-05 (appetitive) and t(12) = 12.94, p = 2.1e-08 (post-ejaculatory); the paired
+    test gives t = 6.615 and 13.95, the legend's t values, with p 0.0012 and 8.5e-06, which doubled are
+    the legend's 0.0024 and 1.69e-05. Proportions (a) pooled over 13 mice 0.743 +/- 0.152 and 0.124 +/-
+    0.070, (b) post-ejaculatory mice 0.786 +/- 0.096 and 0.138 +/- 0.091; both within tolerance, and (a)
+    is given as measured. Whether the paired test should be the main reading is asked of a reader (questions/001249.yaml);
+    both readings are significant.
+- claim: fig7s2-home-cage-activation
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig7s2-home-cage-activation
+  notes: Against post-ejaculatory eYFP (6 mice), post-ejaculatory hM3Dq (8) sniff 4.4 against 27.3 (Bonferroni
+    p = 0.0072) and intromission 1.4 against 32.2 (p = 0.0165); mounting p = 0.4116; appetitive and consummatory
+    hM3Dq differ in nothing (smallest 0.258). Place preference, post-test minus pre-test in the CNO-paired
+    zone, smallest Bonferroni p 0.162 for time and entries, 0.0615 for velocity. The place-preference
+    p-values against the eYFP group equal the legend's (time 0.2203 and 1, entries 1 and 1, velocity 1
+    and 0.8472); for post-ejaculatory hM3Dq against appetitive hM3Dq the legend prints 1, 1 and 0.8472
+    where the test gives 0.162, 0.696 and 0.0615, none significant either way.
+  deviations:
+  - Bonferroni over the three comparisons with eYFP, as Figure S10.ipynb runs it; the legend gives no
+    number.
+- claim: fig7s3-inhibition
+  outcome: reproduced
+  notebook: reproduce_ishii_2025.ipynb
+  output: claim:fig7s3-inhibition
+  notes: Home cage on CNO, hM4Di (8) against eYFP (6), intromission 77.0 against 50.5 (p = 0.0045) and
+    receptive score 0.836 against 0.653 (p = 0.0200); sniffing p = 0.697 and mounting p = 0.400, the legend's
+    values. In the self-paced assay no measure changes with CNO in either group (smallest Bonferroni p
+    0.117 by rank-sum, 0.100 by signed-rank). The choice of test is asked of a reader with fig7fg-activation-suppresses;
+    the outcome is the same under both tests.
+findings:
+- kind: metadata_error
+  statement: Each NWB file stores the z planes of a brain as the frames of an ImageSeries (acquisition/TRAP
+    and acquisition/background) with starting_time rate 4.0, the z step in micrometres given as a sampling
+    rate, resolution 3.6 and unit "lumen". No voxel size, orientation, channel wavelength or description
+    is given; the descriptions are "no description".
+- kind: data_missing
+  statement: The dandiset holds only the raw volumes of Figure 2. The registration to the atlas, the cell
+    segmentation, the per-region counts and densities, and the trained ilastik classifier are not in it,
+    so none of the Figure 2 results can be computed without rerunning the whole pipeline, and the classifier,
+    trained on manual labels, cannot be rebuilt as it was. The per-region densities are only on Figshare
+    (tdTomato_summary.csv), with no link to the volumes.
+- kind: other
+  statement: The volumes are stored uncompressed and unchunked, 1.38 TB for 14 brains. At the 35.5 to
+    67.4 MB/s measured in runs of this notebook, streaming the TRAP channels once takes 2.8 to 5.4 h and
+    both channels 5.7 to 10.8 h, which puts any analysis of Figure 2 out of reach of a streamed notebook. A
+    full-width band of rows can be read in one range request (20.4 MB/s in the executed notebook), a crop
+    only row by row (2.5 MB/s).
+- kind: other
+  statement: The five consummatory (Mount) brains have session start dates of 2024-02-07, a year after
+    the appetitive and post-ejaculatory brains (2022-12 to 2023-06), and their middle-plane TRAP intensities
+    are lower (means 20 to 35 against 47 to 143). The dandiset does not say whether this is a separate
+    imaging batch; it bears on the group comparisons of Figure 2.
+- kind: metadata_error
+  statement: In the Figure 1 tables on Figshare (group_df.csv, group_df_virgin_SE.csv) the column Time_in_Isolation_zone_per_10min
+    holds the mean duration of an isolation zone visit in seconds (equal to the mean of merge_df to 4e-8),
+    not a time per 10 min.
+- kind: metadata_error
+  statement: In the Figure 7 table (Figure 6 zip, group_df.csv) Average_Isolation_zone_duration is in
+    frames (15 times Duration_second, up to 107887 in a 7200 s session) for three groups and in seconds
+    for the consummatory hM3Dq group.
+- kind: metadata_insufficient
+  statement: The calcium imaging arrays named *_all_norm_zscore_snip_array.npy are not the traces the
+    Methods compute magnitudes from; for ejaculation each cell's trace is divided by its SD over -5 to
+    0 s, and their 0 to 5 s means do not give the deposited magnitudes (r = 0.53 to 0.89). Only the ejaculation
+    trace from -5 to +120 s matches the Methods. The magnitudes of the other five behaviors can be taken
+    only from the deposited table, and nothing describes the arrays.
+- kind: methods_unavailable
+  statement: The decay length of Figure 6C is defined in the Methods as "the time the z-scored signal
+    was smaller than 0", and the code reads it precomputed. The deposited values equal the time from the
+    peak after onset to the first sample below 0 for 207 of 219 cells, which gives the paper's result,
+    while the time from onset to the first sample below 0, or the total time below 0, give Vgat no longer
+    than Vglut2. The deposited table gives 120 s to each of the 44 responders whose trace never falls
+    below 0 after the peak; with the time to the end of the window, or with these cells left out, Vgat
+    is not longer at p < 0.05. The questions for the authors are whether the decay length is measured
+    from the peak, what value a trace that never returns below 0 takes and why, and how the other 12 cells
+    are computed.
+- kind: paper_inconsistency
+  statement: The Methods state that the spectral clustering chose 55 nearest neighbours with an average
+    silhouette of 0.405; the paper's code printed 30 neighbours and 0.474, the deposited labels are those
+    of 30 neighbours, and no setting with 5 clusters scores 0.405 (0.461 at 55).
+- kind: paper_inconsistency
+  statement: The Results give 177 ejaculation-specific and 46 mount-specific cells; the Figure 5 legend
+    and the deposited data give 178 and 48.
+- kind: code_mismatch
+  statement: The Figure 7 and Figure 7-figure supplement 3 legends name a Wilcoxon rank sum test for the
+    saline against CNO trials; the code runs the paired signed-rank test, and the reported p-values (0.03125
+    for 8 mice) are those of the signed-rank test. With the rank-sum test the consummatory hM3Dq group
+    also has fewer transitions (Bonferroni p = 0.0157).
+- kind: code_mismatch
+  statement: Figure 7-figure supplement 1G reports t(10) = 6.6154 and t(12) = 13.9477; these are the t
+    values of a paired test with the degrees of freedom of an unpaired one, and the reported p-values
+    are the paired p doubled.
+- kind: paper_inconsistency
+  statement: Figure 7-figure supplement 1B and C give 14 post-ejaculatory mice; the deposited table holds
+    15 (7 eYFP, 7 hM3Dq_Ejaculated, 1 hM3Dq_Post_ejaculatory), as F(2,24) requires. The legend of panel
+    D says the appetitive-hM3Dq and post-ejaculatory-hM3Dq groups were used, while the post-ejaculatory
+    group of panel G holds 4 eYFP and 3 hM3Dq mice.
+- kind: selection_undocumented
+  statement: In the HCR analysis of Figure 3, the Vgat and Vglut2 populations count only cells with one
+    of the two calls; 5013 of 68807 MPN cells with both are left out. The paper does not say so; the per-cell
+    table shows it.
+- kind: code_mismatch
+  statement: Figure 1-figure supplement 2B is the number of entries in the isolation zone per the legend;
+    Figure S2.ipynb tests Interaction_zone_entry. The two give the same p-value.
+- kind: metadata_insufficient
+  statement: The NWB files do not give each brain's orientation in the stack. The Figure 2 subject table
+    on Figshare (meta/metainfo.csv) does (Anterior_top, Ventral_first; the two differ between brains),
+    and links each brain to the mouse ID and group of the density table through experiment_id, which matches
+    the dandiset's subject names.
+- kind: paper_inconsistency
+  statement: In the Figure 7-figure supplement 2H to 2J legend, the place-preference p-values for post-ejaculatory-hM3Dq
+    against appetitive-hM3Dq (1, 1 and 0.8472) are not those the Mann-Whitney test with Bonferroni over
+    three comparisons gives on the deposited table (0.162, 0.696 and 0.0615), which are the values Figure
+    S10.ipynb prints; the comparisons with eYFP match. None is significant either way.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier queried the DANDI API for the blocked Figure
+    2 claims and tested mpoa.elbow_pcs on synthetic data. It gave its own outcome for each of the 27 claims;
+    all agree with the record (fig6c-decay-length as reproduced, fragile). It reported 8 problems, one
+    marked as affecting a conclusion (the claims file's choice of the rank-sum test for Figure 7), which
+    is asked of a reader.
+  results:
+  - claim: fig2-density-link
+    agrees: true
+    outcome: blocked
+    reason: I checked the DANDI API myself. It lists only 14 raw NWB volumes, 1.38 TB in total, with empty
+      processing and analysis groups. There are no atlas labels, cell counts or classifier. Cell 3 measured
+      35.5 MB/s, so streaming the TRAP channel once takes 5.4 h. The ilastik classifier would also have
+      to be retrained from manual labels.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes. The grouping part of the link holds (14 of 14 brains, groups 4, 5 and 5 equal to the
+      Stim labels); the notes say so.
+  - claim: fig2c-brain-wide-increase
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes.
+  - claim: fig2ei-social-regions-higher
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes.
+  - claim: fig2-mpn-higher
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes.
+  - claim: fig2f-mpn-fourth-largest
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes.
+  - claim: fig2gh-consummatory-tendency
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes.
+  - claim: fig2s-dorsal-raphe
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The Figure 2 section now opens the Figure 2 zip on Figshare (members, memo,
+      subject table, density table), matches the 14 brains to it by name and group, times reads of row
+      bands, crops and a plane subsample for registration, and says why a region-restricted read does
+      not test the claims (each corrects over a family of regions covering the brain). The 60 minute limit
+      is cited from docs/protocol.md, and the missing classifier is named as a second reason (methods_underspecified)
+      in the notes.
+  - claim: fig1gh-transitions-isolation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 9 gives F(2,16)=10.888, p=0.00104 and F=14.344, p=0.00027. The Tukey p-values are 0.0142
+      and 0.0015 for transitions, and 0.0057 and 0.0004 for isolation time. All match the legend, and
+      all are in the stated direction.
+    response: No change needed.
+  - claim: fig1i-latency-return
+    agrees: true
+    outcome: reproduced
+    reason: Cell 11, F=11.870, p=0.000691. Ejaculation against sniff gives p=0.0016 and against mount
+      p=0.0077, with ejaculation longest.
+    response: No change needed.
+  - claim: fig1jm-behaviors-after-ejaculation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 13, sniff p=0.652 (not significant). Mount and intromission p=0.0039, all 9 mice lower.
+      Grooming p=0.0234 (exact) or 0.0251 (approximate), higher in 7 of 9.
+    response: No change needed.
+  - claim: fig1nt-natural-estrus
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15, the three RM ANOVAs give p=0.0101, 0.00082 and 2.0e-5. Sniff, mount and intromission
+      give p=0.031 (all 6 mice lower). Grooming gives p=0.35 (approximate) or 0.44 (exact).
+    response: No change needed.
+  - claim: fig1s1-experience
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17, virgin females spend more time in the isolation zone, p=0.026 (code's column) or
+      0.041 (legend's measure). Entries differ at p=0.041; virgin females make fewer.
+    response: No change needed.
+  - claim: fig1s2-novel-male
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19, entries fall in 6 of 7 mice (p=0.027/0.031) and average time rises in 6 of 7 (p=0.028/0.031).
+    response: No change needed.
+  - claim: fig3d-mpn-fos
+    agrees: true
+    outcome: reproduced
+    reason: Cell 25, MPN t=-4.2709, Bonferroni p=0.0136. MPA p=0.514. BST, LPO and VLPO give p=1. The
+      MPN is the only significant region.
+    response: No change needed.
+  - claim: fig3i-vgat-vglut2-fos
+    agrees: true
+    outcome: reproduced
+    reason: Cell 27, Vgat p=0.0153 and Vglut2 p=0.0190, as in the legend. The post-ejaculatory Fos+ share
+      is 0.235 in Vgat against 0.160 in Vglut2.
+    response: No change needed.
+  - claim: fig3jm-cell-types
+    agrees: true
+    outcome: reproduced
+    reason: Cell 29, Vgat+Calcr 0.0318, Gal 0.0174, Prlr 0.0212. In Vglut2 cells only Calcr is significant
+      (0.0146). Clusters Vglut2 0.0189, Vgat 0.0022, Gal 0.0265; Nts 0.377 (not significant).
+    response: No change needed.
+  - claim: fig4h-response-magnitude
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 33, ejaculation t=3.998, p=4.2e-4. Sniff t=6.46 and anogenital sniffing t=6.64, both
+      significant with Vgat higher. Mount and intromission give p=1. This tests the deposited magnitudes
+      (problem 4: for the five non-ejaculation behaviors the magnitudes come from the deposited table,
+      not from the traces; the array variant gives the same outcomes). Figures 4 to 6 treat cells as independent
+      units, as the paper does (problem 7).'
+    response: 'Outcome kept. Added the animal-level test (animal means as units, 6 and 4 mice): no behavior
+      differs after Bonferroni correction (ejaculation p = 0.176), stated in the conclusion and notes
+      as resting on cells as units, as in the paper and the criterion. The table-based magnitudes stay
+      a recorded deviation, now also named in the notes.'
+  - claim: fig4i-ejaculation-responders
+    agrees: true
+    outcome: reproduced
+    reason: Cell 35, 184/522 against 35/271 (p=1.5e-10) and 29 against 1 (p=0.0017). The counts are exact.
+      Figures 4 to 6 treat cells as independent units (problem 7).
+    response: Outcome kept. Added the responder fraction by animal and an animal-level comparison (ejaculation
+      t-test p = 0.104, Mann-Whitney p = 0.038; sniff p = 0.46 and 0.694), in the conclusion and notes.
+  - claim: fig5-ejaculation-specific
+    agrees: true
+    outcome: reproduced
+    reason: Cell 37, 178 ejaculation, 48 mount and 12 sniff cells. These are the legend's counts and lie
+      within tolerance of the Results' 177 and 46. Specific share Vgat 0.810, Vglut2 0.829. Readings (a)
+      and (b) agree for all 793 cells.
+    response: Outcome kept. Added the classes by animal (problem 7).
+  - claim: fig5c-class-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39, all five F values match the legend. In the Tukey tests every required pairwise contrast
+      holds. Mount cells do not exceed sniff cells for sniff, and do not exceed ejaculation cells for
+      ejaculation.
+    response: No change needed.
+  - claim: fig6c-decay-length
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41, reading (c), t=3.037, p=0.00268, against the paper''s t(217)=3.0397, p=0.00266.
+      Reading (a) is not significant, and reading (b) is significant in the opposite direction. The result
+      rests on giving 120 s to traces that never return below 0 (problem 3: 43 of the 184 Vgat cells,
+      31 from Vgat_2; Vgat is no longer significantly longer if those cells take the time from peak to
+      end of window (p=0.11), are left out (p=0.30), or animals are the unit (p=0.149)). Verifier''s outcome
+      reproduced (fragile).'
+    response: 'Outcome kept, with assumed true; the verifier found the convention reasonable as a reproduction
+      of the authors'' computation, and its fragility was already stated in the conclusion, notes and
+      finding. Added the table of the 12 responders where (c) and the deposited table differ (peak time,
+      return time, readings a, b, c and the table value): 11 in Vgat_4, none unreturned, the table longer
+      by 0.3 to 5.2 s; recorded in the notes.'
+  - claim: fig6k-late-cluster-vgat
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 43, the late cluster holds 37 Vgat and 0 Vglut2 cells (Bonferroni p=0.018). The fast
+      cluster holds 26/184 Vgat against 16/35 Vglut2 (p=6.8e-5). All match the legend. The fit''s labels
+      equal the deposited labels (adjusted Rand 1.0), and every seed gives the same result. Problem 5:
+      fast is defined as the largest 0 to 5 s mean, the notebook''s own choice; cluster 4 peaks earlier
+      (1.9 s against 5.8 s). The best fit is 30 neighbours with silhouette 0.474, not the paper''s 55
+      and 0.405; at 55 neighbours the late cluster holds 33 Vgat cells, outside the tolerance. Problem
+      6: mpoa.elbow_pcs returns a 0-based index.'
+    response: Outcome kept. The fast cluster definition is now cited to the code (reorder_clusters numbers
+      the clusters by their 0 to 5 s response, and the paper's type numbers are the code's), and the earliest-peak
+      cluster is shown as a variant (41/184 Vgat, 5/35 Vglut2, p = 1), in the conclusion, notes and deviations.
+      The 55-neighbour count being outside tolerance is now stated. elbow_pcs is documented as the code's
+      rule, which uses the 0-based index as the count of components kept (the code printed 4 and used
+      transformed_data[:, :4]); the value is unchanged. The late cluster is broken down by animal.
+  - claim: fig7fg-activation-suppresses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 47, post-ejaculatory-hM3Dq is significant in both measures under both tests. Under the
+      claims file''s main reading (rank-sum) the consummatory-hM3Dq group also drops in transitions (Bonferroni
+      p=0.0157), so ''only post-ejaculatory'' fails. Under the signed-rank variant it holds, with p=0.0625.
+      Problem 1: the claims file making the rank-sum test the main reading looks like a misreading of
+      the paper; every p-value in the Figure 7 legend is reproduced exactly by the paired signed-rank
+      test, and the design is paired.'
+    response: Outcome kept, as tested on the claims file. Added the question to questions/001249.yaml
+      for a reader, covering fig7fg, fig7kl and fig7s3; the conclusion and notes say it is asked.
+  - claim: fig7kl-activation-intromission
+    agrees: true
+    outcome: reproduced
+    reason: Cell 49, intromission p=0.0026 and receptive score p=0.0033 (rank-sum); both 0.03125 (signed-rank).
+      Grooming and mount give 0.0625 under signed-rank, as the legend says.
+    response: Outcome kept; the test question of fig7fg-activation-suppresses covers this claim, as the
+      notes say.
+  - claim: fig7s1-mpn-proportion
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51, cell count F(2,24)=0.3072, p=0.7383. MPN proportion F=4.3335, p=0.0247, Tukey p=0.0471.
+      Vgat exceeds Vglut2 in both groups. The proportions are 0.743/0.124 (pooled) and 0.786/0.138 (post-ejaculatory
+      only), both within tolerance. Problem 2: the paper''s t values equal the paired t values and its
+      p-values twice the paired p; both readings are significant.'
+    response: Outcome kept. Added the question of the paired test to questions/001249.yaml for a reader;
+      the conclusion and notes say it is asked.
+  - claim: fig7s2-home-cage-activation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 53, sniff p=0.0072, intromission p=0.0165, mount p=0.41. Only post-ejaculatory-hM3Dq
+      is significant. No place-preference comparison is significant (smallest p=0.062). It could not check
+      whether post-test minus pre-test in the CNO-paired zone matches Figure S10.ipynb.
+    response: 'Outcome kept. Printed the legend''s place-preference p-values next to the notebook''s:
+      the four comparisons with eYFP equal the legend''s, while for post-ejaculatory against appetitive
+      hM3Dq the legend prints 1, 1 and 0.8472 where the test gives 0.162, 0.696 and 0.0615 (the values
+      Figure S10.ipynb prints); recorded as a paper_inconsistency finding.'
+  - claim: fig7s3-inhibition
+    agrees: true
+    outcome: reproduced
+    reason: Cell 55, home cage intromission p=0.0045 and receptive score p=0.020; sniff p=0.70, mount
+      p=0.40. In the self-paced assay the smallest corrected p is 0.117 (rank-sum) and 0.100 (signed-rank).
+    response: Outcome kept; the test question of fig7fg-activation-suppresses covers this claim, as the
+      notes say.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and the summary, the attempt record,
+    the README, the helper module and the claims file, with the paper. The verifier agreed with all 27 outcomes
+    and the one assumption (fig6c-decay-length). It reported the Figure 2 cost figures in the notes, a
+    finding and cell 79 as carried over from an earlier run, and one misleading sentence on the fast cluster
+    of fig6k; round-1 points 1 (Figure 7 test, with a reader) and 3 (fig6c convention) remain open.
+  results:
+  - claim: fig2-density-link
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. Cell 3 prints 36.3 MB/s, and cell 78 prints 318 min to stream the TRAP channels
+      and 635 min for both, against a 60-minute limit. The argument in cell 76 holds: every claim corrects
+      over regions that cover the whole brain, so reading only a region would not test it. The missing
+      ilastik classifier is now named as a second reason. The notes'' cost figures were carried over from
+      an earlier run (37.0 MB/s, 312 and 623 min, 13.2 MB/s, 12 and 31 min) against the printed 36.3 MB/s,
+      318 and 635 min, 12.3 MB/s, 13 and 32 min; none of these affects an outcome, since every figure is
+      far over 60 minutes. The 60-minute limit is cited to docs/protocol.md, which is not in its
+      materials, so it cannot verify it. Registration time was not measured, only read time; that does not
+      change the too_large outcome.'
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig2c-brain-wide-increase
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig2ei-social-regions-higher
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig2-mpn-higher
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig2f-mpn-fourth-largest
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig2gh-consummatory-tendency
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig2s-dorsal-raphe
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-density-link.
+    response: Outcome kept. The entry was re-run; this run measured 67.4 MB/s (cell 3), so streaming the
+      TRAP channels takes 171 min and both channels 342 min (cell 78); bands of rows stream at 20.4 MB/s,
+      crops at 2.5 MB/s, and every 25th (10th) background plane takes 7 (17) min (cell 77). The notes, the
+      volume-size finding and cell 79 now give these figures, with the range over runs (35.5 to 67.4 MB/s,
+      so 2.8 to 5.4 h for the TRAP channels). Cell 76 now quotes the protocol's passages on the 60-minute
+      limit and on too_large.
+  - claim: fig1gh-transitions-isolation
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig1i-latency-return
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig1jm-behaviors-after-ejaculation
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig1nt-natural-estrus
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig1s1-experience
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig1s2-novel-male
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig3d-mpn-fos
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig3i-vgat-vglut2-fos
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig3jm-cell-types
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig4h-response-magnitude
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57. The animal-level non-significance in fig4h
+      is disclosed, while the outcome follows the paper and the claims file in treating cells as units; it
+      still bears on the conclusion.
+    response: Outcome kept; no change. The animal-level result is stated in the notes, the summary and
+      the README.
+  - claim: fig4i-ejaculation-responders
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig5-ejaculation-specific
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig5c-class-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: Every value in the notes matches cells 9 to 57.
+    response: Outcome kept; no change.
+  - claim: fig6c-decay-length
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree. The assumption is stated in the deviations, the conclusion (cell 55) and a
+      finding, and it is reasonable. The deposited table gives 120 s to all 44 cells whose trace never
+      falls below 0 after the peak, and reading (c) matches the table at r = 1.000. The result is fragile:
+      under the other treatments of those cells it is not significant (p = 0.111 and 0.299), and by animal
+      p = 0.149. The record says all of this. Still bears on the conclusion: the outcome rests on a
+      convention known only from the deposited table, not from the paper.'
+    response: Outcome kept; no change. The assumption and its fragility are stated in the deviations,
+      the notes, cell 55 and a finding.
+  - claim: fig6k-late-cluster-vgat
+    agrees: true
+    outcome: reproduced
+    reason: 'Every value in the notes matches cells 9 to 57. The choice of type 1 as the fast cluster is
+      better supported than the notebook says: the Results call type 1 the fast response type, and the
+      Figure 6 legend gives Type 1 as 42 cells (26 Vgat, 16 Vglut2), the notebook''s cluster 1; the
+      legend''s Type 5, the negative response type, has 46 cells (41/5), the notebook''s earliest-peak
+      cluster 4. Cell 58 and the notes say under that definition Vglut2 cells are not more often fast,
+      which is supported but misleading, as the earliest-peak cluster is the paper''s negative-response
+      type, not a candidate fast type.'
+    response: Outcome kept. Cell 58 and the notes no longer say Vglut2 cells are not more often fast
+      under the earliest-peak definition; they now say that cluster is the paper's Type 5, the negative
+      response type, not a candidate fast type, and give the legend's counts for Type 1 and Type 5. The
+      deviation on the fast cluster cites the Results' type names and the legend's counts.
+  - claim: fig7fg-activation-suppresses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree under the claims file as written: cell 62 gives rank-sum p = 0.0157 for the
+      consummatory group''s transitions, so only post-ejaculatory fails. Round-1 point 1 is open and
+      affects a conclusion: it still judges the rank-sum main reading a misreading of the paper, as the
+      legend says rank sum but every legend p-value equals the paired signed-rank value and the design is
+      paired; under the signed-rank test fig7fg would be reproduced. Passing the question to a reader is
+      correct.'
+    response: Outcome kept, as tested on the claims file; the question is already in
+      questions/001249.yaml for a reader. No change.
+  - claim: fig7kl-activation-intromission
+    agrees: true
+    outcome: reproduced
+    reason: Cells 65, 68, 71 and 74 support fig7kl, fig7s1, fig7s2 and fig7s3.
+    response: Outcome kept; no change.
+  - claim: fig7s1-mpn-proportion
+    agrees: true
+    outcome: reproduced
+    reason: Cells 65, 68, 71 and 74 support fig7kl, fig7s1, fig7s2 and fig7s3. The unpaired t-test as
+      main reading is passed to a reader and does not affect the conclusion (both tests are significant).
+    response: Outcome kept; no change.
+  - claim: fig7s2-home-cage-activation
+    agrees: true
+    outcome: reproduced
+    reason: Cells 65, 68, 71 and 74 support fig7kl, fig7s1, fig7s2 and fig7s3. The place-preference
+      p-values hard-coded from the legend in cell 71 match the paper's text exactly (0.2203, 1, 1 / 1, 1,
+      1 / 1, 0.8472, 0.8472).
+    response: Outcome kept; no change.
+  - claim: fig7s3-inhibition
+    agrees: true
+    outcome: reproduced
+    reason: Cells 65, 68, 71 and 74 support fig7kl, fig7s1, fig7s2 and fig7s3.
+    response: Outcome kept; no change.
