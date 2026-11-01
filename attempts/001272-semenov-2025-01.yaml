@@ -68,7 +68,7 @@ outcomes:
   - Frame 0 (1.7 to 15.7 times the median brightness) and the last frame are left out of every trace,
     a standard choice.
 - claim: figs1-near-threshold-delayed-aps
-  outcome: partially_reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: di8_controls.ipynb
   output: claim:figs1-near-threshold-delayed-aps
@@ -83,18 +83,13 @@ outcomes:
     subject 4 one at 201 ms, so 2 of 3 neurons meet it. One or a few APs near threshold hold in all three
     neurons, later than at higher fields, and a delay of 100 ms or more in one or two of the three,
     depending on the height reading. The questions on "delayed" and on the AP height are for the paper's
-    authors (findings). Verification round 2 found that the criterion is one per-neuron test, so the
-    outcome under the stated assumptions is not reproduced; the change is proposed below.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion is one test per neuron, which needs the median near-threshold session to have
-      1 to 3 APs and its first AP delayed, and it is met when more than half of the neurons pass it.
-      Under the adopted readings (whole frame, F0 (a), height (b) read as prominence, O5 (a)) 1 of 3
-      neurons passes, under O4 (a) and (b) alike, and the criterion is met in 0 of 24 combinations under
-      O5 (a) with prominence (6 of 24 with the dF value). Partially reproduced described the two halves
-      of the per-neuron test, which the criterion does not judge apart. The outcome would still rest on
-      the assumptions (assumed true). The analysis is the claim:figs1-near-threshold-delayed-aps cell of
-      di8_controls.ipynb, whose conclusion now states the proposal.
+    authors (findings). Changed from partially reproduced after verification round 3. The criterion is
+    one test per neuron, which needs the median near-threshold session to have 1 to 3 APs and its first
+    AP delayed, and it is met when more than half of the neurons pass it; 1 of 3 passes under the
+    adopted readings, under O4 (a) and (b) alike. Partially reproduced described the two halves of that
+    test, which the criterion does not judge apart. Under O5 (b), "delayed" relative to the neuron's own
+    higher fields, every neuron's near-threshold AP is later, so the outcome rests on the reading of
+    "delayed" (assumed true).
   deviations:
   - Assumed the AP height read as prominence for Di-8-ANEPPS, after verification round 1. With the
     height as the dF value, the whole frame and height (b), the detector finds 46 peaks after the
@@ -176,16 +171,16 @@ outcomes:
     with the height as prominence (p 0.15 to 0.64). Under reading (ii) the Di-8-ANEPPS thresholds are
     higher under 9 of 12 readings (p 0.002 to 0.017; 8 of 12 as prominence, 12 of 12 with the earlier
     2-ms width bound). The response pattern holds only in part (figs1-near-threshold-delayed-aps
-    partially reproduced, figs1-stronger-field-shorter-delay-sustained-firing reproduced,
+    not reproduced, figs1-stronger-field-shorter-delay-sustained-firing reproduced,
     figs1-culminates-in-sustained-depolarization not reproduced), so the criterion's condition for
     reproduced is not met; its condition for not reproduced, a threshold difference, is not met under the
     adopted unit reading either. The FluoVolt mean, about 150 V/cm, is far above the paper's 57.7 V/cm
     (reported, not judged); the one-sample tests of the Di-8-ANEPPS thresholds against 57.7 V/cm give p
     0.14 to 0.36 with n = 2 or 3. With n = 2 or 3 and intervals this wide, the absence of a difference
     carries little information. The criterion gives no outcome for a pattern that fails with no
-    threshold difference; this is asked of a reader in questions/001272.yaml. The proposed change of
-    figs1-near-threshold-delayed-aps to not reproduced would leave this outcome as it is, as the pattern
-    fails either way.
+    threshold difference; this is asked of a reader in questions/001272.yaml. The change of
+    figs1-near-threshold-delayed-aps to not reproduced in verification round 3 leaves this outcome as it
+    is, as the pattern fails either way.
   deviations:
   - Assumed unit reading (i), the volts as the files state them times the files' 36 V/cm per volt in
     both groups. The 001032 to 001035 files call their volts peak-to-peak, and the 001272 files say only
@@ -838,3 +833,25 @@ verifications:
       part); rest untested" to not_reproduced.
     response: No change of outcome, as the claim depends on fig6-sine-less-than-pulse, which is blocked.
       The round-1 reason now opens with the verifier's full outcome.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on figs1-near-threshold-delayed-aps, with the
+    analysis behind it in di8_controls.ipynb (cells 11, 20, 21, 35 and 37), the claims file for this
+    dataset, the attempt record, the README and the paper.
+  results:
+  - claim: figs1-near-threshold-delayed-aps
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion is a single test per neuron, the median near-threshold session must have 1 to 3
+      APs and its first AP must be delayed (O5), with no partial outcome for meeting one half, so
+      not_reproduced is the outcome when most neurons fail it. Under the adopted readings 1 of 3 neurons
+      passes with O4 (a) and (b); median first-AP latencies are 5.7, 62.8 and 137.3 ms, and only subject 4
+      reaches 100 ms. The choices were not made to reach this result, both push the claim toward failure,
+      and under O5 (b) with prominence it is met in 20 of 24 combinations. The outcome depends on O5; the
+      record states this, keeps assumed true and puts the meaning of "delayed" to the authors, which is
+      the right way to handle it. Cell 35 prints "near-threshold partially reproduced" as a hard-coded
+      string, which will be out of date if the proposal is accepted.
+    response: Outcome changed to not reproduced, still resting on the assumptions, and the proposal
+      removed. The notebook conclusion and summary, the hard-coded string in cell 35, the README and the
+      notes on figs1-effects-same-as-fluovolt now state the changed outcome.

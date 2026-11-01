@@ -12,7 +12,7 @@ scaled them to, which is not deposited, as the claims file allows.
 |---|---|---|
 | Di-8-ANEPPS experiments on eight neurons | 001272 | Not reproduced (3 neurons) |
 | Di-8-ANEPPS APs are reductions of emission | 001272 | Reproduced |
-| Near threshold, one or a few delayed APs | 001272 | Partially reproduced (assumption); not reproduced proposed |
+| Near threshold, one or a few delayed APs | 001272 | Not reproduced (assumption) |
 | Stronger fields shorten the delay and induce sustained firing | 001272 | Reproduced (assumption) |
 | The strongest fields give sustained depolarization | 001272 | Not reproduced |
 | Di-8-ANEPPS traces are noisier than FluoVolt | 001272 with FluoVolt neurons | Not reproduced |
@@ -40,8 +40,8 @@ height of 1 to 20 ms, as the claims file gives it after a reader answered a ques
 since read as the dF value it counts noise on the bleaching-raised inverted trace (a null test of the
 detector after the stimulus shows it). Thresholds in V/cm, from the files' nominal
 volts and 36 V/cm per volt, are about 150 V/cm at 2 kHz, against the paper's 57.7 V/cm; the files say
-the delivered amplitude is smaller by a calibration that is not deposited. For the near-threshold claim the
-second verification round found that only 1 of 3 neurons passes the claim's per-neuron test under the
-adopted readings, and a change to not reproduced is proposed for a third round. The attempt record,
+the delivered amplitude is smaller by a calibration that is not deposited. For the near-threshold claim only 1
+of 3 neurons passes the claim's per-neuron test under the adopted readings, so its outcome was changed
+to not reproduced after the third verification round. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/001272-semenov-2025-01.yaml`](../../attempts/001272-semenov-2025-01.yaml).
