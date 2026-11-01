@@ -17,9 +17,9 @@ of the same worms, and the whole-brain activity recordings, are on the paper's Z
 | Guided annotation beats random annotation, head and tail | Partially reproduced: head only |
 | Confidence is calibrated | Blocked: the criterion's two readings disagree |
 | NeuroPAL leaves 3.5% color violations (with the paper's NeuroPAL colors) | Reproduced |
-| Optimal coloring finds 1.7% with 39 reporters and 10.5% with 3 (with the paper's reporter table) | Partially reproduced; a change to blocked is proposed, as the 3-reporter value depends on the sparsity |
+| Optimal coloring finds 1.7% with 39 reporters and 10.5% with 3 (with the paper's reporter table) | Blocked: the 3-reporter value depends on the sparsity, which the paper does not give |
 | Ventral ganglion least accurate | Blocked: no tails (lowest of the head ganglia) |
-| Whole-brain activity, five claims on the Zenodo record (counted apart) | 2 reproduced, 1 partially (a change to blocked is proposed), 1 not reproduced, 1 blocked |
+| Whole-brain activity, five claims on the Zenodo record (counted apart) | 2 reproduced, 1 not reproduced, 2 blocked (the result depends on the removal of similar neurons) |
 | Reporter expression, mutants, phenotypes and other activity claims | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
