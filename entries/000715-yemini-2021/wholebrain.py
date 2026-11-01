@@ -129,11 +129,34 @@ def window_means(d, key, stim, mapping="order"):
     return pre, dur, post
 
 
-def storey_q(p: np.ndarray, lam: float = 0.5) -> np.ndarray:
-    """q-values of Storey (2002), with pi0 estimated at lambda = 0.5 (a standard choice)."""
+BOOT_LAMBDAS = np.arange(1, 96) / 100     # MATLAB mafdr's default 'Lambda', 0.01:0.01:0.95
+
+
+def storey_pi0(p: np.ndarray, lam=0.5, boot: int = 100, seed: int = 0) -> float:
+    """Storey's (2002) estimate of the share of true nulls.
+
+    lam a number: pi0 at that lambda (0 gives pi0 = 1, Benjamini-Hochberg). lam = "bootstrap": the
+    bootstrap choice of lambda over 0.01 to 0.95 (Storey 2002 section 9; Storey, Taylor and Siegmund
+    2004), the default 'Method' and 'Lambda' of MATLAB's mafdr: the lambda whose bootstrap estimates
+    have the least mean squared difference from the smallest estimate over lambda.
+    """
+    p = np.asarray(p, float)
+    if len(p) == 0:
+        return 1.0
+    if lam != "bootstrap":
+        return min(1.0, np.mean(p > lam) / (1 - lam))
+    est = lambda x: (x[:, None] > BOOT_LAMBDAS).mean(0) / (1 - BOOT_LAMBDAS)
+    pi0 = est(p)
+    rng = np.random.default_rng(seed)
+    mse = np.mean([(est(rng.choice(p, len(p))) - pi0.min()) ** 2 for _ in range(boot)], axis=0)
+    return min(1.0, pi0[np.argmin(mse)])
+
+
+def storey_q(p: np.ndarray, lam=0.5) -> np.ndarray:
+    """q-values of Storey (2002), with pi0 from storey_pi0 (lambda = 0.5 by default, a standard choice)."""
     p = np.asarray(p, float)
     m = len(p)
-    pi0 = min(1.0, np.mean(p > lam) / (1 - lam)) if m else 1.0
+    pi0 = storey_pi0(p, lam)
     order = np.argsort(p)
     q = np.empty(m)
     prev = 1.0
@@ -143,7 +166,7 @@ def storey_q(p: np.ndarray, lam: float = 0.5) -> np.ndarray:
     return q
 
 
-def responses(d, stim, mapping="order"):
+def responses(d, stim, mapping="order", lam=0.5):
     """Per class (L and R pooled): paired two-tailed t test of stimulus against pre-stimulus."""
     rows = []
     classes = sorted({k[0] for k in d["traces"]})
@@ -161,11 +184,11 @@ def responses(d, stim, mapping="order"):
         rows.append({"neuron": c, "n": len(v), "mean_change": diff.mean(), "p": p,
                      "post_gate": bool(v[:, 1].mean() > v[:, 0].mean()), "p_post": post})
     if rows:
-        q = storey_q(np.array([r["p"] for r in rows]))
+        q = storey_q(np.array([r["p"] for r in rows]), lam)
         gated = [i for i, r in enumerate(rows) if r["post_gate"]]
         qp = np.full(len(rows), np.nan)
         if gated:
-            qp[gated] = storey_q(np.array([rows[i]["p_post"] for i in gated]))
+            qp[gated] = storey_q(np.array([rows[i]["p_post"] for i in gated]), lam)
         for r, qq, qqp in zip(rows, q, qp):
             r["q"] = qq
             r["q_post"] = qqp
