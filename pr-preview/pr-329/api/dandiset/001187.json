@@ -1,0 +1,1061 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001187",
+  "label": "DANDI:001187"
+ },
+ "page": "datasets/dandi/001187/",
+ "generated": "2026-11-01T20:41:39+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 19,
+  "partially_reproduced": 4,
+  "not_reproduced": 2,
+  "blocked": 4
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001187-daume-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001187",
+    "version": "0.240904.2347",
+    "doi": "10.48324/dandi.001187/0.240904.2347"
+   },
+   "key": "dandi:001187",
+   "label": "DANDI:001187",
+   "dataset_version": "0.240904.2347",
+   "paper": "10.1016/j.neuron.2024.09.013",
+   "paper_title": null,
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41284150060"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001187-daume-2024",
+   "entry_title": "Working memory maintenance and long-term memory in human hippocampus (Daume et al. 2024)",
+   "description": "Tests the findings of Daume et al. (2024) on dandiset 001187, which holds the spike times of 950 units recorded in the hippocampus and amygdala of 39 epilepsy patients over 46 sessions of a Sternberg working memory task and a later recognition memory test. It covers the behaviour, the selection of category and memory-selective neurons, the mixed-effects models relating maintenance activity to later memory, and the pairing of memory-selective with category neurons.",
+   "notebooks": [
+    {
+     "path": "reproduce_daume_2024.ipynb",
+     "title": "Reproducing Daume et al. (2024) from dandiset 001187",
+     "executed": "notebooks/001187-daume-2024/reproduce_daume_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "sessions-and-neurons",
+     "statement": "After excluding two sessions, 46 sessions are analysed, in which 883 single units pass the 0.1 Hz rate filter, 351 in the hippocampus and 532 in the amygdala, of 950 isolated.",
+     "source": "Results, paragraph 3; STAR Methods, Spike sorting",
+     "quote": "In total, we isolated 950 neurons across both areas of the MTL. Neurons with a firing rate lower than 0.1 Hz in either the WM or the LTM tasks were excluded from analysis (67 neurons (7.1%)). Analyses are based on 351 isolated neurons in the hippocampus and 532 in the amygdala",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "The dandiset holds 46 sessions of 39 subjects and 950 units (380 hippocampus, 570 amygdala). The rate filter of the paper's code removes 67 units (7.1%) and leaves 351 and 532. Table S1's recorded counts sum to 973 (386 and 587); see table-s1-counts.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table-s1-counts",
+     "statement": "Per session, the numbers of recorded units in the hippocampus and the amygdala are those of Table S1.",
+     "source": "Table S1",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Numbers from Table S1 (third number of each area column); no sentence of the text states them. Their sums (386 hippocampus, 587 amygdala) differ from the 950 and 883 of the Methods.",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "All 46 sessions are matched to Table S1 by the label in the file identifier; the WM and LTM accuracies agree with the table to within 0.18 and 1.52 points. 42 sessions match the recorded counts before the rate filter (21 after it). Four differ, P1809jh (hippocampus 1 against 6), P61cs_2 (hippocampus 1 against 2), P68cs (amygdala 7 against 17) and P82cs (amygdala 17 against 24); these 23 units are the difference between Table S1's 973 and the 950 of the text. As a report (printed under ms-neuron-counts), the per-session category counts equal Table S1's in 42 (hippocampus) and 40 (amygdala) of 46 sessions, and the MS counts in 40 and 44.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "behaviour-overall-accuracy",
+     "statement": "Patients answered 93.3% of WM trials and 70.3% of LTM trials correctly (d' 1.19), both above the 50% chance level.",
+     "source": "Results, paragraph 2",
+     "quote": "Patients performed well in both parts of the task, with an average accuracy of 93.3 \u00b1 7.6 % (mean \u00b1 SD) in the WM task and 70.3 \u00b1 9.8 % (d\u2019 = 1.19 \u00b1 0.62) in the LTM task, respectively (both p < 0.0001 as compared to 50 % chance; permutation-based t-test",
+     "statistics": [
+      {
+       "test": "permutation-based t-test against 50% chance",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "WM accuracy 93.33% (SD 7.60), LTM accuracy 70.32% (SD 9.89), d' 1.189 (SD 0.620); no hit or false-alarm rate is 0 or 1. Both accuracies exceed 50% with the smallest permutation p the test gives (about 1e-4, below 0.0001), t(45) = 38.67 and 13.93.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-wm-accuracy-load",
+     "statement": "WM accuracy is higher in load 1 than in load 3 trials.",
+     "source": "Results, paragraph 2; Figure 1c",
+     "quote": "In the WM task, patients performed with higher accuracy (Fig. 1c; load 1 \u2013 load 3: t(45) = 4.89, p < 0.0001",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = 4.89",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Load 1 95.09%, load 3 91.58%; t(45) = 4.91 (paper 4.89), permutation p below 0.0001.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-wm-rt-load",
+     "statement": "WM responses are faster in load 1 than in load 3 trials.",
+     "source": "Results, paragraph 2; Figure 1d",
+     "quote": "and faster (Fig. 1d; t(45) = \u22124.29, p < 0.0001) in load 1 than load 3 trials",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = -4.29",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "With response times above 5 s set to missing, load 1 1.393 s and load 3 1.525 s, t(45) = -4.28 (paper -4.29). The criterion's bar, p < 0.0001, lies at the resolution of a 10,000-permutation test; the draw printed first gives p = 0.0003, and over 100 seeds 63 draws give p below 0.0001 (median 0.0001). With 2,000,000 permutations the p the test estimates is 6.0e-05 (95% upper bound 7.0e-05), below 0.0001, so load 1 is faster at p < 0.0001. Changed from partially reproduced after verification round 1. Without the 5 s cut (variant), t = 0.20, p = 0.86.",
+     "deviations": [
+      "The permutation p is estimated with 2,000,000 sign flips in place of the 10,000 of the Methods, since 10,000 cannot resolve a p near the criterion's bar of 0.0001; the 10,000-permutation p is shown over 100 seeds."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-ltm-confidence-accuracy",
+     "statement": "LTM recognition is more accurate in high-confidence than in low-confidence trials.",
+     "source": "Results, paragraph 2; Figure 1e",
+     "quote": "In the LTM task, retrieval was more accurate (Fig. 1e; t(44) = 8.66, p < 0.0001; one patient did not use confidence ratings and was therefore excluded from all confidence-related analyses)",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(44) = 8.66",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "45 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "45 sessions (sub-11, whose ratings are all 1 or 6, left out). High 77.31%; low 61.40% pooled, t(44) = 8.51 (paper 8.66), or 62.48% averaged, t(44) = 7.34; p below 0.0001 in both.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ltm-rt-confidence",
+     "statement": "LTM responses are faster with high confidence (mean 1.83 s) than with low confidence (2.62 s).",
+     "source": "Results, paragraph 2",
+     "quote": "and faster (mean RT high: 1.83 \u00b1 0.57 s; mean RT low: 2.62 \u00b1 0.66 s; t(44) = \u221211.13, p < 0.0001) when patients indicated high confidence in their responses",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(44) = -11.13",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "45 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Reading (b), response times above 5 s set to missing, matches with low confidence pooled (1.838 and 2.618 s, t(44) = -11.37) and averaged (1.838 and 2.659 s, t(44) = -11.22), p below 0.0001. Reading (a), all response times, gives 2.205 and 3.565 s, outside tolerance, with high still faster (t(44) = -7.30).",
+     "deviations": [
+      "The paper's means match only with response times above 5 s set to missing, the code's rule (plot_behavior.m), which the text does not state; the criterion lists it as a reading."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-ltm-load",
+     "statement": "Pictures held in load 1 WM trials are later recognized better than pictures held in load 3 trials.",
+     "source": "Results, paragraph 2; Figure 1f",
+     "quote": "Items that were encoded in load 1 trials in the previous WM task were remembered better than items encoded during load 3 trials (Fig. 1f; t(45) = 2.42; p = 0.018)",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = 2.42",
+       "p": 0.018,
+       "n": "46 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Hit rate 68.59% for load 1 pictures and 65.77% for load 3, t(45) = 2.65, p = 0.0097 (paper t = 2.42, p = 0.018).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-ltm-probe",
+     "statement": "Pictures that were also used as WM probes, and so shown twice, are later recognized better than pictures shown once.",
+     "source": "Results, paragraph 2; Figure 1g",
+     "quote": "items that were also used as the probe and therefore presented twice were remembered better than items not used as the probe (Fig. 1g; t(45) = 7.25, p < 0.0001)",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = 7.25",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Hit rate 72.10% for pictures shown twice, 63.99% for pictures shown once, t(45) = 6.80 (paper 7.25), p below 0.0001.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "category-neuron-counts",
+     "statement": "104 hippocampal units (29.65%) and 220 amygdala units (41.35%) are category neurons.",
+     "source": "Results, Category neurons remain persistently active when their preferred category is held in WM, paragraph 1",
+     "quote": "In the hippocampus, 104 (29.65 %) neurons qualified as category neurons, and in the amygdala 220 (41.35 %) neurons qualified as category neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "102 of 351 hippocampal (29.06%) and 222 of 532 amygdala (41.73%) units. Reading the second test as a two-sided p < 0.05 gives 96 and 205.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-hippocampus-persistent",
+     "statement": "Hippocampal category neurons are persistently active above baseline during maintenance and fire more when an image of their preferred category is held in WM.",
+     "source": "Results, Category neurons remain persistently active, paragraph 2; Figure 2b",
+     "quote": "In the hippocampus, category neurons remained persistently active throughout the maintenance period (intercept: beta = 17.86, p = 1.38 \u00d7 10\u22123; mixed-effects GLM) and had significantly higher FRs during trials in which images from the preferred category were maintained in WM (Fig. 2b; preferred category: beta = 12.47, p = 8.82 \u00d7 10\u22127)",
+     "statistics": [
+      {
+       "about": "intercept",
+       "test": "mixed-effects GLM",
+       "p": 0.00138,
+       "n": "104 hippocampal category neurons"
+      },
+      {
+       "about": "preferred category",
+       "test": "mixed-effects GLM",
+       "p": 8.82e-07,
+       "n": "104 hippocampal category neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule for this GLM in place of O-M. Under all four readings with O-G the intercept and the preferred effect are positive at p < 0.05 with at least one beta outside tolerance. One row per trial, baseline B1, gives intercept 20.22 (p = 0.00096) and preferred 14.11 (p = 0.000001), both above tolerance; B2 gives 22.38 and 11.86 (preferred within tolerance); the code's rows give 22.98 and 8.82 (B1) or 25.42 and 6.90 (B2). O-G removes 1 or 2 of 102 neurons. The code's rule (O-C, variant) with one row per trial and B1 gives 19.39 and 13.12, both within tolerance. The outcome is the same as under O-M in a run before that answer (partially reproduced); O-M is no longer run, so its betas are not shown in the notebook.",
+     "deviations": [
+      "O-G takes each neuron's mean normalized rate over all rows of its table before trial selection (incorrect trials included), as NWB_computeGLM.m takes the means for O-C; claims header O, as amended.",
+      "Mixed models are fitted by maximum likelihood with statsmodels MixedLM, not MATLAB fitglme; p-values from the t distribution on n - p degrees of freedom."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-hippocampus-correct-load",
+     "statement": "When the preferred category is held, hippocampal category neurons fire more in correct than incorrect trials and more in load 1 than load 3 trials.",
+     "source": "Results, Category neurons remain persistently active, paragraph 2; Figure 2c",
+     "quote": "Using only preferred trials and modelling WM accuracy (2 levels, WM correct/incorrect, categorical) as well as load (2 levels, load 1/load 3, categorical) as fixed effects, we further observed that category neurons in the hippocampus had higher FRs in (1) correct than incorrect trials (beta = 16.22, p = 0.046) and (2) in load 1 than in load 3 trials (Fig. 2c; beta = 13.769, p = 0.0023)",
+     "statistics": [
+      {
+       "about": "correct against incorrect",
+       "test": "mixed-effects GLM",
+       "p": 0.046
+      },
+      {
+       "about": "load 1 against load 3",
+       "test": "mixed-effects GLM",
+       "p": 0.0023
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "The readings the criterion names give different outcomes, and the claims file (shared method, opening paragraph) blocks such a claim; changed from partially reproduced (assumed) after verification round 1. With main effects (reading a) and O-G, 101 of 102 neurons, baseline B1 gives accuracy 18.48 (p = 0.0499) and load 18.64 (p = 0.0003), both above tolerance; B2 gives load 12.94 (p = 0.0069, within tolerance) and accuracy 16.46 (p = 0.060). Both grade the claim partially reproduced. With the interaction term (reading b) the load term is -14.24 (p = 0.56) or -18.66 (p = 0.41), which grades it not reproduced. With 0/1 coding that term is the load effect in incorrect trials (59 rows with load 1), not a main effect; whether reading (b) is the paper's model is asked of a reader (questions/001187.yaml). With -0.5/+0.5 coding (a variant) the load main effect is 2.96 (p = 0.81) with B1 and -2.12 (p = 0.86) with B2, and accuracy 30.62 (p = 0.018) and 28.09 (p = 0.019). O-C under reading (a) with B1 gives accuracy 18.68 (p = 0.028) and load 13.63 (p = 0.0034). The earlier outcome under O-M was not reproduced.",
+     "deviations": [
+      "O-G as in fig2b-hippocampus-persistent."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-amygdala-persistent",
+     "statement": "Amygdala category neurons are also persistently active during maintenance and fire more for the preferred category.",
+     "source": "Results, Category neurons remain persistently active, paragraph 3; Figure 2e",
+     "quote": "In the amygdala, category neurons also remained persistently active throughout the maintenance period across all correct trials (intercept: beta = 9.78, p = 6.76 \u00d7 10\u22124) with FRs higher for preferred than unpreferred categories (Fig. 2e; preferred category: beta = 6.91, p = 9.38 \u00d7 10\u22127)",
+     "statistics": [
+      {
+       "about": "intercept",
+       "test": "mixed-effects GLM",
+       "p": 0.000676,
+       "n": "220 amygdala category neurons"
+      },
+      {
+       "about": "preferred category",
+       "test": "mixed-effects GLM",
+       "p": 9.38e-07,
+       "n": "220 amygdala category neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "The two row readings the criterion names give different outcomes, and the claims file blocks such a claim; changed from reproduced (assumed) after verification round 1. With one row per trial (reading a) and O-G both terms are positive at p < 0.05 with both betas within tolerance, intercept 10.50 and preferred 6.88 with B1 (p = 0.00046 and 0.000002; 220 of 222 neurons), 10.06 and 6.55 with B2, which grades the claim reproduced. With the code's rows (reading b) the intercept is above tolerance and the preferred beta below it (13.06 and 5.62 with B1, 11.26 and 5.61 with B2), which grades it partially reproduced. O-C gives 10.50 and 6.88 (B1) and 9.34 and 5.89 (B2) with one row per trial.",
+     "deviations": [
+      "O-G and the fitting as in fig2b-hippocampus-persistent."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-amygdala-load-not-accuracy",
+     "statement": "When the preferred category is held, amygdala category neurons fire more in load 1 than load 3 trials, but not more in correct than incorrect trials.",
+     "source": "Results, Category neurons remain persistently active, paragraph 3; Figure 2f",
+     "quote": "using only preferred trials category neurons in the amygdala showed a significant main effect only for load (Fig. 2f; load 1 \u2013 load 3; beta = 12.309; p = 2.46 \u00d7 10\u22127), but the effect for WM accuracy (correct \u2013 incorrect: beta = \u22126.13; p = 0.24) was not significant",
+     "statistics": [
+      {
+       "about": "load 1 against load 3",
+       "test": "mixed-effects GLM",
+       "p": 2.46e-07
+      },
+      {
+       "about": "correct against incorrect",
+       "test": "mixed-effects GLM",
+       "p": 0.24
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "The readings the criterion names give different outcomes, and the claims file blocks such a claim; changed from reproduced (assumed) after verification round 1. The accuracy effect has p >= 0.05 under every reading and outlier rule (O-G p 0.19 to 0.24, betas -6.39 to -7.44; paper -6.13, p = 0.24). With main effects (reading a), B1 and O-G the load effect is 11.55 (p = 0.00002), within 12.309 +- 1.231, with 220 of 222 neurons, which grades the claim reproduced. With B2 it is 9.51 (p = 0.00025), below tolerance, and with the interaction term (reading b) not significant (p = 0.70 and 0.82); these grade it partially reproduced. As in fig2c, the load term of reading (b) is the effect in incorrect trials (asked of a reader); with -0.5/+0.5 coding (a variant) the load main effect is 8.67 (p = 0.24) with B1 and 6.47 (p = 0.36) with B2. O-C gives the same as O-G with B1.",
+     "deviations": [
+      "O-G and the fitting as in fig2b-hippocampus-persistent."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-area-interactions",
+     "statement": "In a GLM over category neurons of both areas, no main effect of LTM accuracy, confidence or area is significant, nor the LTM accuracy by confidence interaction, but every interaction with area is, so the relation of maintenance activity to later memory differs between hippocampus and amygdala.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus - not the amygdala - predicts LTM formation, paragraph 1; Figure 3a",
+     "quote": "We did not observe any significant main effects nor was the interaction between LTM accuracy and confidence significant (Fig. 3a; all p > 0.26). However, all interaction terms including area showed significant modulations (confidence \u00d7 area: beta = 16.88, p = 0.025; LTM accuracy \u00d7 area: beta = 59.78, p = 0.0030; confidence \u00d7 LTM accuracy \u00d7 area: beta = \u221228.64, p = 0.0029)",
+     "statistics": [
+      {
+       "about": "main effects and the LTM accuracy by confidence interaction",
+       "test": "mixed-effects GLM",
+       "p": 0.26,
+       "p_relation": ">"
+      },
+      {
+       "about": "confidence by area",
+       "test": "mixed-effects GLM",
+       "p": 0.025
+      },
+      {
+       "about": "LTM accuracy by area",
+       "test": "mixed-effects GLM",
+       "p": 0.003
+      },
+      {
+       "about": "confidence by LTM accuracy by area",
+       "test": "mixed-effects GLM",
+       "p": 0.0029
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Re-run after a reader's answer (questions/001187.yaml), which made O-G the main outlier rule in the criterion in place of O-M. The earlier outcome under O-M was partially reproduced and rested on the assumption of which conditions O-M compares; O-G removes that assumption. With O-G (5 neurons removed, 313 remain) confidence x area 19.12 (p = 0.019), LTM accuracy x area 70.57 (p = 0.0011) and the three-way -32.52 (p = 0.0017) have the paper's signs, and no main effect or the LTM accuracy x confidence term has p < 0.05 (smallest 0.24); all three betas are outside tolerance, larger than the paper's. With the all-sure session kept, as the code does, 20.23, 73.60 and -33.74. The code's rule (O-C, variant, 8 removed) gives 16.60, 56.61 and -27.83, all within tolerance (17.84, 59.96 and -29.16 with the all-sure session kept).",
+     "deviations": [
+      "O-G takes each neuron's mean normalized rate over all rows of the code's table, before the selection of correct, preferred and rated rows and with the all-sure session's neurons included, as NWB_computeGLM.m takes the means for O-C.",
+      "The session whose ratings are all sure (sub-11, P69cs) is left out, as the paper says one patient was excluded from all confidence analyses (Results, paragraph 2); the code keeps it, shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-hippocampus-predicts-ltm",
+     "statement": "In the hippocampus, maintenance activity of category neurons for the preferred category predicts later LTM accuracy and confidence, with an interaction between the two, so activity is higher for pictures later remembered than forgotten.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 1; Figure 3b",
+     "quote": "This revealed a significant main effect of confidence (Fig. 3b; beta = 20.30, p = 4.17 \u00d7 10\u22123) and LTM accuracy (beta = 67.90, p = 4.43 \u00d7 10\u22124), as well as a significant interaction between the two terms (beta = \u221230.80, p = 7.74 \u00d7 10\u22124) in the hippocampus",
+     "statistics": [
+      {
+       "about": "confidence",
+       "test": "mixed-effects GLM",
+       "p": 0.00417
+      },
+      {
+       "about": "LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.000443
+      },
+      {
+       "about": "confidence by LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.000774
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Re-run after a reader's answer (questions/001187.yaml), which made O-G the main outlier rule in the criterion in place of O-M; the earlier outcome under O-M, in a run before that answer and not shown in the notebook, was partially reproduced. With O-G, outliers over both areas (5 removed) or within the hippocampus (2 removed) leave the same 98 neurons, and confidence 21.25 (p = 0.0045), LTM accuracy 67.37 (p = 0.00085) and the interaction -30.69 (p = 0.0014) are all within tolerance with the paper's signs. With the all-sure session kept, 21.51, 68.18 and -31.05. The code's rule (O-C) gives the same within the area; over both areas, 20.25, 57.52 and -27.98, with LTM accuracy below tolerance.",
+     "deviations": [
+      "As fig3a-area-interactions. For outliers over both areas, the neuron means are taken over the full table of both areas."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-amygdala-no-prediction",
+     "statement": "In the amygdala, maintenance activity of category neurons does not predict later LTM accuracy or confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 1; Figure 3b",
+     "quote": "in the hippocampus but not in the amygdala (confidence: beta = 1.54, p = 0.69; LTM accuracy: beta = \u22122.27, p = 0.82; confidence \u00d7 LTM accuracy: beta = 1.02, p = 0.83)",
+     "statistics": [
+      {
+       "about": "confidence",
+       "test": "mixed-effects GLM",
+       "p": 0.69
+      },
+      {
+       "about": "LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.82
+      },
+      {
+       "about": "confidence by LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.83
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule in place of O-M; the outcome is unchanged. No effect has p < 0.05 under any reading or outlier rule (smallest p 0.43). With O-G and outliers over both areas, confidence 1.81 (p = 0.68), LTM accuracy -4.08 (p = 0.71), interaction 2.28 (p = 0.67).",
+     "deviations": [
+      "As fig3a-area-interactions."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-hippocampus-high-confidence",
+     "statement": "Across hippocampal category neurons, maintenance firing for the preferred category is higher for pictures later remembered than forgotten with high confidence, but not with low confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 2; Figure 3c",
+     "quote": "In the hippocampus, FRs were higher for remembered than forgotten trials for high confidence (Fig. 3c; t(82) = 2.16, p = 0.028; some neurons were removed due to insufficient data in at least one of the conditions or since they differed \u00b13 SD from the mean across all neurons and conditions; see Methods), but not low confidence trials (t(68) = \u22121.38, p = 0.17)",
+     "statistics": [
+      {
+       "about": "high confidence, remembered against forgotten",
+       "test": "permutation-based t-test",
+       "statistic": "t(82) = 2.16",
+       "p": 0.028,
+       "n": "83 hippocampal category neurons"
+      },
+      {
+       "about": "low confidence, remembered against forgotten",
+       "test": "permutation-based t-test",
+       "statistic": "t(68) = -1.38",
+       "p": 0.17,
+       "n": "69 hippocampal category neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "High confidence, remembered against forgotten, t(68) = 1.17, p = 0.26 (normalized) and t(70) = 1.79, p = 0.078 (spikes per second); low confidence p = 0.30 and 0.10. Keeping the all-sure session gives p = 0.33 and 0.054 for high confidence. Of 102 hippocampal category neurons, 100 are outside the all-sure session and have rows, 98 have a remembered and 82 a forgotten high-confidence row, 80 both, 73 spikes in both, and 69 or 71 remain after O-M, against 83 in the paper. The forgotten condition has a median of 5 rows per neuron, and 13 neurons have one. Since 80 neurons have both conditions before any removal, the paper's rows likely differ from the claims file's (correct WM trials, preferred pictures later tested); adding incorrect WM trials (a diagnostic) still gives 80 neurons and p = 0.46 and 0.12.",
+     "deviations": [
+      "The all-sure session is left out (variant shown with it)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-amygdala-no-difference",
+     "statement": "Across amygdala category neurons, maintenance firing does not differ between later remembered and forgotten pictures, with high or low confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 2; Figure 3d",
+     "quote": "In the amygdala, we neither observed a significant effect for high (Fig. 3d; t(158) = 0.84, p = 0.41) nor low confidence trials (t(152) = 1.15, p = 0.26)",
+     "statistics": [
+      {
+       "about": "high confidence",
+       "test": "permutation-based t-test",
+       "statistic": "t(158) = 0.84",
+       "p": 0.41,
+       "n": "159 amygdala category neurons"
+      },
+      {
+       "about": "low confidence",
+       "test": "permutation-based t-test",
+       "statistic": "t(152) = 1.15",
+       "p": 0.26,
+       "n": "153 amygdala category neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "High confidence p = 0.85 and 0.64 (mean differences -0.97% and -0.04 Hz), low p = 0.30 and 0.51; 146 to 147 neurons (paper 159 and 153).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-early-delay-cluster",
+     "statement": "In hippocampal category neurons, firing differs between pictures later remembered and forgotten with high confidence early in the maintenance period, from 0 to 650 ms.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 3; Figure 3e",
+     "quote": "In the hippocampus, FRs during the beginning of the maintenance period (0 \u2013 650 ms) differed significantly between the two conditions (Fig. 3e; cluster-p = 0.0042; cluster-based permutation test",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test",
+       "p": 0.0042
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Under all four readings (binning and rate) a cluster with remembered above forgotten has cluster p < 0.025, from about 0.875 to 1.05 s (p 0.0001 to 0.0196), not 0 to 650 ms. Early clusters exist only below significance (0 to 0.125 s, p = 0.061, spikes per second in 200 ms windows; 0 to 0.025 s, p = 0.25, normalized). The time-resolved t in 0 to 650 ms exceeds the cluster-forming threshold (about 2.0) at 3 of 27 points (normalized) and 6 of 27 (spikes per second) with 200 ms windows, largest at onset (3.09 at 0 s, normalized; 3.47 at 0.025 s, spikes per second), where the windows take in 100 and 75 ms of the last encoding picture, and at 1 of 13 points with 50 ms bins. The largest |t| over the whole delay lies at 0.925 to 1.025 s under every reading (4.05 and 4.41 with 200 ms windows, 3.43 and 3.60 with 50 ms bins). The criterion's partial grade is met, but the data do not support an early effect. The measured end is that of the significant cluster under the first reading (200 ms windows, normalized).",
+     "deviations": [
+      "The cluster-forming threshold is FieldTrip's default 0.05 (two-sided), as the claims file names; the paper does not give it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-amygdala-no-cluster",
+     "statement": "In amygdala category neurons, no period of the maintenance period shows a significant difference between later remembered and forgotten pictures.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 3; Figure 3f",
+     "quote": "In the amygdala, we did not observe any significant cluster throughout the entire maintenance period of the WM task (Fig. 3f; cluster-p = 0.16)",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test",
+       "p": 0.16
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "No cluster has p < 0.025 under any reading; the smallest cluster p is 0.40 (normalized, 50 ms bins).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-nonpreferred-no-effect",
+     "statement": "Maintenance activity of category neurons while non-preferred pictures are held does not predict later LTM accuracy or confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 4; Figure 3g",
+     "quote": "None of the main effects nor interactions in either of the mixed-effects GLMs showed any significant relationship between FR and the factors tested (all p > 0.06)",
+     "statistics": [
+      {
+       "test": "mixed-effects GLM",
+       "p": 0.06,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule in place of O-M. The outcome is unchanged and no longer rests on an assumption (under O-M it rested on which conditions O-M compares). With O-G no fixed effect other than the intercept has p < 0.05 in either set of rows (smallest p 0.089 for all non-preferred pictures, 0.11 for trials without a preferred picture); with O-C 0.067 and 0.11.",
+     "deviations": [
+      "As fig3a-area-interactions."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-encoding-no-effect",
+     "statement": "Activity of category neurons during the presentation of the first encoding picture, for preferred pictures, does not predict later LTM accuracy or confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 4; Figure 3h; STAR Methods, Relating WM maintenance activity to LTM formation, paragraph 2",
+     "quote": "or for the visually evoked response of category neurons when images were shown on the screen during encoding (Fig. 3h; encoding 1; 0 \u2013 2s after picture onset; preferred trials only). None of the main effects nor interactions in either of the mixed-effects GLMs showed any significant relationship between FR and the factors tested (all p > 0.06)",
+     "statistics": [
+      {
+       "test": "mixed-effects GLM",
+       "p": 0.06,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule in place of O-M; the earlier outcome under O-M, in a run before that answer and not shown in the notebook, was not reproduced (assumed), an effect reaching p < 0.05 under each reading. With O-G (5 neurons removed) no fixed effect other than the intercept has p < 0.05 under either reading (smallest p 0.30 with picture 1 preferred, 0.078 with a preferred picture in any slot); with O-C 0.35 and 0.074.",
+     "deviations": [
+      "O-G as in fig3a-area-interactions, on the neuron means of the picture 1 rate over all rows of the table."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ms-neuron-counts",
+     "statement": "53 of the 351 hippocampal units (15.10%) are memory-selective, 25 of them (47%) firing more to familiar than novel pictures.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 2",
+     "quote": "Out of the 351 recorded cells, n = 53 (15.10 %) were MS cells. Of these, 25 (47%) responded more to familiar than novel items, with the remaining responding more to novel than to familiar items.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "53 of 351 hippocampal units (15.10%), 26 familiarity- and 27 novelty-selective. The amygdala has 69 (Table S1 68).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-ms-confidence-auc",
+     "statement": "Hippocampal memory-selective neurons separate old from new pictures better for high-confidence than for low-confidence decisions (higher ROC AUC), so they carry a memory-strength signal.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 2; Figure 4b; STAR Methods, Single-neuron AUC analysis",
+     "quote": "The response of MS neurons differed significantly more for high- as compared to low-confidence trials (Fig. 4b; t(40) = 2.89, p = 0.0039; 12 neurons excluded due to insufficient data in either one of the conditions, see Methods)",
+     "statistics": [
+      {
+       "test": "permutation-based t-test",
+       "statistic": "t(40) = 2.89",
+       "p": 0.0039,
+       "n": "41 hippocampal MS neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Reading (a), 49 neurons, AUC 0.5975 high against 0.5577 low, t(48) = 3.87, p = 0.0005; reading (b), 40 neurons (paper 41), 0.5994 against 0.5621, t(39) = 3.55, p = 0.0009.",
+     "deviations": [
+      "The ROC thresholds span the counts of the two groups compared; the Methods say \"the minimal and maximal spike count observed\" without naming the trials.",
+      "The all-sure session is left out (one MS neuron)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-overlap-chance",
+     "statement": "20 hippocampal neurons are both memory-selective and category neurons, an overlap no greater than chance.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 3; Figure 4c",
+     "quote": "Of the 53 MS neurons and the 104 category neurons, 20 neurons (37.8% of MS cells; 19.2 % of category neurons) were part of both groups ... This revealed that the overlap between category neurons and MS cells was not significantly higher than chance (Fig. 4c; p = 0.11)",
+     "statistics": [
+      {
+       "test": "permutation test against random selection, 1000 repetitions",
+       "p": 0.11,
+       "n": "351 hippocampal neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "19 neurons are both MS and category neurons (of 53 and 102); the null has mean 15.55 (7 to 26) and p = 0.179.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-category-no-memory-signal",
+     "statement": "During LTM retrieval, hippocampal category neurons code neither familiarity nor confidence for pictures of their preferred category.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 4; Figure 4d",
+     "quote": "None of the effects revealed significant modulations of FRs (Fig. 4d top; confidence: beta = 6.05, p = 0.28; familiarity: beta = 4.49, p = 0.71; confidence \u00d7 familiarity: beta = \u22124.32, p = 0.57). To further confirm this result, we directly compared FRs of category neurons between preferred old and new items and did not observe a significant difference (Fig. 4d bottom; t(94) = \u22120.28, p = 0.78).",
+     "statistics": [
+      {
+       "about": "confidence",
+       "test": "mixed-effects GLM",
+       "p": 0.28
+      },
+      {
+       "about": "familiarity",
+       "test": "mixed-effects GLM",
+       "p": 0.71
+      },
+      {
+       "about": "confidence by familiarity",
+       "test": "mixed-effects GLM",
+       "p": 0.57
+      },
+      {
+       "about": "preferred old against new",
+       "test": "permutation-based t-test",
+       "statistic": "t(94) = -0.28",
+       "p": 0.78,
+       "n": "95 hippocampal category neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "Changed from blocked (metadata insufficient) after verification round 1. The dataset's metadata gives no category for the new LTM pictures (IDs 1001 to 1200), but their images are in the files. All 600 new images of the three task variants were viewed; in each, IDs 1001 to 1040 show people, 1041 to 1080 animals, 1081 to 1120 cars (variants 1 and 3) or tools (variant 2), 1121 to 1160 food and fruit, and 1161 to 1200 landscapes, the order of the old pictures' leading digits 1 to 5, with no image outside its block. These were the images of one session per variant; the new images of every session (8809 over 46 sessions) are identical to those of the viewed session of its variant, and every new picture shown has its image in the file. The notebook shows contact sheets of every new image with eight old pictures per category. The category neurons agree (best block is the preferred category for 58.0% of them, against 60.5% for old pictures). With these categories no GLM effect reaches p < 0.05 under any reading (smallest p 0.079 with O-M; 0.063 with O-C), and no old against new t-test does (p 0.22 to 0.92, 96 or 98 neurons; paper t(94) = -0.28, p = 0.78).",
+     "deviations": [
+      "The categories of the new pictures are read from their images in the dataset by the author, as blocks of 40 IDs; the dataset does not label them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-fs-strong-maintenance",
+     "statement": "Familiarity-selective hippocampal neurons respond more during LTM retrieval to familiar pictures that were held with strong, compared with weak, maintenance activity of a simultaneously recorded category neuron.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraphs 5 and 6; Figure 4e; STAR Methods, Interaction between simultaneously recorded category- and memory-selective neurons",
+     "quote": "This analysis revealed that FRs of familiarity-selective MS cells during LTM retrieval of items that were previously accompanied by high persistent activity in the WM task were higher than those previously accompanied by low persistent activity (Fig. 4e left; Maintenance FR: beta = 14.63, p = 1.39 \u00d7 10\u22123)",
+     "statistics": [
+      {
+       "about": "strong against weak maintenance, GLM",
+       "test": "mixed-effects GLM",
+       "p": 0.00139,
+       "n": "76 FS and category neuron pairs"
+      },
+      {
+       "about": "strong against weak maintenance, per pair",
+       "test": "permutation-based t-test",
+       "statistic": "t(75) = 3.43",
+       "p": 0.0003,
+       "n": "76 FS and category neuron pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "197 MS and category pairs (178 without self-pairs), 84 FS pairs (74). Under all 16 GLM readings the maintenance beta is negative (-0.14 to -0.19 Hz, -6.5 to -9.4 normalized; p 0.059 to 0.45), and under all 8 t-test readings strong is below weak (t -1.00 to -1.60, p 0.11 to 0.33). Per FS pair, strong minus weak has median -0.044 Hz, 37 pairs positive and 47 negative (sign test p = 0.33); per MS neuron, 9 of 20 positive. With the median split over both loads pooled (a variant the Methods do not describe), strong is below weak in all 24 readings, at p < 0.05 in four GLM readings and one t-test reading. The measured beta is that of the first reading, in spikes per second.",
+     "deviations": [
+      "A rate equal to the category neuron's median goes to weak (a standard choice)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-ns-no-effect",
+     "statement": "The response of novelty-selective hippocampal neurons to familiar pictures does not depend on whether the paired category neuron's maintenance activity was strong or weak.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraphs 5 and 6; Figure 4f",
+     "quote": "No significant relationship was observed for the activity of novelty-selective MS neurons (Fig. 4f left; Maintenance FR: beta = 0.09, p = 0.98)",
+     "statistics": [
+      {
+       "about": "GLM",
+       "test": "mixed-effects GLM",
+       "p": 0.98,
+       "n": "122 NS and category neuron pairs"
+      },
+      {
+       "about": "per pair",
+       "test": "permutation-based t-test",
+       "statistic": "t(121) = -0.48",
+       "p": 0.64,
+       "n": "122 NS and category neuron pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_daume_2024.ipynb",
+     "notes": "The readings the criterion names do not all give the same outcome, and the claims file blocks such a claim; changed from reproduced (assumed) after verification round 1. No GLM reading reaches p < 0.05 (smallest 0.42), and seven of the eight t-test readings do not (p 0.14 to 0.98), but one does (pictures answered old, self-pairs dropped, spikes per second, t(81) = 2.04, p = 0.040), so the claim is neither reproduced (no p < 0.05 under every reading) nor not reproduced (p < 0.05 under every reading). The single p of 0.040 is one of 24 uncorrected tests. With all trials of the old pictures, self-pairs kept and spikes per second, the GLM gives beta 0.006 (p = 0.90) or 0.010 (p = 0.85) and the t-test t(106) = -1.03, p = 0.31, with 107 NS pairs (paper 122).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Table S1's recorded unit counts sum to 973 (386 hippocampus, 587 amygdala), while the Methods say 950 units were isolated. The dandiset holds 950, and four sessions have fewer units than Table S1 lists (P1809jh hippocampus 1 against 6, P61cs_2 hippocampus 1 against 2, P68cs amygdala 7 against 17, P82cs amygdala 17 against 24).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every file gives Cedars-Sinai Medical Center as the institution, though 14 sessions have Toronto Western identifiers (TWH) and 6 Johns Hopkins identifiers (JHU), and the paper says the patients were recorded at three institutions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The new pictures of the LTM test (IDs 1001 to 1200) carry no category, and their stimulus images are named only by ID, so analyses of preferred-category new pictures (Fig. 4d) need the images to be viewed. Viewed for this attempt, the images of each of the three task variants form consecutive blocks of 40 IDs per category, in the order of the old pictures' leading digits.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The LTM confidence column is described as 1 to 6 with no coding. The accuracy column agrees in every trial with 1 to 3 meaning new and 4 to 6 old, 1 and 6 being sure as the paper's code reads it, but the coding is not stated in the files.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "One LTM trial of sub-24 session 2 has confidence 7, outside the documented 1 to 6.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Five units have spike times out of order in the units table (sub-13 session 1 units 1 and 2, sub-2 session 2 units 19 and 29, sub-24 session 2 unit 10).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Eight sessions have fewer than 400 LTM trials (161, 187, 228, 257, 384, 390, 395, 399) and one has 139 WM trials, where the paper describes 400 and 140. Picture 1 lasts 1.57 to 2.04 s and the maintenance period 2.53 to 3.20 s, where the Methods say 2 s and 2.55 to 2.85 s.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's code for the Fig. 3a GLM (NWB_computeGLM.m) removes outlier neurons whose mean normalized rate exceeds 3 SD of the neuron means, without centring and on the upper side only, where the Methods remove neurons that differ by more than 3 SD from the mean; and it keeps the session whose ratings are all sure, which the Results say was excluded from confidence analyses. With the code's rule the Fig. 3a GLM gives the paper's betas within tolerance (16.60, 56.61, -27.83); with the Methods' threshold on the same neuron means it gives 19.12, 70.57 and -32.52.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. Which outlier rule was applied to the mixed-effects GLMs, the Methods' \"\u00b13 SD from the mean\" or the code's threshold of 3 SD without centring (NWB_computeGLM.m), and on which values; and for the GLMs of Fig. 2, which the code does not cover, were the rows one per trial or one per picture, and to which baseline mean were rates normalized? For Fig. 2c and 2f, was the model fitted with main effects only, or with the interaction of accuracy and load, and with which coding? Here the code's neuron means with the Methods' threshold were used, and every row, baseline and model reading was run; these choices change the outcomes of Fig. 2c, 2e, 2f and 3a, and the claims of Fig. 2c, 2e and 2f are blocked for it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. The Methods sentence on the GLM of Fig. 4e and 4f lost its variable names (\"with (2 levels, high vs low, categorical) as fixed effect and nested into as random intercept\"). Which unit was the random intercept nested in patient (MS neuron or pair), were all LTM trials of the old pictures used or only those answered old, and was a neuron both MS and category paired with itself? Fig. 4f's outcome depends on these.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier tested the helpers on synthetic inputs (paired and pooled t, one-way F, AUC, window edges, s1_label, the cluster test) and found them correct. Its report had no attempt record and gave its own outcome for each claim; 25 of 29 agree with the record as it was. It also asked for outputs not tied to one claim, which were added; per-session peri-onset rates of all units at true and shifted onsets, for the shared clock of the 12 sessions without a WM advantage in the category test (193 units respond at true WM onsets against 22 at shifted ones; nine of the 12 sessions show more responding units at the true onsets, and the other three hold 10 of 883 units), and a table of convergence and missing SE or p for every mixed-model fit (none failed to converge, none has a missing SE or p).",
+     "agreed": 25,
+     "of": 29,
+     "disagreements": [
+      {
+       "claim": "fig2c-hippocampus-correct-load",
+       "outcome": "blocked",
+       "reason": "Reading (a), main effects, is partial (B1 acc 18.48, p = 0.0499 and l1 18.64, both out of tolerance; B2 acc p = 0.060). Reading (b), with the interaction, is not reproduced (l1 = -14.2, p = 0.56). The claims file blocks a claim whose readings disagree. Problem 2 (affects a conclusion, in the claims file) is that in acc * l1 with 0/1 reference coding the acc and l1 terms are simple effects at the reference level (for example load in incorrect trials, where only 59 rows have load 1), not the main effects the paper reports, and this reading alone turns the claim into blocked."
+      },
+      {
+       "claim": "fig2e-amygdala-persistent",
+       "outcome": "blocked",
+       "reason": "O-G. One row per trial reproduces (B1 10.50 / 6.88, B2 10.06 / 6.55, all within tolerance). The code's rows are partial (13.06 / 5.62 and 11.26 / 5.61)."
+      },
+      {
+       "claim": "fig2f-amygdala-load-not-accuracy",
+       "outcome": "blocked",
+       "reason": "Accuracy is not significant in every reading (p >= 0.15). The load effect is reproduced under (a) B1 (11.55, p = 2e-5), has its beta out of tolerance under (a) B2 (9.51), and is not significant under (b) (p >= 0.70). Problem 2 applies to reading (b) here too."
+      },
+      {
+       "claim": "fig4f-ns-no-effect",
+       "outcome": "blocked",
+       "reason": "No GLM reading reaches p < 0.05. One of 8 t-test readings does (answered old, without self-pairs, Hz, t(81) = 2.04, p = 0.0395), so the absence holds under some readings and not others. Problem 7 (does not affect a conclusion) is that with 24 uncorrected tests a single p of 0.0395 is about what chance predicts, though the claims file's rule still decides the outcome."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook with its conclusions and summary, the helper module, the claims file and the attempt record, with the paper. The verifier agreed with all 29 outcomes; no outcome rests on an assumption. It checked the text against the outputs and listed statements the numbers do not support (fig3e, fig3f, fig4d, the README behaviour row, and record notes citing earlier O-M runs), all corrected here. Of its round-1 points, 1, 3, 5, 6, 7 and 8 and the five items not checked were resolved; points 2 (claims file, fig2c and fig2f), 4 (fig3c) and the shared clock remain without changing an outcome.",
+     "agreed": 29,
+     "of": 29,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001187-daume-2024",
+   "type": "reproduction",
+   "title": "Working memory maintenance and long-term memory in human hippocampus (Daume et al. 2024)",
+   "description": "Tests the findings of Daume et al. (2024) on dandiset 001187, which holds the spike times of 950 units recorded in the hippocampus and amygdala of 39 epilepsy patients over 46 sessions of a Sternberg working memory task and a later recognition memory test. It covers the behaviour, the selection of category and memory-selective neurons, the mixed-effects models relating maintenance activity to later memory, and the pairing of memory-selective with category neurons.",
+   "datasets": [
+    "dandi:001187"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2024.09.013"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_daume_2024.ipynb",
+     "title": "Reproducing Daume et al. (2024) from dandiset 001187",
+     "executed": "notebooks/001187-daume-2024/reproduce_daume_2024.html"
+    }
+   ]
+  }
+ ]
+}

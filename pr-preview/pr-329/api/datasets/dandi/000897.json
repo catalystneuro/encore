@@ -1,0 +1,932 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000897",
+  "label": "DANDI:000897"
+ },
+ "page": "datasets/dandi/000897/",
+ "generated": "2026-11-01T20:41:39+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 5,
+  "partially_reproduced": 8,
+  "not_reproduced": 5,
+  "blocked": 6
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000897-neupane-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000897",
+    "version": "0.240605.1710",
+    "doi": "10.48324/dandi.000897/0.240605.1710"
+   },
+   "key": "dandi:000897",
+   "label": "DANDI:000897",
+   "dataset_version": "0.240605.1710",
+   "paper": "10.1038/s41586-024-07557-z",
+   "paper_title": "Mental navigation in the primate\u00a0entorhinal cortex",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41223460625"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000897-neupane-2024",
+   "entry_title": "Mental navigation in the primate entorhinal cortex (Neupane, Fiete and Jazayeri 2024)",
+   "description": "Tests the findings of Neupane, Fiete and Jazayeri (2024) on dandiset 000897, which holds 15 of the paper's 32 entorhinal recording sessions in two monkeys performing the mental navigation task. It covers behavioural performance, the periodicity of firing rates and of the Fano factor, the phase of activity peaks before joystick offset, distance coding at joystick onset and offset, motor-related responses, cross-correlation structure across epochs and the fit of two Bayesian observer models, and one simulation of the paper's model. The inter-trial interval is not marked in the files, and the other model simulations were not run.",
+   "notebooks": [
+    {
+     "path": "reproduce_neupane_2024.ipynb",
+     "title": "Reproducing Neupane, Fiete and Jazayeri (2024) from dandiset 000897",
+     "executed": "notebooks/000897-neupane-2024/reproduce_neupane_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1bc-produced-matches-actual",
+     "statement": "In MNAV the produced vectors match the actual vectors in direction and magnitude; performance is quantified by the slope of the regression of v_p on v_a.",
+     "source": "Results, paragraph 4 (The monkeys learned to perform MNAV); Figure 1b,c",
+     "quote": "The produced vectors ( v p ) quantified in terms of temporal distance (magnitude) and direction (sign) closely matched the actual vectors separating the start and target landmarks",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Median session slope of v_p on v_a is 0.872 in monkey A (6 sessions, 0.825 to 0.946) and 0.860 in monkey M (9 sessions, 0.687 to 0.893); every slope is positive. One monkey M session (04142021) is below 0.8. On validtrials_mm trials the medians are 0.936 and 0.869.",
+     "deviations": [
+      "Only the 15 recorded sessions in the dandiset are used; Fig. 1c pools behavioural sessions with at least 400 successful trials, most of them training sessions not deposited.",
+      "All MNAV trials with a recorded production are used, including monkey M's seqq 3 trials, whose vectors are in steps of 0.975 s."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-immediate-generalization",
+     "statement": "After training on 15 start and target pairs, the monkeys performed the 15 held-out pairs with high performance from the first generalization session.",
+     "source": "Results, paragraph 5; Figure 1d,e",
+     "quote": "we found that they were able to readily generalize with high performance from the very first session",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds only the 15 recording sessions, which came after training and generalization (Methods, Electrophysiology, paragraph 1). The first generalization sessions are not in it, and the code says the raw training data are shared on request.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-periodic-proportion",
+     "statement": "A substantial fraction of EC neurons have significantly periodic activity during mental navigation, 37% (231/614) in monkey A and 36% (311/864) in monkey M, and the proportion per session ranged from 0% to 45% depending on recording site.",
+     "source": "Results, Neural signatures, paragraph 2; Figure 2c,d",
+     "quote": "Across sessions, the proportion of neurons with a significant PI ranged from 0% to 45% depending on the recording site in the posterior EC, with an overall average of 37% (231/614) and 36% (311/864) in monkeys A and M, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the main reading (code's score against the surrogate scores, own-duration null matched to each unit's number of kept trials, Methods lags, Poisson null) 56 of 364 units in monkey A (15.4%) and 57 of 729 in monkey M (7.8%) are periodic, against the paper's 37.6% and 36.0%; the highest session proportion is 30.6%. Across all 24 readings no monkey's proportion is within 10% of the paper's. Rule a2 gives 7.1 to 31.3% (A) and 0.1 to 7.8% (M), a1 at most 5.2% and 0.4%, and b (PI above the surrogate at any lag) 65.7 to 81.3% and 52.0 to 60.4%, with session maxima of 73.9 to 95.3%. Under a1 and a2 the session range holds, so at most one of the three conditions holds under any reading. The code's GP null without the Poisson step gives 1.1 to 16.2% (A) and 0 to 5.8% (M) under a1 and a2. Without units labelled noise, 20.7% of monkey A units are periodic under the main reading; without the three sessions whose clock could not be checked, 15.3% (A, 46/300) and 9.0% (M, 47/524).",
+     "deviations": [
+      "The dandiset holds 6 of 17 monkey A sessions and 9 of 15 monkey M sessions, so the counts are compared as proportions of the units it holds (231/614 and 311/864, 10% relative tolerance); the raw counts are recorded as measured.",
+      "The Methods pass a zero-mean Gaussian process through a Poisson process without saying how it becomes a rate. The code's utilities/get_gpfr.m draws the GP around the trials' mean rate with no Poisson step and no smoothing, and the scripts do not call it, so how its output was used is not shown. It is assumed here that rate = r exp(g - 1/2), with r the median unit rate of the monkey in the navigation window (1.65 and 0.51 spikes/s), so that the mean rate is r. The code's variant without the Poisson step (GP around the mean rate, smoothed as the data, which is an assumption) is run as well.",
+      "Surrogate neurons average single-trial surrogate ACGs drawn at random from a bank of 4,000 surrogate trials per monkey (and 3,000 at the median duration for the global null), among the 200 nearest in duration. For one group this gives an a2 threshold of 0.152 to 0.155 against 0.141 for a null generated afresh, about 0.4 SD of the null scores higher.",
+      "The own-duration null of a unit averages as many surrogate trials as the unit keeps, matched to a grid in steps of 25%; units keep a median of 68 to 69% of their PI trials.",
+      "The claims file's rule (a), \"the maximum over lags of (mean + 2 SD) of the surrogate scores\", is run two ways, a1 (the maximum over lags of the surrogate PI mean + 2 SD) and a2 (the mean + 2 SD of the surrogate scores). The outcome is the same under every reading.",
+      "The trial rate threshold of 0.05 (code line 3756) is read as spikes/s, as the claims file gives no unit.",
+      "All units in the files are counted, including the 103 monkey A units labelled noise."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-periodicity-at-065",
+     "statement": "Across neurons with significant PI, the lag of the peak PI was at or near 0.65 s, the temporal distance between landmarks.",
+     "source": "Results, Neural signatures, paragraph 2; Figure 2d; Extended Data Fig. 2a",
+     "quote": "across neurons with significant PI, the peak lag was at or near 0.65 s, which matches the temporal distance between consecutive landmarks",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the main reading the median periodicity of periodic units is 0.580 s (A, direction -1), 0.590 (A, 1), 0.650 (M, -1) and 0.640 (M, 1), within 0.60 to 0.70 s in the 2 monkey M groups; measured is the median over all periodic unit-directions. Under the other a2 readings 0 to 4 groups are within (4 of 4 with the global Poisson null, 0 of 3 with the own-duration GP null and the code's lags); under a1, which selects 0 to 14 units per group, 0 or 1; under b, which selects most units, 0 or 1 (medians 0.695 to 0.96 s, close to the 0.73 to 0.91 s of all units).",
+     "deviations": [
+      "The readings of the classification rule give different outcomes. Reading a2 (the code's score, max PI minus mean PI from the first positive lag, against the mean + 2 SD of the same score in the surrogates) is adopted, as it compares a measure with its own null distribution; a1 compares the score with a threshold on the raw PI and selects almost no unit in monkey M, and b, the Methods' wording, classifies 52 to 81% of units as periodic. The question is for the paper's authors (findings)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3-no-eye-hand-periodicity",
+     "statement": "Eye position (horizontal and vertical) and joystick position during the navigation epoch show no periodicity; their PI at 650 ms is below chance.",
+     "source": "Results, Neural signatures, paragraph 2; Extended Data Fig. 3a-c",
+     "quote": "Complementary analyses revealed no such periodicity in the monkeys' eye and hand (joystick) movements",
+     "statistics": [
+      {
+       "about": "horizontal eye position PI at 650 ms against chance",
+       "test": "one-tailed t-test",
+       "statistic": "t(99) = -67.8",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "100 bootstraps"
+      },
+      {
+       "about": "vertical eye position PI at 650 ms against chance",
+       "test": "one-tailed t-test",
+       "statistic": "t(99) = -81.6",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "100 bootstraps"
+      },
+      {
+       "about": "joystick position PI at 650 ms against chance",
+       "test": "one-tailed t-test",
+       "statistic": "t(99) = -138.1",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "100 bootstraps"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "In both monkeys (A 6 sessions, 2,088 trials; M 9 sessions, 1,998 trials) the PI at 650 ms is below chance for all three signals under both bootstrap and both chance readings (one-tailed t-test, p 5.7e-52 to 1.2e-183), and no signal is above chance (one-tailed p = 1.0). The mean PIs are 0.155 (horizontal eye), 0.117 (vertical eye) and -0.401 (joystick) in monkey A and -0.370, -0.159 and -0.452 in monkey M, all outside the 10% tolerance of the paper's -0.25, -0.44 and -0.53, against chance values of 0.230 to 0.384; measured are monkey A's. In the ten sessions whose traces are on another clock, the joystick deviates from rest by 2.39 to 2.53 V after the recorded onsets once shifted, against 0.16 to 0.84 V before them and 0.73 to 1.39 V 7 s later, as in the sessions on the trial clock.",
+     "deviations": [
+      "In A 08152019 and all monkey M sessions the eye and joystick timestamps are on another clock than the trial table. The offset is estimated here by cross-correlating the joystick deflection with the intervals between the recorded joystick onsets and offsets (peak 15 to 87 SD above the median), minus the estimate's bias in the sessions on the trial clock (-0.17 s, range -0.12 to -0.26 s).",
+      "The surrogate for continuous signals is the Gaussian process smoothed as the signals, without the Poisson step of the spike null; the paper's code for this figure is not in its repository.",
+      "Eye and joystick traces are interpolated to 1 ms and smoothed with the rate kernel (claims, the paper gives no smoothing for these signals)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2b-pi-navigation-above-iti",
+     "statement": "In periodic neurons the PI at 0.65 s is significantly stronger during the mental navigation epoch than during the inter-trial interval, in both monkeys and both directions.",
+     "source": "Results, Neural signatures, paragraph 3; Extended Data Fig. 2b",
+     "quote": "The PI was significantly stronger during the mental navigation epoch (Extended Data Fig. 2b ), which suggests that the periodic activity was specific to mental navigation",
+     "statistics": [
+      {
+       "about": "monkey A, right",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(67) = 14.07",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "68 neurons"
+      },
+      {
+       "about": "monkey A, left",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(75) = 14.02",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "76 neurons"
+      },
+      {
+       "about": "monkey M, right",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(73) = 16.93",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "74 neurons"
+      },
+      {
+       "about": "monkey M, left",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(103) = 26.56",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "104 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "The trial table marks no ITI or fixation event; start_time equals stim1onttl and each row ends where the next begins. The time from a completed trial's joystick offset to the next trial's start has a median of 0.87 to 1.30 s per session and exceeds 4 s in 0 to 6 trials per session, so the ITI segments longer than 4 s that the comparison uses cannot be located. After aborted trials the next trial starts 6.1 to 6.3 s after the abort in monkey M and 2.3 to 2.4 s in monkey A; the paper does not say its ITI segments came from there.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2c-pi-error-below-correct",
+     "statement": "Neurons significantly periodic at 0.65 s had a lower PI on error trials than on correct trials, suggesting weaker periodicity contributed to larger errors.",
+     "source": "Results, Neural signatures, paragraph 3; Extended Data Fig. 2c",
+     "quote": "Neurons that were significantly periodic within a 100-ms window centred at 0.65 s had a lower PI during error trials (Extended Data Fig. 2c ), suggesting that weaker periodicity contributed to committing larger errors",
+     "statistics": [
+      {
+       "about": "monkey A, right",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(67) = 10.58",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "68 neurons"
+      },
+      {
+       "about": "monkey A, left",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(75) = 11.02",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "76 neurons"
+      },
+      {
+       "about": "monkey M, right",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(65) = 10.11",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "66 neurons"
+      },
+      {
+       "about": "monkey M, left",
+       "test": "one-tailed paired t-test",
+       "statistic": "t(102) = 17.73",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "103 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the main periodic reading, with the Methods' error trials, correct-trial PI exceeds error-trial PI in all four groups, but at p < 0.0001 in 1 of 4 under the code's neuron selection (A -1, t = 4.80, n = 18; the others p = 0.00010 to 0.0119) and 1 of 4 under the Results' selection (M 1, t = 5.05, n = 26). With the correct trials subsampled to the error-trial count, 0 of 4. The readings differ. With the code's error trials, 2 of 4 groups under the code's selection; under rule b with the code's error trials and the Results' selection, 4 of 4; under rule a1, 0 of 2 (monkey A only, 2 to 7 units per group); under the GP null, 0 or 1 of 4.",
+     "deviations": [
+      "The neuron and error-trial readings and the periodic set give different outcomes; the main periodic reading with the Methods' error trials is adopted, under which both neuron readings give 1 of 4.",
+      "Error productions longer than 5 s are left out so that every trial fits the ACG's FFT; the longest correct vector is 3.25 s.",
+      "Groups have 10 to 26 neurons under the main reading against the paper's 66 to 104, as the dandiset holds about half of the sessions."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-first-peak-near-065",
+     "statement": "The first local peak of activity before joystick offset is centred close to -0.65 s and differs from a null distribution built by random phase shifts of the same spikes.",
+     "source": "Results, Neural signatures, paragraph 3; Figure 2e",
+     "quote": "The first peak preceding the joystick offset was centred close to -0.65 s and differed significantly from a null distribution generated by applying random phase shifts to the same spiking data (KS test, P << 0.0001)",
+     "statistics": [
+      {
+       "test": "KS test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "bootstrapped first-peak phases against shuffled spike trains, as in Fig. 2e"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the main periodic reading, among units with KS p < 0.001, the median first-peak mode is -0.655 s in monkey A (45 units), within -0.70 to -0.60 s, and -0.780 s in monkey M (30 units), 0.08 s outside it. The KS test gives p < 0.0001 in 36 of 55 (A) and 26 of 34 (M) units, and the pooled test p = 1.7e-71 and 1.6e-40, so both readings of the KS test hold. The code's window gives -0.675 (A) and -0.825 s (M). Rule b gives -0.625 and -0.595 s, the GP-null reading -0.665 s in A, rule a1 -0.645 s in A; neither has more than one unit in M. No reading puts M within the range. Measured is the median pooled over both monkeys under the main reading (75 units).",
+     "deviations": [
+      "The claims give \"low rate\" in -1.5 to -0.5 s without a threshold; trials with mean rate at or below 0.05 spikes/s there are dropped, the PI's threshold.",
+      "The modes are taken in 10 ms bins, a standard choice.",
+      "Periodic units are those of each periodic reading; the main one rests on an assumption."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-earlier-peaks-multiples",
+     "statement": "The second and third local peaks before joystick offset are centred near multiples of 0.65 s.",
+     "source": "Results, Neural signatures, paragraph 3; Figure 2e,f; Extended Data Fig. 4a,b",
+     "quote": "We extended this analysis to earlier times in the navigation epoch and found that these were centred near multiples of 0.65 s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the main periodic reading the median second-peak mode is -1.245 s (A) and -1.070 s (M), and the third -1.445 and -1.745 s, against -1.30 and -1.95 s. The median interval between the first and second peak within a unit is 0.550 s (A) and 0.344 s (M), and between the second and third 0.407 and 0.394 s. Monkey A's second peak is within 0.05 s of -1.30 s under the code's window (-1.255 s), rule a1 (-1.310 s) and the GP-null reading (-1.285 s), and 0.005 s outside it under the main reading; monkey M's is outside it under every reading, and no reading puts the third peak within 0.05 s of -1.95 s in either monkey. Measured are the medians pooled over both monkeys under the main reading.",
+     "deviations": [
+      "As fig2e-first-peak-near-065."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4d-overshoot-longer-period",
+     "statement": "For trials of the same desired distance, the periodicity of EC neurons is significantly longer (lower frequency) on overshoot trials (top tertile of produced vector) than on undershoot trials (bottom tertile).",
+     "source": "Results, Neural signatures, paragraph 4; Extended Data Fig. 4c,d",
+     "quote": "We found a small but significant increase in the periodicity (that is, lower frequency) for the top tertile compared to the bottom tertile",
+     "statistics": [
+      {
+       "about": "monkey M, overshoot against undershoot periodicity",
+       "test": "rank-sum test",
+       "statistic": "Z(194) = -5.80",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "monkey A, overshoot against undershoot periodicity",
+       "test": "rank-sum test",
+       "statistic": "Z(161) = -3.3",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the main periodic reading, in monkey M overshoot periodicity is longer (median 0.71 against 0.58 s, rank-sum Z = 3.83, p = 1.3e-04, n = 29 unit-directions); in monkey A it is longer but not significantly (0.590 against 0.570 s, Z = 0.78, p = 0.43, n = 41). The code's lags give the same (M p = 1.1e-04), and so does rule b (M p = 3.4e-07, A p = 0.15). Rule a1 has no periodic unit in M and the GP-null reading 1; neither reaches p < 0.05 in A (p = 0.66 and 0.25). The paper reports 194 and 161 for its Z degrees of freedom.",
+     "deviations": [
+      "Periodic units are those of each periodic reading, pooled over the directions in which they are periodic; the main reading rests on an assumption.",
+      "Tertiles are formed per session and direction."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-onset-and-offset-coding",
+     "statement": "Single EC neurons encode temporal distance in their firing rate before joystick onset, before joystick offset, or, in a small number, at both.",
+     "source": "Results, Ramping, paragraph 1; Figure 3b",
+     "quote": "Some neurons encoded distance at joystick onset, others at joystick offset, and a small number of neurons had a representation of distance at both onset and offset",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "In both monkeys and both windows, onset-only (A 0.7% and 1.0%, M 8.0% and 8.2%) and offset-only (A 8.3% and 6.0%, M 2.3% and 3.6%) coding proportions exceed the shuffled-regressor proportion (0 in every case), and coding at both (A 0%, M 1.1% and 2.9%) is less common than either. The shuffled proportion is 0 because R2 averaged over 50 held-out halves is negative for a shuffled regressor, so the comparison with the null is weak; the coding proportions are small. Units with R2 below -1 were dropped (A 76 and 63, M 201 and 185 of 364 and 464).",
+     "deviations": [
+      "3 of 9 monkey M sessions have fewer than 10 trials per distance in a direction and are not used.",
+      "The linear fit has an intercept; the Methods write y_pred = beta X."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-offset-coding-stronger",
+     "statement": "At the population level distance is encoded weakly before joystick onset and robustly and linearly before joystick offset; offset R2 exceeds onset R2 in both monkeys.",
+     "source": "Results, Ramping, paragraph 1; Figure 3d",
+     "quote": "By contrast, population neural states in both monkeys had a robust linear relationship with distance before joystick offset",
+     "statistics": [
+      {
+       "about": "monkey A, onset against offset R2",
+       "test": "two-sided Wilcoxon rank-sum test",
+       "statistic": "Z = -7.81",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "50 bootstraps"
+      },
+      {
+       "about": "monkey M, onset against offset R2",
+       "test": "two-sided Wilcoxon rank-sum test",
+       "statistic": "Z = -4.17",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "50 bootstraps"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "With each unit centred by its mean across the two windows, as the Methods state, offset R2 exceeds onset R2 in monkey A (p = 2.8e-07, denoised 5.2e-14) and monkey M reverses (onset 0.787 against offset 0.684, Z = 6.85, p = 7.3e-12; denoised 6.6e-11), so the criterion holds in one monkey. Without distance 1, the Methods' control and outside the criterion, A no longer differs (p = 0.91) and M gives offset above onset (p = 4.9e-12). With the variant centring per window and time bin, offset R2 exceeds onset R2 in both monkeys (A medians 0.853 against 0.502, Z = -6.03, p = 1.6e-09; M 0.935 against 0.808, Z = -6.90, p = 5.2e-12), with denoising (p = 4.2e-08 and 4.0e-14) and without distance 1 (p = 2.4e-11 and 4.2e-14). The mean rate in the offset window is 1.36 spikes/s above the onset window in M and 0.81 below it in A.",
+     "deviations": [
+      "The main reading centres each unit by its mean across the two windows and regresses without an intercept, as the Methods state (Targeted dimensionality reduction). The method they cite for the regression (ref. 63, Mante et al. 2013) has a constant term at each time point, equivalent to centring per window and time bin, which is run as a variant; the readings give different outcomes, and the question is for the paper's authors (findings).",
+      "The criterion's variant with the code's windows (-200 to -100 ms and -400 to -300 ms on time-warped bins) is not run; only the Methods' windows are.",
+      "The bin of largest coefficient norm is found separately in each window; the Methods do not say whether per window or across both.",
+      "The regression uses 20 ms bins, which the Methods do not give (a standard choice).",
+      "3 of 9 monkey M sessions are not used (fewer than 10 trials per distance in a direction)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4e-rate-codes-distance-over-slope",
+     "statement": "Near joystick offset the distance effect on the mean firing rate is significantly larger than that on the slope of the firing rate.",
+     "source": "Results, Ramping, paragraph 3; Extended Data Fig. 4e",
+     "quote": "A direct comparison of the two indicated that the distance effect due to the firing rate is significantly larger than that due to the slope of the firing rate",
+     "statistics": [
+      {
+       "test": "two-sample t-test",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "The two-sample t-test finds rate F above slope F at p < 0.0001 only in monkey M with the legend's windows (mean F 3.27 against 1.86, p = 1.9e-05). Under the Methods' and Results' windows neither monkey reaches it (p 0.003 to 0.47); in monkey A with the legend's windows slope F is larger (2.77 against 2.29, p = 0.21). Median F is near 1 throughout. Units, 324 to 331 (A) and 330 to 363 (M).",
+     "deviations": [
+      "Type II sums of squares, a standard choice; the Methods do not say which.",
+      "The slope is fitted to the smoothed rate (100 ms Gaussian) in the window.",
+      "4 of 9 monkey M sessions have fewer than 10 trials in some condition and are not used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4fg-distance-over-landmark",
+     "statement": "Significantly less variance of firing rate near joystick offset is explained by the start or the target landmark than by distance.",
+     "source": "Results, Ramping, paragraph 4; Extended Data Fig. 4f,g",
+     "quote": "We found that significantly less variance of the neural firing rate near joystick offset was explained by either the start or the target landmark compared with distance",
+     "statistics": [
+      {
+       "about": "distance against start landmark F",
+       "test": "two-sample t-test",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "distance against target landmark F",
+       "test": "two-sample t-test",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Distance F exceeds start and target landmark F in every comparison, at p < 0.0001 in 8 of 16 main comparisons. In the last 200 ms with the t-test on differences all four monkey and landmark comparisons meet it (p 6.8e-05 to 3.8e-17); in -500 to -300 ms only monkey M's start landmark does (p 1.4e-04 to 4.5e-03 for the others).",
+     "deviations": [
+      "Type II sums of squares, a standard choice.",
+      "4 of 9 monkey M sessions are not used (fewer than 10 trials in some condition)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-xcorr-conserved-iti",
+     "statement": "The structure of pairwise cross-correlations among simultaneously recorded periodic neurons is conserved between the mental navigation epoch and the ITI (monkey A r = 0.84, monkey M r = 0.86).",
+     "source": "Results, Ramping, paragraph 5; Figure 3e; Extended Data Fig. 5b",
+     "quote": "Notably, the structure of correlations across the pairs was similar between the two periods",
+     "statistics": [
+      {
+       "about": "monkey A, MNAV against ITI pair cross-correlations",
+       "test": "Pearson correlation",
+       "statistic": "r(188) = 0.84",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "monkey M, MNAV against ITI pair cross-correlations",
+       "test": "Pearson correlation",
+       "statistic": "r(292) = 0.86",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The ITI segments longer than 4 s cannot be located in the files (see ed2b-pi-navigation-above-iti).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5-xcorr-conserved-other-epochs",
+     "statement": "The conserved correlation structure generalizes to the inference epoch, error trials and both directions of movement.",
+     "source": "Results, Ramping, paragraph 5; Extended Data Fig. 5a-c",
+     "quote": "This finding was robust and generalized to all task epochs, including the inference epoch (during start and target landmark presentation but before mental navigation), error trials and for both directions of movement",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Both session readings select A 08292019 (27 periodic units under the main reading) and M 04122021 (30). With 20 or 25 units, every comparison gives a positive r with p far below 0.05 after Bonferroni correction over 1,801 lags (largest corrected p 6.7e-39). Navigation against the inference epoch r = 0.934 and 0.902 (A) and 0.904 and 0.904 (M); against error trials 0.954 and 0.940 (A) and 0.883 and 0.870 (M); direction 1 against direction -1 0.797 and 0.815 (A) and 0.812 and 0.782 (M); 186 to 300 pairs.",
+     "deviations": [
+      "The claim depends on fig3e-xcorr-conserved-iti in the claims file, which is blocked because the ITI cannot be located. Its own comparisons do not use the ITI, and the neuron and session selection it takes from fig3e is computable, so it is tested.",
+      "The chronological readings take the fifth monkey A and first monkey M session among those the dandiset holds, which need not be the paper's; the selection rests on the main periodic reading.",
+      "The lag step of Extended Data Fig. 5c is not given; the correction counts 1,801 lags (1 ms steps), and 181 (10 ms steps) is also shown."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-periodic-fano-factor",
+     "statement": "Many EC neurons have a Fano factor that is periodic at about 0.65 s: 55% (341/614) in monkey A and 43% (378/864) in monkey M.",
+     "source": "Results, The behaviour of the monkeys, paragraph 4; Figure 4h; Extended Data Fig. 8",
+     "quote": "The proportion of neurons with a periodic Fano factor was 43% (378/864) in monkey M and 55% (341/614) in monkey A",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the legend's selection and either direction, the median Fano periodicities are 0.69 s (A) and 0.66 s (M), within 0.60 to 0.70 s, while the units are 65.4% (238/364) and 52.3% (381/729), against the paper's 55.5% and 43.8%. Direction 1 only gives 44.2% and 32.6%; the code's selection gives 59.9% (A, within tolerance) and 54.0% (M), with M's median 0.72 s. No combination puts both proportions within tolerance; the medians hold under the legend's selection.",
+     "deviations": [
+      "Counts are compared as proportions of the units the dandiset holds.",
+      "The end of the Fano time course is not given; it is taken as 500 ms before the shortest trial's offset, as for the PI (an assumption).",
+      "PI at 650 ms is read at the nearest 30 ms step (660 ms)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8-fano-periodic-without-rate-periodicity",
+     "statement": "The periodic Fano factor is not a by-product of firing-rate periodicity; it is also present in neurons whose firing rate is not periodic.",
+     "source": "Results, The behaviour of the monkeys, paragraph 4; Extended Data Fig. 8c,f",
+     "quote": "This periodicity was not a by-product of the underlying periodicity of firing rates, and was also evident in neurons with non-periodic activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the legend's Fano selection and either direction, 193 of 308 rate non-periodic units in monkey A and 334 of 672 in monkey M (main periodic reading) have a periodic Fano factor, far above 5% of all units (binomial p 1.0e-147 and 3.1e-227). The selection's false-positive rate, measured on Poisson units with each unit's own mean count time course, is 3.3% (A) and 2.0% (M) per unit-direction, and the counts are far above it (p 2.0e-145 and 3.1e-274). The code's selection has false-positive rates of 22.0% and 16.7%, and its counts are above them too (p 1.4e-06 or below). Every selection, direction and periodic reading gives p < 1e-12 against 5% of all units (largest 4.0e-13, rule b, monkey A). The code's unlabelled counts are 99/614 and 74/864.",
+     "deviations": [
+      "Rests on the periodic readings for which units are periodic in rate, and on the fig4h assumption about the Fano time course."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10-motor-preparation-signal",
+     "statement": "Most EC neurons show a motor-related response before joystick offset, 77% (477/614) in monkey A and 70% (607/864) in monkey M, including most non-periodic neurons (81%, 368/452, in A and 89%, 432/481, in M).",
+     "source": "Extended Data Fig. 10 legend; Discussion, paragraph 1",
+     "quote": "Overall, the majority of neurons in both monkeys showed such motor-related response, 77% (477/614) in monkey A and 70% (607/864) in monkey M",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "Under the code's test, 75.5% (275/364, A) and 67.9% (495/729, M) of units are motor-related, within 10% of the paper's 77.7% and 70.3%. Under the main periodic reading 65.9% (A, 240/364) and 52.8% (M, 385/729) of units are non-periodic, against 73.6% and 55.7%, so A is just outside tolerance (bound 66.2%) and M within; among them 84.6% (203/240) and 83.6% (322/385) are motor-related, within 10% of 81.4% and 89.8%. Five of the six values are within tolerance and the four proportions are each above 50%. Under rule a1 and the GP-null reading all six are within tolerance (non-periodic 78.6% and 72.5% in A, 60.6% and 59.5% in M); under rule b only 15.7% and 8.6% of units are non-periodic. Counting increases only, 33.0% and 33.1% of units are motor-related, and a paired t-test across trials at p < 0.0001 finds 5.8% and 6.9%; the bootstrap t-test compares 200 resampled means, so its p-value depends on the number of resamples.",
+     "deviations": [
+      "Counts are compared as proportions of the units the dandiset holds.",
+      "The periodic readings give different outcomes; non-periodic units follow the main reading."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-reset-model-fits-better",
+     "statement": "A Bayesian observer model whose timing variability grows sublinearly, as with resets at multiples of 0.65 s, fits the monkeys' behaviour better than a scalar-variability model without resets.",
+     "source": "Results, The behaviour of the monkeys, paragraph 6; Figure 4g",
+     "quote": "Fitting these two models to the monkeys' behaviour, we found that the model with intermediate resets was significantly better than the one without resets at capturing behaviour",
+     "statistics": [
+      {
+       "about": "monkey A, no-reset against reset model error",
+       "test": "paired t-test",
+       "statistic": "t(77) = 7.93",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "monkey M, no-reset against reset model error",
+       "test": "paired t-test",
+       "statistic": "t(101) = 16.56",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "The model with resets has the lower error in all 15 sessions (mean 0.0188 against 0.1488 in monkey A, 0.0247 against 0.1359 in M) and the higher likelihood in 14. The paired t-test does not reach p < 0.0001 in either monkey (A t(5) = 9.26, p = 2.5e-04; M t(8) = 4.99, p = 1.1e-03, two-sided), nor without the first session as the code does (p 1.2e-03 and 3.4e-03). The code's two-sample test gives p < 0.0001 in both (about 2e-06 and 1.3e-05). The criterion defines only the reproduced outcome. The paired effect size d_z is 3.78 (A) and 1.66 (M), against 0.90 and 1.64 from the paper's t and degrees of freedom, and p < 0.0001 would need t of 11.2 and 7.1 with 6 and 9 sessions, against the paper's 78 and 102 pairs. The effect is present, in the paper's direction in every session and at least as large as the paper's, and its test is weaker because of the number of sessions, so the outcome is partially reproduced under the protocol's definition (effect present but weaker). The verifier would give not reproduced; the disagreement is recorded under verifications. The outcome does not rest on the lapse range, since the mixture excluded no trial.",
+     "deviations": [
+      "The test uses the 6 and 9 sessions the dandiset holds; the paper's degrees of freedom imply 79 and 103 behavioural sessions.",
+      "The models are the code's models 1 and 2 as the claims file directs (Fig. 4g's models 10 and 12 are not in the repository), ported here to Python from utilities/bls_offset_*_nonuniformPrior_self.m at commit 4bee109, with Nelder-Mead from [0.5, 0.5, 0]. As in that code, the reset model scales the measurement noise with the square root of the interval too.",
+      "The model's bias and variance per interval are computed from the model's distribution; the code takes them from one sample of generated productions.",
+      "Monkey M's seqq 3 trials are left out, as their intervals lie outside the prior's 0.65 to 3.25 s.",
+      "The Methods' lapse distribution, uniform \"from 0 to 3 v_p\", is read as 0 to 3 times the interval (an assumption); the mixture excluded no first-attempt trial, so the Methods' and the code's fits are the same."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-learned-landmark-input",
+     "statement": "In the model, Hebbian plasticity from grid-cell modules to a landmark unit selectively strengthens inputs from the cells whose periodicity and phase match the external landmarks, so that the internal drive alone reproduces the landmark input when it is removed.",
+     "source": "Results, The behaviour of the monkeys, paragraph 2; Figure 4a,b; Extended Data Fig. 6a-c",
+     "quote": "In the presence of external landmarks, synapses were modified such that CAN inputs mimicked the external input, and when the external input was extinguished, the CAN drive alone was able to emulate that external drive",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A model simulation, which uses no recorded data. Not attempted within the time of the author runs; it needs the learning simulation of utilities/gc1d_init_oja.m (a million sequential steps per landmark module) ported and run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-model-subscalar-variability",
+     "statement": "The CAN model without landmarks shows scalar variability, its SD growing linearly with temporal distance, while the model with endogenous landmarks shows subscalar variability, with a power-law exponent below 1.",
+     "source": "Results, The behaviour of the monkeys, paragraph 5; Figure 4c,d",
+     "quote": "We verified this sublinearity by nonlinear regression in which the standard deviation and mean had a power-law relationship with an exponent of less than unity",
+     "statistics": [
+      {
+       "about": "power-law exponent b against 1, model with landmarks",
+       "test": "one-tailed t-test",
+       "statistic": "t(999) = -11.29",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "1000 bootstraps"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_neupane_2024.ipynb",
+     "notes": "With the claims' fit (SD = a mean^b + c, 1,000 bootstrap fits of 50 simulations), the model with landmarks has b = 0.848 (t(999) = -1188.9), but the model without landmarks also has b significantly below 1, 0.977 with the velocity set per base interval (t(999) = -80.0) and 0.990 at the script's 0.35 (t(999) = -611.5), so the second condition fails. With the code's fit (SD = a mean^b), the landmark model has b = 0.977 (t(999) = -292.4) and the no-landmark model 1.009 (p = 1.0) with the Methods' velocities, which would meet the criterion, and 1.000 (t(999) = -13.2) at 0.35. The coefficient of variation hardly changes with the interval in either model (0.065 to 0.067 with landmarks, 0.072 to 0.074 without), so the ported model shows little subscalar variability. The bootstrap t-test treats 1,000 fits of the same 50 simulations as independent, so a b that differs from 1 by a few thousandths is significant.",
+     "deviations": [
+      "The model is ported to Python from the paper's code (gc_CAN_model_simulation.m and utilities/gc1d_setup.m, gc1d_init.m, gc1d_run.m at commit 4bee109); the paper's own simulation files are not available to compare.",
+      "Weber fraction 0.08, where the claims file writes 0.8; the code names its files with 100 times the Weber fraction and sets 0.08 for Fig. 4c. Asked of a reader (questions/000897.yaml).",
+      "Without landmarks the dynamics depend only on the velocity, so 38 noise-free velocities are simulated and the times of the 50 noisy velocities interpolated from them.",
+      "The fit with c starts from the linear fit (b = 1), a standard choice; from [0.5, 0.5, 0] it can stop in a degenerate minimum with b near 0."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6d-model-fano-periodic",
+     "statement": "In the CAN model with endogenous landmarks, the Fano factor of individual units fluctuates periodically with a periodicity of 0.65 s, and the periodicity of the Fano factor follows that of unit activation across a range of velocities.",
+     "source": "Results, The behaviour of the monkeys, paragraph 4; Extended Data Fig. 6d",
+     "quote": "As expected by the presence of reset events, the Fano factor of individual units fluctuated periodically with a periodicity of 0.65 s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A model simulation, which uses no recorded data. Not attempted within the time of the author runs; it needs 50 simulations of the fig4d model with every unit's activity recorded, at each of several velocities.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5efg-tighter-phase-clustering",
+     "statement": "The relative phases of cell to cell cross-correlations of periodic EC neurons are more tightly clustered than predicted for grid cells by the CAN model.",
+     "source": "Results, The behaviour of the monkeys, paragraph 3; Extended Data Fig. 5e-g",
+     "quote": "we found a significantly tighter clustering of the relative phase distribution of cell\u2013cell cross-correlation in our data, which differs from what is predicted for GCs in rodents",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The model side needs the phase distribution of the model's units, which was not simulated (the fig4d simulation records only the network state). The monkeys' side (peak lags of pairs of periodic units) is computable from the data but cannot be compared without it. The claims file also names fig3e-xcorr-conserved-iti (blocked) for the pair selection, which is computable as in ed5-xcorr-conserved-other-epochs.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds 15 of the paper's 32 recording sessions (monkey A 6 of 17, monkey M 9 of 15), with 364 and 729 units against the paper's 614 and 864. The behavioural training and generalization sessions of Fig. 1c,e and the behavioural sessions behind Fig. 4g are not in it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "About half of monkey M's MNAV trials have seqq 3, whose vectors come in steps of 0.975 s (0.975 to 4.875 s) with ta/0.65 not equal to target minus curr. The paper describes a landmark spacing of 0.65 s for both monkeys, and the seqq description (\"which sequence, 1, 2, 3 or 4\") does not explain it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "In 10 of the 15 sessions (A 08152019 and all monkey M sessions) the eye and joystick timestamps are on another clock than the trial table and the spikes; they start between 3,209 and 1,559,866 s while trials start near 4 s. The offset is not documented. Estimated here from the joystick deflection, it is 3,326 to 1,561,450 s, and once it is removed the joystick moves at the recorded joystick onsets.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In three sessions (A 09172019, M 04132021, M 04142021) no unit changes its rate between 1.0 to 0.6 s and 0.4 to 0.1 s before joystick offset (paired t-test, p < 0.01), while 2 to 89% of units do in the others, and while preparing the notebook their population rate was flat around every task event. In M 04132021 the spikes end at 9,306 s while the trials run to 18,599 s. That spikes and trials share a clock could not be established in these sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The inter-trial interval is not marked. Trial rows are contiguous, from stimulus onset (start_time equals stim1onttl) to the next stimulus onset, so the ITI segments longer than 4 s that the paper compares with the navigation epoch cannot be located.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Rows with attempt 2 are trials that took two attempts. Their joystick times and tp are consistent with the first attempt (the joystick is pressed about 0.5 s after the go cue, as on single-attempt trials, and the row runs 2.4 to 5.4 s past the joystick offset, against 0.9 to 1.3 s), and the second attempt is not timed. The files do not say which attempt the row holds, nor what succ and numrepeat mean on these rows.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Monkey A units carry phy's quality label, and 103 of the 364 are labelled noise; monkey M units carry only Kilosort's KSLabel. The paper analysed all single and multi-units, and the files do not say which units are those. The unit columns amp, ch, depth, fr, n_spikes and sh have no description.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Which rule classifies a neuron as periodic, and how is the Gaussian process surrogate turned into a firing rate for the Poisson step? The Methods say PI above 2 SD of the surrogate PI at any lag; the code compares max PI minus the mean PI from the first positive lag with a threshold from surrogates it loads from a file. On these data, with a null matched to each unit's number of trials, the Methods' rule classifies 52 to 81% of units as periodic, the code's score against the surrogate scores 0.1 to 31%, and against the per-lag surrogate maximum at most 5%; the median periodicity is near 0.65 s only under the second. This attempt assumed the second, with rate = r exp(g - 1/2).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the paper's authors. Which neurons enter Extended Data Fig. 2c (PI at the 650 ms lag above threshold, as the code does, or periodicity within 0.60 to 0.70 s, as the Results say); this attempt ran both. Where the Fano factor time course of Extended Data Fig. 8 ends, and what \"low rate\" removes a trial in the phase analysis of Fig. 2e.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. In the targeted dimensionality reduction of Fig. 3d, is each unit centred by its mean across the two windows and regressed on distance without an intercept, as the Methods write, or does the regression have a constant term per time point, as in the method cited (Mante et al. 2013)? On these data the first gives onset R2 above offset R2 in monkey M (p = 7.3e-12) and the second offset above onset in both monkeys; this attempt takes the first as the main reading.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the archive's file list and tested helper functions on synthetic inputs. It gave its own outcome for each claim; 21 of 24 agree with the record as it then was.",
+     "agreed": 21,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "ed3-no-eye-hand-periodicity",
+       "outcome": "partially_reproduced",
+       "reason": "Under every bootstrap and chance reading all three signals are below chance at p < 1e-4, and none is above. The criterion's test is met, but only in monkey A (5 sessions). All three mean PIs at 650 ms are outside tolerance, and the eye PIs have the opposite sign (eye x 0.148, paper -0.25; eye y 0.136, paper -0.44; joystick -0.40, paper -0.53). Monkey M is dropped because its behaviour clock is offset; the joystick deflection could have estimated that offset against joy1onttl, and this was not tried (problem 6)."
+      },
+      {
+       "claim": "fig2f-earlier-peaks-multiples",
+       "outcome": "not_reproduced",
+       "reason": "The second peak is -1.315 s in A (within) but -1.07 s in M. The third peak is -1.585 s in A and -1.66 s in M (expected -1.95). Neither partial clause holds cleanly, as A meets only the second peak and M neither. A synthetic test shows the peak routine recovers -0.65, -1.30 and -1.95 correctly, so this is a property of the data, not a bug. Per-unit inter-peak intervals were not shown."
+      },
+      {
+       "claim": "ed5-xcorr-conserved-other-epochs",
+       "outcome": "blocked",
+       "reason": "Wrongly blocked. Its comparisons are MNAV against the inference epoch, against error trials and between directions, and none of these needs the ITI. Only the neuron and session selection comes from fig3e, and that rests on the PI, which the notebook computes."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, with its conclusions and summary, the attempt record, the README, the helper module and the claims file, with the paper. The verifier checked each stated outcome and assumption and every sentence of the conclusions against the printed outputs. It agrees with 22 of the 24 outcomes; it would give fig3d partially reproduced and fig4g not reproduced.",
+     "agreed": 22,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "fig3d-offset-coding-stronger",
+       "outcome": "partially_reproduced",
+       "reason": "The Methods say explicitly that each neuron is centred by its mean across the two windows. Under that centring, monkey M reverses (p = 7.3e-12). The main reading is the cited paper's constant term, which departs from the Methods' own text. The claims file's convention is Methods first, and its rule is \"under the readings run\". The assumption is stated but is not reasonable as the main reading. The verifier's round-1 statement that the Methods centre per time point was its misreading."
+      },
+      {
+       "claim": "fig4g-reset-model-fits-better",
+       "outcome": "not_reproduced",
+       "reason": "The criterion defines only \"reproduced\". The paired test fails in both monkeys (p 2.5e-4 and 1.1e-3). The partial rule (effect in the same direction in every session) is the author's invention and is not listed as an assumption. The assumed flag points to the lapse range, and since the mixture excluded no trial, the outcome does not rest on that. The low power is a fair note for the notes field, not grounds for a partial outcome."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. Only the proposed change of outcome for fig3d-offset-coding-stronger and the analysis behind it in the full executed notebook of the author-revise-2 run (commit 45d630444), cells 40 to 42, with the claims file, the paper's Methods and the attempt record. Nothing else was reviewed. Report in transcripts/000897/verifier-3-report.md.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000897-neupane-2024",
+   "type": "reproduction",
+   "title": "Mental navigation in the primate entorhinal cortex (Neupane, Fiete and Jazayeri 2024)",
+   "description": "Tests the findings of Neupane, Fiete and Jazayeri (2024) on dandiset 000897, which holds 15 of the paper's 32 entorhinal recording sessions in two monkeys performing the mental navigation task. It covers behavioural performance, the periodicity of firing rates and of the Fano factor, the phase of activity peaks before joystick offset, distance coding at joystick onset and offset, motor-related responses, cross-correlation structure across epochs and the fit of two Bayesian observer models, and one simulation of the paper's model. The inter-trial interval is not marked in the files, and the other model simulations were not run.",
+   "datasets": [
+    "dandi:000897"
+   ],
+   "papers": [
+    "10.1038/s41586-024-07557-z"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_neupane_2024.ipynb",
+     "title": "Reproducing Neupane, Fiete and Jazayeri (2024) from dandiset 000897",
+     "executed": "notebooks/000897-neupane-2024/reproduce_neupane_2024.html"
+    }
+   ]
+  }
+ ]
+}
