@@ -37,13 +37,16 @@ focal glomerulus claims are measured where each glomerulus was placed without th
 tested (leave one odor out), so that the tested values did not choose the place; on those held-out
 trials only 9 of 52 old-ant glomerulus traces follow Data S2's. The claims that rest on old ants'
 alarm responses fail, and PGb's alarm AUCs measured from the imaging are well below Data S2's
-Figure 3C and 3D values in both this dandiset and DANDI 000467. Run on Data S2's own values, every
-focal glomerulus claim holds as the paper states it.
+Figure 3C and 3D values in both this dandiset and DANDI 000467. Where an old-ant ROI misses the
+glomerulus its values are read too low, which favours the claims that old responses are lower
+(Figure 4) and works against those that they are higher (Figure 3D, S4D). Run on Data S2's own
+values, every focal glomerulus claim holds as the paper states it except pg-opposite-modulation,
+whose criterion fails on Data S2 (G2 and G3 with propionic acid; asked of a reader).
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000773-hart-2024-01.yaml`](../../attempts/000773-hart-2024-01.yaml).
 
 - `reproduce_hart_2024.ipynb`: the analysis. It streams about 460 GB by HTTP range requests (only
-  the frames needed), including the eight 90-day ants of DANDI 000467, and takes about 30 minutes.
+  the frames needed), including the eight 90-day ants of DANDI 000467, and takes about 40 minutes.
 - `antal.py`: listing and streaming the files, the peak fold change maps of the Methods, the AL
   outline, responding ROIs, locating the focal glomeruli and reading their traces, and the
   behaviour fits. Other notebooks on this dandiset can import it.

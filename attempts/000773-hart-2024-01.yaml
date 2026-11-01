@@ -92,14 +92,15 @@ outcomes:
 - claim: fig2b-gcamp-baseline-unchanged
   outcome: blocked
   blocked_by: other
-  notes: The confocal stacks are not in the dandiset; they are in the Brain Image Library (doi:10.35077/g.1153),
-    whose landing page lists 15 brains (7 young, 8 old) under download.brainimagelibrary.org. That server
-    did not answer at 17:12 and 18:22 in the first run, from the shell at 21:22 (30 s timeout) in this
-    revision, and in the notebook's run, three attempts 30 s apart with a 60 s timeout each (ReadTimeout,
-    ReadTimeout, ConnectTimeout, printed). The landing page says the library is under review and that
-    its data were unavailable for part of October. The data were never read, so the block is other (the
-    server was not reached), not data_unreadable. The number of brains could not be compared with Figure
-    2B.
+  notes: The confocal stacks are not in the dandiset; they are in the Brain Image Library (doi:10.35077/g.1153).
+    The notebook reads the landing page, which lists 15 brains (7 young, 8 old) under download.brainimagelibrary.org
+    and carries two notices, printed (the repository "is under review for potential modification in compliance
+    with Administration directives", and "BIL data will be unavailable between October 5 and October 16").
+    The notebook then tries the download server three times, 30 s apart with a 60 s timeout each, and
+    every try timed out (ReadTimeout, ReadTimeout, ConnectTimeout in the final run's output; three
+    ReadTimeouts in the round 2 run). Requests made from the shell during the attempt also timed out but are in no
+    output. The data were never read, so the block is other (the server was not reached), not data_unreadable.
+    The number of brains could not be compared with Figure 2B.
 - claim: fig2d-whole-al-alarm-no-age-effect
   outcome: reproduced
   notebook: reproduce_hart_2024.ipynb
@@ -216,8 +217,13 @@ outcomes:
   notes: The mean AUC over the glomeruli identified in each ant does not differ with age. At the held-out
     placement (reading a, radius 8) p = 0.58 (4-methyl-3-heptanone) and 0.23 (4-methyl-3-heptanol); over
     every variant, including the placement from all trials (p = 0.81 and 0.25) and placements above chance
-    only, p >= 0.080. Data S2's own values give p = 0.14 and 0.053. The partial link (data-s2-glomerulus-link)
-    bears on the old-ant values.
+    only, p >= 0.0799 (general odorants only, reading b, 4-methyl-3-heptanone). Data S2's own values give
+    p = 0.14 and 0.053. The partial link (data-s2-glomerulus-link) bears on the old-ant values. This null
+    result is weak evidence, since it comes from the same located ROIs that miss the paper's positive
+    old-ant effects (fig3b, fig3d), and a null from a procedure that misses the paper's effects is a weak
+    test, the reason figs3c-general-breadth-no-age-effect is blocked. It is kept as reproduced because
+    the glomeruli are placed from Data S2 per ant (above chance in every young ant), not by the automated
+    rule of figs3c, and no variant reaches p < 0.05.
   deviations:
   - Glomerulus positions are not in the dandiset; each is placed where the dandiset's per-trial responses
     best correlate with Data S2's (data-s2-glomerulus-link), so the test uses Data S2 (data with_inputs).
@@ -245,8 +251,8 @@ outcomes:
   notes: At the held-out placement (reading a, radius 8) G2 with 4-methyl-3-heptanone does not differ
     (young -1.98, old -2.34, p = 0.86), and G1 with 4-methyl-3-heptanone does (8.71 against -1.97, p =
     0.033). Over the variants G2 p ranges from 0.0496 to 0.86; only the placement from all trials restricted
-    to placements above chance (4 old ants) gives G2 p < 0.05, with one other pair also significant, which
-    would be partially reproduced. At the placement from all trials (round 1) p = 0.24. Young means exceed
+    to placements above chance (5 old ants) gives G2 p < 0.05 (p = 0.0496), with one other pair also significant,
+    which would be partially reproduced. At the placement from all trials (round 1) p = 0.24. Young means exceed
     old ones in 5 of 8 pairs (held out). Data S2's own values give G2 p = 0.0069 and no other pair below
     0.05, as the paper. The outcome rests on the located ROIs; the link is partial, weakest in old ants.
   deviations:
@@ -308,7 +314,11 @@ outcomes:
   notes: The readings give different outcomes and neither is a fair test here. Reading (a), both cohorts
     measured here at the placement from all trials (60-day ants of this dandiset, 90-day ants of DANDI
     000467), finds no difference (PGb with 4-methyl-3-heptanone 5.15 against 11.59, p = 0.15; PGb with
-    4-methyl-3-heptanol p = 0.94; PGa p = 0.41; every variant p >= 0.059), but the 90-day PGa positions
+    4-methyl-3-heptanol p = 0.94; PGa p = 0.41; every variant p >= 0.059). Added after the round 2 verifier,
+    the 60-day values at the held-out placement of the main measure against the same 90-day values also
+    show no difference (8.46 against 11.59, p = 0.60; p = 0.53; PGa 0.08 against 6.53, p = 0.18; reading
+    b p = 0.33 to 0.74); at the placement from the general odorants alone only reading (b) of PGb with
+    4-methyl-3-heptanone differs (1.74 against 14.14, p = 0.041; reading a p = 0.063). But the 90-day PGa positions
     are placed from six trials and only 1 of 8 is above chance (r 0.996 to 0.9997, 95th percentiles of
     the shuffled maxima about 0.999); the PGb positions (12 trials) are above chance in 7 of 8. No held-out
     placement can be made for the 90-day PGa, whose Data S2 trials are only the six alarm trials. Reading
@@ -370,8 +380,14 @@ outcomes:
     12.8, p = 0.022); isopropanol in G1 does not (p = 0.20), as in the paper. The partial level rests
     on two p-values just under 0.05 and is not met under any of the eight other variants (5 to 8 of 10,
     one odorant 3 or fewer of 5), including the placement from all trials (7 of 10, isopropanol 3 of 5;
-    not reproduced in round 1). Data S2''s own values give all 10, with PGb 3-hexanone p = 0.23. Changed
-    from not reproduced with the held-out placement.'
+    not reproduced in round 1). With all trials in place of Data S2''s trials, G2 with 3-hexanone gives
+    p = 0.059. Data S2''s own values give all 10, with PGb 3-hexanone p = 0.23. The located ROIs bias
+    this claim toward passing. On held-out trials only 9 of 52 old-ant glomerulus traces follow Data S2''s,
+    so old-ant values are read partly where the glomerulus is not, which pulls old means down; claims
+    that need old ants to be lower (this one) are pushed toward passing, those that need them higher (fig3d,
+    the late window of figs4d) toward failing. The PGb decline with 3-hexanone is the visible case (old
+    mean 12.8 here against Data S2''s 25.1 for the same ants). Changed from not reproduced with the held-out
+    placement.'
   deviations:
   - Glomerulus positions are not in the dandiset; each is placed where the dandiset's per-trial responses
     best correlate with Data S2's (data-s2-glomerulus-link), so the test uses Data S2 (data with_inputs).
@@ -484,7 +500,9 @@ findings:
 - kind: metadata_insufficient
   statement: The dandiset holds no ROI positions, glomerulus identities or responding-ROI counts. The
     six focal glomeruli (PGb, PGa, G1 to G4) and the responding ROIs of Figures 2E and S3C were drawn
-    by hand and cannot be located from the dandiset alone; ten claims depend on them. Data S2 of the paper
+    by hand and cannot be located from the dandiset alone; twelve claims depend on them (eight list the
+    link claim as a dependency, pg-opposite-modulation depends on it through others, and three rest on
+    the responding ROIs). Data S2 of the paper
     holds the traces of the focal glomeruli but not their positions.
 - kind: metadata_insufficient
   statement: Stimulus timing is not stored as times or intervals, only in the series description ("odor
@@ -579,8 +597,8 @@ verifications:
       request with a 30 s timeout and it timed out. The confocal data are not missing; the server was
       not reached. One more attempt from another network, with retries, would settle it.
     response: blocked_by changed from data_unreadable to other, as the verifier gives. The notebook now
-      tries three times, 30 s apart, with a 60 s timeout each; all three failed (ReadTimeout, ReadTimeout,
-      ConnectTimeout), as did a request from the shell. Another network was not available to this run.
+      tries three times, 30 s apart, with a 60 s timeout each; all three timed out (printed in the notebook).
+      Another network was not available to this run.
   - claim: fig2d-whole-al-alarm-no-age-effect
     agrees: true
     outcome: reproduced
@@ -656,7 +674,7 @@ verifications:
     response: 'The focal glomerulus claims now take the held-out placement (leave one odor out) as the
       main measure, with the placement from all trials, placements above chance only and (for the alarm
       pheromones) the general-odorant-only placement as variants; reading (b) leaves out pixels at background
-      level. No change of outcome: p = 0.58 and 0.23 at the held-out placement, p >= 0.080 over every
+      level. No change of outcome: p = 0.58 and 0.23 at the held-out placement, p >= 0.0799 over every
       variant, including placements above chance only.'
   - claim: fig3b-g2-heptanone-weaker-old
     agrees: true
@@ -669,8 +687,8 @@ verifications:
       main measure, with the placement from all trials, placements above chance only and (for the alarm
       pheromones) the general-odorant-only placement as variants; reading (b) leaves out pixels at background
       level. No change of outcome: G2 p = 0.86 at the held-out placement and 0.0496 to 0.86 over the variants;
-      only the placement from all trials restricted to placements above chance (4 old ants) gives G2 p
-      < 0.05, which would be partial. With the background floor, the old-ant G1 alarm means under reading
+      only the placement from all trials restricted to placements above chance (5 old ants; written 4
+      in round 2, corrected after the round 2 verifier) gives G2 p < 0.05, which would be partial. With the background floor, the old-ant G1 alarm means under reading
       (b) at the placement from all trials are 2.6 and -6.3 (were 39 to 57).'
   - claim: fig3d-pg-stronger-old
     agrees: true
@@ -753,3 +771,173 @@ verifications:
       the criterion states only when the claim is reproduced and its alarm part fails. The contradiction
       with fig4-propionic-acid-g2-g3 is added to questions/000773.yaml for a reader; the claim is not
       changed.
+- date: 2026-10-31
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The full executed notebook of the first revision (79 cells, with the conclusion cells and
+    the summary), the helper module antal.py, the claims file, the attempt record and the README, with
+    the paper under paper/. Report: transcripts/000773/verifier-2-report.md. The verifier agreed with
+    all 22 outcomes. Points answered in the entry and this record: the fig3b count of old ants (5, not
+    4); the fig2b timeouts, now as printed, with the landing page read and its notices printed by the
+    notebook, and the shell attempts said to be in no output; the README and summary sentences on Data
+    S2, now excepting pg-opposite-modulation; the summary''s "need no hand-drawn ROI", now saying the
+    outline is a threshold stand-in; the run time (36.2 minutes in this run, 43.9 in round 2), now about
+    40 minutes; the number of claims that depend on the hand-drawn ROIs, now twelve; and the figs2a smallest
+    p, now 0.0799. Added: the direction of the placement bias in the fig4 notes and the summary, the
+    figs3c caveat in the figs2a notes, and the held-out 60-day values against the 000467 90-day values
+    for fig3d-pg-60-vs-90-days-same. The claims-file problems the verifier lists are in questions/000773.yaml;
+    the missing rule for readings that disagree in fig3d-pg-60-vs-90-days-same is added there.'
+  results:
+  - claim: fig1c-old-faster-alarm
+    agrees: true
+    outcome: reproduced
+    reason: Cells 13 to 19 are unchanged and match Table S1.
+    response: No change.
+  - claim: fig1c-vehicle-single-curve
+    agrees: true
+    outcome: reproduced
+    reason: Cells 13 to 19 are unchanged and match Table S1.
+    response: No change.
+  - claim: fig1b-alarm-stimuli-similar
+    agrees: true
+    outcome: reproduced
+    reason: Cells 13 to 19 are unchanged and match Table S1.
+    response: No change.
+  - claim: figs1-heptanone-separate-curves
+    agrees: true
+    outcome: reproduced
+    reason: Cells 13 to 19 are unchanged and match Table S1.
+    response: No change.
+  - claim: figs1-heptanol-blend-single-curve
+    agrees: true
+    outcome: reproduced
+    reason: Cells 13 to 19 are unchanged and match Table S1.
+    response: No change.
+  - claim: fig2b-gcamp-baseline-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other). Cell 10: three tries, each timed out. Cell 10 prints ReadTimeout three times;
+      the record''s "ReadTimeout, ReadTimeout, ConnectTimeout", the 17:12, 18:22 and 21:22 shell attempts
+      and the landing-page wording appear in no output, so they cannot be checked.'
+    response: 'No change of outcome. The notebook now reads the landing page and prints its brain count
+      (15; 7 young, 8 old) and its two notices before trying the download server; the final run''s three
+      tries printed ReadTimeout, ReadTimeout and ConnectTimeout. The notes and the round 1 response now give
+      only what the outputs print, and say that the shell attempts are in no output.'
+  - claim: fig2d-whole-al-alarm-no-age-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 29: every p >= 0.061.'
+    response: 'No change. The summary no longer says the whole-AL measures need no hand-drawn ROI; it says
+      they use a threshold outline in place of the paper''s hand-drawn one (verifier, section 2, point
+      4).'
+  - claim: figs3b-whole-al-general-decline
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 32: the ratios are not reached with the raw measure or with the paraffin oil value subtracted
+      (6.0 and 9.5).'
+    response: No change.
+  - claim: figs3b-whole-al-other-no-age-effect
+    agrees: true
+    outcome: reproduced
+    reason: The smallest p is 0.062. The map without the minimum filter is saturated, and the notebook
+      rightly does not count it as a test.
+    response: No change.
+  - claim: fig2e-heptanone-breadth-falls
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified), with fig2-alarm-sparse and figs3c.
+    response: No change.
+  - claim: fig2-alarm-sparse
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified), with fig2e and figs3c.
+    response: No change.
+  - claim: figs3c-general-breadth-no-age-effect
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified); figs3c is now consistent with fig2e.
+    response: No change.
+  - claim: data-s2-glomerulus-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'By the criterion''s letter: 66% at the placement from all trials. The notes say plainly that
+      the link would fail on held-out trials (41%; old ants 9 of 52). Still open: only 9 of 52 old-ant
+      triples agree on held-out trials, so every focal-glomerulus outcome still mostly reflects where
+      the ROI was placed in old ants; claims that need old ants to be higher (fig3d, the late window of
+      figs4d) are pushed toward failing, claims that need them lower (fig4) toward passing.'
+    response: No change of outcome. The direction of the bias is now stated in the fig4 notes, the notebook's
+      fig4 conclusion, the summary and the README.
+  - claim: figs2a-mean-six-glomeruli-no-age-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, weakly. The null result comes from the same located ROIs that miss the paper''s positive
+      old-ant effects (fig3b, fig3d). By the logic used to block figs3c ("a null from a procedure that
+      misses the paper''s effect is not a test"), it is weak evidence; Data S2 itself gives p = 0.053
+      for 4-methyl-3-heptanol. Reproduced (assumed) is accepted, but the notes should apply the same caveat
+      explicitly. The record''s "p >= 0.080" is a rounding nit; the smallest printed value is 0.07996.'
+    response: 'No change of outcome. The notes and the notebook''s conclusion now state the caveat, and
+      say why the outcome is kept (the glomeruli are placed from Data S2 per ant, not by the automated
+      rule of figs3c, and no variant reaches p < 0.05). The smallest p is given as 0.0799.'
+  - claim: fig3b-g2-heptanone-weaker-old
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 52: G2 p = 0.86 at the held-out placement. The sentence "only the placement from all
+      trials restricted to placements above chance (4 old ants) gives G2 p < 0.05" is wrong: cell 52
+      prints n_old 5 for that row (p = 0.04957); ant5-m1-d10 G2 has p_trial = 10/201, about 0.0498, which
+      prints as 0.05 in cell 42.'
+    response: No change of outcome. Corrected to 5 old ants in the notebook, the notes and the round 1
+      response.
+  - claim: fig3d-pg-stronger-old
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 55: no variant meets either reading. The round-1 PGa result disappears once the place
+      is chosen without the tested trials.'
+    response: No change.
+  - claim: fig3d-pg-60-vs-90-days-same
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (methods_underspecified). Cells 58 and 60: 1 of 8 PGa placements at 90 days is above
+      chance, and reading (b) mixes two pipelines. Reading (a) uses only the 60-day values from the placement
+      from all trials; the held-out 60-day values, the main measure elsewhere, are not compared with the
+      000467 90-day values. The criterion has no rule for readings that disagree; blocking is a defensible
+      choice, but it is the author''s, not the criterion''s.'
+    response: 'No change of outcome. Reading (a) now also compares the 60-day values at the held-out placement
+      and at the general-odorant-only placement with the 000467 90-day values: no difference held out
+      (p = 0.60, 0.53 and 0.18; reading b 0.33 to 0.74), and at the general-only placement only reading
+      (b) of PGb with 4-methyl-3-heptanone differs (p = 0.041). The missing rule for readings that disagree
+      is added to questions/000773.yaml.'
+  - claim: figs4a-general-odorants-in-focal-glomeruli
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 63: 56 of 60 cells match, but the 3-hexanone pattern breaks.'
+    response: No change.
+  - claim: fig4-general-odorants-decline
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes by the letter, fragile. Cell 66: 9 of 10, but G2 p = 0.0498 and G3 p = 0.0477. Only 1
+      of 9 variants reaches the partial level. With all trials instead of Data S2''s trials, G2 is p =
+      0.059. PGb with 3-hexanone "declines" (p = 0.022) where Data S2 gives p = 0.23, which shows old-ant
+      values are read too low (held out 12.8 against Data S2''s 25.1). The notes give the fragile p-values
+      but not the direction of bias.'
+    response: No change of outcome. The notes and the notebook's conclusion now say that the located ROIs
+      bias this claim toward passing, with the PGb example and the all-trials G2 p = 0.059.
+  - claim: fig4-propionic-acid-g2-g3
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 69.
+    response: No change.
+  - claim: figs4d-pgb-hexanone-dynamics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 72.
+    response: No change.
+  - claim: pg-opposite-modulation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 75. The README and summary sentences "Run on Data S2''s own values, every focal glomerulus
+      claim holds as the paper states it" and "Data S2''s traces give every focal glomerulus claim as the
+      paper states it" are not supported: cell 75 shows Data S2 fails this claim''s criterion (2 of 30
+      tests, G2 and G3 with propionic acid). The criterion contradicts fig4-propionic-acid-g2-g3 (reported,
+      not corrected).'
+    response: No change of outcome. Both sentences now except this claim. The contradiction was already
+      asked of a reader in questions/000773.yaml.
