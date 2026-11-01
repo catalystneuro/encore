@@ -1,0 +1,1027 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000011",
+  "label": "DANDI:000011"
+ },
+ "page": "datasets/dandi/000011/",
+ "generated": "2026-11-01T15:11:00+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 6,
+  "partially_reproduced": 5,
+  "not_reproduced": 9,
+  "blocked": 18
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000011-li-2016-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000011",
+    "version": "0.220126.1907",
+    "doi": "10.48324/dandi.000011/0.220126.1907"
+   },
+   "key": "dandi:000011",
+   "label": "DANDI:000011",
+   "dataset_version": "0.220126.1907",
+   "paper": "10.1038/nature17643",
+   "paper_title": "Robust neuronal dynamics in premotor cortex during motor planning",
+   "date": "2026-10-21",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39600002327"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000011-li-2016",
+   "entry_title": "Robust preparatory activity in mouse premotor cortex (Li, Daie et al. 2016)",
+   "description": "Tests the findings of Li, Daie, Svoboda and Druckmann (2016) on dandiset 000011, which holds extracellular recordings from left ALM of 12 control mice during unilateral and bilateral photoinhibition (58 sessions) and 33 sessions of 7 further mice with no photostimulus record. It reads the photostimulus conditions from the laser traces, and tests unit classification, selectivity, recovery of spike rates and selectivity after photoinhibition, the coding direction analyses and the network models of the paper. The behavioural photoinhibition sessions, the photoactivation and untrained mice, and the callosotomy conditions are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_li_2016.ipynb",
+     "title": "Reproducing Li, Daie et al. (2016) from dandiset 000011",
+     "executed": "notebooks/000011-li-2016/reproduce_li_2016.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "unit-classification",
+     "statement": "1012 single units were recorded in left ALM during behaviour in 58 sessions (20 unilateral, 38 bilateral experiment sessions); by spike width 72 were fast-spiking, 890 putative pyramidal, and 50 intermediate and excluded.",
+     "source": "Methods, Electrophysiology data analysis, paragraph 1",
+     "quote": "1012 single units were recorded during behavior across 58 recording sessions (20 sessions of unilateral experiments, Fig. 1 ; 38 sessions of bilateral experiments ... Units with spike width < 0.35 ms were defined as fast-spiking (FS) neurons (72/1012) and units with spike widths > 0.45 ms as putative pyramidal neurons (890/1012). Units with intermediate values (0.35 - 0.45 ms, 50/1012) were excluded",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The 12 control mice hold 979 units in 58 sessions (20 unilateral, 38 bilateral); by the Methods' width thresholds 74 are fast-spiking, 890 putative pyramidal (the paper's number exactly) and 15 intermediate. Four of five values are within tolerance; the intermediate count is 15 against 50. The dandiset holds 33 units fewer than the paper's 1012, about the 35 intermediate units missing, so these were probably not deposited. With widths from waveforms interpolated to ten times the stored rate (a variant) 11 units are intermediate, so the 19.5 kHz sampling does not explain the shortfall. The criterion defines no partial outcome; four of five values hold, so the outcome is partial by the rule stated in the notebook's summary (at least half of the parts hold under every reading that must agree).",
+     "deviations": [
+      "The 33 sessions of the 7 mice without a photostimulus record (564 units) are counted apart, as the criterion asks."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "selective-fraction",
+     "statement": "Most putative pyramidal neurons distinguished trial types (634 of 890); 176 in the sample epoch, 337 in the delay epoch and 493 in the response epoch.",
+     "source": "Results, Preparatory activity in ALM, paragraph 1; Extended Data Figure 1",
+     "quote": "Most ALM pyramidal neurons distinguished trial types (634/890, p<0.05, t-test; sample epoch, 176/890; delay epoch, 337/890; response epoch, 493/890, Methods)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "On the 846 putative pyramidal units with identifiable control trials, no combination of readings (R1 or R2, O1 or O2, Student or Welch) puts all four counts within tolerance, with lick-early trials dropped (K1) or kept (K2). With K1 only the response-epoch count reaches its band (445 or 446 under three readings with correct trials); any epoch (at most 565, band 571 to 697), sample (at most 156, band 158 to 194) and delay (at most 294, band 303 to 371) fall short. With K2 three of four reach their bands with correct trials (any 575 to 588, delay 315 to 320, response 453 to 464) and the sample count does not (at most 149). The outcome must hold under K1 and K2, and under K1 one count of four holds, so the claim is not reproduced; it was partial before the first verification round, and was changed with the rule for partial outcomes stated in the notebook's summary. Most units are selective (563 of 846 with K1). Measured values are R1, O1, Student, K1. With the 44 units of the three unlabelled experiment-1 sessions added on all their trials (photoinhibition trials included, so not the control trials the criterion names), all four are within tolerance with correct trials and K1 (592, 165, 307, 464), under no reading with K2.",
+     "deviations": [
+      "The 44 putative pyramidal units of three experiment-1 sessions with no photostimulus record have no identifiable control trials and are left out (shown as a variant)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-late-delay-ipsilateral-bias",
+     "statement": "Unilateral photoinhibition of ALM (0.5 s) ending at the go cue caused an ipsilateral response bias.",
+     "source": "Results, Preparatory activity after unilateral silencing, paragraph 1; Figure 1d",
+     "quote": "Transient (duration, 0.5 s) unilateral photoinhibition of ALM up to the \u2018go\u2019 cue (late delay) caused an ipsilateral response bias (n = 5 mice, p < 0.01, two-tailed t-test; Fig. 1d )",
+     "statistics": [
+      {
+       "test": "two-tailed t-test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The condition with light ending at the go cue is in none of the files; the recordings of experiment 1 hold light ending 1.6, 0.8 and 0.3 s before the go cue. The behavioural photoinhibition sessions of the 5 mice are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-earlier-photoinhibition-minimal",
+     "statement": "Unilateral photoinhibition ending at least 0.3 s before the go cue had minimal behavioural effects.",
+     "source": "Results, Preparatory activity after unilateral silencing, paragraph 1; Figure 1d; Extended Data Figure 3b",
+     "quote": "In contrast, photoinhibition ending at least 0.3 s prior to the \u2018go\u2019 cue produced minimal behavioral effects (middle delay, early delay; p > 0.1, two-tailed t-test)",
+     "statistics": [
+      {
+       "test": "two-tailed t-test",
+       "p": 0.1,
+       "p_relation": ">",
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The paper's test uses the behavioural photoinhibition sessions of 5 mice, which are not in the dandiset. As a reference only, in the recording sessions of 4 mice performance on early-delay and late-delay (0.3 s before the go cue) photoinhibition trials is 0.745 and 0.749 against 0.799 in control (paired p 0.21 and 0.16).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3-behaviour-recovery-interval",
+     "statement": "Performance was not significantly affected when photoinhibition (0.5 s or 1.3 s) ended more than 0.3 s before the go cue, and 0.5 s photoinhibition just before the go cue had an effect similar to photoinhibition over the whole delay epoch.",
+     "source": "Extended Data Figure 3b, d, e",
+     "quote": "Performance was not significantly affected for T recovery > 0.3s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No file holds 1.3 s photoinhibition or a variable delay of 1.2 to 1.7 s; the behavioural sessions of Extended Data Fig. 3 are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4-return-to-trajectory",
+     "statement": "Neurons whose spike rates decreased during the delay epoch also recovered after unilateral photoinhibition, returning to the time-matched control trajectory and not decaying to the end-point rate.",
+     "source": "Extended Data Figure 4b, c; Results, Preparatory activity after unilateral silencing, paragraph 2",
+     "quote": "Spike rate difference relative to time-matched control show significantly smaller root-mean-squared error (RMS) than spike rate difference relative to end point (p<0.001, paired t-test)",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "27 neurons from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The selection finds 47 to 67 putative pyramidal neurons with a significant delay-epoch decrease, from 4 mice (paper 27 from 6; measured is s1, paired, with K1). Under none of the combinations the answer requires (s1 or s2, t1 or t2, K1 or K2) and neither reading a or b is the time-matched RMS smaller than the end-point RMS; the two differ by at most 0.015 and the paired p is 0.30 to 0.98. What the answer changed (question 6) is that s1, s2, t1, t2 and K1, K2 are now named in the criterion and the outcome must hold under all; it is not reproduced under all, so the outcome is unchanged.",
+     "deviations": [
+      "Experiment 1 holds 4 mice here, against 6 in the paper."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-spike-rate-recovery",
+     "statement": "Within 400 ms after unilateral photoinhibition, spike rates became indistinguishable from control in 90% of neurons; 10% retained a sustained change.",
+     "source": "Results, Preparatory activity after unilateral silencing, paragraph 2; Figure 1f",
+     "quote": "Within 400 ms after photoinhibition, spike rates became indistinguishable from the unperturbed condition in 90% of the neurons; only 10% of neurons retained a sustained change in spike rate",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "Under reading (b), windows labelled by their centre (W2) and no exclusion (X2), the pooled fraction of neurons with a significant change 400 ms after offset is 0.101 with lick-early trials dropped (K1) and 0.097 with them kept (K2). Per condition under that reading it is 0.105, 0.113 and 0.085 (K1), so reading (a) does not hold. With the exclusion (X1), 170 to 172 neurons per condition (paper 168 to 175) and pooled fractions 0.112 to 0.165. What the answer changed (question 1) is that the outcome must hold under K1 and K2; it does, so the outcome is unchanged. The passing reading (X2) tests 248 neurons per condition, against the paper's 168 to 175, and the reading close to the paper's counts (X1) fails; the criterion allows either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-selectivity-recovery",
+     "statement": "After unilateral photoinhibition ALM neurons recovered more than 80% of their control selectivity within about 0.5 s; recovery times were 373 ms (sample), 510 ms (early delay) and 327 ms (late delay).",
+     "source": "Results, Preparatory activity after unilateral silencing, paragraph 2; Figure 1g legend",
+     "quote": "Green lines, recovery to 80% of control (mean \u00b1 s.e.m. bootstrap). Sample, 373\u00b1260 ms; early delay, 510\u00b1218 ms; late delay, 327\u00b1112 ms",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The analysis ran. The answers (questions 1 to 4) found none of the details in the paper, and the claims file now requires one outcome over K1, K2, D1 to D3, L1, L2 and E1, E2, with trials per condition (N1) deciding. The 24 combinations give different outcomes, 12 with readings that put all three times within tolerance, 9 with two and 3 with none. With K1 all three are within tolerance under every combination with E2 and under E1 with centre labels (for example 200 to 350, 250 to 350 and 300 ms with delay-epoch preference and centre labels); with K2 three combinations reach none (end labels with whole-trial preference, and with delay-epoch preference under E1). Per condition and trial type (N2, a variant) gives 11, 12 and 1. Every reading includes 138 to 173 neurons, against the paper's 55. What the answers changed is the set of readings (D3 and E1 added, N1 deciding); the outcome stays blocked. Under E1 with end labels the late-delay time is never found (96 readings); the paper's 327 ms falls after the go cue for this condition, so E1 can give at most 300 ms (a question asks whether E1 is meant here). Of the 162 neurons included with K1 (R1-O1-Student), 118 have more than 20 trials in every condition, 73 are delay-selective and 15 delay-selective only; none of these selections gives 55.",
+     "deviations": [
+      "The measured time is that of all included neurons; bootstrap means and s.d. are shown beside it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5-photoactivation-recovery",
+     "statement": "After transient photoactivation of layer 5 intratelencephalic neurons, ALM selectivity recovered on a time course similar to recovery after photoinhibition.",
+     "source": "Results, Preparatory activity after unilateral silencing, paragraph 2; Extended Data Figure 5f",
+     "quote": "Sample epoch: 249 \u00b1 68 ms to recover to 80 % of control selectivity; early delay: 275 \u00b1 168 ms; middle delay: 250 \u00b1 218 ms",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No Tlx_PL56-cre x Ai32 mouse is in the dandiset; its genotypes are VGAT-ChR2-EYFP and PV-ires-Cre x ReaChR only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5-photoactivation-rate-changes",
+     "statement": "Photoactivation during the sample epoch excited 19% and suppressed 22% of neurons; during the late delay epoch it excited 15% and suppressed 17%.",
+     "source": "Extended Data Figure 5c",
+     "quote": "Photoactivation during sample epoch: 19% excited, 22% suppressed; late delay epoch: 15% excited, 17% suppressed",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As ed5-photoactivation-recovery; the photoactivation recordings are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2b-silencing-strength",
+     "statement": "Ipsilateral and bilateral photoinhibition reduced the activity of putative pyramidal neurons by more than 90%, similarly in VGAT-ChR2-EYFP and PV x ReaChR mice; contralateral photoinhibition had little effect on the average rate.",
+     "source": "Extended Data Figure 2b; Methods, Photoinhibition",
+     "quote": "Ipsilateral and bilateral photoinhibition similarly silenced neuronal activity. Average spike rate across the population was little affected by contralateral photoinhibition",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "With lick-early trials dropped (K1), the normalised rate in experiment 2 is 0.077 to 0.097 for bilateral and 0.94 to 1.00 for contralateral photoinhibition, and 0.035 to 0.052 for ipsilateral photoinhibition in PV x ReaChR mice but 0.177 to 0.245 in VGAT-ChR2-EYFP mice, so the criterion fails on VGAT mice under both windows and three of four parts hold. With them kept (K2) only the contralateral part holds (1.01 to 1.04); ipsilateral 0.139 to 0.140 (PV) and 0.282 to 0.356 (VGAT), bilateral 0.169 to 0.196. The outcome must hold under K1 and K2, and under K2 one part of four holds, so the claim is not reproduced; it was partial before the first verification round, and was changed with the rule for partial outcomes stated in the notebook's summary. Part of the K2 rise comes from lick-early trials whose light falls before its logged time (6.5% to 7.5% of the experiment-2 photoinhibition trials), which enter the average without light in the window. Experiment 1 gives 0.037 to 0.098 (K1). Neuron counts 172, 299 and 55 to 110 per condition, against 109 to 117, 294 to 301 and 52 to 102.",
+     "deviations": [
+      "Neurons need at least 2 trials in the condition and in control (a standard choice)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2d-spatial-extent",
+     "statement": "Photoinhibition with one laser spot silenced activity in a cortical area of 1 mm radius at half-maximum, through all layers.",
+     "source": "Methods, Photoinhibition; Extended Data Figure 2d",
+     "quote": "The photoinhibition silenced 90% of spikes ( Extended Data Fig. 2b ) in a cortical area of 1mm radius (at half-max) through all cortical layers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The recordings in 4 untrained mice that map photoinhibition against distance are not in the dandiset; every file is a behaving session of a trained mouse.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2e-no-rebound",
+     "statement": "No rebound excitation was detected on average after photoinhibition offset; a small fraction of neurons showed rebound, balanced by weak sustained inhibition in a larger fraction.",
+     "source": "Extended Data Figure 2e",
+     "quote": "No rebound excitation was detected after photoinhibition offset on average ( d ). A small proportion of neurons showed rebound excitation which was balanced by a low level of sustained inhibition in a larger proportion of neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "After ipsilateral photoinhibition the population mean rate is not higher than control (paired p 0.93 and 0.22 in the two windows with K1; 0.70 and 0.06 with K2), but more neurons show a significant increase than a significant decrease, 27 against 7 and 30 against 3 (K1; 31 against 10 and 31 against 4 with K2), the reverse of the legend. After bilateral photoinhibition the mean rate rises above control in 400 to 800 ms (3.84 against 3.21 spikes/s, p = 0.002). What the answer changed (question 1) is that the outcome must hold under K1 and K2; it is not reproduced under both, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-unilateral-performance",
+     "statement": "Unilateral photoinhibition in the early delay epoch only slightly reduced performance (one spot 70.3%, four spots 67.7%).",
+     "source": "Results, Preparatory activity after bilateral silencing, paragraph 1; Figure 2b",
+     "quote": "Behavioral performance was only slightly affected after unilateral photoinhibition with a single spot during the early delay epoch ( Fig. 2b , 70.3% correct, p = 0.009, two-tailed t-test against control); unilateral photoinhibition with four spots had small additional effect (67.7%, p=0.003)",
+     "statistics": [
+      {
+       "about": "one spot unilateral against control",
+       "test": "two-tailed t-test",
+       "p": 0.009,
+       "n": "13 mice"
+      },
+      {
+       "about": "four spots unilateral against control",
+       "test": "two-tailed t-test",
+       "p": 0.003,
+       "n": "13 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Figure 2b uses behavioural sessions of 13 mice with 0.8 s and 1.3 s light and a four-spot unilateral protocol; the dandiset holds only recording sessions with 0.8 s light, and no four-spot unilateral light in experiment 2. In those sessions (7 mice), one-spot ipsilateral and contralateral photoinhibition give 0.703 and 0.726 against 0.773, and 0.716 with the hemispheres pooled per mouse (paired p 0.059); in experiment 3 (3 mice) one spot pooled gives 0.705 and four spots 0.756 (left) and 0.830 (right) against 0.795 (reference only).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-bilateral-performance",
+     "statement": "Bilateral photoinhibition degraded performance severely (two spots 58.0%, eight spots 51.4%, near chance), more than four-spot unilateral photoinhibition.",
+     "source": "Results, Preparatory activity after bilateral silencing, paragraph 1; Figure 2b",
+     "quote": "In contrast, using only two spots across both hemispheres caused performance to degrade severely ( Fig. 2b , 58.0%, p<0.001; difference from 4 spot unilateral: p<0.05, two-tailed t-test); four spots bilaterally further reduced performance to near chance level (4 laser spots: 51.4%, p<0.001)",
+     "statistics": [
+      {
+       "about": "one spot each side against control",
+       "test": "two-tailed t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "13 mice"
+      },
+      {
+       "about": "one spot each side against four spots unilateral",
+       "test": "two-tailed t-test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "13 mice"
+      },
+      {
+       "about": "four spots each side against control",
+       "test": "two-tailed t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "13 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As fig2b-unilateral-performance. In the recording sessions, eight-spot bilateral photoinhibition gives 0.580 against 0.773 in control (paired p 0.0001, 7 mice); there is no two-spot bilateral condition in experiment 2. In experiment 3 (3 mice) two-spot bilateral photoinhibition gives 0.658 against 0.795 (paired p 0.045), and four-spot unilateral 0.756 (left) and 0.830 (right) (reference only).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6a-bilateral-inconsistent-bias",
+     "statement": "Bilateral photoinhibition biased movements inconsistently across mice and sessions, toward lick left in some and lick right in others.",
+     "source": "Results, Preparatory activity after bilateral silencing, paragraph 1; Extended Data Figure 6a",
+     "quote": "Bilateral photoinhibition biased movements inconsistently across mice and sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "In experiment 2, 12 (Fisher table f1, trial type by correct on bilateral trials) or 13 (f2, licked side by condition) of 25 sessions have a significant bias; 7 or 8 are biased toward lick right, in 4 mice, and 5 toward lick left, in 4 mice, with no-response trials left out or counted as errors. What the answer changed (question 7) is that f1 and f2 are named in the criterion and the outcome must hold under both; it does, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-recordings-recovery",
+     "statement": "After ipsilateral (one spot) photoinhibition spike rate (more than 90%) and selectivity (more than 80%) recovered within 600 ms; contralateral photoinhibition hardly affected activity; after bilateral photoinhibition spike rates recovered on average but selectivity did not.",
+     "source": "Results, Preparatory activity after bilateral silencing, paragraph 2; Figure 2c-e",
+     "quote": "As before ( Fig. 1 ), spike rate (> 90 %) ( Fig. 2c, d ) and selectivity (> 80%) ( Fig. 2e ) recovered 600 ms after ipsilateral perturbation. ALM activity was hardly affected by contralateral photoinhibition ... After bilateral photoinhibition neurons recovered their spike rate on average ( Fig. 2c, d ), but selectivity failed to recover",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "Spike rates recover; 600 ms after offset 8% to 10% of neurons differ after ipsilateral photoinhibition and the population rate is 1.00 to 1.05 of control (1.16 to 1.23 after bilateral photoinhibition), and bilateral selectivity is 0.22 to 0.33 of control at the go cue. Under every reading two parts fail; ipsilateral selectivity at 600 ms is 0.45 to 0.72 of control, and contralateral photoinhibition changes the rate of 15% to 19% of neurons in some window during or after the light. What the answers changed (questions 1, 2 and 4) is that the outcome must be the same over K1, K2, D1 to D3 and L1, L2, with trials per condition (N1); all 12 combinations give partial, so the outcome is unchanged. The search end (E) does not enter this claim. The criterion defines no partial outcome; three of five parts hold, so it is partial by the rule stated in the notebook's summary.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-selectivity-recovery-times",
+     "statement": "Selectivity recovered to 80% of control 538 ms after ipsilateral and 192 ms after contralateral photoinhibition, and did not recover after bilateral photoinhibition.",
+     "source": "Figure 2e legend",
+     "quote": "Selectivity recovery: ipsilateral, 538\u00b1178 ms; contralateral, 192\u00b1114 ms; bilateral, no recovery",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "Under all 24 combinations of the method details the answers name (K1, K2; D1 to D3; L1, L2; E1, E2), with trials per condition (N1), no reading puts both times within tolerance. With E2 ipsilateral selectivity reaches 80% of control 1000 to 2400 ms after offset, after the go cue, or not at all (20 of 192 readings), against the paper's 538; with E1 it never does before the go cue. Contralateral 200 to 1300 ms (paper 192). Bilateral selectivity stays below 80% of control up to the go cue in all 384 readings. 260 to 293 neurons are included per condition (221 to 292 per condition and trial type; paper 143). Measured values are 200 ms bins, D1, N1, L1, E2, R1-O1-Student, K1. What the answers changed is the set of readings (D3 and E1 added, N1 deciding); the outcome is the same under all, so it is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7-larger-photoinhibition",
+     "statement": "Bilateral photoinhibition with one spot per side changed selectivity more persistently than unilateral photoinhibition with four spots; selectivity recovered to 80% of control 490 ms after ipsilateral and 235 ms after contralateral four-spot photoinhibition, and did not recover after bilateral one-spot photoinhibition; recovery after unilateral photoinhibition was less robust with larger photoinhibition (Extended Data Fig. 7e).",
+     "source": "Results, Preparatory activity after bilateral silencing, paragraph 2; Extended Data Figure 7d",
+     "quote": "Ipsilateral: 490\u00b1280 ms to recover to 80% of control selectivity; contralateral: 235\u00b1156 ms; bilateral: no recovery at end of delay period",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The analysis ran. The answers found neither the window label nor the other details in the paper, and the claims file now requires one outcome over K1, K2, D1 to D3, L1, L2 and E1, E2. Of the 24 combinations, 10 have readings that hold, all with centre labels (L1), and 14 have none, among them every combination with end labels (L2). With K1 and centre labels, ipsilateral four-spot recovery 650 to 700 ms (paper 490), contralateral 50 to 350 ms (paper 235), and a larger selectivity change at the go cue after bilateral one-spot (-0.38 to -0.49) than after ipsilateral four-spot photoinhibition (-0.10 to +0.14). With end labels the ipsilateral time is 750 ms or more; it is within tolerance (210 to 770 ms) in 8 of 16 readings with K1 and D2 or D3, but those combinations fail on the other parts. With per-bin preference (D3) bilateral selectivity reaches up to 0.87 of control before the go cue in half the readings. The search end does not change which combinations hold. The four-spot ipsilateral ROC is below the one-spot one under H1. 58 to 62 neurons are included, against 40. What the answers changed is the set of readings (D3 and E1 added); the outcome stays blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7e-roc-larger-photoinhibition",
+     "statement": "Trajectory separation along cd at the end of the delay was 0.80 in control, 0.64 after ipsilateral and 0.68 after contralateral four-spot photoinhibition, and 0.54 after bilateral one-spot photoinhibition.",
+     "source": "Extended Data Figure 7e",
+     "quote": "We quantified the separation between trajectories at the end of delay epoch by computing ROC values for each session: control, 0.80 \u00b1 0.08; ipsilateral, 0.64 \u00b1 0.10; contralateral, 0.68 \u00b1 0.15; bilateral, 0.54 \u00b1 0.8",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "Over 6 sessions of 3 mice, the ipsilateral (0.60 to 0.67) and contralateral (0.69 to 0.71) four-spot values are within tolerance, and the bilateral one-spot value (0.615 to 0.616) with lick-early trials dropped (K1; 0.646 to 0.665 kept, K2); the control value (0.680 to 0.689) is below 0.72 under every reading, so no reading has all four. Measured values are H1 with K1. What the answer changed (question 1) is that the outcome must hold under K1 and K2; it is partial under both, so the outcome is unchanged. The criterion defines no partial outcome; three of four values hold under K1 and two under K2, so it is partial by the rule stated in the notebook's summary.",
+     "deviations": [
+      "The bilateral s.e.m. printed as 0.8 is read as 0.08, as the claims file does."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cd-stable-over-epochs",
+     "statement": "The direction of the lick right minus lick left difference vector was stable over the sample and delay epochs (correlation 0.61 between late sample and late delay).",
+     "source": "Methods, Analysis of population dynamics in the activity space, paragraph 1; Extended Data Figure 9b",
+     "quote": "was stable (correlation of w t 's between late sample epoch vs. late delay epoch, 0.61 \u00b1 0.05; Extended Data Fig. 9b )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The analysis ran. The claims file says that w comes from correct control trials and that cd, built from w, uses a subset of them, but not which trials give the w whose correlation is reported. With all correct control trials the mean correlation of w between late sample and late delay is 0.563 (K1) and 0.588 (K2) over 24 sessions, within 0.56 to 0.66; with the training subset that builds cd it is 0.534 (H1) or 0.554 (H2) with K1 and 0.537 or 0.553 with K2, outside. The two readings give different outcomes, so the claim is blocked, and a question was asked. It was reproduced before the first verification round, on the first reading only; the verifier pointed out that this reading was the author's choice. Counting trials per trial type (T2, a variant) gives 0.559 and 0.580 with all trials. Sessions follow convention A's rule as written (T1, 24 sessions with 6 to 37 neurons, mean 17, against the paper's 16 with 6 to 20, mean 11).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cd-captures-selectivity",
+     "statement": "Projection on cd captured 65.6% of population selectivity and 36.4% of task-related activity variance over the sample and delay epochs; modes 1 to 5 together captured 98.5% of variance and 95.8% of selectivity.",
+     "source": "Methods, Analysis of population dynamics in the activity space, paragraphs 1 and 3; Extended Data Figure 8a",
+     "quote": "The projection along the cd captured 65.6\u00b15.1% of the population selectivity for \u201click left\u201d and \u201click right\u201d trials over the sample and delay epochs ... and 36.4\u00b16.3% of the total variance in ALM task-related activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The analysis ran. The answer (question 8, part 2) found no rule in the paper for which trials' average is decomposed, and the criterion now requires the outcome under v1 (training trials) and v2 (all correct control trials); they differ. Under v1, the reading run before the answer, cd captures 73.7% to 88.0% of the selectivity (T1), outside 65.6 +/- 5.1 under every reading, so not reproduced. Under v2, with H2, squared ratios and the pre-sample baseline, cd captures 66.2% of the selectivity and 34.6% of the variance (K1; 67.6% and 39.5% with K2), within tolerance, while modes 1 to 5 capture 88.6% to 96.1% of the selectivity and 91.5% to 97.6% of the variance, outside tolerance, so partially reproduced. The outcome is the same under K1 and K2 within each v reading. What the answer changed is the v2 reading, which moved the outcome from not_reproduced to blocked. The captured fractions are measured on trial averages that include the trials used to build cd and the modes (all of them under v1, part under v2), so they are in-sample; the claims file names no held-out reading, and none is run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-cd-recovery-roc",
+     "statement": "Along cd, trajectories recovered after ipsilateral photoinhibition (ROC 0.73 against 0.76 in control) and were little changed by contralateral photoinhibition (0.74), but were permanently altered by bilateral photoinhibition (0.58).",
+     "source": "Results, Robustness along the coding direction, paragraph 1; Figure 3c; Extended Data Figure 8",
+     "quote": "After ipsilateral photoinhibition the cd mode recovered to trajectories similar to the unperturbed trials ( Fig. 3c ; ROC values between trajectories at the end of delay epoch: control, 0.76 \u00b1 0.03; ipsilateral, 0.73 \u00b1 0.02; mean \u00b1 s.e.m. across sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The bilateral ROC is within tolerance (0.558 to 0.559), but control is 0.649 to 0.677 (paper 0.76 +/- 0.03), ipsilateral 0.631 to 0.652 and contralateral 0.672 to 0.704. The order holds; ipsilateral and contralateral are close to control and bilateral is lowest. Over 10 random splits the control mean is 0.641 to 0.686. Measured values are T1, H1, K1. What the answers changed (questions 1 and 5) is that the rule is followed as written (T1, 24 sessions with 6 to 37 neurons against the paper's 16 with 6 to 20) and the outcome must hold under K1 and K2; it is not reproduced under both, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8-roc-during-photoinhibition",
+     "statement": "During photoinhibition trajectory separation along cd fell to 0.54 (ipsilateral), 0.64 (contralateral) and 0.54 (bilateral), against 0.72 in control.",
+     "source": "Extended Data Figure 8 legend",
+     "quote": "ROC values during the time period of photoinhibition: control, 0.72 \u00b1 0.02; ipsilateral, 0.54 \u00b1 0.03; contralateral, 0.64 \u00b1 0.03; bilateral 0.54 \u00b1 0.01",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "During the light separation along cd falls below control in every condition under every reading; control 0.649 to 0.685, ipsilateral 0.49 to 0.58, contralateral 0.59 to 0.64, bilateral 0.48 to 0.55. Under reading (c), H1, K1 the three perturbed values are within tolerance (0.546, 0.626, 0.535), and under K2 at most two are (0.534 and 0.631, window a/b, H1); control is below 0.70 under every reading. Measured values are reading (a), T1, H1, K1. What the answers changed (questions 1 and 5) is that the outcome must hold under K1 and K2 with the rule as written (T1); it is partial under both, so the outcome is unchanged. The criterion defines no partial outcome; three of four values hold under K1 and two under K2, so it is partial by the rule stated in the notebook's summary.",
+     "deviations": [
+      "Readings (a) and (b) are the same window here (0.2 to 0.6 s after delay onset)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-cd-predicts-movement",
+     "statement": "Activity along cd predicts the upcoming movement trial by trial; deviations toward the lick right trajectory predict more lick right responses, and vice versa.",
+     "source": "Results, Robustness along the coding direction, paragraph 1; Figure 3c bottom; Extended Data Figures 8b and 9e",
+     "quote": "Deviations toward the \u201click right\u201d trajectory predicted more frequent \u201click right\u201d responses and vice versa",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The side of the boundary predicts the lick in 67% to 69% of held-out control trials (1890 to 2895) and 63% to 68% of ipsilateral trials (261 to 448), binomial p below 1e-6. Lick right performance rises with distance (Spearman rho +0.28 to +0.99) and lick left performance falls (rho -0.76 to -1.00), under every reading. What the answers changed (questions 1 and 5) is that the outcome must hold under K1 and K2 with the rule as written (T1); it does, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-persistent-mode",
+     "statement": "A persistent mode, built to capture the sustained effect of ipsilateral perturbation, stays altered past movement onset but neither discriminates trial type nor predicts behaviour on control trials.",
+     "source": "Results, Robustness along the coding direction, paragraph 1; Figure 3d",
+     "quote": "By construction, the persistent mode was altered by the perturbation, up to and beyond movement onset. However, this projection did not discriminate trial type nor predict behavior on control trials",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The persistent mode stays altered at the go cue after ipsilateral photoinhibition (difference 1.08 to 1.75, more than 2 s.e.m.), but it predicts the lick on control trials above chance (59% to 62%, binomial p below 1e-6) under every reading, and under two of four readings (T1) its ROC (0.408 and 0.430) is further than 2 s.e.m. from 0.5. What the answers changed (question 8, part 1, and questions 1 and 5) is the confirmation that projected ipsilateral trials are ones not used to build the mode, as was done, and that the outcome must hold under K1 and K2 with T1; it is not reproduced under both, so the outcome is unchanged. Per session the mean |ROC - 0.5| of the mode is 0.091 to 0.127 (cd 0.154 to 0.181 on the same sessions); the binomial test, which does not depend on the sign of the mode, decides the outcome.",
+     "deviations": [
+      "3 sessions with too few trials to build the mode under H2 are left out."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-ramping-mode",
+     "statement": "A ramping mode capturing most remaining variance shows non-selective ramping in the delay epoch, does not predict behaviour, and is resistant to unilateral and bilateral perturbation.",
+     "source": "Results, Robustness along the coding direction, paragraph 1; Figure 3e; Extended Data Figure 8c-e",
+     "quote": "Third, a mode that maximally captured the remaining activity variance, showed non-selective ramping during the delay epoch, did not predict behavior, and was resistant to unilateral and bilateral perturbations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The ramping mode is resistant to all three perturbations under T1 (differences at the go cue within 2 s.e.m. under every reading and either orientation; under the T2 variant with K1, H1 and g1 the ipsilateral difference, -0.353, is beyond its 2 s.e.m. of 0.294), but it predicts the lick in 55% to 58% of control trials, above chance (p below 1e-6), whatever its sign. Under g1 (positive weight sum) it does not rise over the delay (change -0.73 to +0.11, positive under one of four readings) and its ROC is near 0.5 under three of four; under g2 (each session oriented so the control projection rises) the change is 1.26 to 1.56 against 2 s.e.m. of 0.47 to 0.53, so it ramps, and its ROC is near 0.5 under all four. What the answer changed (question 8, part 3) is the g2 reading, under which the ramp holds; the claim fails under both g1 and g2 and under K1 and K2, so the outcome is unchanged. Per session the mean |ROC - 0.5| of the mode is 0.064 to 0.103 (cd 0.154 to 0.181); the session-mean ROC near 0.5 partly reflects signs that differ between sessions, and the binomial test, which does not depend on the sign, decides the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-bilateral-cd-predicts-movement",
+     "statement": "Even after bilateral photoinhibition destroys average selectivity, single-trial activity along cd predicts the upcoming movement.",
+     "source": "Results, Robustness along the coding direction, paragraph 2; Figure 4b; Extended Data Figures 6b and 9e",
+     "quote": "This analysis shows that even after average selectivity is destroyed by perturbations, ALM population dynamics still dictate upcoming movements",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "On bilateral trials the boundary predicts the lick in 59% to 64% of trials (777 to 1139), binomial p below 1e-6; lick right performance rises with distance (rho +0.84 to +1.00) and lick left performance falls (rho -0.93 to -1.00), under every reading. What the answers changed (questions 1 and 5) is that the outcome must hold under K1 and K2 with the rule as written (T1); it does, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6b-session-bias-predicted",
+     "statement": "In each session the behavioural bias after bilateral photoinhibition followed the side of the control trajectory that the perturbed cd trajectory ended closer to.",
+     "source": "Extended Data Figure 6b",
+     "quote": "The biases in movement were predicted based ALM activity trajectories",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The side of the boundary where bilateral trials end agrees in sign with the behavioural bias in 13 to 15 of 24 sessions with the rule as written (T1; one-sided binomial p 0.15 to 0.42), and in 11 to 13 of 19 to 23 with T2, not above chance under any reading. The legend's five example sessions are not identified. What the answers changed (questions 1 and 5) is that the outcome must hold under K1 and K2 with T1; it is not reproduced under both, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9f-reaction-time",
+     "statement": "Reaction times were faster on trials whose cd trajectory was far from the decision boundary at the go cue.",
+     "source": "Extended Data Figure 9f",
+     "quote": "Reaction times are faster on trials in which the trajectory is far from the decision boundary at the time of the \u2018go\u2019 cue",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "The analysis ran. The answer (question 9) found no lick rule in the paper and asked for the outcome over a range of thresholds, so the first lick was read from lick_trace under ten rules (raw level 0.10, 0.12, 0.14; baseline plus 0.01, 0.02, 0.05; baseline plus 3, 5, 10, 20 s.d.). In the 24 experiment-2 sessions of convention A the trace holds no licks; on correct trials its maximum after the go cue is a median 0.0019 above the pre-go baseline, and pooled over 3660 correct and 61 no-response trials no rule detects a lick on correct trials more often than on no-response trials (3 s.d. 0.59 against 0.38; level 0.14 0.05 against 0.03, in one session, 28 ms after the go cue; all others 0.02 or less). In reference sessions of experiment 3 and of the mice without a photostimulus record the same rules detect licks on 73% to 100% of correct trials. The Spearman test holds under 3 of 20 combinations of threshold and lick-early reading, on 3 to 10 trials, so by the criterion's rule the outcome would also be methods_underspecified. What the answer changed is that the claim was run; the block moved from methods_underspecified to data_missing, as the lick times are not in the dandiset for these sessions. After the first verification round raw levels 0.16, 0.20 and 0.25 were added (the levels 0.10 to 0.14 lie below the 0.166 to 0.193 baseline of these sessions); the test then holds under 5 of 26 combinations, on 3 to 10 trials. Per session the median rise after the go cue on correct trials is 0.0013 to 0.0022, as on no-response trials (0.0013 to 0.0021), and example traces are shown. In experiment 3, whose trace carries licks (median rise 0.0385 to 0.0717 on correct trials), the same test on its 6 sessions, a variant on another experiment, holds under 18 of 26 combinations, failing for the levels near or above the trace and a rise of 0.05; it does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9c-cd-window-robust",
+     "statement": "The recovery along cd after unilateral perturbation does not depend on the window used to compute cd (first or last 400 ms of the delay epoch).",
+     "source": "Extended Data Figure 9c",
+     "quote": "The recovery of ALM dynamics along the coding direction ( cd ) is robust to the choice of time window for the calculation of cd",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "With cd from the first or the last 400 ms of the delay, the ipsilateral ROC is within 0.05 of control and the bilateral ROC is lowest under H1 and H2 with lick-early trials dropped (K1), and under H2 with them kept (K2; under H1 the first-window ipsilateral ROC is 0.059 to 0.072 below control). What the answers changed (questions 1 and 5) is that the outcome must hold under K1 and K2 with the rule as written (T1); it does, under H1 or H2 for each, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-callosotomy-control-performance",
+     "statement": "Bisecting the ALM corpus callosum did not affect performance on control trials.",
+     "source": "Results, Contralateral input is required for recovery, paragraph 1; Figure 5b; Extended Data Figure 10b",
+     "quote": "Remarkably, behavioral performance was unaffected ( Fig. 5b , control trials, before vs. after callosotomy, p>0.05, two-tailed t-test)",
+     "statistics": [
+      {
+       "test": "two-tailed t-test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "There are no sessions before the callosotomy, and no file marks any mouse as callosotomised; the 7 mice are identified as the callosotomy group only by their genotypes, delay and the absence of a photostimulus record. Control trials of their sessions cannot be identified either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-callosotomy-unilateral-sensitivity",
+     "statement": "After callosotomy, performance became highly sensitive to unilateral (one spot) photoinhibition, with a significant interaction between callosotomy and photoinhibition, and dropped to the level of bilateral photoinhibition in control mice.",
+     "source": "Results, Contralateral input is required for recovery, paragraph 1; Figure 5b",
+     "quote": "However, behavioral performance was now highly sensitive to transient unilateral photoinhibition ( Fig 2b , 1 laser spot: p=0.0019, two-tailed t-test against control). There was a significant interaction between callosotomy and unilateral photoinhibition (p=0.0035, repeated measure two-way ANOVA)",
+     "statistics": [
+      {
+       "about": "unilateral one spot against control, after callosotomy",
+       "test": "two-tailed t-test",
+       "p": 0.0019,
+       "n": "7 mice"
+      },
+      {
+       "about": "interaction of callosotomy and unilateral photoinhibition",
+       "test": "repeated measure two-way ANOVA",
+       "p": 0.0035,
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The 33 sessions of the 7 mice contain silenced trials (in 23 of 35 unlabelled sessions the fraction of trials with population rate below 30% of median in the light window exceeds the one 1.5 s later by 0.1 or more) but no photostimulus record, so photoinhibition and control trials cannot be told apart.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10-callosotomy-preparatory-activity",
+     "statement": "Preparatory activity after callosotomy was similar to control; 254 of 496 putative pyramidal neurons were selective.",
+     "source": "Results, Contralateral input is required for recovery, paragraph 2; Extended Data Figure 10e-g",
+     "quote": "Preparatory activity in callosotomized mice (n=7 mice) was similar to control mice ( Fig. 5c ; Extended Data Fig. 10 ), providing additional evidence that the two ALM hemispheres can maintain preparatory activity independently",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Control trials cannot be identified (as fig5b-callosotomy-unilateral-sensitivity). The sessions hold 519 putative pyramidal units by width (paper 496, within tolerance, if these are the callosotomy mice, which no file says), 15 fast-spiking and 30 intermediate. Counted on all trials, photoinhibition trials included, 331 to 340 are selective with correct trials (paper 254 on control trials) and 81 to 84 in the sample epoch; this is not the claim's measure.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-callosotomy-no-recovery",
+     "statement": "After callosotomy, ipsilateral photoinhibition left spike rates recovered on average but selectivity failed to recover; contralateral photoinhibition selectivity recovered in 217 ms; bilateral did not recover.",
+     "source": "Results, Contralateral input is required for recovery, paragraph 2; Figure 5d, e legend",
+     "quote": "After ipsilateral photoinhibition, ALM neurons recovered their average spike rate ( Fig. 5c, d ), but selectivity failed to recover ( Fig. 5e )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The photoinhibition conditions (ipsilateral, contralateral, bilateral) of the callosotomy sessions are not recorded in any file.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-callosotomy-cd-reduced",
+     "statement": "After callosotomy, selectivity along cd was reduced following ipsilateral photoinhibition.",
+     "source": "Results, Contralateral input is required for recovery, paragraph 2; Figure 5f",
+     "quote": "Selectivity in the cd direction was reduced ( Fig. 5f , 16 sessions)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "As fig5-callosotomy-no-recovery; the ipsilateral trials of the callosotomy sessions cannot be identified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1-monolithic-models-fail",
+     "statement": "Monolithic network models (integrator, integrator with corrective feedback, trained random recurrent networks) do not recover the unperturbed trajectory after transient silencing of half their neurons.",
+     "source": "Results, Robust model networks, paragraph 1; Extended Data Figure 1f-i",
+     "quote": "Overall, all \u201cmonolithic\u201d models consisting of one network were unable to explain robustness",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "Each of 10 simple integrators (persistent input) ends 20% to 22% of its selectivity away from its unperturbed output at 2 s after half of its units are silenced, and each of 10 FORCE networks trained to ramp after a transient input ends 13% to 76% away (median 41%); all exceed the 10% bound. Transient-input and cascaded integrators end about 50% away. The corrective-feedback and tamed-chaos models lack parameters in the text and were not built.",
+     "deviations": [
+      "FORCE target (a ramp to plus or minus 1 at 2 s), feedback weights, learning rate and update every 2 ms are standard choices the paper does not give."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-modular-models-recover",
+     "statement": "Modular networks of two coupled modules (attractor, integrator, trained recurrent network) recover after silencing of one module; the modular attractor drifts to a random fixed point when both modules are silenced.",
+     "source": "Results, Robust model networks, paragraph 2; Figure 6b-d",
+     "quote": "Selective commissural connections restored activity on the other side after unilateral transient silencing ( Fig. 6b ). When the two sides are silenced, the network drifts to one of the fixed points randomly",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_li_2016.ipynb",
+     "notes": "With noise drawn once per step (n2) the modular attractor ends at the instructed fixed point in 100% of trials after unilateral silencing and in 48% (1 ms step, h1) or 50% (0.1 ms, h2) after bilateral silencing; with Euler-Maruyama noise of intensity 0.01 (n1) it does so in 41.5% to 51% of trials whatever the silencing (51% and 48.5% unperturbed), so the unilateral part fails. The modular integrator built from the printed matrix restores lick right trials (0.2% from unperturbed at 2 s with h1, 5.4% with h2) but not lick left ones (50% away), as its recovery unit passes only right-preferring activity. What the answer changed (question 10) is that n1, n2, h1 and h2 are named and the outcome must hold under all four; h2 was added, and all four give partial, so the outcome is unchanged. The criterion defines no partial outcome; two (n1) or three (n2) of four parts hold, so it is partial by the rule stated in the notebook's summary.",
+     "deviations": [
+      "The trained modular FORCE network is not specified enough to rebuild and was not built."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds only the recording sessions. The behavioural photoinhibition sessions (Figs 1d, 2b, 5b and Extended Data Fig. 3), the photoactivation mice (Extended Data Fig. 5), the untrained mice used to map photoinhibition (Extended Data Fig. 2d) and any session before callosotomy are not in it. Nine of the paper's findings cannot be tested for this reason.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "33 sessions of 7 mice (the callosotomy group by genotype and delay) and 3 experiment-1 sessions of mouse 255200 have no photostimulus record (no laser traces, no photostimulus events, no trial column), though most of them contain trials whose activity is silenced in the light window of the other sessions. Their photoinhibition trials cannot be identified.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No file says which mice were callosotomised, on which side, or when; the subject description holds only the JAX strain numbers.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trial table has no photostimulus column. The condition of a trial (site, number of laser spots, timing) can be recovered only from the per-site laser power traces (one 5 s chunk per photostimulus trial, matched to trials by time) and the photostim_start_time events, whose value is the peak power. The number of spots is not stated anywhere and is inferred from the waveform and power.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In lick-early trials the photostim_start_time and photostim_stop_time events are logged at the restarted delay, after the light seen in the laser trace (20 of 41 lick-early photostimulus trials in two sessions read in full); in other trials they agree within 5 ms. Over all labelled sessions, 339 lick-early photostimulus trials have the event more than 0.1 s after the light, with the light up to 10 s before the logged go cue.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Session 258250_20141202 holds two interleaved sequences of trial ids (1 to 24 and 105 to 160) whose times overlap (98 overlapping pairs), so its events cannot be assigned to trials. In 28 units of 3 sessions the spike times are not in time order, and two sessions have trials out of time order.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The control mice hold 979 units against the paper's 1012; 15 have intermediate spike widths against 50, so about 33 intermediate units were not deposited.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The units' cell_type labels intermediate-width units (0.35 to 0.45 ms trough to peak) as FS, where the Methods exclude them (45 units in all).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The asset sub-255200_ses-20140910_behavior.nwb holds only metadata (no trials, events or time series).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The paper's neuron and session counts for its selectivity and population analyses (55, 143 and 40 selective neurons; 16 sessions with 6 to 20 neurons) cannot be reached with the criteria the paper states; the dataset gives 138 to 173, 221 to 293, 58 to 62 and 24 sessions with 6 to 37 neurons. Experiment 1 holds 4 mice where the paper reports 6.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "No file holds lick times; licks exist only as the analogue lick_trace (5 s chunks at 10 kHz, unit a.u.). In the 24 experiment-2 sessions used for the activity space the trace stays within about 0.002 of its baseline after the go cue on correct trials, and lick-detection rules fire no more often on correct than on no-response trials, so it holds no licks; an experiment-1 session read for reference is flat as well, while an experiment-3 session and a session of the mice without a photostimulus record carry licks. Reaction times cannot be computed for these sessions.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-21",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the author-answers run (commit 2eecc413), the executed notebook with the conclusions and summary removed, the helper module and the claims file. The verifier also checked the archive for the blocked claims (92 assets, 19 subjects) and read the paper.",
+     "agreed": 34,
+     "of": 38,
+     "disagreements": [
+      {
+       "claim": "selective-fraction",
+       "outcome": "not_reproduced",
+       "reason": "None of the 16 reading combinations has all four counts within tolerance, with lick-early trials dropped (K1) or kept (K2); the sample-epoch count is 132 to 156 against a floor of 158.4, which is borderline. The 44 putative pyramidal units of the three unlabelled experiment-1 sessions are dropped, so 846 units are tested, not 890; the variant that includes them reproduces under K1 (sample 162 to 165) and misses under K2 by about 1.5 units (157), which would make the outcome methods_underspecified."
+      },
+      {
+       "claim": "ed2b-silencing-strength",
+       "outcome": "not_reproduced",
+       "reason": "The VGAT ipsilateral normalised rate is 0.177 to 0.356 (needs < 0.1) under every reading. PV (0.035 to 0.052), bilateral and contralateral pass under K1. The 299 neurons match the legend's 300. Under K2 the photostimulus event is logged after the light in early-lick trials, which dilutes the effects (0.14 to 0.36). The \"at least 2 trials\" rule is an author choice; the outcome holds across it."
+      },
+      {
+       "claim": "ed7e-roc-larger-photoinhibition",
+       "outcome": "not_reproduced",
+       "reason": "The control ROC is 0.680 to 0.689, below the floor of 0.72."
+      },
+      {
+       "claim": "ed8-roc-during-photoinhibition",
+       "outcome": "not_reproduced",
+       "reason": "Control is 0.649 to 0.685 against 0.72 +/- 0.02 in every reading."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-21",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the author-revise-1 run (commit 5ca354b6), with the conclusions and summary, the helper module, the attempt record and the claims file. The verifier relied, as in round 1, on the clock checks (cells 19 and 20) for how events and photostimulus records are assigned to trials. It also noted that cell 14 says the event is logged up to about 2 s after the light, while cell 13 prints a maximum of 1587 ms; cell 14 now says about 1.6 s (1587 ms).",
+     "agreed": 38,
+     "of": 38,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000011-li-2016",
+   "type": "reproduction",
+   "title": "Robust preparatory activity in mouse premotor cortex (Li, Daie et al. 2016)",
+   "description": "Tests the findings of Li, Daie, Svoboda and Druckmann (2016) on dandiset 000011, which holds extracellular recordings from left ALM of 12 control mice during unilateral and bilateral photoinhibition (58 sessions) and 33 sessions of 7 further mice with no photostimulus record. It reads the photostimulus conditions from the laser traces, and tests unit classification, selectivity, recovery of spike rates and selectivity after photoinhibition, the coding direction analyses and the network models of the paper. The behavioural photoinhibition sessions, the photoactivation and untrained mice, and the callosotomy conditions are not in the dandiset.",
+   "datasets": [
+    "dandi:000011"
+   ],
+   "papers": [
+    "10.1038/nature17643"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_li_2016.ipynb",
+     "title": "Reproducing Li, Daie et al. (2016) from dandiset 000011",
+     "executed": "notebooks/000011-li-2016/reproduce_li_2016.html"
+    }
+   ]
+  }
+ ]
+}

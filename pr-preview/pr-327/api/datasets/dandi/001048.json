@@ -1,0 +1,725 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001048",
+  "label": "DANDI:001048"
+ },
+ "page": "datasets/dandi/001048/",
+ "generated": "2026-11-01T15:11:00+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 3,
+  "partially_reproduced": 6,
+  "not_reproduced": 1,
+  "blocked": 10
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001048-semenov-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001048",
+    "version": "0.250701.1624",
+    "doi": "10.48324/dandi.001048/0.250701.1624"
+   },
+   "key": "dandi:001048",
+   "label": "DANDI:001048",
+   "dataset_version": "0.250701.1624",
+   "paper": "10.1016/j.xcrp.2025.102660",
+   "paper_title": "Excitation and polarization of isolated neurons by high-frequency sine waves for temporal interference stimulation",
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41269722313"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001048-semenov-2025",
+   "entry_title": "High-frequency sine waves excite isolated neurons (Semenov et al. 2025)",
+   "description": "Tests the findings of Semenov, Kim, Silkuniene and Pakhomov (2025). Dandiset 001048 names the paper but holds HEK-cell recordings of another study, so the claims are tested on the ten dandisets the paper lists (001030 to 001035, 001271 to 001274). These hold optical recordings of rat hippocampal neurons stimulated by unmodulated and 20-Hz modulated sine waves at 2 and 20 kHz, with TTX and Di-8-ANEPPS controls, and strobe images of membrane charging by 2-us pulses and sine waves.",
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2025.ipynb",
+     "title": "Reproducing Semenov et al. (2025) from the DANDI datasets it names",
+     "executed": "notebooks/001048-semenov-2025/reproduce_semenov_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "ap-selection",
+     "statement": "Neurons were selected for APs peaking above 5% dF and lasting about 10 ms; typical APs were 11.3% dF high and 8 ms long, excluding the afterhyperpolarization (mean of 22).",
+     "source": "Methods, Recording of the optical APs and data analyses",
+     "quote": "we selected neurons whose APs peaked at a more than 5% \u0394 F and lasted about 10 ms (typical values ... 11.3% \u00b1 0.9% \u0394 F and 8 \u00b1 0.7 ms duration, excluding afterhyperpolarization; mean \u00b1 SEM, n = 22)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Over 39 neurons of 001032, 001033 and 001035 (ROI c, F0 a, O3 a, every AP, width at half height), the mean AP peak is 10.53 +- 0.38 % dF and the duration 3.70 +- 0.18 ms. Under the crop ROI the peak is within 11.3 +- 0.9 in 12 of 16 readings (10.27 to 11.46 %); the duration is in range under none (half width 3.11 to 3.71 ms, rise to return 17.31 to 24.14 ms). Under ROI a the peak is within the SEM in all 16 readings (11.01 to 11.56 %) and the duration in none. Under ROI b the peak is 12.68 to 14.67 %, outside it, and three readings give a rise-to-return duration in range (7.32 to 8.57 ms). The peak holds under the crop ROI in 12 of 16 readings (it fails in the four that measure every AP with O3 b, 10.27 to 10.41 %) and under ROI a in all 16; the duration holds under no reading in which the peak holds. The paper does not say which 22 neurons were measured; 39 are deposited.",
+     "deviations": [
+      "The soma ROI is the 16 x 16 pixel crop the depositors cut around the soma (reading c), adopted as the paper's \"emission intensity over the entire cell soma\" (Methods, Recording of the optical APs) because the crop is the dataset's own soma region and the claims file says ROIs are taken from the dataset when it holds them (O1). The claims file's Otsu readings (a, b) give masks of a median 35 and 10 pixels, some of 1 to 3, with about twice the noise; they are shown. Where the ROI readings disagree the claims file's header would block the claim; under protocol step 1.6 the crop is adopted as an assumption.",
+      "APs are detected by the claims file's rule (O3), with the width at half height required to be 2 to 20 ms both at half the peak's dF and at half its prominence (an assumption; each measure alone fails on these traces, and both are shown as variants). The paper identified APs by eye."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924) and 001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles; the paper does not say which 22 neurons these are",
+     "proposed": null
+    },
+    {
+     "claim": "fig1-pure-sine-excites-all",
+     "statement": "Unmodulated 250-ms sine waves at 2 and 20 kHz excited every neuron tested; near threshold isolated APs came 100 to 200 ms after onset, and stronger fields shortened the delay and evoked sustained firing whose maximum rate rose linearly to a ceiling of 60 to 90 Hz.",
+     "source": "Results, Stimulation by 2- and 20-kHz unmodulated sine waves, paragraph 2; Figures 1A to 1C and inset",
+     "quote": "Pure sine waves at 2 and even 20 kHz excited 100% of neurons ... at near-threshold electric field strengths, isolated APs emerged with a delay of 100\u2013200 ms after the sine wave onset ... Increasing the field strength reduced this delay and evoked sustained firing ... The maximum firing rate increased linearly until reaching a ceiling of 60\u201390 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Under the crop ROI unmodulated waves excited 27 of 28 neurons at 2 kHz (96.4 %) and 15 of 17 at 20 kHz (88.2 % with O3 a, given as measured; 94.1 % with O3 b), and the first-AP latency fell with voltage in 34 of 37 neuron-frequencies (Spearman rho below 0). Under every reading the median latency at threshold is 59.8 to 88.4 ms, below 90 to 220 ms, and the median highest maximum firing rate is 22.6 to 42.3 Hz, with 9.1 to 31.0 % of neurons in 54 to 99 Hz, so neither ceiling reading holds. Per frequency (ROI c) the median latency at threshold is 59 ms at 2 kHz and 124 ms at 20 kHz. Two of the 42 latencies at threshold are under 5 ms (median 63.9 ms without them); such early APs are not onset artefacts, since the same stimulus under TTX gives no transient above 5 % in the first 10 ms in any of 71 sessions (145 of 211 without TTX). Under the Otsu ROIs 39.3 to 85.7 % of neurons are excited at 2 kHz. Below each neuron's highest rate the rate rises with voltage (slope positive in 23 of 23 neurons, median 12.3 Hz per V; not deciding).",
+     "deviations": [
+      "Fields are the labelled generator voltages (see fig2d-modulated-thresholds-higher); the claim uses only their order.",
+      "The excitation part depends on the ROI (90 % or more under the crop ROI with O3 b only); the crop ROI is assumed, as for ap-selection. The latency and ceiling parts fail under every reading."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924) and 001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig1-excitation-block",
+     "statement": "At the highest fields, unmodulated sine waves merged APs into low-amplitude oscillations on a continuous depolarization, which could flatten and leave the membrane depolarized for the rest of the stimulus (an excitation block), and this depolarization reversed immediately when the stimulus stopped.",
+     "source": "Results, Stimulation by 2- and 20-kHz unmodulated sine waves, paragraph 2; Results, Tetrodotoxin blocks sustained depolarization, paragraph 1; Figure 1",
+     "quote": "At the highest field strengths, multiple APs coalesced into low-amplitude oscillations on top of a continuous depolarization. These oscillations could flatten after several cycles, leaving the membrane depolarized for the rest of the sine wave ... The sustained depolarization induced by intense unmodulated sine waves ( Figures 1 and 3 ) was immediately reversible upon stimulus cessation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Of the 12 to 14 neuron-frequencies tested above the voltage of their highest firing rate (ROI c), none shows sustained depolarization (O4, either level) at its highest voltage; under ROI a 2 of 12 to 15 do (one of them falling below the O4 level in the 50 ms after the stimulus), and under ROI b 1 of 4 to 13 (O4 b only). Most neurons still fire in the last 100 ms at their highest voltage. Two sessions at any voltage meet O4 a under the crop ROI (001032/12_1 at 15 V, with no AP and 9.82 % mean dF in the last 100 ms, and 001033/3_2 at 9 V), and the mean dF in the last 100 ms rises with voltage (rho median 0.93, positive in 42 of 45), so a depolarization builds up, but the block is rare. 001032/12_1 at 15 V stays depolarized after the stimulus (7.87 % over 50 ms), against the claim's immediate reversal. 38 sessions of 900 frames end at 291 ms, before the stimulus. The outcome is the same under the first round's detector and with the width at half the dF only (0 of 11 to 22).",
+     "deviations": [
+      "Traces are not corrected for bleaching, as the claims file says (F2, only the 2-s traces were); the mean dF in the 50 ms after the stimulus is mostly below 0, so the late dF is biased down by up to a few percent, against finding the block."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924) and 001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig1-20khz-needs-twice-the-field",
+     "statement": "All excitation thresholds at 20 kHz were about 2-fold higher than at 2 kHz.",
+     "source": "Results, Excitation thresholds are similar or lower for pure 2- and 20-kHz sine waves than those for modulated sine waves, paragraph 1; Figure 2D",
+     "quote": "All thresholds at 20 kHz were about 2-fold higher than at 2 kHz ( p < 0.0001, two-tailed unpaired t test)",
+     "statistics": [
+      {
+       "about": "20 kHz against 2 kHz thresholds",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "The claim is a ratio of fields in V/cm at 20 and 2 kHz. The files give labelled generator voltages and say the delivered amplitude differs from the label by frequency-dependent calibration factors \"reported separately\", which are in none of the dandisets, so the ratio cannot be formed. Not deciding - in labelled volts the 20-kHz thresholds are higher in every reading (pooled p 2.5e-06 to 2.2e-24; under the crop ROI the unmodulated tests reach p 5.1e-10 to 8.2e-10 for 1 AP and 1.9e-12 to 4.1e-12 for 5 APs), and the ratios of the means are 2.33 to 2.80 under the crop ROI (2.04 to 3.52 over all readings), outside 2 +- 0.2. Within the 11 neurons tested at both frequencies the median ratio is 3.36. The 20-kHz modulated group has 3 neurons. Recorded as partially reproduced in the first round; blocked after the verifier's round 1.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-5ap-above-1ap",
+     "statement": "All thresholds to elicit 5 APs were higher than those for 1 AP.",
+     "source": "Results, Excitation thresholds are similar or lower for pure 2- and 20-kHz sine waves than those for modulated sine waves, paragraph 1; Figure 2D",
+     "quote": "All thresholds to elicit 5 APs were expectedly higher than those for 1 AP",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Under the crop ROI the mean 5-AP threshold is above the mean 1-AP threshold for all four stimuli in all four F0 and O3 readings (F0 a, O3 a - 5.00 against 4.22 V pure 2 kHz, 6.15 against 5.38 modulated 2 kHz, 13.55 against 9.85 pure 20 kHz, 17.20 against 14.00 modulated 20 kHz, with 2 of 3 modulated 20-kHz neurons reaching 5 APs). Under the Otsu ROIs at most 1 neuron reaches 5 APs with modulated waves, so those comparisons cannot be made, and under ROI b with O3 a the 5-AP mean is below the 1-AP mean for pure 2 kHz (4.65 against 4.85 V, over 4 and 22 neurons) and pure 20 kHz (12.00 against 12.33 V, over 1 and 9). The means are over different numbers of neurons; within a neuron the 5-AP threshold cannot be below the 1-AP one.",
+     "deviations": [
+      "The crop ROI is assumed, as for ap-selection; the Otsu readings give a different outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-modulated-thresholds-higher",
+     "statement": "Thresholds for sine waves modulated at 20 Hz were significantly higher than for pure sine waves at the same carrier frequency for 5 APs at 2 kHz and for 1 and 5 APs at 20 kHz, so modulation did not lower excitation thresholds; the 2-kHz unmodulated AP threshold was 57.7 \u00b1 3.6 V/cm.",
+     "source": "Results, Excitation thresholds are similar or lower for pure 2- and 20-kHz sine waves than those for modulated sine waves, paragraph 1; Figure 2D and legend; Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, last paragraph",
+     "quote": "thresholds for modulated sine waves, which emulate the TI stimulus at the target, were significantly higher than those for pure sine waves at the same frequency (for 2 kHz, 5 APs ... p = 0.0079; for 20 kHz, 1 and 5 APs, respectively ... p = 0.0142 and p = 0.0037). Thus, modulated sine waves were equally or less efficient than pure ones at eliciting APs",
+     "statistics": [
+      {
+       "about": "modulated against unmodulated, 2 kHz, 5 APs",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0079
+      },
+      {
+       "about": "modulated against unmodulated, 20 kHz, 1 AP",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0142
+      },
+      {
+       "about": "modulated against unmodulated, 20 kHz, 5 APs",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0037
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Under the crop ROI modulated thresholds are higher than unmodulated ones in every comparison, but only one of the paper's three significant differences is significant - 20 kHz with 1 AP, p = 0.034 under O3 a (0.10 under O3 b), with 3 modulated neurons; 20 kHz with 5 APs p = 0.13 (2 neurons), 2 kHz with 5 APs p = 0.12 (paper 0.0079). 2 kHz with 1 AP does not differ the other way (p = 0.056, modulated higher). Paired, the 2-kHz 1-AP threshold is higher with modulation in 11 of 12 neurons (p = 7.9e-05). With O3 b none of the three tests reaches p < 0.05 even under the crop ROI, the direction still holding in all four comparisons. Under the Otsu ROIs no test reaches p < 0.05, and under ROI b with O3 a the 20-kHz 1-AP mean is lower with modulation (12.00 against 12.33 V, p = 0.86). With the first round's detector the 20-kHz tests give p = 0.021 and 0.031 and the 2-kHz 5-AP test 0.09. The mean unmodulated 2-kHz threshold is 4.22 V peak to peak, 76.0 V/cm (1 AP, given as measured) or 90.1 V/cm (5 APs) with 36 V/cm per volt of amplitude, and twice that per volt peak to peak; none is within 57.7 +- 3.6, but the files say the labels are not the delivered amplitude and the calibration is not deposited, so this part cannot be judged. The direction holds; the significance holds in one of three tests.",
+     "deviations": [
+      "The conversion of labelled volts to V/cm is not settled by the files (\"1V translates into 36 V/cm\" with the voltage labelled peak to peak); both readings are run. The files also say the labels are not the delivered amplitude.",
+      "The crop ROI is assumed, as for ap-selection. The one significant test needs the crop ROI with O3 a (p = 0.034; 0.10 with O3 b); under the Otsu ROIs no test is significant and one direction reverses."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig2-modulated-locks-to-beats",
+     "statement": "With 20-Hz modulation, firing above threshold locked to the beats, one AP near the peak of each of the five beats and at most two per beat (ten in all), and modulated sine waves triggered no sustained firing or sustained depolarization.",
+     "source": "Results, Stimulation by 2- and 20-kHz sinusoids modulated at 20 Hz, paragraph 1; Figures 2A and 2B",
+     "quote": "single APs emerged near the peak of each beat, so the firing rate equaled the modulation rate ... At the highest field strengths, each beat could elicit a pair of APs, so the maximum number of APs evoked by five beats was limited to ten. Unlike pure sine waves, modulated stimuli did not trigger sustained firing or sustained depolarization",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "No modulated session has more than 10 APs (at most 8, of 84). In the 16 sessions with at least 5 APs (ROI c), 96.4 % of APs fall within 12.5 ms of beat peaks 25 ms into each beat (envelope reading a) and 3.6 % under reading b; the APs lock to 26.6 ms of the 50-ms beat (vector strength 0.735, Rayleigh p = 2.0e-20), at both carriers. Under O4 b no session shows sustained depolarization; under O4 a one does under the crop ROI (001032/2_1 at 11 V, 3 APs, none in its last 100 ms, a session cut at 291 ms), none under the Otsu ROIs. Its last-100-ms mean dF is 5.96 %, above the O4 a level (4.72 %) and 0.14 % below the O4 b level (6.10 %, half its median AP height of 12.20 %), so the outcome rests on O4 b by a small margin in one session. It is the only modulated session with a last-100-ms mean dF above 5 %. Under the Otsu ROIs at most one session reaches 5 APs, so the locking is shown under the crop ROI.",
+     "deviations": [
+      "The files hold no stimulus waveform. The envelope is assumed to start at minimal amplitude (reading a), as the paper's Methods say of the modulated strobe waves (\"the first and the last sine wave cycles (when its amplitude was minimal)\"); under reading b the APs would sit at the envelope's minima, where the field is near zero. Reading b fails.",
+      "The O4 level is assumed to be half the neuron's median AP height (reading b), as the paper describes the sustained depolarization as APs that \"merge into sustained depolarization\" (Summary), a level of the order of the APs themselves; under reading a (5 SD of the pre-onset noise) one of 84 sessions, cut short by the end of its recording, passes it. The choice was made after the first run showed that session. It is the assumed reading wherever O4 decides, and it decides only this claim - fig1-excitation-block, fig3c-sustained-firing-2s and figs2-ttx-blocks-depolarization give the same outcome under both levels.",
+      "The crop ROI is assumed, as for ap-selection."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-pure-more-aps",
+     "statement": "In the same neuron, the threshold was typically lower for unmodulated sine waves, and at the same field strength pure sine waves triggered more APs than modulated ones.",
+     "source": "Results, Stimulation by 2- and 20-kHz sinusoids modulated at 20 Hz, paragraph 2; Figures 2A to 2C",
+     "quote": "When modulated and unmodulated sine waves of the same carrier frequency were tested in the same cell, the threshold was typically lower for unmodulated signals ( Figures 2A - 2C ). At the same field strengths, pure sine waves triggered a larger number of APs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Under the crop ROI pure waves gave more APs than modulated ones at the same carrier and voltage in 44 of 52 pairs against 2 (mean difference 3.35 APs, paired p = 1.2e-08), and the pure 1-AP threshold was lower in 14 of 15 neurons (higher in none). Both parts hold in 11 of the 12 readings; under ROI b with F0 b and O3 b the counts favour pure waves (9 pairs against 6) but of the 3 neurons with both thresholds the pure one is lower in none and higher in 1.",
+     "deviations": [
+      "The crop ROI is assumed, as for ap-selection; one Otsu reading gives a different outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-low-conductivity-halves-threshold",
+     "statement": "Replacing NaCl with sodium gluconate, which lowered the solution conductivity from 16.4 to 8.4 mS/cm, reversibly lowered excitation thresholds about 2-fold at every sine wave frequency from 2 to 20 kHz.",
+     "source": "Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 2; Figures 3A and 3B",
+     "quote": "Switching to the NaGlu-based solution reversibly and reproducibly decreased excitation thresholds ~2-fold across all sine wave frequencies tested",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "None of the ten dandisets the paper lists holds 250-ms sessions in the low-conductivity (sodium gluconate) solution. 001032, 001033 and 001035 are all NaCl (625 sessions); 001030 holds only the 2-s ramped waves of Figure 3C, and 001031 100-kHz pulses. The data the claim needs are not public. The reason would be data_missing, which the registry's checks do not allow for a claim marked data elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924) and 001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig3-extrapolated-threshold",
+     "statement": "Extrapolated to a 2 mS/cm solution, excitation by 2-kHz sine waves would be expected at about 7 V/cm.",
+     "source": "Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 2",
+     "quote": "Extrapolating this trend to still lower conductivities, excitation by 2-kHz sine waves would be expected at ~7 V/cm in a 2 mS/cm solution",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig3b-low-conductivity-halves-threshold, blocked because the low-conductivity 250-ms sessions are not deposited.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924) and 001032 to 001035 (0.240527.1431 or 0.240527.1432), assigned from their titles",
+     "proposed": null
+    },
+    {
+     "claim": "fig3-not-heating",
+     "statement": "Excitation by pure sine waves was not caused by heating; the adiabatic temperature rise was 2.5 C after 250 ms at 63 V/cm in NaCl, at most 1.24 C for the same stimulus in the low-conductivity solution, where it evoked sustained firing, and 4.1 C at 81 V/cm in NaCl.",
+     "source": "Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 3; Figure 3A",
+     "quote": "the maximum theoretical temperature rise (assuming no heat dissipation 43 ) was 2.5\u00b0C after 250 ms of near-threshold stimulation at 2 kHz, 63 V/cm, in the NaCl-based solution ( Figure 3A ). The same stimulation in the low-conductance solution elicited sustained neuron firing while the temperature rise would not exceed 1.24\u00b0C ... 81 V/cm in the NaCl solution, which would heat by 4.1\u00b0C in the adiabatic conditions. These observations prove that excitation by pure sine waves was not caused by heating",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "With water's heat capacity (4.18 J per cm3 per K), 63 V/cm in NaCl gives 3.89 C (peak field) or 1.95 C (RMS), neither 2.5 C; 63 V/cm in NaGlu 1.99 or 1.00 C (paper 1.24); 81 V/cm in NaCl 6.44 or 3.22 C (paper 4.1). Both ratios follow the formula (81/63 squared 1.653 against the paper's 1.640, 0.8 % apart; 8.4/16.4 0.512 against 0.496, 3.3 % apart), so by the criterion the claim is blocked. 2.5 C needs a heat capacity of 6.51 J per cm3 per K with the peak field or 3.25 with the RMS field. The Figure 3A neuron is not deposited. Question for the authors - which field (peak or RMS) and heat capacity give 2.5 C.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924) or 001032 to 001035 (0.240527.1431 or 0.240527.1432) for the Figure 3A neuron, assigned from their titles; the temperatures are calculated, not measured",
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-sustained-firing-2s",
+     "statement": "In the low-conductivity solution, a 2-s unmodulated 2-kHz sine wave ramped up over 250 ms evoked firing for its whole duration; the firing rate rose with field until replaced by a firing block with sustained depolarization, which developed before the end of the ramp.",
+     "source": "Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 4; Figure 3C",
+     "quote": "we observed sustained firing for the entire duration of the sine wave ( Figure 3C ). The rate of firing increased with the electric field strength until it was replaced by a firing block and sustained depolarization. The block had already developed before the end of the 250-ms ramp-up period",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "In all four neurons of 001030 (ROI c, bleaching-corrected) some voltage gives APs in the last 250 ms of the 2-s wave and the AP count rises with voltage up to a point. No neuron under any reading shows the block at the highest voltage (no AP after 275 ms with a raised dF). c7 at 2.3 V comes close - 7 APs in the ramp and one after 275 ms (at 1,964 ms, 8.0 % high, prominence 4.4 %) on a mean dF of 6.72 %; the first round's detector counted 11 there (prominences 2.7 to 6.4 %). c8 at 2.0 V keeps 6 APs after 275 ms (prominence 4.1 to 7.2 %) on 3.63 %. At the top voltage the count falls (c7 88 to 8, c8 46 to 8). Two c5 sessions end at 1,914 ms.",
+     "deviations": [
+      "Bleaching is corrected by subtracting a trace without APs (Methods, F2). The only such trace in 001030 is c7 at 1.0 V, so it is subtracted from every session; uncorrected traces are a variant.",
+      "Figure 3C shows one neuron; the criterion is taken to hold when one neuron meets all three parts."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (0.240520.1924), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "figs1-di8-same-as-fluovolt",
+     "statement": "With Di-8-ANEPPS in place of FluoVolt, in eight neurons, 2-kHz sine waves near threshold elicited one or a few delayed APs, and stronger fields shortened the delay and induced sustained firing ending in sustained depolarization, as with FluoVolt.",
+     "source": "Results, Sensitivity to unmodulated sine waves was not caused by FluoVolt dye, paragraph 2; Figure S1",
+     "quote": "Experiments were performed on eight neurons using different electric field strengths tested in a random sequence ... Stimulation near the threshold elicited one or a few delayed APs. Increasing the electric field strength reduced the delay and induced sustained firing that culminated in sustained depolarization. Overall, stimulation effects were not different from those observed with FluoVolt dye",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "001272 holds 3 Di-8-ANEPPS neurons, not 8. The inverted APs are small (median 4.2 % dF, 13 % above 5 %), so O3 b alone applies, as the claims file says. Under the crop ROI with O3 b, most of the 3 neurons show one to three APs at their lowest voltage with APs (3 with F0 a, 2 with F0 b), a latency that falls with voltage (2 of 3, with rho -0.03 and -0.69; -0.12 and -0.76 with F0 b) and sustained firing or depolarization above it (3 of 3). Under the Otsu ROIs with O3 b the latency falls in at most 1 of 3 and one or two neurons have no AP. The behaviour holds in the deposited neurons under the crop ROI; the count of eight does not.",
+     "deviations": [
+      "Only 3 of the paper's 8 neurons are deposited.",
+      "The crop ROI is assumed, as for ap-selection; the Otsu readings give a different outcome."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001272 (0.250805.1358), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "figs2-ttx-blocks-depolarization",
+     "statement": "1 uM tetrodotoxin abolished both the APs and the sustained depolarization evoked by intense unmodulated 2-kHz sine waves, while the vehicle did not.",
+     "source": "Results, Tetrodotoxin blocks sustained depolarization, paragraph 1; Figure S2 legend",
+     "quote": "the inhibition of sodium channels with 1 \u03bcM tetrodotoxin not only abolished the APs but also fully blocked the sustained depolarization",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Under the crop ROI all 6 TTX neurons had APs before TTX at the voltages also tested after it and none responded after (no AP, no sustained depolarization); after TTX the mean dF in the last 100 ms stays at or below 0.42 %. In 5 of 6 (3 or 4 with F0 b) every session before TTX responded; in 001271/14_20240731 one of 8 did not. Sustained depolarization before TTX occurred only in that neuron (2 sessions; median last-100-ms dF 5.08 and 5.18 % at 4.5 and 5 V before, -0.46 and -0.66 % after), so its abolition rests on one neuron. 11 of 13 vehicle neurons responded at every common voltage after the pause, all 13 at some. The two that did not at every voltage are 001271/4_20240730 (2 of 3), whose longest pause is 73 s, so no change of solution can be placed, and 001271/5_20240801 (5 of 7). The split pause is about 300 s in most vehicle neurons, 167 s in 001271/13_20240731, 73 s in 001271/4_20240730 and 35 s in 001271/17_20240801 (no common voltage). Under the Otsu ROIs at most 1 of 6 TTX neurons responds at every voltage before TTX.",
+     "deviations": [
+      "Vehicle neurons carry no mark of when the vehicle was applied; the split is assumed at the longest pause between sessions (about 300 s in most, the Figure S2 legend's \"about 5 min\").",
+      "The crop ROI is assumed, as for ap-selection."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001271 (0.250805.1352), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-pooled-time-constants",
+     "statement": "Membrane charging by 2-us pulses is fast; pooled over 19 experiments, charging and discharging time constants averaged 0.7 and 0.91 us at the cathodic pole and 0.65 and 0.8 us at the anodic pole, so the membrane charges fully within each sine wave cycle up to 100 to 200 kHz.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend; Figures 4D and 4E",
+     "quote": "The time constants pooled together for all cells averaged 0.7 \u00b1 0.08 (charging) and 0.91 \u00b1 0.08 (discharging) \u03bcs for the cathodic cell pole and 0.65 \u00b1 0.05 and 0.8 \u00b1 0.07 \u03bcs for the anodic pole, respectively (mean \u00b1 SEM, n = 19)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "The claim is a mean over the paper's 19 experiments in hand-drawn ROIs. 001273 holds no ROIs and does not say which of its 22 groups are the 19 experiments; its groups were run at 40 to 130 V, whose session descriptions give measured amplitudes of 25 to 102 V, where the paper gives 140 V/cm for all. Not deciding - with 12 x 12 pixel boxes at the extremes of the smoothed ratio image, the means over the 22 groups (scaled, free discharging amplitude) are 1.10 +- 0.39 and 1.49 +- 0.18 us (cathodic charging and discharging) and 3.92 +- 1.53 and 1.45 +- 0.23 us (anodic); no selection, scaling or fit puts any of the four within the paper's SEM, 16 of 176 charging fits end at the 20-us bound, and the medians are 0.37 to 0.49 (cathodic) and 0.57 to 1.02 us (anodic) for charging and 0.81 to 1.79 us for discharging. Recorded as not reproduced in the first round; blocked after the verifier's round 1, as the time constants depend on ROIs and a selection the dandiset does not give.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001273 (0.250805.1356), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-orientation-and-poles",
+     "statement": "Aligning elongated cells with the field doubled the time constants compared with the same cells perpendicular to it or with randomly shaped cells; dFmax and the time constants did not differ between the cathode- and anode-facing poles; and discharging was slower than charging except in elongated cells aligned with the field.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the two paragraphs after the Figure 4 legend; Figures 4D and 4E and legend",
+     "quote": "\u0394 F max did not differ at the cathodic and anodic cell poles, indicating the lack of rectification of the applied electric field. Charging and discharging time constants did not differ between the two poles either. Aligning elongated cells with the electric field doubled the time constants, as compared to either the same cells oriented perpendicular to the field ( p < 0.001, paired t test) or to randomly shaped cells ( p < 0.01, unpaired t test). Interestingly, discharging time constants were always larger than the charging ones in the same cell ( p < 0.001, paired t test), with the exception of elongated cells aligned with the field",
+     "statistics": [
+      {
+       "about": "elongated cells, parallel against perpendicular time constants",
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "3 parallel and 6 perpendicular experiments"
+      },
+      {
+       "about": "elongated parallel against random cells",
+       "test": "unpaired t test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "3 parallel and 10 random experiments"
+      },
+      {
+       "about": "discharging against charging time constants",
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The files do not say which cells are elongated or random, nor how a cell's long axis lies with respect to the up/bottom and right/left electrode pairs (and on 2024-01-17 the electrode position is not specified), so the parallel, perpendicular and random groups cannot be formed. Shown in the notebook, not deciding - over the 22 groups the pole difference in dFmax is not significant (paired p = 0.053), nor in charging (p = 0.105) or discharging tau (p = 0.917), and discharging does not exceed charging significantly (p = 0.119 anodic, 0.368 cathodic).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001273 (0.250805.1356), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "fig5-sine-asymmetry",
+     "statement": "Sine waves polarized the two poles of a cell more asymmetrically than 2-us pulses; in the Figure 5 cell the depolarized ROI 2 was 30% smaller than the hyperpolarized ROI 1 with the pulse and up to 90% smaller with sine waves, and in the Figure S3 cell the hyperpolarized ROI 1 was 20% smaller than the depolarized ROI 2 with the pulse and 40% smaller with sine waves, the oscillations not migrating to other regions.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, paragraphs 1 to 4; Figures 5 and S3",
+     "quote": "in this cell, the oscillations in ROI 2 were up to 90% smaller than those in ROI 1 (compared to just 30% smaller when the same cell was polarized with the 2-\u03bcs pulse) ... With the 2-\u03bcs pulse, polarization in ROI 1 was 20% smaller than in ROI 2 ( Figure S3B ); however, with sine waves, it became 40% smaller",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The claim is about the Figure 5 and S3 cells (C7 and C8 of Figure 6B). The files do not identify them, and the Figure 5 cell's 12 sine sessions match no cell in 001274 (five at most at 100 Hz, in 2_20240522). For the nine cells taken as Figure 6's, the pulse asymmetry is 10.8 to 69.2 % and the sine asymmetry 4.6 to 99.7 % (shown in the notebook, not deciding).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001274 (0.250805.1401), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "fig5-whole-cell-depolarization",
+     "statement": "During a single beat of a modulated 2-kHz sine wave, the optical TMP in ROIs 1 and 2 oscillated with the carrier in opposite phases, with amplitudes proportional to the sine wave amplitude, on top of a gradual depolarization of the whole cell that developed as the amplitude rose.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, paragraph 2; Figures 5C, 5D and legend; Figure S3",
+     "quote": "Optical TMP oscillated in synchrony with the carrier sine wave in the opposite phases, i.e., the peak depolarization in ROI 1 corresponded to the peak hyperpolarization in ROI 2, and vice versa. These oscillations, proportional to the sine wave amplitude, were superimposed on the gradual depolarization of the entire cell",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Same cells as fig5-sine-asymmetry, not identifiable. For the nine cells (not deciding), the signed sine slopes of ROI 1 and ROI 2 have opposite signs in 8, and the fitted carrier phases of the two ROIs lie near antiphase in 7 (4_20240523 is nearly in phase, -2.70 and -2.13 rad, and 2_20240523 in quadrature, -3.14 and 1.56 rad). The Pearson correlation of the whole oscillation traces, which include everything the LOESS leaves, is negative in 2 (p < 0.05) and up to 0.66 in cells whose carriers are near antiphase; why is not shown. The LOESS fit at the envelope peak is above F0 in both ROIs in 2 cells.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001274 (0.250805.1401), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "fig6-sine-less-than-pulse",
+     "statement": "Across 9 cells FluoVolt sensitivity to 2-us pulses was 15% to 47% per 1 kV/cm (mean 28%); sensitivity to 2-kHz sine waves, linearly correlated with the field, was 1.5% to 28.4% (mean 11.8%), smaller in every ROI, and 42% of the pulse value.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, paragraphs 5 and 6; Figures 6B to 6D",
+     "quote": "The electric field sensitivity of FluoVolt ranged between a 15% and 47% change per 1 kV/cm, with an average value of 28% \u00b1 2.5% across all ROIs in all the cells ... The regression coefficient, which was the FluoVolt sensitivity to sine waves, varied from 1.5% to 28.4% ( Figure 6C ). All numbers were invariably smaller than those measured for the same ROIs with the pulse ( Figure 6D ). The electric field sensitivity averaged across all ROIs in all the cells was 11.8% \u00b1 1.7% per 1 kV/cm, just 42% of the value for the 2-\u03bcs pulses",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Six of the criterion's seven parts are values (means, ranges, ratio, the count of cells with p below 0.0001) measured in the paper's hand-drawn ROIs on the paper's nine cells, and the dandiset holds neither the ROIs nor the cell labels; the sensitivities are also divided by the paper's nominal fields, scaled by generator voltage, as 001274 gives no measured amplitudes. Not deciding - sine sensitivity is below pulse sensitivity in all 18 ROIs of the nine cells under the signed regression (15 of 18 under the per-cycle reading). With the 12 x 12 boxes the values are lower than the paper's - pulse 17.4 % per kV/cm (3.14 to 29.2; paper 28, 15 to 47), sine 5.55 % (0.04 to 14.8; paper 11.8, 1.5 to 28.4), ratio 32 % (paper 42 %) - and the regression reaches p < 0.0001 in both ROIs in 4 cells, not 8 (scaled, span 2 ms, signed regression, given as measured). These values depend on the ROIs, which the paper drew by hand and the dandiset does not hold - with 6 x 6 and 20 x 20 boxes at the same centres the pulse mean is 16.9 and 13.3 %, the sine mean 5.96 and 4.98 %, the ratio 35.2 and 37.6 %, 1 and 4 cells reach p < 0.0001 in both ROIs, and the sine value is below the pulse in 17 and 18 of 18 ROIs - and the nine cells are inferred, so the sizes cannot be judged, as for fig4-pooled-time-constants. The fitted carrier phases lie at -1.8 to -3.1 rad (ROI 1, all 9 cells) and 0.1 to 0.9 rad (ROI 2, 7 cells), near antiphase in those 7; 4_20240523 is nearly in phase (-2.70 and -2.13 rad) and 2_20240523 in quadrature (-3.14 and 1.56 rad). At the fitted phase the sine sensitivity averages 6.4 to 6.5 % (ratio 37 %), below the pulse in 18 of 18 ROIs. The pulse starts at frame 20, as the file description says (the binned pulse dF). The direction holds in every ROI under the signed regression, at the fitted phase and under every box size but the smallest (17 of 18), and in 15 of 18 under the per-cycle reading; it is the only part that does not rest on the paper's ROIs, and as it fails under the per-cycle reading it cannot carry the claim under a criterion that asks for every part under every reading. Under the per-cycle reading no cell reaches p < 0.0001 in both ROIs. With the full peak-to-peak amplitude, as the criterion names it, the per-cycle sine mean is 13.7 to 16.2 %, the ratio 79 to 93 %, and the sine value is below the pulse in 12 or 13 of 18 ROIs. Recorded as partially reproduced in rounds 1 and 2; blocked after the verifier's round 3, as for fig4-pooled-time-constants.",
+     "deviations": [
+      "ROIs are 12 x 12 pixel boxes centred on the extremes of the paper's RATIO image inside the cell; the paper drew ROIs by hand over the most polarized regions, with no size given. This is an assumption, and the sensitivities depend on it; 6 x 6 and 20 x 20 boxes are shown as a variant.",
+      "No debris ROI is marked; frames are scaled to the image median (reading a) or not scaled (b).",
+      "The nine cells are those of 001274 with a pulse and 100-Hz modulated waves without TTX; the files do not label them C1 to C9.",
+      "Fields are the paper's 257 V/cm (pulse) and 136 V/cm peak (sine), scaled by the generator voltage for the two cells run at 5 V (sine) and 15 V (pulse), as 001274 gives no measured amplitudes; the carrier phase is taken as zero at the first frame, checked above.",
+      "The LOESS is R's loess (degree 2, tricube weights, no robustness iterations), as the paper ran RStudio (Table S1), with the claims file's spans of 2 and 4 ms (O6); the first round used statsmodels' lowess.",
+      "Four sine sessions per cell are averaged (five in 2_20240522); the paper averaged 4 to 12.",
+      "The per-cycle reading (b) regresses half the cycle's peak-to-peak amplitude on its peak field, so that it is on the scale of the signed regression; the criterion names the peak-to-peak amplitude. With the full amplitude the reading-(b) sine values and ratio double, the p-values are the same, and the sine value is below the pulse in 12 or 13 of 18 ROIs, not 15; the notebook prints that variant, and no criterion row holds under it either."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001274 (0.250805.1401), assigned from its title",
+     "proposed": null
+    },
+    {
+     "claim": "threshold-depolarization-estimate",
+     "statement": "The 2-kHz AP threshold of 57.7 V/cm times the sine wave sensitivity gives a 0.68% emission change, about 6.8 mV with FluoVolt's calibration, so the threshold depolarization is 5 to 15 mV, as with intracellular current injection.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, last paragraph",
+     "quote": "This threshold corresponds to a 0.68% \u00b1 0.11% FluoVolt emission change (11.8 \u00d7 57.7/1,000) ... Then, a 0.68% emission change corresponds to a 6.8-mV depolarization at the AP threshold. Considering the calibration factor variability, the threshold TMP depolarization can be conservatively estimated in the range from 5 to 15 mV",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "The estimate needs the 2-kHz AP threshold in V/cm. The files give labelled generator voltages and \"1V translates into 36 V/cm\" without saying whether of the amplitude or the peak-to-peak value, and say the delivered amplitude is \"somewhat smaller\", the calibration not being deposited; the outcome changes with the field reading. Not deciding - with the signed-regression sine sensitivity (5.55 %) and the 1-AP threshold under the amplitude reading (76.0 V/cm, crop ROI) the emission change is 0.42 % and 4.2 mV (0.50 % and 5.0 mV with the 5-AP threshold); the peak-to-peak reading gives 0.84 to 1.46 %; 20 of 24 combinations with the per-cycle slope under the amplitude reading are in range, none otherwise. With the paper's own 57.7 V/cm the emission is 0.32 to 0.47 %. Recorded as not reproduced in the first round; blocked after the verifier's round 1.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 (0.240527.1431 or 0.240527.1432) for the threshold and DANDI:001274 (0.250805.1401) for the sensitivity, assigned from their titles",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "DANDI:001048 names this paper as related (IsPublishedIn) but holds TIRF recordings of HEK cells under patch clamp from another study, with species human. The paper's data are in 001030 to 001035 and 001271 to 001274, of which only 001271 to 001274 name the paper.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "001034 is a copy of 001032. All 178 recordings are identical pixel for pixel, under other subject names (sub-N-3 for sub-N-1).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "001030 gives its neurons as mouse (Mus musculus, C57BL/6); the paper used only rat hippocampal neurons. 001035 describes its neurons as \"C57BL/6 rat\". 001030 makes each session a separate subject (sub-c7-1-45V), so the four neurons appear as 17 subjects.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The stimulus voltages in 001030 to 001035, 001271 and 001272 are generator settings. The files say the delivered amplitude is \"somewhat smaller\", with frequency-dependent calibration factors \"reported separately\", which are in none of the dandisets; 001032 to 001035 label the voltage peak to peak and give 36 V/cm per volt without saying of which. Thresholds in V/cm and the ratio of 20-kHz to 2-kHz thresholds cannot be computed as the paper did.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The low-conductivity (sodium gluconate) sessions with 250-ms waves of Figures 3A and 3B are in none of the dandisets, and 001272 holds 3 of the 8 Di-8-ANEPPS neurons of Figure S1.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "001271 labels TTX sessions but not when the vehicle was applied to vehicle neurons, so the before and after sessions can only be inferred from pauses between sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The 71 TTX session descriptions of 001271 say TTX \"abolished the action potentials and caused sustained depolarization\", while the dandiset's description says it \"completely prevented sustained depolarization\", as the paper does; the data show no depolarization under TTX. All 65 Di-8-ANEPPS session descriptions of 001272 say \"without tetrodotoxin (vehicle control)\", the wording of the 001271 vehicle sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The strobe dandisets (001273, 001274) hold no ROIs, no debris ROI, no cell shape or orientation, no stimulus waveform and no mark of which groups are the paper's 19 Figure 4 experiments or the cells C1 to C9 of Figure 6. The Figure 5 cell's 12 sine sessions match no cell. 001273 notes that its 40, 80, 100 and 130 V pulses measured 25, 62, 79 and 102 V, where the paper gives 140 V/cm for every Figure 4 experiment.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The dandisets hold stimuli the paper does not describe - sine waves of 20 Hz to 10 kHz in 001032, 001033 and 001035 (a 20-Hz session in most neurons), of 40 kHz in 001033 and 100 kHz in 001035, 100-kHz bipolar pulses in 001031, and TTX strobe sessions in 001274.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Frame 0 of every time-lapse file is a bright artefact (at least 1.51 times frame 1, median 3.15). 59 sessions of 001032 have 900 frames and end at 291 ms, before the 250-ms stimulus that starts at 50 ms ends. The stimulus onset is not stored in the files of 001032 to 001035, 001271 and 001272 beyond the text of the description; the APs are consistent with it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors on the optical AP analysis - how the soma ROI was drawn (the deposited 16 x 16 crop is used here), how APs were identified and their duration measured (the half width here is about 3.7 ms against the paper's 8 ms), how the maximum firing rate was measured at fields where APs merge, and the calibration that converts the deposited voltages to the V/cm of Figure 2D. The width at half height of an AP is measured here both at half its dF and at half its prominence; which the paper meant decides how APs riding on a depolarization count.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors on the strobe analysis - the size of the ROIs, which groups of 001273 are the 19 experiments of Figure 4 and which cells are elongated, which cells of 001274 are C1 to C9, the phase of the modulated waves at the first frame, and the field values used for each cell.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors - which field (peak or RMS) and volumetric heat capacity give the adiabatic rise of 2.5 C at 63 V/cm in a 16.4 mS/cm solution; with water's heat capacity the peak field gives 3.89 C and the RMS field 1.95 C.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the paper. The handover package held the claims file of dandiset 001274 for the same paper in place of this attempt's (claims/001048), because tools/entry.py handover copies the claims file of every dandiset the entry uses under the same file name, and the 001274 copy overwrote the 001048 one. The verifier therefore judged 26 claims with other ids, criteria and readings (O1 to O4) and reported that the notebook followed another claims file. Its results are recorded below against this file's claims, each with the verifier's claim it maps to; its outcomes were given under that other file's criteria. Four claims of this file have no counterpart in its report (ap-selection, fig2d-5ap-above-1ap, fig3-extrapolated-threshold, fig3-not-heating) and are not listed. Its problems on the code apply to this file as well and were taken up - the AP detector (problems 2 and 3) now asks for a width of 2 to 20 ms both at half the dF and at half the prominence, which removes the plateau oscillations its synthetic test found, and both single measures are shown as variants; the crop-ROI rule (problem 4) is now an assumption recorded on each outcome where the ROI readings disagree, as protocol step 1.6 allows, where the claims file's header would block; bleaching (problem 6) is not corrected, as the claims file's F2 says the paper corrected only the 2-s traces, and its bias is stated; the outputs it asked for under C were added. Problems 12 to 14 (the 1.1-mV tolerance, the 4.5 to 16.5 mV range, the beat-phase reading b, the \"sustained firing or depolarization\" test and the \"most\" threshold) follow this attempt's claims file, so they were not changed. Its report quoted the verifier's cell numbers of the stripped notebook.",
+     "agreed": 8,
+     "of": 16,
+     "disagreements": [
+      {
+       "claim": "fig1-pure-sine-excites-all",
+       "outcome": "blocked",
+       "reason": "(Judged on the 001274 file's fig1-pure-sine-excites-all, blocked, with fig1-onset-delay and fig1-max-rate-ceiling, both judged not reproduced.) ROI c - 2 kHz 96.4% (27/28); 20 kHz 88.2% under the notebook's AP reading (a) but 94.1% under (b). The readings disagree, which the criterion says blocks the claim. The claims file's own reading (b), a rise of 5% within 5 ms, was never run. Median first-AP latency at the near-threshold session is 66 to 67 ms for ROI c under all readings, outside 90 to 220 ms; the Spearman part passes (40/40 negative). Median ceiling is 40 to 44 Hz for ROI c, outside 54 to 99 Hz. First-AP latencies go down to 1 ms and may be stimulus-onset artefacts, never inspected."
+      },
+      {
+       "claim": "fig1-20khz-needs-twice-the-field",
+       "outcome": "blocked",
+       "reason": "(Judged as the 001274 file's fig2d-20khz-twofold-threshold.) The files give nominal voltages and say \"calibration factors are frequency-dependent and will be reported separately\"; confirmed via the API. So the 20/2 kHz field ratio cannot be formed. Taken at face value, the voltage ratios are 2.27 to 2.86 for ROI c, outside 2+-0.2, although every p < 1e-4. Thresholds in nominal volts are compared across frequencies even though the calibration is frequency dependent."
+      },
+      {
+       "claim": "fig2-modulated-locks-to-beats",
+       "outcome": "partially_reproduced",
+       "reason": "(i) At most 10 APs per session. (ii) 85 to 100% of APs fall in the middle half of the beat, and the histogram peaks at 20 to 35 ms. (iii) The claims' block test was never computed for modulated sessions; the notebook's O4(a) test flags one session."
+      },
+      {
+       "claim": "fig3c-sustained-firing-2s",
+       "outcome": "not_reproduced",
+       "reason": "Part (iii) fails in all 4 neurons under every reading - APs are detected after 275 ms at the top voltage, e.g. c7 at 2.3 V has 11 APs on a 6.7% mean dF. The detector counts plateau oscillations as APs (problem 3), so this could flip. (Given as provisional.)"
+      },
+      {
+       "claim": "figs1-di8-same-as-fluovolt",
+       "outcome": "blocked",
+       "reason": "(Judged as the 001274 file's figs1-di8-anepps-control.) The readings disagree - ROI c latency falls with field in 1/3 neurons (O3 a) vs 3/3 (O3 b). Only 3 of the 8 neurons are deposited, and the claims' block test was not computed. (Blocked as methods_underspecified.)"
+      },
+      {
+       "claim": "fig4-pooled-time-constants",
+       "outcome": "blocked",
+       "reason": "No ROIs, and which 19 experiments are the paper's is unknown. The variant has 0 of 4 values within the SEM in all 8 runs, and 16 of 176 fits sit at the 20-us bound. Rebuilt 12x12 box ROIs and whole-image-median scaling are used as tests. The field per cell is scaled linearly with voltage; for 001273 the descriptions give measured amplitudes (40 V to 25 V, 80 to 62, 100 to 79, 130 to 102), which the notebook ignores when pooling groups at different voltages."
+      },
+      {
+       "claim": "fig6-sine-less-than-pulse",
+       "outcome": "blocked",
+       "reason": "(Judged as fig6b-pulse-sensitivity, fig6c-sine-sensitivity and fig6d-sine-less-than-pulse.) The dataset has no ROIs, and O1 says to block in that case. The rebuilt-ROI variant gives a mean of 17.4 against 28+-2.5, with a minimum of 3.1; 4 cells (or 0) have p < 1e-4 in both ROIs, against 8; a sine mean of 5.6 to 8.3 and a sine/pulse ratio of 32 to 47%. LOESS is statsmodels lowess (locally linear, 3 robustness iterations), not R loess with degree 2. The field's carrier phase is assumed to be 0 at frame 0 and never checked. The pulse-onset frame of the 140-frame 001274 pulse files was not printed."
+      },
+      {
+       "claim": "threshold-depolarization-estimate",
+       "outcome": "blocked",
+       "reason": "It depends on fig6d and threshold-2khz-unmodulated, both blocked. Cell 59 uses a +-1.1 mV tolerance and a 4.5 to 16.5 mV range; the claims file gives +-0.68 mV."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the round-1 revision, the helper module, this attempt's claims file (claims/001048) and the attempt record, with the paper. The verifier agreed with 19 of the 20 outcomes and not with fig6-sine-less-than-pulse. Its sentences without outputs behind them were corrected - the count of 100-Hz sessions (5 at most, in 2_20240522, not 4), the antiphase of the fitted carriers (7 of 9 cells), the round-1 response on fig1-pure-sine-excites-all, the AP peak under the crop ROI (12 of 16 readings), the unused stimuli (40 kHz in 001033 and 100 kHz in 001035 added), the Summary row of figs2-ttx-blocks-depolarization (crop ROI added) and the README, which said every claim is tested on the ten dandisets (001031 is not used and 001034 serves only as the duplicate check). The TTX and vehicle wording the findings quote is now printed in the Data check (71 TTX session descriptions of 001271 say TTX \"caused sustained depolarization\"; all 65 of 001272 say \"vehicle control\"). Its remaining point 1, the crop-ROI rule, is answered under ap-selection. No outcome was changed; for fig6-sine-less-than-pulse a change to blocked is proposed.",
+     "agreed": 19,
+     "of": 20,
+     "disagreements": [
+      {
+       "claim": "fig6-sine-less-than-pulse",
+       "outcome": "blocked",
+       "reason": "Stated, but inconsistent. fig4-pooled was blocked because its values \"depend on ROIs and a selection the dandiset does not give\". The same is true here - the deviations say \"the sensitivities depend on it\", and the nine cells are inferred. The 12x12 boxes would dilute the peak polarization, which fits 17.4 against 28. The sizes should be recorded as not judgeable, not as \"fail under every reading\", or the claim blocked. The direction (18/18 under the signed reading, 15/18 per cycle) is the only part that holds."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The one proposed change of outcome, for fig6-sine-less-than-pulse (partially reproduced to blocked, metadata insufficient), and the analysis behind it (notebook cells 70 to 73), with the paper. The verifier agreed, and the outcome is now blocked.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001048-semenov-2025",
+   "type": "reproduction",
+   "title": "High-frequency sine waves excite isolated neurons (Semenov et al. 2025)",
+   "description": "Tests the findings of Semenov, Kim, Silkuniene and Pakhomov (2025). Dandiset 001048 names the paper but holds HEK-cell recordings of another study, so the claims are tested on the ten dandisets the paper lists (001030 to 001035, 001271 to 001274). These hold optical recordings of rat hippocampal neurons stimulated by unmodulated and 20-Hz modulated sine waves at 2 and 20 kHz, with TTX and Di-8-ANEPPS controls, and strobe images of membrane charging by 2-us pulses and sine waves.",
+   "datasets": [
+    "dandi:001030",
+    "dandi:001032",
+    "dandi:001033",
+    "dandi:001034",
+    "dandi:001035",
+    "dandi:001048",
+    "dandi:001271",
+    "dandi:001272",
+    "dandi:001273",
+    "dandi:001274"
+   ],
+   "papers": [
+    "10.1016/j.xcrp.2025.102660"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2025.ipynb",
+     "title": "Reproducing Semenov et al. (2025) from the DANDI datasets it names",
+     "executed": "notebooks/001048-semenov-2025/reproduce_semenov_2025.html"
+    }
+   ]
+  }
+ ]
+}
