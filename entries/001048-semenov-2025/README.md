@@ -27,7 +27,7 @@ TTX and Di-8-ANEPPS controls, and strobe images of membrane charging by pulses a
 | Charging time constants of 0.65 to 0.91 us | Blocked: metadata insufficient (no ROIs, experiments not identifiable) |
 | Orientation and pole effects on charging | Blocked: metadata insufficient |
 | Figure 5 and S3 cells (asymmetry, whole-cell depolarization) | Blocked: metadata insufficient |
-| Sine sensitivity below pulse sensitivity, 42% of it | Partially reproduced (a change to blocked, metadata insufficient, is proposed) |
+| Sine sensitivity below pulse sensitivity, 42% of it | Blocked: metadata insufficient (no ROIs, cells not identifiable, fields not measured) |
 | Threshold depolarization of 6.8 mV | Blocked: metadata insufficient (voltages not calibrated) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning

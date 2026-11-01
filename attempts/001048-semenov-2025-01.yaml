@@ -324,18 +324,15 @@ outcomes:
     cells whose carriers are near antiphase; why is not shown. The LOESS fit at the envelope peak is
     above F0 in both ROIs in 2 cells.
 - claim: fig6-sine-less-than-pulse
-  outcome: partially_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig6-sine-less-than-pulse
-  measured:
-  - 4
-  - 17.4
-  - 3.14
-  - 5.55
-  - 0.035
-  - 32.0
-  notes: Sine sensitivity is below pulse sensitivity in all 18 ROIs of the nine cells under the signed
+  notes: Six of the criterion's seven parts are values (means, ranges, ratio, the count of cells with p
+    below 0.0001) measured in the paper's hand-drawn ROIs on the paper's nine cells, and the dandiset
+    holds neither the ROIs nor the cell labels; the sensitivities are also divided by the paper's
+    nominal fields, scaled by generator voltage, as 001274 gives no measured amplitudes. Not deciding -
+    sine sensitivity is below pulse sensitivity in all 18 ROIs of the nine cells under the signed
     regression (15 of 18 under the per-cycle reading). With the 12 x 12 boxes the values are lower than
     the paper's - pulse 17.4 % per kV/cm (3.14 to 29.2; paper 28, 15 to 47), sine 5.55 % (0.04 to 14.8;
     paper 11.8, 1.5 to 28.4), ratio 32 % (paper 42 %) - and the regression reaches p < 0.0001 in both
@@ -351,17 +348,12 @@ outcomes:
     pulse starts at frame 20, as the file description says (the binned pulse dF). The direction holds
     in every ROI under the signed regression, at the fitted phase and under every box size but the
     smallest (17 of 18), and in 15 of 18 under the per-cycle reading; it is the only part that does not
-    rest on the paper's ROIs.
-  proposed:
-    outcome: blocked
-    blocked_by: metadata_insufficient
-    reason: Six of the criterion's seven parts are values (means, ranges, ratio, the count of cells
-      with p below 0.0001) measured in the paper's hand-drawn ROIs on the paper's nine cells, and the
-      dandiset holds neither the ROIs nor the cell labels. The values move with the box size (pulse mean
-      13.3 to 17.4 %, cells with p below 0.0001 in both ROIs 1 to 4), so they cannot be judged here,
-      which is why fig4-pooled-time-constants was blocked; the round-2 verifier found the two treated
-      differently. The direction alone, which holds in 15 to 18 of 18 ROIs, cannot carry the claim
-      under a criterion that asks for every part under every reading.
+    rest on the paper's ROIs, and as it fails under the per-cycle reading it cannot carry the claim
+    under a criterion that asks for every part under every reading. Under the per-cycle reading no cell
+    reaches p < 0.0001 in both ROIs. With the full peak-to-peak amplitude, as the criterion names it, the
+    per-cycle sine mean is 13.7 to 16.2 %, the ratio 79 to 93 %, and the sine value is below the pulse in
+    12 or 13 of 18 ROIs. Recorded as partially reproduced in rounds 1 and 2; blocked after
+    the verifier's round 3, as for fig4-pooled-time-constants.
   deviations:
   - ROIs are 12 x 12 pixel boxes centred on the extremes of the paper's RATIO image inside the cell;
     the paper drew ROIs by hand over the most polarized regions, with no size given. This is an
@@ -376,6 +368,11 @@ outcomes:
     RStudio (Table S1), with the claims file's spans of 2 and 4 ms (O6); the first round used
     statsmodels' lowess.
   - Four sine sessions per cell are averaged (five in 2_20240522); the paper averaged 4 to 12.
+  - The per-cycle reading (b) regresses half the cycle's peak-to-peak amplitude on its peak field, so
+    that it is on the scale of the signed regression; the criterion names the peak-to-peak amplitude.
+    With the full amplitude the reading-(b) sine values and ratio double, the p-values are the same, and
+    the sine value is below the pulse in 12 or 13 of 18 ROIs, not 15; the notebook prints that variant,
+    and no criterion row holds under it either.
 - claim: threshold-depolarization-estimate
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -832,3 +829,28 @@ verifications:
     outcome: blocked
     reason: Agrees.
     response: No change.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, for fig6-sine-less-than-pulse (partially
+    reproduced to blocked, metadata insufficient), and the analysis behind it (notebook cells 70 to 73),
+    with the paper. The verifier agreed, and the outcome is now blocked.
+  results:
+  - claim: fig6-sine-less-than-pulse
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The values rest on information the dandiset lacks - six of the seven parts are
+      numbers measured in the paper's hand-drawn ROIs, 001274 holds no ROIs, and the means and the
+      significant-cell count change with box size. The fields are assumed as well - both sensitivities
+      are divided by the paper's nominal fields, scaled by generator voltage, which the proposed reason
+      does not name. The nine cells are inferred. A partial outcome cannot rest on the direction, which
+      fails under reading (b) at 15 of 18. It matches fig4-pooled-time-constants. Not reproduced was
+      considered, but a failure of the paper is not shown. Reading (b) regresses half the peak-to-peak
+      amplitude where the criterion says the peak-to-peak amplitude, and the deviations do not list
+      this; with the full amplitude the criterion would still fail. The count of 1 to 4 significant cells
+      covers only the signed regression; under reading (b) it is 0.
+    response: Changed to blocked, metadata insufficient. The notes and the conclusion now name the
+      nominal fields as a second missing piece of metadata and say that no cell reaches p < 0.0001 in both
+      ROIs under reading (b). The halving is now a deviation, and the notebook prints reading (b) with
+      the full peak-to-peak amplitude - sine mean 13.7 to 16.2 %, ratio 79 to 93 %, below the pulse in 12
+      or 13 of 18 ROIs, no row holds.
