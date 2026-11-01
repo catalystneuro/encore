@@ -24,8 +24,8 @@ Where each parameter comes from:
   artefact in every file, a bright first frame, and is dropped), (b) the last 20 ms before it.
 - AP: claims file O3, a local maximum of dF with width at half height of 2 to 20 ms and at least 5 ms
   from a larger maximum, height above (a) 5% dF or (b) 5 SD of the pre-onset dF. The width is taken
-  at half the peak's prominence (scipy.signal.peak_widths), the usual implementation of a width at
-  half height; a standard choice.
+  both at half the peak's height in dF and at half its prominence, and must be 2 to 20 ms under both
+  (an assumption, see detect_aps: each measure alone fails on these traces; both are variants).
 - Sustained depolarization: claims file O4, no AP in the last 100 ms of the stimulus and mean dF there
   above (a) 5 SD of the pre-onset dF, (b) half the median AP height of the neuron.
 - Maximum firing rate: inverse of the interval between the first two APs (paper, Methods; F4).
@@ -198,14 +198,32 @@ def trace(data, rate, onset_ms, o1="a", o2="a"):
     return t, dF, dict(npix=int(mask.sum()), erosion=ero, pre_sd=float(dF[pre].std()))
 
 
-def detect_aps(t, dF, onset_ms, stop_ms, pre_sd, o3="a"):
-    """Claims file O3. APs between onset and stop. Returns peak times (ms), heights (% dF), widths (ms)."""
+def detect_aps(t, dF, onset_ms, stop_ms, pre_sd, o3="a", width_ref="both"):
+    """Claims file O3. APs between onset and stop. Returns peak times (ms), heights (% dF), widths (ms).
+
+    "Width at half height" can be measured two ways, and each alone fails on these traces:
+    - at half the peak's height in dF, where dF falls below half the peak value ("height"). A small
+      wiggle on the decaying tail of an AP then counts as a second AP 5 ms later, so the first two
+      "APs" of a session are often 5 to 7 ms apart (maximum rates of 150 to 200 Hz);
+    - at half the peak's prominence ("prominence", scipy's default, used in the first round). Small
+      oscillations on a raised plateau then count as APs, so no session can show the claims file's
+      sustained depolarization (no AP in the last 100 ms).
+    The default ("both") asks for a width of 2 to 20 ms under both: a brief uptick that is distinct
+    from its neighbours and returns below half its height within 20 ms (the paper's "brief emission
+    upticks"). The returned width is the one at half the height. Each single measure is a variant."""
     dt = np.median(np.diff(t))
     h = 5.0 if o3 == "a" else 5.0 * pre_sd
-    pk, props = signal.find_peaks(dF, height=h, distance=max(1, int(round(5.0 / dt))),
-                                  width=(2.0 / dt, 20.0 / dt), rel_height=0.5)
-    keep = (t[pk] >= onset_ms) & (t[pk] < stop_ms)
-    return t[pk][keep], dF[pk][keep], props["widths"][keep] * dt
+    pk, _ = signal.find_peaks(dF, height=h, distance=max(1, int(round(5.0 / dt))))
+    n = len(dF)
+    wh = signal.peak_widths(dF, pk, rel_height=0.5,
+                            prominence_data=(dF[pk].astype(float), np.zeros(len(pk), int),
+                                             np.full(len(pk), n - 1, int)))[0] * dt
+    wp = signal.peak_widths(dF, pk, rel_height=0.5)[0] * dt
+    okh = (wh >= 2.0) & (wh <= 20.0)
+    okp = (wp >= 2.0) & (wp <= 20.0)
+    ok = {"both": okh & okp, "height": okh, "prominence": okp}[width_ref]
+    ok = ok & (t[pk] >= onset_ms) & (t[pk] < stop_ms)
+    return t[pk][ok], dF[pk][ok], (wh if width_ref != "prominence" else wp)[ok]
 
 
 def return_duration(t, dF, peak_t):
@@ -222,10 +240,10 @@ def return_duration(t, dF, peak_t):
     return t[b] - t[a]
 
 
-def session_measures(t, dF, info, onset_ms, dur_ms, o3="a"):
+def session_measures(t, dF, info, onset_ms, dur_ms, o3="a", width_ref="both"):
     """AP count, first latency, max rate, and the O4 inputs for one session and reading."""
     stop = onset_ms + dur_ms
-    pt, ph, pw = detect_aps(t, dF, onset_ms, stop, info["pre_sd"], o3)
+    pt, ph, pw = detect_aps(t, dF, onset_ms, stop, info["pre_sd"], o3, width_ref)
     last = (t >= stop - 100) & (t < stop)
     post = (t >= stop) & (t < stop + 50)
     ret = np.array([return_duration(t, dF, x) for x in pt])
@@ -290,7 +308,7 @@ def build_records(dandiset, invert=False):
     return out
 
 
-def session_table(records, dandiset):
+def session_table(records, dandiset, width_ref="both"):
     """One row per session and reading (O1 x O2 x O3) with the session measures."""
     import pandas as pd
     rows = []
@@ -300,7 +318,7 @@ def session_table(records, dandiset):
         st = r["stim"]
         for (o1, o2), (dF, info) in r["traces"].items():
             for o3 in "ab":
-                m = session_measures(r["t"], dF, info, r["onset"], r["dur"], o3)
+                m = session_measures(r["t"], dF, info, r["onset"], r["dur"], o3, width_ref)
                 rows.append(dict(dandiset=dandiset, neuron=f"{dandiset}/{r['subject_id']}", path=r["path"],
                                  start=r["start"], session_start_time=r["session_start_time"],
                                  kind=st["kind"], carrier=st["carrier"], mod=st["mod"], volts=st["volts"],
@@ -416,3 +434,33 @@ def sine_field(n, fm, epk=0.136, dt=20e-6, fc=2000.0, phase=0.0):
     t = np.arange(n) * dt
     env = np.sin(np.pi * fm * t) ** 2
     return t, epk * env * np.sin(2 * np.pi * fc * t + phase), env
+
+
+def loess(x, y, span, degree=2):
+    """R's loess with family "gaussian" (its default): at each point a weighted least-squares fit of
+    degree 2 (R's default) over the nearest span * n points, with tricube weights, no robustness
+    iterations. The paper ran its LOESS in RStudio (Table S1); the span is the claims file's O6."""
+    x = np.asarray(x, float)
+    y = np.asarray(y, float)
+    n = len(x)
+    q = max(degree + 2, int(np.floor(span * n)))
+    out = np.empty(n)
+    for i in range(n):
+        d = np.abs(x - x[i])
+        idx = np.argpartition(d, q - 1)[:q]
+        h = d[idx].max()
+        w = (1 - (d[idx] / (h * 1.0000001)) ** 3) ** 3
+        X = np.vander(x[idx] - x[i], degree + 1, increasing=True)
+        sw = np.sqrt(w)
+        beta = np.linalg.lstsq(X * sw[:, None], y[idx] * sw, rcond=None)[0]
+        out[i] = beta[0]
+    return out
+
+
+def carrier_phase(t, osc, env, fc=2000.0):
+    """Phase (rad) and amplitude of the carrier in an oscillation trace: least squares of osc on
+    env sin(2 pi fc t) and env cos(2 pi fc t). Phase 0 means in phase with the assumed field, pi in
+    antiphase."""
+    X = np.c_[env * np.sin(2 * np.pi * fc * t), env * np.cos(2 * np.pi * fc * t)]
+    a, b = np.linalg.lstsq(X, osc, rcond=None)[0]
+    return float(np.arctan2(b, a)), float(np.hypot(a, b))

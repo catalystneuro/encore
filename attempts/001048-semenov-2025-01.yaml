@@ -45,89 +45,114 @@ outcomes:
   notebook: reproduce_semenov_2025.ipynb
   output: claim:ap-selection
   measured:
-  - 10.58
-  - 4.53
+  - 10.53
+  - 3.70
   notes: Over 39 neurons of 001032, 001033 and 001035 (ROI c, F0 a, O3 a, every AP, width at half
-    height), the mean AP peak is 10.58 +- 0.37 % dF and the duration 4.53 +- 0.20 ms. Under the crop
-    ROI the peak is within 11.3 +- 0.9 in 14 of 16 readings (10.30 to 11.61 %); the duration is in
-    range under none (half width 4.19 to 4.53 ms, rise to return 17.21 to 23.47 ms). Under the Otsu
-    ROIs the peak is 11.53 to 16.23 %, and only ROI b with O3 b gives a rise-to-return duration in
-    range (7.64 to 8.37 ms), with a peak of 15.5 to 16.2 %. The peak holds, the duration does not.
-    The paper does not say which 22 neurons were measured; 39 are deposited.
+    height), the mean AP peak is 10.53 +- 0.38 % dF and the duration 3.70 +- 0.18 ms. Under the crop
+    ROI the peak is within 11.3 +- 0.9 in 12 of 16 readings (10.27 to 11.46 %); the duration is in
+    range under none (half width 3.11 to 3.71 ms, rise to return 17.31 to 24.14 ms). Under ROI a the
+    peak is within the SEM in all 16 readings (11.01 to 11.56 %) and the duration in none. Under ROI b
+    the peak is 12.68 to 14.67 %, outside it, and three readings give a rise-to-return duration in
+    range (7.32 to 8.57 ms). The peak holds, the duration does not under any reading where the peak
+    holds. The paper does not say which 22 neurons were measured; 39 are deposited.
   deviations:
   - The soma ROI is the 16 x 16 pixel crop the depositors cut around the soma (reading c), adopted as
     the paper's "emission intensity over the entire cell soma" (Methods, Recording of the optical
     APs) because the crop is the dataset's own soma region and the claims file says ROIs are taken
     from the dataset when it holds them (O1). The claims file's Otsu readings (a, b) give masks of a
-    median 35 and 10 pixels, some of 1 to 3, with about twice the noise; they are shown.
-  - APs are detected by the claims file's rule (O3); the paper identified them by eye.
+    median 35 and 10 pixels, some of 1 to 3, with about twice the noise; they are shown. Where the ROI
+    readings disagree the claims file's header would block the claim; under protocol step 1.6 the crop
+    is adopted as an assumption.
+  - APs are detected by the claims file's rule (O3), with the width at half height required to be 2 to
+    20 ms both at half the peak's dF and at half its prominence (an assumption; each measure alone
+    fails on these traces, and both are shown as variants). The paper identified APs by eye.
 - claim: fig1-pure-sine-excites-all
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig1-pure-sine-excites-all
   measured: 88.2
-  notes: Unmodulated waves excited 27 of 28 neurons at 2 kHz (96.4 %) and 15 of 17 at 20 kHz (88.2 %
-    under ROI c with O3 a, given as measured; 94.1 % with O3 b), and the first-AP latency fell with
-    voltage in 40 of 40 neuron-frequencies (Spearman rho below 0). Under every reading the median
-    latency at threshold is 66.0 to 94.5 ms, below 90 to 220 ms except under ROI b with O3 b (92.4
-    to 94.5 ms, where 2-kHz excitation drops to 67.9 %), and the median highest maximum firing rate
-    is 28.3 to 44.1 Hz, with 9.7 to 37.9 % of neurons in 54 to 99 Hz, so neither ceiling reading
-    holds. Per frequency (ROI c) the median latency at threshold is 54 ms at 2 kHz and 124 ms at
-    20 kHz. Below each neuron's highest rate the rate rises with voltage (slope positive in 24 of 24
-    neurons, median 11.8 Hz per V; not deciding).
+  notes: Under the crop ROI unmodulated waves excited 27 of 28 neurons at 2 kHz (96.4 %) and 15 of 17
+    at 20 kHz (88.2 % with O3 a, given as measured; 94.1 % with O3 b), and the first-AP latency fell
+    with voltage in 34 of 37 neuron-frequencies (Spearman rho below 0). Under every reading the median
+    latency at threshold is 59.8 to 88.4 ms, below 90 to 220 ms, and the median highest maximum firing
+    rate is 22.6 to 42.3 Hz, with 9.1 to 31.0 % of neurons in 54 to 99 Hz, so neither ceiling reading
+    holds. Per frequency (ROI c) the median latency at threshold is 59 ms at 2 kHz and 124 ms at 20
+    kHz. Two of the 42 latencies at threshold are under 5 ms (median 63.9 ms without them); such early
+    APs are not onset artefacts, since the same stimulus under TTX gives no transient above 5 % in the
+    first 10 ms in any of 71 sessions (145 of 211 without TTX). Under the Otsu ROIs 39.3 to 85.7 % of
+    neurons are excited at 2 kHz. Below each neuron's highest rate the rate rises with voltage (slope
+    positive in 23 of 23 neurons, median 12.3 Hz per V; not deciding).
   deviations:
   - Fields are the labelled generator voltages (see fig2d-modulated-thresholds-higher); the claim
     uses only their order.
-  - The 20-kHz excitation is below 90 % under ROI c with O3 a by one neuron of 17.
+  - The excitation part depends on the ROI (90 % or more under the crop ROI with O3 b only); the crop
+    ROI is assumed, as for ap-selection. The latency and ceiling parts fail under every reading.
 - claim: fig1-excitation-block
   outcome: not_reproduced
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig1-excitation-block
-  notes: Of the 10 or 11 neuron-frequencies tested above the voltage of their highest firing rate
-    (ROI c), none shows sustained depolarization (O4, either level) at its highest voltage; under
-    the Otsu ROIs 1 of 12 to 20 (ROI a) and 0 to 2 of 11 to 31 (ROI b). Most neurons still fire in
-    the last 100 ms at their highest voltage. Two sessions at any voltage meet O4 a (001032/12_1 at
-    15 V, 001033/3_2 at 9 V), and the mean dF in the last 100 ms rises with voltage (rho median 0.93,
-    positive in 42 of 45), so a depolarization builds up under firing, but the block is rare.
-    001032/12_1 at 15 V stays depolarized after the stimulus (7.87 % over 50 ms), against the claim's
-    immediate reversal. 38 sessions of 900 frames end at 291 ms, before the stimulus.
+  notes: Of the 12 to 14 neuron-frequencies tested above the voltage of their highest firing rate
+    (ROI c), none shows sustained depolarization (O4, either level) at its highest voltage; under ROI
+    a 2 of 12 to 15 do (one of them falling below the O4 level in the 50 ms after the stimulus), and
+    under ROI b 1 of 4 to 13 (O4 b only). Most neurons still fire in the last 100 ms at their highest
+    voltage. Two sessions at any voltage meet O4 a under the crop ROI (001032/12_1 at 15 V, with no
+    AP and 9.82 % mean dF in the last 100 ms, and 001033/3_2 at 9 V), and the mean dF in the last 100
+    ms rises with voltage (rho median 0.93, positive in 42 of 45), so a depolarization builds up, but
+    the block is rare. 001032/12_1 at 15 V stays depolarized after the stimulus (7.87 % over 50 ms),
+    against the claim's immediate reversal. 38 sessions of 900 frames end at 291 ms, before the
+    stimulus. The outcome is the same under the first round's detector and with the width at half
+    the dF only (0 of 11 to 22).
+  deviations:
+  - Traces are not corrected for bleaching, as the claims file says (F2, only the 2-s traces were);
+    the mean dF in the 50 ms after the stimulus is mostly below 0, so the late dF is biased down by up
+    to a few percent, against finding the block.
 - claim: fig1-20khz-needs-twice-the-field
-  outcome: partially_reproduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig1-20khz-needs-twice-the-field
-  measured: 2.27
-  notes: The 20-kHz thresholds are higher in every reading and every test reaches p < 0.0001 under
-    the crop ROI (unmodulated p 1.4e-09 and 2.5e-12, modulated 1.1e-05 and 7.1e-05 with 3 neurons,
-    pooled 1.3e-23), but the ratios of the means are 2.27 (pure, 1 AP, given as measured), 2.44,
-    2.62 and 2.86, outside 2 +- 0.2 in every reading (1.78 to 2.86 over all readings). Within the 11
-    neurons tested at both frequencies the median ratio is 3.33. The effect is present and larger
-    than the paper's in labelled volts; the files say the delivered amplitude differs from the
-    label by frequency-dependent factors that are not deposited, so the size cannot be compared.
-  deviations:
-  - Thresholds are in labelled generator voltages, not calibrated fields; the 20/2 kHz ratio in V/cm
-    depends on calibration factors the dandisets do not hold.
+  notes: The claim is a ratio of fields in V/cm at 20 and 2 kHz. The files give labelled generator
+    voltages and say the delivered amplitude differs from the label by frequency-dependent calibration
+    factors "reported separately", which are in none of the dandisets, so the ratio cannot be formed.
+    Not deciding - in labelled volts the 20-kHz thresholds are higher in every reading (pooled p 2.5e-06
+    to 2.2e-24; under the crop ROI the unmodulated tests reach p 5.1e-10 to 8.2e-10 for 1 AP and
+    1.9e-12 to 4.1e-12 for 5 APs), and the ratios of the means are 2.33 to 2.80 under the crop ROI
+    (2.04 to 3.52 over all readings), outside 2 +- 0.2. Within the 11 neurons tested at both
+    frequencies the median ratio is 3.36. The 20-kHz modulated group has 3 neurons. Recorded as
+    partially reproduced in the first round; blocked after the verifier's round 1.
 - claim: fig2d-5ap-above-1ap
   outcome: reproduced
+  assumed: true
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig2d-5ap-above-1ap
-  notes: For all four stimuli the mean 5-AP threshold is above the mean 1-AP threshold in the 10 of 12
-    readings where both exist (ROI c, 4.93 against 4.20 V pure 2 kHz, 6.02 against 5.35 modulated
-    2 kHz, 12.03 against 9.53 pure 20 kHz, 17.20 against 14.00 modulated 20 kHz). Under ROI b with O3
-    b no neuron reaches 5 APs with modulated waves, so those two readings cannot test it. The means
-    are over different numbers of neurons, since not all reach 5 APs.
+  notes: Under the crop ROI the mean 5-AP threshold is above the mean 1-AP threshold for all four
+    stimuli in all four F0 and O3 readings (F0 a, O3 a - 5.00 against 4.22 V pure 2 kHz, 6.15 against
+    5.38 modulated 2 kHz, 13.55 against 9.85 pure 20 kHz, 17.20 against 14.00 modulated 20 kHz, with 2
+    of 3 modulated 20-kHz neurons reaching 5 APs). Under the Otsu ROIs at most 1 neuron reaches 5 APs
+    with modulated waves, so those comparisons cannot be made, and under ROI b with O3 a the 5-AP mean
+    is below the 1-AP mean for pure 2 kHz (4.65 against 4.85 V, over 4 and 22 neurons) and pure 20 kHz
+    (12.00 against 12.33 V, over 1 and 9). The means are over different numbers of neurons; within a
+    neuron the 5-AP threshold cannot be below the 1-AP one.
+  deviations:
+  - The crop ROI is assumed, as for ap-selection; the Otsu readings give a different outcome.
 - claim: fig2d-modulated-thresholds-higher
   outcome: partially_reproduced
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig2d-modulated-thresholds-higher
-  measured: 75.6
-  notes: Modulated thresholds are higher than unmodulated ones in every comparison and reading. Under
-    the crop ROI the unpaired tests give p = 0.0205 (20 kHz, 1 AP) and 0.0305 (20 kHz, 5 APs), with
-    3 modulated neurons, but p = 0.09 for 2 kHz with 5 APs (paper 0.0079); 2 kHz with 1 AP does not
-    differ the other way (p = 0.0595, modulated higher). Paired, the 2-kHz 1-AP threshold is higher
-    with modulation in 11 of 12 neurons (p = 0.000116). The mean unmodulated 2-kHz threshold is 4.20 V
-    peak to peak, 75.6 V/cm (1 AP, given as measured) or 88.7 V/cm (5 APs) with 36 V/cm per volt of
-    amplitude, and twice that per volt peak to peak; none is within 57.7 +- 3.6. The tests hold at
-    20 kHz and not at 2 kHz with 5 APs; the value does not hold.
+  measured: 76.0
+  notes: Under the crop ROI modulated thresholds are higher than unmodulated ones in every comparison,
+    but only one of the paper's three significant differences is significant - 20 kHz with 1 AP,
+    p = 0.034 under O3 a (0.10 under O3 b), with 3 modulated neurons; 20 kHz with 5 APs p = 0.13 (2
+    neurons), 2 kHz with 5 APs p = 0.12 (paper 0.0079). 2 kHz with 1 AP does not differ the other way
+    (p = 0.056, modulated higher). Paired, the 2-kHz 1-AP threshold is higher with modulation in 11 of
+    12 neurons (p = 7.9e-05). Under the Otsu ROIs no test reaches p < 0.05. With the first round's
+    detector the 20-kHz tests give p = 0.021 and 0.031 and the 2-kHz 5-AP test 0.09. The mean
+    unmodulated 2-kHz threshold is 4.22 V peak to peak, 76.0 V/cm (1 AP, given as measured) or 90.1
+    V/cm (5 APs) with 36 V/cm per volt of amplitude, and twice that per volt peak to peak; none is
+    within 57.7 +- 3.6, but the files say the labels are not the delivered amplitude and the
+    calibration is not deposited, so this part cannot be judged. The direction holds; the
+    significance holds in one of three tests.
   deviations:
   - The conversion of labelled volts to V/cm is not settled by the files ("1V translates into 36
     V/cm" with the voltage labelled peak to peak); both readings are run. The files also say the
@@ -137,12 +162,14 @@ outcomes:
   assumed: true
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig2-modulated-locks-to-beats
-  notes: No modulated session has more than 10 APs (one of 84 has 10). In the 19 sessions with at
-    least 5 APs (ROI c), 95.1 % of APs fall within 12.5 ms of beat peaks 25 ms into each beat
-    (envelope reading a) and 4.9 % under reading b; the APs lock to 26.5 ms of the 50-ms beat (vector
-    strength 0.71, Rayleigh p = 4.4e-23), at both carriers. Under O4 b no session shows sustained
-    depolarization; under O4 a one does under the crop ROI (001032/2_1 at 11 V, whose window is cut
-    at 291 ms), none under the Otsu ROIs.
+  notes: No modulated session has more than 10 APs (at most 8, of 84). In the 16 sessions with at
+    least 5 APs (ROI c), 96.4 % of APs fall within 12.5 ms of beat peaks 25 ms into each beat (envelope
+    reading a) and 3.6 % under reading b; the APs lock to 26.6 ms of the 50-ms beat (vector strength
+    0.735, Rayleigh p = 2.0e-20), at both carriers. Under O4 b no session shows sustained
+    depolarization; under O4 a one does under the crop ROI (001032/2_1 at 11 V, 5.96 % with no AP in
+    its last 100 ms, a session cut at 291 ms), none under the Otsu ROIs. It is the only modulated
+    session with a last-100-ms mean dF above 5 %. Under the Otsu ROIs at most one session reaches 5
+    APs, so the locking is shown under the crop ROI.
   deviations:
   - The files hold no stimulus waveform. The envelope is assumed to start at minimal amplitude
     (reading a), as the paper's Methods say of the modulated strobe waves ("the first and the last
@@ -151,14 +178,19 @@ outcomes:
   - The O4 level is assumed to be half the neuron's median AP height (reading b), a level tied to
     the size of the neuron's own APs; under reading a (5 SD of the pre-onset noise) one of 84
     sessions, cut short by the end of its recording, passes it.
+  - The crop ROI is assumed, as for ap-selection.
 - claim: fig2c-pure-more-aps
   outcome: reproduced
+  assumed: true
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig2c-pure-more-aps
-  notes: In every reading pure waves gave more APs than modulated ones at the same carrier and voltage
-    in more pairs than the reverse (ROI c 47 of 52 pairs against 0, mean difference 3.75 APs, paired
-    p = 3.4e-10; ROI b with O3 b 21 against 11), and the pure 1-AP threshold was lower in more neurons
-    (ROI c 14 of 15, higher in none).
+  notes: Under the crop ROI pure waves gave more APs than modulated ones at the same carrier and
+    voltage in 44 of 52 pairs against 2 (mean difference 3.35 APs, paired p = 1.2e-08), and the pure
+    1-AP threshold was lower in 14 of 15 neurons (higher in none). Both parts hold in 11 of the 12
+    readings; under ROI b with F0 b and O3 b the counts favour pure waves (9 pairs against 6) but of
+    the 3 neurons with both thresholds the pure one is lower in none and higher in 1.
+  deviations:
+  - The crop ROI is assumed, as for ap-selection; one Otsu reading gives a different outcome.
 - claim: fig3b-low-conductivity-halves-threshold
   outcome: blocked
   blocked_by: other
@@ -190,10 +222,11 @@ outcomes:
   output: claim:fig3c-sustained-firing-2s
   notes: In all four neurons of 001030 (ROI c, bleaching-corrected) some voltage gives APs in the last
     250 ms of the 2-s wave and the AP count rises with voltage up to a point. No neuron under any
-    reading shows the block at the highest voltage, no AP after 275 ms with a raised dF; APs continue
-    (11 in c7 at 2.3 V, 6 in c8 at 2.0 V) while the count falls (c7 89 to 20, c8 46 to 8) and the mean
-    dF rises (6.72 % in c7). Firing gives way to depolarization within the wave, not before the end
-    of the ramp. Two c5 sessions end at 1,914 ms.
+    reading shows the block at the highest voltage (no AP after 275 ms with a raised dF). c7 at 2.3 V
+    comes close - 7 APs in the ramp and one after 275 ms (at 1,964 ms, 8.0 % high, prominence 4.4 %)
+    on a mean dF of 6.72 %; the first round's detector counted 11 there (prominences 2.7 to 6.4 %).
+    c8 at 2.0 V keeps 6 APs after 275 ms (prominence 4.1 to 7.2 %) on 3.63 %. At the top voltage the
+    count falls (c7 88 to 8, c8 46 to 8). Two c5 sessions end at 1,914 ms.
   deviations:
   - Bleaching is corrected by subtracting a trace without APs (Methods, F2). The only such trace in
     001030 is c7 at 1.0 V, so it is subtracted from every session; uncorrected traces are a variant.
@@ -204,53 +237,51 @@ outcomes:
   notebook: reproduce_semenov_2025.ipynb
   output: claim:figs1-di8-same-as-fluovolt
   measured: 3
-  notes: 001272 holds 3 Di-8-ANEPPS neurons, not 8. The inverted APs are small (median 4.1 % dF, 12 %
-    above 5 %), so O3 b alone applies, as the claims file says. Under the crop ROI with O3 b and F0 a
-    all 3 neurons show one to three APs at their lowest voltage with APs, a latency that falls with
-    voltage and sustained firing or depolarization above it; with F0 b 2 of 3 show the first two and
-    all 3 the third. Under ROI a with O3 b 2 of 3 show the falling latency; under ROI b with O3 b 1 of
-    3, and one neuron has no AP. The behaviour holds in the deposited neurons under the crop ROI; the
-    count of eight does not.
+  notes: 001272 holds 3 Di-8-ANEPPS neurons, not 8. The inverted APs are small (median 4.2 % dF, 13 %
+    above 5 %), so O3 b alone applies, as the claims file says. Under the crop ROI with O3 b, most of
+    the 3 neurons show one to three APs at their lowest voltage with APs (3 with F0 a, 2 with F0 b), a
+    latency that falls with voltage (2 of 3) and sustained firing or depolarization above it (3 of 3).
+    Under the Otsu ROIs with O3 b the latency falls in at most 1 of 3 and one or two neurons have no
+    AP. The behaviour holds in the deposited neurons under the crop ROI; the count of eight does not.
   deviations:
   - Only 3 of the paper's 8 neurons are deposited.
-  - The crop ROI is assumed, as for ap-selection.
+  - The crop ROI is assumed, as for ap-selection; the Otsu readings give a different outcome.
 - claim: figs2-ttx-blocks-depolarization
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_semenov_2025.ipynb
   output: claim:figs2-ttx-blocks-depolarization
-  notes: Under the crop ROI all 6 TTX neurons responded (AP or sustained depolarization) before TTX at
-    the voltages also tested after it, and none responded after (5 of 6 under F0 b with O3 a); after
-    TTX the mean dF in the last 100 ms stays at or below 0.42 %. 11 of 13 vehicle neurons kept their
-    response. The two that did not are 001271/4_20240730, whose longest pause is 73 s, so no change of
-    solution can be placed, and 001271/5_20240801, which lost its response at 2 of 7 voltages.
-    Sustained depolarization before TTX occurred in one neuron (2 sessions of 001271/14_20240731), so
-    its abolition rests on that neuron. The criterion's every vehicle neuron fails for 2 of 13.
+  notes: Under the crop ROI all 6 TTX neurons had APs before TTX at the voltages also tested after it
+    and none responded after (no AP, no sustained depolarization); after TTX the mean dF in the last
+    100 ms stays at or below 0.42 %. In 5 of 6 (3 or 4 with F0 b) every session before TTX responded;
+    in 001271/14_20240731 one of 8 did not. Sustained depolarization before TTX occurred only in that
+    neuron (2 sessions; median last-100-ms dF 5.08 and 5.18 % at 4.5 and 5 V before, -0.46 and -0.66 %
+    after), so its abolition rests on one neuron. 11 of 13 vehicle neurons responded at every common
+    voltage after the pause, all 13 at some. The two that did not at every voltage are
+    001271/4_20240730 (2 of 3), whose longest pause is 73 s, so no change of solution can be placed,
+    and 001271/5_20240801 (5 of 7). The split pause is about 300 s in most vehicle neurons, 167 s in
+    001271/13_20240731, 73 s in 001271/4_20240730 and 35 s in 001271/17_20240801 (no common voltage).
+    Under the Otsu ROIs at most 1 of 6 TTX neurons responds at every voltage before TTX.
   deviations:
   - Vehicle neurons carry no mark of when the vehicle was applied; the split is assumed at the longest
     pause between sessions (about 300 s in most, the Figure S2 legend's "about 5 min").
+  - The crop ROI is assumed, as for ap-selection.
 - claim: fig4-pooled-time-constants
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig4-pooled-time-constants
-  measured:
-  - 1.10
-  - 1.49
-  - 3.92
-  - 1.45
-  notes: Over the 22 groups of 001273 (scaled, free discharging amplitude) the means are 1.10 +- 0.39
-    and 1.49 +- 0.18 us (cathodic charging and discharging) and 3.92 +- 1.53 and 1.45 +- 0.23 us
-    (anodic); no selection, scaling or fit puts any of the four within the paper's SEM. 16 of 176
-    charging fits end at the 20-us bound; the medians are 0.37 to 0.49 (cathodic) and 0.57 to 1.02 us
-    (anodic) for charging and 0.81 to 1.79 us for discharging, against 0.65 to 0.91 in the paper.
-  deviations:
-  - ROIs are 12 x 12 pixel boxes centred on the extremes of the paper's RATIO image inside the cell;
-    the paper drew ROIs by hand over the most polarized regions, with no size given. This is a
-    choice made here, and the time constants are sensitive to it.
-  - No debris ROI is marked; frames are scaled to the image median (reading a) or not scaled (b).
-  - The paper's 19 experiments cannot be identified among the 22 groups of 7 or 8 replicates; all 22
-    and the 15 at 40 V are run. Backward recordings are reversed.
+  notes: The claim is a mean over the paper's 19 experiments in hand-drawn ROIs. 001273 holds no ROIs
+    and does not say which of its 22 groups are the 19 experiments; its groups were run at 40 to 130 V,
+    whose session descriptions give measured amplitudes of 25 to 102 V, where the paper gives 140 V/cm
+    for all. Not deciding - with 12 x 12 pixel boxes at the extremes of the smoothed ratio image, the
+    means over the 22 groups (scaled, free discharging amplitude) are 1.10 +- 0.39 and 1.49 +- 0.18 us
+    (cathodic charging and discharging) and 3.92 +- 1.53 and 1.45 +- 0.23 us (anodic); no selection,
+    scaling or fit puts any of the four within the paper's SEM, 16 of 176 charging fits end at the
+    20-us bound, and the medians are 0.37 to 0.49 (cathodic) and 0.57 to 1.02 us (anodic) for charging
+    and 0.81 to 1.79 us for discharging. Recorded as not reproduced in the first round; blocked after
+    the verifier's round 1, as the time constants depend on ROIs and a selection the dandiset does not
+    give.
 - claim: fig4-orientation-and-poles
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -266,14 +297,15 @@ outcomes:
   notes: The claim is about the Figure 5 and S3 cells (C7 and C8 of Figure 6B). The files do not
     identify them, and the Figure 5 cell's 12 sine sessions match no cell in 001274 (four at most at
     100 Hz). For the nine cells taken as Figure 6's, the pulse asymmetry is 10.8 to 69.2 % and the sine
-    asymmetry 5.2 to 99.8 % (shown in the notebook, not deciding).
+    asymmetry 4.6 to 99.7 % (shown in the notebook, not deciding).
 - claim: fig5-whole-cell-depolarization
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: Same cells as fig5-sine-asymmetry, not identifiable. For the nine cells (not deciding), the
-    signed sine slopes of ROI 1 and ROI 2 have opposite signs in 8, while the Pearson correlation of
-    the two oscillations is negative in 2; the LOESS fit at the envelope peak is above F0 in both ROIs
-    in 2 cells.
+    signed sine slopes of ROI 1 and ROI 2 have opposite signs in 8 and the fitted carrier phases of the
+    two ROIs lie near antiphase, while the Pearson correlation of the whole oscillation traces, which
+    include everything the LOESS leaves, is negative in 2 (p < 0.05); the LOESS fit at the envelope
+    peak is above F0 in both ROIs in 2 cells.
 - claim: fig6-sine-less-than-pulse
   outcome: partially_reproduced
   assumed: true
@@ -283,41 +315,47 @@ outcomes:
   - 4
   - 17.4
   - 3.14
-  - 5.58
-  - 0.0203
-  - 32.2
+  - 5.55
+  - 0.035
+  - 32.0
   notes: Sine sensitivity is below pulse sensitivity in all 18 ROIs of the nine cells under the signed
     regression (15 of 18 under the per-cycle reading). The values are lower than the paper's - pulse
-    17.4 % per kV/cm (3.14 to 29.2; paper 28, 15 to 47), sine 5.58 % (0.02 to 14.9; paper 11.8, 1.5
-    to 28.4), ratio 32.2 % (paper 42 %) - and the regression reaches p < 0.0001 in both ROIs in 4
-    cells, not 8 (scaled, span 2 ms, signed regression, given as measured). The direction holds; the
-    numbers do not, under any reading.
+    17.4 % per kV/cm (3.14 to 29.2; paper 28, 15 to 47), sine 5.55 % (0.04 to 14.8; paper 11.8, 1.5
+    to 28.4), ratio 32 % (paper 42 %) - and the regression reaches p < 0.0001 in both ROIs in 4 cells,
+    not 8 (scaled, span 2 ms, signed regression, given as measured). The assumed carrier phase was
+    checked by fitting it - the ROI 1 carriers lie at -1.8 to -3.1 rad and the ROI 2 carriers at 0.1 to
+    0.9 rad in 7 cells (1.56 and -2.13 rad in the other two), near antiphase with each other; at the
+    fitted phase the sine sensitivity averages 6.4 to 6.5 % (ratio 37 %), below the pulse in 18 of 18
+    ROIs. The pulse starts at frame 20, as the file description says (the binned pulse dF). The
+    direction holds in every ROI under the signed regression; the numbers fail under every reading.
   deviations:
-  - ROIs and scaling as in fig4-pooled-time-constants (assumed box ROIs).
+  - ROIs are 12 x 12 pixel boxes centred on the extremes of the paper's RATIO image inside the cell;
+    the paper drew ROIs by hand over the most polarized regions, with no size given. This is an
+    assumption, and the sensitivities depend on it.
+  - No debris ROI is marked; frames are scaled to the image median (reading a) or not scaled (b).
   - The nine cells are those of 001274 with a pulse and 100-Hz modulated waves without TTX; the
     files do not label them C1 to C9.
   - Fields are the paper's 257 V/cm (pulse) and 136 V/cm peak (sine), scaled by the generator voltage
-    for the two cells run at 5 V (sine) and 15 V (pulse); the carrier phase is taken as zero at the
-    first frame, which the antiphase slopes are consistent with.
+    for the two cells run at 5 V (sine) and 15 V (pulse), as 001274 gives no measured amplitudes; the
+    carrier phase is taken as zero at the first frame, checked above.
+  - The LOESS is R's loess (degree 2, tricube weights, no robustness iterations), as the paper ran
+    RStudio (Table S1), with the claims file's spans of 2 and 4 ms (O6); the first round used
+    statsmodels' lowess.
   - Four sine sessions per cell are averaged; the paper averaged 4 to 12.
 - claim: threshold-depolarization-estimate
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_semenov_2025.ipynb
   output: claim:threshold-depolarization-estimate
-  measured:
-  - 0.42
-  - 4.22
-  notes: With the signed-regression sine sensitivity (5.58 %) and the unmodulated 2-kHz 1-AP threshold
-    (75.6 V/cm, amplitude reading) the emission change at threshold is 0.42 % and 4.2 mV (0.50 % and
-    5.0 mV with the 5-AP threshold), below 0.68 +- 0.11 % and 6.8 +- 1.1 mV. Only the per-cycle slope
-    gives values in range (18 of its 24 combinations under the amplitude reading, none under the
-    signed regression); the peak-to-peak reading gives 0.83 to 1.48 %. Both inputs differ from the
-    paper's.
-  deviations:
-  - The amplitude reading of the field and the signed regression are adopted, the first as closer to
-    the paper's own field values, the second as the paper's "regression coefficient between the
-    emission change and the electric field strength" (Figure 6C legend).
+  notes: The estimate needs the 2-kHz AP threshold in V/cm. The files give labelled generator voltages
+    and "1V translates into 36 V/cm" without saying whether of the amplitude or the peak-to-peak value,
+    and say the delivered amplitude is "somewhat smaller", the calibration not being deposited; the
+    outcome changes with the field reading. Not deciding - with the signed-regression sine sensitivity
+    (5.55 %) and the 1-AP threshold under the amplitude reading (76.0 V/cm, crop ROI) the emission
+    change is 0.42 % and 4.2 mV (0.50 % and 5.0 mV with the 5-AP threshold); the peak-to-peak reading
+    gives 0.84 to 1.46 %; 20 of 24 combinations with the per-cycle slope under the amplitude reading
+    are in range, none otherwise. With the paper's own 57.7 V/cm the emission is 0.32 to 0.47 %.
+    Recorded as not reproduced in the first round; blocked after the verifier's round 1.
 findings:
 - kind: metadata_error
   statement: DANDI:001048 names this paper as related (IsPublishedIn) but holds TIRF recordings of HEK
@@ -351,6 +389,8 @@ findings:
   statement: The strobe dandisets (001273, 001274) hold no ROIs, no debris ROI, no cell shape or
     orientation, no stimulus waveform and no mark of which groups are the paper's 19 Figure 4
     experiments or the cells C1 to C9 of Figure 6. The Figure 5 cell's 12 sine sessions match no cell.
+    001273 notes that its 40, 80, 100 and 130 V pulses measured 25, 62, 79 and 102 V, where the paper
+    gives 140 V/cm for every Figure 4 experiment.
 - kind: other
   statement: The dandisets hold stimuli the paper does not describe - sine waves of 20 Hz to 10 kHz in
     001032, 001033 and 001035 (a 20-Hz session in most neurons), 100-kHz bipolar pulses in 001031,
@@ -363,9 +403,10 @@ findings:
 - kind: methods_unavailable
   statement: Questions for the authors on the optical AP analysis - how the soma ROI was drawn (the
     deposited 16 x 16 crop is used here), how APs were identified and their duration measured (the
-    half width here is about 4.5 ms against the paper's 8 ms), how the maximum firing rate was
+    half width here is about 3.7 ms against the paper's 8 ms), how the maximum firing rate was
     measured at fields where APs merge, and the calibration that converts the deposited voltages to
-    the V/cm of Figure 2D.
+    the V/cm of Figure 2D. The width at half height of an AP is measured here both at half its dF and
+    at half its prominence; which the paper meant decides how APs riding on a depolarization count.
 - kind: methods_unavailable
   statement: Questions for the authors on the strobe analysis - the size of the ROIs, which groups of
     001273 are the 19 experiments of Figure 4 and which cells are elongated, which cells of 001274 are
@@ -375,3 +416,205 @@ findings:
   statement: Question for the authors - which field (peak or RMS) and volumetric heat capacity give the
     adiabatic rise of 2.5 C at 63 V/cm in a 16.4 mS/cm solution; with water's heat capacity the peak
     field gives 3.89 C and the RMS field 1.95 C.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the paper. The handover package held the claims file of dandiset 001274 for the
+    same paper in place of this attempt's (claims/001048), because tools/entry.py handover copies the
+    claims file of every dandiset the entry uses under the same file name, and the 001274 copy
+    overwrote the 001048 one. The verifier therefore judged 26 claims with other ids, criteria and
+    readings (O1 to O4) and reported that the notebook followed another claims file. Its results are
+    recorded below against this file's claims, each with the verifier's claim it maps to; its outcomes
+    were given under that other file's criteria. Four claims of this file have no counterpart in its
+    report (ap-selection, fig2d-5ap-above-1ap, fig3-extrapolated-threshold, fig3-not-heating) and are
+    not listed. Its problems on the code apply to this file as well and were taken up - the AP detector
+    (problems 2 and 3) now asks for a width of 2 to 20 ms both at half the dF and at half the prominence,
+    which removes the plateau oscillations its synthetic test found, and both single measures are
+    shown as variants; the crop-ROI rule (problem 4) is now an assumption recorded on each outcome
+    where the ROI readings disagree, as protocol step 1.6 allows, where the claims file's header would
+    block; bleaching (problem 6) is not corrected, as the claims file's F2 says the paper corrected only
+    the 2-s traces, and its bias is stated; the outputs it asked for under C were added. Problems 12 to
+    14 (the 1.1-mV tolerance, the 4.5 to 16.5 mV range, the beat-phase reading b, the "sustained firing
+    or depolarization" test and the "most" threshold) follow this attempt's claims file, so they were
+    not changed. Its report quoted the verifier's cell numbers of the stripped notebook.
+  results:
+  - claim: fig1-pure-sine-excites-all
+    agrees: false
+    outcome: blocked
+    reason: (Judged on the 001274 file's fig1-pure-sine-excites-all, with fig1-onset-delay and
+      fig1-max-rate-ceiling.) ROI c - 2 kHz 96.4% (27/28); 20 kHz 88.2% under the notebook's AP reading
+      (a) but 94.1% under (b). The readings disagree, which the criterion says blocks the claim. The
+      claims file's own reading (b), a rise of 5% within 5 ms, was never run. Median first-AP latency
+      at the near-threshold session is 66 to 67 ms for ROI c under all readings, outside 90 to 220 ms;
+      the Spearman part passes (40/40 negative). Median ceiling is 40 to 44 Hz for ROI c, outside 54 to
+      99 Hz. First-AP latencies go down to 1 ms and may be stimulus-onset artefacts, never inspected.
+    response: Kept partially reproduced, now marked assumed. Under this file the claim has one
+      criterion with four parts, and the latency and ceiling parts fail under every reading while the
+      excitation and falling latency hold under the crop ROI, so the outcome is partial under every
+      reading; the excitation part depends on the ROI and O3 readings, recorded as resting on the crop
+      ROI. The rise-within-5-ms reading belongs to the other file. Added a check of APs within 5 ms of
+      onset (66 sessions, 2 of the 42 latencies at threshold); under TTX the same stimulus gives no
+      transient above 5 % in the first 10 ms in any of 71 sessions, so they are not onset artefacts,
+      and without them the median latency is 63.9 ms. With the new detector the median latency is
+      59.8 to 88.4 ms and the median ceiling 22.6 to 42.3 Hz.
+  - claim: fig1-excitation-block
+    agrees: true
+    outcome: not_reproduced
+    reason: Applying the claims criterion to cell 21, at most 4 of 32 neurons have a mean dF above 5% in
+      the last 100 ms at their highest voltage. The notebook's own test (cell 20) finds 0 to 2. The
+      detector counts plateau oscillations as APs (problem 3), which defeats the block tests that
+      require no AP. There is no bleaching correction for the 250-ms traces; mean_post50 is mostly
+      -0.5% to -4%, so late-window dF is biased downward.
+    response: Outcome kept. With the new detector, which no longer counts small oscillations on a
+      plateau, the block is still absent at the highest voltage under the crop ROI (0 of 12 to 14) and
+      rare under the Otsu ROIs (2 of 12 to 15 under ROI a, 1 of 4 to 13 under ROI b); 001032/12_1 at 15 V
+      now has no AP and 9.82 % mean dF. Bleaching is not corrected, following the claims file's F2; its
+      downward bias is stated in the conclusion and the record.
+  - claim: fig1-20khz-needs-twice-the-field
+    agrees: false
+    outcome: blocked
+    reason: (Judged as the 001274 file's fig2d-20khz-twofold-threshold.) The files give nominal
+      voltages and say "calibration factors are frequency-dependent and will be reported separately";
+      confirmed via the API. So the 20/2 kHz field ratio cannot be formed. Taken at face value, the
+      voltage ratios are 2.27 to 2.86 for ROI c, outside 2+-0.2, although every p < 1e-4. Thresholds in
+      nominal volts are compared across frequencies even though the calibration is frequency dependent.
+    response: Changed to blocked, metadata insufficient, as the verifier says - the expected value is a
+      ratio of calibrated fields. The voltage ratios (2.33 to 2.80 under the crop ROI with the new
+      detector) are kept as a variant.
+  - claim: fig2d-modulated-thresholds-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: ROI c - 2 of 3 pairs significant and higher under AP reading (a) (20k 1-AP p=0.021, 20k
+      5-AP p=0.031); 1 of 3 under (b). The 2-kHz 5-AP pair has p=0.09. The 20-kHz modulated group has
+      only 3 neurons. (The 57.7 V/cm value, as the 001274 file's threshold-2khz-unmodulated, it would
+      block as metadata_insufficient - 75.6 or 151 V/cm against 57.7, the true amplitude "somewhat
+      smaller" and the calibration not deposited.)
+    response: Outcome kept. With the new detector 1 of 3 tests is significant (20 kHz 1 AP, p = 0.034
+      under O3 a; 0.10 under O3 b), and the first round's p values are shown as a variant. The notes now
+      say the 57.7 V/cm part cannot be judged, the calibration not being deposited.
+  - claim: fig2-modulated-locks-to-beats
+    agrees: false
+    outcome: partially_reproduced
+    reason: (i) At most 10 APs per session. (ii) 85 to 100% of APs fall in the middle half of the beat,
+      and the histogram peaks at 20 to 35 ms. (iii) The claims' block test was never computed for
+      modulated sessions; the notebook's O4(a) test flags one session.
+    response: Outcome kept as reproduced, resting on the envelope phase and the O4 level. Part (iii)
+      of the other file's criterion is not this file's (this one asks for no session with sustained
+      depolarization by O4); the requested output was added - 1 of 84 modulated sessions has a
+      last-100-ms mean dF above 5 %, the session that O4 (a) flags, cut at 291 ms. With the new
+      detector at most 8 APs per session and 96.4 % within 12.5 ms of the beat peak.
+  - claim: fig2c-pure-more-aps
+    agrees: true
+    outcome: reproduced
+    reason: ROI c - pure sine has more APs in 47 pairs, modulated in 0, paired p about 3e-10, under both
+      AP readings. Pure exceeds modulated under every reading; only the eroded-ROI + 5 SD readings miss
+      p < 0.05.
+    response: Outcome kept, now marked assumed, as one Otsu reading (ROI b, F0 b, O3 b) fails the
+      threshold part with the new detector. Under the crop ROI 44 of 52 pairs favour pure waves against
+      2 (p = 1.2e-08).
+  - claim: fig3b-low-conductivity-halves-threshold
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive - no 250-ms NaGlu sessions. 001031 is in NaGlu but holds 100-kHz
+      bipolar pulses for 2 s, and an archive search for "gluconate" finds nothing. (It gives
+      data_missing.)
+    response: Outcome kept. The reason stays other, since the registry's check rejects data_missing
+      for a claim marked data elsewhere; the notes say the data are deposited nowhere.
+  - claim: fig3c-sustained-firing-2s
+    agrees: false
+    outcome: not_reproduced
+    reason: Part (iii) fails in all 4 neurons under every reading - APs are detected after 275 ms at the
+      top voltage, e.g. c7 at 2.3 V has 11 APs on a 6.7% mean dF. The detector counts plateau
+      oscillations as APs (problem 3), so this could flip. (Given as provisional.)
+    response: Outcome kept as partially reproduced; under this file's criterion the first two parts
+      hold in all four neurons and only the block fails. With the new detector c7 at 2.3 V keeps one AP
+      after 275 ms (8.0 % high, prominence 4.4 %), where the first round counted 11 (prominences 2.7 to
+      6.4 %), and c8 at 2.0 V keeps 6 (prominence 4.1 to 7.2 %), so the block still fails. The prominences
+      and the rise-within-5-ms count the verifier asked for were added.
+  - claim: figs1-di8-same-as-fluovolt
+    agrees: false
+    outcome: blocked
+    reason: (Judged as the 001274 file's figs1-di8-anepps-control.) The readings disagree - ROI c latency
+      falls with field in 1/3 neurons (O3 a) vs 3/3 (O3 b). Only 3 of the 8 neurons are deposited, and
+      the claims' block test was not computed. (Blocked as methods_underspecified.)
+    response: Outcome kept as partially reproduced, resting on the crop ROI. This file says O3 (b) alone
+      applies when the Di-8-ANEPPS APs do not reach 5 %, which they do not (13 %), so the O3 (a) reading
+      does not decide; the ROI readings disagree, and the crop ROI is adopted as an assumption under
+      protocol step 1.6. The count of eight fails.
+  - claim: figs2-ttx-blocks-depolarization
+    agrees: true
+    outcome: partially_reproduced
+    reason: APs are abolished in 6/6 TTX neurons (ROI c). The depolarization half is untested - a
+      sustained depolarization before TTX is found at the common voltages in only 1 of 6 neurons. 11 of
+      13 vehicle neurons keep their response. ok checks only for any response before and none after,
+      not the claims' last-100-ms dF test; the vehicle split uses gaps of 35 to 167 s for some neurons
+      (17_20240801, 13_20240731, 4_20240730), not about 5 min.
+    response: Outcome kept. The last-100-ms test is the other file's; this file asks for APs or
+      sustained depolarization (O4). Added, per TTX neuron and common voltage, the last-100-ms mean dF
+      before and after TTX (above 5 % only in 001271/14_20240731, 4 sessions at 4.5 and 5 V, and never
+      after), a variant with "at least one" response, and the split pause of every vehicle neuron; the
+      short pauses are named in the notes.
+  - claim: fig4-pooled-time-constants
+    agrees: false
+    outcome: blocked
+    reason: No ROIs, and which 19 experiments are the paper's is unknown. The variant has 0 of 4 values
+      within the SEM in all 8 runs, and 16 of 176 fits sit at the 20-us bound. Rebuilt 12x12 box ROIs
+      and whole-image-median scaling are used as tests. The field per cell is scaled linearly with
+      voltage; for 001273 the descriptions give measured amplitudes (40 V to 25 V, 80 to 62, 100 to 79,
+      130 to 102), which the notebook ignores when pooling groups at different voltages.
+    response: Changed to blocked, metadata insufficient - the ROIs and the 19 experiments are not in
+      the dandiset, and the time constants depend on both. The box-ROI fits are kept as a variant, and
+      the measured amplitudes are now printed and named in the conclusion and the findings.
+  - claim: fig4-orientation-and-poles
+    agrees: true
+    outcome: blocked
+    reason: (Judged as fig4-orientation-time-constants, fig4-no-pole-difference and
+      fig4-discharging-slower.) No ROIs and no shape or orientation labels; confirmed by scanning all
+      001273 session descriptions. There are 22 replicate groups against the paper's 19 experiments.
+      The variant gives paired p = 0.053, 0.105 and 0.917, and per-pole p = 0.12 and 0.37.
+    response: No change needed.
+  - claim: fig5-sine-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: (Judged as fig5-sine-asymmetry-c7, figs3-sine-asymmetry-c8, fig5-carrier-antiphasic and
+      fig5fg-no-migration.) C7 cannot be matched - no cell has 12 sine sessions at both rates, and the
+      descriptions carry no cell labels (checked via the API). C8 cannot be identified, and there are no
+      ROIs. The dataset holds none of the 16 ROIs or their 5F/5G split.
+    response: No change needed.
+  - claim: fig5-whole-cell-depolarization
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5-carrier-antiphasic. The ROI 1 to ROI 2 oscillations are positively
+      correlated in 6 of 9 cells, which suggests a common-mode signal or a phase mismatch.
+    response: No change of outcome. The carrier phase of each ROI is now fitted (fig6 section); the two
+      ROIs' carriers lie near antiphase, so the positive correlations come from what the LOESS leaves
+      besides the carrier. The notes say so.
+  - claim: fig6-sine-less-than-pulse
+    agrees: false
+    outcome: blocked
+    reason: (Judged as fig6b-pulse-sensitivity, fig6c-sine-sensitivity and fig6d-sine-less-than-pulse.)
+      The dataset has no ROIs, and O1 says to block in that case. The rebuilt-ROI variant gives a mean
+      of 17.4 against 28+-2.5, with a minimum of 3.1; 4 cells (or 0) have p < 1e-4 in both ROIs, against
+      8; a sine mean of 5.6 to 8.3 and a sine/pulse ratio of 32 to 47%. LOESS is statsmodels lowess
+      (locally linear, 3 robustness iterations), not R loess with degree 2. The field's carrier phase is
+      assumed to be 0 at frame 0 and never checked. The pulse-onset frame of the 140-frame 001274 pulse
+      files was not printed.
+    response: Outcome kept as partially reproduced, resting on the ROI boxes, the scaling and the field
+      values; the disagreement is recorded. This file has no rule that blocks a claim for want of
+      deposited ROIs; the paper says how its ROIs were placed (over the most de- and hyperpolarized
+      regions of the RATIO image), which the boxes follow, and the direction (sine below pulse) holds in
+      every ROI under the signed regression and at the fitted phase (15 of 18 under the per-cycle
+      reading) while the sizes fail under every reading. LOESS is now R's loess (degree 2, no
+      robustness iterations); the carrier phase is now fitted per ROI (near antiphase between the ROIs,
+      sensitivity at the fitted phase 6.4 to 6.5 %, ratio 37 %, below the pulse in 18 of 18); the pulse
+      files' description and the binned pulse dF put the onset at frame 20.
+  - claim: threshold-depolarization-estimate
+    agrees: false
+    outcome: blocked
+    reason: It depends on fig6d and threshold-2khz-unmodulated, both blocked. Cell 59 uses a +-1.1 mV
+      tolerance and a 4.5 to 16.5 mV range; the claims file gives +-0.68 mV.
+    response: Changed to blocked, metadata insufficient - the threshold in V/cm cannot be formed without
+      the calibration, and the outcome changes with the field reading. The 1.1-mV tolerance and the
+      4.5 to 16.5 mV range are this file's.
