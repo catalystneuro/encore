@@ -53,11 +53,12 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_semenov_2025.ipynb
   output: claim:figs2-before-firing-then-depolarization
-  notes: Firing holds and sustained depolarization does not, under every combination of the claims file's readings
-    (O1 to O4). With O1(a) every neuron fires before the change (20 of 20 with the 5% height, 18 or 19 with the
-    5-SD height) and all have APs without sustained depolarization at a lower field. No neuron shows sustained depolarization
-    (O4) at its highest field under any reading (0 of 20; 0 of 7 under O1(b)), where the criterion needs more than
-    half. At the highest field the mean dF over the last 100 ms of the stimulus is above zero in 20 of 20 neurons
+  notes: Each of the 24 combinations of the claims file's readings (O1 to O4) gives not reproduced, and the criterion
+    has no partial outcome. Firing before the change holds under some readings only. With O1(a) every neuron fires
+    with the 5% height (20 of 20) and 18 or 19 of 20 with the 5-SD height, and 18 to 20 have APs without sustained
+    depolarization at a lower field; with O1(b) all 7 fire with the 5% height and 1 of 7 with the 5-SD height. No
+    neuron shows sustained depolarization (O4) at its highest field under any reading (0 of 20; 0 of 7 under
+    O1(b)), where the criterion needs more than half. At the highest field the mean dF over the last 100 ms of the stimulus is above zero in 20 of 20 neurons
     (median 2.63%, range 0.55 to 5.41% with O1(a)), below both O4 levels (medians 7.29% and 4.93%), and 9 of the
     20 still have an AP in that window. The whole-frame variant finds 1 of 20. Against a baseline without
     depolarization, the median of the same window over every session after TTX (-0.60%, as in the 5 sham sessions,
@@ -65,7 +66,14 @@ outcomes:
     O4 levels in every neuron. The depolarization the paper describes is present but smaller than the levels of the
     claims file's measure, which cannot detect plateaus of this size in these recordings; the failed part says the
     measure finds none, not that the data show none. The maximum firing rate rises with field in most neurons
-    (tables in the notebook).
+    (tables in the notebook). Whether O4 suits these data is asked of a reader (questions/001271.yaml).
+  proposed:
+    outcome: not_reproduced
+    reason: Every one of the 24 claims-file readings gives not reproduced (notebook, the table of this claim), and
+      the criterion has no partial outcome; firing in every neuron also fails under the 5-SD height (18 or 19 of 20
+      neurons with O1(a), 1 of 7 with O1(b)). The round-2 verifier gives not_reproduced for this reason. The failure
+      rests on O4, whose levels are above the plateaus of these recordings, so the claims file's measure cannot
+      detect them; this is asked of a reader.
   deviations:
   - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
     file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
@@ -136,7 +144,8 @@ outcomes:
     membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
     that reading. The whole frame is shown as a variant that decides nothing.
   - After the change the 5-SD level of O4(a) is the median pre-stimulus SD of the neuron's sessions before the change,
-    as O3 has it for APs, an extension of O3 to O4 made by this attempt.
+    as O3 has it for APs, an extension of O3 to O4 assumed by this attempt. It does not change the outcome, as no
+    pair qualifies before TTX.
 - claim: figs2-vehicle-keeps-response
   outcome: blocked
   blocked_by: methods_underspecified
@@ -161,7 +170,8 @@ outcomes:
   - The files do not mark the solution change. For TTX neurons it is the first session labelled with TTX; for vehicle
     neurons it is placed at the last gap of more than 3 minutes between sessions (an assumption; the Methods give
     20 to 60 s between sessions and the TTX neurons' gaps before TTX are 3.6 to 10.0 minutes). Three vehicle-labelled
-    neurons have no such gap and count as having no change.
+    neurons have no such gap and count as having no change. This assumption does not decide the outcome, which
+    is blocked whichever change point 13_20240801 is given.
 - claim: ap-amplitude-duration
   outcome: blocked
   blocked_by: methods_underspecified
@@ -171,7 +181,7 @@ outcomes:
     each session, duration to the return to F0) gives means within the paper's SEM (10.76% and 7.62 ms over 18 neurons);
     the other 31 do not, and the criterion blocks the claim when the readings disagree. With O1(a) mean peaks are
     9.29 to 10.82% and widths at half height 3.56 to 4.06 ms (about half the paper's 8 ms); durations to F0 are
-    6.52 to 9.28 ms. With O1(b) (7 neurons, 1 with the 5-SD height) peaks are 16.3 to 18.9%. In the whole frame
+    6.52 to 9.28 ms. With O1(b) (7 neurons, 1 with the 5-SD height) peaks are 15.8 to 18.9%. In the whole frame
     peaks are 7.67 to 9.54%. The dataset's neurons are not known to be among the paper's 22.
   deviations:
   - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
@@ -206,9 +216,11 @@ outcomes:
     no reading has all four ratios within 1.8 to 2.2 (6 of 32 stimulus and AP-count rows are), so the criterion
     fails under every reading. The measured value is the unmodulated 1-AP ratio under the first reading (2.16; 2.15
     to 2.19 with the 5% height, 2.56 or 3.51 to 3.53 with the 5-SD height). Unmodulated 5-AP ratios are 2.06 to
-    2.84 and modulated ones 2.24 to 2.96, with 1 to 3 neurons with modulated 20-kHz thresholds. The ratios are of
-    the stated generator voltages; the files say the actual amplitude is smaller by a frequency-dependent factor
-    they do not give, so the field ratio may differ.
+    2.84 and modulated ones 2.24 to 2.96, from 1 to 3 neurons with modulated 20-kHz thresholds (0 or 1 for 5 APs,
+    where there is no ratio when there are none). Without the 20-kHz sessions of 13_1, which show the cell of 14_1,
+    0 or 1 of the four ratios is within 1.8 to 2.2 in each reading (a variant). The ratios are of the stated
+    generator voltages; the files say the actual amplitude is smaller by a frequency-dependent factor they do not
+    give, so the field ratio may differ.
   deviations:
   - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
   - Thresholds are in stated generator volts; the frequency-dependent calibration to the actual field is not given
@@ -219,16 +231,21 @@ outcomes:
   output: claim:fig2d-modulated-thresholds-higher
   measured: 74.1
   notes: Under no reading do the three comparisons the paper reports as significant all hold. Modulated thresholds
-    are higher on average wherever they can be compared, but the 2-kHz 5-AP difference is not significant (p = 0.082
-    to 0.28 under O1(a)), and only 1 to 3 neurons have modulated 20-kHz thresholds (1-AP p = 0.013 with the 5% height,
-    0.80 with the 5-SD height; the 5-AP test cannot be run). The 2-kHz 1-AP threshold is not lower for modulated
+    are higher on average wherever they can be compared except at 20 kHz with 1 AP under O1(b) with the 5-SD height
+    (12.00 or 11.93 V unmodulated against 11.00 V for the one modulated neuron). The 2-kHz 5-AP difference is not
+    significant (p = 0.082 to 0.28 under O1(a)), and only 1 to 3 neurons have modulated 20-kHz 1-AP thresholds and
+    0 or 1 have 5-AP ones (1-AP p = 0.013 with the 5% height under O1(a), 0.80 with the 5-SD height; the 5-AP test
+    cannot be run). Without the 20-kHz sessions of 13_1 the tests fail in every reading too (a variant). The 2-kHz 1-AP threshold is not lower for modulated
     waves in any reading. The measured value is the mean 2-kHz unmodulated 1-AP threshold under the first reading
     at 18 V/cm per V, 74.1 V/cm (74.1 to 79.0 under O1(a), 61.2 to 67.6 under O1(b), twice these at the files' 36
     V/cm per V), against 57.7 +/- 3.6.
   deviations:
   - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
   - Fields use 18 V/cm per stated volt, the scale at which 001271's voltages give the fields of Figure S2; the files
-    state 36 V/cm per V, also shown.
+    state 36 V/cm per V, also shown. The 18 V/cm scale is an assumption of this attempt; the outcome is the same at
+    both scales, so it does not rest on it.
+  - Subject 13_1 of 001032 is counted as one neuron as deposited, though its 20-kHz sessions show another cell;
+    without them the outcome is the same.
 - claim: fig2-modulated-locks-to-beats
   outcome: reproduced
   assumed: true
@@ -240,13 +257,14 @@ outcomes:
     firing against the sustained firing of pure sine waves, and amended the criterion. A modulated session now
     shows sustained firing when more than two APs fall in one beat or, with 5 APs or more, at least as many APs
     fall outside 12.5 to 37.5 ms of the beats as inside. Under it, 12 of the 16 readings pass, all four O1(a)
-    readings with the 5-SD height and all eight O1(b) readings. Under O1(a) with the 5% height, 92% of 212 APs in
+    readings with the 5-SD height and all eight O1(b) readings. Under O1(a) with the 5% height, 91% of 213 APs in
     84 modulated sessions fall within 12.5 to 37.5 ms of a beat (49% of 1,383 APs for unmodulated waves), no
-    session has more than 8 APs, all 14 sessions with 5 APs or more have most APs near the beat peaks, no session
+    session has more than 8 APs, all 15 sessions with 5 APs or more have most APs near the beat peaks, no session
     has as many APs outside that window as inside, and none shows sustained depolarization. The four O1(a)
     readings with the 5% height fail through a single session, subject 9_2 at 2 kHz and 3.4 V, with three APs in
     the fifth beat (206.4, 217.4 and 236.2 ms, peaks 11.1 to 22.2% dF). Its pre-onset SD is 9.8% dF, about twice
-    the 5% level, and none of its peaks passes its 5-SD level (49.0% dF). The O4 definition would still flag 15
+    the 5% level, and none of its peaks passes its 5-SD level (49.0% dF); the same neuron's unmodulated session
+    at 3.4 V has a pre-onset SD of 1.40% dF and eight APs of 11.6 to 15.0% dF under both heights. The O4 definition would still flag 15
     to 32 modulated sessions under O1(a); the amended rule flags 88 of the 197 unmodulated sessions with 3 APs or
     more, so it separates the two kinds of wave. What the answer changed is the test of sustained firing, and with
     it the outcome, from partially_reproduced to reproduced; the first run's assumption that O1(a) decides is no
@@ -263,7 +281,7 @@ outcomes:
   output: claim:fig2c-pure-more-aps
   notes: All 8 readings of the claims file pass with the 1-AP threshold. With the O1(a) ROI the unmodulated wave
     gives more APs than the modulated one at the same carrier and voltage in 32 to 43 of 52 pairs (12 neurons)
-    against 2 to 4 (paired t p = 2.3e-10 to 7.8e-07), and the unmodulated 1-AP threshold is lower in 10 to 13 of
+    against 2 to 4 (paired t p = 4.7e-10 to 7.8e-07), and the unmodulated 1-AP threshold is lower in 10 to 13 of
     12 to 15 neurons (0 to 2 the reverse). With O1(b) (5 neurons) the count is larger in 5 to 14 of 16 pairs against
     1 to 3, and the 1-AP threshold lower in 3 to 6 of 3 to 7 neurons against 0 or 1. Requiring the 5-AP threshold
     too (a variant) passes the four O1(a) readings (2 to 6 of 4 to 9 neurons lower, none the reverse) and fails the
@@ -305,10 +323,12 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_fig3c_001030.ipynb
   output: claim:fig3c-sustained-firing-2s
-  notes: The first two parts hold with the O1(a) ROI. Under every F0, height and bleaching reading, c7 (the cell
-    with six fields, 1.0 to 2.3 V) has APs in the last 250 ms of the 2-s wave at an intermediate field and an AP
-    count that rises from its lowest field; with the 5% height all four cells do. The third part fails in every
-    reading, in the claims file's ROIs and the whole frame. No cell's highest field meets sustained depolarization
+  notes: Each of the 48 combinations of the claims file's readings gives not reproduced, and the criterion has no
+    partial outcome. The first two parts hold with the O1(a) ROI. Under every F0, height and bleaching reading, c7
+    (the cell with six fields, 1.0 to 2.3 V) has APs in the last 250 ms of the 2-s wave at an intermediate field and
+    an AP count that rises from its lowest field; with the 5% height all four cells do, and with the 5-SD height 1
+    to 3 cells meet the first part and 3 or 4 the second. With O1(b) and the 5-SD height no cell meets the first
+    part. The third part fails in every reading, in the claims file's ROIs and the whole frame. No cell's highest field meets sustained depolarization
     (O4), so the criterion is not met for one cell or for every cell. In c7 firing drops at 2.3 V (16 APs with O1(a),
     against 70 to 90 at 1.45 to 2.0 V), with O1(a) its mean dF over the last 250 ms (1.7 to 7.1%) stays below the
     O4 levels (6.5 to 14.5%), and in the whole frame it is 6.0%, above the 5-SD level, but a single 8.0% peak in
@@ -316,7 +336,15 @@ outcomes:
     smoothed by a 101-ms running median, c7 is corrected under every reading and its mean dF over the last 250 ms
     at 2.3 V is 6.97 to 7.07%, below the O4 levels (7.93 to 13.28%); the 5-SD level drops little (13.28 against
     13.73% with the raw reference under O1(a), F0 all, 5-SD height). In the whole frame reading (c) lets one cell,
-    c8, meet all three parts with F0 over the last 20 ms (a variant).
+    c8, meet all three parts with F0 over the last 20 ms (a variant). Whether O4, with its no-AP condition, suits
+    the paper's firing block is asked of a reader (questions/001271.yaml).
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion gives not reproduced in all 48 claims-file readings (notebook, the table of this claim)
+      and has no partial outcome; the first two parts hold only with the O1(a) ROI (with O1(b) and the 5-SD height
+      no cell meets the first part), and the third part fails everywhere. The round-1 and round-2 verifiers give
+      not_reproduced. The failing part rests on O4, whose levels are above the plateau of c7 at 2.3 V (6.97 to
+      7.07% against 7.93 to 13.28% with the smoothed reference); this is asked of a reader.
   deviations:
   - Only c7 has an AP-free session for the bleaching correction; for the other cells readings (a) no correction
     and (b) subtracting c7's 1.0-V trace are both run. Reading (c) subtracts the reference after a 101-ms running
@@ -429,7 +457,7 @@ findings:
   statement: Question for the paper's authors. How was sustained depolarization measured? The plateaus in 001271
     at the highest field are 0.6 to 5.4% dF (median 2.6%) with small oscillations, below the claims file's levels
     (5 pre-stimulus SD, or half the AP height, with no AP in the last 100 ms), so that no session qualifies and
-    three claims are blocked or partial.
+    four claims are blocked or fail on it.
 - kind: methods_unavailable
   statement: Question for the paper's authors. Which session pairs were compared before and after the vehicle change
     (every field, or the highest), which APs and which duration measure give 11.3% and 8 ms, and which heat capacity
@@ -442,7 +470,7 @@ verifications:
     module and the paper. The handover gave the verifier the claims file of DANDI:001272 in place of this entry's
     claims/001271 file: tools/entry.py handover copies every claims file of the entry's dandisets under its file
     name, and both are named 10.1016-j.xcrp.2025.102660.yaml. The verifier judged the 19 claims of the 001272 file;
-    ten of their ids are also in the 001271 file (with criteria that differ in wording), and the claims only in the
+    eleven of their ids are also in the 001271 file (with criteria that differ in wording), and the claims only in the
     001271 file it could not check against a criterion. Results below are given per claim of the 001271 file."
   results:
   - claim: figs2-neurons-tested
@@ -600,3 +628,161 @@ verifications:
     outcome: blocked
     reason: Not attempted. The 2-kHz threshold half is already computed (74 V/cm at 18 V/cm per V, 148 at 36).
     response: No change; the other half depends on fig6-sine-less-than-pulse.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The three full executed notebooks of the round-1 revision, with their conclusions and summaries,
+    the helper module, the attempt record and the claims file of DANDI:001271 (claims/001271), with the paper.
+  results:
+  - claim: figs2-neurons-tested
+    agrees: true
+    outcome: reproduced
+    reason: 6 TTX neurons and 11 vehicle neurons. The change point of each vehicle neuron is an assumption not
+      marked, but it does not change an outcome. Points for the whole attempt, given here, the record's round-1 block
+      says ten of the verifier's round-1 ids are also in the 001271 file, where eleven are; B10, the stimulus timing
+      is confirmed from the images in only 4 of 282 sessions (not bearing on a conclusion).
+    response: The deviations now say that the outcomes do not rest on the change point. The round-1 block now says
+      eleven. B10 is not changed. The files hold no stimulus record, and the aliased stimulus can be seen in the
+      images only at the highest voltages; the timing is the one the Methods give, and the AP times of every
+      dandiset agree with it (0 AP-like peaks before the onset against 1,380 during the stimulus in 282 sessions of
+      001271; none in the first 50 ms of the 624 sessions of 001032, 001033 and 001035, with few after 300 ms).
+      Outcome kept.
+  - claim: figs2-before-firing-then-depolarization
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Every one of the 24 claims-file readings returns "not reproduced" (cell 26), and the criterion has no
+      partial outcome. The "firing part" the record says holds also depends on the reading: with O1(a) and the 5-SD
+      height only 18 or 19 of 20 neurons have APs, with O1(b) and the 5-SD height only 1 of 7. The sentences "Firing
+      holds ... under every combination of the claims file''s readings" (record) and "So the firing part holds" (cell
+      33) are not supported. The outcome should be not_reproduced, with the note that the claims file''s measure
+      cannot detect plateaus of this size. O4 requires no AP in the last 100 ms, while the paper describes APs that
+      "coalesced into low-amplitude oscillations on top of a continuous depolarization"; a detector at 5% counts
+      those oscillations as APs (9 of 20 neurons at their highest field), so O4 rules out by construction the state
+      the paper describes, and the claims file should revise it.'
+    response: The verified outcome is kept, as round 2 allows no change, and not_reproduced is proposed on the
+      outcome with this reason. The notes and the conclusion now say that every reading fails and give the firing
+      counts per reading. The O4 point is added to questions/001271.yaml as a question for a reader; the claim is
+      unchanged.
+  - claim: figs2-depolarization-reversible
+    agrees: true
+    outcome: blocked
+    reason: No session meets the claims file's sustained-depolarization rule (O4). Its outcome is decided by the O4
+      issue, which the claims file should revise.
+    response: The O4 question in questions/001271.yaml names this claim. Outcome kept.
+  - claim: figs2-ttx-abolishes-aps
+    agrees: true
+    outcome: blocked
+    reason: This follows the header's rule. O1(a) gives a different outcome over every common field than at the
+      highest one (cell 43), and O1(b) is split between its two AP heights. The O1 readings do not suit 16 x 16
+      crops (B4, now a claims-file issue); O1(b) is empty in 210 of 287 sessions, O1(a) can be a single pixel, and
+      the one AP after TTX comes from a one-pixel ROI with an SD of 11.8%. The attempt is right to run them as
+      written; the claims file should revise them.
+    response: Added to questions/001271.yaml as a question for a reader about O1; the claim is unchanged. The
+      main summary no longer says that the empty O1(b) masks drive most of the disagreements between readings
+      (the verifier, "In all three methods_underspecified claims on 001271, O1(a) disagrees with itself"); it now
+      says where the readings disagree within O1(a). Outcome kept.
+  - claim: figs2-ttx-blocks-sustained-depolarization
+    agrees: true
+    outcome: blocked
+    reason: The criterion's own blocking clause applies. Extending O3's before-change level to O4 is an assumption
+      not marked, but no pair qualifies, so it does not change the outcome.
+    response: The deviation now calls the extension an assumption and says that the outcome does not rest on it.
+      The O4 question names this claim. Outcome kept.
+  - claim: figs2-vehicle-keeps-response
+    agrees: true
+    outcome: blocked
+    reason: The readings disagree (cell 58). The change point of each vehicle neuron is an assumption not marked,
+      but the claim is blocked anyway.
+    response: The deviation now says that the outcome does not rest on the change point. Outcome kept.
+  - claim: ap-amplitude-duration
+    agrees: true
+    outcome: blocked
+    reason: 1 of 32 readings falls within the paper's values. Cell 68 and the record say "with the O1(b) ROI ... peaks
+      are 16.3 to 18.9%", but cell 67 has 15.79% (O1(b), last 20 ms, 5-SD height).
+    response: Corrected to 15.8 to 18.9% in the notebook and the record. Outcome kept.
+  - claim: fig3-not-heating
+    agrees: true
+    outcome: blocked
+    reason: The criterion's ratio clause applies.
+    response: No change needed.
+  - claim: fig1-pure-sine-excites-all
+    agrees: true
+    outcome: not_reproduced
+    reason: Every reading fails.
+    response: No change needed.
+  - claim: fig1-20khz-needs-twice-the-field
+    agrees: true
+    outcome: not_reproduced
+    reason: Every reading fails. Cell 18 and the record say "1 to 3 neurons" have modulated 20-kHz thresholds; cell
+      17 has rows with 0. B8, in 001032 13_1's 20-kHz sessions show 14_1's cell (correlation 0.997) but are still
+      counted as a separate neuron in the threshold tests (not bearing on a conclusion).
+    response: Corrected to 1 to 3 for 1 AP and 0 or 1 for 5 APs. Added a variant without the 20-kHz sessions of
+      13_1, in which 0 or 1 of the four ratios is within 1.8 to 2.2 in each reading, so the outcome is the same.
+      Outcome kept.
+  - claim: fig2d-modulated-thresholds-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Every reading fails, at both 18 and 36 V/cm per V; the scale of 18 V/cm per V is an assumption not
+      marked, but it does not change the outcome. Cell 22 says modulated thresholds are "higher on average in every
+      comparison that can be made" (record: "wherever they can be compared"); cell 21 shows the reverse for O1(b)
+      with the 5-SD height at 20 kHz and 1 AP: 12.00 V unmodulated against 11.00 V modulated, and 11.93 against
+      11.00.'
+    response: The notebook and the record now name that exception. The deviation now calls the scale an assumption
+      on which the outcome does not rest. The variant without 13_1's 20-kHz sessions fails too. Outcome kept.
+  - claim: fig2-modulated-locks-to-beats
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated and reasonable: the 5-SD height decides, the 9_2 session''s pre-onset SD is 9.8%,
+      and none of its peaks reaches its own 5-SD level (cell 25). "92% of 212 APs": cell 25 prints 213 APs and a
+      share of 0.91. "14 of 14" sessions with 5 APs or more: cell 25 has 15 of 15. "Eight clear APs of about 13%" in
+      the unmodulated session is shown only in a figure; no printed output supports it.'
+    response: Corrected to 91% of 213 APs and 15 of 15. The notebook now prints the unmodulated 9_2 session at 3.4 V
+      (8 APs of 11.6 to 15.0% dF, pre-onset SD 1.40% dF, under both heights), and the text cites it. Outcome kept.
+  - claim: fig2c-pure-more-aps
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated and reasonable; "the threshold" is read as the 1-AP threshold, with support from
+      the Methods. Cell 32 and the record give "p = 2.3e-10 to 7.8e-07"; cell 31 prints 4.7e-10 to 7.8e-07.
+    response: Corrected to 4.7e-10 to 7.8e-07. Outcome kept.
+  - claim: fig3b-low-conductivity-halves-threshold
+    agrees: true
+    outcome: blocked
+    reason: Blocked as metadata_insufficient, agreed.
+    response: No change needed.
+  - claim: fig3c-sustained-firing-2s
+    agrees: false
+    outcome: not_reproduced
+    reason: The notebook's own tally is "not reproduced" in 48 of 48 readings (cell 11). The first two parts hold only
+      with the O1(a) ROI; with O1(b) and the 5-SD height no cell meets the first part. The third part fails
+      everywhere. Cell 15 says "with the 5-SD height 1 to 3 cells meet each part", but with the smoothed bleaching
+      reference 4 cells meet the "rises" part. Its outcome is also decided by the O4 issue, which the claims file
+      should revise.
+    response: The verified outcome is kept, as round 2 allows no change, and not_reproduced is proposed on the
+      outcome with this reason. Cell 15 now gives 1 to 3 cells for the first part and 3 or 4 for the second, and
+      says that every reading fails. The O4 question in questions/001271.yaml names this claim.
+  - claim: figs1-di8-same-as-fluovolt
+    agrees: true
+    outcome: not_reproduced
+    reason: This rests only on the deposit holding 3 neurons. The comparison of effects found no difference (p =
+      0.72 to 0.93), and the three pattern claims were not run, so "not reproduced" does not mean the effects differ.
+    response: The notes already say this; no change. Outcome kept.
+  - claim: fig4-pooled-time-constants
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), not attempted.
+    response: No change; not attempted in this revision either.
+  - claim: fig4-orientation-and-poles
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), not attempted.
+    response: No change; not attempted in this revision either.
+  - claim: fig6-sine-less-than-pulse
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), not attempted.
+    response: No change; not attempted in this revision either.
+  - claim: threshold-depolarization-estimate
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), not attempted.
+    response: No change; depends on fig6-sine-less-than-pulse.
