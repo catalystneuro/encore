@@ -1,0 +1,482 @@
+schema_version: 2
+id: 001074-kalugin-2026-01
+dataset:
+  archive: dandi
+  id: "001074"
+  version: 0.260928.0807
+  doi: 10.48324/dandi.001074/0.260928.0807
+paper: doi:10.1016/j.neuron.2026.07.008
+date: 2026-11-01
+entry: 001074-kalugin-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41278818646
+inputs:
+- what: The well order of the identification and dose-response dipping of the ten ten-sensor
+    revision probes (cells 0-2), the well length of 93 frames (cells 1, 8), the mixture
+    concentrations (cell 345), the baseline and normalization wells and trimmed wells of each
+    dose-response fit (cells 338, 365), the noise cut (cells 343, 365), the deleted row of probe
+    251119-ZS16 (cell 6), the tau-on fit (cells 688-692) and the depth orientation (cell 718),
+    from 6_trace_analysis/morse_figs3_rev.ipynb. The list of the code's dipping probes for Figure
+    S2F is from morse_figs2_2.ipynb cell 2.
+  source: https://github.com/pkalugin/kalugin-et-al-morse at commit fa4526ac02eaa2c5a24c4cfdcaab5c36ed5ae4ed
+outcomes:
+- claim: link-revision-well-order
+  outcome: reproduced
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:link-revision-well-order
+  notes: Recordings are matched by date and probe in the subject names (for example
+    sub-251003-PL65-wells001). All ten identification recordings have 1023 frames (11 wells of 93)
+    and all ten dose recordings 1395 (15 wells). 86% of 829 cells rise most steeply within the first
+    minute of a well, against 23%, 11% and 3% with the onsets shifted by 15, 31 and 46 frames. In
+    the dose recording, 79% of the 559 labelled cells rise more in the block of their own mixture;
+    for the six sensors without crosstalk the fractions are 0.73 to 0.85. The DA sensor cells do so
+    in 41%, since they also respond to the NE of the other block.
+  deviations:
+  - The link claim and its criterion were written by the author during the analysis, after the
+    frame counts were seen; its thresholds (more than half) are the author's.
+- claim: fig1c-cells-per-gel
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:fig1c-cells-per-gel
+  measured:
+  - 21
+  - 205
+  notes: Reading (b), curated masks per recording (mr-raw files), over 59 recordings of 43 probes
+    after removing duplicates. Masks per recording range from 21 to 205 (median 128; given as
+    measured), and 38 of 43 probes (0.88) have a mean count in 90 to 220. With the further merged
+    mr-m-raw masks, 31 of 38 probes. In each of the five revision identification recordings with an
+    mr-raw file, mask centres fall in the top (5 to 21 cells), middle (44 to 88) and bottom (27 to
+    67) thirds of the imaged z range. Reading (a), CNMF components before curation, is not in the
+    dandiset and was not tested.
+  deviations:
+  - Reading (a) of the criterion cannot be run; only reading (b) is tested.
+  - Assumed that the gel thickness is the imaged z range of each recording (15 to 26 planes); the
+    claims file and the paper do not say how the thickness is bounded.
+  - Depth uses the masks reordered from their scrambled storage (see findings).
+  - Probes are pooled over all contexts (dipping, slice and in vivo recordings); Figure 1C shows one
+    dipping probe.
+- claim: fig1g-sensor-yield
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:fig1g-sensor-yield
+  measured:
+  - 559
+  - 9.0
+  - 8.0
+  - 9.0
+  - 6.82
+  notes: Reading (b), pooled clustering plus a per-probe pass, gives 559 labelled cells (expected
+    455 to 557), median 9 sensors per probe, 25th percentile 8, 75th 9, and 6.82 cells per sensor
+    per probe (expected 5.42 to 6.62). Reading (a), pooled only, gives 382 cells, median 8.5, 8 and
+    9, and 4.72. Sensors per probe are 5, 8, 9, 10, 5, 9, 10, 9, 8, 9 against the code's 5, 8, 9,
+    10, 6, 9, 10, 9, 9, 9. The code's 30-frame derivative window changes the counts by at most 8
+    cells. The sensor counts match; the cell counts do not.
+  deviations:
+  - The dandiset gives no sensor labels. Labels are made from the identification traces by the
+    Methods' procedure (Quantification and statistical analysis, paragraphs 2-3) with these
+    choices, assumed where the Methods do not fix them. The jump artefact is an exponential with
+    the Methods' 30 s decay scaled by the jump measured as in morse_figs3_rev cell 23. The
+    exponential background is fitted only when two wells precede activation, with its decay bounded
+    by the fitted segment. The ligand administration time course used to match clusters is a boxcar
+    over the first minute of each well, and a match is kept only when the cluster's mean derivative
+    also peaks in that ligand's well.
+  - The code's hand corrections of clusters (morse_figs3_rev cells 73-78) are not repeated, so the
+    labelled cells are not the paper's 506.
+  - The time base is the code's 31 frames per minute (93 per well); the files state 30 Hz.
+- claim: fig1g-all-ten-sensors-respond
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:fig1g-all-ten-sensors-respond
+  notes: All ten sensors carry labels, on 5 to 10 probes each. The mean peak-normalized trace is
+    highest in the sensor's own or partner's well for 2 of 10 sensors (OXT, ATP). Allowing the well
+    after the ligand's, as the code does for AVP, NE and CCK (cell 248), 7 of 10. For CCK the maximum
+    is in the PBS well, for NE and DA in the ATP well. The test is not independent of the labelling,
+    which uses the time of each cell's steepest rise.
+  deviations:
+  - Labels as in fig1g-sensor-yield, reading (b).
+  - The criterion's background correction is the one of fig1g-sensor-yield.
+- claim: fig1h-crosstalk-pairs
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:fig1h-crosstalk-pairs
+  notes: With the Methods' 1-minute window, DA-NE has the largest correlation (0.77); AVP-OXT is
+    0.16, rank 12 of 45, below 5-HT-DA (0.46), DA-ACh (0.45), 5-HT-NE (0.37) and NE-ACh (0.33). With
+    the code's 10 frames, DA-NE 0.83 and AVP-OXT 0.43, rank 14. The DA-NE crosstalk holds; the AVP-OXT
+    part and the "only" do not.
+  deviations:
+  - Labels as in fig1g-sensor-yield, reading (b).
+  - The band-pass artefact variant of morse_figs3_rev cell 219 was not run.
+- claim: table1-ec50-on-target
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:table1-ec50-on-target
+  measured:
+  - 56.7
+  - 2217.2
+  - 9.2
+  - 265.9
+  - 5998.2
+  - 860.0
+  - 19635.3
+  - 255424.1
+  - 2.8
+  - 7629.2
+  notes: Reading (i), the code's baseline and peak wells with the Methods' third-minute mean, puts
+    2 of 10 EC50s within 10% (OXT 2217 nM, CCK 266 nM; given as measured, in nM). Reading (ii), the
+    code's plateau, 0 of 10; reading (iii), Eq. 28 over the recording after an exponential
+    background, 0 of 10; reading (iv), reading (i) on the cells kept by the code's noise cut, 2 of
+    10 (5-HT 632 nM, DA 1622 nM; also AVP 258, OXT 1496, NE 3219, ACh 21420, ATP 93299, MT 13.2,
+    HA 7640 nM). The median absolute log10 ratio to Table 1 is 0.37, 0.30, 1.49 and 0.12 for the
+    four readings. The median normalized plateaus rise from 0 to about 1 over each group's wells,
+    but single cells reach -35 to 161, and the pooled least-squares fits follow them.
+  deviations:
+  - Labels as in fig1g-sensor-yield, reading (b); the paper's cells differ.
+  - The Methods do not say how the dose recording is background corrected and normalized. Reading
+    (i) follows the code (baseline-well subtraction and peak-well normalization, morse_figs3_rev
+    cells 338-339, 365) and is taken as the main reading, an assumption; the others are shown.
+  - The code's per-cell background fits over hand-set windows (cells 285-293) cannot be repeated,
+    and its pooling with an older probe set for ACh, ATP, MT and HA is not run.
+  - Concentrations of the mixture wells, 10 to the power (k - offset) M, are from morse_figs3_rev
+    cell 345.
+- claim: table1-ec50-off-target
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:table1-ec50-off-target
+  measured:
+  - 1339.0
+  - 32.5
+  - 561.7
+  - 20135.9
+  notes: Reading (i), in nM (given as measured); reading (iv) gives 558, 20.2, 2957 and 4379 nM.
+    None of the four is within 10% under any of the four readings. The off-target groups are
+    normalized to their own peak well in the partner's block (the code's groups 1, 2, 7 and 8), so
+    the crosstalk ratio does not enter the EC50.
+  deviations:
+  - As table1-ec50-on-target.
+- claim: table1-peak-dff-morse
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:table1-peak-dff-morse
+  measured:
+  - 0.363
+  - 0.114
+  - 0.292
+  - 0.044
+  - 0.384
+  - 0.492
+  - 0.303
+  - 0.207
+  - 0.314
+  - 0.236
+  - 0.397
+  - 0.338
+  - 0.564
+  - 0.4
+  notes: Reading (a), the ligand's well, puts 4 of 14 within 10% (AVP, 5-HT, ACh, HA); reading (b),
+    the code's wells, 5 of 14 (adding NE 0.338). Of the values outside tolerance in reading (a), NE (0.303) and
+    the OXT sensor to AVP (0.044) are below the paper's and the other eight above, up to MT 0.564
+    against 0.30. The medians are over the cells with a positive peak (13 to 89 per group).
+  deviations:
+  - Labels and corrections as in fig1g-sensor-yield, reading (b).
+- claim: fig1j-ec50-consistent-across-probes
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:fig1j-ec50-consistent-across-probes
+  notes: Reading (a), every per-probe EC50 within a tenth to ten times the consensus, holds for 2
+    of 10 sensors (ACh, HA); reading (b), SEM below half the mean, for 6 of 10. On the cells kept by
+    the noise cut, 7 and 8 of 10. Neither reading holds for all sensors, so the criterion (both must
+    hold) is not met. The consensus EC50s do not reproduce Table 1.
+  deviations:
+  - As table1-ec50-on-target; probes with more than one cell of the sensor (3 to 9 per sensor).
+- claim: figs3e-tau-on-under-one-minute
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:figs3e-tau-on-under-one-minute
+  notes: Median tau-on under 60 s for 10 of 10 sensors on the normalized dF/F0 (28.6 to 53.7 s)
+    and 8 of 10 on the Eq. 8 concentration (34.4 to 58.9 s for those; AVP 74.2 s and 5-HT 62.3 s).
+    Both readings meet at least 8 of 10, so the outcome is the one both give. With the EC50s fitted
+    in reading (i) of table1-ec50-on-target in place of Table 1's, 8 and 7 of 10. The "most signals
+    plateau within 1 minute" part of the statement is not tested by the criterion.
+  deviations:
+  - The well and the concentration conversion use the claims file's CONSTANTS (Table 1 EC50s, the
+    code's F), since the EC50s fitted here do not reproduce Table 1.
+  - Labels as in fig1g-sensor-yield, reading (b); dose traces normalized as in reading (i) of
+    table1-ec50-on-target.
+  - tau is fitted by least squares over a grid and a bounded search; the code uses curve_fit.
+- claim: figs3f-depth-delay
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:figs3f-depth-delay
+  notes: Slopes of concentration tau-on against depth are positive for 5 of 10 sensors (AVP, 5-HT,
+    NE, MT, HA) and negative for OXT, CCK, DA, ACh and ATP, in the code's orientation; the opposite
+    orientation gives 5 of 10 as well. The largest slope is 0.48 s per um, so the slopes are modest
+    as read. Correlations are weak (MT r = 0.56, the others at most 0.20 in size).
+  deviations:
+  - Depth is the z centre of mass of each reordered mask in the dose recording, relative to the
+    probe's shallowest cell, at 9.89 um per plane; the orientation (depth growing as the plane
+    index falls) is taken from morse_figs3_rev cell 718 and assumed to hold for the deposited
+    plane order.
+  - tau-on as in figs3e-tau-on-under-one-minute.
+- claim: figs2f-cells-tracked
+  outcome: reproduced
+  notebook: reproduce_kalugin_2026.ipynb
+  output: claim:figs2f-cells-tracked
+  measured:
+  - 10
+  - 140
+  notes: 72 probes with 110 matched pairs, taken from each probe's reference recording. Per-probe
+    mean matched counts range from 10 to 140 (given as measured; median 68), and 44 of 72 (0.61)
+    lie in 63 to 143. By context, 15 of 21 dipping, 24 of 40 in vivo and 5 of 11 slice probes. The
+    code's dipping set (10 probes, 40 pairs, the n=40 of Figure S2F) has means 56.5 to 108.0, with 8
+    of 10 in range. The claims file cites printed counts of 53 to 108 in morse_figs2_2 cell 4; that
+    cell has no outputs at the pinned commit.
+  deviations:
+  - Contexts are taken from the subject names (wells, slice, mouse); the paper's slice n=15 and in
+    vivo n=25 are not the dandiset's 13 and 42 pairs, and which recordings the figure used is not
+    known.
+  - Duplicated files are counted once; for 20230922-PL28 the pairs are taken from wells001, whose
+    matched suffixes are consistent.
+- claim: fig1d-collagen-reduces-warping
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the demons deformation fields or the raw imaging. The dandiset holds CaImAn traces
+    and masks only; the paper says raw imaging is available from the authors on request.
+- claim: fig1f-koh-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs deformation fields or raw imaging of the 33 test probes; not in the dandiset, and no
+    file names the hydrogel recipe or KOH treatment.
+- claim: methods-revision-probe-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs deformation fields or raw imaging, and a record of which probes were unstable. The
+    dandiset holds only the recordings that were processed; the files give no stability flag.
+- claim: figs2c-stabilization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw GRAB and tdTomato imaging and the Cellpose probability maps; neither is in
+    the dandiset.
+- claim: slices-probe-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs all 48 slice probes with deformation fields or imaging; the dandiset holds 22 slice
+    recordings (86 files) of CaImAn output only.
+- claim: fig2c-dlgn-kcl-activates-sensors
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The slice files give no brain region (dLGN, PVH or LC), no KCl or ligand wash-on times and
+    no sensor labels. The slice probes' post hoc dipping files (wells001) exist for some, but their
+    well order is not in the files. The paper's code (morse_fig2_rev) holds hand-picked windows for
+    the LC slices only, and the code that made the dLGN and PVH numbers is not in the repository
+    (claims file header).
+- claim: fig2c-dlgn-da-explained-by-ne
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2c-dlgn-kcl-activates-sensors.
+- claim: fig2d-dlgn-robust-counts
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2c-dlgn-kcl-activates-sensors.
+- claim: fig2e-dlgn-peak-concentrations
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2d-dlgn-robust-counts; as fig2c-dlgn-kcl-activates-sensors.
+- claim: fig2f-dlgn-5ht-delay
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2d-dlgn-robust-counts; as fig2c-dlgn-kcl-activates-sensors.
+- claim: figs4de-deconvolution
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2e-dlgn-peak-concentrations and fig2f-dlgn-5ht-delay.
+- claim: slices-no-peptide-release
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the region, the KCl timing and the sensor labels from post hoc dipping, none of
+    which the files give.
+- claim: figs5c-kcl-no-direct-effect
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the KCl and aCSF well order of the PVH probe's dipping recording, which no file
+    names; which subject is that probe is not stated.
+- claim: figs5d-pvh-ne-alone
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2c-dlgn-kcl-activates-sensors, for the PVH recordings.
+- claim: figs5f-pvh-robust-counts
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2c-dlgn-kcl-activates-sensors, for the PVH recordings.
+- claim: figs5g-pvh-dose-dependence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the KCl dose periods; depends on figs5f-pvh-robust-counts.
+- claim: figs5i-pvh-ne-concentration
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2e-dlgn-peak-concentrations; needs the PVH dose periods.
+- claim: fig2h-lc-ne-da-peaks
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2jk-lc-robust-counts.
+- claim: fig2i-lc-increments
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the optogenetic train onsets and the sensor labels; no file holds a stimulation
+    record or names the example probe.
+- claim: fig2jk-lc-robust-counts
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The files do not say which slice recordings are LC, hold no stimulation record, and give
+    no sensor labels; the peak normalization needs the times of the 50 uM wash-ons, which the code
+    sets by hand (morse_fig2_rev cells 73 and 107). The LC analysis was not attempted with the
+    code's hand-set frames in the time available.
+- claim: fig2l-lc-ne-delay
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2jk-lc-robust-counts.
+- claim: fig3df-ip-responses
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The in vivo files (mouse) give no IP or ICV injection times, no injected ligand order
+    (which varies by mouse, morse_fig3_rev cell 0) and no sensor labels; the post hoc dipping files
+    exist for some mice but name no wells.
+- claim: figs6ef-photometry-kinetics
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The fiber photometry recordings are not in the dandiset (the paper says they are
+    available on request).
+- claim: fig3g-ten-sensor-yield
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs sensor labels for the four ten-sensor in vivo probes. The code (morse_fig3_rev cells
+    3, 162, 175-204) mixes 2023 recordings at another frame rate (mean_factor 52) with 2025 ones and
+    corrects clusters by hand; which four mice form the figure and their dipping well order are not
+    in the files.
+- claim: fig3h-each-sensor-responds-ip
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the IP mixture injection times and sensor labels; depends on fig3g-ten-sensor-yield.
+- claim: fig4-ip-csf-concentrations
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the IP and ICV injection times and sensor labels, as fig3df-ip-responses.
+- claim: fig4-ex-vivo-elevations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The ELISA and mass spectrometry tables (AVP_all_samples.csv, OXT_all_samples.csv,
+    vandy_core.csv in the code) are not in the dandiset or the code repository at the pinned
+    commit.
+- claim: fig4-ex-vivo-two-orders-lower
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-ex-vivo-elevations (data missing) and fig4-ip-csf-concentrations
+    (metadata insufficient).
+- claim: figs6j-serum-dipping-matches-elisa
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The ELISA values are not public; which dipping file holds the serum samples, and its well
+    order, are not stated in the files.
+- claim: fig5ab-spontaneous-5ht
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the 5-HT, AVP and OXT sensor labels of the three-sensor in vivo probes and the time
+    of the first IP injection; the files give neither.
+- claim: fig5cd-spontaneous-5ht-dynamics
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig5ab-spontaneous-5ht and fig3df-ip-responses.
+- claim: fig5gh-chp-calcium
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The choroid plexus GCaMP6f imaging and ROI traces are not in the dandiset (all 207 subjects
+    are MORSE probe recordings).
+- claim: fig6-chp-grab-similar-time-courses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The choroid plexus GRAB traces are not in the dandiset.
+- claim: fig6c-ip-5ht-reaches-chp-fast-enough
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The choroid plexus traces are not in the dandiset.
+- claim: figs6a-no-implant-inflammation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Iba1, GFAP and BSA histology is not in the dandiset.
+findings:
+- kind: metadata_insufficient
+  statement: No file gives the sensor expressed by each cell, though the identities were made by
+    post hoc dipping and every analysis of the paper rests on them. No file gives well, wash-on,
+    KCl, optogenetic or injection times, the ligand of each well, the brain region of a slice or
+    the injections of a mouse; there is no acquisition or stimulus data. Only the in vitro dipping
+    of the ten revision probes could be labelled, from the paper's code.
+- kind: metadata_error
+  statement: Every file states an imaging rate of 30 Hz and timestamps from 0 in steps of 1/30 s,
+    the same session start (2023-01-01T12:30), the indicator OGB-1 and the location "brain". The
+    Methods give about 0.5 volumes per second (31 per minute in the code for the 2025 recordings, 52
+    per minute for some 2023 ones), the sensors are GRAB sensors, and the dipping recordings are of
+    HEK cells in a hydrogel, not of a mouse brain. The session dates are only in the subject names.
+- kind: format_error
+  statement: The 3D image masks are stored scrambled. Each is the Fortran-order flattening of the
+    (x, y, z) volume written into a C-order array of the same shape, so read as stored every mask
+    spans the full width of the volume with equal weight in every plane; reordered with
+    order="F" it is a compact cell.
+- kind: metadata_error
+  statement: 67 files belong to a subject named "0" with session names that carry no context. 16
+    of them repeat named files of 20230922-PL28, 20230829-SL1PL56 and 220408-PK27PL20; the other 51
+    cannot be placed.
+- kind: metadata_error
+  statement: The six files of sub-250918-SL1ZS5-slice and of sub-250918-SL1ZS5-wells001 are
+    identical in shape and values, so one recording of that probe is deposited under both names and
+    the other is missing.
+- kind: metadata_error
+  statement: The matched-file suffixes of probe 20230922-PL28 do not fit its pairs. wells201 holds a
+    "matched" and a "matched1" file that are copies, and the "matched" file of wells401 has 96
+    cells, the count of wells001's "matched3", where wells001's "matched" has 82.
+- kind: other
+  statement: The matched pair of probe 251119-ZS16 has 143 cells in wells001 and 142 in wells101;
+    the paper's code deletes row 53 of the identification file (morse_figs3_rev cell 6), which
+    nothing in the files records.
+- kind: metadata_insufficient
+  statement: The accepted and rejected columns of every PlaneSegmentation are all false, so they
+    carry no curation information, and the stage of each file (mr-raw, mr-m-raw, refit, matched<k>)
+    is described only by the paper's code README.
+- kind: other
+  statement: The mask volumes have 15 to 26 planes, where the Methods describe 30 planes per volume
+    (about 270 um); the files do not say whether planes were cropped.
+- kind: data_missing
+  statement: The deformation fields, raw two-photon imaging, Cellpose probability maps, fiber
+    photometry, ELISA and mass spectrometry tables, choroid plexus imaging and histology are not
+    deposited. The paper states that raw imaging and photometry are available on request; 13 claims
+    cannot be tested for this reason.
+- kind: methods_unavailable
+  statement: Questions for the authors. (1) Sensor identity. The Methods' clustering without the
+    code's hand corrections (morse_figs3_rev cells 73-78) gives 382 or 559 labelled cells against
+    506; which corrections were made and why? (2) Dose-response normalization. The Methods say
+    "corrected with an exponentially decaying background fit and then peak-normalized"; the code
+    subtracts a baseline well and divides by a peak well, after per-cell background fits over
+    hand-set windows (cells 285-293, 338-339). Which windows and wells were used, and is the noise
+    cut of cells 343 and 365 part of the published fits? The EC50s fitted here depend strongly on
+    this (median log10 distance from Table 1 0.12 to 1.49 across readings). (3) Is the deposited
+    plane index the code's z, so that depth from the front face grows as the index falls (cell
+    718)? (4) How was the jump artefact's 30 s decay and the background-fit window chosen per
+    recording?
