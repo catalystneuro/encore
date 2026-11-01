@@ -934,13 +934,12 @@ PROGRESS_METRICS = {
 
 
 def progress_data(data: dict) -> dict:
-    """Daily counts for the overview's dashboard, for all datasets and for CatalystNeuro conversions.
+    """Daily counts for the overview's dashboard.
 
     Each series is a list over the days of what was new that day: dandisets and papers on the date of their first attempt, attempts
     on their own date, and the claims (those resting on the dandiset) and findings of each dandiset's
     current attempts on the date of those attempts.
     """
-    ours = {t["key"] for t in data["targets"] if t["catalystneuro"]}
     current = [a for atts in current_attempts(data).values() for a in atts]
     if not data["attempts"]:
         return {"days": [], "series": {}}
@@ -948,7 +947,7 @@ def progress_data(data: dict) -> dict:
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
     series = {}
-    for subset, keep in (("all", lambda d: True), ("catalystneuro", lambda d: d in ours)):
+    for subset, keep in (("all", lambda d: True),):
         new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES}} for day in days}
         first_dandiset: dict = {}
         first_paper: dict = {}
@@ -976,7 +975,7 @@ def progress_data(data: dict) -> dict:
 
 
 def progress_panel(data: dict) -> str:
-    """The dashboard at the top of the overview: totals, a filter, and two charts of the effort over time.
+    """The dashboard at the top of the overview: totals and two charts of the effort over time.
 
     The page draws the charts from the JSON it carries (assets/progress.js); without scripts, the table
     below them gives the same numbers.
@@ -995,10 +994,6 @@ def progress_panel(data: dict) -> str:
     head = "".join(f"<th>{e(label)}</th>" for label in PROGRESS_METRICS.values())
     return f'''<section class="progress" aria-label="Progress over time">
   <div class="progress-bar">
-    <div class="segmented" role="group" aria-label="Which datasets">
-      <button type="button" data-subset="all" aria-pressed="true">All datasets</button>
-      <button type="button" data-subset="catalystneuro" aria-pressed="false">Converted by CatalystNeuro</button>
-    </div>
     <span class="muted small">Totals so far; the small line is the last 7 days.</span>
   </div>
   <div class="tiles metrics">{tiles}</div>
