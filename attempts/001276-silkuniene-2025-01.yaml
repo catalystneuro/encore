@@ -1,0 +1,290 @@
+schema_version: 2
+id: 001276-silkuniene-2025-01
+dataset:
+  archive: dandi
+  id: "001276"
+  version: 0.250701.1609
+  doi: 10.48324/dandi.001276/0.250701.1609
+paper: doi:10.1016/j.bioelechem.2025.109016
+date: 2026-11-01
+entry: 001276-silkuniene-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41342444107
+outcomes:
+- claim: fig7be-center-linear-with-bursts
+  outcome: partially_reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig7be-center-linear-with-bursts
+  notes: Center YP rises with burst number in both cell lines. CHO, fit to individual experiments over
+    1, 2, 4 and 6 bursts (x4), slope 643.9 a.u. per burst, p = 2.2e-10 (26 wells); fit to group
+    means p = 0.0026. CT26 over 1, 2 and 4 bursts (x4), slope 1058.2 a.u. per burst, p = 0.0013 to
+    individual experiments (11 wells) and p = 0.024 to group means, so p < 0.001 holds in CHO only.
+    With the 6-burst point included, the CT26 slope has p = 0.00011 (individual experiments). The
+    CT26 wells come from three experiment dates, 1 burst (x4) from one date only.
+  deviations:
+  - The dandiset has 3, 5 (one of 6 left out, see the findings), 3 and 3 usable CT26 wells and 3,
+    8, 7 and 8 CHO wells for 1, 2, 4 and 6 bursts (x4), where the paper has n = 3 to 5 and n = 4.
+    The paper does not say which wells it used.
+  - Pixel size 1.625 um, from the 4x objective and ORCA-Flash4 camera of Methods 2.4 (6.5 um sensor
+    pixels), checked against the electrode spacing; the array center is the center of a square of
+    the paper's size (Methods 2.2) fitted to the dark electrode footprints (Fig. 3A legend), on
+    images reduced to 16.25 um bins. The paper placed ROIs in MetaMorph.
+  - Background is the median over the four footprints of 3 ROIs in each, where Methods 2.5 places 3
+    ROIs in one footprint without saying which; a standard choice, with the spread between
+    footprints shown.
+- claim: fig7b-ct26-saturation
+  outcome: partially_reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig7b-ct26-saturation
+  notes: The CT26 6-burst mean, 4827 a.u. (s.e. 667, n = 3), lies below the line fitted through 1, 2
+    and 4 bursts (x4) and extrapolated to 6 (6273), but inside its 95% band, whose lower edge is 4234
+    for the fit to individual experiments and 4338 for the fit to group means. The CHO 6-burst mean,
+    3175 a.u., lies inside the band of the CHO fit through 1, 2 and 4 bursts (2645 to 4283, individual
+    experiments), as the claim expects for CHO.
+  deviations:
+  - Same wells, center and background as fig7be-center-linear-with-bursts.
+- claim: fig7cf-fwhm-with-bursts
+  outcome: reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig7cf-fwhm-with-bursts
+  notes: Both parts hold under 2 of the 12 readings the criterion names, ROI spacing 0.5 mm, fit
+    range 5 or 6 mm, fits to individual experiments; there the CT26 slope is 1.13 and 1.18 mm per
+    burst with p < 0.0001 and the CHO slope has p = 0.064 and 0.090. The CT26 part fails in every
+    group-mean reading (p 0.008 to 0.029), and the CHO part fails in four of the six
+    individual-experiment readings (p 0.025 to 0.047). CT26 FWHM is 1.01, 2.02, 3.38 and 7.26 mm for 1, 2, 4
+    and 6 bursts (x4), and CHO FWHM 2.09, 2.08 and 2.65 mm for 2, 4 and 6 (fit range 5 mm, 1 mm spacing). The
+    outcome follows the criterion's rule of one reading; under the fit range and spacing adopted for
+    fig7-sharpest-peak-one-burst (0.5 mm, 5 mm) it also holds.
+  deviations:
+  - The ROI spacing and the fit range for Fig. 7 are not in the paper; all readings of the claims
+    file are run.
+  - Same wells, center and background as fig7be-center-linear-with-bursts.
+- claim: fig7-sharpest-peak-one-burst
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig7-sharpest-peak-one-burst
+  measured:
+  - 1.093
+  - 7.14
+  - 2.29
+  notes: CT26 with 1 burst (x4) gives the smallest group-mean FWHM of the dataset. With 0.5 mm ROI
+    spacing the mean FWHM is 1.093, 1.099 and 1.103 mm for fit ranges of 4, 5 and 6 mm (s.e. about
+    0.11, n = 3), 7.14 to 7.21% of the 15.3 mm gap, and 2.29 to 2.33% of the array area under area
+    reading (b), all within tolerance; readings (a) and (c) give 0.80 and 0.57%. With 1 mm spacing
+    the FWHM is 1.001 to 1.011 mm, within tolerance, but the gap percentage is 6.55 to 6.61% against
+    a lower edge of 6.57% and area reading (b) gives 1.92 to 1.96%, outside 2.07 to 2.53%, which would
+    make the claim partially reproduced. The three experiments give 0.92, 1.07 and 1.29 mm (fit range
+    4 mm, 0.5 mm spacing). Measured values are for 0.5 mm spacing, fit range 4 mm and area reading (b).
+  deviations:
+  - Assumed ROI spacing of 0.5 mm along the diagonal. The paper gives no spacing; Methods 2.5 places
+    the ROIs "along the diagonals of the square, connecting electrodes' footprints", which reads as a
+    dense chain of ROIs, and a peak 1 mm wide is sampled by only three points of a 1 mm grid. The
+    results under 1 mm spacing are shown and differ in outcome.
+  - The fit range for Fig. 7 is not in the paper; 4, 5 and 6 mm are run and agree.
+  - Same wells, center and background as fig7be-center-linear-with-bursts.
+- claim: fig7-offtarget-40-50-fold
+  outcome: not_reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig7-offtarget-40-50-fold
+  measured: 31.9
+  notes: CT26, 1 burst (x4), ratio of center YP to YP near electrodes is 31.9 (group means) and 34.8
+    (mean of per-experiment ratios) at 6 mm, and 14.9 and 14.4 at 7 mm, all below 36. The three
+    experiments give 16.3, 37.4 and 50.7 at 6 mm. Under reading B the ratios are 45.1 and 52.1 at 6 mm
+    for 2 bursts (x4) but 7.7 and 7.9 for 4 bursts (x4), so not all lie in 36 to 55. YP near the
+    electrodes is small, 15 to 48 a.u. at 6 mm after background, so the ratio is sensitive to the
+    background level.
+  deviations:
+  - Same wells, center and background as fig7be-center-linear-with-bursts.
+- claim: fig7-cho-replicates-ct26
+  outcome: reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig7-cho-replicates-ct26
+  notes: CHO center YP exceeds YP at 6 and 7 mm for every burst number, with center over 6 mm ratios of
+    18.2, 23.1 and 18.9 and center over 7 mm ratios of 7.4, 6.3 and 5.3 for 2, 4 and 6 bursts (x4)
+    (1 burst (x4), 4.3 and 2.8). The CHO center YP rises linearly with burst number, slope 643.9 a.u.
+    per burst, p = 2.2e-10.
+  deviations:
+  - Same wells, center and background as fig7be-center-linear-with-bursts.
+- claim: fig4b-40-fold-at-02mhz
+  outcome: not_reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig4b-40-fold-at-02mhz
+  measured: 45.08
+  notes: CT26, 0.2 MHz, 2 bursts (x4), five wells. The ratio of center YP to YP at 6 mm is 45.1 of group
+    means and 52.1 as the mean of per-experiment ratios, just above the 36 to 44 tolerance; at 7 mm
+    it is 10.7 and 12.5. Per-experiment ratios at 6 mm span 17.9 to 81.9. The roughly 4-fold stronger
+    field near the electrodes is a model output not in the dataset and is not tested.
+  deviations:
+  - Five usable wells where the paper has n = 3 for Fig. 4; the paper does not say which it used.
+    These wells are those of the 2-burst group of the Fig. 7 series; the paper's Fig. 4 wells may
+    be different experiments.
+  - Same center and background method as fig7be-center-linear-with-bursts.
+- claim: fig3a-cancan-center-enhanced
+  outcome: partially_reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig3a-cancan-center-enhanced
+  notes: CT26, 2 bursts (x4). The group-mean ratio of center YP to YP at 6 and 7 mm is 3.43 and 1.67 for
+    CANCAN at 1 Hz (2 wells) and 45.1 and 10.7 at 0.2 MHz (5 wells), above 1 as the criterion asks,
+    but 1.10 and 1.11 for the control (4 wells), where it asks for below 1. Per control well the ratio
+    at 6 mm is 0.73 to 1.30. The control profile is nearly flat (2275 a.u. at the center, 1837 to 2085
+    from 1 to 7 mm; Spearman rho -0.36, p = 0.39).
+  deviations:
+  - Only two of the four CANCAN packet rates are in the dandiset (1 Hz and 0.2 MHz); 1 kHz and 10 kHz
+    are missing. The controls are all at a packet rate of 1 Hz.
+  - Same center and background method as fig7be-center-linear-with-bursts.
+- claim: fig3bc-lorentzian-profile
+  outcome: reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig3bc-lorentzian-profile
+  notes: The Lorentzian fitted to the group-mean profile from -4 to 4 mm gives R = 0.965 (diagonal) and
+    0.927 (sides) at 1 Hz and 0.990 and 0.992 at 0.2 MHz with 1 mm spacing (9 points), and 0.963,
+    0.941, 0.992 and 0.993 with 0.5 mm spacing (17 points), all with p < 0.001.
+  deviations:
+  - Only the 1 Hz (2 wells) and 0.2 MHz (5 wells) rates are in the dandiset.
+  - The lines parallel to the sides use the same ROIs as the diagonals, through the center toward the
+    midpoints of the sides.
+- claim: fig3bc-offtarget-deviation-falls-with-rate
+  outcome: reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig3bc-offtarget-deviation-falls-with-rate
+  notes: Mean excess of observed over fitted YP beyond 4 mm, in % of the fitted peak, is 2.67 (diagonal)
+    and 2.57 (sides) at 0.2 MHz against 27.31 and 29.42 at 1 Hz with 1 mm spacing, and 1.66 and 2.48
+    against 24.16 and 30.23 with 0.5 mm spacing.
+  deviations:
+  - Only the 1 Hz and 0.2 MHz rates are in the dandiset.
+- claim: fig4b-center-no-rate-effect
+  outcome: reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig4b-center-no-rate-effect
+  notes: Center YP is 3088 a.u. (s.e. 821, n = 2) at 1 Hz and 1985 (s.e. 445, n = 5) at 0.2 MHz, 36%
+    lower; Student t = -1.28, p = 0.257, 0.770 with the paper's threefold Bonferroni correction (Welch
+    p = 0.381). With two 1 Hz wells the test has little power.
+  deviations:
+  - Only the 0.2 MHz against 1 Hz comparison can be made; 1 kHz and 10 kHz are not in the dandiset.
+- claim: fig4b-near-electrode-rate-decline
+  outcome: reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig4b-near-electrode-rate-decline
+  notes: YP at 6 mm is 899 a.u. at 1 Hz and 44 at 0.2 MHz (4.9%), at 7 mm 1851 and 185 (10.0%). The
+    power-function exponents are -0.246 and -0.188, the same for the fit to group means and to
+    individual experiments; two-sided t-tests give p = 3.2e-06 and 0.00036.
+  deviations:
+  - Only two rates are in the dandiset, so the power function passes through two group means.
+- claim: fig4c-fwhm-decreases-with-rate
+  outcome: partially_reproduced
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig4c-fwhm-decreases-with-rate
+  measured:
+  - 4.56
+  - 2.0
+  notes: Per-experiment FWHM (fit -4 to 4 mm) is 4.56 mm at 1 Hz (3.91 and 5.21, 2 wells) and 2.00 mm
+    at 0.2 MHz (s.e. 0.20, 5 wells) with 1 mm spacing, and 4.54 and 1.88 mm with 0.5 mm spacing. The
+    0.2 MHz mean is within 1.8 to 2.2 mm and is 12.3 to 13.1% of the gap, below 15%; the 1 Hz mean is
+    above 4.4 mm. The 1 kHz and 10 kHz means and their tests, which the criterion needs, cannot be
+    computed. The 0.2 MHz against 1 Hz difference has p = 0.003, 0.009 with the threefold correction,
+    where the paper reports p = 0.09.
+  deviations:
+  - Only the 1 Hz and 0.2 MHz rates are in the dandiset.
+- claim: fig4c-log-dependence
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the 1 kHz and 10 kHz wells, which are not in this dandiset (its only packet rates are
+    0.2 MHz and 1 Hz, from the descriptions of all 108 files). DANDI:001047, which cites the same
+    paper, holds a packet-rate series (its description names 1 Hz and 0.2 MHz); whether it holds 1 kHz
+    and 10 kHz was not established. The claims file names no data outside this dandiset.
+- claim: fig5-raised-electrodes-weaker-center
+  outcome: blocked
+  blocked_by: other
+  notes: No well in this dandiset has raised electrodes (its descriptions state no elevation, and it
+    holds no propidium images). DANDI:001284, which cites the same paper, holds the pseudo-3D series
+    with electrodes at 0, 1 and 2 mm; the claims file names no data outside this dandiset, so it is
+    not used here.
+- claim: fig5b-pr-gaussian-yp-lorentzian
+  outcome: blocked
+  blocked_by: other
+  notes: Needs propidium images, which this dandiset does not hold (FITC and DAPI channels only). They
+    appear to be in DANDI:001284, which cites the same paper and describes propidium staining.
+- claim: fig5-yp-spot-slightly-larger-than-pr
+  outcome: blocked
+  blocked_by: other
+  notes: Needs propidium images, not in this dandiset; they appear to be in DANDI:001284.
+- claim: fig5c-irreversible-center
+  outcome: blocked
+  blocked_by: other
+  notes: The criterion needs the Fig. 5 wells with a post-exposure Hoechst counterstain. This dandiset
+    holds Hoechst images taken before exposure only, and no propidium, so the Hoechst part cannot be
+    tested; DANDI:001284 appears to hold the Fig. 5 series. The YP part, shown in the notebook for
+    reference on the CT26 0.2 MHz 2 bursts (x4) wells, holds there (center 1985 a.u., 1030 at 1 mm and at
+    most 244 from 2 to 7 mm). The reader's check also noted that the paper defines no Hoechst
+    background.
+- claim: fig6b-900ns-peak-not-significant
+  outcome: blocked
+  blocked_by: other
+  notes: Every well in this dandiset used 600 ns pulses. DANDI:001277, which names the same lab and
+    funding and describes 300, 600 and 900 ns pulse packets, appears to hold the Fig. 6 series; its
+    metadata names the paper's journal relation without an identifier.
+- claim: fig6c-normalized-decline-similar
+  outcome: blocked
+  blocked_by: other
+  notes: As fig6b-900ns-peak-not-significant; no 300 or 900 ns wells here, apparently in DANDI:001277.
+- claim: fig6d-fwhm-sharper-longer-pulses
+  outcome: blocked
+  blocked_by: other
+  notes: As fig6b-900ns-peak-not-significant; no 300 or 900 ns wells here, apparently in DANDI:001277.
+- claim: fig2-heating-below-44c
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The thermochromic film images are not in this dandiset, and none of the three other
+    dandisets citing the paper (001047, 001277, 001284) mentions thermometry in its description.
+- claim: fig1e-field-simulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The values are outputs of the paper's Sim4Life model, which is not published; no public copy
+    was found, and the dandisets hold images only.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the burst-number series of Fig. 7 and CANCAN and control wells at
+    a packet rate of 1 Hz. The paper's 1 kHz and 10 kHz rates, raised electrodes, propidium images,
+    post-exposure Hoechst, 300 and 900 ns pulses and thermometry are not in it. Three other dandisets
+    citing the paper (001047, 001277, 001284) appear to hold several of these series, but 001276 does
+    not point to them.
+- kind: metadata_insufficient
+  statement: The files give no pixel size or spatial calibration, no electrode positions and no ROI
+    coordinates. Cell line is in the subject strain, but protocol, packet rate, number of bursts,
+    channel and phase are only in free-text descriptions. The stated inter-electrode distance of
+    10.0 mm fits the paper's 15.3 mm diagonal only as the edge-to-edge distance along a side; the
+    electrode footprints in the images are 12.8 mm apart center to center at 1.625 um per pixel.
+- kind: selection_undocumented
+  statement: The dandiset has 3, 6, 3 and 3 CT26 wells and 5, 8, 7 and 8 CHO wells for 1, 2, 4 and 6
+    bursts (x4), where Fig. 7 reports n = 3 to 5 and n = 4, and CHO wells at 1 Hz that the paper does
+    not report. Nothing records which wells the paper used.
+- kind: metadata_error
+  statement: Every file's session_start_time is 2024-12-12, the conversion date; the experiment dates
+    (June to September 2024) are only in the subject ids. Each subject is a culture well, but its age
+    is given as P1D.
+- kind: other
+  statement: Two Hoechst files (P1_20240821_A1 and the 12.5 MB file of P1_20240821_A2) hold a second
+    image plane that the description does not mention, with values near the camera offset. The
+    12.5 MB file covers 1% of the well and matches the same region of the full Hoechst image of the
+    same well (r = 0.89), a fragment deposited twice. Well P1_20240702_A1 has no Hoechst file.
+- kind: other
+  statement: In three YO-PRO-1 images (P1_20240627_B1, P1_20240821_A1, P1_20240827_A1) the electrode
+    footprints are too faint, or lie partly outside the stitched area, to locate the array, so the
+    paper's center cannot be placed from the image; in some others the array is off-center and its
+    lower footprints touch the edge of the stitched area.
+- kind: methods_unavailable
+  statement: The paper does not give the spacing of the ROIs along the diagonals, the fit range used
+    for Fig. 7, or which electrode footprint holds the background ROIs. With 1 mm spacing the 1-burst
+    CT26 FWHM is 1.00 mm and with 0.5 mm spacing 1.09 mm, which decides whether the 7.3% and 2.3%
+    figures are reproduced. Question for the authors, what ROI spacing and fit range were used for
+    the FWHM values of Fig. 7, and which wells of the dandiset form each group.
