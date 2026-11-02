@@ -30,8 +30,9 @@ Where the parameters come from:
   dF/F. The 2-sigma thresholds are the Results' and legends' (Figures 4G, 5B, 5D).
 - "Nested" tests, from the claims file: (a) pooled over units of all mice of a group, (b) on
   per-mouse means (for KS claims, a Mann-Whitney test on per-mouse medians).
-- ACHW: the claims file's criterion, the lag at which the unit's autocorrelation (mean removed)
-  first falls to half its zero-lag value, linearly interpolated between frames, in seconds.
+- ACHW: the claims file's criterion, the lag at which the unit's autocorrelation first falls to
+  half its zero-lag value, linearly interpolated between frames, in seconds. The estimator of the
+  autocorrelation is not given; three are run (`ACHW_ESTIMATORS`, see `achw`).
 - Behaviour decoder (Figure S5E): STAR Methods, Decoding behavior from neural activity; linear SVM
   on frames, equal numbers of sniff and attack frames, 20 repeats; the claims file supplies the
   stratified five-fold cross-validation. The SVM's C is not given: C = 1 (scikit-learn's default)
@@ -39,7 +40,8 @@ Where the parameters come from:
 - rSLDS: the claims file's settings (fig6-rslds-fit-quality) from the ssm notebook the paper's
   code links: K = 3 states, D = 5 latent dimensions, transitions recurrent_only, dynamics
   diagonal_gaussian, emissions gaussian_orthog, single subspace, Laplace-EM with a structured
-  mean-field posterior, 100 iterations; seeds 0 to 3. Time constants tau = |1 / log|lambda||
+  mean-field posterior, 100 iterations, and alpha = 0 (a full parameter update at each iteration,
+  as in the fit call of that notebook; ssm's default is 0.5); seeds 0 to 3. Time constants tau = |1 / log|lambda||
   times the 0.1 s bin (STAR Methods, Estimation of time constants).
 """
 
@@ -220,13 +222,28 @@ def nested_tests(values: dict[str, np.ndarray], groups: dict[str, str]) -> dict:
 
 # --- autocorrelation half-width ------------------------------------------------------------------
 
-def achw(x: np.ndarray, rate: float = RATE_HZ) -> np.ndarray:
-    """ACHW in seconds for each column of x (frames x units); NaN if it never falls to half."""
+ACHW_ESTIMATORS = {"window_mean_biased": (True, False), "window_mean_unbiased": (True, True),
+                   "file_mean_unbiased": (False, True)}
+
+
+def achw(x: np.ndarray, rate: float = RATE_HZ, estimator: str = "window_mean_biased") -> np.ndarray:
+    """ACHW in seconds for each column of x (frames x units); NaN if it never falls to half.
+
+    The paper does not give the estimator of the autocorrelation (it cites Remedios et al. 2017).
+    Estimators: 'window_mean_biased' removes the mean over the window and divides each lag's sum
+    by n (the standard sample autocorrelation); 'window_mean_unbiased' divides by n - k;
+    'file_mean_unbiased' removes nothing, so the mean is the file's (0 for a trace z-scored over
+    the file), and divides by n - k. Over windows of 1 to 2 min the window's mean takes up much of
+    a slow unit's fluctuation, which shortens the ACHW (see the synthetic check in the notebook)."""
+    demean, unbiased = ACHW_ESTIMATORS[estimator]
     x = np.asarray(x, float)
-    x = x - x.mean(0)
+    if demean:
+        x = x - x.mean(0)
     n = len(x)
     f = np.fft.rfft(x, n=2 * n, axis=0)
     ac = np.fft.irfft(f * np.conj(f), axis=0)[:n]
+    if unbiased:
+        ac = ac / (n - np.arange(n))[:, None]
     with np.errstate(invalid="ignore", divide="ignore"):
         ac = ac / ac[0]
     out = np.full(x.shape[1], np.nan)
@@ -240,15 +257,73 @@ def achw(x: np.ndarray, rate: float = RATE_HZ) -> np.ndarray:
     return out
 
 
+# --- choice probability ------------------------------------------------------------------------
+
+def _auc(Y: np.ndarray, a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Per column of Y, the area under the ROC curve of values in frames a against frames b,
+    P(x_a > x_b) + P(x_a = x_b) / 2, from ranks (the same as the ROC built from the histograms)."""
+    sel = np.concatenate([a, b])
+    r = stats.rankdata(Y[sel], axis=0)
+    na, nb = len(a), len(b)
+    return (r[:na].sum(0) - na * (na + 1) / 2) / (na * nb)
+
+
+def _labels(bouts_a, bouts_b, n):
+    la, lb = frames(bouts_a, n), frames(bouts_b, n)
+    return la & ~lb, lb & ~la                     # frames annotated as both are left out
+
+
+def choice_probability(m: dict, beh_a: str, beh_b: str, rng: np.random.Generator,
+                       shuffle: str = "circular", n_shuffles: int = 100) -> dict:
+    """CP of every unit for behaviour a against b, with a bout-shuffled null.
+
+    STAR Methods (Choice probability): the area under the ROC curve built from histograms of the
+    unit's values in frames of the two behaviours; shuffled 100 times "by shuffling behavior bout
+    timings"; tuned when CP > 0.7 and more than 2 shuffled SDs from the shuffled mean. Shuffle
+    readings, from the claims file: 'circular', the bout sequence shifted circularly by a random
+    offset within the interaction (first annotated behaviour to the end of the file);
+    'reassign', each bout given a random onset within the interaction, keeping its duration and
+    label. The AUC is unchanged by an increasing affine map of a unit's trace, so the z-scored and
+    sigma-normalized traces give the same CP."""
+    Y, n = m["Y"], len(m["Y"])
+    i0 = int(round(first_behaviour_s(m) * m["rate"]))
+    a, b = _labels(m["bouts"][beh_a], m["bouts"][beh_b], n)
+    cp = _auc(Y, np.nonzero(a)[0], np.nonzero(b)[0])
+    L = n - i0
+    null = []
+    for _ in range(n_shuffles):
+        if shuffle == "circular":
+            k = int(rng.integers(1, L))
+            sa = np.r_[a[:i0], np.roll(a[i0:], k)]; sb = np.r_[b[:i0], np.roll(b[i0:], k)]
+        elif shuffle == "reassign":
+            new = {}
+            for beh in (beh_a, beh_b):
+                bo = m["bouts"][beh]
+                d = bo[:, 1] - bo[:, 0]
+                on = i0 / m["rate"] + rng.random(len(bo)) * np.maximum(L / m["rate"] - d, 0)
+                new[beh] = np.column_stack([on, on + d])
+            sa, sb = _labels(new[beh_a], new[beh_b], n)
+        else:
+            raise ValueError(shuffle)
+        null.append(_auc(Y, np.nonzero(sa)[0], np.nonzero(sb)[0]))
+    null = np.array(null)
+    mu, sd = null.mean(0), null.std(0, ddof=1)
+    return {"cp": cp, "tuned_a": (cp > 0.7) & (cp > mu + 2 * sd),
+            "tuned_b": (cp < 0.3) & (cp < mu - 2 * sd), "null_mean": mu, "null_sd": sd}
+
+
 # --- behaviour decoder ---------------------------------------------------------------------------
 
 def decode_attack_vs_sniff(m: dict, rng: np.random.Generator, C: float = 1.0, repeats: int = 20,
-                           shuffle: bool = False, by_bout: bool = False) -> float:
+                           shuffle: bool = False, by_bout: bool = False,
+                           n_units: int | None = None) -> float:
     """Mean five-fold accuracy of a linear SVM on balanced sniff and attack frames.
 
     by_bout=False is the paper's frame-wise stratified five-fold split; by_bout=True keeps all
     frames of a bout in one fold (a variant, to show how much neighbouring frames of the same
-    bout in training and test sets contribute)."""
+    bout in training and test sets contribute). n_units: a random subset of that many units is
+    drawn in each repeat (a variant, so that mice with different unit counts are compared on equal
+    numbers; the paper does not subsample)."""
     from sklearn.model_selection import StratifiedGroupKFold, StratifiedKFold, cross_val_score
     from sklearn.svm import LinearSVC
     Y, n = m["Y"], len(m["Y"])
@@ -269,12 +344,14 @@ def decode_attack_vs_sniff(m: dict, rng: np.random.Generator, C: float = 1.0, re
         if k < 10:
             return np.nan
         sel = np.concatenate([rng.choice(np.nonzero(y == c)[0], k, replace=False) for c in (0, 1)])
+        units = (np.sort(rng.choice(Y.shape[1], n_units, replace=False)) if n_units
+                 else np.arange(Y.shape[1]))
         seed = int(rng.integers(1 << 31))
         cv = (StratifiedGroupKFold(5, shuffle=True, random_state=seed) if by_bout
               else StratifiedKFold(5, shuffle=True, random_state=seed))
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            accs.append(cross_val_score(LinearSVC(C=C, max_iter=5000), Y[idx[sel]], y[sel],
+            accs.append(cross_val_score(LinearSVC(C=C, max_iter=5000), Y[idx[sel]][:, units], y[sel],
                                         groups=g[sel] if by_bout else None, cv=cv).mean())
     return float(np.mean(accs))
 
@@ -298,7 +375,7 @@ def fit_rslds(args):
                      single_subspace=True)
     model.initialize(Y)
     elbos, q = model.fit(Y, method="laplace_em", variational_posterior="structured_meanfield",
-                         num_iters=num_iters, initialize=False, verbose=0)
+                         num_iters=num_iters, initialize=False, alpha=0.0, verbose=0)
     x = q.mean_continuous_states[0]
     z = model.most_likely_states(x, Y)
     C = model.emissions.Cs[0]
@@ -308,6 +385,60 @@ def fit_rslds(args):
     As, bs = model.dynamics.As, model.dynamics.bs
     return {"mouse": mouse, "seed": seed, "elbos": np.asarray(elbos), "x": x, "z": z, "C": C,
             "d": d, "As": As, "bs": bs, "r2": float(r2)}
+
+
+def fit_heldout(args):
+    """Fit with one fifth of the recording held out, and score the held-out frames.
+
+    args = (mouse, Y, seed, num_iters). The recording is cut into 20 blocks of equal length;
+    blocks 3, 8, 13 and 18 are held out (spread over the session, so that slow drifts over the
+    session do not dominate the score) and the other 16 are fit as separate trials. The latents
+    of each held-out block are inferred with the parameters fixed (ssm's approximate_posterior).
+    Scores on the held-out neural activity, pooled over the four blocks, each as 1 - SSE / SST
+    about the held-out mean: the R2 of the emissions reconstruction, and the R2 of forward
+    predictions of the activity over 1 s and 5 s (the latent at t propagated with the dynamics
+    of the state at t, then mapped through the emissions, against the activity at t + h). One
+    fold, not the paper's unstated folds; a check, see the notebook."""
+    mouse, Y, seed, num_iters = args
+    for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+        os.environ[v] = "1"
+    warnings.filterwarnings("ignore")
+    import ssm
+    blocks = np.array_split(np.arange(len(Y)), 20)
+    test_ix = (2, 7, 12, 17)
+    train = [Y[b] for i, b in enumerate(blocks) if i not in test_ix]
+    test = [Y[blocks[i]] for i in test_ix]
+    np.random.seed(seed)
+    model = ssm.SLDS(Y.shape[1], K_STATES, D_LATENT, transitions="recurrent_only",
+                     dynamics="diagonal_gaussian", emissions="gaussian_orthog",
+                     single_subspace=True)
+    model.initialize(train)
+    model.fit(train, method="laplace_em", variational_posterior="structured_meanfield",
+              num_iters=num_iters, initialize=False, alpha=0.0, verbose=0)
+    _, q = model.approximate_posterior(test, method="laplace_em",
+                                       variational_posterior="structured_meanfield",
+                                       num_iters=25, verbose=0)
+    C, d = model.emissions.Cs[0], model.emissions.ds[0]
+    As, bs = model.dynamics.As, model.dynamics.bs
+    mean_te = np.concatenate(test).mean(0)
+    sse = {"recon": 0.0, 1.0: 0.0, 5.0: 0.0}
+    sst = {"recon": 0.0, 1.0: 0.0, 5.0: 0.0}
+    for Yb, x in zip(test, q.mean_continuous_states):
+        z = model.most_likely_states(x, Yb)
+        sse["recon"] += ((Yb - (x @ C.T + d)) ** 2).sum()
+        sst["recon"] += ((Yb - mean_te) ** 2).sum()
+        for h_s in (1.0, 5.0):
+            h = int(round(h_s * RATE_HZ))
+            T = len(x) - h
+            pred = x[:T].copy()
+            for _ in range(h):
+                pred = np.einsum("tij,tj->ti", As[z[:T]], pred) + bs[z[:T]]
+            sse[h_s] += ((Yb[h:] - (pred @ C.T + d)) ** 2).sum()
+            sst[h_s] += ((Yb[h:] - mean_te) ** 2).sum()
+    return {"mouse": mouse, "seed": seed, "test_frames": sum(len(b) for b in test),
+            "test_r2": float(1 - sse["recon"] / sst["recon"]),
+            "test_fwd_r2_1s": float(1 - sse[1.0] / sst[1.0]),
+            "test_fwd_r2_5s": float(1 - sse[5.0] / sst[5.0])}
 
 
 def time_constants(A: np.ndarray, dt: float = 1 / RATE_HZ) -> tuple[np.ndarray, np.ndarray]:
@@ -336,10 +467,15 @@ def forward_sim_score(fit: dict, horizon_s: float) -> float:
     return float(1 - ((pred - target) ** 2).sum() / ((target - target.mean(0)) ** 2).sum())
 
 
-def fit_all(mice: list[dict], seeds=SEEDS, num_iters: int = NUM_ITERS, workers: int = 4) -> dict:
-    """Fit every mouse under every seed in worker processes, largest first; {(mouse, seed): fit}."""
+def fit_all(mice: list[dict], seeds=SEEDS, num_iters: int = NUM_ITERS, workers: int = 4,
+            traces: dict | None = None) -> dict:
+    """Fit every mouse under every seed in worker processes, largest first; {(mouse, seed): fit}.
+
+    traces: {mouse: frames x units} to fit in place of the file's z-scored trace (the
+    sigma-normalized reading)."""
     from concurrent.futures import ProcessPoolExecutor
-    jobs = sorted([(m["mouse"], m["Y"], s, num_iters) for m in mice for s in seeds],
+    Ys = {m["mouse"]: (traces[m["mouse"]] if traces else m["Y"]) for m in mice}
+    jobs = sorted([(k, Y, s, num_iters) for k, Y in Ys.items() for s in seeds],
                   key=lambda j: -j[1].size)
     with ProcessPoolExecutor(workers) as ex:
         return {(f["mouse"], f["seed"]): f for f in ex.map(fit_rslds, jobs)}
@@ -353,7 +489,7 @@ def summarize_fit(fit: dict, m: dict) -> dict:
     `state_from`. tau_a: time constants of that state's dynamics matrix; tau_b: the mean over the
     three states of each state's sorted time constants (reading (b)). Unit weights on dimension j
     are |C v_j|, v_j the j-th eigenvector (by decreasing tau) of the attack state's matrix, real
-    part."""
+    part; for the second eigenvector of a complex pair, its imaginary part."""
     n = len(m["Y"])
     z = fit["z"]
     beh = "attack" if "attack" in m["bouts"] else "sniff"
@@ -364,6 +500,15 @@ def summarize_fit(fit: dict, m: dict) -> dict:
     tau_a, V = time_constants(fit["As"][k])
     tau_b = np.mean(taus, axis=0)
     W = np.abs(fit["C"] @ np.real(V))
+    # A complex pair has conjugate eigenvectors with the same real part, so dimensions j and j + 1
+    # would get the same weights; the second of the pair takes the imaginary part instead (the
+    # real and imaginary parts span the plane in which the pair rotates).
+    complex_pair = np.zeros(D_LATENT, bool)
+    for j in range(D_LATENT - 1):
+        if (abs(V[:, j].imag).max() > 1e-12 and not complex_pair[j]
+                and np.allclose(V[:, j + 1], np.conj(V[:, j]))):
+            W[:, j + 1] = np.abs(fit["C"] @ np.imag(V[:, j]))
+            complex_pair[j] = complex_pair[j + 1] = True
     attack_counts = (np.bincount(z[frames(m["bouts"]["attack"], n)], minlength=K_STATES)
                      if "attack" in m["bouts"] else None)
     return {"mouse": m["mouse"], "group": m["group"], "seed": fit["seed"], "state_from": beh,
@@ -372,7 +517,7 @@ def summarize_fit(fit: dict, m: dict) -> dict:
             "score_b": float(np.log2(tau_b[0] / tau_b[1])),
             "attack_frac_in_state": (float(attack_counts.max() / attack_counts.sum())
                                      if attack_counts is not None else np.nan),
-            "weights": W, "r2": fit["r2"],
+            "weights": W, "complex_pair": complex_pair, "r2": fit["r2"],
             "state_occupancy": np.bincount(z, minlength=K_STATES) / len(z)}
 
 

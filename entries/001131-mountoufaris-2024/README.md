@@ -8,15 +8,16 @@ and 6 Oxtr/Avpr1a co-edited male residents during interactions with a male intru
 | Claim | Outcome |
 |---|---|
 | Units and mice recorded (585 in 5 control, 546 in 7 experimental) | Not reproduced |
-| Unilateral editing leaves sniffing and aggression unchanged | Reproduced (assumption) |
+| Unilateral editing leaves sniffing and aggression unchanged | Reproduced (assumption: how attack probability is summarized) |
 | Activity during male interaction lower in experimental mice | Reproduced (assumption, units pooled) |
-| Activity of male-responsive units unchanged | Reproduced (assumption) |
+| Activity of male-responsive units unchanged | Reproduced (assumption: the baseline) |
 | Fewer sniff- and attack-selective units | Partially reproduced (assumption) |
 | Attack against sniff decoding equal in both groups | Not reproduced |
 | ACHW of all units reduced by about 51% | Not reproduced |
+| Bout-triggered activity lower during male sniffing and attack | Not reproduced (male half; the female half is not in the dandiset) |
 | rSLDS fit quality, time constants, line attractor score, flow fields, ACHW of first-dimension units (six claims) | Not reproduced |
 | Post-intruder persistence of the first dimension | Blocked: metadata insufficient |
-| Female-intruder, behaviour-cohort, photometry and slice claims (21 claims) | Blocked: data missing |
+| Female-intruder, behaviour-cohort, photometry and slice claims (20 claims) | Blocked: data missing |
 | Co-expression in an outside RNA-seq atlas | Blocked: not attempted for time |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
@@ -26,6 +27,8 @@ The files mark neither the pre-intruder baseline nor the intruder's entry and re
 measures in units of sigma rest on an assumed baseline (the frames before the first annotated
 behaviour). The rSLDS fits use the settings the claims file takes from the ssm notebook the paper
 points to, with four seeds split over two notebooks; they explain 59% of the variance, against 85% in
-the paper, and do not recover the rSLDS weights the authors deposited for two mice. The attempt
+the paper, and do not recover the rSLDS weights the authors deposited for two mice. A third notebook,
+`rslds_checks.ipynb`, fits the sigma-normalized traces and scores held-out frames for one seed; neither
+changes an outcome. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/001131-mountoufaris-2024-01.yaml`](../../attempts/001131-mountoufaris-2024-01.yaml).
