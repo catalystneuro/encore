@@ -1,0 +1,109 @@
+dandiset: "001444"
+paper: doi:10.1038/s41531-025-01070-4
+questions:
+- claim: fig2c-control-it23-rate-activated
+  asked: 2026-11-02
+  question: The claims file reads the population rates in two ways, R1 (all cells of the
+    population, silent ones at 0) and R2 (cells with at least one spike in the last 2.3 s). Does
+    the paper's text also allow a third reading, R3, the cells that fired at least once in the
+    4.3 s simulation, with rates over the last 2.3 s? If so, should R3 be added to the readings of
+    the rate claims? The same question applies to fig2c-control-it6-rate-activated,
+    control-it5-silenced-activated, control-it4-rate-activated, fig5c-pd-it23-rate-activated,
+    pd-it5-silenced-activated, pd-it6-rate-unchanged, rest-it4-rate-pd-vs-control,
+    rest-it5a-rate-pd-vs-control, activated-it6-rate-pd-vs-control and pt5b-highest-rate.
+  passage: >-
+    Statistically significant change was found for firing rates for excitatory cell types
+    going from rest to activated ... (mean, std dev, range shown; *** p < 0.001; #, truncated
+    maximum rate 73 spikes/s; calculated from the last 2.3 s of 4.3 s simulation to avoid
+    initialization transients). (Fig. 2C legend; also Fig. 5C legend.) The paper does not say
+    which cells enter a population's mean, and the dandiset's units tables hold only the cells that
+    fired at some time in the simulation.
+  why: Under R1 and R2 none of the IT claims has its values within tolerance (for example IT2 at
+    control rest, 0.095 and 1.555 spikes/s against 1.2). Under R3 every IT value the claims give
+    is matched to the printed decimal, including the standard deviations (IT2 1.203 +/- 1.649 and
+    6.662 +/- 8.858 against 1.2 +/- 1.6 and 6.7 +/- 8.9; IT6 5.82, IT5A 3.25, IT5B 3.08, IT4 2.57,
+    parkinsonian IT2 0.783 +/- 1.105 and 4.295 +/- 7.066). For PT5B all 1,435 cells fire, so R1
+    and R3 coincide and match. Ten claims are not reproduced under R1 and R2, and
+    pt5b-highest-rate is blocked; they would be decided again under R3, whose values and tests are
+    in the notebook as a variant.
+  answer: >-
+    Changed. The legends say only that rates are "calculated from the last 2.3 s of 4.3 s
+    simulation to avoid initialization transients" (mean, std dev). That fixes the window of the
+    spikes counted. It does not fix the neurons averaged over, and the paper's code
+    (pd_m1_6ohda at 0a1f0e8) holds no rate analysis. Neurons that fired at least once in the
+    4.3 s simulation, with those silent in the window counted at 0, fit this text as well as R1
+    and R2 do, and they fit the 0 spikes/s IT5A and IT5B activated rates. NetPyNE 1.0.5
+    plotSpikeStats, the software the Methods name, gives R2 by default and R1 with includeRate0,
+    but the paper does not say it was used, so this does not rule R3 out. R3 is added to the
+    definitions in the opening comment. Every rate criterion that read "readings R1 and R2" now
+    reads "readings R1, R2 and R3", including the three PT5B rate claims, where R3 changes
+    nothing when every PT5B neuron fires. control-it5-silenced-activated (and so
+    pd-it5-silenced-activated) now uses R1 and R3, and pt5b-highest-rate accepts R1, R2 or R3.
+    Expected values, tolerances and tests are unchanged. This answer was reached from the paper's
+    text. The fit to the data reported in the question played no part in it, and an outcome that
+    holds only under R3 rests on that reading as an assumption.
+  answered: 2026-11-02
+- claim: control-coincident-spikes
+  asked: 2026-11-02
+  question: The criterion takes the share of all PT5B spikes that have a spike of another PT5B
+    neuron within 1 ms (or in the same 1 ms bin), over all 1,435 PT5B cells. Does the paper's text
+    support that measure, or does its 1% to 3% refer to another set of neurons (for example the
+    cells shown in the rasters of Figs. 4 and 7) or another denominator (for example the share of
+    1 ms bins, or of spikes beyond those expected by chance)? The same question applies to
+    pd-coincident-spikes, and to fig4-control-unitary-events, fig7-pd-unitary-events and
+    rest-synchrony-increase, whose criteria count "2 or more PT5B spikes within 1 ms" over all PT5B
+    cells without saying how a window's coincidences are counted.
+  passage: >-
+    We looked for spikes that fired in the PT5B neuron population within a 1 ms time window of one
+    another and considered those to be coincident spikes. ... PT5B spike coincident firing was
+    observed in 1% of spikes at rest and increased to 3% during the activated state (Fig. 4, cyan
+    lines in A,C cyan + red in raster in B,D). (Results, Control simulations, paragraph 7.) PT5B
+    spike coincident firing (2 or more spikes firing in 1 ms) was observed in 2% of spikes at rest
+    and increased to 3% during the activated state (Fig. 7). (Results, Parkinsonian condition,
+    paragraph 7.) We used unitary event analysis for identifying synchronous spiking significantly
+    above the expected number of synchronous spikes for the neuron population size and firing
+    rates. (Methods, Identifying synchronous spiking.)
+  why: Over all 1,435 PT5B cells the population fires 17 to 42 spikes per ms, so 99.95% to 100% of
+    PT5B spikes have another PT5B spike within 1 ms under every reading of the criterion, and two or
+    more cells fire in 99% to 100% of 1 ms bins. No reading over the whole population can give 1%
+    to 3%, so the two coincidence claims fail by construction, and the unitary-event results go
+    from 0 s to 4.0 s of significant synchrony depending on how coincidences are counted (bins,
+    spikes or pairs of cells; notebook). If the paper's measure is over a subset of cells or uses
+    another denominator, the criteria would need to say which, and the outcomes could change.
+- claim: fig3a-control-rest-spectrogram
+  asked: 2026-11-02
+  question: The criteria of the four spectrogram claims define a burst as an epoch where the band's
+    power is above halfway between its minimum and maximum in W, borrowing the half-height
+    convention of the duty cycle, and fig3b takes the 15 Hz bursts in a 14 to 16 Hz band of the
+    reader's choice. The paper defines neither. Should these claims be tested under this
+    convention, or blocked as methods_underspecified? The same applies to
+    fig3b-control-activated-spectrogram, fig6a-pd-rest-spectrogram and
+    fig6b-pd-activated-spectrogram, and, for the duty cycle, to control-duty-cycle and
+    pd-duty-cycle, whose criteria take the unsmoothed 2 ms SCH.
+  passage: >-
+    The rest state simulation revealed virtually continuous power around 2 Hz, as well as 15–25 Hz
+    beta-band bursts (Fig. 3A), occurring every 600 ms (or with a burst-rate of 1.7 Hz). (Results,
+    Control simulations, paragraph 6.) The Methods, Duty cycle, give the half-height convention
+    for the PT5B spike count histogram only, and the Fig. 2 and 5 legends give 2 ms bins; neither
+    says whether the histogram was smoothed.
+  why: The four spectrogram claims and the two duty-cycle claims are not reproduced under the
+    criteria's conventions, but those conventions are the reader's, not the paper's. On the
+    unsmoothed 2 ms SCH the half-height is crossed every 10 ms (median period), much shorter than
+    a beta or gamma period, so the duty cycles measure noise crossings. With a half-height burst
+    rule the burst rates come out at 0.9 to 2.6 Hz where the paper reports 1 to 20 Hz. If the
+    claims should be blocked, or tested under another definition, the outcomes change.
+- claim: rest-beta-power-order-of-magnitude
+  asked: 2026-11-02
+  question: The criterion says reproduced when the parkinsonian over control ratio of rest LFP power
+    around 15 Hz lies within 3.16 to 31.6 under every reading, and not reproduced when it is below
+    3.16 under every reading. It gives no outcome for a ratio above 31.6. Should a ratio above 31.6
+    count as reproduced (at least an order of magnitude), partially reproduced (the increase holds,
+    its size does not) or not reproduced?
+  passage: >-
+    In the resting state, an order of magnitude increase in beta power was observed around 15 Hz.
+    (Discussion, paragraph 3.) Figures 3A and 6A show the increase only through their colour bars
+    (x 10^-5 and x 10^-4).
+  why: The ratio is 129 (S1, at 15 Hz), 111 (S1, 14 to 16 Hz) and 65 (S2), above 31.6 under every
+    reading, so the criterion assigns no outcome; the attempt chose partially reproduced, and the
+    round-2 verifier noted that the claims file should close the gap. "An order of magnitude" in
+    the Discussion could mean at least tenfold, in which case the outcome would be reproduced.
