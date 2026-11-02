@@ -41,6 +41,16 @@ outcomes:
   deviations:
   - The claims file's count assumes the files hold every cell, as the dandiset description says;
     they do not, so the gid range is shown as a variant.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The count of 4,480 to 2,917 measures what the files store, not the model's size. No stored
+      M1 unit is silent (0 in each file), 5,593 to 7,156 M1 gids of 0 to 10072 have no row, and the
+      units table has no row or column for a cell that did not fire (data check), so the silent cells
+      the criterion counts are not in the dataset. The gids support 10,073 cells (inputs start at gid
+      10073; smallest blocks plus unseen gids sum to 10,073). Not reproduced would say the data
+      contradict the paper, and they do not; the claim cannot be tested from these files. Raised by
+      the round-2 verifier.
 - claim: model-pt5b-excitability-decrease
   outcome: blocked
   blocked_by: data_missing
@@ -117,12 +127,28 @@ outcomes:
     tolerance. The outcome was partially reproduced before the first verification; it is now not
     reproduced, since the criterion fails under every reading and pairing and one test finds no
     increase at all.
+    After round 2 a change to partially reproduced is proposed - under the pairing of the cells
+    kept in both files, adopted elsewhere in this record, every test finds the increase (largest p
+    0.016) and only the 0.001 bound fails.
   deviations:
   - R1 uses the IT2 gid block bounded from the data (1,729 or 1,730 cells); both bounds give the
     same values to three decimals.
   - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
     pairings were run, the cells kept in both files and the cells kept in either file at 0 where
-    absent; they give the same outcome here.
+    absent. Both fail the criterion, but they grade differently - with the cells kept in both every
+    test finds the increase (largest p 0.016) and two of four miss 0.001; with the cells kept in
+    either the Wilcoxon test finds no increase (0.69).
+  proposed:
+    outcome: partially_reproduced
+    reason: Under R3 with the paired tests on the cells kept in both files, the pairing this record
+      adopts for pd-it6-rate-unchanged and fig5c-pd-it23-rate-activated, all four values are within
+      tolerance and every test finds the increase (Mann-Whitney 3.5e-05, Welch 3.6e-06, Wilcoxon
+      0.016, paired t 0.011), with two of four tests above the criterion's 0.001. That is the
+      pattern graded partially reproduced for activated-pt5b-rate-pd-vs-control (an increase every
+      test finds, weaker than the paper's bound). The not reproduced outcome rests on the Wilcoxon p
+      of 0.69 under the union pairing, which the record does not adopt elsewhere. The change would
+      rest on R3 and on that pairing as assumptions. Found by the author after round 2, from the
+      round-2 verifier's remark on fig5c-pd-it23-rate-activated.
 - claim: fig2c-control-it6-rate-activated
   outcome: reproduced
   assumed: true
@@ -304,7 +330,7 @@ outcomes:
     0.3 to 4.3 s and the bin count is at its maximum of 100 in 92% to 100% of control windows.
     Counting pairs of cells against independent cells, 0.8 to 1.65 s are significant at rest
     (against 0.63 to 0.77 s) and 1.0 to 1.43 s activated (within 0.99 to 1.21 s for two of four
-    combinations), rest clusters last up to 551 ms (outside 90 to 302.5 ms), the activated state
+    combinations), rest clusters last up to 552 ms (outside 90 to 302.5 ms), the activated state
     does not have more significant periods, and periodicity (x) is 18.0 to 19.8 Hz at rest
     (within). That count finds no significant window on independent cells and misses 20 added pair
     coincidences, so it is conservative. Against the null that keeps each cell's active bins, 3.2
@@ -354,6 +380,7 @@ outcomes:
     2026-11-02 added R3, which equals R1 here (every PT5B cell fired); the outcome is unchanged.
 - claim: fig5c-pd-it23-rate-activated
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig5c-pd-it23-rate-activated
   measured:
@@ -365,15 +392,20 @@ outcomes:
     spikes/s (66 cells), all four within tolerance. The Welch test finds the increase at p =
     1.7e-04, the Mann-Whitney test gives 0.0018, and the paired tests give 0.60 (Wilcoxon) and 0.21
     (paired t) on the 22 cells kept in both files and 2.4e-04 and 2.2e-04 on the 99 cells kept in
-    either, at 0 where absent. Under neither pairing do all four tests reach p < 0.001, and with the
-    cells kept in both the paired tests find no increase. Under R1 (0.025 +/- 0.239 and 0.164 +/-
+    either, at 0 where absent. Under neither pairing do all four tests reach p < 0.001. With the
+    cells kept in both the paired tests find no increase; with the cells kept in either every test
+    finds the increase at p < 0.01 and only Mann-Whitney misses 0.001, the pattern graded partially
+    reproduced for activated-pt5b-rate-pd-vs-control. The outcome rests on pairing the cells kept
+    in both files, as for pd-it6-rate-unchanged. Under R1 (0.025 +/- 0.239 and 0.164 +/-
     1.598) and R2 (1.163 +/- 1.173 and 6.163 +/- 7.769) the values are outside tolerance. The
     outcome was partially reproduced before the first verification; it is now not reproduced, since
     the criterion fails under every reading and pairing.
   deviations:
-  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
-    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
-    absent; they give the same outcome here.
+  - Assumed - the paired tests under R3 pair the cells kept in both files, as for
+    pd-it6-rate-unchanged. The claims file does not say which cells are paired. Pairing the cells
+    kept in both keeps each paired rate inside the group whose mean the claim gives. Both pairings
+    fail the criterion, but under the union pairing every test finds the increase (2.4e-04,
+    2.2e-04, 0.0018, 1.7e-04), which would grade as partially reproduced. Both are shown.
 - claim: pd-it5-silenced-activated
   outcome: reproduced
   assumed: true
@@ -516,7 +548,7 @@ outcomes:
   notes: No combination meets the criterion. Counting bins or spikes, no window is significant (0 s
     against 3.1 and 1.4 s), with two or more PT5B cells in 99.1% (rest) and 100% (activated) of
     1 ms bins. Counting pairs against independent cells, 3.8 to 3.98 s are significant at rest
-    (against 2.79 to 3.41 s) in one or two clusters of 1,500 to 2,379 ms (outside 360 to 1,210
+    (against 2.79 to 3.41 s) in two clusters of 1,500 to 2,379 ms (outside 360 to 1,210
     ms), and 0 to 0.43 s activated (against 1.26 to 1.54 s); periodicity (x) is 15.1 to 15.4 Hz at
     rest (within). Against the null that keeps each cell's active bins, all 4.0 s at rest and 3.7
     to 4.0 s activated are significant. See fig4-control-unitary-events.
@@ -540,8 +572,8 @@ outcomes:
   notebook: reproduce_doherty_2025.ipynb
   output: claim:rest-it4-rate-pd-vs-control
   measured:
-  - 0.037
-  - 0.037
+  - 2.57
+  - 14.13
   notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings; the outcome is unchanged. Under R3 the means are 2.57 (11 cells) and 14.13
     spikes/s (2 cells), both within tolerance, but no test finds the increase at p < 0.05
     (Mann-Whitney 0.077, Welch 0.31, Wilcoxon 1.0 and paired t 0.68 on the 2 cells kept in both
@@ -646,6 +678,14 @@ outcomes:
     and miss both synthetic synchrony cases, so they cannot test the claim. The outcome was not
     reproduced before the first verification, on the bin count alone; it rests on the pair count
     as an assumption. The durations themselves do not match fig4 and fig7 (both not reproduced).
+    Two caveats bear on it. Under the count-preserving null the comparison is at its ceiling (4.0
+    against 3.98 and 3.99 s for slid windows), and on independent cells that null's slid windows
+    cover 0.64 to 0.75 s by chance, so the comparison rests in effect on the rate null, which is
+    conservative. Both pair nulls take each cell's spikes as spread evenly over its 100 ms window,
+    so the excess partly measures how strongly the PT5B rhythm modulates firing within a window -
+    the median observed over expected pair count is 1.38 to 1.41 at parkinsonian rest against 1.04
+    to 1.05 at control rest, and the largest PT5B SCH spectral power above 5 Hz is 31.5 times higher.
+    The paper's own Poisson window null probably shares this property.
   deviations:
   - The claims file does not say how a window's coincidences are counted. Four counts were run
     (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al.
@@ -694,7 +734,7 @@ findings:
   statement: Question for the authors. Over which cells is a population's mean rate taken? The
     paper's IT rates match exactly when the cells are those that fired at least once in the 4.3 s
     simulation, with rates over the last 2.3 s (IT2 1.203 +/- 1.649 at control rest against 1.2 +/-
-    1.6), and not when all cells or only cells active in the last 2.3 s are counted; nine IT
+    1.6), and not when all cells or only cells active in the last 2.3 s are counted; seven IT
     outcomes here rest on that reading. Which test gave the rate p-values? Under that reading the
     Welch t-test meets every printed bound except for IT4 at rest (two parkinsonian cells, p =
     0.31), while paired tests do not for IT2. If paired tests were used, which cells were paired?
@@ -704,10 +744,10 @@ findings:
   statement: Question for the authors. Which PT5B cells, and what definition, gave 1% to 3% of
     spikes coincident within 1 ms and the unitary-event durations of Figs. 4 and 7? Over all 1,435
     PT5B cells (17 to 42 spikes per ms) nearly every spike has another PT5B spike within 1 ms, two
-    or more cells fire in 95% to 100% of 1 ms bins, and a joint-surprise test against rate-matched
+    or more cells fire in 99.1% to 100% of 1 ms bins, and a joint-surprise test against rate-matched
     Poisson cells finds no significant 100 ms window. How were a window's coincidences counted
     (coincident bins, spikes, or pairs of cells) and against which null? Over all PT5B cells the
-    significant duration runs from 0 s (bins, spikes) to 0.8 to 4.0 s (pairs) with the count.
+    significant duration runs from 0 s (bins, spikes) to 0 to 4.0 s (pairs) with the count.
 - kind: methods_unavailable
   statement: Question for the authors. How were LFP bursts (Figs. 3 and 6) defined, which
     spectrogram parameters and electrode were used, and was the PT5B spike count histogram smoothed
@@ -996,3 +1036,292 @@ verifications:
     outcome: reproduced
     reason: Parkinsonian power is higher under every reading - S1 4.6x, S2 4.7x, SCH 11.8x.
     response: No change of outcome.
+- date: 2026-11-02
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the attempt record, the README and the claims file, with the paper under paper/. Report
+    transcripts/001444/verifier-2-report.md. The report's other text corrections, answered in the notebook,
+    record and README - the summary and findings now say seven IT outcomes rest on R3, not nine; the finding
+    on coincidences gives 99.1% to 100% of 1 ms bins and a pair-count range of 0 to 4.0 s; and the summary
+    says the potentials of the paper's set seem to come from a diverged run, which the files cannot establish.
+  results:
+  - claim: fig1-network-size
+    agrees: false
+    outcome: blocked
+    reason: The count of 4,480 measures what the files store, not the model's size; the gids support 10,073
+      (cell 7, input gids start at 10073; smallest blocks plus unseen gids sum to 10,073), and cell 13 shows
+      the files cannot hold the silent cells the criterion counts. Blocked (data_missing), since the quantity
+      cannot be counted from these files; this revises the round-1 partially reproduced. Not reproduced
+      tells a reader the data contradict the paper, and they do not.
+    response: Kept as not reproduced, the verified outcome, with blocked (data_missing) written under proposed
+      for a third round. The fig1 cell now also prints that no stored M1 unit is silent and how many gids
+      of 0 to 10072 have no row (5,593 to 7,156), and its conclusion gives the proposed change.
+  - claim: model-pt5b-excitability-decrease
+    agrees: true
+    outcome: blocked
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: robustness-four-sets
+    agrees: true
+    outcome: blocked
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig2-control-rest-beta
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig2-control-activated-gamma
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig2c-control-pt5b-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig2c-control-it23-rate-activated
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Unlike activated-pt5b, some test finds no increase at all for the IT2 claims (p 0.69).
+    response: No change of outcome. Checking the verifier's point on fig5c-pd-it23 showed that the 0.69
+      comes from the union pairing, while under the pairing of the cells kept in both, adopted for pd-it6
+      and pd-it23, every test finds the increase (largest p 0.016). A change to partially reproduced, resting
+      on that pairing, is proposed for a third round, and the deviation no longer says the pairings give
+      the same outcome.
+  - claim: fig2c-control-it6-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The R3 rate reading is reasonable - it matches every IT value the paper prints, about
+      20 numbers, to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full.
+    response: No change of outcome.
+  - claim: control-it5-silenced-activated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The R3 rate reading is reasonable - it matches every IT value the paper prints, about
+      20 numbers, to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full.
+    response: No change of outcome.
+  - claim: control-it4-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The R3 rate reading is reasonable - it matches every IT value the paper prints, about
+      20 numbers, to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full.
+    response: No change of outcome.
+  - claim: pt5b-highest-rate
+    agrees: true
+    outcome: blocked
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: control-cv-isi
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: control-subthreshold-oscillations
+    agrees: true
+    outcome: blocked
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: control-duty-cycle
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The half-height burst convention and the unsmoothed duty cycle are the claims-file reader's
+      choices, not the paper's (problem 7); the record asks a reader, and these outcomes stay open until
+      answered.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: fig3a-control-rest-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The half-height burst convention and the unsmoothed duty cycle are the claims-file reader's
+      choices, not the paper's (problem 7); the record asks a reader, and these outcomes stay open until
+      answered.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: fig3b-control-activated-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The half-height burst convention and the unsmoothed duty cycle are the claims-file reader's
+      choices, not the paper's (problem 7); the record asks a reader, and these outcomes stay open until
+      answered.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: control-coincident-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The whole-population coincident-spike share cannot give 1 to 3%, and the same all-PT5B
+      reading underlies fig4 and fig7; this claims-file reading (problem 3) is reported, not corrected,
+      and stays open until a reader answers.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: fig4-control-unitary-events
+    agrees: true
+    outcome: not_reproduced
+    reason: Now agrees with not reproduced (round 1 asked for blocked). Four counts were run, each checked
+      for chance level and against synthetic synchrony, and no combination of count and reading meets the
+      criterion (cell 81), so the outcome no longer depends on one saturated count. 'Rest clusters last
+      up to 551 ms' should be 552 ms (cell 81). The claims-file reading of the coincidence measure stays
+      open until a reader answers (problem 3).
+    response: No change of outcome. 551 corrected to 552 ms in the notebook conclusion and the notes.
+  - claim: fig5-pd-rest-beta
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig5-pd-activated-gamma
+    agrees: true
+    outcome: not_reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig5c-pd-pt5b-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: fig5c-pd-it23-rate-activated
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The deviation's 'they give the same outcome here' is not supported
+      - under the union pairing every test finds the increase at p < 0.01 and only Mann-Whitney misses 0.001
+      (cell 91, 2.4e-04, 2.2e-04, 0.0018, 1.7e-04), the pattern graded partially reproduced for activated-pt5b;
+      the two pairings give the same outcome only because the both-files pairing is adopted.
+    response: No change of outcome. The deviation now says the two pairings grade differently and that the
+      outcome rests on pairing the cells kept in both files, as for pd-it6; the outcome is marked assumed,
+      and the notes and the notebook conclusion say so.
+  - claim: pd-it5-silenced-activated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The R3 rate reading is reasonable - it matches every IT value the paper prints, about
+      20 numbers, to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full.
+    response: No change of outcome.
+  - claim: pd-it6-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: The R3 rate reading is reasonable - it matches every IT value the paper prints, about 20 numbers,
+      to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full. Pairing
+      only cells kept in both files is reasonable, keeping each paired rate inside the R3 group whose mean
+      is tested; both pairings are shown, and the union pairing would flip the outcome (cell 97, Wilcoxon
+      0.0025, paired t 0.0021). Problem 10 is answered in the response.
+    response: No change of outcome.
+  - claim: pd-cv-isi
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: pd-no-subthreshold-oscillations
+    agrees: true
+    outcome: blocked
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: pd-activated-vm-more-negative
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: pd-duty-cycle
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The half-height burst convention and the unsmoothed duty cycle are the claims-file reader's
+      choices, not the paper's (problem 7); the record asks a reader, and these outcomes stay open until
+      answered.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: fig6a-pd-rest-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The half-height burst convention and the unsmoothed duty cycle are the claims-file reader's
+      choices, not the paper's (problem 7); the record asks a reader, and these outcomes stay open until
+      answered.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: fig6b-pd-activated-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The half-height burst convention and the unsmoothed duty cycle are the claims-file reader's
+      choices, not the paper's (problem 7); the record asks a reader, and these outcomes stay open until
+      answered.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: pd-coincident-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The whole-population coincident-spike share cannot give 1 to 3%, and the same all-PT5B
+      reading underlies fig4 and fig7; this claims-file reading (problem 3) is reported, not corrected,
+      and stays open until a reader answers.
+    response: No change of outcome; the question is already in questions/001444.yaml.
+  - claim: fig7-pd-unitary-events
+    agrees: true
+    outcome: not_reproduced
+    reason: Now agrees with not reproduced, as for fig4 (cell 81, no combination meets the criterion). 'In
+      one or two clusters' should be two clusters in all four combinations (cell 81). The claims-file reading
+      stays open until a reader answers (problem 3).
+    response: No change of outcome. Corrected to two clusters in the notebook conclusion and the notes.
+  - claim: rest-pt5b-rate-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: rest-it4-rate-pd-vs-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The measured field holds the R1 values (0.037, 0.037), while the notes
+      and outcome are argued under R3 (2.57, 14.13); every other rate claim records the reading it argues
+      from.
+    response: No change of outcome. measured now holds the R3 values, 2.57 and 14.13.
+  - claim: rest-it5a-rate-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The R3 rate reading is reasonable - it matches every IT value the paper prints, about
+      20 numbers, to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full.
+    response: No change of outcome.
+  - claim: activated-pt5b-rate-pd-vs-control
+    agrees: true
+    outcome: partially_reproduced
+    reason: Accepts partially reproduced (round 1 said not reproduced). All four tests find the increase
+      at p up to 0.0052 and only Mann-Whitney misses the 0.001 bound (cell 109), which separates it from
+      the IT2 claims; the criterion does not make this distinction itself, and the record states it as a
+      judgment.
+    response: No change of outcome.
+  - claim: activated-it6-rate-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The R3 rate reading is reasonable - it matches every IT value the paper prints, about
+      20 numbers, to the paper's digits (cells 34 to 112), and R1 and R2 match none of these claims in full.
+    response: No change of outcome.
+  - claim: rest-beta-power-order-of-magnitude
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The criterion gives no outcome for a ratio above 31.6, so partially reproduced is the
+      author's choice; it is stated and reasonable, but the claims-file reader should close the gap.
+    response: No change of outcome. The gap is added to questions/001444.yaml as a question for a reader.
+  - claim: activated-20-35hz-power-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: One of the 39 outcomes the report agrees with; it raises no point on this claim beyond its general
+      checks.
+    response: No change of outcome.
+  - claim: rest-synchrony-increase
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees with reproduced, resting on the pair count. The bin and spike counts are at their
+      ceiling, and under both pair nulls and every window reading the parkinsonian file has the longer duration
+      (cell 85). The assumption is defensible, with two caveats the notes do not give - both pair nulls
+      assume each cell's spikes are spread evenly across its 100 ms window, so the excess partly measures
+      how strongly the population rhythm modulates firing within a window (median observed/expected 1.38
+      to 1.41 at parkinsonian rest against 1.04 to 1.05 at control rest, spectrum peak about 30 times higher),
+      which the paper's Poisson null probably shares; and under the count-preserving null the comparison
+      is at its ceiling, its slid windows covering 0.64 to 0.75 s by chance on independent cells, so the
+      comparison rests in effect on the rate null, which is conservative.
+    response: No change of outcome. The two caveats are now in the notes and the notebook conclusion, and
+      cell 85 prints the median observed over expected pair counts at rest (1.38 to 1.41 against 1.04 to
+      1.05) and the ratio of the largest PT5B SCH spectral power above 5 Hz (31.5).
