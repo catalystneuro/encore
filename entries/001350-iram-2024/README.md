@@ -19,7 +19,7 @@ RNA-seq in NCBI GEO (GSE241561).
 | No myelin genes among SRF targets | GEO | Reproduced, on an assumption |
 | 157 and 264 differentially expressed genes (Fig. 4A, 4B) | GEO | Reproduced, on an assumption |
 | Srf and Actb down in KO cells (Fig. 4C, 4D) | GEO | Reproduced, on an assumption |
-| Assembly genes regulated, not disassembly genes such as Cfl1 (Fig. S4E, S4F) | GEO | Partially reproduced |
+| Assembly genes regulated, disassembly genes largely unchanged, Cfl1 lower in KO oligodendrocytes (Fig. S4E, S4F) | GEO | Reproduced, on an assumption |
 | GSEA and single-nucleus RNA-seq (4 claims) | GEO | Blocked: not runnable |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -32,7 +32,7 @@ mice. The attempt record, with the reasons and the differences from the paper's 
 
 - `reproduce_iram_2024.ipynb`: the TEM claims, from the dandiset's masks. About two minutes.
 - `geo_sequencing_claims.ipynb`: the ChIP-seq and RNA-seq claims, from GEO's processed files. Five
-  to twelve minutes, most of it waiting on NCBI's server, which refuses some requests.
+  to seventeen minutes, most of it waiting on NCBI's server, which refuses some requests.
 - `srf_tem.py`: loading the images and masks, and the axon measures.
 - `srf_geo.py`: loading the GEO files, DESeq2 through pydeseq2, rn6 sequence by range requests,
   and CArG motif matching.

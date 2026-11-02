@@ -18,7 +18,7 @@ provenance:
     protocol: pilot-13
   runner:
     platform: GitHub Actions
-    url: https://github.com/catalystneuro/encore/actions/runs/41395414014
+    url: https://github.com/catalystneuro/encore/actions/runs/41405245478
 inputs:
 - what: ChIP-seq processed files (SRF and IgG consensus peaks, HOMER annotation, MACS2 peaks of each replicate
     and IgG control), for the elsewhere claims fig3a, fig3bc, fig3d, no-myelin-genes, fig4cd and figs4ef.
@@ -307,19 +307,29 @@ outcomes:
   - 'The paper does not list its ''myelin genes''. Assumed: the structural myelin genes above, with Opalin
     and Myrf; a target is a gene that is HOMER''s nearest gene of an SRF peak, the paper''s annotation.'
 - claim: figs4ef-assembly-not-disassembly-genes
-  outcome: partially_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: geo_sequencing_claims.ipynb
   output: claim:figs4ef-assembly-not-disassembly-genes
-  notes: 'Of the 13 disassembly genes of Fig. S4E, none has padj < 0.05 in OPCs (12 tested; Ssh3 too low)
-    and one does in oligodendrocytes under every reading: Cfl1, lower in KO (log2FC -0.78, padj 0.024,
-    reading a; 0.029 in b, 0.0017 in c), as the paper''s own Fig. S4F shows (p 0.007). Actb is lower in
-    KO in both stages under readings (a) and (b). The ''not ... such as Cfl1'' part of the statement holds
-    in OPCs and fails in oligodendrocytes. A reader is asked whether the claims file should name Cfl1
-    as an unregulated gene (questions/001350.yaml).'
+  notes: Tested on the claims file as amended after a reader's answer (questions/001350.yaml), which
+    now says the disassembly genes are largely unchanged, with Cfl1 lower in SRF-KO oligodendrocytes
+    and unchanged in OPCs. Before the answer the statement named Cfl1 as an unregulated gene, and the
+    outcome was partially reproduced, as Cfl1 is lower in KO oligodendrocytes. The data are the same
+    and the outcome changes with the statement. Of the 12 disassembly genes of Fig. S4E other than Cfl1,
+    none has padj < 0.05 in oligodendrocytes, and none of the 12 or 13 tested in OPCs does, under every
+    reading. Cfl1 is lower in KO oligodendrocytes (log2FC -0.78, p 0.0003, padj 0.024 in reading a; padj
+    0.029 in b and 0.0016 in c), against p 0.007 printed on Fig. S4F, and unchanged in OPCs (log2FC -0.05,
+    padj 0.91). Actb is lower in KO in both stages under readings (a) and (b) (log2FC -0.41 and -1.14
+    in a); under the joint model (c) it is not in OPCs (padj 0.51). Actg1 does not reach padj < 0.05.
   deviations:
-  - The claims file gives no criterion; the disassembly genes are those of Fig. S4E and a gene is regulated
-    when DESeq2 padj < 0.05. Assembly genes are represented by actin itself, as the paper lists no assembly
-    gene set.
+  - The claims file gives no criterion. The disassembly genes are those of Fig. S4E, and a gene is changed
+    when DESeq2 padj < 0.05, the paper's threshold for differential expression (Results, "157 differentially
+    expressed genes ( P .adj < 0.05)"; Figure 4A legend). "Largely unchanged" is read as at most one of
+    the 12 other genes changed in a stage; none is. Assembly genes are represented by actin itself, as
+    the paper lists no assembly gene set.
+  - 'Assumed: the per-stage DESeq2 model adopted in fig4ab-rnaseq-degs. The joint model of all 15 samples
+    (reading c) does not find Actb lower in OPCs, so the "actin itself included" part rests on this choice
+    in OPCs.'
 - claim: fig5e-less-f-actin
   outcome: blocked
   blocked_by: data_missing
@@ -387,9 +397,9 @@ findings:
     pixels (0.23% of an image) are in both the myelinated and the unmyelinated axon masks; in the Flox
     images none are.
 - kind: paper_inconsistency
-  statement: The Results say SRF regulates actin assembly genes and not actin disassembly genes, citing
-    Fig. S4E and S4F; Fig. S4F shows Cfl1, the main disassembly gene, lower in SRF-KO oligodendrocytes
-    (p 0.007), and GEO's counts agree (log2FC -0.78, padj 0.024).
+  statement: The Results say SRF regulates actin assembly genes and not genes that regulate actin disassembly,
+    citing Fig. S4E and S4F, without naming an exception; Fig. S4F shows Cfl1, a main disassembly gene,
+    lower in SRF-KO oligodendrocytes (p 0.007), and GEO's counts agree (log2FC -0.78, padj 0.024).
 - kind: methods_unavailable
   statement: 'Question for the authors: how were the 329 high-confidence SRF peaks selected? ''Consistently
     across replicates'' gives 204 peaks when read as all replicates of a group, 312 as a majority and
