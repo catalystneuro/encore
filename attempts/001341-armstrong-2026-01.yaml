@@ -28,30 +28,49 @@ outcomes:
     counts and 11 unit counts cannot be compared. Neither unit count present matches (489 61 against 65, 503 43
     against 48), nor either OL count (489 249 OL_L and 251 OL_R in its labelled rows against 266 and 265; 503 230
     and 283 against 305 and 304). The total trial counts match (503 1027 rows against 1027; 489 1000 labelled rows
-    against 1000, though its table has 1611 rows, of which rows 1000 to 1610 repeat one row). For 489 the layer
+    against 1000, though its table has 1611 rows, of which rows 1000 to 1610 repeat one row). That the 1000 intact
+    rows of 489 are the trials of Table S1 is an assumption; counted with its 611 repeated rows, 489 has 1611 trials,
+    outside 10% of 1000, and its OL counts are 298 OL_L and 507 OL_R when the 305 repeated turns are given the
+    direction of their displacement at 1 s. For 489 the layer
     counts differ from Fig. 5B in L2/3 (7 against 10) and L6 (12 against 13), and the FS and RS counts by the 0.4 ms
     rule are 30 and 31 against 43 and 22. The header's inconsistencies of the paper (634 against 668 units, the
     trial counts of 489 and 503 in different figures) cannot be settled from two animals.
   deviations:
   - Only animals 489 and 503 are in the dataset.
   - For 489 the trials are counted on the first 1000 rows, whose labels and times are usable; the 611 rows after
-    them repeat one row of the table.
+    them repeat one row of the table. That these 1000 rows are the 1000 trials of Table S1 is an assumption; the
+    count of all 1611 rows is also given.
 - claim: fig1lm-staged-modulation
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The spike times are not on the clock of the trials table and the files hold no synchronisation signal.
-    At the stored onsets the population rate of 489 shows no trial-locked response (5.8 to 8.7 Hz over -1 to 2 s,
-    suppression-window minimum at least 86% of baseline), and trial type cannot be decoded from per-unit spike
-    counts (0.46 to 0.52 against a shuffled 95th percentile of 0.52 to 0.55), while lateral position decodes it at
-    0.96. The lag that best aligns spikes with onsets grows within the session (4.4 to 12.2 s over the first seven
-    windows of 489) and the running-speed correlation gives other lags. An alignment fitted to the neural response
-    would set the timings the claim tests, so none was adopted.
+  notes: The spike times are not on the clock of the trials table and the files hold no synchronisation signal,
+    though the SI says TTL signals were used to synchronise them. At the stored onsets the population rate of 489
+    shows no trial-locked response (5.8 to 8.7 Hz over -1 to 2 s, suppression-window minimum at least 86% of
+    baseline), and trial type cannot be decoded from per-unit spike counts (0.460 to 0.522 against shuffled 95th
+    percentiles of 0.535 to 0.542), while lateral position decodes it at 0.954. In 489 the onset-triggered lag
+    search exceeds the 95th percentile of its null in 2 of 12 windows and the running-speed correlations are weak
+    (|r| at most 0.17), so no alignment can be found. In 503 a clock fitted from running speed (lag 11.86 s plus
+    1.37 ms per s) recovers direction-specific responses and trial type decodes at 0.865 to 0.912, but the clock
+    has a residual SD of 0.56 s and also decodes trial type before the onset (0.655), far coarser than the 5 to
+    180 ms windows the claim tests. An alignment fitted to the neural response would set the timings the claim
+    tests, so none was adopted.
 - claim: fig1n-epoch-rates
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: Needs spikes aligned to the turn onset; the spike times are not on the trial clock (see
-    fig1lm-staged-modulation). The mean firing rate of the 61 units of 489 in the units table is 5.91 Hz, and the
-    population rate at the stored onsets is about 7.5 Hz, where the paper gives 2 Hz before the turn.
+  outcome: not_reproduced
+  notebook: reproduce_armstrong_2026.ipynb
+  output: claim:fig1n-epoch-rates
+  measured: 7.32
+  notes: The epoch 1 population rate of 489 is 6.65 to 7.80 Hz under reading (a) (-0.5 to 0 s) and 6.74 to 7.75 Hz
+    under reading (b) (-1 to 0 s), for OL_L and OL_R, with the onsets shifted by each of 801 lags from -20 to 60 s;
+    none of the 1602 (lag, turn) pairs is within 2.0 ± 0.1 Hz. Measured is reading (a), OL_L, at the stored onsets.
+    Over all CL rows the rate per unit is 7.18 to 7.26 Hz at lags of 0 to 25 s, and 7.09 Hz over the whole
+    recording; the units table gives a mean firing rate of 5.91 Hz (median 2.95 Hz, 19 of 61 units below 2 Hz). The
+    epoch 2 peak time, the epoch 3 minimum and the epoch 4 maximum time need spikes on the trial clock, which the
+    files do not give (see fig1lm-staged-modulation), and are not tested.
+  deviations:
+  - The spike times are not on the trial clock, so the epoch 1 rate is computed at every lag from -20 to 60 s in
+    0.1 s steps, the range searched in the data check, and the three timed values are not tested.
+  - The dataset has 61 units for 489 and 249 and 251 labelled OL_L and OL_R trials, where the paper has 65 units
+    and 266 and 265 trials.
 - claim: fig1jk-all-units
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -69,7 +88,10 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: Needs spikes aligned to the turn onset (see fig1lm-staged-modulation). Of the seven animals of the
-    criterion only 489 and 503 are in the dataset (data_missing for the other five).
+    criterion only 489 and 503 are in the dataset (data_missing for the other five). On the coarse speed clock of
+    503 (residual SD 0.56 s) the population rate rises by 1.38 Hz in 0 to 0.3 s for OL_L and falls by 0.82 Hz for
+    OL_R (null -0.22 to +0.25 Hz), but the criterion's windows (0.065 to 0.25 s) are far shorter than the clock's
+    error, and 489 has no clock.
 - claim: figs1-running-speed
   outcome: not_reproduced
   notebook: reproduce_armstrong_2026.ipynb
@@ -79,7 +101,10 @@ outcomes:
     its running trials (reading b), outside 21 ± 4 cm/s. Reading (c) has 2 of 19 animals; their mean running speed
     is 16.56 cm/s, also outside, though 489 alone (19.98) is inside. Against Table S1, 489 matches (19.98 against
     22.2 cm/s, 91.7% running trials against 92.6%) and 503 does not (13.14 against 16.1 cm/s, 27.7% against
-    52.8%). The dataset holds no habituation sessions (reading d).
+    52.8%). By row type 503 runs in 37.0% of its CL rows, 1.7% of its OL_L rows and 31.8% of its OL_R rows, so no
+    choice of rows gives 52.8%; with its unit and OL counts below the paper's, this suggests that the deposited
+    session or curation of 503 differs from the one the paper analysed. The dataset holds no habituation sessions
+    (reading d).
   deviations:
   - Reading (c) uses the 2 animals in the dataset where the criterion has 19.
 - claim: fig2a-success-rate
@@ -94,7 +119,8 @@ outcomes:
     failures are trials with almost no lateral movement (5th percentile of displacement in the turn direction at
     1 s is 0.00 cm). In a variant outside the criterion, the 94 OL trials run above 10 cm/s succeed at 0.979 to
     1.000 (0 to 2 failures), so the paper's 414 trials may be a selection of running trials that it does not
-    describe.
+    describe. These 94 trials are almost all OL_R, as 503 runs in 1.7% of its 230 OL_L rows and 31.8% of its 283
+    OL_R rows.
   deviations:
   - The dataset has 513 OL trials for 503 (230 OL_L, 283 OL_R); the paper's 414 cannot be identified among them.
 - claim: fig2b-lateral-spread
@@ -105,13 +131,14 @@ outcomes:
   - 0.20
   - 0.84
   - 7.20
-  - 3.54
+  - 4.06
   notes: The stored lateral distance restarts at 0 at each trial, so under reading (a) it is 0.00 ± 0.00 cm at
     t = 0 by construction. Integrated from the start of the straight section (reading b, given as measured with
     reading c), 503 is at 0.20 ± 0.84 cm at t = 0; the mean is within tolerance, the SD (0.84 against 0.55 ± 0.055)
     is not. The distribution widens under (b) (503 SD 0.84, 2.90 and 7.20 cm at 0, 1 and 3 s), but no reading
-    gives the 2 s and 3 s SDs of 1.49 and 2.30 (503 6.64 and 7.20, 489 3.54 and 5.40 under b; 503 0.76 at 3 s and
-    489 3.85 at 2 s under a). Per turn direction the 503 SDs at 3 s are 4.58 (OL_L) and 3.10 (OL_R) under (b).
+    gives the 2 s and 3 s SDs of 1.49 and 2.30 (503 7.02 and 7.20, 489 4.06 and 5.40 under b; 503 0.76 at 3 s and
+    489 3.50 at 2 s under a). Every trial has a value at 1, 2 and 3 s, and all but one of 489 at 0 s. Per turn
+    direction the 503 SDs at 3 s are 4.58 (OL_L) and 3.10 (OL_R) under (b).
   deviations:
   - Following the legends, 503 pools OL_L and OL_R (Fig. 2B) and 489 uses OL_L (Fig. S6A-B), 249 labelled OL_L
     trials where the paper has 520.
@@ -180,6 +207,7 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_armstrong_2026.ipynb
   output: claim:fig4-ddm-fit
+  assumed: true
   measured:
   - 0.000
   - 0.464
@@ -188,27 +216,42 @@ outcomes:
   - 47.6
   - -196.7
   - 2.813
-  notes: The GDDM fits better than the DDM in all 4 readings where both were fitted (BIC -201.6 to -76.8 against
-    42.7 to 82.8), but the DDM nondecision time is 0.000 to 0.005 s in all 16 readings, against 0.12 s, so the two
-    never hold together and only one holds. Measured is the reading run angle derivative, 0 to 1 s, clearance in the
-    turn direction, sigma 0.25, with K/B from the GDDM. Other values are far from the paper's; DDM BIC 42.7 to
-    205.9 (-664), GDDM BIC -201.6 to -76.8 (-705), B 0.150 to 1.214 (0.59, none within tolerance), K/B 2.50 to
-    3.80 (11.12). K is within tolerance in 6 of 16 fits, all with sigma free, where K, B and sigma are identified
-    only up to a common scale. The GDDM leak is at the -10 edge of its range in all four fits. The near-zero NDT
-    follows from the RTs, which in 489 OL_L trials have means of 0.297 to 0.352 s and a minimum of 0.007 s.
+  notes: No reading gives a DDM nondecision time within 0.108 to 0.132 s. It is 0.000 to 0.005 s with all RTs kept,
+    0.000 to 0.039 s with a uniform mixture and 0.080 to 0.094 s with RTs below 0.1 s dropped (16 fits each). The
+    GDDM BIC is below the DDM BIC in all 4 readings fitted with all RTs kept (-201.6 to -76.8 against 42.7 to 82.8)
+    and with RTs below 0.1 s dropped (-441.5 to -343.8 against -298.4 to -266.4), and in none of the 4 with the
+    mixture (-432.9 to -298.5 against -441.8 to -300.0), so only the GDDM condition holds. The NDT is poorly
+    determined. With all RTs kept it sits under the smallest RT (0.007 s); with a cutoff it lies 0.011 to 0.030 s
+    under the smallest RT kept, so one of 16 cutoff fits (0.129 s, cutoff 0.15 s) is within tolerance because of
+    the cutoff; with the mixture it stays at 0.000 to 0.039 s (0.003 to 0.028 s with a weight up to 0.3) and the
+    mixture weight is at its limit in every fit. In the likelihood profile, NDT fixed at 0.12 s gives a BIC 4.4
+    above the best, at 0 s. Measured is the first reading, all RTs kept, run angle derivative, 0 to 1 s, clearance
+    in the turn direction, sigma 0.25, with K/B from the GDDM. The other values are far from the paper's; DDM BIC
+    -441.8 to 205.9 over the three handlings (-664, none within tolerance), GDDM BIC at best -441.5 (-705), B within
+    tolerance in 1 of 48 DDM fits, K/B 0.30 to 4.06 (11.12). K is within tolerance in 6, 4 and 0 of 16 fits under
+    the three handlings; with sigma free K, B and sigma are identified only up to a common scale. The GDDM leak is
+    at the -10 edge of its range in all four fits with all RTs kept and at 2.50 to 9.99 under the other handlings.
   deviations:
   - The 249 labelled OL_L trials of 489 are used; the paper's 266 (Fig. 4B) or 520 (Fig. S7C-D) cannot be
     identified among the dataset's trials.
   - RT maxima at the edge of the search window are not peaks and those trials are dropped (2 to 5 of 249), a
     standard choice.
-  - The GDDM was fitted only under sigma 0.25 and the 0 to 1 s window (4 of 16 readings), for time.
+  - Early RTs. Between 8 and 13 RTs per reading fall below 0.1 s, before the leg push the SI says the peak marks
+    (SI, Fitting of drift diffusion models), and the paper's RT histogram of 489 (Fig. S7D) has none below about
+    0.2 s. The paper does not say how they were handled, so each fit is run with all RTs kept, with a uniform
+    mixture of weight up to 0.1 (PyDDM's OverlayUniformMixture, which its documentation gives to confer robustness
+    in likelihood fits), and with RTs below 0.1 s dropped (an assumption). Fits with cutoffs of 0.05 to 0.2 s and a
+    mixture limit of 0.3 are shown as checks, not readings, since a cutoff sets the NDT.
+  - The GDDM was fitted only under sigma 0.25 and the 0 to 1 s window (4 of 16 readings per handling); as the NDT
+    condition fails in every reading, fits in the other readings could not change the outcome.
   - The GDDM leak, collapse and fitting ranges, the time step and the loss (PyDDM's BIC) are standard choices; the
     paper names the components but not their parameterisation (Results, Ramping neural activity, paragraph 1).
 - claim: fig4b-ddm-matches-ramp
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: The ramp onset needs spikes aligned to the turn onset (see fig1lm-staged-modulation); it also depends on
-    fig1n-ramp-slope, blocked for the same reason. The DDM part is in fig4-ddm-fit (NDT 0.000 to 0.005 s).
+    fig1n-ramp-slope, blocked for the same reason. The DDM part is in fig4-ddm-fit (NDT 0.000 to 0.094 s over three
+    handlings of early RTs).
 - claim: fig5e-slope-across-animals
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -247,16 +290,418 @@ outcomes:
   blocked_by: metadata_insufficient
   notes: Depends on fig5e-slope-across-animals, blocked for the spike clock; the three neighbouring-column animals
     are not in the dataset (data_missing).
+verifications:
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive (2 assets, draft identical)
+    and tested reaction_time on a synthetic trial. Its report gave its own outcome for each claim; all 33 agree
+    with the record as it then stood. Point 8 found no misreading of the paper in the claims file, so no question
+    was added for a reader; the header now notes that the SI says TTL signals were used for synchronisation. Report
+    in transcripts/001341/verifier-1-report.md.
+  results:
+  - claim: table-s1-recordings
+    agrees: true
+    outcome: not_reproduced
+    reason: Only 489 and 503 are in the archive (2 assets, draft identical). Both unit counts miss (61 vs 65, 43
+      vs 48) and both OL counts miss (249+251 vs 266+265; 230+283 vs 305+304). Trial totals match (1000 intact rows,
+      1027), but neither the full nor the partial rule can be met. Also problem 7, that the 1000 intact rows are
+      the 1000 trials of Table S1 is an assumption; the file holds 1611 real rows (305 extra turns), which fail
+      the 10% tolerance.
+    response: Outcome kept. The notebook and the record now state that the 1000 intact rows standing for Table S1's
+      1000 trials is an assumption, and print the count with all 1611 rows (outside 10% of 1000) and the OL counts
+      with the 305 repeated turns given their direction (298 OL_L, 507 OL_R).
+  - claim: fig1lm-staged-modulation
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig1n-epoch-rates
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null. The epoch
+      1 rate of 2 Hz may be checked without the clock, from the population rate over the CL rows of 489, or its
+      session-wide value (mean unit rate 5.9 Hz).
+    response: Outcome changed to not_reproduced. The epoch 1 rate is now computed at each of 801 lags from -20 to
+      60 s; it is 6.65 to 7.80 Hz under both window readings and both turn types, never within 2.0 ± 0.1 Hz, and
+      the CL-row rate is 7.18 to 7.26 Hz at lags of 0 to 25 s. The three timed values remain untested.
+  - claim: fig1jk-all-units
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null. The 65 units
+      and 531 trials can be checked without the clock, and both miss (61 units, 500 trials); these parts do not
+      change the blocked outcome.
+    response: Kept blocked. The blocked-claims section now says that these counts miss and that they describe the
+      recording, not the claim's finding. Kept blocked. Added a recursive listing of both files (processing, analysis
+      and stimulus are empty), a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503
+      in 10 of 12), and a straight-line speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On
+      it 503 shows turn-specific responses beyond a random-onset null and decodes trial type at 0.865 to 0.912,
+      but also at 0.655 before the onset, so the clock is far coarser than the 5 to 180 ms windows the claims test;
+      489 has no clock. The decoder now z-scores with training-fold statistics only (problem 6).
+  - claim: fig1n-ramp-slope
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig1o-trial-end-ramp
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig1-ramp-contralateral-only
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: figs1-running-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: 503 gives 5.93 cm/s under (a) and 12.95 under (b), against 21 ± 4. Reading (c) is computable for only
+      2 of 19 animals and gives 16.56. No habituation sessions exist. Also problem 4, running is classified per
+      row over CL and OL rows together, giving 27.7% against Table S1's 52.8%, which with the unit and OL count
+      mismatches suggests the deposited 503 session or curation differs from the one analysed; the notebook does
+      not say so.
+    response: Outcome kept. Added the running fraction by row type (503 CL 37.0%, OL_L 1.7%, OL_R 31.8%, none near
+      52.8%) and the statement that the deposited session or curation of 503 may differ from the one the paper analysed,
+      in the notebook, the notes and the finding.
+  - claim: fig2a-success-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Success is 0.61 to 0.69 under all 8 criterion readings, against the 0.855 needed. The 100% running variant
+      (n = 94) is the author's own and not a criterion reading.
+    response: Outcome kept. The notes add that the 94 running OL trials are almost all OL_R, since 503 runs in 1.7%
+      of its OL_L rows.
+  - claim: fig2b-lateral-spread
+    agrees: true
+    outcome: not_reproduced
+    reason: Under (b) the t = 0 SD is 0.84 cm against 0.55 ± 0.055, so even the partial rule fails, although the
+      widening holds. The 2 s and 3 s SDs miss under (c), (d) and (e). Reading (a) is degenerate, always 0 at t
+      = 0. Also problem 5, n is the number of rows, not of non-NaN values; _on_grid returns NaN when the first kept
+      sample is after the grid time, and nanmean/nanstd hide that count.
+    response: Outcome kept. The per-time counts showed that only 212 of 513 (503) and 91 of 249 (489) trials had
+      a value at t = 2 s, because a grid time at the end of the turn fell between the last sample of the turn and
+      the first of the next trial. lateral_traces now takes the turn's own last sample at t = 2 s and the edge value
+      within two samples of a trial boundary; every trial now has a value at 1, 2 and 3 s and all but one at 0 s,
+      and the counts are printed. The 2 s SDs rise (503 7.02, 489 4.06 under b; 489 3.50 under a), still far from
+      1.49 and 2.30.
+  - claim: fig2c-psychometric
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig2d-turn-angle
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig2f-whisking-params
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig2i-ft-rt
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent. RT alone is available for the ephys animals, but the claim's animals and first-touch
+      times are not.
+    response: Kept blocked. The blocked-claims section now says the RTs of 489 and 503 are in the fig4-ddm-fit section.
+  - claim: fig2jk-glm-mixed-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig2-epoch2-at-first-touch
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig2l-running-vs-sitting
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig2m-dimensionality-collapse
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: figs12-tuning-lost-during-decision
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig3-wall-kinematics
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig3c-touch-statistics
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig3ijkl-whisking-across-epochs
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing), confirmed against the archive. Two assets only, and the acquisition holds
+      only ball tracking. There are no wall, whisker, touch or gait series, and animals 474, 475, 480, 499, 518,
+      573, 579 and 589 are absent.
+    response: No change.
+  - claim: fig3-not-sensory-drive
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing). It depends on fig3c-touch-statistics (data missing) and fig1lm-staged-modulation
+      (blocked).
+    response: No change.
+  - claim: fig4-ddm-fit
+    agrees: true
+    outcome: partially_reproduced
+    reason: GDDM BIC is below DDM BIC in all 4 readings fitted. NDT is 0.000 to 0.005 s in every fit against 0.12
+      ± 0.012; the NDT failure is probably an artefact (problem 1), set by a few very early RTs (about 5 OL_L RTs
+      between 0 and 0.03 s, min 0.007 s), as a DDM gives zero likelihood to any RT below the NDT, and the model
+      has no lapse or mixture overlay. So the NDT mismatch, and with it the partial outcome, is not established
+      (low confidence). Problem 2, the GDDM leak sits at its lower bound in all 4 fits and the GDDM was fitted only
+      for sigma 0.25 and 0 to 1 s, though the BIC comparison likely holds anyway.
+    response: Outcome kept, with assumed set. The RT table now counts RTs below 0.1 s (8 to 13 for 489 OL_L) and
+      0.15 s. Every fit is run three ways, all RTs kept, with a fitted uniform mixture (PyDDM's OverlayUniformMixture,
+      weight up to 0.1) and with RTs below 0.1 s dropped. NDT is 0.000 to 0.005, 0.000 to 0.039 and 0.080 to 0.094
+      s, never within tolerance; the GDDM BIC is lower in 4 of 4, 0 of 4 and 4 of 4. A new cell shows that with
+      a cutoff the NDT lies 0.011 to 0.030 s under the smallest RT kept (so a cutoff sets it), that a mixture limit
+      of 0.3 gives NDT 0.003 to 0.028 s, and that in the likelihood profile NDT 0.12 s is 4.4 BIC units worse than
+      0 s. The leak edges are reported for each handling; GDDM fits in more readings could not change the outcome,
+      since the NDT condition fails in all.
+  - claim: fig4b-ddm-matches-ramp
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig5e-slope-across-animals
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig4f-varce-example-unit
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig4g-varce-population
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig4j-corce
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig4k-streak-index
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig5b-epochs-in-subpopulations
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null. The layer
+      and FS/RS counts can be checked and miss (L2/3 7 vs 10, L6 12 vs 13, FS 30 vs 43, RS 31 vs 22); this does
+      not change the blocked outcome.
+    response: Kept blocked. The blocked-claims section now points to these counts in the table-s1-recordings section.
+      Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty), a null
+      for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig5cd-other-animals
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
+  - claim: fig5e-principal-vs-neighbor
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). At the stored onsets there is no trial-locked modulation, and
+      spike counts decode trial type at chance. The best lag drifts by seconds to tens of seconds. The SI says LabVIEW
+      TTLs were used for sync, but the asset metadata lists only Units and the files hold no sync signal. Problem
+      3, no clock-drift model fitted from the speed correlation was tried; in 503 it drifts smoothly from 12.9 to
+      19.8 s and could allow coarse tests, while in 489 the correlation is weak and the 489 claims stay blocked
+      either way; the claim that z of 3.1 to 9.9 can be reached by chance over 16,000 lags has no null.
+    response: Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty),
+      a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
+      speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
+      beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
+      the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
+      with training-fold statistics only (problem 6).
 findings:
 - kind: metadata_insufficient
   statement: The spike times are not on the clock of the trials table and the behaviour, and the files hold no
-    synchronisation signal or offset. At the stored turn onsets neither session shows a trial-locked population
-    response, and turn type cannot be decoded from the units' spike counts, while the animal's lateral position
-    decodes it at 0.92 to 0.96. The lag that best aligns spikes with turn onsets grows through each session (489
-    from 4.4 to 12.2 s over its first seven windows of about 40 turns; 503 from 5.6 to 14.2 s over its first three),
-    and the lag of the best correlation between spike rate and running speed gives other values (503 12.9 to
-    19.8 s). The spikes of 489 end at 6255 s and its behaviour at 6218 s. None of the paper's neural findings can be
-    tested.
+    synchronisation signal or offset (processing, analysis and stimulus are empty), though the SI says LabVIEW TTL
+    signals were used to synchronise the recordings with the behaviour. At the stored turn onsets neither session
+    shows a trial-locked population response, and turn type cannot be decoded from the units' spike counts, while
+    the animal's lateral position decodes it at 0.92 to 0.95. In 503 the lag of the best correlation between spike
+    rate and running speed grows smoothly from 12.9 to 19.75 s over the first 5200 s; a line through it (11.86 s
+    plus 1.37 ms per s, residual SD 0.56 s) recovers trial-locked, turn-specific responses, so the spike times of
+    503 appear to be about 12 s later than the trial times of the same events, with a gap growing by about 1.4 ms
+    per s. In 489 no
+    alignment can be found. The spikes of 489 end at 6255 s and its behaviour at 6218 s. None of the paper's
+    findings on spike timing can be tested.
 - kind: data_missing
   statement: The dataset holds 2 of the paper's 19 animals (489 and 503), with units, trials and ball tracking.
     The other 11 ephys sessions, the 6 behaviour-only sessions, and the wall positions, whisker tracking, touch
@@ -279,15 +724,20 @@ findings:
   statement: Unit 101 of 489, which the paper calls 489101 and describes as RS (layer 5A in Fig. 4F and S10, 5B in
     Fig. S5E), is labelled Inhibitory in layer 5A with a 0.2 ms waveform, FS by the paper's 0.4 ms rule. It is the
     session's highest-rate unit, as the paper says of 489101.
+- kind: other
+  statement: The population rate of 489 averaged over its 61 units is 6.65 to 7.80 Hz in the second before the turn
+    at any alignment of the spikes from -20 to 60 s, and 7.09 Hz over the whole recording, where the paper gives
+    2 ± 0.1 Hz for the same quantity (Fig. 1N).
 - kind: metadata_error
   statement: The file of 489 gives the age as P63D, but its date of birth (2022-05-01) and session date
     (2022-07-08) are 68 days apart, the P68 of Table S1. Both files give a weight of 0.02 kg.
 - kind: selection_undocumented
   statement: The paper's trial selections cannot be identified in the files. 489 has 249 and 251 labelled OL_L and
     OL_R trials where Fig. 1J-K uses 266 and 265 and Fig. S6A 520 OL_L; 503 has 230 and 283 where Fig. S4A uses 305
-    and 304 and Fig. 2A 414 in all. In 503 only 27.7% of trials are run above 10 cm/s (Table S1 52.8%) and the mean
-    running speed is 13.1 cm/s (16.1); all 513 OL trials give a success rate of 0.68, and the 94 run above 10 cm/s
-    give 0.98 to 1.00, so the paper's figures may rest on a selection of running trials.
+    and 304 and Fig. 2A 414 in all. In 503 only 27.7% of trials are run above 10 cm/s (Table S1 52.8%; 37.0% of CL,
+    1.7% of OL_L and 31.8% of OL_R rows) and the mean running speed is 13.1 cm/s (16.1); all 513 OL trials give a
+    success rate of 0.68, and the 94 run above 10 cm/s give 0.98 to 1.00, so the paper's figures may rest on a
+    selection of running trials, or the deposited session of 503 may differ from the one analysed.
 - kind: metadata_insufficient
   statement: Several variables are not described. `distance_lat` and `distance_for` restart at 0 at each trial, and
     the sign of lateral distance (positive to the left) is not stated; `trial` has unit "n" and `ts_local` is the

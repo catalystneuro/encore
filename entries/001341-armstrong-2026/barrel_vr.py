@@ -24,7 +24,10 @@ What the files show, and how this module handles it:
   used; `intact` marks the rows before the first repeated start time, and analyses use those.
 - The spike times are not on the clock of the trials table: there is no trial-locked modulation
   at the stored times, and the lag that best aligns them drifts through the session
-  (`lag_scan`). The files hold no synchronisation signal.
+  (`lag_scan`). The files hold no synchronisation signal, though the SI says LabVIEW TTL signals
+  were used to synchronise the recordings with the behaviour (SI, Electrophysiological
+  recordings). In 503 the lag that best correlates spikes with running speed drifts smoothly,
+  and `speed_clock` fits a line to it as a coarse check.
 
 Where the parameters come from:
 
@@ -131,20 +134,26 @@ def trial_table_from_samples(beh: pd.DataFrame, seg: dict[int, np.ndarray]) -> p
                                       "d_for_end", "d_lat_end"]).set_index("row")
 
 
-def _on_grid(beh, idx, col, grid):
+def _on_grid(beh, idx, col, grid, tol=0.0):
+    """Values of `col` in one trial at times `grid` (s in trial), linearly interpolated; NaN
+    outside the trial's samples, except within `tol` s of its first or last sample, where the
+    edge value is used."""
     t = beh.t_local.values[idx]
     y = beh[col].values[idx]
     ok = ~np.isnan(y)
     if ok.sum() < 2:
         return np.full(len(grid), np.nan)
-    return np.interp(grid, t[ok], y[ok], left=np.nan, right=np.nan)
+    t, y = t[ok], y[ok]
+    g = np.where((grid < t[0]) & (grid >= t[0] - tol), t[0], grid)
+    g = np.where((g > t[-1]) & (g <= t[-1] + tol), t[-1], g)
+    return np.interp(g, t, y, left=np.nan, right=np.nan)
 
 
 def lateral_traces(beh, seg, rows, t_grid):
     """Lateral position around each OL trial on `t_grid` (s from the turn start), two ways.
 
     stored: the file's `distance_lat`, which restarts at 0 at each trial; for t < 0 it is the
-        preceding straight trial's value, for 0 <= t < 2 the OL trial's, for t >= 2 the next
+        preceding straight trial's value, for 0 <= t <= 2 the OL trial's, for t > 2 the next
         trial's (each from its own start).
     cl_start: integrated from the start of the preceding straight section; each trial's stored
         distance is added to the end values of the trials before it.
@@ -160,11 +169,12 @@ def lateral_traces(beh, seg, rows, t_grid):
         lat_prev_end = beh.d_lat.values[prev][-1]
         lat_cur_end = beh.d_lat.values[cur][-1]
         m0 = t_grid < 0
-        m1 = (t_grid >= 0) & (t_grid < dur_cur)
-        m2 = t_grid >= dur_cur
-        p = _on_grid(beh, prev, "d_lat", t_grid[m0] + dur_prev)
-        c = _on_grid(beh, cur, "d_lat", t_grid[m1])
-        n = _on_grid(beh, nxt, "d_lat", t_grid[m2] - dur_cur)
+        m1 = (t_grid >= 0) & (t_grid <= dur_cur)
+        m2 = t_grid > dur_cur
+        tol = 2 / FS_BEHAVIOUR    # a grid time at a trial boundary falls between two trials' samples
+        p = _on_grid(beh, prev, "d_lat", t_grid[m0] + dur_prev, tol)
+        c = _on_grid(beh, cur, "d_lat", t_grid[m1], tol)
+        n = _on_grid(beh, nxt, "d_lat", t_grid[m2] - dur_cur, tol)
         stored[k, m0], stored[k, m1], stored[k, m2] = p, c, n
         cum[k, m0], cum[k, m1], cum[k, m2] = p, lat_prev_end + c, lat_prev_end + lat_cur_end + n
     return stored, cum
@@ -266,16 +276,26 @@ def fit_ddm(args):
     integrator (drift K + leak * x), as the Results describe it (Ramping neural activity...,
     paragraph 1). Parameter ranges are standard wide ranges, not taken from the paper.
     sigma_free: sigma fitted with the others (reading a of the claims file), else fixed at 0.25
-    (reading b). Returns the key, the fitted parameters and the BIC.
+    (reading b). mixture: if above 0, a uniform mixture with a fitted weight from 0 to this value
+    is added to the nondecision time, which PyDDM's documentation gives as the way to "confer
+    robustness when fitting using likelihood" (`OverlayUniformMixture`); it absorbs RTs a DDM
+    cannot produce, such as those below the nondecision time. The upper limit is an assumption
+    (0.1 in the main fits, 0.3 as a check). `args` is then
+    (key, rt, correct, model, sigma_free, t_dur, mixture), or with an eighth element, a fixed
+    nondecision time (s) for a likelihood profile. Returns the key, the fitted parameters and
+    the BIC.
     """
     from pyddm import Fittable, Model, Sample, fit_adjust_model
     from pyddm.models import (BoundCollapsingExponential, BoundConstant, DriftConstant,
-                              DriftLinear, LossBIC, NoiseConstant, OverlayNonDecision)
+                              DriftLinear, LossBIC, NoiseConstant, OverlayChain,
+                              OverlayNonDecision, OverlayUniformMixture)
     import logging
     import warnings
     warnings.filterwarnings("ignore")
     logging.getLogger("pyddm").setLevel(logging.ERROR)
-    key, rt, correct, model, sigma_free, t_dur = args
+    key, rt, correct, model, sigma_free, t_dur, *rest = args
+    mixture = float(rest[0]) if rest else 0.0
+    ndt = rest[1] if len(rest) > 1 else None
     sample = Sample.from_numpy_array(np.c_[rt, correct.astype(int)], [])
     noise = NoiseConstant(noise=Fittable(minval=0.01, maxval=2)) if sigma_free else NoiseConstant(noise=0.25)
     if model == "GDDM":
@@ -284,19 +304,33 @@ def fit_ddm(args):
     else:
         drift = DriftConstant(drift=Fittable(minval=0, maxval=20))
         bound = BoundConstant(B=Fittable(minval=0.05, maxval=3))
-    m = Model(drift=drift, noise=noise, bound=bound,
-              overlay=OverlayNonDecision(nondectime=Fittable(minval=0, maxval=0.3)),
+    overlay = OverlayNonDecision(nondectime=Fittable(minval=0, maxval=0.3) if ndt is None else ndt)
+    if mixture:
+        overlay = OverlayChain(overlays=[overlay, OverlayUniformMixture(umixturecoef=Fittable(minval=0, maxval=mixture))])
+    m = Model(drift=drift, noise=noise, bound=bound, overlay=overlay,
               dx=RT_DT, dt=RT_DT, T_dur=t_dur)
     np.random.seed(0)
     fit_adjust_model(sample, m, lossfunction=LossBIC, verbose=False, fitparams={"seed": 0})
     p = m.parameters()
     out = {"K": float(p["drift"]["drift"]), "B": float(p["bound"]["B"]),
            "sigma": float(p["noise"]["noise"]), "NDT": float(p["overlay"]["nondectime"]),
+           "mixture": float(p["overlay"]["umixturecoef"]) if mixture else 0.0,
            "BIC": float(m.get_fit_result().value())}
     if model == "GDDM":
         out["leak"] = float(p["drift"]["x"])
         out["tau"] = float(p["bound"]["tau"])
     return key, out
+
+
+def speed_clock(speed_tab, min_r):
+    """Straight-line fit of the spike lag (s) against time on the trial clock (s), from the
+    windows of `speed_lag_scan` whose best correlation is at least `min_r`. Returns the slope,
+    the intercept, the residual SD and the time span of the windows used. The clock is fitted
+    from running speed only, not from any response to the turn."""
+    w = speed_tab[speed_tab.r >= min_r]
+    slope, intercept = np.polyfit(w.t_mid, w.best_lag, 1)
+    resid = w.best_lag - (intercept + slope * w.t_mid)
+    return slope, intercept, float(resid.std(ddof=2)), (float(w.window_from.min()), float(w.window_from.max() + 400))
 
 
 def behaviour_time(beh, trials, seg):
@@ -333,16 +367,19 @@ def speed_lag_scan(spikes, t_beh, speed, t0, t1, lags, dt=0.01, smooth=10):
 
 
 def decode_accuracy(X, y, rng, folds=5):
-    """Five-fold cross-validated accuracy of a nearest-class-mean decoder on z-scored features
-    (a standard choice for a clock check, not a method of the paper)."""
-    X = (X - X.mean(0)) / np.where(X.std(0) > 0, X.std(0), 1)
+    """Five-fold cross-validated accuracy of a nearest-class-mean decoder on features z-scored
+    with the training folds' mean and SD (a standard choice for a clock check, not a method of
+    the paper)."""
     order = rng.permutation(len(y))
     hits = 0
     for f in range(folds):
         test = order[f::folds]
         train = np.setdiff1d(order, test)
-        means = {c: X[train][y[train] == c].mean(0) for c in np.unique(y[train])}
+        mu, sd = X[train].mean(0), X[train].std(0)
+        sd = np.where(sd > 0, sd, 1)
+        Xtr, Xte = (X[train] - mu) / sd, (X[test] - mu) / sd
+        means = {c: Xtr[y[train] == c].mean(0) for c in np.unique(y[train])}
         cls = np.array(list(means))
-        d = np.stack([((X[test] - means[c]) ** 2).sum(1) for c in cls], 1)
+        d = np.stack([((Xte - means[c]) ** 2).sum(1) for c in cls], 1)
         hits += (cls[d.argmin(1)] == y[test]).sum()
     return hits / len(y)
