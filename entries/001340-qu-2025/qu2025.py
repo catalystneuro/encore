@@ -841,3 +841,56 @@ def identification(fits, models, n_rep, n_trial, blocks, seed0, processes=4):
     with mp.get_context("fork").Pool(processes) as pool:
         out = pool.map(_idjob, jobs, chunksize=20)
     return pd.DataFrame([r for o in out for r in o])
+
+
+def fit_model_multistart(name, df, n_starts=10, seed=230):
+    """The fit of fit_model repeated from n_starts starts (seeds seed .. seed + n_starts - 1),
+    keeping the lowest nll; a check of the code's single start (standard choice), not used for
+    the main results. Also returns the spread of the nll over the starts."""
+    runs = [fit_model(name, df, seed=seed + k) for k in range(n_starts)]
+    best = min(runs, key=lambda r: r["nll"])
+    best = dict(best)
+    best["nll_worst"] = max(r["nll"] for r in runs)
+    best["n_starts"] = n_starts
+    return best
+
+
+def refit_recovery(R, model, n_trial, blocks, n_starts=10):
+    """Parameter recovery of one model refitted from n_starts starts: each simulated session of
+    an identification run (R, from identification) is regenerated from its seed and true
+    parameters and fitted with its own model (check of the single start)."""
+    rows = []
+    for r in R[(R["sim"] == model) & (R["model"] == model)].itertuples():
+        df, _ = generate_frame(model, r.true, n_trial, 1, blocks, int(r.rep))
+        f = fit_model_multistart(model, df, n_starts, seed=int(r.rep))
+        f["sim"] = model
+        f["rep"] = r.rep
+        f["true"] = list(r.true)
+        rows.append(f)
+    return pd.DataFrame(rows)
+
+
+def session_bootstrap_dllk(C, models, n_boot, seed, ref="RL4p", y="DA_PT"):
+    """Delta llk_CV against ref with the sessions as the resampled unit (a check of the
+    bootstrap over repeated splits, which are not independent samples): in each bootstrap
+    sample every animal's sessions are drawn with replacement, its trials split once 70/30 at
+    random, and the per-animal Delta averaged over animals. C needs the columns of rpe_design
+    and rpe_<model>."""
+    rng = np.random.default_rng(seed)
+    yy = C[y].values
+    subj, sess = C["Subject"].values, C["Session"].values
+    X = {m: rpe_design(C, C["rpe_" + m].values) for m in set(models) | {ref}}
+    by = {s: [np.flatnonzero((subj == s) & (sess == se)) for se in np.unique(sess[subj == s])]
+          for s in np.unique(subj)}
+    out = np.zeros((n_boot, len(models)))
+    for b in range(n_boot):
+        acc = np.zeros(len(models))
+        for s, ses in by.items():
+            idx = np.concatenate([ses[i] for i in rng.integers(0, len(ses), len(ses))])
+            perm = rng.permutation(len(idx))
+            k = int(round(0.7 * len(idx)))
+            tr, te = idx[perm[:k]], idx[perm[k:]]
+            l0 = llk_cv(X[ref], yy, tr, te)[0]
+            acc += [llk_cv(X[m], yy, tr, te)[0] - l0 for m in models]
+        out[b] = acc / len(by)
+    return pd.DataFrame(out, columns=list(models))
