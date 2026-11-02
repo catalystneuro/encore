@@ -44,7 +44,9 @@ The files hold every sorted unit of the 99 recordings (with 000473, the 29,782 u
 had before its quality control) and no label of which units the paper kept. The sleep-like
 detection of the Methods, applied per session, marks a median 9.9% of each recording, against 6%
 in the paper; the paper's own detection files on Zenodo show that it did not use the detection in
-19 recordings, a step the Methods do not describe. Which retrained cluster is which of the
+19 recordings, a step the Methods do not describe. With the paper's own sleep-like periods (a
+variant) three outcomes would differ: PFC enrichment in regular categories, nw enrichment and the
+Gao hierarchy correlation of category 1. Which retrained cluster is which of the
 paper's numbered categories is not settled by the paper, and eight enrichment and hierarchy
 claims change outcome with it; on the paper's own trained SOM the categories match the text. The
 attempt record, with the reasons and the differences from the paper's method, is

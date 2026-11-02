@@ -21,8 +21,9 @@ Where each parameter comes from:
   and 0.3 s around single off periods). The geometric mean is taken over the bins with a
   positive smoothed rate (assumption: the geometric mean of a vector with zeros is zero, which
   would make the threshold meaningless). Sessions where the detector marks 1% of the time or
-  more in a Poisson population of the same pooled rate (NULL_MAX, an assumption: too few
-  cortical units, see the notebook) and the probes the code's table marks "ignore"
+  more in a Poisson population of the same pooled rate (NULL_MAX, a rule of this attempt and
+  not of the paper, which describes no skipped session: too few cortical units, see the
+  notebook) and the probes the code's table marks "ignore"
   (config/datatables/allrecs_allprobes.xlsx, quietdet_src) get no sleep-like period. The
   per-probe detection of round 1 (with the table's "from-other" probe) and the code's detector
   are variants.
@@ -518,10 +519,11 @@ def classify_epochs(recs, detector="session"):
 
     detector 'session' (main): the Methods detector on the pooled cortical units of the
     recording session; where that detector marks NULL_MAX or more of the time in a Poisson
-    population of the same rate, the session has too few cortical units for it (the Methods
-    rest the detection on sessions that "consistently featured a sufficient number of cortical
-    units to detect collective off periods") and no sleep-like period is marked, as the code
-    does for the probes its table marks "ignore" (assumption, see the notebook). 'methods' (variant, the main reading of round 1): the same
+    population of the same rate, the session has too few cortical units for it and no
+    sleep-like period is marked, as the code does for the probes its table marks "ignore".
+    This skip rule is this attempt's own, not the paper's: the Methods say all sessions of
+    dataset KI "consistently featured a sufficient number of cortical units to detect
+    collective off periods" and skip none (assumption, see the notebook). 'methods' (variant, the main reading of round 1): the same
     detector on each probe's own cortical units, or on the probe the code's table names.
     'code' (variant): the code's detector per probe, with the code's table."""
     by_sess = {r["session"]: r for r in recs}
