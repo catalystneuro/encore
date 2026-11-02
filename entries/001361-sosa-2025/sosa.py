@@ -46,9 +46,17 @@ RAD50 = 2 * np.pi * 50 / TRACK   # 0.698 rad, Methods, Quantification of RR rema
 def list_assets(version=VERSION):
     url = f"{API}/dandisets/{DANDISET}/versions/{version}/assets/?page_size=500"
     out = []
+    import time
     while url:
-        with urllib.request.urlopen(url) as r:
-            d = json.load(r)
+        for k in range(5):
+            try:
+                with urllib.request.urlopen(url, timeout=60) as r:
+                    d = json.load(r)
+                break
+            except OSError:
+                if k == 4:
+                    raise
+                time.sleep(10 * (k + 1))
         out += d["results"]
         url = d.get("next")
     return {a["path"]: a for a in out}
@@ -64,10 +72,18 @@ def session_table(version=VERSION):
     return sorted(rows, key=lambda r: (int(r["mouse"][1:]), r["day"]))
 
 
-def open_asset(asset_id):
+def open_asset(asset_id, tries=5):
+    """Open a file for streaming; a dropped connection is retried (standard)."""
+    import time
     url = f"{API}/assets/{asset_id}/download/"
-    s3 = requests.head(url, allow_redirects=True).url
-    return h5py.File(remfile.File(s3), "r")
+    for k in range(tries):
+        try:
+            s3 = requests.head(url, allow_redirects=True, timeout=60).url
+            return h5py.File(remfile.File(s3), "r")
+        except (requests.exceptions.RequestException, OSError):
+            if k == tries - 1:
+                raise
+            time.sleep(10 * (k + 1))
 
 
 B = "processing/behavior/BehavioralTimeSeries/"
@@ -208,7 +224,9 @@ def bin_index(pos, nb=NBINS, lo=0.0, hi=TRACK):
 def circ_bin_index(pos, nbins_circ=45, code_bins=False):
     """Position in cm to circular bins over -pi..pi (0 cm -> -pi, 450 cm -> pi), Methods,
     Quantification of RR remapping. Methods bin size 2pi/45; with code_bins the code's
-    np.linspace(-pi, pi, 45) step of 2pi/44, with bin edges from -pi (dayData.py:954-967)."""
+    np.linspace(-pi, pi, 45) step of 2pi/44, with bin edges from -pi (dayData.py:954-967). With
+    that step the track fills 44 bins, so the 45th code-bin centre (beyond pi) stays empty; this
+    touches only the code-bin variants."""
     th = 2 * np.pi * pos / TRACK - np.pi
     if code_bins:
         bs = 2 * np.pi / 44
@@ -260,7 +278,8 @@ def _si(fmap, p):
 
 
 def spatial_info_shuffle(X, pos, speed, bounds, rng, nperm=100, min_shift=15, nb=NBINS):
-    """SI and its shuffle for one trial set (Methods, Place cell identification): occupancy p_i
+    """A variant since round 1 of verification; the main procedure is spatial_info_shuffle_code.
+    SI and its shuffle for one trial set (Methods, Place cell identification): occupancy p_i
     from the per-trial occupancy fractions summed over trials; f_i the trial-averaged activity
     per bin; the shuffle circularly shifts activity against position within each trial by a
     random amount between ~1 s (15 samples) and the trial length, 100 times. Returns the real
@@ -298,6 +317,58 @@ def spatial_info_shuffle(X, pos, speed, bounds, rng, nperm=100, min_shift=15, nb
         src = s0 + (fr_all - s0 + shifts[t_all]) % L
         Mk = sps.csr_matrix((w, (b_all, src)), shape=(nb, X.shape[0]))
         shuf[k] = _si(Mk @ Xn, p)
+    return si, shuf
+
+
+def _si_code(fmap, occ):
+    """SI as TwoPUtils computes it (spatial_analyses.spatial_info, called by the paper's
+    spatial.py:1260-1289): the rate map minus its minimum over all bins and cells, plus 0.001,
+    then the Methods' formula. fmap bins x cells, occ the occupancy probabilities."""
+    P = fmap - np.nanmin(fmap) + 0.001
+    mr = (P * occ[:, None]).sum(0, keepdims=True)
+    Pn = P / mr
+    return np.nansum(Pn * occ[:, None] * np.log2(Pn), 0)
+
+
+def spatial_info_shuffle_code(X, pos, speed, bounds, rng, nperm=100, nb=NBINS, min_shift=15):
+    """SI and its shuffle as the paper's code runs them (TwoPUtils spatial_analyses.place_cells_calc
+    and trial_matrix with perm=True, github.com/GiocomoLab/TwoPUtils at commit 3714d32, which the
+    paper's spatial.py:1260-1289 calls; the claims criterion cites those lines). Frames at speed
+    < 2 cm/s have their activity set to NaN and their position to -1000; in each shuffle the
+    position of each trial (start to teleport) is rolled by np.random.randint(15, trial length),
+    one offset per trial shared by all cells, so the speed mask on position moves with it while
+    the mask on activity stays. f_i is the mean over trials of the per-trial bin means; occupancy
+    is the per-trial occupancy fractions summed over trials, plus 0.001, normalized; SI is
+    `_si_code`. Returns the real SI (cells) and the shuffled SI (nperm x cells)."""
+    bidx = bin_index(pos, nb)
+    Xn = np.nan_to_num(X)
+    act_ok = speed >= SPEED_THR
+    src_ok = (bidx >= 0) & act_ok
+    nt = len(bounds)
+
+    def one(shifts):
+        fr_all, b_all, t_all = [], [], []
+        cnt = np.zeros((nt, nb))
+        for t, (s, e) in enumerate(bounds):
+            L = e - s
+            src = s + (np.arange(L) - shifts[t]) % L      # np.roll(pos_t, shift)
+            ok = act_ok[s:e] & src_ok[src]
+            fr = np.arange(s, e)[ok]
+            b = bidx[src][ok]
+            cnt[t] = np.bincount(b, minlength=nb)
+            fr_all.append(fr); b_all.append(b); t_all.append(np.full(len(fr), t))
+        fr_all = np.concatenate(fr_all); b_all = np.concatenate(b_all); t_all = np.concatenate(t_all)
+        nvis = (cnt > 0).sum(0)
+        w = 1.0 / (cnt[t_all, b_all] * nvis[b_all])
+        fmap = sps.csr_matrix((w, (b_all, fr_all)), shape=(nb, X.shape[0])) @ Xn
+        fmap[nvis == 0] = np.nan
+        occ = (cnt / (cnt.sum(1, keepdims=True) + 1e-3)).sum(0) + 1e-3
+        return _si_code(fmap, occ / occ.sum())
+
+    si = one(np.zeros(nt, dtype=int))
+    lens = bounds[:, 1] - bounds[:, 0]
+    shuf = np.array([one(np.array([rng.integers(min(min_shift, L - 1), L) if L > 1 else 0
+                                   for L in lens])) for _ in range(nperm)])
     return si, shuf
 
 
@@ -598,17 +669,30 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
     r_speed = (z * sz[:, None]).mean(0)
     is_int = r_speed > 0.5
     clock["split_half"] = clock_check_maps(D, pos, spd, bounds)
-    # spatial information on the deconvolved activity, per trial set
+    # spatial information on the deconvolved activity, per trial set, as the paper's code runs it
     si, sig, shuf_q95 = [], [], []
     for s in sets:
-        v, sh = spatial_info_shuffle(D, pos, spd, bounds[s], rng, nperm=nperm_si)
+        v, sh = spatial_info_shuffle_code(D, pos, spd, bounds[s], rng, nperm=nperm_si)
         p = pop_shuffle_p(v, sh)
         si.append(v); sig.append(p < 0.05); shuf_q95.append(np.percentile(sh, 95))
-    # variant: the same on the dataset's own deconvolved series
-    sig_ds = []
-    for s in sets:
-        v, sh = spatial_info_shuffle(D_ds, pos, spd, bounds[s], rng, nperm=nperm_si)
-        sig_ds.append(pop_shuffle_p(v, sh) < 0.05)
+    # variants, from a generator of their own so that they do not change the main result:
+    # (1) the procedure of the first round (activity rolled against fixed frames, the Methods'
+    # SI without the code's offset); (2) the main procedure on the dataset's own deconvolved
+    # series; (3) the main procedure on OASIS events with tau = 1.0 s. Switch days only, where
+    # the notebook uses them
+    rng_v = np.random.default_rng(seed + 10 ** 6)
+    sig_meth, sig_ds, sig_tau1 = [], [], []
+    if is_switch:
+        for s in sets:
+            v, sh = spatial_info_shuffle(D, pos, spd, bounds[s], rng_v, nperm=nperm_si)
+            sig_meth.append(pop_shuffle_p(v, sh) < 0.05)
+            v, sh = spatial_info_shuffle_code(D_ds, pos, spd, bounds[s], rng_v, nperm=nperm_si)
+            sig_ds.append(pop_shuffle_p(v, sh) < 0.05)
+        D1 = events_from_dff(dff, bounds, tau=1.0)
+        for s in sets:
+            v, sh = spatial_info_shuffle_code(D1, pos, spd, bounds[s], rng_v, nperm=nperm_si)
+            sig_tau1.append(pop_shuffle_p(v, sh) < 0.05)
+        del D1
     # linear trial matrices
     lb = bin_index(pos)
     tm_dff, occ = trial_matrix(dff, lb, bounds, spd)
@@ -666,7 +750,7 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
         )
     res.update(dict(
         n_cells=ncell, n_rois_total=op["n_rois_total"], is_int=is_int, r_speed=r_speed,
-        si=si, sig=sig, sig_ds=sig_ds, shuf_q95=shuf_q95, clock=clock, peak_lin=peak_lin, trial_mean=trial_mean,
+        si=si, sig=sig, sig_ds=sig_ds, sig_meth=sig_meth, sig_tau1=sig_tau1, shuf_q95=shuf_q95, clock=clock, peak_lin=peak_lin, trial_mean=trial_mean,
         mean_dff=mean_dff, mean_dec=[np.nanmean(tm_dec[s], 0) for s in sets],
         circ=circ, roi=op["roi"], plane=op["plane"], cx=op["cx"], cy=op["cy"], pix=op["pix"],
         mean_imgs=op["mean_imgs"],
@@ -674,6 +758,9 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
         pc_idx=np.where((sig[0] | sig[1]) & ~is_int)[0],
         tm_dec_pc=(tm_dec[:, :, (sig[0] | sig[1]) & ~is_int].astype(np.float16) if is_switch
                    else None),
+        # individual place fields from the raw activity (place_fields_raw), switch days
+        fields_raw=(place_fields_raw(D, pos, spd, bounds, sets, np.where((sig[0] | sig[1]) & ~is_int)[0])
+                    if is_switch else None),
         dec_mean=np.nanmean(D, 0),
         dff_range=(float(np.nanpercentile(dff, 1)), float(np.nanpercentile(dff, 99))),
         dec_range=(float(np.nanmin(D)), float(np.nanpercentile(D, 99))),
@@ -682,6 +769,120 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
                                            for i in range(0, ncell, max(1, ncell // 50))])),
     ))
     return res
+
+
+def nansmooth(a, sig, axis=-1):
+    """Gaussian smoothing that does not spread NaNs, as the paper's utilities.nansmooth."""
+    nan = np.isnan(a)
+    one = np.where(nan, 0.001, 1.0)
+    return (ndi.gaussian_filter1d(np.where(nan, 0, a), sig, axis=axis)
+            / ndi.gaussian_filter1d(one, sig, axis=axis))
+
+
+def _com(w, x):
+    """utilities.center_of_mass: sum |w| x / sum |w|, NaNs ignored."""
+    w = np.abs(w)
+    s = np.nansum(w)
+    return np.nansum(w * x) / s if s > 0 else np.nan
+
+
+def place_fields_raw(D, pos, spd, bounds, sets, cells, n_std=1, n_trials_thr=8, field_thr=0.2):
+    """Place fields as the Methods give them (Place field definition and inclusion criteria;
+    Formation lap identification and backwards shifting), following the paper's code
+    (Ext3_FieldQuant.md, find_sig_active_fields, n_std 1, n_trials_thr 8, field_thr 0.2, sigma 1
+    bin; spatial.field_from_thresh). Per cell and set (the 30 trials before, the last 30 after):
+    the trial-averaged binned activity (speed >= 2 cm/s), smoothed by 1 bin (10 cm); fields are
+    runs of >= 2 bins above min + 0.2 (max - min); a field is kept when on >= 8 trials the raw,
+    unbinned activity exceeds the mean + 1 s.d. of the raw activity of the set (frames at speed
+    >= 2 cm/s from the set's first trial start to its last teleport) at a position strictly
+    between the field's first and last bin centres. Positions are resolved to 5 cm, which places
+    each frame exactly against the bin centres. The formation lap is the first trial, in the
+    first 5-trial window with >= 3 such trials, on which the smoothed binned activity exceeds
+    its mean + 1 s.d. over all post-switch trials within the field +/- 10 cm; the shift is the
+    field's centre of mass in the smoothed mean of the last 30 trials minus the centre of mass of
+    the raw activity within the field +/- 10 cm on the formation lap. Returns per cell: number of
+    fields before and after, the offset between the two field centres (rad) when there are two,
+    the primary field's (the one with the highest mean) formation lap (from 1) and shift (cm)."""
+    nb = NBINS
+    cen = 5.0 + 10 * np.arange(nb)
+    X = D[:, cells].astype(np.float64)
+    Xs = np.where((spd >= SPEED_THR)[:, None], X, np.nan)
+    bidx = bin_index(pos)
+    tm, _ = trial_matrix(X, bidx, bounds, spd)            # trials x bins x cells
+    tms = nansmooth(tm, 1, axis=1)
+    half = np.clip(np.floor(pos / 5).astype(int), -1, 2 * nb - 1)
+    half[(pos < 0) | (pos > TRACK)] = -1
+    ncell = len(cells)
+    out = dict(n0=np.zeros(ncell, int), n1=np.zeros(ncell, int), off0=np.full(ncell, np.nan),
+               off1=np.full(ncell, np.nan), form_lap=np.full(ncell, np.nan),
+               shift_cm=np.full(ncell, np.nan))
+    s0 = np.asarray(sets[0])[:30]
+    s1 = np.asarray(sets[1])
+    s1l = s1[-30:]
+    kept = {}
+    for key, st in (("0", s0), ("1", s1l)):
+        if len(st) == 0:
+            continue
+        a, b = bounds[st[0], 0], bounds[st[-1], 1]
+        thr = np.nanmean(Xs[a:b], 0) + n_std * np.nanstd(Xs[a:b], 0)
+        act = np.zeros((len(st), 2 * nb, ncell), bool)       # any raw frame above thr, 5 cm bins
+        for i, t in enumerate(st):
+            fr = np.arange(bounds[t, 0], bounds[t, 1])
+            ok = half[fr] >= 0
+            sig = Xs[fr[ok]] > thr[None, :]
+            np.logical_or.at(act[i], half[fr[ok]], sig)
+        mean = nansmooth(np.nanmean(tm[st], 0), 1, axis=0)  # bins x cells
+        for c in range(ncell):
+            m = mean[:, c]
+            if not np.any(np.isfinite(m)):
+                kept[(key, c)] = []
+                continue
+            th = field_thr * (np.nanmax(m) - np.nanmin(m)) + np.nanmin(m)
+            above = m > th
+            runs, i = [], 0
+            while i < nb:
+                if above[i]:
+                    j = i
+                    while j + 1 < nb and above[j + 1]:
+                        j += 1
+                    if j - i + 1 >= 2:
+                        runs.append((i, j))
+                    i = j + 1
+                else:
+                    i += 1
+            fl = []
+            for i, j in runs:
+                # strictly between the first and last bin centres: half-bins 2i+1 .. 2j
+                if act[:, 2 * i + 1:2 * j + 1, c].any(1).sum() >= n_trials_thr:
+                    fl.append((i, j, _com(m[i:j + 1], cen[i:j + 1]), np.nanmax(m[i:j + 1])))
+            kept[(key, c)] = fl
+    post_thr = np.nanmean(tms[s1], axis=(0, 1)) + np.nanstd(tms[s1], axis=(0, 1))
+    for c in range(ncell):
+        f0 = kept.get(("0", c), []); f1 = kept.get(("1", c), [])
+        out["n0"][c] = len(f0); out["n1"][c] = len(f1)
+        if len(f0) == 2 and len(f1) == 2:
+            out["off0"][c] = (f0[1][2] - f0[0][2]) * 2 * np.pi / TRACK
+            out["off1"][c] = (f1[1][2] - f1[0][2]) * 2 * np.pi / TRACK
+        if not f1:
+            continue
+        i, j, com_mean, _ = max(f1, key=lambda f: f[3])
+        lo, hi = cen[i] - 10, cen[j] + 10
+        inb = (cen >= lo) & (cen <= hi)
+        on = (tms[s1][:, inb, c] > post_thr[c]).any(1)
+        form = None
+        for k in range(len(on)):
+            if on[k] and on[k:k + 5].sum() >= 3:
+                form = k
+                break
+        if form is None:
+            continue
+        t = s1[form]
+        fr = np.arange(bounds[t, 0], bounds[t, 1])
+        p = pos[fr]
+        w = (p >= lo) & (p <= hi)
+        out["form_lap"][c] = form + 1
+        out["shift_cm"][c] = com_mean - _com(Xs[fr[w], c], p[w])
+    return out
 
 
 def session_seed(row):

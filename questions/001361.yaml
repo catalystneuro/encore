@@ -1,0 +1,53 @@
+dandiset: "001361"
+paper: doi:10.1038/s41593-025-01985-4
+questions:
+- claim: ed8df-time-warp-speed-mse
+  asked: 2026-11-02
+  question: The criterion takes the warp "of fig6e-rr-prefer-reward per trial set", so the MSE tests
+    run only on the trial sets with at least three omissions (41 before the switch, 18 sessions with
+    both sets here). The Extended Data Fig. 8d,f legend counts 61 sessions and marks the Fig. 6 subset
+    with black edges. Should the MSE tests run on all 61 sessions the legend counts, with the warp fit
+    to every trial set, and not only on the fig6e trial sets?
+  passage: Extended Data Fig. 8d,f legend, which gives n = 61 sessions for the speed MSE and marks
+    the sessions included in Fig. 6 with black edges.
+  why: The test runs on a smaller set of sessions than the paper's. Here the result holds on the fig6e
+    sets (warped below raw, p = 9.1e-13; after above before, p = 0.00053, 18 sessions) and the raw
+    after-against-before test also holds on all 77 sessions (p = 0.00041), so the outcome is unlikely
+    to change, but the n compared with the legend's differs.
+- claim: fig2i-rr-remapping-spans-track
+  asked: 2026-11-02
+  question: The above-chance fraction is the summed excess of the real histogram over the shuffle's
+    95th percentile, counting only the bins that exceed it, so it is never negative and is positive
+    whenever any of the eleven bins exceeds its own 95th percentile by chance. Is "positive at every
+    exclusion distance" the test the paper intends for "spanning nearly the whole track", or should
+    the criterion compare the fraction with what the shuffle itself gives (for example the same
+    summed excess computed on shuffled data)?
+  passage: Results, "above-chance RR remapping remained, spanning nearly the entire track by the
+    last switch day" (Fig. 2i), and Methods, Quantification of RR remapping compared to chance.
+  why: With eleven bins each tested at its 95th percentile, about half of the exclusion distances
+    could show a positive fraction under the null alone, so the criterion as written is weak. Here
+    day 14 is positive at every distance from 10 to 190 cm (0.004 to 0.248), which a null reference
+    might not all support.
+- claim: ed7-no-anatomical-bias
+  asked: 2026-11-02
+  question: The claims file's header lists per-ROI depth estimates from the z-stack among the
+    variables used, as if they were in the dataset. The files hold no z-stack and no per-ROI depth
+    (the notebook lists every group and dataset of a day-14 file). Should the header say that the
+    depth part of Extended Data Fig. 7 has no data in the dandiset?
+  passage: Methods, Estimation of anatomical location per ROI, which estimates depth from a z-stack
+    taken at the end of the experiment; the DANDI asset metadata lists only TwoPhotonSeries and
+    PlaneSegmentation.
+  why: It does not change the outcome, as the depth part is untested here, but the header suggests
+    that the depth part can be tested on this dataset.
+- claim: place-cell-fraction
+  asked: 2026-11-02
+  question: The criterion says "SI as the Methods' formula" and cites the code (spatial.py:39-56 and
+    1260-1289) for the shuffle. That code calls TwoPUtils place_cells_calc, whose spatial_info takes
+    the rate map minus its minimum plus 0.001 before the formula. Does "the Methods' formula" in the
+    criterion include the code's offset, or should SI be the formula without it?
+  passage: Methods, Place cell identification, SI = sum p_i (f_i/f) log2(f_i/f); TwoPUtils
+    spatial_analyses.spatial_info (github.com/GiocomoLab/TwoPUtils, commit 3714d32), P_map = frmap -
+    np.amin(frmap) + .001.
+  why: The test decides whether the place-cell fraction matches. With the offset, and position rolled as the
+    code does, 48.7% of cells are place cells (paper 48.5 +/- 4.85); with the formula alone and activity
+    rolled against fixed frames, 59.9%. The cell classes of most other claims follow from this test.
