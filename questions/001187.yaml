@@ -1,0 +1,59 @@
+dandiset: "001187"
+paper: doi:10.1016/j.neuron.2024.09.013
+questions:
+- claim: fig3a-area-interactions
+  asked: 2026-11-01
+  question: Should the outlier rule of the paper's code (O-C, NWB_computeGLM.m) be the main reading
+    for the mixed-effects GLMs, with the Methods rule (O-M) kept for the permutation t-tests? The
+    same question applies to fig2b-hippocampus-persistent, fig2c-hippocampus-correct-load,
+    fig2e-amygdala-persistent, fig2f-amygdala-load-not-accuracy, fig3b-hippocampus-predicts-ltm,
+    fig3b-amygdala-no-prediction, fig3g-nonpreferred-no-effect and fig3h-encoding-no-effect.
+  passage: Before each test, we removed neurons that had no spikes in at least one of the tested
+    conditions (including the baseline period) or differed ±3 SD from the mean across all neurons
+    and all tested conditions. This explains differences in degrees of freedom between
+    comparisons. (STAR Methods, Statistics). The linked code computes the Fig. 3a GLM and removes
+    only neurons whose mean normalized rate exceeds 3 SD of the neuron means (NWB_computeGLM.m).
+  why: The Methods sentence names "tested conditions" and degrees of freedom, which fit the
+    t-tests; for a GLM with a continuous confidence term the conditions are not defined, and the
+    claims file makes O-M the main reading. On the dataset, O-C gives the paper's betas within
+    tolerance for Fig. 3a (56.61, 16.60, -27.83; with the all-sure session kept as the code does,
+    59.96, 17.84, -29.16) and Fig. 3b hippocampus (21.25, 67.37, -30.69), and the paper's pattern
+    for Fig. 2c (accuracy 18.68, p = 0.028; load 13.63, p = 0.0034). O-M gives smaller betas, and
+    for Fig. 2c and Fig. 3h a different outcome. The outcomes of this attempt were judged on O-M
+    as the claims file says.
+  answer: >-
+    Changed, in part. The Methods rule does cover the GLMs: the sentence "Before each test, we
+    removed neurons ..." follows "or mixed-effects GLMs (fitglme.m in MATLAB)" (STAR Methods,
+    Statistics), so it is not limited to the t-tests. But it does not say what value is compared
+    when a GLM has a continuous term, and the claims file's O-M (one value per neuron and
+    condition) was its own construction. NWB_computeGLM.m, the paper's code for Fig. 3a, settles
+    that: one value per neuron, its mean normalized rate over all its rows. Where the code then
+    departs from the Methods (threshold 3 SD with no centring, upper side only, against "±3 SD
+    from the mean"), protocol step 2 keeps the Methods. Header O now defines O-G (the code's
+    neuron means, removed outside mean ± 3 SD of the neuron means) as the main reading for the
+    GLMs of Figures 2 and 3, with O-C as a variant and O-M dropped for them; the criteria of
+    fig3a-area-interactions and fig3b-hippocampus-predicts-ltm now name O-G, and the other seven
+    claims take it through O. O-M stays for the permutation t-tests and the Figure 4 GLMs. The
+    expected values and grades are unchanged.
+  answered: 2026-11-01
+- claim: fig2c-hippocampus-correct-load
+  asked: 2026-11-01
+  question: Reading (b) of the criterion fits acc * l1 with 0/1 reference coding (incorrect and
+    load 3 as reference, as header G says), so its acc and l1 terms are simple effects at the
+    reference level of the other factor (for l1, the load effect in incorrect trials only), not
+    the main effects the paper reports. Should reading (b) be dropped, or be stated with centred
+    (-0.5/+0.5) coding so that its terms are main effects? The same applies to
+    fig2f-amygdala-load-not-accuracy, which takes the model of fig2c.
+  passage: Using only preferred trials and modelling WM accuracy (2 levels, WM correct/incorrect,
+    categorical) as well as load (2 levels, load 1/load 3, categorical) as fixed effects, we further
+    observed that category neurons in the hippocampus had higher FRs in (1) correct than incorrect
+    trials (beta = 16.22, p = 0.046) and (2) in load 1 than in load 3 trials (Results, Category
+    neurons remain persistently active, paragraph 2); "a significant main effect only for load"
+    (paragraph 3, for the amygdala).
+  why: The paper names main effects, and reading (b) as written tests other quantities. In
+    hippocampal preferred trials only 59 of 5738 rows are incorrect load 1 trials, so the l1 term of
+    reading (b) is -14.24 (p = 0.56) where the main-effects model gives 18.64 (p = 0.0003). Both
+    claims are blocked because reading (b) disagrees with reading (a). With centred coding the load
+    main effect is still not significant (2.96, p = 0.81 in the hippocampus; 8.67, p = 0.24 in the
+    amygdala). Dropping reading (b) would make fig2c partially reproduced (both baselines of reading
+    (a) grade it so); fig2f would stay blocked, as its baselines disagree.

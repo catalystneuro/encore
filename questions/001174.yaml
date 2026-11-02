@@ -1,0 +1,54 @@
+dandiset: "001174"
+paper: doi:10.1016/j.isci.2025.112767
+questions:
+- claim: fig4a-example-sequences-q
+  asked: 2026-11-01
+  question: Do the readings of method S include the procedure that produced the paper's sequence
+    counts? Method S fixes the window at 2 s and reads the paper's 0.05 s as a lower bound, a separation or both (readings a, b, c),
+    while identify_sequences.m records no parameter values. Should method S name other readings of
+    the window's upper bound, the separation of repetitions, the minimum repetitions or the
+    double-counting step (the code as it runs removes nothing, its comments describe a removal, and
+    the file says "double counting removed as the code does"), or say that the parameters are not
+    fixed, so that fig4a-example-sequences-q and fig4b-example-three-segments-q are blocked as
+    methods_underspecified? The same applies to fig4b-example-three-segments-q, and through the
+    detection to fig4d-sequence-measures-vary and fig4c-sequence-cells-not-clustered.
+  passage: with each step of the sequence occurring within a specific time limit (2 s). ... Sequences
+    that were detected in the original data were accepted as being significant if they occurred more
+    commonly than seen in 95% of the shuffled data (thus, were outside of the 95th percentile of the
+    shuffled data), if they were found at least 4 times during the 10 min observation period, and if
+    individual occurrences were separated by at least 0.05 s (STAR Methods, Determination of
+    precisely timed sequences of calcium events)
+  why: The paper's Figure 4D table (Zenodo doi:10.5281/zenodo.14976005) gives the paper's own counts
+    for every session, including 13 and 17 for Q 2022-09-15 and 8, 13 and 9 for Q 2022-12-06. A port
+    of identify_sequences.m under the claims file's readings gives about 3.1 times those counts, or
+    0.4 times with the documented double-counting step; a sweep of 32 settings (upper bound 0.25 to
+    2 s, separation 0.05 to 2 s, either step) puts at most 21.4% of 56 slices within 10% of the
+    table, and none matches in the two task slices where the dandiset's events match the paper's
+    per-cell table. The verifier of round 1 reported that the claims file's readings may not contain
+    the paper's pipeline. Tested as written, fig4a and fig4b fail under every reading; the attempt
+    blocks them as methods_underspecified on this evidence.
+- claim: fig2-q-sma-modulated-34pct
+  asked: 2026-11-01
+  question: Is method Z the procedure behind the paper's counts of task-modulated cells? Method Z tests,
+    per cell and target position, the mean z in 0 to 1 s after the event against the mean z in the
+    1 s before, by a signed-rank test across trials, with Benjamini-Hochberg over each chamber and
+    alignment. Run on the paper's own z-scored trial windows, it gives counts far from the paper's.
+    Should method Z name another test (for example the trial-averaged trace against its baseline, a
+    different baseline window, or a different unit of the test), or say that the procedure is not
+    fixed? The same applies to fig2c-q-sma-direction, fig2-q-magnitude-no-difference,
+    figs1-u-sma-direction, figs1-u-m1-target-onset and figs1-u-m1-movement-onset.
+  passage: Cellular activity was considered as being modulated by the task events if the mean calcium
+    activity during the event window (0-1 s after the reward target appeared for both animals, or
+    0-1 s after the hand left the center target for monkey U) differed significantly from the mean
+    activity during the second preceding the target presentation or movement onset. We used Wilcoxon
+    signed rank tests with multiple comparisons corrected at the level of each chamber using FDR
+    (STAR Methods, Alignment to behavioral events)
+  why: The Zenodo table of z-scored trial windows (doi:10.5281/zenodo.14976651, Event
+    alignment-consolidated table.csv, md5 3826e7afab34289f31e82a8838c992dc) is the paper's own output
+    of the alignment. Method Z's test on it (reproduce_martel_2025.ipynb, the Figure 2 check) gives
+    20 modulated Q SMA cells with FDR over the chamber (21 with FDR per condition column, 42
+    uncorrected), against the paper's 43, and 14 direction-related and 6 not, against 32 and 11.
+    For U M1 at target onset it gives 6 modulated and 3 direction-related, against 4 and 0. The six
+    claims are blocked as data_missing, as the dandiset holds no event times, so the answer does not
+    change their outcomes; it bears on a later attempt with the event times. The verifier of round
+    2 reported that this suggests method Z is not the paper's procedure.
