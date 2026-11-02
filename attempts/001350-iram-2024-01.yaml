@@ -1,0 +1,411 @@
+schema_version: 2
+id: 001350-iram-2024-01
+dataset:
+  archive: dandi
+  id: '001350'
+  version: 0.250511.1527
+  doi: 10.48324/dandi.001350/0.250511.1527
+paper: doi:10.1073/pnas.2307250121
+date: '2026-11-02'
+entry: 001350-iram-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41395414014
+inputs:
+- what: ChIP-seq processed files (SRF and IgG consensus peaks, HOMER annotation, MACS2 peaks of each replicate
+    and IgG control), for the elsewhere claims fig3a, fig3bc, fig3d, no-myelin-genes, fig4cd and figs4ef.
+    GEO is not versioned; the SHA-256 of each file is printed in the notebook.
+  source: NCBI GEO GSE241559 (SuperSeries GSE241561)
+- what: RSEM gene results of the 15 bulk RNA-seq samples, for fig4ab, fig4cd and figs4ef. SHA-256 printed
+    in the notebook.
+  source: NCBI GEO GSE241560, GSE241560_RAW.tar (samples GSM7731029 to GSM7731043)
+- what: Mouse gene names for Ensembl gene ids (labels only).
+  source: Ensembl release 102, Mus_musculus.GRCm38.102.gtf.gz (ftp.ensembl.org/pub/release-102)
+- what: Rat genome sequence around the SRF peaks, read by range requests.
+  source: UCSC rn6 (Rnor 6.0, GCA_000001895.4), hgdownload.soe.ucsc.edu/goldenPath/rn6/bigZips/rn6.2bit
+- what: SRF position frequency matrix for FIMO.
+  source: JASPAR MA0083.3
+outcomes:
+- claim: fig2c-cc-percent-myelinated
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_iram_2024.ipynb
+  output: claim:fig2c-cc-percent-myelinated
+  notes: The claim's test is an unpaired t test on per-mouse values of 5 SRF-Flox and 5 SRF-cKO mice (Figure
+    2C to 2E legends; Methods, Data Analysis and Statistics). The raw images of all 10 mice are in the
+    dandiset (1779 to 4535 um2 per mouse), but the paper's hand scoring is not, and the masks cover one
+    SRF-Flox mouse, so the test cannot be run as the claim states; Welch's test is undefined and Student's
+    test would borrow the cKO variance for the Flox group. The values the masks give are shown in the
+    notebook and below; they do not decide the outcome. sub-370 (Flox) has 26.3% of its 3,842 counted
+    axons myelinated (26.3% to 28.2% over readings O2 and O4), below the expected 37 +/- 3.7%. The cKO
+    mean over four mice is 14.3% (14.3% to 18.9%), below the expected 22 +/- 2.2%, and lower than the
+    Flox mouse under all 8 combinations; Student p for one Flox mouse against the cKO mice is 0.13 to
+    0.20. With images as units (2 Flox, 8 cKO) Student p is 0.014 and 0.036, Welch p 0.12 and 0.19.
+  deviations: &id001
+  - The paper scored and measured axons by hand in Fiji; the dataset's segmentation masks (AxonDeepSeg
+    pseudo-labels corrected by hand, made after the paper) stand in for that scoring (reading O1 of the
+    claims file).
+  - The masks cover 9 full images and 2 small regions, from one SRF-Flox mouse (sub-370) and four SRF-cKO
+    mice (sub-372, sub-373C, sub-374, sub-375), where the paper used 5 mice per genotype; sub-373C has
+    15 um2.
+- claim: fig2d-cc-myelinated-density
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_iram_2024.ipynb
+  output: claim:fig2d-cc-myelinated-density
+  notes: The claim's test is an unpaired t test on per-mouse values of 5 SRF-Flox and 5 SRF-cKO mice (Figure
+    2C to 2E legends; Methods, Data Analysis and Statistics). The raw images of all 10 mice are in the
+    dandiset (1779 to 4535 um2 per mouse), but the paper's hand scoring is not, and the masks cover one
+    SRF-Flox mouse, so the test cannot be run as the claim states; Welch's test is undefined and Student's
+    test would borrow the cKO variance for the Flox group. The values the masks give are shown in the
+    notebook and below; they do not decide the outcome. sub-370 has 0.95 myelinated axons per um2 over
+    1062 um2 (1.04 with edge axons kept), against the expected 1.8 +/- 0.18 under the claims file's unit
+    (reading O3); the cKO means are 0.78 to 1.13 against 1.42 +/- 0.142. The cKO to Flox ratio is 0.81
+    to 1.08 over the readings (inside 0.79 +/- 0.079 only with edge axons left out and all four cKO mice);
+    Student p 0.64 to 0.80. The masked area is 531 um2 for sub-372 and sub-374 and 15 um2 for sub-373C,
+    below the paper's 1000 um2.
+  deviations:
+  - The paper scored and measured axons by hand in Fiji; the dataset's segmentation masks (AxonDeepSeg
+    pseudo-labels corrected by hand, made after the paper) stand in for that scoring (reading O1 of the
+    claims file).
+  - The masks cover 9 full images and 2 small regions, from one SRF-Flox mouse (sub-370) and four SRF-cKO
+    mice (sub-372, sub-373C, sub-374, sub-375), where the paper used 5 mice per genotype; sub-373C has
+    15 um2.
+  - The unit of Figure 2D is not stated; the masks give about half the density the claims file reads from
+    the figure in axons per um2 (a question for the authors is recorded as a finding).
+- claim: fig2e-cc-g-ratio
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_iram_2024.ipynb
+  output: claim:fig2e-cc-g-ratio
+  notes: The claim's test is an unpaired t test on per-mouse values of 5 SRF-Flox and 5 SRF-cKO mice (Figure
+    2C to 2E legends; Methods, Data Analysis and Statistics). The raw images of all 10 mice are in the
+    dandiset (1779 to 4535 um2 per mouse), but the paper's hand scoring is not, and the masks cover one
+    SRF-Flox mouse, so the test cannot be run as the claim states; Welch's test is undefined and Student's
+    test would borrow the cKO variance for the Flox group. The values the masks give are shown in the
+    notebook and below; they do not decide the outcome. The Flox mouse's mean g-ratio is 0.696 to 0.724
+    over the 16 combinations of readings O4, O5, O6 and cKO subset, inside 0.703 +/- 0.0703. The cKO mean
+    is 0.675 to 0.710, below the Flox value in all 16 (cKO minus Flox -0.009 to -0.026, where the paper
+    reports +0.057); Student p 0.29 to 0.77. With images as units, Flox 0.721 and cKO 0.700 (Welch p 0.077).
+    As far as these masks show, the direction of the paper's effect is not present, but one Flox mouse
+    cannot test it.
+  deviations:
+  - The paper scored and measured axons by hand in Fiji; the dataset's segmentation masks (AxonDeepSeg
+    pseudo-labels corrected by hand, made after the paper) stand in for that scoring (reading O1 of the
+    claims file).
+  - The masks cover 9 full images and 2 small regions, from one SRF-Flox mouse (sub-370) and four SRF-cKO
+    mice (sub-372, sub-373C, sub-374, sub-375), where the paper used 5 mice per genotype; sub-373C has
+    15 um2.
+  - Diameters are equivalent-circle diameters from object areas or minimum Feret widths (reading O5),
+    not lines drawn by hand; myelin is assigned to its axon by a watershed of the fibre mask (a standard
+    choice).
+- claim: figs3c-cc-myelin-thickness-unchanged
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_iram_2024.ipynb
+  output: claim:figs3c-cc-myelin-thickness-unchanged
+  notes: The claim's test is an unpaired t test on per-mouse values of 5 SRF-Flox and 5 SRF-cKO mice (Figure
+    2C to 2E legends; Methods, Data Analysis and Statistics). The raw images of all 10 mice are in the
+    dandiset (1779 to 4535 um2 per mouse), but the paper's hand scoring is not, and the masks cover one
+    SRF-Flox mouse, so the test cannot be run as the claim states; Welch's test is undefined and Student's
+    test would borrow the cKO variance for the Flox group. The values the masks give are shown in the
+    notebook and below; they do not decide the outcome. A claim of absence is judged on the paper's Student
+    test on 5 against 5 mice. The Flox mouse's mean myelin thickness is 96.5 to 110.0 nm (inside 105 +/-
+    10.5); the cKO mean is 97.4 to 112.5 nm (cKO minus Flox -3.4 to +11.6 nm; inside 93 +/- 9.3 in 2 of
+    16 combinations). The Student test of one Flox mouse against the cKO mice gives p 0.085 to 0.99; over
+    images p 0.21 (Welch 0.24).
+  deviations: *id001
+- claim: figs3d-cc-larger-myelinated-diameter
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_iram_2024.ipynb
+  output: claim:figs3d-cc-larger-myelinated-diameter
+  notes: The claim's test is an unpaired t test on per-mouse values of 5 SRF-Flox and 5 SRF-cKO mice (Figure
+    2C to 2E legends; Methods, Data Analysis and Statistics). The raw images of all 10 mice are in the
+    dandiset (1779 to 4535 um2 per mouse), but the paper's hand scoring is not, and the masks cover one
+    SRF-Flox mouse, so the test cannot be run as the claim states; Welch's test is undefined and Student's
+    test would borrow the cKO variance for the Flox group. The values the masks give are shown in the
+    notebook and below; they do not decide the outcome. The Flox mouse's mean myelinated axon diameter
+    is 478 to 618 nm (inside 530 +/- 53 in 10 of 16 combinations); the cKO mean is 446 to 569 nm, smaller
+    than the Flox value in 15 of 16 (expected 625 +/- 62.5). The one Student p below 0.05 (0.010) has
+    cKO smaller, the reverse of the claim. With images as units, Flox 595 nm and cKO 549 nm (Welch p 0.085).
+  deviations: *id001
+- claim: figs2b-on-p18-half-myelinated
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs P18 optic nerve TEM, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs2e-on-adult-hypomyelination
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs adult optic nerve TEM, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs2cf-on-myelin-thickness-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs optic nerve TEM, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs2ij-on-g-ratio-not-significant
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs optic nerve TEM, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs2kl-on-larger-myelinated-caliber
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs optic nerve TEM, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: fig2gk-ol-lineage-density-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs CC1 and Olig2 immunostaining, which is not in the dandiset. The dandiset holds only corpus
+    callosum TEM images and their masks (134 assets); the paper names no other deposit for these data
+    (its data availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs3fg-mbp-intensity-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs MBP immunostaining, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: fig1d-srf-expressed-opc-ol
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RNAscope images, which are not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: fig1ef-srf-protein-nuclear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SRF immunostaining, which is not in the dandiset. The dandiset holds only corpus callosum
+    TEM images and their masks (134 assets); the paper names no other deposit for these data (its data
+    availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs1-srf-loss-in-cko
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RT-PCR and immunostaining data, which are not in the dandiset. The dandiset holds only
+    corpus callosum TEM images and their masks (134 assets); the paper names no other deposit for these
+    data (its data availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: fig3a-chip-peaks
+  outcome: reproduced
+  assumed: true
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:fig3a-chip-peaks
+  measured:
+  - 848
+  - 312
+  notes: GEO's SRF consensus peak file (GSE241559) holds 848 peaks, the paper's number. The high-confidence
+    count depends on the reading of 'consistently across replicates within the same group and not in the
+    IgG control'. Peaks in all replicates of a group (OPC 4 of 4 or OLG 3 of 3) without an IgG peak number
+    204 (206 with each group's own IgG); in a majority (3 of 4, 2 of 3) 312 or 316, inside 329 +/- 32.9;
+    in at least two 404 or 409. Without the IgG filter the majority reading gives 329 exactly. The majority
+    reading is adopted. The question is asked of the authors (finding).
+  deviations:
+  - 'The paper does not say how many replicates make ''consistently'', nor which IgG peaks are excluded.
+    Assumed: a majority of the group''s replicates, and no overlap with the IgG consensus peaks. Requiring
+    all replicates ties the OLG set to its weakest replicate (OLG R2 has 47 peaks against 436 and 172),
+    and ''consistently'' asks for more than two of four; the majority is the middle reading. The other
+    readings give 204 to 206 and 404 to 409, outside the tolerance, so the outcome rests on this choice.'
+  - Read from GEO's processed nf-core outputs, not re-derived from the reads; GEO files are not versioned,
+    and the SHA-256 of each file is printed in the notebook.
+- claim: fig3bc-chip-tss-carg
+  outcome: reproduced
+  assumed: true
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:fig3bc-chip-tss-carg
+  notes: 545 of 848 peaks (64.3%) are within 2 kb of a TSS by HOMER's annotation (the paper's tool), and
+    76.0% of the high-confidence peaks. In the -250 to +250 window around each peak centre, FIMO matches
+    of the JASPAR SRF matrix MA0083.3 (p < 1e-4) are in 10.7% of peaks, against 5.2% of flank windows
+    3 kb away (odds 2.2, Fisher p < 0.0001) and 3.7% of shuffled peaks (p < 0.0001); in OPC peaks 8.9%
+    against 5.2% (p = 0.0007), in OLG peaks 14.4% against 4.3%. The strict consensus CC(A/T)6GG gives
+    9.8% against 3.0% and 2.4%. The consensus with one mismatch is not enriched over all peaks (38.9%
+    against 36.7%, p = 0.28) or OPC peaks (p = 1.0), only in OLG peaks (p = 0.014).
+  deviations:
+  - 'The paper found its motif with MEME-ChIP, whose motif discovery is not run; FIMO is run with the
+    JASPAR SRF matrix in place of the motif MEME-ChIP reported. Assumed: the paper''s ''SRF CArG consensus''
+    is the SRF matrix or the strict CC(A/T)6GG box, both of which are enriched; the one-mismatch variant,
+    a looser CArG-like box, is not enriched over all peaks.'
+  - '''Most'' is read as more than half.'
+- claim: fig3d-shared-carg-targets
+  outcome: partially_reproduced
+  assumed: true
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:fig3d-shared-carg-targets
+  measured: 43
+  notes: 'With FIMO matches of the SRF matrix and each cell type''s peaks as the Methods define them (present
+    in at least one replicate), 43 CArG target genes are shared between OPC and OLG, 49.4% of the 87 genes
+    of either group, so ''roughly half'' holds and the count is outside 60 +/- 6. Egr1, Egr2, Egr3, Fos,
+    Junb, Srf, Actb, Actg1 and Vcl, named in the paper, are all shared; Arc has no OPC peak. Over nine
+    readings (three motif readings, three peak sets) the shared count is 7 to 133, and one reading gives
+    a count inside the tolerance (56: the consensus with one mismatch on the majority high-confidence
+    peaks).'
+  deviations:
+  - 'The paper used FIMO matches of the motifs MEME-ChIP found and does not say which motif or threshold;
+    FIMO is run here with the JASPAR SRF matrix at its default p < 1e-4. Assumed: the Methods'' per cell
+    type consensus (''peaks present in at least one replicate of the respective cell type'') is the peak
+    set of Figure 3D, and FIMO''s default threshold.'
+  - Genes are HOMER's nearest genes of the peaks, as annotated in GEO's file.
+- claim: fig4ab-rnaseq-degs
+  outcome: reproduced
+  assumed: true
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:fig4ab-rnaseq-degs
+  measured:
+  - 160
+  - 264
+  notes: DESeq2 (pydeseq2, default settings) on the RSEM gene results of GSE241560, KO against Flox per
+    stage. With length-scaled counts (tximport's lengthScaledTPM, reading b) 160 genes have padj < 0.05
+    in OPCs (85 up, 75 down) and 264 in oligodendrocytes (99 up, 165 down), inside 157 +/- 15.7 and 264
+    +/- 26.4. Rounded expected counts (reading a) give 118 and 293; one model of all 15 samples (reading
+    c) gives 130 and 418; both outside the tolerance.
+  deviations:
+  - 'The Methods say DESeq2 performed ''normalization for transcript length and sequencing depth'' with
+    standard settings, without saying how lengths entered. Assumed: the length correction is built into
+    the counts (reading b); tximport''s offsets are not available in pydeseq2. The outcome rests on this
+    choice, as readings (a) and (c) fall outside the tolerance.'
+  - pydeseq2, the Python port of DESeq2, is used, as R is not available here.
+- claim: fig4cd-rnaseq-srf-actb-down
+  outcome: reproduced
+  assumed: true
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:fig4cd-rnaseq-srf-actb-down
+  notes: Under readings (a) and (b) Srf and Actb are lower in KO with padj < 0.05 in OPCs and oligodendrocytes
+    (reading b, log2FC Srf -4.82 and -1.48, Actb -0.41 and -1.43). Under the joint model (c), Actb in
+    OPCs has padj 0.51. Actb and Actg1 are the actin genes with a CArG peak (FIMO or one mismatch); at
+    p < 0.05 Actb is lower in both stages and Actg1 in oligodendrocytes (log2FC -0.43, p 0.024), and neither
+    is higher.
+  deviations:
+  - Down-regulated is read as log2FC < 0 with padj < 0.05, the paper's threshold for differential expression;
+    the claims file gives no criterion. The adopted counts are those of fig4ab-rnaseq-degs (reading b);
+    reading (c) does not find Actb in OPCs.
+- claim: fig4eg-rnascope-in-vivo-down
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RNAscope images of P16 to P18 cortex, which are not in the dandiset, and the paper names
+    no other deposit for them.
+- claim: no-myelin-genes-direct-targets
+  outcome: reproduced
+  assumed: true
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:no-myelin-genes-direct-targets
+  notes: None of Mbp, Plp1, Mog, Mag, Mobp, Cnp, Cldn11, Pmp22, Mal, Opalin and Myrf is the nearest gene
+    of any of the 848 SRF peaks (739 distinct nearest genes), so none is a target under any reading of
+    the peak set or the motif.
+  deviations:
+  - 'The paper does not list its ''myelin genes''. Assumed: the structural myelin genes above, with Opalin
+    and Myrf; a target is a gene that is HOMER''s nearest gene of an SRF peak, the paper''s annotation.'
+- claim: figs4ef-assembly-not-disassembly-genes
+  outcome: partially_reproduced
+  notebook: geo_sequencing_claims.ipynb
+  output: claim:figs4ef-assembly-not-disassembly-genes
+  notes: 'Of the 13 disassembly genes of Fig. S4E, none has padj < 0.05 in OPCs (12 tested; Ssh3 too low)
+    and one does in oligodendrocytes under every reading: Cfl1, lower in KO (log2FC -0.78, padj 0.024,
+    reading a; 0.029 in b, 0.0017 in c), as the paper''s own Fig. S4F shows (p 0.007). Actb is lower in
+    KO in both stages under readings (a) and (b). The ''not ... such as Cfl1'' part of the statement holds
+    in OPCs and fails in oligodendrocytes. A reader is asked whether the claims file should name Cfl1
+    as an unregulated gene (questions/001350.yaml).'
+  deviations:
+  - The claims file gives no criterion; the disassembly genes are those of Fig. S4E and a gene is regulated
+    when DESeq2 padj < 0.05. Assembly genes are represented by actin itself, as the paper lists no assembly
+    gene set.
+- claim: fig5e-less-f-actin
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs phalloidin images of cultured cells, which are not in the dandiset. The dandiset holds
+    only corpus callosum TEM images and their masks (134 assets); the paper names no other deposit for
+    these data (its data availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: fig5d-late-actin-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs phalloidin images of cultured cells, which are not in the dandiset. The dandiset holds
+    only corpus callosum TEM images and their masks (134 assets); the paper names no other deposit for
+    these data (its data availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: culture-mbp-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs MBP measurements of cultured cells, which are not in the dandiset. The dandiset holds only
+    corpus callosum TEM images and their masks (134 assets); the paper names no other deposit for these
+    data (its data availability statement lists only GEO GSE241561, which holds sequencing data).
+- claim: figs5ab-gsea-bulk
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The paper's enrichment analysis used the GeneTrail 3 web service with BH adjustment and its defaults
+    (SI Methods), which cannot be run in a locked environment. The DESeq2 results it would start from
+    are computed in geo_sequencing_claims.ipynb.
+- claim: fig6b-snrnaseq-degs
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: 'The count matrices are in GEO (GSM7794023, GSM7794024), but the claim rests on the paper''s
+    R pipeline: SoupX, DoubletFinder, scTransform and Seurat 4.3 integration, clustering at resolution
+    0.3 with manual annotation of clusters 0 and 2, and MAST. R is not available here (printed in the
+    notebook) and these packages cannot be installed in the entry''s locked Python environment; a Python
+    substitute would change the clusters and the test the counts of 63 and 213 depend on.'
+- claim: fig6cd-ol-genes-depleted
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Rests on the clusters and MAST results of the R pipeline (see fig6b-snrnaseq-degs) and on GSEA;
+    not runnable here for the same reasons.
+- claim: fig6eg-disease-genes-up
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The ranking of top up-regulated genes in oligodendrocyte clusters 0 and 2 rests on the R pipeline
+    and MAST (see fig6b-snrnaseq-degs); not runnable here.
+findings:
+- kind: data_missing
+  statement: The paper's hand scoring of the corpus callosum TEM (axons counted, diameters and myelin
+    thickness) is not deposited. The dandiset holds the raw images of all 10 mice and segmentation masks
+    made later for a segmentation project, which cover 9 full images and 2 small regions from 5 mice,
+    only one of them SRF-Flox. The paper's per-mouse comparisons of Figure 2C to 2E and Fig. S3C and S3D
+    cannot be repeated from the dandiset.
+- kind: data_missing
+  statement: Only the adult corpus callosum TEM of the paper is in the dandiset. The optic nerve TEM (Fig.
+    S2), immunostaining, RNAscope, RT-PCR and culture imaging are not, and the paper names no other deposit
+    for them; 14 of its findings cannot be tested.
+- kind: metadata_error
+  statement: The archive's summary gives 16 samples, where samples.tsv lists 86 (one per image, including
+    two crops), and lists no species; participants.tsv gives the species as 'mus muculus'.
+- kind: selection_undocumented
+  statement: The dataset does not say which images were segmented or why, nor how its images relate to
+    the paper's stitched 8 x 8 montages; image sizes differ by mouse (1482 to 5712 pixels a side). The
+    two regions of sub-373C are exact crops of its sample-0001 at the README's coordinates, read as (column,
+    row).
+- kind: format_error
+  statement: The axon-and-myelin mask of sub-373C chunk-01 is stored as grey with alpha and codes axon
+    as 254 and 255, where the other masks are single-channel with axon 255. In the cKO images up to 51,098
+    pixels (0.23% of an image) are in both the myelinated and the unmyelinated axon masks; in the Flox
+    images none are.
+- kind: paper_inconsistency
+  statement: The Results say SRF regulates actin assembly genes and not actin disassembly genes, citing
+    Fig. S4E and S4F; Fig. S4F shows Cfl1, the main disassembly gene, lower in SRF-KO oligodendrocytes
+    (p 0.007), and GEO's counts agree (log2FC -0.78, padj 0.024).
+- kind: methods_unavailable
+  statement: 'Question for the authors: how were the 329 high-confidence SRF peaks selected? ''Consistently
+    across replicates'' gives 204 peaks when read as all replicates of a group, 312 as a majority and
+    404 as at least two (each without an IgG peak); a majority without the IgG filter gives 329. This
+    attempt assumed the majority reading.'
+- kind: methods_unavailable
+  statement: 'Question for the authors: how did transcript length enter the DESeq2 analysis of the bulk
+    RNA-seq? Length-scaled counts give 160 and 264 differentially expressed genes, as the paper reports;
+    rounded RSEM expected counts give 118 and 293. This attempt assumed length-scaled counts.'
+- kind: methods_unavailable
+  statement: 'Question for the authors: which motif and threshold defined the CArG-containing target genes
+    of Figure 3D, and which peaks (per cell type consensus or high-confidence)? FIMO with the JASPAR SRF
+    matrix on each cell type''s peaks gives 43 shared genes, against 60 in the paper; other readings give
+    7 to 133.'
+- kind: methods_unavailable
+  statement: 'Question for the authors: what is the unit of Figure 2D, and which genes are the ''myelin
+    genes'' found not to be SRF targets? The dataset''s masks give 0.82 to 1.09 myelinated axons per um2
+    in the mice with whole images, about half of the values the claims file reads from the figure in that
+    unit.'
