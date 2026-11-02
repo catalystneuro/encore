@@ -44,7 +44,7 @@ recordings of the same mice (Fig. 3).
 | Supp. Fig. 3j, body weight after the switch | Reproduced |
 | Supp. Fig. 3m, mid-meal response against weight gain | Partially reproduced (assumption) |
 | Supp. Fig. 3l, body weight does not predict meal length | Reproduced |
-| Supp. Fig. 3q, HFD->NCD meal length against weight change | Reproduced (assumption) |
+| Supp. Fig. 3q, HFD->NCD meal length against weight change | Partially reproduced (assumption) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -52,7 +52,10 @@ reasoning and the differences from the paper's method.
 The paper's Z-score could not be rebuilt exactly. The claims file's two readings of the Methods
 are computed here from the deposited raw trace; the depositors' own Z-score is shown as a variant,
 and under it the Fig. 1k mixed model reproduces. The dataset lacks one of the seven cohort-2 HFD
-mice, holds four files twice, and in 32 files has a Z-score that does not match its own raw trace.
+mice, holds four files twice, and in 32 files has a Z-score that does not match its own raw trace. In
+those 32 files and the 26 without a Z-score, the trial starts in the raw trace are taken from the
+other files; a check on the tone-evoked response supports them, and without these 58 recordings
+every outcome is the same except Fig. 2c, which would be partially reproduced.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001474-porniece-2025-01.yaml`](../../attempts/001474-porniece-2025-01.yaml).
 

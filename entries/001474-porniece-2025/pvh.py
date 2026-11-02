@@ -43,7 +43,10 @@ Where the parameters come from:
   with the deposited Z-score columns (each trial starts 3000 samples after the previous one).
   Where a file has no Z-score, or its Z-score does not match its raw trace (see
   ALIGN_MIN_R), the modal offset of the matched files with the same number of trials is used
-  (an assumption: the session timing is the same; reported in the notebook).
+  (an assumption: the session timing is the same; reported in the notebook). Every recording's
+  trial starts are checked against the tone-evoked rise of the raw signal (`alignment_check`;
+  the window 0.5-2 s against 2 s before the tone, and the 30-s and 5-trial search ranges, are
+  standard choices for a check that decides no outcome).
 """
 
 from __future__ import annotations
@@ -211,6 +214,39 @@ def _psd(x):
     return welch(x, fs=FS, nperseg=1024)
 
 
+TONE_LAGS = np.arange(-1500, 1501, 5)   # alignment check, -30 to 30 s in 0.1-s steps
+
+
+def tone_contrast(raw, t):
+    """Per tone time t (sample of the tone; any shape), the mean signal 0.5-2 s after it over
+    the mean of the 2 s before it, minus 1; NaN where the window leaves the trace. The tone
+    itself evokes a fast rise of the signal in triggered and untriggered trials alike (shown in
+    the notebook), so this marks where the tones are in the raw trace."""
+    x = pd.Series(raw).interpolate(limit_direction="both").to_numpy()
+    c = np.r_[0, np.cumsum(x)]
+    ok = (t - 2 * FS >= 0) & (t + 2 * FS <= len(x))
+    tt = np.where(ok, t, 2 * FS)
+    pre = (c[tt] - c[tt - 2 * FS]) / (2 * FS)
+    post = (c[tt + 2 * FS] - c[tt + FS // 2]) / (1.5 * FS)
+    return np.where(ok, post / pre - 1, np.nan)
+
+
+def alignment_check(raw, starts, good, k=5):
+    """Checks of the trial starts used for the raw measures. (a) The tone response averaged over
+    the recording's trials, with every tone time shifted by each lag of TONE_LAGS: with the
+    right starts it peaks within a fraction of a second of lag 0. (b) The tone response at the
+    k tone slots of the 60-s grid before the first trial and after the last one, against the
+    first and last k trials: with the right trial count it is absent outside the trials (the
+    5-min baseline holds no tones)."""
+    tones = starts + TONE
+    v = tone_contrast(raw, tones[good][:, None] + TONE_LAGS[None, :])
+    scan = np.nanmean(v, axis=0)
+    before = tone_contrast(raw, tones[0] - TRIAL_STEP * np.arange(k, 0, -1))
+    after = tone_contrast(raw, tones[-1] + TRIAL_STEP * np.arange(1, k + 1))
+    inside = tone_contrast(raw, tones)
+    return {"scan": scan, "before": before, "first": inside[:k], "last": inside[-k:], "after": after}
+
+
 def raw_measures(rec, s0):
     """Per-trial F - F0 and dF/F0 window means from the raw trace, and the per-recording sums
     for the per-mouse SDs of Z1 and Z2."""
@@ -233,6 +269,14 @@ def raw_measures(rec, s0):
     dff = dF / F0
     rec["raw_ok"] = ok
     rec["F0"] = F0
+    rec["raw_tail_s"] = (len(raw) - (s0 + TRIAL_STEP * ntr)) / FS
+    good = ok & ~lost
+    trg = rec["triggered"][:ntr] & good
+    utr = ~rec["triggered"][:ntr] & good
+    # mean dF/F0 trace of triggered and untriggered trials, -10 to 50 s, at 10 Hz (alignment check)
+    rec["avg_trig"] = np.nanmean(dff[:3000, trg], axis=1).reshape(-1, 5).mean(axis=1) if trg.any() else None
+    rec["avg_untrig"] = np.nanmean(dff[:3000, utr], axis=1).reshape(-1, 5).mean(axis=1) if utr.any() else None
+    rec["align_check"] = alignment_check(raw, starts, good)
     rec["dF"] = {k: np.nanmean(dF[sl(*w)], axis=0) for k, w in WINDOWS.items()}
     rec["dff"] = {k: np.nanmean(dff[sl(*w)], axis=0) for k, w in WINDOWS.items()}
     # Z1 sigma (tcpZ.m): trace from sample 50 on, mean-subtracted per recording
