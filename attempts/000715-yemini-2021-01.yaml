@@ -1,0 +1,1003 @@
+schema_version: 2
+id: 000715-yemini-2021-01
+dataset:
+  archive: dandi
+  id: "000715"
+  version: 0.241009.1514
+  doi: 10.48324/dandi.000715/0.241009.1514
+paper: doi:10.1016/j.cell.2020.12.012
+date: 2026-10-31
+entry: 000715-yemini-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41214704202
+inputs:
+- what: NeuroPAL colors of 235 head and tail neurons (NeuroPAL_colors in data.mat), the outside input
+    of ms2-neuropal-color-violations; the Brain Atlas reporter table (BrainAtlas in the same file,
+    read with mat-io), the outside input of fig7de-optimal-coloring-violations; the paper's own atlas
+    positions, covariances and adjacency matrix in the same file, used only as a reference.
+  source: https://github.com/Eviatar/Optimal_Coloring at commit 990c597d1a7b0c38c4e7e99f8e8b60da411b3493
+- what: Parameters of the color readout, the alignment search, the Sinkhorn iterations, the guided
+    annotation and the neuron detection, read from the paper's code (no data used); the ganglion of
+    each neuron from Data/NeuroPAL/herm_data.mat, for the head part of
+    fig7bc-ventral-ganglion-lowest.
+  source: https://github.com/amin-nejat/CELL_ID at commit d9f5df92d1bc218d0b8b105e3cd880c8bba30764
+- what: The paper's Zenodo record. Two head volumes (7_YAaLR, 76_YAaDV) and the annotation files
+    (*_ID.mat) of all ten heads were read only to check what the dandiset's files are. The whole-brain activity files Head_Activity_OH16230.mat and
+    Tail_Activity_OH16230.mat are the data of the five data elsewhere claims tested in
+    wholebrain_zenodo.ipynb.
+  source: doi:10.5281/zenodo.3906530
+outcomes:
+- claim: fig2cd-variability-differs
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig2cd-variability-differs
+  notes: Head atlas of 198 neurons fit on the ten heads. Among the 191 neurons named in at least
+    eight worms the largest per-neuron positional standard deviation is 36.1, 21.2 and 13.1 times
+    the smallest along the three principal axes of the atlas means (13.6 against 0.38 um along the
+    major axis), and the 90th over 10th percentile ratios are 8.3, 3.2 and 3.7. Every variant of
+    the atlas fit (two other initial worms, 5 or 100 alternations, no gauge, the forward regression
+    of equation 4.11) gives ratios of 9.39 or more along every axis. The criterion asks for the
+    difference within the head and within the tail; the head half holds and the tail half cannot
+    be tested, as the dandiset holds no tails, so the claim is reproduced only in part. The first
+    record gave reproduced for the head; the outcome was changed after the verifier's round 1.
+  deviations:
+  - Head only. The dandiset holds the heads of the ten worms; their tails are on the paper's Zenodo
+    record and were not used, since the claims file assigns this claim to the dataset.
+  - Assumption. Algorithm 4 of Methods S1 as written (equations 4.13 to 4.16) does not converge on
+    these data, because the atlas is defined only up to an affine map and the regression of the
+    atlas means on each worm shrinks it along its minor axes at every alternation (the extents of
+    axes 2 and 3 fall from 22.5 and 15.6 um to 0 by 300 alternations). The atlas is kept in the
+    frame of the initial worm (after each update it is mapped back by the affine map that best fits
+    its means to that worm's neurons) and stopped after 20 alternations, where the position block
+    has settled. This keeps Algorithm 4's alternation and its initialisation at one worm, and is
+    the smallest change that gives a stable atlas; variants are shown and agree, including the
+    forward regression of equation 4.11.
+  - Colors are read from the volumes as Methods S1 Figure 6.2 describes (median of the z-scored
+    image in a 1.5 x 1.5 x 0.75 um patch, CELL_ID patch_hsize [3, 3, 0]), as the files hold no
+    per-neuron colors.
+  - Neurons missing from a worm (the dandiset names 186 to 193 per head, against 195 in the paper)
+    are left out of that worm's alignment and moments, and a ridge of 0.01 um^2 is added to every
+    covariance (a standard choice) so that the 7 neurons named in fewer than 8 worms have an
+    invertible covariance. The ridge bounds each standard deviation below by 0.1 um, which sets the
+    smallest values of the all-neuron table; the table of neurons named in at least 8 worms, which
+    decides the claim, is not affected.
+- claim: fig2c-ollr-more-variable-than-olll
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig2c-ollr-more-variable-than-olll
+  measured: 2.144
+  notes: Along the major axis of the head atlas OLLR's standard deviation is 2.69 um and OLLL's
+    1.25 um, ratio 2.14 (reading a, given as measured); the variance ratio is 4.60 (reading b);
+    the extent of the 50% contour of the conditional distribution in the planes of axes 1 and 2
+    and of axes 1 and 3 gives 1.63 and 2.06 (reading c). Under the six variants of the atlas fit
+    (including the forward regression of equation 4.11) the standard deviation ratio is 2.00 to
+    2.33 and the variance ratio 4.01 to 5.44. Both neurons are named in all ten worms.
+  deviations:
+  - The atlas is fit with the gauge and the 20 alternations of the assumption stated under
+    fig2cd-variability-differs; the variants shown all give a ratio above 2 under reading b and
+    2.00 or more under reading a.
+  - Which minor axis is left-right and which dorsal-ventral is not fixed by the atlas; reading c is
+    shown in both planes.
+- claim: fig7bc-identification-accuracy
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig7bc-identification-accuracy
+  notes: Head only. On the named annotated neurons (reading a) Algorithm 5 as written gives 39.05,
+    39.04, 51.80 and 51.76% (mean per worm and pooled, per neuron and by class for left/right
+    pairs) and the CELL_ID alignment 55.00 to 63.25%. On the automatic detections of
+    ms1-detection-accuracy (reading b), with 82.8% of the named neurons matched to a detection,
+    Algorithm 5 gives 21.4 to 27.6% and the CELL_ID alignment 24.8 to 30.7%. No reading of the
+    paper's two alignments reaches 77.4%, so their outcomes agree; the atlas variants give 38.7 to
+    67.0% with them. The files record no orientation, and the five heads imaged in dorsal-ventral
+    view (subject names ending DV) are stored rotated by 92.6 to 102.7 degrees about the long axis
+    relative to the atlas (rotation part of the alignment by true correspondences), against 1.8 to 12.9
+    degrees for the left-right heads. Algorithm 5's identity start gives 9.6% on average on the DV
+    heads and 68.5% on the LR heads. The CELL_ID rotation search re-runs the principal-axis fit
+    after each rotation, as CELL_ID does, so its 52 candidates give 4 distinct starts. Started from
+    the identity and from rotations of 90, 180 and 270 degrees about the long axis, keeping the run
+    with the lowest assignment cost (a variant, not the paper's method), Algorithm 5 gives 74.75,
+    74.67, 77.38 and 77.30%, all below 77.4% (81.0% on the DV heads, 68.5% on the LR heads); the
+    highest, 77.38% by class with the mean over worms, misses the bound by 0.02 points. Under the
+    four atlas variants this rotated start gives 73.0 to 79.4% by class and 68.1 to 70.8% per
+    neuron. Both class readings are inside the tolerance with 5 alternations (79.40 and 79.35%) and
+    with the other initial worm (78.76 and 78.72%), only the mean-per-worm class reading with no
+    gauge (77.43%, pooled 77.35%), and neither with 100 alternations; no per-neuron reading is inside
+    under any variant. With orientation undone, which the paper's method does not do here, the
+    outcome would turn on the atlas fit and the reading by a few hundredths of a point. Aligning each held-out worm by its true
+    correspondences (not the paper's method) gives 77.72 to 80.22%, so even a perfect alignment of
+    this atlas lies at the lower edge of the tolerance. Algorithm 5 converged in every worm under
+    both starts. The tail value (94%) cannot be tested.
+  deviations:
+  - Head only; the tails are not in the dandiset.
+  - The atlas fit rests on the assumption stated under fig2cd-variability-differs.
+  - The CELL_ID variant makes the worm's principal-axis frame a proper rotation before the search,
+    so that no candidate is a mirror image (CELL_ID rejects mirror solutions, and with an improper
+    frame every candidate was rejected); CELL_ID's atlas is centred on its principal axes, so ours
+    is expressed in its own principal-axis frame for this variant. Its search over theta is ported
+    as written and has no effect (see notes).
+  - A variant not in the paper starts Algorithm 5 from four rotations about the long axis, because
+    the files carry no orientation and half the heads are stored in another one; it uses no
+    annotations. It changes no outcome on the main atlas (see notes for the atlas variants).
+  - Two named neurons of one held-out worm whose names are not in the nine-worm atlas count as
+    wrong.
+  - The detection behind reading b is a Python port (see ms1-detection-accuracy).
+- claim: fig7bc-ventral-ganglion-lowest
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig7bc-ventral-ganglion-lowest
+  notes: The criterion compares every tail ganglion with the head's ventral ganglion, and the
+    dandiset holds no tails. The tail volumes of the same worms are on the paper's Zenodo record
+    (doi:10.5281/zenodo.3906530); the claims file assigns the claim to the dataset with labels, so
+    they were not used. It also depends on fig7bc-identification-accuracy, which was not
+    reproduced. The head part the criterion asks to report is shown, with ganglia from the CELL_ID
+    neuron tables (Data/NeuroPAL/herm_data.mat). The ventral ganglion has the lowest pooled
+    accuracy of the seven head ganglia under every alignment (12.9% with Algorithm 5, 22.1% with
+    the CELL_ID alignment, 29.3% with the rotated starts, 31.6% with the true correspondences;
+    the other six range from 39.7 to 63.1% with Algorithm 5 and from 62.9 to 96.9% with the
+    rotated starts). By median distance to the nearest atlas neuron (1.87 um) it is the second
+    densest head ganglion after the dorsal ganglion (1.56 um, 6 neurons), and the third by neurons
+    per convex-hull volume; across the seven head ganglia accuracy does not follow density
+    (Spearman rho -0.25 to 0.04).
+- claim: fig7b-eight-labels-above-90
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig7b-eight-labels-above-90
+  measured: 43.0
+  notes: After eight annotations of the least certain neurons, the mean head accuracy over held-out
+    worms is 43.0 (highest entropy, given as measured) and 43.1% (lowest top probability) with
+    Algorithm 5, from 39.1%, and 58.8 and 58.7% with the CELL_ID alignment, from 55.0%; over the
+    unannotated neurons only 40.5 to 57.0%. No held-out worm exceeds 90% with these alignments (the
+    best worm reaches 83.0% with Algorithm 5 and 86.2 to 86.7% with the CELL_ID alignment). With the rotated starts of fig7bc-identification-accuracy (not the paper's
+    method) it is 79.3 and 78.4%, from 74.8%, with one worm above 90% (91.5%, entropy ranking).
+  deviations:
+  - Runs on the leave-one-out identifications of fig7bc-identification-accuracy, and so rests on
+    the same atlas assumption.
+- claim: ms1-uncertain-first-faster
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:ms1-uncertain-first-faster
+  notes: Head only. With the most uncertain neurons annotated first, the mean accuracy over worms is
+    above the mean of 100 random orders at all 50 annotation counts, under both rankings and all
+    three alignments, and its mean over 1 to 50 annotations is higher (68.0 against 62.4% with the
+    CELL_ID alignment and entropy ranking, 52.2 against 48.5% with Algorithm 5, 86.8 against 79.0%
+    with the rotated starts). At 50 annotations it is 79.1 against 69.5% with the CELL_ID
+    alignment; at 8, 58.8 against 57.3% (43.0 against 42.1% with Algorithm 5, 79.3 against 76.0%
+    with the rotated starts). The criterion asks for this in head and tail; the head half holds and
+    the tail half cannot be tested, so the claim is reproduced only in part. The statement's "much
+    faster" is a gap of 3.5 to 7.8 points between the means over the range and 1 to 3 points at eight annotations. The
+    first record gave reproduced for the head; the outcome was changed after the verifier's round 1.
+  deviations:
+  - Head only; the tails are not in the dandiset.
+  - Rests on the identifications of fig7bc-identification-accuracy and its atlas assumption.
+- claim: ms1-position-only-accuracy
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:ms1-position-only-accuracy
+  notes: Head only. With positions alone, accuracy is 20.4 to 22.8% with Algorithm 5 and 24.3 to
+    27.1% with the CELL_ID alignment over the four readings, below 45%; under every reading it is
+    below the full model, as the claim says. With the rotated starts of
+    fig7bc-identification-accuracy, which undo the orientation of the dorsal-ventral heads (not the
+    paper's method), it is 43.1 to 44.0%, still below 45%; under the atlas variants the rotated
+    starts give 45.1 to 46.7% with 5 alternations, the other initial worm and no gauge, inside the
+    tolerance, and 37.8 to 38.8% with 100 alternations. Aligning by the true correspondences
+    (not the paper's method either) gives 48.7 to 49.4%, inside 45 to 55%. The tail value cannot be
+    tested.
+  deviations:
+  - Head only; the tails are not in the dandiset.
+  - Same atlas assumption as fig2cd-variability-differs, applied to a position-only atlas.
+- claim: ms1-detection-accuracy
+  outcome: partially_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:ms1-detection-accuracy
+  notes: Head only, K = 191 on each of the ten heads, against all 189 to 196 stored neurons. Mean
+    accuracy 71.0% (SD 4.6, per head 64.4 to 80.3%), just below 72 to 88%; mean precision 83.4% and
+    recall 82.5%, inside 81 to 99%. Against the named neurons only, 70.6, 82.5 and 82.8%. SLSQP
+    reported success in 2,043 of the 2,064 Gaussian fits in this run. Whether MATLAB's fmincon would place the
+    detections differently, which could move the accuracy across its bound, is not measured; scipy's
+    trust-constr optimiser was tried while preparing and was too slow for the notebook, so it is
+    not run here. The tail values cannot be tested.
+  deviations:
+  - Head only; the tails are not in the dandiset.
+  - The detection is a Python port of CELL_ID (Preprocess.filter_gut_lysosomes, AutoDetect.detect
+    and fit_gaussian) with its default parameters (minimum eigenvalue 0.1, exclusion radius 1.5
+    um, eigenvalue bounds 0.01 to 5, detection at 0.4 um). fmincon (interior point) is replaced by
+    scipy's SLSQP with the same bounds and constraints, MATLAB's imresize3 by scikit-image's
+    resize with antialiasing, and the in-plane Gaussian blur of imgaussfilt by scipy's filter.
+    Any of these can shift detections.
+  - Whether the paper's hand annotations include the stored neurons that have no name is not said;
+    both are shown.
+- claim: ms1-calibration
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:ms1-calibration
+  notes: The criterion's two readings disagree, which it says blocks the claim. Reading a holds in
+    every run (Spearman rho 0.51 to 0.70 between per-neuron confidence and accuracy, p 2.1e-14 or
+    lower, 198 neurons); reading b fails in every run (confidence averages 87.1 to 89.4% and
+    accuracy 37.9 to 61.8%, a mean absolute difference of 27.8 to 49.2 points against a bound of
+    10). With the rotated starts of fig7bc-identification-accuracy (not the paper's method) rho is
+    0.81 to 0.82 and the difference 16.3 to 17.7 points, so the readings still disagree. The
+    overconfidence follows from the low identification accuracy of
+    fig7bc-identification-accuracy. The paper gives no measure of agreement; the question is
+    recorded as a finding for its authors. Head only.
+- claim: ms2-neuropal-color-violations
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:ms2-neuropal-color-violations
+  measured: 3.64
+  notes: With neighbors from the dandiset's head atlas (192 neurons with a NeuroPAL color, 4065
+    adjacent ordered pairs), the code's measure, the mean shortfall below the margin over
+    neighboring pairs, is 3.64%, inside 3.5 +/- 0.35, and 3.62 to 3.66% under the atlas variants.
+    The paper's own inputs in data.mat give 3.47% (this port of computeProbAdjacency agrees with
+    data.mat's adjacency on 98.9% of entries). The Methods share of neighboring pairs closer in
+    color than 1/3, now a variant, is 21.50% on the head atlas and on data.mat alike. What the
+    answer changed. The first run tested the claims file's earlier criterion, which took the
+    Methods share as the main result, and recorded not_reproduced (21.50%) with a question to a
+    reader. The reader amended the claim (questions/000715.yaml), so that the code's mean
+    shortfall decides it and the share is a variant, and the statement now reads "theoretical
+    color margin violation of 3.5%". Under the amended claim the same numbers give reproduced.
+    Pooled head and tail cannot be tested; the head-only reading is one the criterion names.
+  deviations:
+  - Head atlas only; the tails are not in the dandiset.
+  - Six atlas neurons (AMSOL, AMSOR, DA2, DB3, HMC, VD3) have no NeuroPAL color in data.mat and are
+    left out.
+  - The random samples of computeProbAdjacency use numpy with seed 1, not MATLAB's rng(1).
+- claim: fig7de-optimal-coloring-violations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: optimal_coloring.ipynb
+  output: claim:fig7de-optimal-coloring-violations
+  measured:
+  - 1.72
+  - 6.95
+  notes: On the neighbors of ms2-neuropal-color-violations (dandiset head atlas, 192 neurons, 543
+    Brain Atlas reporters with distinct patterns over them), the best of 10,000 runs at sparsity
+    100 has a mean shortfall of 1.71 to 1.72% (27 to 30 reporters kept), inside 1.7 +/- 0.17; the
+    best run keeping exactly 39 reporters (189 to 205 runs) has 1.83 to 1.86%, also inside. These
+    values differ in the second decimal between machines with the same seeds; the ranges are those
+    of the runs made for this attempt. The sparsity for 3 reporters is not given, and the
+    criterion's reading, the sparsity whose solutions use 3 reporters, fits 1500, 2000 and 3000 of
+    the scan, where most runs keep 3 reporters (95, 94 and 89 of 100). With the criterion's 7,500
+    runs the best 3-reporter value is 6.95% at 1500 (7,106 runs with 3 reporters) and 8.38% at
+    2000 (7,020 runs), below 9.45 to 11.55, and 9.90% at 3000 (6,253 runs, none below 9.45%), inside
+    it (optimal_coloring_sparsity.ipynb); at 1000 the best of 1,000 runs (561 with 3 reporters) is
+    7.83%. The 39-reporter value is inside the tolerance under every reading. The outcome would be
+    partially reproduced at 1500 and 2000 and reproduced at 3000, and no sparsity is better
+    supported than the others, so the claim is blocked with every result shown, by the rule this
+    attempt applies to fig6de-asj-ric-stimulus-specific. The first record gave partially
+    reproduced at 1500; the change was proposed after round 2 and agreed in round 3. The 3-reporter
+    solutions take few values (5th percentile 9.90% at 1500), so the best of fewer runs lands in
+    the tolerance, in 95% of random subsets of 10 runs, 66% of 100 and 1% of 1,000. On the paper's
+    own adjacency in data.mat (235 neurons, 654 unique reporters as the paper states, 1,000 runs
+    each) the best is 1.74 to 1.81% at sparsity 100 (1.99 to 2.03% for exactly 39 reporters) and
+    8.71% for 3 reporters. The Methods share, a variant, is 13.65% and 20.84% for the two best
+    head-atlas solutions.
+    What the answer changed. The amended criterion takes the code's mean shortfall as the measure,
+    in place of the Methods share. The first run had blocked this claim (not_runnable) because
+    scipy cannot read the MATLAB table holding the reporters; the author-answers run read it with
+    mat-io and ported the solver. A question is recorded for a reader on whether the 3-reporter
+    value is the best of 7,500 runs of this one setting, as the criterion reads it, or of the part
+    of the paper's 7,500 simulations that had this setting (Methods S2 Figure 1 and Figure 6
+    legends), since with fewer runs the best falls in the tolerance.
+  deviations:
+  - Head atlas only (192 neurons); the paper used 235 head and tail neurons. The paper's own
+    adjacency is run as a reference with 1,000 runs per setting, not 10,000 and 7,500.
+  - optimal_color_solver.m ported to Python and run on many random starts at once; starts are drawn
+    with numpy, not MATLAB's rand, and the loop over neighbors uses squared distances over the
+    nonzero entries of A, which gives the code's updates up to rounding.
+  - Three intensities taken as the margin of 1/3, from Methods S2 section 4.2 ("1/3 as our minimum
+    color margin (corresponding to discriminating 3 levels of color intensity)"); 300 iterations
+    from optimal_color_parameters.m and Methods S2 section 4.2 ("300 iterations in total").
+  - The solution kept from a set of runs is the one with the fewest violations, from the Methods S2
+    Figure 1 legend ("chosen as those with the minimal color violations, among 10,000
+    simulations"); each solution's colors and kept reporters follow find_optimal_colors.m (Otsu
+    threshold on X, colors scaled by each channel's maximum).
+  - The sparsity for 3 reporters is not given by the paper; it was chosen as the value of a scan
+    (250, 500, 1000, 1500, 2000, 3000; 100 runs each) whose runs most often keep 3 reporters, as
+    the criterion reads it. Sparsities 2000 and 3000 were also run with 7,500 runs each, and 1000
+    with 1,000 runs, in optimal_coloring_sparsity.ipynb, a notebook of its own to keep each within
+    its time limit.
+- claim: fig1e-stereotyped-color-map
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks the data as elsewhere but says they are in no public archive; this check does not accept data_missing for such a claim, so it is blocked as other. The claims file states the images (hundreds of animals crossed to 25 reporter lines) are
+    not deposited in any archive the paper names; none were found. The dandiset's ten heads bear on
+    it only through the atlas claims.
+- claim: res-variable-brightness-classes
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks the data as elsewhere but says they are in no public archive; this check does not accept data_missing for such a claim, so it is blocked as other. The scoring of hundreds of animals is not given as data and is not deposited anywhere the
+    paper names.
+- claim: figs1-otis670-closest-to-wild-type
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks the data as elsewhere but says they are in no public archive; this check does not accept data_missing for such a claim, so it is blocked as other. The phenotyping data (Table S2) are not deposited in any archive the paper names, and the
+    table was not available to this run.
+- claim: fig4c-metabotropic-receptor-coverage
+  outcome: blocked
+  blocked_by: other
+  notes: Needs Table S4, a supplementary spreadsheet of the paper that was not supplied to this run
+    (the claims file says it was not in the text read); the reporter images are not deposited
+    anywhere the paper names. Not attempted.
+- claim: fig4b-gabab-in-every-gaba-partner
+  outcome: blocked
+  blocked_by: other
+  notes: Needs Table S4, not supplied to this run, and the connectome of Cook et al. 2019, which was
+    not pinned here. Not attempted.
+- claim: fig4d-cognate-metabotropic-partners
+  outcome: blocked
+  blocked_by: other
+  notes: Needs Table S4, not supplied to this run, and the connectome of Cook et al. 2019. Not
+    attempted.
+- claim: fig4e-extrasynaptic-gaba
+  outcome: blocked
+  blocked_by: other
+  notes: Needs Table S4, not supplied to this run, and the connectome of Cook et al. 2019. Not
+    attempted.
+- claim: fig4f-sensory-extrasynaptic
+  outcome: blocked
+  blocked_by: other
+  notes: Needs Table S4, not supplied to this run, and the connectome of Cook et al. 2019. Not
+    attempted.
+- claim: fig5ab-pag3-fate-changes
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks the data as elsewhere but says they are in no public archive; this check does not accept data_missing for such a claim, so it is blocked as other. The mutant images and scores (Table S5) are not deposited in any archive the paper names.
+- claim: fig5c-pag3-new-expression
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks the data as elsewhere but says they are in no public archive; this check does not accept data_missing for such a claim, so it is blocked as other. The reporter images are not deposited in any archive the paper names.
+- claim: fig5efg-eor1-rme
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks the data as elsewhere but says they are in no public archive; this check does not accept data_missing for such a claim, so it is blocked as other. The mutant images and scores (Table S5) are not deposited in any archive the paper names.
+- claim: fig6d-ase-nacl-asymmetry
+  outcome: reproduced
+  notebook: wholebrain_zenodo.ipynb
+  output: claim:fig6d-ase-nacl-asymmetry
+  notes: On the Zenodo record (21 OH16230 heads, histogram-normalised traces), ASEL's mean change
+    from the 10 s before NaCl to the 10 s of NaCl is 1.01 and ASER's 0.42; the two-tailed unpaired
+    t test gives t = 3.82, p = 0.00046 (21 against 21). ASER rises in 14 of 21 worms (one-sample
+    p = 0.0032). With similar neurons removed (both members) p = 0.0019 (17 against 17) and ASER
+    rises by 0.46; with one member removed the numbers are those without removal.
+  deviations:
+  - The response is the mean during the stimulus minus the mean of the identical period before it,
+    as the STAR Methods define a response; the asymmetry test is applied to these changes.
+- claim: fig6d-awc-odor-asymmetry
+  outcome: blocked
+  blocked_by: other
+  notes: The criterion says only that the claim is not tested on the dandiset and gives no test for
+    "stochastically asymmetric" responses; with the run's time spent on the dandiset's claims no
+    criterion was derived from the paper. The data are on the Zenodo record
+    (is_AWCL_OFF gives the ON/OFF assignment per worm).
+- claim: fig6ef-nacl-novel-interneurons
+  outcome: reproduced
+  assumed: true
+  notebook: wholebrain_zenodo.ipynb
+  output: claim:fig6ef-nacl-novel-interneurons
+  notes: AIN, AVF, AVH, AVJ, I2 and MI all respond to NaCl with q of at most 0.05 (paired two-tailed
+    t test of the stimulus against the period before, Storey q-values over the tested neurons)
+    under the three readings of the removal of similar neurons; the largest q is 0.041 (AVF, no
+    removal) and 0.039 (AVJ, both members removed). All six rise. Storey's pi0 for the head's NaCl
+    tests is 0.45 to 0.47 at lambda = 0.5; the bootstrap choice of lambda over 0.01 to 0.95 (Storey
+    2002, the default of MATLAB's mafdr) gives pi0 of 0.40 to 0.43 and a largest q of 0.033 to
+    0.038, so the outcome holds under both estimates. With pi0 = 1, the Benjamini-Hochberg bound
+    and not Storey's method, AVF and AVJ have q of 0.062 to 0.088 under every reading.
+  deviations:
+  - Storey's pi0 is estimated at lambda = 0.5, a standard choice the paper does not give; the
+    bootstrap choice of lambda (MATLAB mafdr's default) and pi0 = 1 are shown.
+- claim: fig6c-odors-more-inhibitory
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file gives no criterion ("Not tested on the dandiset") and the paper gives no
+    measure of "more inhibitory activity"; not attempted within the run's time. The data are on the
+    Zenodo record.
+- claim: fig6de-asj-ric-stimulus-specific
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: wholebrain_zenodo.ipynb
+  output: claim:fig6de-asj-ric-stimulus-specific
+  notes: The outcome depends on whether both members of a pair of similar neurons (within 5 um,
+    traces correlated at 0.95 or more) were removed, which the paper does not say. Without removal,
+    and with one member removed, both statements hold. ASJ is excited by NaCl (q 0.0013 and
+    0.0017) and inhibited by 2-butanone (q 0.0009 and 0.0014) and 2,3-pentanedione (q 0.019 and
+    0.033); RIC is excited by 2,3-pentanedione (q 0.0044 and 0.019) and not by NaCl (q 0.065 and
+    0.054) or 2-butanone. With both members removed, ASJ's fall with 2,3-pentanedione is not
+    significant (mean change -0.091, q 0.063) and RIC also responds to NaCl (q 0.044). Removing
+    both drops 647 of 3,550 head traces, removing one 353. The responding sets overlap and differ
+    under every reading (9 or 10 of 60 to 65 responding neurons respond to all three stimuli). With
+    the bootstrap choice of Storey's lambda the pattern is the same (RIC to NaCl q 0.060 without
+    removal and 0.049 with one member removed; with both removed ASJ to 2,3-pentanedione q 0.055 and
+    RIC to NaCl q 0.037). The
+    first record took removal of both members as an assumption and gave not_reproduced; after the
+    verifier's round 1 no reading is held to be better supported than the others, so the claim is
+    blocked with the result of every reading shown. The question is recorded as a finding for the
+    paper's authors.
+  deviations:
+  - The STAR Methods remove neurons within 5 um whose traces correlate at 0.95 or more ("were
+    deemed too similar and removed") without saying whether both members of a pair go; the
+    record's README says they are kept in the files. All three readings are run. The correlation
+    is taken on the dF/F0 traces.
+  - Storey's pi0 at lambda = 0.5, a standard choice; the bootstrap choice of lambda and pi0 = 1 are
+    shown.
+- claim: tables6-tail-pvq-and-post-stimulus
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: wholebrain_zenodo.ipynb
+  output: claim:tables6-tail-pvq-and-post-stimulus
+  notes: The outcome depends on the removal of similar neurons, which the paper leaves open. On the
+    21 tails, PVQ is excited by 2,3-pentanedione under every reading (mean change 0.048 to 0.049, q
+    0.0006 to 0.0008) and by neither other stimulus. Post-stimulus responders exist for all three
+    stimuli without removal (NaCl LUA, PHB, PVW; 2-butanone LUA, PHA, PHB, PVR; 2,3-pentanedione
+    eleven neurons) and with one member removed (NaCl LUA only), but with both members removed none
+    remains for NaCl. So the claim holds in full on the criterion under two of the three readings
+    and in part under the third, and by the rule the notebook states and applies to
+    fig6de-asj-ric-stimulus-specific it is blocked with every result shown. The first record gave
+    partially reproduced, the outcome every reading supports; the change was proposed after round 2
+    and agreed in round 3. Removing both drops 161 of 797 tail traces. With the bootstrap choice of
+    Storey's lambda the pattern is the same (no NaCl responder with both members removed), though
+    the bootstrap gives pi0 = 0 for some of the tail's small sets of tests.
+    Which responders are sensory and which interneurons was not tested, as neither the record nor
+    the claims file gives neuron types.
+  deviations:
+  - Same open detail on the removal of similar neurons as fig6de-asj-ric-stimulus-specific; all
+    three readings are run.
+  - The post-stimulus window is the 10 s after the stimulus, the stimulus length; the paper does not
+    give it.
+- claim: fig6f-pharyngeal-responses
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file gives no criterion; not attempted within the run's time. The data are on
+    the Zenodo record.
+- claim: figs1h-avf-cyclic-activity
+  outcome: not_reproduced
+  assumed: true
+  notebook: wholebrain_zenodo.ipynb
+  output: claim:figs1h-avf-cyclic-activity
+  measured: 0.197
+  notes: Over 31 AVF traces from 18 heads, the median rate of peaks in traces median filtered at
+    0.5 s is 0.197, 0.109 and 0.071 per second at prominences of 0.5, 1 and 1.5 standard deviations
+    (the first given as measured), and the median frequency of the largest spectral power is 0.19
+    Hz; 1 (peak count) and 3 (spectrum) of 31 traces fall in 0.27 to 0.33 Hz. The paper's five worms
+    are not named, so a subset near 0.3 Hz is not excluded.
+  deviations:
+  - Assumption. Figure S1H does not give its peak rule; peaks are counted with scipy's find_peaks
+    at three prominences, and the spectral peak is shown as a check.
+  - The 0.5 s median filter is 2 samples at 4 Hz; the median filter needs an odd window, so 3
+    samples (0.75 s) are used. All 31 AVF traces from 18 worms
+    are pooled, as the five worms of Figure S1H are not named.
+- claim: fig6gi-stimulus-specific-correlations
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file gives no criterion; not attempted within the run's time. The data are on
+    the Zenodo record.
+- claim: fig6jk-weak-function-structure-correlation
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the connectomes of White et al. 1986 and Cook et al. 2019 as outside inputs, which
+    were not pinned, and the claims file gives no criterion; not attempted within the run's time.
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 1. The executed notebooks reproduce_yemini_2021.ipynb, optimal_coloring.ipynb and
+    wholebrain_zenodo.ipynb with the conclusion cells and the summaries removed, the helper modules
+    neuropal.py and wholebrain.py and the claims file, with the paper; the verifier did not have the
+    attempt record. It tested the CELL_ID rotation search on synthetic points and checked the archive
+    through the API. Its report gave its own outcome for the 16 tested or blocked claims it reviewed;
+    13 agree with the record and 3 do not (fig2cd-variability-differs, ms1-uncertain-first-faster,
+    fig6de-asj-ric-stimulus-specific). It did not review the 16 claims marked not tested on the
+    dandiset (its report counted 15; its round-2 report corrects this).
+  results:
+  - claim: fig2cd-variability-differs
+    agrees: false
+    outcome: partially_reproduced
+    reason: Head only. For neurons named in at least 8 worms, the largest SD over the smallest is 36,
+      21 and 13 on the three axes; the atlas variants give 33 to 53 on axis 1 (cell 12). The criterion
+      also needs the tail, which the archive does not hold.
+    response: Outcome changed to partially_reproduced, as the criterion asks for the difference within
+      the head and within the tail and only the head can be tested. Added the forward regression of
+      equation 4.11 (fit_atlas direction="forward", implemented but never run, problem 7) as a
+      variant; it gives ratios of 32.2, 21.7 and 11.0. Added to the deviation that the ridge of 0.01
+      um^2 bounds each SD below by 0.1 um, which sets the all-neuron table but not the table of
+      neurons named in at least 8 worms that decides the claim (problem 9).
+  - claim: fig2c-ollr-more-variable-than-olll
+    agrees: true
+    outcome: reproduced
+    reason: SD ratio 2.14 and variance ratio 4.6 (cell 14). Every atlas variant has SD ratio of 2.00 or
+      more (lowest 2.002, initial worm 38_YAaDV) and variance ratio of 4.0 or more. One reading over 2
+      is enough under the criterion.
+    response: No change of outcome. The forward regression variant was added (SD ratio 2.33, variance
+      ratio 5.44).
+  - claim: fig7bc-identification-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: Head accuracy is 39.0 to 51.8% with the Methods alignment and 55.0 to 63.2% with the
+      CELL_ID alignment, against 77.4 to 94.6% (cell 20). The atlas variants give 38.7 to 67.0% (cell
+      21) and reading b gives 21 to 31%. Only the oracle, which is not a paper method, gets in
+      (77.7%). Tail data missing. Separately (problem 1) the identification failures cluster in the
+      DV-named worms and the notebook does not check whether the files share one orientation; in
+      code_alignment the rotation search does nothing, since the second major_axis_align re-runs PCA
+      and all 26 theta values give the same output up to axis signs, as in CELL_ID
+      AutoId.local_alignment. The low accuracies may therefore reflect how the worms were mounted;
+      for fig7bc the outcome probably still stands.
+    response: Outcome kept. Added a table per worm with the principal-axis and image extents, the
+      rotation part of the oracle alignment and the accuracy under each alignment; the five DV heads
+      are stored rotated by 92.6 to 102.7 degrees about the long axis relative to the atlas, the LR heads
+      by 1.8 to 12.9. Added a printed check that the CELL_ID search gives 4 distinct starts from 52
+      candidates, a docstring note, and a code_mismatch finding. Added a variant, not the paper's
+      method, that starts Algorithm 5 from four rotations about the long axis and keeps the lowest
+      assignment cost; it gives 74.7 to 77.4% (77.38% at most), below 77.4%, and 73.0 to 79.4% by
+      class under the atlas variants. Accuracies are now grouped by LR and DV view for every
+      alignment and atlas variant, and the tolerance check uses unrounded values. Added the largest
+      difference between the Sinkhorn shortcut and a log-space port of CELL_ID sinkhorn_logspace on
+      every held-out worm (0.0001 to 0.0013).
+  - claim: fig7bc-ventral-ganglion-lowest
+    agrees: true
+    outcome: blocked
+    reason: The deciding comparison needs the tail ganglia. The API lists 10 assets, all heads. The
+      head part (ventral ganglion's rank among head ganglia, and densities) could be reported from the
+      head runs; the notebook does not (problem 8).
+    response: Outcome kept. Added the head part with ganglia from the CELL_ID neuron tables; the
+      ventral ganglion has the lowest accuracy of the seven head ganglia under every alignment (12.9
+      to 31.6%), and its density rank and the densities are printed.
+  - claim: fig7b-eight-labels-above-90
+    agrees: true
+    outcome: not_reproduced
+    reason: After 8 annotations, 43.0% (Methods alignment) and 58.8% (CELL_ID alignment); no worm is
+      above 90% (cell 23).
+    response: Outcome kept. The rotated-start variant gives 78.4 to 79.3% after eight annotations, with
+      one worm above 90%.
+  - claim: ms1-uncertain-first-faster
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Head: the uncertain-first curve is above random at 50 of 50 counts, with means 52.2 vs
+      48.5 and 68.0 vs 62.4 (cell 24). The gain at 8 annotations is only about 1 point. Tail missing.'
+    response: Outcome changed to partially_reproduced, as the criterion asks for head and tail and
+      only the head can be tested. The rotated-start variant is added (86.8 against 79.0% over the
+      range, 79.3 against 76.0% at eight).
+  - claim: ms1-position-only-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: Head 20.4 to 27.1% against 45 to 55% (cell 22). Only the oracle (48.7%) is inside. Tail
+      missing. For position-only the oracle is inside tolerance, so the outcome is less secure if the
+      low accuracies reflect how the worms were mounted (problem 1).
+    response: Outcome kept. With the rotated starts, which undo the orientation of the DV heads,
+      position-only accuracy is 43.1 to 44.0%, still below 45%.
+  - claim: ms1-detection-accuracy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Head precision 83.4% and recall 82.5% are inside 81 to 99%. Accuracy is 71.0%, just under
+      the 72% bound (cell 16). Tail missing. fmincon is replaced by SLSQP, accuracy misses the bound
+      by 1 point, and the effect of this deviation is not measured (problem 4).
+    response: Outcome kept. The notebook now prints the optimiser status of every fit (SLSQP reported
+      success in 2,046 of 2,065). A comparison with another optimiser was not run here, as the one
+      tried (trust-constr) was too slow for the notebook; the record says the effect of the
+      substitution is not measured.
+  - claim: ms1-calibration
+    agrees: true
+    outcome: blocked
+    reason: The two readings disagree. Spearman rho is 0.51 to 0.70 with p below 1e-13, but the mean
+      absolute difference is 27.8 to 49.2 points. Confidence is 87 to 89% against accuracy of 38 to
+      62% (cell 26). Tail missing.
+    response: Outcome kept. The rotated-start variant is added (rho 0.81 to 0.82, difference 16.3 to
+      17.7 points); the readings still disagree.
+  - claim: ms2-neuropal-color-violations
+    agrees: true
+    outcome: reproduced
+    reason: Head-atlas adjacency gives 3.64%, inside 3.15 to 3.85; the variants give 3.62 to 3.66%.
+      The data.mat adjacency for head and tail pooled gives 3.47% (cell 28). The code's shortfall
+      measure is chosen because the Methods share (21.5% here) is far above 3.5%, so the reading is
+      selected by its agreement with the target; under the Methods share the claim fails (problem 6).
+    response: Outcome kept. The measure was set by a reader's amendment of the claims file
+      (questions/000715.yaml, answered), which the author may not change; the notes and the notebook
+      give the Methods share as a variant and say that the claim fails under it.
+  - claim: fig7de-optimal-coloring-violations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 39-reporter case matched, best of 10,000 runs is 1.707%, and the best run with exactly 39
+      reporters is 1.828%. 3-reporter case not matched, best is 6.945%, against 9.45 to 11.55%.
+      Sparsities 1000, 2000 and 3000 also give 3-reporter solutions, but only 1500 got the full
+      7,500 runs; at 3000 the best 3-reporter value was 15.2%, not 9.9%, so this open detail could
+      change the outcome and was not run under every reading (problem 2). The claims file misreads
+      Methods S2 Figure 1, whose 7,500 simulations span several settings (problem 5).
+    response: Outcome kept. Sparsity 2000, where runs keep 3 reporters about as often as at 1500, was
+      run with 7,500 runs (best 8.38%), and 1000 and 3000 with 1,000 runs each (7.83% and 12.36%);
+      the 3-reporter value is outside the tolerance at every sparsity, so the outcome does not depend
+      on it. The data.mat reference now uses 1,000 runs per setting to keep the notebook within its
+      time limit. The misreading of problem 5 was already asked of a reader in questions/000715.yaml
+      (the fig7de question, not yet answered); no new question was added. The verifier's 1.707% and
+      1.828% are the notebook's 1.717% and 1.859%.
+  - claim: fig6d-ase-nacl-asymmetry
+    agrees: true
+    outcome: reproduced
+    reason: The left/right t test gives p 0.0005 to 0.002, and ASER rises (mean +0.42, p 0.003 to
+      0.007), under every duplicate-removal reading (cell 8).
+    response: No change needed.
+  - claim: fig6ef-nacl-novel-interneurons
+    agrees: true
+    outcome: reproduced
+    reason: All six neurons have q of 0.041 or less under every reading (cell 9).
+    response: No change needed.
+  - claim: fig6de-asj-ric-stimulus-specific
+    agrees: false
+    outcome: blocked
+    reason: The claim holds with no removal and with one member removed. It fails with both members
+      removed, the helper's main reading; ASJ to pentanedione has q 0.063 and RIC to NaCl has q 0.044
+      (cell 10). The wholebrain.py docstring calls removing both members a choice that removes few
+      traces, but it removes 647 of 3,550 head traces and 161 of 797 tail traces; the outcomes of
+      fig6de and tables6 turn on this reading (problem 3).
+    response: Outcome changed to blocked (methods_underspecified). The paper's sentence ("Neurons
+      within 5 um distance of each other ... were deemed too similar and removed") does not settle
+      whether both members went, and the false justification in the docstring is replaced by the
+      counts; with no better-supported reading the claim is blocked, with the result of every reading
+      shown.
+  - claim: tables6-tail-pvq-and-post-stimulus
+    agrees: true
+    outcome: partially_reproduced
+    reason: PVQ excitation to pentanedione has q of 0.0008 or less under every reading. Post-stimulus
+      responses to NaCl disappear with both members removed (cell 11).
+    response: Outcome kept, as the claim holds at least in part under every removal reading; the notes
+      now say it holds in full on the criterion under two of the three, and give the counts removed.
+  - claim: figs1h-avf-cyclic-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: Median peak rate is 0.07 to 0.20 Hz and the median spectral peak is 0.19 Hz. At most 3 of 31
+      traces fall in 0.27 to 0.33 Hz (cell 12). The peak rule is the notebook's assumption. Figure S1H
+      uses five worms, while the notebook pools 31 traces from 18 worms, and the median filter is 3
+      samples (0.75 s), not 0.5 s (problem 10).
+    response: Outcome kept. The helper, the notebook and the deviation now say that the filter is 3
+      samples (0.75 s), the shortest odd window at 4 Hz, and that all 31 traces from 18 worms are
+      pooled because the five worms are not named. The data check (problem 11) now compares the
+      annotations of all ten heads with the Zenodo annotation files, which match in names and in
+      positions to within 0.5 voxel; the wrong archive metadata were already recorded as findings.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks reproduce_yemini_2021.ipynb, optimal_coloring.ipynb and
+    wholebrain_zenodo.ipynb with their conclusions and summaries, the helper modules, the claims file,
+    the attempt record and the README, with the paper. The verifier agreed with 31 of the 32 outcomes
+    and would give blocked for tables6-tail-pvq-and-post-stimulus. It quoted six sentences the outputs
+    do not support and listed what remains of its round-1 points.
+  results:
+  - claim: fig2cd-variability-differs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The gauge fix and 20 alternations are stated, with 6 variants, all at ratio of 9.39
+      or more; the assumption is stated and reasonable.
+    response: No change.
+  - claim: fig2c-ollr-more-variable-than-olll
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Same assumption, stated and reasonable; SD ratio 2.00 to 2.33 across variants.
+    response: No change.
+  - claim: fig7bc-identification-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, but the margin is thin. With orientation corrected, fig7bc misses by 0.02 points on
+      the main atlas and is inside under three atlas variants (class readings). With perfect alignment
+      it reaches only 77.7 to 80.2%, which supports not reproduced. The record should state the 0.02-point
+      margin plainly. Cell 26 and the record say the class-level readings fall inside the tolerance under
+      three of the four variants, but under the no-gauge variant only the mean-per-worm class reading
+      is inside (77.43), the pooled one (77.35) is outside. The summary's statement that the rotated-start
+      variant changes no outcome is true only on the main atlas.
+    response: Outcome kept, as the rotated starts are not the paper's method. The record notes, cell 26
+      and the README now state that the best rotated-start reading misses the bound by 0.02 points, and
+      give which class readings are inside under each atlas variant (both with 5 alternations and with
+      the other initial worm, only the mean-per-worm reading with no gauge, neither with 100 alternations).
+      The summary of reproduce_yemini_2021.ipynb and the deviation now say the variant changes no outcome
+      on the main atlas but puts a class reading inside under three of the four atlas variants. Reading
+      b moved in the last digit in this run (21.4 to 27.6% and 24.8 to 30.7%); the text follows it.
+  - claim: fig7bc-ventral-ganglion-lowest
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
+    response: No change.
+  - claim: fig7b-eight-labels-above-90
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Even the rotated start gives 79%. The record's 'the best, 86.2%' is supported only
+      for the CELL_ID alignment with the entropy ranking, the only run whose per-worm values are printed;
+      the zero counts above 90% are supported.
+    response: Outcome kept. The table of cell 31 now prints the best worm after eight annotations for
+      every alignment and ranking (83.0% with Algorithm 5, 86.2 and 86.7% with the CELL_ID alignment,
+      91.5 and 87.3% with the rotated starts), and the record and notebook cite these.
+  - claim: ms1-uncertain-first-faster
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the assumption is stated and reasonable. The record's 'a gap of 4 to 10 points over
+      the range' does not match cell 33, where the gaps between the means over the range are 3.5 to 7.8
+      points.
+    response: Outcome kept. The record now says 3.5 to 7.8 points between the means over the range.
+  - claim: ms1-position-only-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The paper's alignments give 20 to 27%; rotated 43.1 to 44.0%. The position-only rotated
+      start is not shown under the atlas variants.
+    response: 'Outcome kept. Cell 29 now gives the position-only rotated starts under the four atlas variants:
+      45.1 to 46.7% with 5 alternations, the other initial worm and no gauge, inside the tolerance, and
+      37.8 to 38.8% with 100 alternations. The record, the notebook and its summary say so. The outcome
+      is not changed, since the rotated starts are not the paper''s method and the main atlas gives 43.1
+      to 44.0%.'
+  - claim: ms1-detection-accuracy
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Round-1 point 4 is partly resolved: SLSQP converges in 2,046 of 2,065 fits, and the
+      effect of the optimiser is still not measured; it no longer bears on the outcome, which is partial
+      either way because the tail is missing.'
+    response: Outcome kept; the effect of the optimiser is still not measured. In this run SLSQP reported
+      success in 2,043 of 2,064 fits, and the record and notebook give these counts.
+  - claim: ms1-calibration
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: No change.
+  - claim: ms2-neuropal-color-violations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, under the amended criterion. The shortfall measure was chosen because the Methods
+      share is far from the target; the record states this openly.
+    response: No change.
+  - claim: fig7de-optimal-coloring-violations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees under the criterion''s reading, but it is not robust. The outcome turns on two open
+      details: the sparsity (between 2000 and 3000 the best value crosses the band, and 3000 had only
+      1,000 runs) and how many runs the paper''s best was taken from; the best of 100 runs lands in the
+      tolerance 66% of the time. On the paper''s own data.mat adjacency the port gives 8.71% for 3 reporters,
+      below the tolerance, and 1.99% for exactly 39 reporters, above it. The record''s ''The second value
+      is outside the tolerance at every sparsity tried, so the outcome does not depend on this choice''
+      does not follow; the outcome holds under the criterion as written, but that note should go. The
+      claims file''s reading of 7,500 runs for the single 3-reporter setting misreads Methods S2 Figure
+      1; the record has put this to a reader.'
+    response: Outcome kept and a change to blocked (methods_underspecified) proposed. The note is removed.
+      Sparsities 2000 and 3000 now get the criterion's 7,500 runs, in a notebook of their own (optimal_coloring_sparsity.ipynb)
+      to keep each notebook within its time limit; the best 3-reporter value at 3000 is 9.90%, inside
+      the tolerance, against 6.95% at 1500 and 8.38% at 2000, so the outcome depends on the sparsity.
+      The data.mat values are in the notes (8.71%, and 2.03% for 39 reporters in this run). The sparsity-100
+      values differ in the second decimal between machines (1.71% here); the notes say so. No new question
+      was added, as the misreading is already asked in questions/000715.yaml.
+  - claim: fig6d-ase-nacl-asymmetry
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig6ef-nacl-novel-interneurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Storey lambda = 0.5 is not flagged as an assumption. AVF q 0.041, AVJ q 0.039 and
+      RIC-to-NaCl q 0.044 are close to 0.05, and the notebook does not print pi0 or the q-values under
+      another pi0 estimate; a smaller pi0 could move fig6ef or fig6de.
+    response: Outcome kept and marked as assumed. wholebrain.py now estimates pi0 also by the bootstrap
+      choice of lambda over 0.01 to 0.95 (Storey 2002; the default of MATLAB's mafdr), and a new cell
+      prints pi0 per part and stimulus and the deciding q-values under lambda = 0.5, the bootstrap and
+      pi0 = 1. The bootstrap gives a largest q of 0.033 to 0.038 for the six neurons; pi0 = 1, the Benjamini-Hochberg
+      bound and not Storey's method, gives 0.062 to 0.088 for AVF and AVJ.
+  - claim: fig6de-asj-ric-stimulus-specific
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (methods_underspecified). Under the alternative rule, the outcome every reading supports,
+      it would be partially reproduced: ASJ to NaCl and 2-butanone, RIC to 2,3-pentanedione, and the overlap
+      of responding sets hold under every reading. One rule should be applied to both this claim and tables6.'
+    response: Outcome kept. The rule the notebook states, blocking a claim whose outcome differs between
+      the readings, is kept and a change of tables6 to blocked is proposed. The bootstrap estimate of
+      pi0 gives the same pattern.
+  - claim: tables6-tail-pvq-and-post-stimulus
+    agrees: false
+    outcome: blocked
+    reason: Would give blocked (methods_underspecified). wholebrain_zenodo.ipynb cell 5 states the rule
+      'a claim whose outcome differs between them is blocked'. tables6 gives full, full and partial under
+      the three removal readings, so under that rule it is blocked. One rule should be applied to both
+      claims. The 10 s post-stimulus window is stated and reasonable.
+    response: Outcome kept, as round 1 agreed with partially reproduced, and a change to blocked (methods_underspecified)
+      is proposed under the notebook's rule, as for fig6de-asj-ric-stimulus-specific. The bootstrap estimate
+      of pi0 gives the same pattern.
+  - claim: figs1h-avf-cyclic-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The peak rule is stated, with three prominences and a spectral check.
+    response: No change.
+  - claim: fig1e-stereotyped-color-map
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: res-variable-brightness-classes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: figs1-otis670-closest-to-wild-type
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig4c-metabotropic-receptor-coverage
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig4b-gabab-in-every-gaba-partner
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig4d-cognate-metabotropic-partners
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig4e-extrasynaptic-gaba
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig4f-sensory-extrasynaptic
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig5ab-pag3-fate-changes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig5c-pag3-new-expression
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig5efg-eor1-rme
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig6d-awc-odor-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig6c-odors-more-inhibitory
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig6f-pharyngeal-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig6gi-stimulus-specific-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+  - claim: fig6jk-weak-function-structure-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, as for each of the 16 claims not attempted.
+    response: No change.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. Only the two proposed changes of outcome, fig7de-optimal-coloring-violations and
+    tables6-tail-pvq-and-post-stimulus, with the executed notebooks optimal_coloring.ipynb,
+    optimal_coloring_sparsity.ipynb and wholebrain_zenodo.ipynb behind them. The verifier agreed with
+    both.
+  results:
+  - claim: fig7de-optimal-coloring-violations
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified). The numbers come from the data, and 1000, 2000 and 3000
+      are the remaining grid points of the original scan, with fixed seeds, so the sparsities were not
+      chosen to reach the result. The criterion says to use the sparsity whose solutions use 3
+      reporters, and three sparsities fit that equally well; the outcome is partially reproduced at
+      1500 and 2000 and reproduced at 3000, so the criterion does not settle it, and blocking follows
+      the rule the attempt applies to fig6de. The open number of runs behind the paper's best points
+      the same way. The 39-reporter value is inside the tolerance under every reading. Some text does
+      not match the printed outputs (563 for 561 runs at sparsity 1000; 1.71% with 30 reporters and
+      1.83% from 189 runs for 1.717% with 27 and 1.859% from 205; 1.81% and 2.03% on data.mat for
+      1.737% and 1.993%), differences between machines that do not change the result.
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. The record
+      now gives 561 runs at sparsity 1000, and the sparsity-100 and data.mat values as the ranges seen
+      over the runs of this attempt, as they differ in the second decimal between machines; the
+      notebook's conclusion and summary and the README say the same.
+  - claim: tables6-tail-pvq-and-post-stimulus
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified). The numbers come from the data and the test matches the
+      criterion as written. The three removal readings were fixed before this claim was tested and the
+      counts removed are printed. The claim holds in full under two readings and only in part under
+      the third, so cell 5's rule gives blocked, the same treatment as fig6de-asj-ric-stimulus-specific.
+      The sensory and interneurons part of the statement is still untested, since there are no neuron
+      types; the criterion does not require it.
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed; the
+      notebook's conclusion and summary and the README say so. The assumed mark is dropped, as the
+      record does not allow it on a blocked outcome; the 10 s post-stimulus window stays a deviation.
+findings:
+- kind: metadata_error
+  statement: Every file gives strain OH16230 (the NeuroPAL;GCaMP6s strain of the whole-brain
+    recordings), a spinning disk confocal, a worm "in microfluidic chip", birth on 2021-01-05 and
+    imaging on 2021-01-07. The files are the heads of the paper's ten otIs669 (OH15262) atlas
+    worms imaged on a Zeiss LSM 880; the volumes of 7_YAaLR and 76_YAaDV are identical, voxel for
+    voxel, to the Zenodo volumes of those otIs669 worms, and the ten identifiers match.
+- kind: metadata_error
+  statement: The third channel is labelled GFP-GCaMP, with GFP emission settings, but its mean is
+    17,000 to 21,000 in every file, far above the fluorescence channels, and the Zenodo copies mark
+    that channel as the DIC (transmitted light) channel. The worms carry no GCaMP.
+- kind: data_missing
+  statement: The dandiset holds only the heads. The tails of the same ten worms, used for the
+    paper's tail atlas and tail accuracies, are on the paper's Zenodo record, and so is the
+    whole-brain activity of Figure 6. Nine of the claims tested here need the tails in part or in
+    full.
+- kind: metadata_insufficient
+  statement: The files carry no per-neuron colors (the Zenodo files have a color readout per
+    neuron), no orientation of the worm, and do not say whether the stored voxel indices are 0- or
+    1-based. The five heads imaged in dorsal-ventral view are stored rotated by about 90 degrees
+    about the long axis relative to the five imaged in left-right view, which only the subject
+    names (ending DV or LR) hint at. Comparison with the Zenodo annotations shows that each stored
+    voxel is the Zenodo position made 0-based and rounded. Colors had to be recomputed from the
+    volumes.
+- kind: metadata_insufficient
+  statement: 0 to 6 of the 189 to 196 stored neurons per file have an empty name, with no
+    description of what they are; the paper reports 195 annotated head neurons per worm.
+- kind: other
+  statement: Neuron names are stored as a ragged array of single characters (ID_labels with
+    ID_labels_index), so each name must be joined from its characters.
+- kind: identifier_missing
+  statement: The dandiset metadata name no related publication (relatedResource is empty); the
+    description and the files' related_publications give the paper's title only, without a DOI.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Algorithm 4 of Methods S1 as written does not
+    converge on these data, because the regression of the atlas means on each worm shrinks the
+    atlas along its minor axes at every alternation. How was the atlas kept from shrinking, and
+    after how many alternations was it stopped? This attempt kept it in the initial worm's frame
+    and stopped after 20 alternations.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Algorithm 5 starts the alignment of a held-out worm
+    at the identity, which fails on worms stored in another orientation (5 to 12% accuracy on the
+    five dorsal-ventral heads against an atlas in a left-right worm's frame). How were held-out
+    worms oriented before identification in the cross-validation of Figure 7B-C? Starting from four
+    rotations about the long axis gives 75 to 77% here.
+- kind: code_mismatch
+  statement: CELL_ID AutoId.local_alignment (d9f5df9) rotates each candidate by theta about the
+    major axis and then runs the principal-axis alignment again, which undoes the rotation, so its
+    search over 26 angles and 2 signs yields 4 distinct starts on the worm checked. The search does
+    not explore rotations about the major axis as the code's loop suggests.
+- kind: paper_inconsistency
+  statement: Methods S2 section 4.3 defines the color violation percentage as the share of
+    neighboring pairs below the discrimination margin, but the reported 3.5% for NeuroPAL is the
+    mean shortfall below the margin computed by find_optimal_colors.m. On the paper's own data.mat
+    the share is 21.5% and the mean shortfall 3.47%.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which sparsity, and how many runs of the 3-color,
+    3-intensity, 3-reporter setting, gave the 10.5% solution of Figure 7E and Methods S2 Figure 1?
+    The 7,500 simulations of Methods S2 Figure 6 span 2 to 6 colors, 1 to 3 intensities and 2 to 71
+    reporters. A Python port of the code finds 6.95% as the best of 7,500 runs of that setting on
+    the dandiset's head atlas at sparsity 1500, 8.38% at 2000 and 9.90% at 3000, and values within
+    10% of 10.5% as the best of 10 to 100 runs at 1500.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Methods S1 section 6.4 says confidence and accuracy
+    are "largely in good agreement" without a measure. Which measure of agreement was meant, and
+    which left/right pairs were scored by class under footnote 1?
+- kind: methods_unavailable
+  statement: Question for the paper's authors, on the Zenodo activity data. When neurons within 5
+    um had traces correlated at 0.95 or more, were both removed or one, and on which traces? Which
+    window defines the post-stimulus period, which five worms and which peak rule underlie Figure
+    S1H? The outcomes of two claims depend on the first point.

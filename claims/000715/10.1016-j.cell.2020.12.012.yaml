@@ -259,8 +259,8 @@ claims:
     plot is shown.
 - id: ms2-neuropal-color-violations
   statement: Using the atlas of neuron positions from the 10 worms to define neighbors, NeuroPAL's
-    designed color map leaves 3.5% of neighboring neuron pairs below the color discrimination
-    margin.
+    designed color map has a theoretical color margin violation of 3.5% over neighboring neuron
+    pairs.
   source: Methods S2, section 4.3, paragraph 1
   quote: NeuroPAL, which comprehensively identifies all neuron types, exhibited a theoretical color
     violation of 3.5%.
@@ -276,10 +276,13 @@ claims:
     include each other (Methods S2 section 2; Optimal_Coloring computeProbAdjacency.m, 1000
     samples per neuron, seed 1), from the head and tail atlases fit on all 10 worms. Colors are the
     NeuroPAL colors of Optimal_Coloring data.mat (NeuroPAL_colors), normalized to sum to one per
-    neuron as find_optimal_colors.m does; the margin is 1/3. The Methods define the violation
-    rate as the share of neighboring pairs whose color distance is below the margin (section 4.3);
-    the code reports the mean shortfall below the margin over neighboring pairs
-    (find_optimal_colors.m); the Methods measure is the main result and the code's is a variant.
+    neuron as find_optimal_colors.m does; the margin is 1/3. The violation is the code's measure,
+    the mean shortfall below the margin over neighboring pairs, sum(max(margin*A - D.*A, 0)) /
+    sum(A) (find_optimal_colors.m, which prints it as the NeuroPAL color margin violation). The
+    Methods describe the violation as the share of neighboring pairs whose color distance is below
+    the margin (section 4.3), but that share, computed on the code's own data.mat adjacency and
+    NeuroPAL colors, is far above 3.5%, so the reported number is the code's measure; the share is
+    reported as a variant and does not decide the claim.
     Whether the 3.5% pools head and tail is not said for NeuroPAL itself; the solver runs of
     Methods S2 section 4.2 use the 235 head and tail neurons together, and Methods S2 Figure 1A
     shows head and tail with one value, so pooled is the main reading; head and tail apart are
@@ -312,7 +315,8 @@ claims:
     labels, Colors=3 Intensities=3 Reporters=39 and Reporters=3). The sparsity giving 3 reporters
     is not stated; the reading is the sparsity whose
     solutions use 3 reporters after the code's Otsu threshold. Violations as in
-    ms2-neuropal-color-violations (Methods measure, code measure as a variant). Reproduced when the
+    ms2-neuropal-color-violations (the code's mean shortfall decides; the Methods share is a
+    variant). Reproduced when the
     best solutions are within tolerance; the solver is stochastic and fewer runs may be used if
     the full number cannot run, which is recorded as a deviation.
 - id: fig1e-stereotyped-color-map

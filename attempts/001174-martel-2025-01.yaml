@@ -1,0 +1,799 @@
+schema_version: 2
+id: 001174-martel-2025-01
+dataset:
+  archive: dandi
+  id: "001174"
+  version: 0.250331.2218
+  doi: 10.48324/dandi.001174/0.250331.2218
+paper: doi:10.1016/j.isci.2025.112767
+date: 2026-11-01
+entry: 001174-martel-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41282269219
+inputs:
+- what: The paper's per-cell descriptors table (Ca_Imaging_dataset_Tidy version.csv, md5
+    60bd8689b867b55bb680f2a3a1658b46), used for each cell's first occurrence (its global cell id),
+    for the link claim's reference values, and as a variant of the Figure 1 tests.
+  source: doi:10.5281/zenodo.14727695
+- what: The paper's Jaccard output table (Jaccard_data_table (fig 3)_Tidy version.csv, md5
+    6a7bfc28406dd82e08920f8b747a2782), shown next to this attempt's Z-Jaccard proportions; it
+    decides nothing.
+  source: doi:10.5281/zenodo.15116617
+- what: The paper's Figure 4D table (Sequence parameters box plots (fig 4D)_Tidy version.csv, md5
+    4f52af7e3e3d6ba0a9f660932608d4fe), shown next to this attempt's sequence measures; it decides
+    nothing.
+  source: doi:10.5281/zenodo.14976005
+- what: The paper's table of z-scored trial windows (Event alignment-consolidated table.csv, md5
+    3826e7afab34289f31e82a8838c992dc), its output for Figure 2 and Figure S1, on which the paper's
+    classification is re-run as a check; it decides nothing.
+  source: doi:10.5281/zenodo.14976651
+- what: The paper's code, read for method details (ReorganizedData_Final.m and ISI_Final.m for the
+    descriptors; permfun.R and 1_JaccardIndexAnalysisAllSessions.R for the Z-Jaccard; identify_sequences.m,
+    ported to Python in sequences.py, for the sequences; identify_sequences.m, md5
+    6fe2a4f0f36ec29b78683d71aed0ef34, is downloaded by the sequences notebook, which prints its
+    double-counting step).
+  source: doi:10.5281/zenodo.14963213, doi:10.5281/zenodo.14977106 and doi:10.5281/zenodo.14963234
+outcomes:
+- claim: zenodo-descriptors-link
+  outcome: not_reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:zenodo-descriptors-link
+  notes: The cells link, the descriptors do not. 565 of 626 table rows match a dandiset cell by
+    subject, site, date and accepted-cell index; the 61 unmatched rows are task rows of F, which has
+    no task files. 93.8% of matched cells have both centroid coordinates within 3 pixels of the
+    dandiset's footprint centroids (median differences -0.52 and -0.45 pixels), so the identity holds.
+    86 of 313 cells (27.5%) have rate and amplitude within 1% in every condition, below the 50% the
+    criterion asks. The table's rates exceed the dandiset's by a median factor of 1.042 (5th to 95th
+    percentile 0.999 to 1.499); 40.9% of cell-conditions agree within 1% for the rate and 66.3% for
+    the amplitude. Two U SMA sessions differ by large factors (2023-03-07 spontaneous 20.0,
+    2023-03-14 task 0.042). One-frame inter-event intervals are rarer in the dandiset (median IEI of
+    one frame in 3.9% of cell-conditions against 11.9% in the table). No unmatched dandiset cells
+    are expected, as the table lists first occurrences only (313 of the 401 accepted cells). The two
+    U SMA sessions are not a swap of conditions. In 2023-03-07 the table's task counts follow the
+    dandiset's task counts (Spearman 0.975) and its spontaneous counts follow neither file (-0.354
+    and 0.205); in 2023-03-14 each condition follows its own file best (0.829 and 0.786). In both the
+    dandiset has fewer spontaneous events (4 against 133 and 78 against 246 over the first-occurrence
+    cells) and a higher amplitude in every cell-condition (medians 3.702 against 3.080 and 3.488
+    against 2.987), which points to a different event detection in those files.
+  deviations:
+  - Rates use each file's duration from its frames ((n - 1) / rate), as ReorganizedData_Final.m
+    divides by the segment's last time; the paper's segments were parts of one concatenated
+    recording, the dandiset's are separate files.
+- claim: cell-counts
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:cell-counts
+  measured:
+  - 129
+  - 60
+  - 63
+  - 37
+  - 23
+  notes: Under reading (i), unique cells, the counts are Q 129, F 60 (61 with the one cell of
+    2024-03-19, which the opening comment's session list leaves out), U SMA 63, U M1 37, V 23, all
+    within tolerance. Which cells repeat comes from the Zenodo table's first occurrences, matched to
+    the dandiset by session and index (identity confirmed by centroids in zenodo-descriptors-link);
+    the dandiset alone cannot give these counts. Under reading (ii), accepted cells summed over
+    sessions, the only count the dandiset gives by itself, the counts are 160, 87, 85, 43 and 25, and
+    only V is within tolerance. Reading (i) counts the rows of the paper's own table per site, so it
+    compares the paper's table with the paper's text more than it tests the dandiset. The link claim
+    is not reproduced on its descriptors, but this claim rests only on the identity of the cells,
+    which holds.
+  deviations:
+  - The first occurrences come from the Zenodo descriptors table (an outside input), as the claims
+    file's method C allows; the claims file does not list the link claim under depends_on.
+- claim: cells-tracked-18pct
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Neither the dandiset nor the Zenodo table identifies a cell's later occurrences. In all 45
+    files the PlaneSegmentation ids are 0 to n-1 and the table has no other column (image_mask only). The table
+    lists each of 313 cells at its first session only; the code reads cross-session identity from
+    Metadata_all_monkeys.xlsx, which is not deposited. Of 401 accepted cells summed over sessions, 88
+    are repeat occurrences, so between 44 and 88 cells (14.1% to 28.1%) were seen in two or more
+    sessions; 18% lies inside this range, and the data cannot narrow it.
+- claim: fig1d-rate-no-change
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig1d-rate-no-change
+  notes: No reading finds a difference. Over pooled SMA and M1 and over Q SMA, U SMA, U M1 and V M1,
+    the smallest uncorrected signed-rank p is 0.0666 (V M1) and no q is below 0.05 in family (a) or
+    (b). Pooled SMA medians 0.0149 and 0.0166 events/s (n = 192), pooled M1 0.0874 and 0.0865 (n = 60).
+  deviations:
+  - Only the claims file's reading D (i), a cell's value in its first session, could be run; reading
+    D (ii), the median over the sessions a cell appears in, needs later occurrences that no source
+    identifies.
+  - Each cell counts once, in its first session (Methods, Cell identification, "We only report results
+    for the first session in which cells were identified"), from the Zenodo table.
+- claim: fig1e-ieicv-no-change
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig1e-ieicv-no-change
+  notes: No reading finds a difference; the smallest uncorrected p is 0.0841 (U SMA) and no q is below
+    0.05. 78 of 252 cells with a task part have fewer than two intervals in a part and are left out.
+  deviations:
+  - As fig1d-rate-no-change; only reading D (i) was run.
+- claim: fig1f-amplitude-u-sma-spont-higher
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig1f-amplitude-u-sma-spont-higher
+  notes: In U's SMA (44 cells with events in both parts) the spontaneous amplitude is higher (medians
+    3.409 and 3.166, 72.7% of cells higher at rest), p = 0.0017, q = 0.0204 in family (a) and 0.0068
+    in family (b); the paper gives p = 0.032. The spontaneous median is higher in each of the five U
+    SMA sessions. The pooled SMA test is significant too (q = 0.0198 and 0.0066), Q's SMA alone is not
+    (p = 0.1108). The paper's table gives p = 0.0074 for its 42 cells with amplitudes in both parts.
+    Without U SMA 2023-03-07 and 2023-03-14, whose events differ most from the table, p = 0.0078 over
+    33 cells (medians 3.272 and 3.123), so the result does not rest on them.
+  deviations:
+  - As fig1d-rate-no-change; only reading D (i) was run.
+- claim: fig1d-rate-m1-above-sma-u
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig1d-rate-m1-above-sma-u
+  notes: U M1 (37 cells) against U SMA (63 cells), rank-sum p below 1e-5 in both conditions,
+    corrected or not; medians 0.0891 against 0.0042 events/s at rest and 0.1151 against 0.0089 in the
+    task. Without U SMA 2023-03-07 and 2023-03-14 the p-values are 1.9e-05 and 2e-06.
+  deviations:
+  - As fig1d-rate-no-change; only reading D (i) was run.
+- claim: fig1f-amplitude-m1-above-sma-u-task
+  outcome: not_reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig1f-amplitude-m1-above-sma-u-task
+  notes: The task amplitude is higher in U's M1 than in its SMA (medians 3.384 and 3.193, P(M1 > SMA)
+    0.604) but not significantly, p = 0.0988 uncorrected and q = 0.1976 corrected over the two
+    conditions; the paper gives p = 0.03. The same test on the paper's own per-cell table gives
+    p = 0.0138 (medians 3.407 and 3.124, 36 and 48 cells, against 36 and 52 here), so the difference
+    comes from the dandiset's event amplitudes, which differ from the table's (zenodo-descriptors-link),
+    not from the method. U SMA 2023-03-07 and 2023-03-14, where every dandiset amplitude is above the
+    table's, account for most of the gap in the SMA task median (3.193 with them, 3.133 without,
+    3.124 in the table) but for less than half of it in the p-value on a log scale (0.0988 with
+    them, 0.041 without, 0.0138 in the table). Without them the task test gives p = 0.041 uncorrected
+    (medians 3.384 and 3.133, 36 and 39 cells) and q = 0.082 corrected over the two conditions
+    (spontaneous p = 0.11), so the readings would then disagree. Leaving out sessions is not the
+    claims file's method, and the outcome stays on all cells.
+  deviations:
+  - As fig1d-rate-no-change; only reading D (i) was run.
+- claim: fig2-q-sma-modulated-34pct
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The test needs the target-onset times, which the paper took from TTL pulses recorded on extra
+    channels, and the raw traces. The dandiset's files hold neither (no trial table, no TTL or
+    behavioural channel, and only the denoised trace). The Zenodo record of activity aligned to
+    behavioural events (doi:10.5281/zenodo.14976651) holds the paper's z-scored trial windows, its
+    output, not the event times, so it cannot place trials in the recordings. The TTL files are not
+    public elsewhere. None of the 45 files has a trial table, intervals, stimulus or analysis group,
+    and the archive's variableMeasured lists only imaging variables for every asset. As a check that
+    decides nothing, method Z's test run on the paper's z-scored windows finds 20 of 129 Q SMA cells
+    modulated with FDR over the chamber (21 with FDR per condition column, 42 uncorrected), against
+    the paper's 43. Run on the paper's own windows, method Z thus falls far short of the paper's
+    count, which suggests that method Z is not the paper's procedure; this is put to a reader in
+    questions/001174.yaml and does not change the outcome, which rests on the missing event times.
+- claim: fig2c-q-sma-direction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2-q-sma-modulated-34pct; the TTL event times and raw traces are not in the
+    dandiset or public elsewhere. On the paper's z-scored windows (Zenodo, a check that decides
+    nothing) the classes are 14 direction-related and 6 not, against the paper's 32 and 11.
+- claim: fig2-q-magnitude-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2-q-sma-modulated-34pct; the TTL event times and raw traces are not in the
+    dandiset or public elsewhere.
+- claim: figs1-u-sma-direction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs U's target-onset and center-release times (TTL) and raw traces, which the dandiset does
+    not hold; which U session carried TTL data is also not recorded in the files. On the paper's
+    z-scored windows (Zenodo, 14 U SMA cells, a check that decides nothing) 5 cells are modulated at
+    target onset and 6 at movement onset, all direction-related; the paper gives 6 and 6.
+- claim: figs1-u-m1-target-onset
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As figs1-u-sma-direction. On the paper's z-scored windows (6 U M1 cells, a check that decides
+    nothing) all 6 are modulated at target onset and 3 are direction-related; the paper gives 4 and 0.
+- claim: figs1-u-m1-movement-onset
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As figs1-u-sma-direction. On the paper's z-scored windows (a check that decides nothing) all 6
+    U M1 cells are modulated at movement onset and 3 are direction-related, as the paper gives.
+- claim: fig3-synchronized-pairs-exist
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig3-synchronized-pairs-exist
+  notes: Every site and condition has sessions with pairs of |Z-Jaccard| > 1.96. M1 6 of 6 sessions in
+    each condition, SMA 18 of 20 spontaneous and 12 of 12 task sessions; 542 of 6089 defined pairs in
+    all. Median proportions per session are SMA 0.0776 and 0.0647, M1 0.1006 and 0.1802 (spontaneous,
+    task), against 0.05 expected under the null at this threshold (reported, not used). Eight SMA
+    session-conditions are at or below 0.05 (spontaneous 0, 0, 0.038 and 0.044; task 0.026, 0.043,
+    0.044 and 0.045), and the median SMA task session is near chance, so synchrony exists in SMA in
+    the sense the criterion asks and no more. The proportions correlate with the paper's Jaccard
+    table at 0.950 over 43 session-conditions.
+  deviations:
+  - Each condition is a separate file, so each is binned on its own and its last four bins dropped;
+    the code bins the joined recording and drops the bin that mixes the two.
+- claim: fig3ab-synchrony-not-distance
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig3ab-synchrony-not-distance
+  notes: With Pearson, 4 U SMA sessions and all 4 U M1 sessions show no significant correlation of
+    Z-Jaccard with centroid distance in either condition; with Spearman, 5 U SMA and 4 U M1 sessions.
+    Over all 44 session-conditions of all monkeys, 5 Pearson and 3 Spearman correlations reach p < 0.05.
+  deviations:
+  - Centroids are footprint-weighted means of the dandiset's masks; they agree with the paper's IDPS
+    centroids within 3 pixels for 93.8% of cells.
+- claim: fig3c-sync-no-condition-change
+  outcome: reproduced
+  notebook: reproduce_martel_2025.ipynb
+  output: claim:fig3c-sync-no-condition-change
+  notes: Signed-rank tests over sessions with both conditions find no difference; SMA p = 0.1514
+    (12 sessions, median change -0.0198), M1 p = 0.2188 (6 sessions, median change +0.0509). Variants
+    agree; the positive tail only gives 0.2036 and 0.0938, all pairs as denominator 0.4131 and 0.3125,
+    and the code's 10-shift null for SMA 0.0771. The paper's own table gives 0.0674 and 0.2188, the
+    paper's 0.07 and 0.22.
+- claim: fig4a-example-sequences-q
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: sequences_martel_2025.ipynb
+  output: claim:fig4a-example-sequences-q
+  notes: Changed from not_reproduced after verification. The port of the claims file's method S does
+    not reproduce the paper's own sequence counts. Run on the 56 slices of the paper's Figure 4D table
+    under 32 settings (window upper bound 0.25, 0.5, 1 and 2 s; separation of repetitions 0.05, 0.5,
+    1 and 2 s; both double-counting steps), the best setting has 21.4% of slices within 10% of the
+    paper's count. In the two slices where the dandiset's events match the paper's table (Q
+    2022-12-01 and 2022-12-06 task, at least 80% of cells with the rate within 1%), no setting gives
+    the paper's 7 and 9 (2 to 13 and 8 to 111). So the readings of method S do not include the
+    procedure behind 13 and 17, and the counts here cannot say whether the paper's numbers hold on
+    the dandiset. The table also gives n.a. for this session's first spontaneous 10 min and 13 for
+    its second, while the dandiset's spontaneous file lasts 10 min. As run, the only Q SMA session with 40 accepted cells is 2022-09-15, and the paper's Figure 4D table
+    gives 13 and 17 for it. Under every reading of method S the counts are far off. With the
+    double-counting step as the code runs it, 157 to 196 (spontaneous) and 176 to 311 (task); with the
+    code's more-than-4 rule, 113 to 155 and 156 to 260; with the double-counting step as documented,
+    5 and 2 to 5. Every ordering of cells (reading a) gives 979 and 1856 significant patterns. The two
+    conditions' sets of sequences differ under every reading (10 shared of 157 and 211 under reading
+    a, task reading i). Across all slices the counts follow the paper's table in rank (Spearman 0.871)
+    but are a median 3.12 times larger (0.40 times with the documented double-counting step), so the
+    port, the parameters the paper used, or the dandiset's events differ from the paper's. The
+    question of the parameters is put to the paper's authors (findings), and whether method S
+    should name other readings to a reader (questions/001174.yaml).
+  deviations:
+  - The detection is a Python port of identify_sequences.m (sequences.py), not the MATLAB code.
+  - The parameter values the paper passed to identify_sequences.m are not recorded; the claims file's
+    readings of the two 0.05 s rules and of the task slice were all run.
+  - The code's double-counting step writes 2 into a logical array, so it removes nothing; the main
+    count does what the code does, as the claims file asks, and the documented step is a variant.
+    The sequences notebook prints the lines of identify_sequences.m (DA = false(...), the test
+    DA(...) == 2 and the assignment DA(...) = 2) so that this reading can be checked.
+  - The outcome departs from the criterion. The criterion's rule gives not_reproduced when every
+    reading of method S fails, as here. The attempt blocks the claim as methods_underspecified
+    because the sweep shows that the readings the criterion lists do not include the procedure
+    behind the paper's own Figure 4D counts, so the failure says nothing about the dandiset. The
+    point is put to a reader in questions/001174.yaml.
+- claim: fig4b-example-three-segments-q
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: sequences_martel_2025.ipynb
+  output: claim:fig4b-example-three-segments-q
+  notes: Changed from not_reproduced after verification, for the reason given under
+    fig4a-example-sequences-q. Over the 32 settings, 2022-12-06 gives 4 to 331, 6 to 613 and 8 to
+    111, and no setting gives 8, 13 and 9 within tolerance, even in the task slice, where at least
+    80% of cells' rates match the paper's table. As run, two Q SMA sessions have 18 cells and at least 20 min of spontaneous recording, 2022-10-03 and
+    2022-12-06; the paper's Figure 4D table gives 8, 13 and 9 for 2022-12-06, so measured is that
+    session under reading (a), task reading (i). No reading is within tolerance (0 of 12). 2022-12-06
+    gives 331 to 386, 613 to 746 and 111 to 174 sequences (3 to 10, 9 to 10 and 10 to 13 with the
+    documented double-counting step); 2022-10-03 gives 3, 4 and 12 to 13. The three slices' sets
+    differ in every reading, with at most 4 sequences shared by all three.
+  deviations:
+  - As fig4a-example-sequences-q, including the departure from the criterion's rule, which gives
+    not_reproduced when every reading fails.
+- claim: fig4d-sequence-measures-vary
+  outcome: reproduced
+  notebook: sequences_martel_2025.ipynb
+  output: claim:fig4d-sequence-measures-vary
+  notes: Under all six readings each measure's per-site medians differ across segments and across
+    sites (sequences per cell 0.160 to 8.477, median repetitions 4.0 to 18.25, cells in sequences 24.0%
+    to 100.0%). The criterion is met by any measure that is not constant, so the outcome carries little
+    weight; the counts behind it are about three times the paper's (fig4a-example-sequences-q).
+  deviations:
+  - As fig4a-example-sequences-q. F 2024-03-19 (one cell) is left out, as the Jaccard code leaves it
+    out and the Figure 4D table has no row for it.
+- claim: fig4c-sequence-cells-not-clustered
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: sequences_martel_2025.ipynb
+  output: claim:fig4c-sequence-cells-not-clustered
+  notes: Reading (i), centroids of cells in sequences against all cells (spontaneous, Q SMA and U M1),
+    finds no difference under any 0.05 s reading (smallest p 0.6776 over 24 tests). Reading (ii),
+    distances between cells sharing a sequence against all pair distances, finds them shorter when
+    pairs are pooled over sessions (medians 284 to 296 against 320 um; KS p 0.0001 to 0.0020), but
+    pooling mixes fields of view of different geometry. Within sessions, with the code's
+    double-counting step, no session differs (0 of 25 at p < 0.05 by KS or Mann-Whitney under each
+    reading), and the stratified tests agree (percentile KS p 0.5485 to 0.7846, Mann-Whitney 0.5673
+    to 0.9362, cell-relabelling permutation 0.3305 to 0.9110). So under the code's step, which
+    removes nothing as the code runs (the notebook prints the lines), the pooled test and the
+    within-session test of reading (ii) disagree; the within-session and stratified tests were
+    chosen after the first verification, and the criterion names neither. With the double-counting
+    step as its comments describe it, the stratified tests find sequence pairs closer under readings
+    (a) and (b) (permutation p 0.0025 and 0.0105, percentile KS 0.0027 and 0.0247), with no session
+    at q < 0.05. The claim stays blocked, as the readings disagree once the pooled test is counted, and
+    which cells enter sequences rests on a detection that the paper's own counts do not pin down
+    (fig4a-example-sequences-q). The Results describe reading (ii) and
+    the Figure 4C legend reading (i); Figure S2 is not in the text read, and the paper gives no test.
+    The question of which comparison and test the paper meant is put to its authors (findings).
+  deviations:
+  - Reading (ii) is tested within each session and stratified by session (the pooled test is shown);
+    distances between cells exist only within a session's field of view, a choice made after
+    verification.
+- claim: histology-lens-placement
+  outcome: blocked
+  blocked_by: other
+  notes: The histology is on Zenodo (doi:10.5281/zenodo.15328390) as 13 whole-slide scans (about 8.6
+    GB, ndpi, svs and vsi). Judging where each lens track ends against the Paxinos atlas is an
+    anatomist's reading of the images that the notebook cannot compute; nothing was run. The data are
+    public and readable and no software is missing, so the reason is other, not not_runnable.
+- claim: histology-gcamp-not-gabaergic
+  outcome: blocked
+  blocked_by: other
+  notes: As histology-lens-placement; the GFP and GABA double-label images (MR385R_507_GABA_GFP_20x.vsi
+    among them) would need a visual or trained cell-level classification that the paper does not
+    describe as a procedure.
+findings:
+- kind: data_missing
+  statement: The dandiset holds no TTL or trial data and no raw traces. The Figure 2 and Figure S1
+    analyses, which align raw traces to TTL-marked target and movement onsets, cannot be run; six of
+    the paper's findings are untestable. The Zenodo table of aligned activity holds the paper's
+    z-scored windows, not the event times.
+- kind: metadata_insufficient
+  statement: The trace in processing/ophys/Fluorescence/RoiResponseSeries is the CNMFe denoised trace
+    (between events it decays by one constant factor per frame, in a median 90% and at least 77% of a file's samples), but
+    is described only as "Fluorescence data associated with spatial footprints". EventAmplitude holds
+    the deconvolved events as a dense frame by cell array without saying that zero means no event.
+    ImagingPlane indicator and location are "N/A" in every file; the site is only in session_description.
+- kind: identifier_missing
+  statement: No cross-session cell identity is deposited. The dandiset gives each file's cells
+    0..n-1; the paper's Zenodo table gives a global id only at a cell's first session, and the
+    spreadsheet the code reads for identity (Metadata_all_monkeys.xlsx) is not public. The
+    fraction of cells tracked across sessions (18%) cannot be checked.
+- kind: other
+  statement: The dandiset's events differ from the paper's per-cell table. The cells match (centroids
+    within 3 pixels for 93.8%), but event rates agree within 1% for only 40.9% of cell-conditions and
+    the table's are a median 4.2% higher (up to 50% at the 95th percentile); one-frame inter-event
+    intervals are rarer in the dandiset (3.9% against 11.9% of cells with a one-frame median IEI),
+    so some events of the paper's table are missing from the dandiset's event arrays. U SMA 2023-03-07 and 2023-03-14
+    differ by factors of 0.04 to 20; in both the dandiset has far fewer spontaneous events and a higher
+    amplitude in every cell, which is not a swap of conditions and looks like a different event
+    detection. With the dandiset's amplitudes the U task M1 against SMA difference is not significant
+    (p = 0.099), with the table's it is (p = 0.014), and without those two sessions p = 0.041.
+- kind: other
+  statement: U SMA 2023-03-14 is sampled at 20 Hz (both files), where the Methods give 10 Hz for all
+    imaging.
+- kind: paper_inconsistency
+  statement: The dandiset has arm-reaching files for monkey V (both M1 sessions), and the paper's
+    Jaccard and sequence code treat them as task, while the Results and Methods say only Q and U
+    performed the task.
+- kind: metadata_error
+  statement: The spontaneous file of Q's 2022-09-15 session is named sub-Q/sub-Q_ophys.nwb, without
+    the session label the other 44 files carry.
+- kind: selection_undocumented
+  statement: The dandiset holds cells the paper's analyses leave out. The paper's Jaccard table has
+    pairs for 17 cells in Q 2022-10-03, 11 in Q 2022-12-01, 10 in V 2023-03-09 and 13 in V 2023-03-16,
+    and its Figure 4D table counts 17, 11, 11 and 13, where the dandiset has
+    18, 13, 11 and 14 accepted cells. V 2023-03-09 is V's first session, yet the descriptors table
+    lists 10 of its 11 cells. Which cells were left out, and why, is not stated.
+- kind: other
+  statement: The paper's Jaccard table dates one F session "20-Feb-23"; F was imaged in 2024 and the
+    dandiset's session is 2024-02-20.
+- kind: code_mismatch
+  statement: The double-counting step of identify_sequences.m (eliminate_double_counting_v2) marks
+    used events by writing 2 into the logical event array, which MATLAB stores as true, so its test
+    for 2 never succeeds and it removes no repetition, contrary to its comments.
+- kind: code_mismatch
+  statement: 1_JaccardIndexAnalysisAllSessions.R runs the SMA sessions with nperm = 10 shifts, where
+    the Methods give 1000. On the dandiset, SMA spontaneous against task gives p = 0.077 with 10 shifts
+    and 0.151 with 1000; the paper's p = 0.07 matches its own table (0.067).
+- kind: methods_unavailable
+  statement: Question for the authors. Which values were passed to identify_sequences.m for Figure 4
+    (the time window tc, the minimal separation, min_num_reps, the sequence lengths), and does the 0.05 s
+    of the Results apply to the window's lower bound, to the separation of repetitions, or both? Run on
+    the dandiset's events under each reading, the port gives counts that follow the paper's Figure 4D
+    table in rank (Spearman 0.87) but are about three times larger, or 0.4 times with the
+    double-counting step as documented. No setting of 32 (window upper bound 0.25 to 2 s, separation
+    0.05 to 2 s, either double-counting step) puts more than 21.4% of slices within 10% of the
+    table, even where the dandiset's events match the paper's.
+- kind: methods_unavailable
+  statement: Question for the authors. For "no preferred spatial relation between cells involved in
+    sequences" (Figure 4C, Figure S2), which distributions were compared (centroid positions of cells
+    in sequences against all cells, or distances between cells of the same sequence against all pair
+    distances), and was a test used? On the dandiset the first comparison finds no difference and the
+    second finds sequence pairs closer when pairs are pooled over sessions (medians 285 against 320
+    um) and not within sessions, unless the double-counting step removes repetitions as its comments
+    describe.
+- kind: paper_inconsistency
+  statement: The paper's Figure 4D table gives n.a. for the first spontaneous 10 min of Q 2022-09-15
+    and 13 sequences for the second, the 13 of Figure 4A, while the dandiset's spontaneous file of
+    that session lasts 10.05 min. Either more spontaneous recording was analysed than was deposited,
+    or the table's segment label is wrong.
+verifications:
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebooks with the conclusions and summaries
+    removed, the helper modules and the claims file. The verifier also read the paper, queried the
+    archive's asset metadata and tested the helpers on synthetic inputs.
+  results:
+  - claim: zenodo-descriptors-link
+    agrees: true
+    outcome: not_reproduced
+    reason: Only 86 of 313 matched cells (27.5%) have rate and amplitude within 1%, and per cell and
+      condition the rate agrees in only 40.9%, both under the 50% bar. Cell identity does match (93.8%
+      of centroids within 3 px); the descriptor values do not. The disagreement is never explained;
+      two U SMA sessions are far off (20 times for 2023-03-07 spontaneous, 3.8 and 0.042 times for
+      the 2023-03-14 files), which could mean mislabelled conditions or truncated events.
+    response: No change of outcome. The two sessions are now shown cell by cell, with the rank
+      correlation of the table's counts against the dandiset's for the same and the swapped condition.
+      They are not a swap (2023-03-07 task 0.975, spontaneous follows neither file; 2023-03-14 each
+      condition follows its own file); the dandiset has far fewer spontaneous events and a higher
+      amplitude in every cell, which points to a different event detection. Recorded in the notes and
+      the finding.
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Reading (i) gives 61/129/63/37/23, all within tolerance; reading (ii) fails for 4 of 5
+      sites. But the reading (i) counts are the row counts of the paper's own Zenodo table, not counts
+      taken from the dandiset, and were used even though the link claim failed; the only count the
+      dandiset yields by itself is reading (ii), and that fails.
+    response: No change of outcome, as the claims file's method C allows the table's first
+      occurrences. The notes and the notebook now say that reading (i) compares the paper's table with
+      its text and that reading (ii) is the only count the dandiset gives alone.
+  - claim: cells-tracked-18pct
+    agrees: true
+    outcome: blocked
+    reason: The Zenodo table lists each cell only at its first occurrence, and the dandiset has no
+      global cell IDs; the bound of 0.141 to 0.281 contains 0.18 but cannot decide the claim. Whether
+      PlaneSegmentation/id holds cross-session IDs was not printed.
+    response: The data check now opens all 45 files and prints the PlaneSegmentation ids and columns.
+      The ids are 0 to n-1 in every file and image_mask is the only column, so no cross-session id
+      exists. No change of outcome.
+  - claim: fig1d-rate-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Under every grouping and both FDR families q > 0.26. Reading D(ii) could not be run, so the
+      result rests on D(i), the Methods' first-session rule.
+    response: No change. The deviation already records that only D (i) could be run.
+  - claim: fig1e-ieicv-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Every reading gives q > 0.33. Same D(ii) caveat.
+    response: No change.
+  - claim: fig1f-amplitude-u-sma-spont-higher
+    agrees: true
+    outcome: reproduced
+    reason: U SMA n=44, p=0.0017, q=0.020 (family a) and 0.0068 (family b); the spontaneous median is
+      higher and higher in all 5 sessions. Two U SMA sessions differ strongly from the table; the
+      conclusion was judged safe, but it was not checked without them.
+    response: The test is now run without U SMA 2023-03-07 and 2023-03-14 (p = 0.0078 over 33 cells,
+      medians 3.272 and 3.123). No change of outcome.
+  - claim: fig1d-rate-m1-above-sma-u
+    agrees: true
+    outcome: reproduced
+    reason: Both conditions give p < 1e-5, uncorrected and corrected, with the M1 median about 10
+      times the SMA median.
+    response: The tests without the two U SMA sessions are added (p = 1.9e-05 and 2e-06). No change.
+  - claim: fig1f-amplitude-m1-above-sma-u-task
+    agrees: true
+    outcome: not_reproduced
+    reason: Task amplitude p=0.099 uncorrected, 0.198 corrected, though the M1 median is higher. The
+      paper's own Zenodo values give p=0.014, so the gap comes from the deposited events, which differ
+      from the paper's.
+    response: No change of outcome. Without the two U SMA sessions the task test gives p = 0.041
+      uncorrected and q = 0.082 corrected; this is shown and recorded in the notes, and the outcome
+      stays on all cells as the claims file's method has it.
+  - claim: fig2-q-sma-modulated-34pct
+    agrees: true
+    outcome: blocked
+    reason: No TTL or trial data and no raw traces; the archive's variableMeasured for all 45 assets
+      lists only ImagingPlane, OpticalChannel, PlaneSegmentation, ProcessingModule and OnePhotonSeries.
+      Cell 8 checks one file only. Whether the Zenodo aligned-activity record would allow a partial,
+      outside-data test of the classification was not checked.
+    response: The data check now opens all 45 files and lists the archive's variableMeasured. The
+      Zenodo record holds one table of the paper's z-scored trial windows (cell, trial, side,
+      alignment, 30 samples), listed in the notebook; the classification run on it gives 20 Q SMA
+      cells modulated with the chamber-wide FDR, 42 uncorrected, against 43. It is the paper's output,
+      not the dandiset's data, so it is shown as a check and the outcome stays blocked.
+  - claim: fig2c-q-sma-direction
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig2-q-sma-modulated-34pct.
+    response: The check on the Zenodo windows gives 14 direction-related and 6 not; outcome unchanged.
+  - claim: fig2-q-magnitude-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig2-q-sma-modulated-34pct.
+    response: No change.
+  - claim: figs1-u-sma-direction
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig2-q-sma-modulated-34pct.
+    response: The check on the Zenodo windows is added (5 and 6 modulated, all direction-related);
+      outcome unchanged.
+  - claim: figs1-u-m1-target-onset
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig2-q-sma-modulated-34pct.
+    response: The check on the Zenodo windows is added (6 modulated, 3 direction-related); outcome
+      unchanged.
+  - claim: figs1-u-m1-movement-onset
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig2-q-sma-modulated-34pct.
+    response: The check on the Zenodo windows is added (6 modulated, 3 direction-related); outcome
+      unchanged.
+  - claim: fig3-synchronized-pairs-exist
+    agrees: true
+    outcome: reproduced
+    reason: Every region and condition has sessions with |Z| > 1.96. The chance level is 0.05; SMA
+      task's median, 0.065, is barely above it, and several U SMA proportions are at or below it (0,
+      0.026, 0.044), so synchrony exists only in the sense the criterion asks for.
+    response: The notebook now lists the session-conditions at or below 0.05 (eight, all SMA), and the
+      notes and conclusion say so. No change of outcome.
+  - claim: fig3ab-synchrony-not-distance
+    agrees: true
+    outcome: reproduced
+    reason: Under both Pearson and Spearman there are U SMA and U M1 sessions with no significant
+      correlation in either condition.
+    response: No change.
+  - claim: fig3c-sync-no-condition-change
+    agrees: true
+    outcome: reproduced
+    reason: SMA p=0.151 and M1 p=0.219. The 10-shift SMA variant gives p=0.077, near the paper's 0.07;
+      the paper's own table gives 0.067. Each file is binned and shifted on its own and the bin counts
+      are 3 short of the Methods', but agreement with the paper's Jaccard table is good.
+    response: No change. The deviation already records the per-file binning.
+  - claim: fig4a-example-sequences-q
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading is within tolerance of 13/17. On the sessions it can be matched to, the port
+      finds about 3.1 times the paper's own Zenodo counts, or 0.4 times with the documented dedupe, and
+      neither matches the paper's outputs anywhere. The method readings in the claims file
+      (identify_sequences.m records no parameter values) may not include the paper's pipeline, so the
+      outcome reflects a method mismatch, not the data; on this evidence it could have been blocked as
+      methods_underspecified. A sweep of t2 and the separation rule against the Fig. 4D table would
+      show whether any parameter set reproduces the paper's pipeline.
+    response: Outcome changed to blocked, methods_underspecified. The sweep was run (32 settings on
+      the 56 slices of the table); none puts more than 21.4% of slices within 10% of the paper's
+      counts, and in the two slices where the dandiset's events match the paper's table no setting
+      gives the paper's counts. The point about the claims file's method S is added to
+      questions/001174.yaml. The double-counting step's MATLAB behaviour is left as described in
+      sequences.py.
+  - claim: fig4b-example-three-segments-q
+    agrees: true
+    outcome: not_reproduced
+    reason: The Zenodo table identifies the session as 2022-12-06 (8/13/9); no reading is within
+      tolerance (0 of 12). Same method-mismatch point as fig4a.
+    response: Outcome changed to blocked, methods_underspecified, for the reason given under
+      fig4a-example-sequences-q; over the sweep 2022-12-06 gives 4 to 331, 6 to 613 and 8 to 111.
+  - claim: fig4d-sequence-measures-vary
+    agrees: true
+    outcome: reproduced
+    reason: All 6 readings differ across segments and sites. The criterion is close to automatic, and
+      the values do not match the paper's table in scale.
+    response: No change; the notes already say so.
+  - claim: fig4c-sequence-cells-not-clustered
+    agrees: true
+    outcome: blocked
+    reason: Reading (i) finds no difference, reading (ii) finds a difference under every 0.05 s
+      reading, so the readings disagree. In reading (ii) pairs are pooled over all sessions, so
+      sessions with many sequence cells dominate and field-of-view geometry confounds the comparison;
+      a test within each session, or stratified by session, could find no difference, which would turn
+      blocked into reproduced. Reading (i) compares a subset with the set containing it, so p near 1
+      is nearly built in.
+    response: Reading (ii) is now tested within each session and stratified by session. With the
+      code's double-counting step no session differs and the stratified tests find nothing (p 0.33 or
+      above), so all readings agree; with the step as documented, the stratified tests find sequence
+      pairs closer under two of the three 0.05 s readings (p 0.0025 and 0.0105). As the detection
+      cannot be tied to the paper's (fig4a), the outcome stays blocked, with the reason rewritten.
+  - claim: histology-lens-placement
+    agrees: true
+    outcome: blocked
+    reason: The histology is on Zenodo, not in the dandiset, and judging it needs an anatomist's
+      reading. The notebook's reason, not_runnable, is not one of the protocol's reasons; the verifier
+      gives other.
+    response: blocked_by changed from not_runnable to other. The protocol does list not_runnable, but
+      for software that cannot be installed or run in time; here the data are public and readable and
+      what is missing is an anatomist's judgement, so other fits.
+  - claim: histology-gcamp-not-gabaergic
+    agrees: true
+    outcome: blocked
+    reason: Same reason as histology-lens-placement.
+    response: blocked_by changed from not_runnable to other.
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The second run, the full executed notebooks with their conclusions and summaries, the
+    helper modules, the attempt record, the claims file and the paper. The verifier could not see
+    identify_sequences.m, permfun.R or the protocol.
+  results:
+  - claim: zenodo-descriptors-link
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The finding of kind other says the one-frame intervals are
+      "consistent with events lost when they were put on the frame grid", but no output shows this
+      mechanism; cell 13 shows only that one-frame IEIs are rarer (3.9% against 11.9%). Cell 15's
+      weaker wording ("events missing from the dandiset's event arrays") is supported.
+    response: The finding now says only that some events of the paper's table are missing from the
+      dandiset's event arrays, as cell 15 does. No change of outcome.
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Round-1 point P1 is resolved; the notes and cell 18 now say that
+      reading (i) compares the paper's table with its text.
+    response: No change.
+  - claim: cells-tracked-18pct
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (metadata_insufficient). The roi_ids are now checked, 0..n-1 in
+      all 45 files.
+    response: No change.
+  - claim: fig1d-rate-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig1e-ieicv-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig1f-amplitude-u-sma-spont-higher
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. P2 is resolved; cell 14 shows the two U SMA sessions are not a
+      swap of conditions, and cell 36 reruns the test without them (p = 0.0078).
+    response: No change.
+  - claim: fig1d-rate-m1-above-sma-u
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Without the two U SMA sessions the rate tests give p = 1.9e-05
+      and 2e-06 (cell 36).
+    response: No change.
+  - claim: fig1f-amplitude-m1-above-sma-u-task
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome, which stands on the claims file's method. It is decided by two
+      U SMA sessions whose deposited events appear to come from a different event detection; without
+      them p = 0.041 uncorrected and q = 0.082, and a finding records this. The outcome reflects the
+      deposit, not the paper's analysis. Cell 40 and the notes say "Most of the gap comes from U SMA
+      2023-03-07 and 2023-03-14"; this holds for the SMA task median (3.193 falls to 3.133, against
+      the table's 3.124) but not for the p-value (0.099 falls to 0.041, against the table's 0.014,
+      less than half the gap on a log scale). The wording should say which measure it means.
+    response: Cell 40 and the notes now say that the two sessions account for most of the gap in the
+      SMA task median and for less than half of it in the p-value on a log scale, with the three
+      values of each. No change of outcome.
+  - claim: fig2-q-sma-modulated-34pct
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing). P3 is resolved; cell 8 opens all 45 files and
+      lists variableMeasured for all assets. Method Z run on the paper's own z-scored windows (cell
+      42) gives 20 modulated Q SMA cells against the paper's 43. This suggests the claims file's
+      method Z is not the paper's procedure; the claims are blocked anyway, but no finding or question
+      records the mismatch, and one should.
+    response: The mismatch is added to questions/001174.yaml as a question for a reader, covering the
+      six Figure 2 and Figure S1 claims, and the notes and the summary of the first notebook say so.
+      No change of outcome.
+  - claim: fig2c-q-sma-direction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing). On the paper's windows the class split is 14
+      direction-related and 6 not, against 32 and 11; as for fig2-q-sma-modulated-34pct, no finding or
+      question records the mismatch.
+    response: As for fig2-q-sma-modulated-34pct.
+  - claim: fig2-q-magnitude-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing).
+    response: No change; the question on method Z covers it.
+  - claim: figs1-u-sma-direction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing).
+    response: No change; the question on method Z covers it.
+  - claim: figs1-u-m1-target-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing). For U M1 at target onset method Z on the paper's
+      windows gives 6 modulated and 3 direction-related, against 4 and 0.
+    response: As for fig2-q-sma-modulated-34pct.
+  - claim: figs1-u-m1-movement-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing).
+    response: No change; the question on method Z covers it.
+  - claim: fig3-synchronized-pairs-exist
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. P9 is resolved; cells 47 and 48 list the eight SMA
+      session-conditions at or below 0.05. permfun.R (joined series or each part shifted) is still
+      unverified, but agreement with the paper's Jaccard table is good (r = 0.950). The summary of
+      the first notebook says the paper's Jaccard and Figure 4D tables count fewer cells than the
+      dandiset in four sessions; that holds for the Jaccard table, but the Figure 4D table has fewer
+      in three only (V 2023-03-09 has 11 in both), as the selection_undocumented finding states.
+    response: The summary now says four sessions for the Jaccard table and three for the Figure 4D
+      table, naming them. No change of outcome.
+  - claim: fig3ab-synchrony-not-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig3c-sync-no-condition-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4a-example-sequences-q
+    agrees: true
+    outcome: blocked
+    reason: On the sweep evidence agrees with methods_underspecified; in cell 13 no setting gives the
+      paper's own Figure 4D counts, even in the two task slices whose events match the paper's table.
+      However, the criterion's own rule gives not_reproduced when every reading fails. The notes
+      explain the departure, but the deviations do not list it as a departure from the criterion;
+      they should. The Figure 4D table gives n.a. for Q 2022-09-15's first spontaneous 10 min and 13
+      for its second, while the deposited spontaneous file lasts 10 min, so the spontaneous half may
+      not be testable on the dandiset at all; the paper_inconsistency finding records this. The
+      README's "about twenty-two minutes" for the sequences notebook does not match the printed
+      timings, which add up to about 26 minutes.
+    response: A deviation now records the departure from the criterion's rule, and the result cell
+      says so. The sequences notebook now prints the double-counting lines of identify_sequences.m.
+      The README gives the run time of the last run (915 s) and the earlier one (about 26 min). No
+      change of outcome.
+  - claim: fig4b-example-three-segments-q
+    agrees: true
+    outcome: blocked
+    reason: As for fig4a-example-sequences-q, the deviations should list blocking as a departure from
+      the criterion's rule, which gives not_reproduced when every reading fails.
+    response: The deviation and the result cell now say so. No change of outcome.
+  - claim: fig4d-sequence-measures-vary
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The summary of the sequences notebook lists Q 2022-10-03 and Q
+      2022-12-01 as sessions where the Figure 4D table counts fewer cells and leaves out V 2023-03-16
+      (table 13, dandiset 14); incomplete, not wrong.
+    response: The summary now names V 2023-03-16 as well. No change of outcome.
+  - claim: fig4c-sequence-cells-not-clustered
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Under the code's double-counting step, with the within-session and stratified
+      tests, every reading finds no difference; with the pooled test of reading (ii) the readings
+      disagree, so the claim is blocked under either test choice. The notes rest the blocking mainly
+      on the documented-dedupe variant and would be stronger if they said that the pooled and the
+      within-session test of reading (ii) disagree, and that the within-session test was chosen after
+      verification. The outcome turns on the double-counting step, and the verifier cannot see
+      identify_sequences.m to confirm that it removes nothing. If confirmed, and the within-session
+      test is accepted as the reading, every reading agrees and the claim would be reproduced; if the
+      step works as its comments describe, the stratified tests find sequence pairs closer and the
+      claim stays blocked.
+    response: The notes and the result cell now rest the blocking on the disagreement of the pooled
+      and within-session tests of reading (ii) under the code's step, say that the within-session
+      test was chosen after verification, and keep the detection's link to fig4a as a second reason.
+      The sequences notebook now downloads identify_sequences.m and prints the lines in question (DA
+      created by false(...), the test DA(...) == 2 and the assignment DA(...) = 2), so the step can be
+      checked. No change is proposed; the criterion leaves the test open, the pooled test is one of
+      its readings, and so the readings still disagree.
+  - claim: histology-lens-placement
+    agrees: true
+    outcome: blocked
+    reason: The verifier cannot see the protocol; other is reasonable for both histology claims.
+    response: No change.
+  - claim: histology-gcamp-not-gabaergic
+    agrees: true
+    outcome: blocked
+    reason: As histology-lens-placement, other is reasonable.
+    response: No change.
