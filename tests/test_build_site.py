@@ -227,6 +227,15 @@ def test_claims_checked_since_an_attempt_was_deprecated_count_as_read_again():
     assert new["claims"] == ("done", "read again") and new["check"] == ("done", "ready")
     assert old["attempt"][0] == new["attempt"][0] == "deprecated"
 
+
+def test_a_named_paper_the_manifest_has_not_checked_is_not_called_unnamed():
+    def paper(target):
+        data = {"targets": [{"key": "figshare:1", "label": "FIGSHARE:1", "name": "x", **target}], "attempts": [],
+                "pipeline": {"papers": {}, "questions": {}, "checks": {}}}
+        return site.pipeline_rows(data)[0]["state"]["paper"]
+    assert paper({"papers": ["10.1038/x"]}) == ("waiting", "not checked")
+    assert paper({"papers": []}) == ("waiting", "no paper named")
+
 def test_the_pipeline_has_a_row_per_target(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
