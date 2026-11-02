@@ -1,0 +1,679 @@
+schema_version: 2
+id: 001273-semenov-2025-01
+dataset:
+  archive: dandi
+  id: "001273"
+  version: 0.250805.1356
+  doi: 10.48324/dandi.001273/0.250805.1356
+paper: doi:10.1016/j.xcrp.2025.102660
+date: 2026-11-01
+entry: 001273-semenov-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41319240351
+outcomes:
+- claim: fig4-polarized-poles-face-electrodes
+  outcome: reproduced
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig4-polarized-poles-face-electrodes
+  assumed: true
+  notes: Tested on the 14 experiments whose session description names the electrode axis (January
+    19 and March 11). In 13 of 14 the extreme depolarized and hyperpolarized pixels of the soma lie
+    on opposite sides of its centroid with their separation within 45 degrees of the field axis
+    (median angle 13.8 degrees); the exception (cell 1 of March 11) is at 48.7 degrees. With the
+    axes swapped, 1 of 14 passes. In the 40 V experiments, 10 of 11 pass. The shape groups are not
+    in the dataset, so the majority is taken over all experiments with an axis (O4), not per
+    group. The polarity of the electrodes is not given, so which pole faced the cathode is not
+    tested. With the soma mask opened by a disc of radius 8 pixels, to trim neurite stumps the
+    threshold mask can take in, 12 of 14 pass (median angle 17.1 degrees). The neurite part is
+    reported, not judged; the 99th percentile of the absolute RATIO change outside the soma is
+    below that within it in 21 of 22 experiments.
+  deviations:
+  - The ROIs are not in the dataset. The extreme pixels are taken from the RATIO image rebuilt as
+    the Methods describe (Pulsed laser fluorescence microscopy, CONTROL, POLARIZED and RATIO
+    images, 12 x 12 pixel low-pass filter), within the soma, defined as the connected region of
+    the filtered CONTROL image brighter than halfway between the image median and the brightest
+    central pixel (a standard choice; the neuron was centred in the field, Methods, Sine wave and
+    square pulse stimulation). The centroid is that of the soma region.
+  - Assumed that "Up and Bottom" in the session description is the image's vertical axis and
+    "Right and Left" its horizontal axis. The files do not give the orientation of the camera
+    image relative to the stage; this is the plain reading of the description.
+  - The 8 January 17 experiments have "Electrode position not specified" and are left out.
+- claim: fig4-orientation-time-constants
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig4-orientation-time-constants
+  notes: The groups of Figure 4D and 4E (elongated parallel n = 3, elongated perpendicular n = 6,
+    random n = 10) are not in the dataset, and the paper judged shape and orientation by eye (O4).
+    The four January 19 cells were imaged on both electrode axes, but which axis was parallel to
+    each cell's long axis is not recorded. Their charging tau per axis is printed for reference
+    only.
+- claim: fig4-no-pole-difference
+  outcome: reproduced
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig4-no-pole-difference
+  notes: Two-sided paired t tests, cathodic against anodic, of |dFmax|, charging tau and
+    discharging tau. None of the 16 unscaled readings (ROI a and b, weighting none or 1/SEM^2,
+    discharge amplitude free or fixed, in both experiment sets) finds a difference at p < 0.05, and
+    none of the frame-scaled variants does. Main reading (all 22 experiments, ROI a, unweighted,
+    free amplitude) |dFmax| difference -2.36% (95% CI -6.92 to 2.21, p = 0.29, n = 15 pairs),
+    charging tau 0.35 us (-0.48 to 1.18, p = 0.38), discharging tau -0.03 us (n = 14). The
+    intervals are wide and, in set A, 7 to 10 of 22 experiments per reading lose a pair to a failed
+    fit, so the test has little power. The time constants do not differ under any variant (each
+    experiment's estimated onset, fits with tau beyond its window dropped, ROI a clipped to the
+    soma). The amplitude does in two variants. With fits whose tau exceeds its window dropped,
+    |dFmax| differs at p = 0.046 in 2 of 8 set A readings (n = 12). The |dF| over the last 0.5 us
+    of the pulse, which needs no fit and keeps all 22 experiments, is larger at the anodic pole in
+    set A (cathodic minus anodic -2.86%, p = 0.014, ROI a; -2.54%, p = 0.011, ROI b) but not in the
+    40 V set (p = 0.28 and 0.24); the difference grows with amplitude (-0.95% at 40 V, -14.82% and
+    -12.23% at 100 and 130 V, ROI a), and without the 100 and 130 V runs it is -1.79% (p = 0.048).
+    The criterion's quantity, the fitted |dFmax|, shows no difference under any of the header
+    readings (O1 to O3); only the window variant, which drops fits, gives p = 0.046 in 2 of its 8
+    set A readings. The outcome follows the criterion's quantity and readings. The absence of a
+    pole difference in amplitude is weak in set A, and depends on whether the 100 and 130 V runs
+    belong to the paper's 19 experiments, which the dataset does not say.
+  deviations:
+  - The test is run over the 22 experiments in the dataset (set A) and over the 15 at 40 V (set
+    B); the paper's 19 cannot be identified.
+  - Unscaled data only; the debris ROI used for scaling is not in the dataset (claims file, F2).
+  - ROIs rebuilt from the RATIO image under the claims file's readings O1 (a) and (b), within the
+    soma region described under fig4-polarized-poles-face-electrodes.
+  - Fits that fail or end at a bound (tau 0.005 or 50 us, amplitude 200%) are dropped, a standard
+    choice; the counts are printed. Fits are least squares in SciPy, not Origin 8.0.
+- claim: fig4-discharging-slower
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig4-discharging-slower
+  notes: The criterion needs the elongated parallel group for the exception (O4), which the
+    dataset does not label. Reading (a), all experiments and both poles, is shown for each
+    reading of the header. Its result depends on the reading. In set A, discharging minus
+    charging tau averages -0.09 to 1.25 us, with p from 0.0016 to 0.90; none reaches the
+    paper's p < 0.001.
+- claim: fig4-pooled-time-constants
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig4-pooled-time-constants
+  measured:
+  - 0.87
+  - 1.62
+  - 0.69
+  - 2.22
+  notes: Means over experiment fits, all 22 experiments, unscaled. Under no reading of O1 to O3, in
+    either experiment set, are all four within the paper's SEMs. In set A the cathodic charging
+    means are 0.65 to 1.01 us (0.7 plus or minus 0.08), the cathodic discharging means are 1.37
+    to 4.20 us (0.91 plus or minus 0.08), the anodic charging means are 0.62 to 2.28 us (0.65 plus
+    or minus 0.05), and the anodic discharging means are 1.32 to 2.22 us (0.8 plus or minus 0.07).
+    The measured values are from reading ROI a, unweighted, free amplitude. The medians over
+    experiments are lower (cathodic discharging 1.02 to 1.46 us). The frame-scaled variant has
+    no row within tolerance either. The per-experiment fits are noisy (charging tau from 0.02 to
+    4.3 us at the cathodic pole), and 2 to 6 of 22 fits per pole and reading are dropped. Three
+    variants give the same outcome, with no reading in either set within the SEMs. With each
+    experiment's estimated onset the set A cathodic discharging means are 1.43 to 3.77 us; with
+    fits dropped whose tau exceeds the time it is fitted over (2 us charging, 5 us discharging)
+    they are 1.55 to 1.92 us, and the cathodic charging means fall to 0.41 to 0.50 us; with ROI a
+    clipped to the soma they are 1.36 to 1.58 us.
+  deviations:
+  - The ROIs and the debris ROI are not in the dataset. The polarized ROIs are rebuilt from the
+    RATIO image (O1 a and b), and the traces are unscaled (F2). The paper scaled to the debris ROI
+    to remove flash-to-flash laser fluctuations, which this attempt could not do; the
+    whole-frame scaling shown as a variant is not the paper's.
+  - 22 experiments in the dataset against the paper's 19; set A uses all 22, set B the 15 at 40 V.
+  - Dim frames (below 70% of the file's median frame mean, mostly the first image acquired) are
+    dropped, a standard choice; 204 of 28,000 frames.
+  - The time base is the Methods' (frame 20 is the pulse onset, 50 ns per frame); the onset
+    estimated from the data has median 19.9 frames (18.0 to 21.0), and the fits are repeated with
+    it as a variant.
+  - Fits are kept up to tau 50 us, a standard choice; values beyond the fitted window are poorly
+    constrained, so a variant drops them.
+- claim: fig4-full-charge-within-3us
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig4-full-charge-within-3us
+  notes: Reading (a) needs the elongated parallel group, which the dataset does not label (O4).
+    Reading (b) fails under every reading of the header (3 to 5 experiments per pole and reading
+    have 3 tau above 3 us; the largest cathodic charging tau is 4.29 us under ROI a, unweighted),
+    so it cannot stand in for (a). It fails too with charging fits whose tau exceeds the 2-us
+    pulse dropped (largest tau 1.64 to 1.97 us, 4 to 6 pole fits with 3 tau above 3 us). The claim also depends on fig4-pooled-time-constants, which
+    was not reproduced.
+- claim: fig1-pure-sine-excites-all
+  outcome: blocked
+  blocked_by: other
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere (DANDI:001032 to 001035). Not tested; the author run ran out of time
+    after the Figure 4 analysis. A metadata survey of those dandisets (survey_other_dandisets.ipynb)
+    finds 16 x 16 pixel image stacks at 3,086.4 frames/s with the stimulus given only in free
+    text, and 001034 holding the same 178 image arrays as 001032, byte for byte, with the same
+    session descriptions under other subject ids.
+- claim: fig2d-modulated-thresholds-higher
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere (DANDI:001032 to 001035). Not tested for lack of time, as for
+    fig1-pure-sine-excites-all, on which it depends.
+- claim: fig2-modulated-locks-to-beats
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere (DANDI:001032 to 001034, the "spindle" sessions). Not tested for lack of
+    time, as for fig1-pure-sine-excites-all, on which it depends.
+- claim: fig2c-pure-more-aps
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere (DANDI:001032 to 001034). Not tested for lack of time, as for
+    fig1-pure-sine-excites-all, on which it depends.
+- claim: fig3b-low-conductivity-halves-threshold
+  outcome: blocked
+  blocked_by: other
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere, but not found there. The metadata survey (survey_other_dandisets.ipynb)
+    finds every session description of DANDI:001032 to 001035 (803 files) naming the 140 mM NaCl
+    solution; the only sodium gluconate sessions are the 17 of 001030, all with a 2-s ramped
+    2-kHz stimulus. The NaGlu thresholds of Figure 3B do not appear to be deposited. Not tested
+    further for lack of time; the claim also depends on fig1-pure-sine-excites-all.
+- claim: fig3c-sustained-firing-2s
+  outcome: partially_reproduced
+  notebook: elsewhere_001030.ipynb
+  output: claim:fig3c-sustained-firing-2s
+  assumed: true
+  notes: DANDI:001030 version 0.240520.1924, 17 sessions of four cells (c5 to c8) at 1.0 to 2.3 V.
+    Judged per cell, bleach-corrected. In all four cells, under both AP readings, an intermediate
+    field fires in the last 250 ms of the stimulus and the AP count after the ramp rises with
+    field. Cell c7 meets the whole criterion under both readings; at 2.3 V it has no AP after the
+    ramp and a corrected mean dF of 6.66%. Cells c5 and c8 stop firing at their highest field (1
+    and 0 APs after the ramp under reading (a), 0 under (b)) but their mean dF there is 3.48% and
+    3.63%, below the 5% level. Cell c6 keeps firing at its highest field, 1.45 V (32 APs after the
+    ramp). So the criterion holds in 1 of 4 cells, and the firing part in all 4. With the first
+    run's detector it holds in none (reading (a) counts 197 noise peaks on the c7 plateau, reading
+    (b) one, at 1,707 ms), which also gives a partial result; without the bleaching correction it
+    holds in no cell (c7 at 2.3 V has a mean dF of 3.30%).
+  deviations:
+  - Data elsewhere, in DANDI:001030, as the claims file assigns from the dandiset's title.
+  - F is the mean over the whole 16 x 16 frame. At this resolution the soma the Methods name
+    ("emission intensity over the entire cell soma") cannot be outlined.
+  - The bleaching trace is the only session without APs during the stimulus under both
+    readings (c7 at 1.0 V), used for every cell (Methods, "corrected for bleaching by
+    subtracting a trace without APs"). Uncorrected results are shown too.
+  - The first 20 frames (6.4 ms) of each file are dropped, a standard choice. The first frame is
+    2.6 to 7.6 times brighter than the rest, and the next ones recover from it.
+  - The criterion does not say how cells are combined. Each cell's field series is judged on its
+    own, as Figure 3C shows one cell ("Sustained firing and depolarization in a neuron", Figure 3
+    legend). Assumed that the claim is reproduced when the criterion holds in most cells,
+    partially reproduced when it holds in at least one cell or its firing parts hold in most,
+    and not reproduced otherwise. The Results present the neuron of Figure 3C as what was
+    observed ("we observed sustained firing for the entire duration of the sine wave"), so a
+    typical cell should show it, which a single cell does not establish. The outcome rests on
+    this rule. Judged on any one cell the claim would be reproduced (c7); judged on most cells it
+    would not.
+  - AP detection runs on a 1-ms running mean of the trace; a reading (a) peak must stand 5% dF
+    above its surroundings, and peaks of both readings must be at least 5 ms apart. These are
+    standard choices (APs last about 10 ms, Methods). The first run used no smoothing and a
+    prominence of 2.5%, which counted noise on a depolarized plateau as APs; it is shown as a
+    variant.
+- claim: figs1-di8-anepps-control
+  outcome: not_reproduced
+  notebook: elsewhere_001272.ipynb
+  output: claim:figs1-di8-anepps-control
+  notes: DANDI:001272 version 0.250805.1358, 65 sessions of three neurons (the paper reports
+    eight). The criterion holds under none of the three AP readings. In no neuron does the
+    highest field end in depolarization at the criterion's 5% level; the largest mean inverted dF
+    over the last 100 ms of any session is 3.2%. Under reading (c), 5 SD of the pre-stimulus
+    trace, every neuron fires and first-AP latency falls with field in all 3; under reading (a)
+    the 5% level finds APs only in neuron 3_20240806 (4 sessions), and under reading (b) in no
+    neuron.
+    In 19 of 52 sessions with APs under reading (c) the first AP comes within 5 ms of the onset,
+    which may be an onset artefact; without those, latency falls in 2 of 3. No variant changes
+    the outcome. With the first run's detector, without the first 5 ms, or with the depolarization
+    level at 5 SD of each neuron's pre-stimulus trace (2.2 to 2.5%), the highest field ends in
+    depolarization in at most one neuron under any reading. The Di-8-ANEPPS signals are smaller
+    than the FluoVolt signals the 5% level comes from, so the failure may lie in that level and
+    not in the data; whether the level suits this dye is asked of a reader
+    (questions/001273.yaml).
+  deviations:
+  - Data elsewhere, in DANDI:001272, as the claims file assigns from the dandiset's title. Three
+    neurons where the paper reports eight.
+  - F is the mean over the whole 16 x 16 frame (the soma cannot be outlined), inverted, with the
+    first 20 frames dropped (standard choices).
+  - The stimulus timing (50 ms before, 250 ms during) is from the Methods ("The standard imaging
+    protocol started 50 ms before sine wave stimulation and continued for 250 ms during"); the
+    files do not give it.
+  - The criterion does not fix how "latency falls with field" or the window of "ends in
+    depolarization" are judged. Latency falls when the Spearman correlation of field and first-AP
+    latency over a neuron's sessions with APs is negative. A neuron ends in depolarization when
+    its highest-field sessions have no APs in the last 100 ms of the stimulus and mean dF above 5%
+    there, the window the claims file uses for 250-ms stimuli (fig2-modulated-locks-to-beats).
+    Both are standard choices; no window gives the 5% level, as no session reaches it over its
+    last 100 ms.
+  - AP detection runs on a 1-ms running mean, and a peak of reading (a) or (c) must stand above its
+    surroundings by the detection level (standard choices, as for fig3c-sustained-firing-2s). The
+    first run's detector is a variant.
+- claim: figs2-ttx-blocks-depolarization
+  outcome: blocked
+  blocked_by: other
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere (DANDI:001271, 287 sessions of 20 subject ids, 71 described as recorded
+    in the presence of tetrodotoxin and 216 without it; survey_other_dandisets.ipynb). Not tested
+    for lack of time.
+- claim: fig6-sine-less-than-pulse
+  outcome: blocked
+  blocked_by: other
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere (DANDI:001274, 232 files, 25.0 GB of strobe images;
+    survey_other_dandisets.ipynb). Not started for lack of time in the author run, as for
+    fig1-pure-sine-excites-all; its criterion also takes its readings from the claims file for
+    001274. The nine cells' 2-us, 257 V/cm pulse recordings are not in this dandiset. Its files
+    were recorded on 2024-01-17, 01-19 and 03-11, all name the three-electrode array of Figure 4,
+    and 001274's files date from May and August 2024 (reproduce_semenov_2025.ipynb, data check).
+- claim: fig5-sine-asymmetry
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere (DANDI:001274), as for fig6-sine-less-than-pulse. Not started for lack of
+    time.
+- claim: threshold-depolarization-estimate
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig6-sine-less-than-pulse and fig2d-modulated-thresholds-higher, neither tested
+    for lack of time.
+findings:
+- kind: metadata_insufficient
+  statement: The dandiset holds only the raw images. The ROIs over the de- and hyperpolarized
+    poles, the debris ROI used to scale out laser-flash fluctuations, and the shape and
+    orientation group of each experiment (elongated parallel, elongated perpendicular, random)
+    are not in it, so the group comparisons of Figure 4D and 4E cannot be made and the time
+    constants cannot be recomputed as the paper did.
+- kind: metadata_insufficient
+  statement: The electrode axis is given for the January 19 and March 11 experiments, but the
+    January 17 files say "Electrode position not specified", and no file says which electrode was
+    the cathode or how the camera image is oriented relative to the named directions.
+- kind: selection_undocumented
+  statement: The files form 22 runs of 7 or 8 replicates (one run of cell 1 of January 17 has 7)
+    plus six single files at 100 V; the paper reports 19 experiments. Nothing says which runs
+    the paper used or why the others were left out. The nominal amplitudes vary (40, 60, 80, 100
+    and 130 V) where the paper gives one field, 140 V/cm, and no file gives the field.
+- kind: metadata_insufficient
+  statement: Files recorded "in a backward manner" are stored in acquisition order, so their
+    frames run back in time; the data show this (the backward files match the forward ones only
+    once reversed), but the files do not say it beyond the stepping direction in prose.
+- kind: metadata_error
+  statement: The time base of the series (50 ns per frame, pulse 1 us after the first image) is
+    given only in prose. The ImageSeries rate is the camera's 6 Hz, and starting_time holds the
+    session start as a Unix time (about 1.7e9 s) where NWB expects seconds after the session
+    start.
+- kind: metadata_error
+  statement: The subjects (13) are cells identified by number and date, not animals, and their
+    age is P18D with reference birth, for neurons dissected at E18 and cultured about one week.
+- kind: paper_inconsistency
+  statement: The Results say images ran from 1 us before to 6 us after the pulse, 1,440 images per
+    experiment of eight replicates (180 each); the Methods say 160 images over 8 us. The files hold
+    160 images each, as the Methods say.
+- kind: other
+  statement: The first image acquired in 156 of 175 files of the experiments is about half as
+    bright as the rest (a failed or partial flash); 204 frames in all were dropped as dim.
+- kind: other
+  statement: The paper's other dandisets were surveyed from their metadata and images
+    (survey_other_dandisets.ipynb). DANDI:001034 holds the same 178 image arrays as DANDI:001032,
+    byte for byte, with the same session descriptions, under other subject ids (1_1 against
+    1_3, and so on for all 14). Every session description of 001032 to 001035 names the NaCl
+    solution, so the sodium gluconate thresholds of Figure 3B do not appear to be deposited.
+- kind: data_missing
+  statement: DANDI:001272, used here for Figure S1, holds three Di-8-ANEPPS neurons (subject ids
+    2, 3 and 4 of 2024-08-06) where the paper reports eight, and its files do not give the
+    stimulus timing.
+- kind: metadata_error
+  statement: In DANDI:001030, used here for Figure 3C, every file gives the species as Mus musculus,
+    where the paper used E18 rat hippocampal neurons; two of its 17 sessions (cell c5 at 1.5 and
+    2.0 V) end at 1.91 s, before the 2-s stimulus does.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The Methods do not give the size or placement of
+    the ROIs over the polarized membrane, how the fits were weighted in Origin 8.0, or whether the
+    discharge amplitude was a free parameter. This attempt rebuilt the ROIs from the RATIO image
+    (a 12 x 12 pixel square at the extreme pixel, or the pixels beyond half the extreme) and ran
+    every combination; the pooled time constants differ from the paper's under all of them. Could
+    the ROIs, the debris ROI and the list of the 19 experiments with their groups be deposited?
+inputs:
+- what: The 2-s, 2-kHz sine wave sessions in sodium gluconate solution of Figure 3C (claim
+    fig3c-sustained-firing-2s, data elsewhere).
+  source: doi:10.48324/dandi.001030/0.240520.1924
+- what: The Di-8-ANEPPS sessions of Figure S1 (claim figs1-di8-anepps-control, data elsewhere).
+  source: doi:10.48324/dandi.001272/0.250805.1358
+- what: Session metadata and image hashes of DANDI:001032, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001032/0.240527.1432
+- what: Session metadata and image hashes of DANDI:001033, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001033/0.240527.1432
+- what: Session metadata and image hashes of DANDI:001034, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001034/0.240527.1431
+- what: Session metadata and image hashes of DANDI:001035, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001035/0.240527.1432
+- what: Session metadata and image hashes of DANDI:001271, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001271/0.250805.1352
+- what: The asset listing and size of DANDI:001274, for the notes of fig6-sine-less-than-pulse
+    (survey_other_dandisets.ipynb and the data check of reproduce_semenov_2025.ipynb).
+  source: doi:10.48324/dandi.001274/0.250805.1401
+verifications:
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebooks)
+  reviewed: The handover of the first run, the three executed notebooks with the conclusions and
+    summaries removed, the helper modules strobe.py and fastimg.py, and the claims file. The
+    verifier also read the paper under paper/ and checked the archive's asset metadata and
+    session descriptions. The attempt record was not among its materials.
+  results:
+  - claim: fig4-polarized-poles-face-electrodes
+    agrees: true
+    outcome: reproduced
+    reason: In 13 of the 14 experiments with a stated electrode axis the extreme pixels lie on
+      opposite sides of the centroid with the angle to the field axis under 45 degrees (median
+      13.8); with the axes swapped only 1 of 14 pass, and 13 is a majority even if all 22 runs
+      are counted. The cathode/anode polarity cannot be checked because no file gives electrode
+      polarity. Shape groups are missing, so the claims file's fallback to all experiments
+      applies. The neurite part is reported only. Separately, the 12 x 12 square of ROI reading
+      (a) is not clipped to the cell mask, and several masks take in neurite segments, which can
+      move the extreme pixels; the 13 of 14 against 1 of 14 contrast suggests the effect is small.
+    response: No change of outcome. ROI (a) clipped to the soma is now a variant of the fits, and
+      a variant with the soma mask opened by a disc of radius 8 pixels (trimming neurite stumps)
+      recomputes the extreme pixels and the centroid; 12 of 14 pass (median 17.1 degrees). The
+      pixel counts of the soma and of every ROI are printed.
+  - claim: fig4-orientation-time-constants
+    agrees: true
+    outcome: blocked
+    reason: No shape or orientation labels. The dandiset description, the asset metadata of all
+      181 files (variableMeasured is empty) and every session description give amplitude,
+      stepping direction and electrode axis, nothing else. Under O4 the labels must come from the
+      dataset. The verifier could not open the HDF5 files and asked for the full group tree and
+      general fields of one file.
+    response: No change. The data check now prints every group and dataset of one file, with its
+      scalar and text fields and the series attributes; it holds one image series and no ROIs,
+      labels or notes.
+  - claim: fig4-no-pole-difference
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (weak). No p < 0.05 for |dFmax|, charging tau or discharging tau under any
+      of the 16 unscaled readings, in either experiment set, and the frame-scaled variant gives
+      the same. Only 7 to 15 pairs survive the fits (not 19), and the 95% intervals are wide, so
+      the test has little power. |dFmax| enters the paired test only when the charging fit
+      succeeded at both poles, and the hyperpolarized pole loses more fits. The fits also use only
+      the nominal onset, frame 20, where estimated onsets range from 18 to 21.
+    response: No change of outcome, as the criterion's quantity shows no difference under any of
+      its readings. Added variants with each experiment's estimated onset, with fits whose tau
+      exceeds its window dropped, with ROI (a) clipped to the soma, and with |dF| over the last
+      0.5 us of the pulse, which needs no fit and keeps all 22 experiments. The time constants
+      differ under none. The amplitude does in set A, in two variants (|dF| larger at the anodic
+      pole, p = 0.014 and 0.011; |dFmax| at p = 0.046 in 2 of 8 readings of the window variant),
+      not in the 40 V set; the notes and the conclusion now say so.
+  - claim: fig4-discharging-slower
+    agrees: true
+    outcome: blocked
+    reason: The elongated-parallel exception needs labels; readings (b) and (c) also need them to
+      exclude that group. The part that can be tested, reading (a), never reaches p < 0.001 under
+      any header reading (p from 0.0016 to 0.90), and the readings disagree with each other.
+    response: No change.
+  - claim: fig4-pooled-time-constants
+    agrees: true
+    outcome: not_reproduced
+    reason: all_within is False in all 16 unscaled readings and all 16 frame-scaled ones, in both
+      sets. Discharging tau is too large everywhere; cathodic means 1.37 to 4.20 us against 0.91
+      plus or minus 0.08, medians 1.02 to 1.82. Tau up to 50 us is accepted from a 2-us charging
+      window, so values like 4.29, 5.82 and 17.62 us are poorly constrained extrapolations that
+      inflate the pooled means; the pooled outcome stands either way, as the discharging medians
+      are also out of tolerance. The helper's docstring says the fits use the estimated onset, but
+      the notebook uses only the nominal frame 20; on synthetic traces a 1-frame shift moves
+      charging tau by about 15%. No debris ROI was attempted, though the RATIO images show
+      candidate spots, some of which polarize. Fit quality was shown for 4 of 22 experiments only.
+    response: No change of outcome. The docstring now says the fits use the nominal onset, and the
+      estimated onset is run as a variant. A variant drops fits whose tau exceeds the time it is
+      fitted over, and another clips ROI (a) to the soma; no reading of any variant is within the
+      SEMs (set A cathodic discharging means 1.43 to 3.77, 1.55 to 1.92 and 1.36 to 1.58 us).
+      Trace and fit panels are now shown for all 22 experiments under both ROI readings. No debris
+      ROI was attempted; the paper chose it by eye and candidate spots polarize, so an automatic
+      choice would be no better grounded than the whole-frame scaling; this is said in the
+      summary.
+  - claim: fig4-full-charge-within-3us
+    agrees: true
+    outcome: blocked
+    reason: Reading (a) needs the elongated-parallel group. Reading (b) fails under every reading
+      (3 x max tau is 5.5 to 52.9 us). That leaves the outcome partial or not reproduced, but (a)
+      decides between them and cannot be tested. The long, poorly constrained taus decide reading
+      (b).
+    response: No change. With charging fits whose tau exceeds the 2-us pulse dropped, reading (b)
+      still fails (largest tau 1.64 to 1.97 us, 4 to 6 pole fits with 3 tau above 3 us); this is
+      now printed and in the notes.
+  - claim: fig3c-sustained-firing-2s
+    agrees: false
+    outcome: not_reproduced
+    reason: Not reproduced, by the letter of the criterion. The block test fails for every cell
+      under both AP readings, while the other two parts (late firing at an intermediate field,
+      count rising with field) pass in all cells. In the figure, c7 at 2.3 V shows exactly the
+      block the paper describes, a plateau of about 7% from about 0.25 s to the end. It fails only
+      because of detector false positives on that plateau. Reading (a), a peak above 5% dF with
+      prominence 2.5, counts noise peaks as APs, 197 at c7 2.3 V, and reading (b) gives one false
+      detection at 1707 ms. A detector that does not count plateau noise would likely pass c7, so
+      the claim could plausibly be reproduced.
+    response: Kept partially_reproduced, with the disagreement recorded. The detector was revised
+      (a 1-ms running mean before detection, and a reading (a) peak must stand 5% above its
+      surroundings); the first run's detector is kept as a variant. With it c7 meets the whole
+      criterion under both readings (no AP after the ramp at 2.3 V, corrected mean dF 6.66%); c5
+      and c8 stop firing at their highest field but stay below 5% (3.48% and 3.63%), and c6 keeps
+      firing at its highest field. The criterion holds in 1 of 4 cells and its firing part in all
+      4, which is a partial result; with the first run's detector the firing part holds and the
+      block fails, also partial. Traces of every cell's highest field are now plotted with the APs
+      of both readings.
+  - claim: figs1-di8-anepps-control
+    agrees: true
+    outcome: not_reproduced
+    reason: ends_depolarized is 0 of 3 neurons under every reading, and the largest mean dF over
+      the last 100 ms is 3.2% against the 5% level. Under reading (b), neuron 4 never fires. The
+      dandiset holds 3 neurons; the paper reports 8. The test reuses the 5% dF level set for
+      FluoVolt, though the paper says Di-8-ANEPPS works by a different (electrochromic) mechanism
+      and the claims file notes the dye is less sensitive; the outcome rests on that level. In
+      reading (c) many first APs come 2 to 4 ms after onset, which looks like an onset artefact, so
+      the latency test under (c) means little.
+    response: No change of outcome. The question of the 5% level for this dye is added to
+      questions/001273.yaml for a reader; the claim is unchanged. Variants added, none of which
+      changes the outcome. Without first APs in the first 5 ms of reading (c) (19 of 52 sessions),
+      latency falls in 2 of 3 neurons. With the depolarization level at 5 SD of each neuron's
+      pre-stimulus trace (2.2 to 2.5%), at most one neuron ends depolarized under any reading. The
+      first run's detector is also shown. Every neuron's highest-field traces are plotted with
+      its lowest-field mean as the bleaching drift and the first 5 ms marked. With the revised
+      detector, readings (a) and (b) find APs only in neuron 3_20240806.
+  - claim: fig1-pure-sine-excites-all
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change.
+  - claim: fig2d-modulated-thresholds-higher
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change.
+  - claim: fig2-modulated-locks-to-beats
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change.
+  - claim: fig2c-pure-more-aps
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change.
+  - claim: fig3b-low-conductivity-halves-threshold
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change.
+  - claim: figs2-ttx-blocks-depolarization
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change.
+  - claim: fig5-sine-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt). DANDI:001273 holds only
+      2-us strobe recordings.
+    response: No change; the record gives too_large as the reason, as the first run did, and the
+      verifier gives other.
+  - claim: fig6-sine-less-than-pulse
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt). The claims file asked
+      whether the nine cells' 257 V/cm pulse recordings are here. They are not; 001273's cells were
+      recorded on 2024-01-17, 2024-01-19 and 2024-03-11 with the three-electrode array at nominal
+      40 to 130 V, while the 001274 subjects are dated May and August 2024. The notebook never
+      states this check.
+    response: No change of outcome. The data check now prints the recording dates of both
+      dandisets (none shared) and that every file here names the three-electrode array, and the
+      notes say so. The record gives too_large as the reason, where the verifier gives other.
+  - claim: threshold-depolarization-estimate
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other; data elsewhere, not tested in this attempt).
+    response: No change; the record gives too_large, through its dependence on
+      fig6-sine-less-than-pulse.
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebooks)
+  reviewed: The revision after round 1, with the full executed notebooks, the helper modules, the
+    claims file and the attempt record with the author's conclusions.
+  results:
+  - claim: fig4-polarized-poles-face-electrodes
+    agrees: true
+    outcome: reproduced
+    reason: The assumption that "Up and Bottom" means the image's vertical axis is stated and
+      reasonable, and decides the outcome; with the axes swapped, 1 of 14 pass. In each of the
+      four January 19 cells imaged on both axes the separation turns with the stated axis. The
+      opened-soma variant still passes 12 of 14, but the set of passing experiments changes
+      (1_20240119 hori goes to 78.3 degrees and 2_20240311 to 60.6 degrees). Individual
+      experiments are sensitive to the mask; the majority holds.
+    response: No change.
+  - claim: fig4-orientation-time-constants
+    agrees: true
+    outcome: blocked
+    reason: Cell 4 now shows the file tree, with no ROIs, no labels and no notes.
+    response: No change.
+  - claim: fig4-no-pole-difference
+    agrees: true
+    outcome: reproduced
+    reason: Yes, but weak. Under the criterion's readings 0 of 16 are significant. The fit-free
+      variant finds a larger anodic |dF| in set A (p = 0.014 for ROI a and 0.011 for ROI b, and
+      p = 0.048 without the 100 and 130 V runs), and the fitted |dFmax| reaches p = 0.046 in 2 of
+      8 readings of the window variant. The outcome holds only because the criterion names the
+      fitted |dFmax| and the header readings. It depends on whether the 100 to 130 V runs belong
+      to the paper's 19. The sentence that the fitted |dFmax| shows no difference under any of its
+      readings is true of the header readings, but the window variant, also on fitted |dFmax|,
+      gives p = 0.046.
+    response: No change of outcome. The sentence in the record and in the notebook's conclusion
+      now says the header readings (O1 to O3) find no difference and the window variant gives
+      p = 0.046 in 2 of its 8 set A readings, that the outcome follows the criterion's quantity
+      and readings, and that it depends on whether the 100 and 130 V runs belong to the paper's
+      19.
+  - claim: fig4-discharging-slower
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig4-pooled-time-constants
+    agrees: true
+    outcome: not_reproduced
+    reason: No row is within the SEMs under any reading or any variant.
+    response: No change.
+  - claim: fig4-full-charge-within-3us
+    agrees: true
+    outcome: blocked
+    reason: Reading (b) fails both with and without the window filter. Reading (a) cannot be
+      tested.
+    response: No change.
+  - claim: fig3c-sustained-firing-2s
+    agrees: true
+    outcome: partially_reproduced
+    reason: With the revised detector c7 meets the whole criterion and the firing parts hold in
+      all 4 cells; with the first-run detector the result is also partial. However, the record
+      states the per-cell judgement only as a deviation, not as `assumed`, and the outcome rests
+      on it. Judged "any cell" (Figure 3C shows one cell) the claim would be reproduced; judged
+      "most cells" it would not. This should be flagged as an assumption, with the rule stated.
+      c7 also passes only with the bleaching correction (6.66% corrected, 3.30% uncorrected).
+    response: No change of outcome. The outcome is now marked `assumed`, and a deviation states the
+      rule (reproduced when the criterion holds in most cells, partially reproduced when it holds
+      in at least one or its firing parts hold in most) with the passages behind it; the
+      notebook's conclusion and summary state it too. The bleaching dependence was already in the
+      notes.
+  - claim: figs1-di8-anepps-control
+    agrees: true
+    outcome: not_reproduced
+    reason: The outcome rests on the claims file's 5% level, not on any assumption by the author;
+      with a 5 SD level one neuron ends depolarized, still not a majority. The notes say that
+      under readings (a) and (b) the 5% level finds APs only in neuron 3_20240806 (4 sessions
+      under a, none under b); under (b) no neuron fires, so "only in neuron 3" is true of (a)
+      alone.
+    response: No change of outcome; the reader question on the 5% level stands. The sentence in the
+      record and in the notebook's conclusion now says reading (a) finds APs only in neuron
+      3_20240806 and reading (b) in no neuron.
+  - claim: fig1-pure-sine-excites-all
+    agrees: true
+    outcome: blocked
+    reason: The 16 x 16 stacks at 3,086.4 frames/s, 001034 as a byte-for-byte copy of 001032, the
+      250-ms sessions all in NaCl and the 287 sessions with 71 TTX in 001271 come from a survey
+      that is not in any notebook, so none of it can be checked against outputs.
+    response: No change of outcome. A new notebook, survey_other_dandisets.ipynb, reads every file
+      of 001030, 001032 to 001035 and 001271 and prints these facts. It confirms them, with one
+      correction of wording; the session descriptions of 001035 give no stimulus duration, so the
+      notes now say every session of 001032 to 001035 names the NaCl solution.
+  - claim: fig2d-modulated-thresholds-higher
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig2-modulated-locks-to-beats
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig2c-pure-more-aps
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig3b-low-conductivity-halves-threshold
+    agrees: true
+    outcome: blocked
+    reason: The survey behind the notes is not in any notebook (as for fig1-pure-sine-excites-all).
+    response: No change of outcome; the survey is now in survey_other_dandisets.ipynb, which the
+      notes cite.
+  - claim: figs2-ttx-blocks-depolarization
+    agrees: true
+    outcome: blocked
+    reason: The survey behind the notes is not in any notebook (as for fig1-pure-sine-excites-all).
+    response: No change of outcome; survey_other_dandisets.ipynb prints the 287 sessions, 20 subject
+      ids and 71 sessions with tetrodotoxin.
+  - claim: fig5-sine-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: Outcome yes, reason no. I would still give `other`. The stated reason is the time left
+      in the run, the same reason as for fig1, not the size of the data.
+    response: blocked_by changed from too_large to other, as the verifier gives; the outcome stays
+      blocked.
+  - claim: fig6-sine-less-than-pulse
+    agrees: true
+    outcome: blocked
+    reason: Outcome yes, reason no; `blocked_by` should be `other`, as the stated reason is the time
+      left in the run. The notes' "Streaming the 10.6 GB of this dandiset took 1,115 s" is not
+      printed; the notebook prints 232 s for listing and 1195 s for loading and reducing, and
+      neither 10.6 GB, 1,115 s nor the 25.0 GB of 001274 appears in any output.
+    response: blocked_by changed to other. The timing and its extrapolation are removed from the
+      notes, which now give the reason as lack of time; the sizes of 001273 (10.6 GB) and 001274
+      (25.0 GB) are printed by survey_other_dandisets.ipynb.
+  - claim: threshold-depolarization-estimate
+    agrees: true
+    outcome: blocked
+    reason: Outcome yes, reason no; `blocked_by` should be `other`.
+    response: blocked_by changed to other.
