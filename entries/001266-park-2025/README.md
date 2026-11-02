@@ -17,7 +17,7 @@ a figure panel. The pooled samples behind most of the paper's statistics are not
 | Fig. 3: dSpikes never start in the dendrites | Not reproduced |
 | Fig. 3: two motifs, independent of stimulus location | Not reproduced |
 | Fig. 3e: soma stimulation, 6 of 54 third-bAP dSpikes | Not reproduced |
-| Fig. 3d: distal stimulation, 35 of 54 first-bAP dSpikes | Reproduced, on an assumption (a change to blocked, methods underspecified, is proposed) |
+| Fig. 3d: distal stimulation, 35 of 54 first-bAP dSpikes | Blocked: methods underspecified |
 | Fig. 3f: soma plus distal, third-bAP dSpike in 54 of 54 | Not reproduced |
 | Fig. 3: dSpikes need 15 ms of distal depolarization | Not reproduced |
 | Fig. S7b: first components hold 96% of the variance | Blocked: methods underspecified |
@@ -45,7 +45,7 @@ The files hold no regions, structural images, stimulus masks or pixel size, so t
 along the apical trunk are found on each movie's mean image, and distances use the Methods' 0.65 µm
 per pixel. The paper set its spike and dSpike thresholds by hand. The dSpike threshold follows the
 claims file's rule (a trough of the amplitude histogram). The somatic threshold departs from the
-claims file's 5 s.d. for the Fig. 3 counts, where 4 s.d. is assumed and 5 s.d. shown, and several
+claims file's 5 s.d. for the Fig. 3 counts in the soma and D4+soma files, where 4 s.d. is assumed and 5 s.d. shown, and several
 outcomes depend on these choices (see the notebook). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/001266-park-2025-01.yaml`](../../attempts/001266-park-2025-01.yaml).

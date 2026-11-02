@@ -215,17 +215,20 @@ outcomes:
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - The soma file of the Fig. 3 neuron (index entry branch_stim (Fig.3), file soma).
 - claim: fig3d-distal-first-bap
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_park_2025.ipynb
   output: claim:fig3d-distal-first-bap
-  measured: 33
-  notes: The file whose totals match the legend's D2 is the file named D4 (84 to 88 bAPs, legend 84). Its first bAP carries
-    a dSpike in 33 (median filter) and 32 (Butterworth) of 54 trials with 4 s.d., within 35 ± 3.5; with the region cut at
-    400 µm, 34 in both. With the claims file's 5 s.d. the counts are 32 and 31, the Butterworth one just outside the tolerance
-    (33 in both between 300 and 400 µm), so the outcome rests on the 4 s.d. threshold. The criterion counts under the reading
-    whose totals match the legend, and in this file that is 5 s.d. (84 bAPs in both filter readings, against 85 to 88 at 4
-    s.d.), where the filter readings disagree; a change to blocked is proposed below. The file named D2 gives 0 to 3. The claims file's statement that the somatic
-    threshold cannot change the outcome (header, item 4) is asked of a reader in questions/001266.yaml.
+  measured: 32
+  notes: The file whose totals match the legend's D2 is the file named D4. The criterion counts under the reading whose totals
+    match the legend, and in this file that is the claims file's 5 s.d. somatic threshold, which gives the legend's 84 bAPs
+    exactly under both filters (4 s.d. gives 85 to 88). At 5 s.d. and beyond 300 µm the first bAP carries a dSpike in 32
+    (median filter) and 31 (Butterworth) of 54 trials, against 35 ± 3.5, so the filter readings disagree and the claim is
+    methods_underspecified. The Butterworth count is one trial outside the tolerance and rests on the dSpike threshold rule,
+    so a slightly different trough could move it by one. Other readings, shown and not used for the outcome; with 4 s.d. the
+    counts are 33 and 32 (34 in both with the region cut at 400 µm), and at 5 s.d. between 300 and 400 µm 33 in both. The
+    file named D2 gives 0 to 3. The claims file's statement that the somatic threshold cannot change the outcome (header,
+    item 4) is asked of a reader in questions/001266.yaml.
   deviations:
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
@@ -244,17 +247,6 @@ outcomes:
     the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
-  assumed: true
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The criterion counts under the reading whose totals match the legend. In file D4 that is the claims file's 5 s.d.
-      somatic threshold, which gives the legend's 84 bAPs exactly in both filter readings (4 s.d. gives 85 to 88; notebook,
-      the fig3d table under claim:fig3d-distal-first-bap). At 5 s.d. and beyond 300 µm the median filter gives 32 of 54 first
-      bAPs with a dSpike, within 35 ± 3.5, and the Butterworth filter 31, outside it, so the filter readings disagree. The
-      4 s.d. threshold the outcome rests on does not give the legend's totals in this file, nor in the soma and D4+soma files
-      (161 to 165 against 167, and 167 against 170), so it has no better support than 5 s.d. here, and the paper does not
-      say which filter it used. The readings give different outcomes and no choice between them is defensible.
 - claim: fig3f-soma-plus-distal
   outcome: not_reproduced
   notebook: reproduce_park_2025.ipynb
@@ -1490,3 +1482,26 @@ verifications:
     reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
       "for lack of time"; this does not change any blocked outcome (B4).
     response: No change.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig3d-distal-first-bap) and the analysis behind it in the executed
+    notebook, with the claims file and the attempt record. Report in transcripts/001266/verifier-3-report.md.
+  results:
+  - claim: fig3d-distal-first-bap
+    agrees: true
+    outcome: blocked
+    reason: 'Agree; blocked (methods_underspecified). The claims file''s choices (5 s.d., beyond 300 µm) give exactly the
+      legend''s 84 bAPs in file D4, so D4 is the reading whose totals match. There the first bAP carries a dSpike in 32 of
+      54 trials with the median filter and 31 of 54 with the Butterworth; 32 is inside 35 ± 3.5 and 31 is outside. The filter
+      is an open method detail with two readings, and the header''s Readings rule says the outcome is methods_underspecified
+      when they give different outcomes. The change goes against the author''s interest: it drops the 4 s.d. deviation that
+      gave a pass under both filters and does not adopt the 300 to 400 µm variant. At 4 s.d. none of the three files matches
+      the legend''s totals. The Butterworth fail is one trial past the tolerance and rests on the author''s dSpike threshold
+      rule, so the result is close to the boundary either way, which supports underspecified.'
+    response: 'Outcome changed from reproduced to blocked (methods_underspecified) as proposed. The notes, the notebook''s
+      conclusion and summary and the README now give the 5 s.d. counts as the ones the outcome rests on and say that the
+      Butterworth count is one trial from the tolerance. The header''s statement that the somatic threshold cannot
+      change the outcome is already asked of a reader in questions/001266.yaml. The criterion''s matching reading was written
+      to choose between files D2 and D4, and the attempt also used it to choose the threshold; as the verifier says, this
+      makes no difference here, since 5 s.d. is the claims file''s standard choice.'
