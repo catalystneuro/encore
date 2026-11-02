@@ -1,0 +1,1250 @@
+schema_version: 2
+id: 001361-sosa-2025-01
+dataset:
+  archive: dandi
+  id: '001361'
+  version: 0.251124.0550
+  doi: 10.48324/dandi.001361/0.251124.0550
+paper: doi:10.1038/s41593-025-01985-4
+date: '2026-11-02'
+entry: 001361-sosa-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41405101564
+inputs:
+- what: The time-warping package affinewarp (PiecewiseWarping), which the paper names for its time warp
+    models; software only, no data.
+  source: https://github.com/ahwillia/affinewarp at commit 23f9e643d2e74ad930ef283311c2c14c585eb6b9
+outcomes:
+- claim: fig1h-lick-ratio-improves
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig1h-lick-ratio-improves
+  notes: 'Reading (b), the mean over switch days of the last minus the first post-switch block, is positive
+    in 11 of 11 mice. Retention holds: the mean ratio over the first block of the following day is above
+    0 in 11 of 11 mice. Reading (a), improvement on every switch day, holds in 8 of 11 mice (74 of 77
+    mouse-days). The mean ratio rises from 0.093 in the first post-switch block to 0.650 in the last.
+    The criterion is met under reading (b).'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - Trials with lick-sensor errors were removed (81 trials, the paper's count). Days without a next day
+    (day 14) have no retention value.
+- claim: place-cell-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:place-cell-fraction
+  measured:
+  - 577.1
+  - 969.5
+  - 60.0
+  notes: Over the 77 switch sessions there are 577.1 +/- 331.0 place cells of 969.5 +/- 482.1 cells imaged,
+    60.0 +/- 16.1%. The cell count is within tolerance; the place-cell count (459 +/- 45.9) and the fraction
+    (48.5 +/- 4.85) are not. The variant over per-mouse means gives the same values, because all mice
+    have seven switch days. On the files' own deconvolved series the fraction is 66.8 +/- 25.0%. On average
+    41.3% of cells are significant before the switch and 46.7% after.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: remap-category-fractions
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:remap-category-fractions
+  measured:
+  - 22.7
+  - 8.6
+  - 4.9
+  - 4.8
+  - 17.9
+  notes: 'Over 66 within-environment mouse-days, under the Methods'' reading (a): TR 22.7 +/- 8.1, disappearing
+    8.6 +/- 5.9, appearing 4.9 +/- 3.2, near reward 4.8 +/- 3.1 and far 17.9 +/- 4.2% of place cells.
+    TR and near are within tolerance; the other three are not. Under the code''s reading (b), with RR
+    removed from every category, near falls to 1.2% and far to 13.9%, and only TR is within tolerance.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: ed2cd-switch-remapping-intermediate
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed2cd-switch-remapping-intermediate
+  notes: Per-mouse means of fractions of place cells significant in both sets, with logit paired t-tests
+    and Holm correction within each category. All other remapping is ordered stay 0.268 < within 0.408
+    < across 0.587 (t = -8.3, -16.3, -6.4; Holm p 1.7e-5, 4.6e-8, 8.2e-5). The diagonal is ordered stay
+    0.535 > within 0.491 > across 0.300 (t = 2.4, 10.1, 6.1; Holm p 0.04, 4.5e-6, 2.4e-4). The code's
+    band gives the same order (largest p 0.048).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - m11 has five stay days (no days 1 and 2).
+- claim: ed2f-teleport-distance
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed2f-teleport-distance
+  measured:
+  - 6.1
+  - 6.8
+  - 6762
+  notes: Of 6,762 RR cells, 6.1% have a significant Spearman correlation between the teleport distance
+    after a trial and the next trial's peak error before the switch, and 6.8% after. Both are within tolerance
+    (6.7 +/- 0.67 and 7.5 +/- 0.75). The pooled RR count, 6,762, is outside the tolerance of 5,979 +/-
+    598. The criterion's values are the two percentages.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+  - Per-trial peaks are the maxima of the trial's circular dF/F map (2pi/45 bins).
+- claim: fig2e-rr-remapping-above-chance
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig2e-rr-remapping-above-chance
+  measured:
+  - 1465
+  - 1500
+  notes: On day 3, 8 of the 11 bins within 0.698 rad of zero exceed the shuffle's 95th percentile, and
+    the above-chance fraction is 0.158 (0.137 with the code's bins). The remapping cells pooled over mice
+    number 1,465 on day 3 and 1,500 on day 14, outside the tolerances of 1,082 and 1,153. The criterion
+    is met.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: fig2h-rr-remapping-grows
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig2h-rr-remapping-grows
+  notes: The pooled above-chance fraction over switches 1 to 7 is 0.158, 0.175, 0.167, 0.159, 0.235, 0.251
+    and 0.257. The linear regression slope is 0.0184 per switch (p = 0.0084; 0.0179, p = 0.010 with the
+    code's bins). The per-mouse logit mixed model has slope 0.153 (p = 0.0027; 70 mouse-days, 7 at 0 dropped).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: fig2eg-mean-rr-position-after-reward
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig2eg-mean-rr-position-after-reward
+  measured:
+  - 0.385
+  - 0.321
+  - 676
+  - 850
+  notes: Day 3, circular mean 0.385 rad (95% CI 0.261 to 0.508), n = 676. Day 14, 0.321 rad (0.238 to
+    0.404), n = 850. Both means are within tolerance and both intervals exclude zero. The cell counts
+    are outside the tolerances of 453 and 645.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: fig2i-rr-remapping-spans-track
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig2i-rr-remapping-spans-track
+  notes: On day 14 the above-chance fraction is positive at every exclusion distance from 10 to 190 cm
+    (0.231 at 10 cm, 0.016 to 0.025 from 130 to 190 cm). On day 3 it is positive up to 170 cm and at 190
+    cm, with 0.000 at 180 cm.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: ed2jl-rr-remapping-beyond-50cm
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed2jl-rr-remapping-beyond-50cm
+  measured:
+  - 1197
+  - 1060
+  - 1.315
+  - 1.36
+  notes: With the 50 cm exclusion, day 3 has 1,197 cells, above-chance fraction 0.044, and circular mean
+    1.315 rad (0.934 to 1.696, n 424). Day 14 has 1,060 cells, fraction 0.077, and mean 1.360 rad (1.076
+    to 1.645, n 426). The fractions are positive, the means are within tolerance and the intervals exclude
+    zero. The cell counts after exclusion are outside the tolerances of 888 and 795.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: ed2m-more-fields-after-reward
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed2m-more-fields-after-reward
+  notes: Day 3, the fraction of RR cells after the zone start exceeds 0.5 at p < 0.00263 for every exclusion
+    from 10 to 80 cm (0.661 to 0.589). Day 14, it does to 60 cm (0.580, p = 0.00078), but not at 70 cm
+    (0.568, p = 0.0071) or 80 cm (0.562, p = 0.023). The criterion holds on day 3 only.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: ed2n-far-remapping-no-increase
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed2n-far-remapping-no-increase
+  notes: Beyond 50 cm the above-chance fraction by switch is 0.043, 0.063, 0.031, 0.033, 0.057, 0.065
+    and 0.076. The linear regression slope is 0.0047 (p = 0.175), so the paper's test finds no increase.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: rr-cell-fractions
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:rr-cell-fractions
+  measured:
+  - 14.6
+  - 12.8
+  - 17.1
+  - 14.3
+  - 34.4
+  notes: 'With the Methods'' 2pi/45 bins and 1-45 bin shuffle: RR 14.6 +/- 4.8% over all switch days (just
+    under the 14.67 lower limit), day 3 12.8 +/- 3.3 (within), day 14 17.1 +/- 4.3 (outside 17.46). Non-RR
+    remapping is 14.3 +/- 3.9 over 7 days and 13.9 +/- 3.4 over 6 days, outside 11.9 +/- 1.19. Unclassified
+    is 34.4 and 34.1%, within 31.4 +/- 3.14. With the code''s 2pi/44 bins and 1-44 shuffle, RR is 14.7,
+    12.8 and 17.5%, all within tolerance, and non-RR remapping is still outside (14.3, 13.9). The values
+    do not all match under either reading.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: ed2pq-rr-reward-aligned-correlation
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed2pq-rr-reward-aligned-correlation
+  measured:
+  - 6762
+  - 9442
+  - 6417
+  notes: 'Reward-aligned correlation: RR median 0.637 against TR -0.129 (Z = 100.1) and against non-RR
+    -0.039 (Z = 82.3). Track correlation: TR 0.772 against RR -0.067 (Z = 102.9) and against non-RR 0.148
+    (Z = 87.0). All p are below 1e-300. The pooled counts (RR 6,762, TR 9,442, non-RR 6,417) are outside
+    the tolerances of 5,979, 7,027 and 4,314.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+- claim: fig3b-decode-rr-position
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_sosa_2025.ipynb
+  notes: 'The decoder runs on each session''s activity time series, which this entry reduces to binned
+    maps as it loads; it would need its own pass over the files (about 30 minutes). The paper''s procedure
+    is 77 sessions x 3 populations x (1 + 100 shuffles) x 10 folds, about 233,000 fits of the circular
+    regression of decode.py (up to 100 EM iterations each), before testing after the switch. That is more
+    than an hour of fitting at about 20 ms per fit, beyond the time left in this run and, with the rest
+    of the analysis, the notebook''s limit. Nothing in the files prevents it: activity, position, speed
+    and the zones are there.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: fig3c-decode-range
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_sosa_2025.ipynb
+  notes: Depends on fig3b-decode-rr-position, which was not run (too large for this run).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: fig4c-rr-sequences-preserved
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4c-rr-sequences-preserved
+  measured: 75
+  notes: RR sequences exceed the identity shuffle (P < 0.05) in 75 of 77 sessions; none has fewer than
+    5 cells. Median rho is 0.73 (0.08 to 0.93), with a median of 68 cells. The two exceptions are m13
+    on days 5 and 7.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: fig4f-tr-sequences-preserved
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4f-tr-sequences-preserved
+  measured: 76
+  notes: TR sequences exceed the shuffle in 76 of 77 sessions (median rho 0.86); the exception is m13
+    on day 8 (12 cells, P = 0.073).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: fig4i-nonrr-sequences-not-preserved
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4i-nonrr-sequences-not-preserved
+  measured: 62
+  notes: 62 of 77 non-RR sequences do not exceed the shuffle (median rho -0.04), within 61 +/- 6.1.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: ed5a-tr-fewer-across-environments
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed5a-tr-fewer-across-environments
+  measured:
+  - 10.5
+  - 22.7
+  notes: 'TR fraction (RR excluded): Friedman Q = 26.8, p = 0.00016. Day 8 has a lower median than every
+    other day; against days 3, 5, 7, 12 and 14 the Holm p is 0.039 to 0.047, but against day 10 it is
+    0.073. Day 8 is 10.5 +/- 3.5% (outside 8.4 +/- 0.84); the 66 within-environment mouse-days give 22.7
+    +/- 8.1% (within 21.4 +/- 2.14).'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Holm correction over all 21 day pairs, as pingouin's pairwise tests do.
+- claim: ed5f-rr-no-decrease-across-environments
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed5f-rr-no-decrease-across-environments
+  notes: 'RR fraction: Friedman Q = 12.8, p = 0.046. The day 8 median is 15.2%, against 9.3 to 17.3% on
+    other days. No post hoc comparison shows day 8 lower (all Holm p >= 0.26), so the paper''s test finds
+    no decrease.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: fig4j-rr-overrepresent-reward
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4j-rr-overrepresent-reward
+  measured:
+  - -50
+  - 90
+  notes: Averaged over the seven switch days, the bins above the uniform level (0.0032 per bin) form a
+    region from 50 cm before to 90 cm after the zone start (outer bin edges). The densest bin is 10 to
+    20 cm after the start. The lower limit and the densest bin match; the upper limit is outside 70 +/-
+    10 cm. Read per day, no day has both limits within tolerance (lower -90 to -20, upper 40 to 110 cm).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Relative bins are taken so that bin 0 spans 0 to 10 cm after the zone start; on the 2pi/45 grid peaks
+    fall on these bins exactly.
+- claim: fig4m-rr-density-near-reward-grows
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4m-rr-density-near-reward-grows
+  notes: 'Near (within 50 cm) RR fraction of place cells: raw slope 0.0063 per switch, p = 3.6e-5; logit
+    0.091, p = 0.00019. Far: raw 0.0023, p = 0.083; logit 0.038, p = 0.062. It holds under both readings.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: fig4no-licking-speed-increase
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4no-licking-speed-increase
+  notes: 'Post-switch lick rate within 50 cm of the zone start: slope 0.148 Hz per switch, p = 0.00011.
+    Speed within 50 cm: 0.74 cm/s per switch, p = 0.012. Speed beyond 50 cm: 2.16, p = 3.3e-6. It holds
+    under both speed readings.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - Lick-sensor error trials removed.
+- claim: fig4p-lick-precision-sequence-precision
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4p-lick-precision-sequence-precision
+  notes: 'Reading (a), all licks of the trial set pooled: before the switch slope 0.350, r = 0.33, p =
+    0.0032; after 0.172, r = 0.23, p = 0.042 (77 sessions). Reading (b), the code''s per-trial variances:
+    before p = 0.00096, after p = 0.067. It holds under reading (a).'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: ed4hij-sequence-variance-decreases
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed4hij-sequence-variance-decreases
+  notes: 'Mixed models on switch index. RR circular variance (post-switch relative peaks): slope -0.0122,
+    p = 0.069, not significant. Post-switch lick variance: -0.030, p = 0.0032 (reading a); -0.027, p =
+    0.0018 (reading b). Mean RR position: -0.017, p = 0.50, no change. No mouse-day lacks RR cells, so
+    dropping them and filling with 0 give the same result.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - The variance of the RR distribution is taken from the post-switch relative peaks, as in Figure 4j
+    (assumption; the legend does not say which set).
+  assumed: true
+- claim: fig4qr-tr-track-ends
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig4qr-tr-track-ends
+  notes: Mean TR post-switch density within 50 cm of either track end is 0.0103 per bin, against a uniform
+    level of 0.0047 (0.0031 elsewhere). The fraction of place cells that are TR cells more than 50 cm
+    from both ends falls over switches (raw slope -0.0072, p = 0.0053; logit -0.075, p = 0.0098).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+- claim: ed4l-disappearing-decrease
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed4l-disappearing-decrease
+  notes: 'Mixed models of fractions of place cells by switch. Disappearing near reward: slope -0.0015,
+    p = 0.040. Disappearing far: -0.0029, p = 0.21. Appearing near p = 0.072 and far p = 0.26; non-RR
+    near p = 0.13 and far p = 0.063, so neither shows a significant change, as the paper''s test of absence
+    requires. The disappearing decrease holds near reward only.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Disappearing cells are placed by their pre-switch peak relative to the pre-switch zone, appearing
+    and non-RR cells by their post-switch peak (assumption; the legend does not say).
+  assumed: true
+- claim: ed5-teleport-fractions
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_sosa_2025.ipynb
+  notes: 'Not attempted in this run''s time. It needs place cells re-identified on bins that extend into
+    the teleport, from the time series of the sessions imaged through it; this entry reduces each session
+    to track maps as it loads. The data are there. The data check finds sessions without dark teleport
+    frames exactly where the Methods say imaging continued through the teleport: m11 to m14 on days 1,
+    7, 8 and 14, and m15 to m19 on day 1 and the switch days.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: fig5b-rr-remain-rr-increases
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig5b-rr-remain-rr-increases
+  notes: Of RR cells matched to the next switch day and a place cell there, the fraction RR on day B rises
+    from 0.209 (pair 1) to 0.292 (pair 6). Mixed model slope 0.0212 per pair, p = 0.0019 (65 mouse-pairs
+    with at least 5 cells; pooled 727 of 2,700).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: fig5d-nontr-to-rr-increases
+  outcome: not_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig5d-nontr-to-rr-increases
+  notes: 'Non-TR place cells (appearing, disappearing, non-RR; RR excluded) becoming RR: slope 0.0070
+    per pair, p = 0.137 (66 mouse-pairs; pooled 844 of 5,406; means by pair 0.120 to 0.172).'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: fig5f-nonpc-to-rr-increases
+  outcome: not_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig5f-nonpc-to-rr-increases
+  notes: 'Non-place cells becoming RR: slope 0.0058 per pair, p = 0.20 (pooled 764 of 5,352; means by
+    pair 0.116 to 0.158).'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: fig5h-tr-to-rr-constant
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig5h-tr-to-rr-constant
+  notes: 'TR cells becoming RR: slope 0.0025 per pair, p = 0.57; pooled 542 of 4,501 (12.0%). The paper''s
+    test finds no change.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: fig5i-rr-to-tr-decreases
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig5i-rr-to-tr-decreases
+  notes: 'RR cells becoming TR (no 5-cell minimum): slope -0.0164 per pair, p = 0.027; means by pair 0.246
+    to 0.169.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: fig5jkl-tr-no-recruitment
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig5jkl-tr-no-recruitment
+  notes: 'Becoming TR: from non-TR place cells, slope -0.0057 (p = 0.35); from non-place cells, -0.0039
+    (p = 0.52); TR remaining TR, 0.0021 (p = 0.79). None is positive at p < 0.05.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: ed6a-rr-near-reward-stable
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed6a-rr-near-reward-stable
+  measured:
+  - 3407
+  - 5217
+  notes: 'RR cells followed: 3,407; TR: 5,217, both outside the tolerances of 2,294 and 3,408. RR reward-relative
+    change: near 52.1 cm against far 86.0 cm (Z = -17.9, p = 1.9e-71); slope 0.286 cm per cm of day-A
+    distance (p = 4.3e-53). TR track change: near 98.0 against far 63.4 cm (Z = 14.8, p = 2.6e-49); slope
+    -0.206 (p = 1.0e-43). Both readings agree with the statement.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  - More place cells pass the spatial-information test than in the paper (60.0 against 48.5% of cells),
+    so pooled cell counts are above the paper's.
+  - Followed cells are day-A cells matched to day B, whatever their day-B class.
+  assumed: true
+- claim: ed6c-rr-shift-toward-reward
+  outcome: not_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed6c-rr-shift-toward-reward
+  measured: 577
+  notes: 'RR cells RR on both days with day-A relative peak within 80 cm: n = 577 (within 551 +/- 55).
+    The signed change against the day-A position has a negative slope that is not significant (-0.095,
+    r = -0.073, p = 0.080).'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: ed6-across-day-drift
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed6-across-day-drift
+  notes: 'Median across-day rho against the median within-day rho of fig4c and fig4f. RR: 0.266 for cells
+    followed regardless of day-B class (66 mouse-pairs) and 0.568 for cells RR on both days (43), against
+    0.726 within the day. TR: 0.231 (66) and 0.543 (57), against 0.857. Across-day values are lower under
+    both readings.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Cells are matched across days here; the files hold no matching. The Methods' IoU rule is applied after
+    shifting day B's ROIs by the rigid offset between the two days' mean images (phase correlation, largest
+    shift 17 pixels); the threshold per pair is the largest second-best IoU, so every kept match is a
+    mutual best match above every second-best one. 59% of day-A cells match (median over 66 mouse-pairs,
+    34 to 77%). The registration step is an assumption, as the paper's matching code (TwoPUtils) is not
+    public.
+  assumed: true
+- claim: ed7-no-anatomical-bias
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed7-no-anatomical-bias
+  measured:
+  - 2
+  - 0
+  notes: 'Rank-sum tests of RR against TR ROI centroids per mouse (planes apart for m17 and m18; 13 tests
+    per axis). At p < 0.0038, 2 tests are significant along the image row axis (m18 both planes, RR at
+    lower rows) and 0 along the column axis. That is within the limits (3 ML, 2 AP) whichever image axis
+    is ML. The depth part cannot be tested: the files hold no z-stack or per-ROI depth estimate. The claim
+    holds for the two axes tested.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - The files do not say which image axis is medio-lateral; both assignments are shown.
+- claim: fig6e-rr-prefer-reward
+  outcome: partially_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:fig6e-rr-prefer-reward
+  measured: 5
+  notes: 'Before the switch, 41 trial sets with the zone at A or B and at least three omissions are warped;
+    the days per mouse equal the legend''s exactly. Mice with a positive median index at p < 0.0045: 5
+    of 11 under reading (a) and 7 of 11 under reading (b), outside 9 +/- 1. The median is positive in
+    10 of 11 mice under both readings (m7 negative, -0.022 and -0.011, not significant). Cells per mouse
+    exceed the legend''s (for example m3 156 against 114). Runs made while preparing, before the warp''s
+    random generator was fixed, gave counts that varied by one or two mice; the notebook''s run is seeded
+    and repeats.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Omission trials are taken as unrewarded trials with licks inside the reward zone; the files flag rewards
+    but not omissions, so misses and omissions cannot otherwise be told apart (assumption). The trial
+    sets with at least three omissions this gives match the paper's days per mouse exactly (41 before
+    and 48 after the switch).
+  - The warp's random search runs in numba threads; it is run on one thread with its generator seeded
+    so that it repeats.
+  assumed: true
+- claim: ed8k-rr-prefer-reward-after-switch
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed8k-rr-prefer-reward-after-switch
+  measured: 8
+  notes: 'After the switch, 48 trial sets are warped, matching the legend''s days per mouse. Mice with
+    a positive median at p < 0.0045: 8 of 11 under both readings, within 9 +/- 1, and all 11 medians are
+    positive. Runs made while preparing, before the generator was fixed, varied by one mouse.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Omission trials are taken as unrewarded trials with licks inside the reward zone; the files flag rewards
+    but not omissions, so misses and omissions cannot otherwise be told apart (assumption). The trial
+    sets with at least three omissions this gives match the paper's days per mouse exactly (41 before
+    and 48 after the switch).
+  assumed: true
+- claim: ed8df-time-warp-speed-mse
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed8df-time-warp-speed-mse
+  notes: 'Before the switch, warping lowers the speed MSE in all 41 sets (median 141.5 to 39.3, Wilcoxon
+    p = 9.1e-13). Raw MSE after the switch exceeds before: 180.2 against 132.3 over the 18 sessions with
+    both sets warped (p = 0.00053), and 174.0 against 139.6 over all 77 sessions (p = 0.00041). The paper''s
+    n is 61 sessions; here 41 sets are warped before and 48 after.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - Omission trials are taken as unrewarded trials with licks inside the reward zone; the files flag rewards
+    but not omissions, so misses and omissions cannot otherwise be told apart (assumption). The trial
+    sets with at least three omissions this gives match the paper's days per mouse exactly (41 before
+    and 48 after the switch).
+  assumed: true
+- claim: glm-well-fit-cells
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_sosa_2025.ipynb
+  notes: The GLM (GLM_Tensorflow_2, group lasso over 11 values of lambda, fivefold cross-validation grouped
+    by trial, 85/15 held-out split) is fit on the time series of every place cell, about 44,000 here,
+    which this entry does not keep. It needs TensorFlow and many hours of fitting, beyond this run. The
+    inputs (activity, position, speed, licks, reward) are in the files.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: fig7de-glm-top-predictors
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_sosa_2025.ipynb
+  notes: Depends on glm-well-fit-cells, which was not run (too large for this run).
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: fig8e-rr-remap-precedes-behavior
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_sosa_2025.ipynb
+  notes: Not attempted in this run's time. The method needs the factorized k-means of lvl with speckled-holdout
+    model selection against rotation shuffles and sigmoid fits per session. The data it uses (per-trial
+    binned activity of RR cells, licks, speed) are in the files.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: ed10-appearing-remap-later
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_sosa_2025.ipynb
+  notes: Depends on fig8e-rr-remap-precedes-behavior, which was not attempted in this run's time.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+- claim: ed3d-single-field-increases
+  outcome: not_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed3d-single-field-increases
+  notes: Fraction of included cells with one field before and after, by switch 1 to 7. RR 0.279 to 0.256,
+    slope -0.0010, p = 0.81 (6,682 cells). TR 0.397 to 0.342, slope -0.0067, p = 0.24. Non-RR 0.220 to
+    0.202, slope -0.0014, p = 0.69. No subpopulation increases.
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Place fields, activity on a trial and centres of mass use the 10 cm binned deconvolved events, not
+    the raw unbinned events the Methods name (Place field definition; Formation lap identification). The
+    threshold for an active trial is the mean + 1 s.d. of the cell's binned activity over the trials of
+    the set, read from 'its mean +1 s.d. across the 30 trials' (assumption).
+  - Only place cells (significant SI before or after) are considered, as the per-trial maps are kept for
+    them.
+  assumed: true
+- claim: ed3fg-fields-remap-independently
+  outcome: not_reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed3fg-fields-remap-independently
+  measured:
+  - 103
+  - 153
+  notes: 'RR cells with exactly two fields before and after, field-offset correlations by day: day 3 n
+    = 103, rho 0.186, p = 0.058; day 5 n = 116, rho 0.267, p = 0.0068; day 7 0.084, p = 0.38; day 8 n
+    = 153, -0.066, p = 0.40; day 10 0.054, p = 0.53; day 12 -0.046, p = 0.64; day 14 n = 129, -0.187,
+    p = 0.036. Two days are significant. The two-field counts are 3 to 8 times the paper''s (31 on day
+    3, 20 on day 8), so the field detection here differs from the paper''s.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Place fields, activity on a trial and centres of mass use the 10 cm binned deconvolved events, not
+    the raw unbinned events the Methods name (Place field definition; Formation lap identification). The
+    threshold for an active trial is the mean + 1 s.d. of the cell's binned activity over the trials of
+    the set, read from 'its mean +1 s.d. across the 30 trials' (assumption).
+  - The p of the circular-circular correlation is the normal approximation of its test statistic (Jammalamadaka
+    and SenGupta), as the legend names no test.
+  assumed: true
+- claim: ed3mo-appearing-late-backward
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed3mo-appearing-late-backward
+  measured:
+  - 6328
+  - 2140
+  notes: 'Primary fields with a formation lap: appearing 2,140 (within 2,386 +/- 239) and RR 6,328 (outside
+    2,368). Median formation lap: appearing 6, RR 2, TR 1, non-RR 3. Median shift: appearing -6.1 cm,
+    RR -2.5, TR -0.5, non-RR -3.2. The formation-lap rank-sum Z against appearing is -23.4, -26.9 and
+    -12.8 (p < 1e-36), and the shift Z is 4.0, 8.9 and 3.9 (largest p 0.00011), all at the legend''s levels.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Place fields, activity on a trial and centres of mass use the 10 cm binned deconvolved events, not
+    the raw unbinned events the Methods name (Place field definition; Formation lap identification). The
+    threshold for an active trial is the mean + 1 s.d. of the cell's binned activity over the trials of
+    the set, read from 'its mean +1 s.d. across the 30 trials' (assumption).
+  assumed: true
+- claim: ed3p-shift-follows-reward-direction
+  outcome: reproduced
+  notebook: reproduce_sosa_2025.ipynb
+  output: claim:ed3p-shift-follows-reward-direction
+  notes: 'Backward against forward moves of the zone, median shifts: RR -5.5 against 0.6 cm (Z = -10.2),
+    TR -2.3 against 1.0 (Z = -8.2), non-RR -5.6 against -1.5 (Z = -6.4), appearing -10.3 against -3.3
+    (Z = -5.9). The permutation p over session labels is 0.0099 for each, the smallest 100 permutations
+    allow, below 0.01.'
+  deviations:
+  - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
+    carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
+    cannot be aligned; the first data-check cell shows this from the files.
+  - dF/F and the deconvolved activity are recomputed from the files' F and neuropil, as the Methods give
+    them (Calcium data processing, maximin baseline over 20 s within each trial, 2-sample smoothing, OASIS
+    on dF/F), with the code's values for what the Methods leave out (preprocessing.dff and utilities.default_dff_method,
+    neuropil coefficient 0.7 with the trial's neuropil mean added back, a 15-sample Gaussian before a
+    300-sample maximin, OASIS tau 0.7 s at 15.5 Hz). The paper's own run took tau from its Suite2p settings,
+    which are not public.
+  - Spatial information shuffle (Methods, Place cell identification) implemented here, since TwoPUtils
+    is not public. Activity is rolled within each trial (start to teleport) by 15 samples to the trial
+    length, 100 times, frames below 2 cm/s excluded as in the real maps, threshold the 95th percentile
+    of all shuffles of the session and trial set pooled.
+  - Place fields, activity on a trial and centres of mass use the 10 cm binned deconvolved events, not
+    the raw unbinned events the Methods name (Place field definition; Formation lap identification). The
+    threshold for an active trial is the mean + 1 s.d. of the cell's binned activity over the trials of
+    the set, read from 'its mean +1 s.d. across the 30 trials' (assumption).
+  assumed: true
+findings:
+- kind: other
+  statement: 'In version 0.250406.0045, the version the paper cites, every file of a mouse carries the
+    behaviour (position, speed, licks, trials, rewards) of one and the same session: 152 files hold 11
+    distinct behaviour series, and the behaviour''s length equals the imaging length in only 11 files.
+    For example, every m11 file holds the behaviour of day 5 (zone A then C), whatever its scene name
+    says. Imaging and behaviour cannot be aligned in the other 141 files. Version 0.251124.0550 has 152
+    distinct series, of the imaging''s length (to one frame in 10 files), with zones that agree with the
+    scene names. Version 0.250609.2249 has the same total size as 0.250406.0045.'
+- kind: metadata_insufficient
+  statement: The files' processing/ophys/Deconvolved series (unit 'lumens', no description) is not the
+    deconvolved activity the paper analyses, which the Methods describe as OASIS on dF/F. Its median correlation
+    with OASIS on dF/F computed from the files' F and neuropil is 0.47 per session (0.37 to 0.70). Spatial
+    information on it marks 66.8% of cells as place cells, against 60.0% with OASIS on dF/F. The files
+    hold no dF/F, so the paper's signals must be rebuilt from F and the code's parameters.
+- kind: methods_unavailable
+  statement: 'Question for the authors: the place-cell count here is 60% of cells against the paper''s
+    48.5%. The Methods do not give the OASIS time constant (the run passed Suite2p''s ''tau'' setting),
+    the neuropil coefficient, or how the spatial-information shuffle treats frames below 2 cm/s. TwoPUtils,
+    which holds the shuffle (place_cells_calc) and the ROI matching (ROIAligner), is not public. Which
+    tau and which shuffle details were used?'
+- kind: data_missing
+  statement: The files hold no cross-day ROI matching, although the Methods say cells were followed across
+    days by the IoU of their pixels. Figure 5 and Extended Data Fig. 6 are tested here on matches made
+    by this attempt, after a rigid alignment of the days' mean images.
+- kind: methods_unavailable
+  statement: 'Question for the authors: was any registration applied between days before the IoU matching
+    of ROIs, and how exactly was the per-dataset threshold chosen? This attempt aligned the mean images
+    by phase correlation (shifts up to 17 pixels) and used the largest second-best IoU of each day pair
+    as the threshold, matching 59% of cells (median).'
+- kind: data_missing
+  statement: The z-stack and the per-ROI depth estimates of single-plane mice (Methods, Estimation of
+    anatomical location per ROI) are not in the dandiset, so the superficial-deep part of Extended Data
+    Fig. 7 cannot be tested. The three fixed-condition mice (Extended Data Fig. 1d,f and 6d) are not in
+    the dandiset either.
+- kind: metadata_insufficient
+  statement: Omitted rewards are not marked. The files give reward times, but an unrewarded trial can
+    be an omission or a miss, which the paper treats differently (longer jitter after both, but only omissions
+    in Figure 6). This attempt took unrewarded trials with licks in the zone as omissions; the trial sets
+    with at least three omissions then match the paper's day counts per mouse exactly.
+- kind: methods_unavailable
+  statement: 'Question for the authors: the Methods test field activity and centres of mass on ''raw,
+    un-binned deconvolved activity'', and the active-trial threshold is ''mean +1 s.d. across the 30 trials''.
+    Is that the s.d. of all samples, of the in-field samples, or of per-trial values? With 10 cm binned
+    events and the s.d. over all bins, this attempt finds 3 to 8 times the paper''s count of RR cells
+    with two fields before and after (103 against 31 on day 3).'
+- kind: metadata_error
+  statement: The ROI pixel and voxel masks name their coordinates x and y, but 'x' indexes the image rows
+    (0 to 511 of 512) and 'y' the columns (0 to 795 of 796). The 'reward_zone' series is described as
+    'reward zone entry (binary)' but takes values 0 to 6, and it does not rise on unrewarded trials.
+- kind: metadata_insufficient
+  statement: The files do not say how the image axes map onto the medio-lateral and antero-posterior axes,
+    which Extended Data Fig. 7 uses.
