@@ -34,11 +34,12 @@ FIGSHARE_ADN_FILE = 43857150  # Dataset_5.tar.gz, ADN recordings (claim, data: e
 FIGSHARE_OPTO_FILE = 43857159  # Dataset_6.tar.gz, optogenetic sessions (claim, data: elsewhere)
 FIGSHARE_NPX_FILE = 43857156  # Dataset_4.tar.gz, Neuropixel session (claim, data: elsewhere)
 FIGSHARE_CUE_FILE = 43857153  # Dataset_3.tar.gz, cue rotation sessions (claim, data: elsewhere)
+FIGSHARE_LISTS_FILE = 43857237  # SessionLists_ForAnalysis.zip, the code's session lists
 
 NBINS = 360          # 1 degree bins (Methods, HD tuning curves)
 SMOOTH_SD = 3        # Gaussian s.d. in bins (Methods; code smoothTC = 3)
 SPEED_TH = 2.0       # cm/s (Methods, "speed exceeded 2 cm s-1"; code velTh = 2)
-RATE_MIN = 0.5       # Hz over the square epoch (Methods; code GetCellTypes_PoSub gd)
+RATE_MIN = 0.5       # Hz over the square epoch, kept at or above it (Methods, "at least 0.5 Hz"; the code's gd uses > 0.5)
 FS_RATE = 10.0       # Hz (Methods; code)
 TTP_CUT = 0.4        # ms (Methods); the code's 0.35 is a variant
 HD_INFO_TH = 0.2     # bits per spike (Methods, Results; code)
@@ -237,14 +238,21 @@ def tuning_curves(spikes, t, ang, mask, nbins=NBINS, sd=SMOOTH_SD, reverse=False
 
     As in the code's HeadDirectionField: each spike takes the angle of its nearest sample,
     spikes are kept only where that sample is used, counts over occupancy times the sampling
-    rate, empty bins set to 0, then circular Gaussian smoothing. With reverse=True the angle
-    values of the used samples are reversed in time, the time-reversed control (Methods; code).
+    rate, empty bins set to 0, then circular Gaussian smoothing. With reverse=True the HD series
+    is reversed in time over the span of the mask (its first to its last used sample, which is
+    the tracked epoch, or the half of it, for every mask used here) before the mask is applied,
+    the time-reversed control (claims file, "the HD series reversed in time within the epoch";
+    Methods); samples whose reversed angle is not finite are dropped.
     Bins are centred on 0, 1, ..., 359 degrees (code, hist with centres B).
     """
+    if reverse:
+        idx = np.where(mask)[0]
+        ang = ang.copy()
+        if len(idx):
+            ang[idx[0]:idx[-1] + 1] = ang[idx[0]:idx[-1] + 1][::-1]
+        mask = mask & np.isfinite(ang)
     tt = t[mask]
     aa = np.mod(ang[mask], 2 * np.pi)
-    if reverse:
-        aa = aa[::-1]
     dt = np.median(np.diff(t))
     b = np.round(aa / (2 * np.pi) * nbins).astype(int) % nbins
     occ = np.bincount(b, minlength=nbins).astype(float)
@@ -671,6 +679,66 @@ def poisson_glm_batch(y, m, Z, iters=100, tol=1e-8):
         lr = eta.min(0) - eta.max(0)  # log of smallest over largest fitted mean
     well = lr > (4 / 3) * np.log(np.finfo(float).eps)
     return b, ok & conv & well, ok & conv
+
+
+def glmfit_poisson_batch(y, m, Z, iter_lim=100, convcrit=1e-6):
+    """Poisson GLM with log link, y ~ 1 + m + Z[:, k], for every column k of Z at once, by the
+    iteratively reweighted least squares of MATLAB's glmfit (the call glmfit(X, c, 'poisson') of
+    GetGLM_Forward.m), so that its warnings, on which Figure_GLMRemWake.m removes a pair, can be
+    flagged. Mirrored from glmfit as documented and as its IRLS is commonly written: start at
+    mu = y + 0.25; at each iteration the weights are sqrt(mu) (log link, Poisson variance), and
+    glmfit warns that the weights are ill-conditioned ('BadScaling') when any is below eps^(2/3)
+    of the largest, and then raises them to that level; weighted least squares; stop when every
+    coefficient changes by at most 1e-6 of max(sqrt(eps), |b|); a warning ('IterationLimit') when
+    100 iterations do not converge. MATLAB itself is not run here, so this is an assumption that
+    the mirror flags the same fits. Returns the coefficients (3, K), a mask of fits with a
+    bad-scaling warning at any iteration and a mask of fits that reached the iteration limit."""
+    n, K = Z.shape
+    eps = np.finfo(float).eps
+    seps = np.sqrt(eps)
+    mu = np.repeat((y + 0.25)[:, None], K, 1)
+    eta = np.log(mu)
+    b = np.zeros((3, K))
+    active = np.ones(K, bool)
+    bad = np.zeros(K, bool)
+    for it in range(iter_lim + 1):
+        a = np.where(active)[0]
+        if not len(a):
+            break
+        mu_a, eta_a, Za = mu[:, a], eta[:, a], Z[:, a]
+        z = eta_a + (y[:, None] - mu_a) / mu_a
+        sw = np.sqrt(mu_a)
+        wtol = sw.max(0) * eps ** (2 / 3)
+        low = (sw < wtol) & (sw != 0)
+        bad[a] |= low.any(0)
+        sw = np.where(low, wtol, sw)
+        w = (sw / sw.max(0)) ** 2  # the solution does not change with the scale of the weights
+        wm, wz = w * m[:, None], w * Za
+        h00 = w.sum(0); h01 = wm.sum(0); h02 = wz.sum(0)
+        h11 = (wm * m[:, None]).sum(0); h12 = (wm * Za).sum(0); h22 = (wz * Za).sum(0)
+        Hm = np.array([[h00, h01, h02], [h01, h11, h12], [h02, h12, h22]]).transpose(2, 0, 1)
+        g = np.stack([(w * z).sum(0), (wm * z).sum(0), (wz * z).sum(0)]).T[:, :, None]
+        with np.errstate(all="ignore"):
+            try:
+                bn = np.linalg.solve(Hm, g)[:, :, 0].T
+            except np.linalg.LinAlgError:
+                bn = np.full((3, len(a)), np.nan)
+                for k in range(len(a)):
+                    try:
+                        bn[:, k] = np.linalg.solve(Hm[k], g[k])[:, 0]
+                    except np.linalg.LinAlgError:
+                        pass
+        b_old = b[:, a]
+        b[:, a] = bn
+        bad[a] |= ~np.isfinite(bn).all(0)  # a singular system, on which MATLAB also warns
+        with np.errstate(all="ignore"):
+            e = bn[0] + np.outer(m, bn[1]) + Za * bn[2]
+        eta[:, a] = e
+        mu[:, a] = np.maximum(np.exp(np.clip(e, -745, 709)), np.finfo(float).tiny ** 0.25)
+        done = ~(np.abs(bn - b_old) > convcrit * np.maximum(seps, np.abs(b_old))).any(0)
+        if it < iter_lim:
+            active[a[done]] = False
+    return b, bad, active.copy()
 
 
 def ccg_counts(ref, tgt, binsize=0.0002, nbins=250):
