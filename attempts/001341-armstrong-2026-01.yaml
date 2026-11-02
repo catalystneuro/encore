@@ -48,11 +48,13 @@ outcomes:
     shows no trial-locked response (5.8 to 8.7 Hz over -1 to 2 s, suppression-window minimum at least 86% of
     baseline), and trial type cannot be decoded from per-unit spike counts (0.460 to 0.522 against shuffled 95th
     percentiles of 0.535 to 0.542), while lateral position decodes it at 0.954. In 489 the onset-triggered lag
-    search exceeds the 95th percentile of its null in 2 of 12 windows and the running-speed correlations are weak
-    (|r| at most 0.17), so no alignment can be found. In 503 a clock fitted from running speed (lag 11.86 s plus
+    search exceeds the 95th percentile of its null in 2 of 12 windows, though its best lags rise almost steadily
+    over windows 0 to 6 (4.36 to 12.23 s), which suggests a drifting offset; the running-speed correlations are weak
+    (|r| at most 0.17), so no clock can be fitted, and any clock from these lags would be no finer than that of 503. In 503 a clock fitted from running speed (lag 11.86 s plus
     1.37 ms per s) recovers direction-specific responses and trial type decodes at 0.865 to 0.912, but the clock
     has a residual SD of 0.56 s and also decodes trial type before the onset (0.655), far coarser than the 5 to
-    180 ms windows the claim tests. An alignment fitted to the neural response would set the timings the claim
+    180 ms windows the claim tests. The clock was fitted to running speed, and 503 runs in 1.7% of OL_L and 31.8% of
+    OL_R rows, so the responses and decoding on it may in part reflect running. An alignment fitted to the neural response would set the timings the claim
     tests, so none was adopted.
 - claim: fig1n-epoch-rates
   outcome: not_reproduced
@@ -90,7 +92,7 @@ outcomes:
   notes: Needs spikes aligned to the turn onset (see fig1lm-staged-modulation). Of the seven animals of the
     criterion only 489 and 503 are in the dataset (data_missing for the other five). On the coarse speed clock of
     503 (residual SD 0.56 s) the population rate rises by 1.38 Hz in 0 to 0.3 s for OL_L and falls by 0.82 Hz for
-    OL_R (null -0.22 to +0.25 Hz), but the criterion's windows (0.065 to 0.25 s) are far shorter than the clock's
+    OL_R (null -0.22 to +0.25 Hz), which may in part reflect running (1.7% of OL_L and 31.8% of OL_R rows run), but the criterion's windows (0.065 to 0.25 s) are far shorter than the clock's
     error, and 489 has no clock.
 - claim: figs1-running-speed
   outcome: not_reproduced
@@ -224,13 +226,18 @@ outcomes:
     determined. With all RTs kept it sits under the smallest RT (0.007 s); with a cutoff it lies 0.011 to 0.030 s
     under the smallest RT kept, so one of 16 cutoff fits (0.129 s, cutoff 0.15 s) is within tolerance because of
     the cutoff; with the mixture it stays at 0.000 to 0.039 s (0.003 to 0.028 s with a weight up to 0.3) and the
-    mixture weight is at its limit in every fit. In the likelihood profile, NDT fixed at 0.12 s gives a BIC 4.4
-    above the best, at 0 s. Measured is the first reading, all RTs kept, run angle derivative, 0 to 1 s, clearance
+    mixture weight is at its limit of 0.1 in all 16 DDM fits; with a limit of 0.3 it is 0.158 to 0.243, below the
+    limit but far above the 3 to 5% of RTs below 0.1 s, which suggests the plain DDM misfits the shape of the RT
+    distribution more broadly. In the likelihood profile, NDT fixed at 0.12 s gives a BIC 4.4 above the best, at 0
+    s; with equal parameter counts this is a deviance difference, so 0.12 s lies just outside a 95% profile-likelihood
+    interval (p about 0.04). The partial outcome rests on the assumption about early RTs; under the mixture handling
+    the GDDM condition fails too, and the claim would be not reproduced. Confidence in this outcome is low. Measured is the first reading, all RTs kept, run angle derivative, 0 to 1 s, clearance
     in the turn direction, sigma 0.25, with K/B from the GDDM. The other values are far from the paper's; DDM BIC
     -441.8 to 205.9 over the three handlings (-664, none within tolerance), GDDM BIC at best -441.5 (-705), B within
     tolerance in 1 of 48 DDM fits, K/B 0.30 to 4.06 (11.12). K is within tolerance in 6, 4 and 0 of 16 fits under
     the three handlings; with sigma free K, B and sigma are identified only up to a common scale. The GDDM leak is
-    at the -10 edge of its range in all four fits with all RTs kept and at 2.50 to 9.99 under the other handlings.
+    at the -10 edge of its range in all four fits with all RTs kept, 2.50 to 8.17 with the mixture and 6.04 to 9.99
+    with the cutoff (two of four near the +10 edge).
   deviations:
   - The 249 labelled OL_L trials of 489 are used; the paper's 266 (Fig. 4B) or 520 (Fig. S7C-D) cannot be
     identified among the dataset's trials.
@@ -298,7 +305,9 @@ verifications:
     helper module and the claims file, with the paper. The verifier queried the archive (2 assets, draft identical)
     and tested reaction_time on a synthetic trial. Its report gave its own outcome for each claim; all 33 agree
     with the record as it then stood. Point 8 found no misreading of the paper in the claims file, so no question
-    was added for a reader; the header now notes that the SI says TTL signals were used for synchronisation. Report
+    was added for a reader. Its suggestion that the claims-file header note the SI's TTL synchronisation was not
+    taken up, since the author does not edit the claims file; the earlier text of this record said the header had been
+    changed, which was wrong and was corrected in round 2. The TTL point is in the notes and the findings. Report
     in transcripts/001341/verifier-1-report.md.
   results:
   - claim: table-s1-recordings
@@ -353,7 +362,7 @@ verifications:
       and 531 trials can be checked without the clock, and both miss (61 units, 500 trials); these parts do not
       change the blocked outcome.
     response: Kept blocked. The blocked-claims section now says that these counts miss and that they describe the
-      recording, not the claim's finding. Kept blocked. Added a recursive listing of both files (processing, analysis
+      recording, not the claim's finding. Added a recursive listing of both files (processing, analysis
       and stimulus are empty), a null for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503
       in 10 of 12), and a straight-line speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On
       it 503 shows turn-specific responses beyond a random-onset null and decodes trial type at 0.865 to 0.912,
@@ -653,7 +662,7 @@ verifications:
       and FS/RS counts can be checked and miss (L2/3 7 vs 10, L6 12 vs 13, FS 30 vs 43, RS 31 vs 22); this does
       not change the blocked outcome.
     response: Kept blocked. The blocked-claims section now points to these counts in the table-s1-recordings section.
-      Kept blocked. Added a recursive listing of both files (processing, analysis and stimulus are empty), a null
+      Added a recursive listing of both files (processing, analysis and stimulus are empty), a null
       for the onset-lag z (489 exceeds its 95th percentile in 2 of 12 windows, 503 in 10 of 12), and a straight-line
       speed clock for 503 (11.86 s plus 1.37 ms per s, residual SD 0.56 s). On it 503 shows turn-specific responses
       beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
@@ -689,6 +698,333 @@ verifications:
       beyond a random-onset null and decodes trial type at 0.865 to 0.912, but also at 0.655 before the onset, so
       the clock is far coarser than the 5 to 180 ms windows the claims test; 489 has no clock. The decoder now z-scores
       with training-fold statistics only (problem 6).
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, the helper module, the claims file, the README and
+    the attempt record, with the paper. The verifier agreed with all 33 outcomes and checked each sentence of the conclusions
+    against the outputs; the sentences it found unsupported are corrected (cells 17, 22, 28 and 43, the README, the notes
+    and the findings). It found no misreading of the paper in the claims file. Its point that the record wrongly said
+    the claims-file header had been changed is corrected in the round-1 entry. No outcome changes and none is proposed.
+    Report in transcripts/001341/verifier-2-report.md.
+  results:
+  - claim: table-s1-recordings
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. Both unit counts and both OL counts miss. The outcome does not depend on the 1000-row assumption,
+      which is stated, so assumed is not needed.
+    response: No change.
+  - claim: fig1lm-staged-modulation
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected. The round-1 record said the claims-file header had been changed to note the SI's TTL synchronisation;
+      it had not, since the author does not edit the claims file, and that text is corrected.
+  - claim: fig1n-epoch-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree with the change from blocked. The criterion needs all four values. The epoch 1 rate is 6.65 to 7.80
+      Hz at every lag from -20 to 60 s, 7.18 to 7.26 Hz over the CL rows and 7.09 Hz over the whole recording; no clock
+      could bring that to 2 Hz, and 4 missing units cannot either. The stored-onset range in the result should read 7.15
+      to 7.48 Hz.
+    response: Outcome kept. The stored-onset range in the result now reads 7.15 to 7.48 Hz.
+  - claim: fig1jk-all-units
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected. The repeated "Kept blocked." in the round-1 response is removed.
+  - claim: fig1n-ramp-slope
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig1o-trial-end-ramp
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig1-ramp-contralateral-only
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: figs1-running-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree.
+    response: No change.
+  - claim: fig2a-success-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The rate is 0.609 to 0.694 under all 8 readings.
+    response: No change.
+  - claim: fig2b-lateral-spread
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. With the NaN fix every trial now has a value. Under (b) the t = 0 SD is 0.84, outside 0.55 ± 0.055;
+      under (a) the SD does not widen (0.00, 2.78, 0.76).
+    response: No change.
+  - claim: fig2c-psychometric
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2d-turn-angle
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2f-whisking-params
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2i-ft-rt
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2jk-glm-mixed-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2-epoch2-at-first-touch
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2l-running-vs-sitting
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig2m-dimensionality-collapse
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: figs12-tuning-lost-during-decision
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig3-wall-kinematics
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig3c-touch-statistics
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig3ijkl-whisking-across-epochs
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig3-not-sensory-drive
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (data_missing).
+    response: No change.
+  - claim: fig4-ddm-fit
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, with low confidence. NDT is out of tolerance under all three early-RT handlings. GDDM BIC is below
+      DDM BIC with all RTs kept and with the 0.1 s cutoff, but in 0 of 4 fits with the mixture. The assumption is stated
+      and reasonable. The record should say plainly that the GDDM condition, and with it the partial outcome, fails under
+      the mixture handling. The mixture weight is at its limit only in the limit-0.1 fits, not in the limit-0.3 fits
+      (0.158 to 0.243), which is well above the 4 to 5% of RTs below 0.1 s and suggests the plain DDM misfits the RT
+      shape more broadly. The BIC difference of 4.4 at NDT 0.12 s is a deviance difference that puts 0.12 s just outside
+      a 95% profile-likelihood interval (p about 0.04), so "narrowly excluded" fits better than "not excluded". Only
+      two of four cutoff fits have the leak near the +10 edge.
+    response: Outcome kept. The notes now say that the partial outcome rests on the early-RT assumption and that under
+      the mixture handling the GDDM condition fails too, so the claim would be not reproduced, and that confidence is
+      low. The result and notes now give the mixture weight at its limit of 0.1 in the DDM fits and 0.158 to 0.243 below
+      a limit of 0.3, with the verifier's reading that the DDM misfits the RT shape; call 0.12 s narrowly excluded by
+      the profile (p about 0.04); and give the cutoff leaks as 6.04 to 9.99, two of four near the edge.
+  - claim: fig4b-ddm-matches-ramp
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig5e-slope-across-animals
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig4f-varce-example-unit
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig4g-varce-population
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig4j-corce
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig4k-streak-index
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig5b-epochs-in-subpopulations
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected. The repeated "Kept blocked." in the round-1 response is removed.
+  - claim: fig5cd-other-animals
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
+  - claim: fig5e-principal-vs-neighbor
+    agrees: true
+    outcome: blocked
+    reason: Agree, blocked (metadata_insufficient). The speed clock for 503 has a residual SD of 0.56 s and 489 has no
+      clock, against windows of 5 to 180 ms. Windows 0 to 6 of 489 give best lags that rise almost steadily (4.36 to
+      12.23 s), which contradicts "no alignment can be found"; the blocked outcomes do not change, because any such clock
+      would be as coarse as the one for 503. The 503 speed clock was fitted to running speed, and running differs by
+      trial type (1.7% of OL_L rows against 31.8% of OL_R), so the turn-specific responses and the decoding on it may
+      partly reflect running.
+    response: Kept blocked. The notebook (data check and blocked claims), README, notes and finding now describe the
+      rising lags of 489 and say that no clock can be fitted from them, instead of saying no alignment can be found,
+      and say that the responses and decoding on the 503 speed clock may in part reflect running. The 503 onset lags
+      are now compared with the clock for all seven windows in its span, and the swapped 95th percentiles in the data
+      check are corrected.
 findings:
 - kind: metadata_insufficient
   statement: The spike times are not on the clock of the trials table and the behaviour, and the files hold no
@@ -699,8 +1035,10 @@ findings:
     rate and running speed grows smoothly from 12.9 to 19.75 s over the first 5200 s; a line through it (11.86 s
     plus 1.37 ms per s, residual SD 0.56 s) recovers trial-locked, turn-specific responses, so the spike times of
     503 appear to be about 12 s later than the trial times of the same events, with a gap growing by about 1.4 ms
-    per s. In 489 no
-    alignment can be found. The spikes of 489 end at 6255 s and its behaviour at 6218 s. None of the paper's
+    per s. That clock is fitted to running speed, and 503 runs in 1.7% of OL_L and 31.8% of OL_R rows, so the
+    turn-specific responses on it may in part reflect running. In 489 the onset-triggered best lags rise from 4.36
+    to 12.23 s over the first seven windows, which suggests a similar drifting offset, but no window's lag is
+    separated from chance and the speed correlations are weak, so no clock can be fitted. The spikes of 489 end at 6255 s and its behaviour at 6218 s. None of the paper's
     findings on spike timing can be tested.
 - kind: data_missing
   statement: The dataset holds 2 of the paper's 19 animals (489 and 503), with units, trials and ball tracking.

@@ -20,9 +20,11 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The spike times are not on the clock of the trials table, and the files hold no synchronisation signal: at the
-stored turn onsets there is no trial-locked response. In 489 no alignment can be found. In 503 a clock fitted from
-running speed (spike times about 12 s late, drifting by about 1.4 ms per s) recovers trial-locked responses, but only
-to about half a second, too coarse for the timings the claims test. The population rate of 489 before the turn is
+stored turn onsets there is no trial-locked response. In 489 the onset lags suggest a drifting offset, but no
+window's lag is separated from chance and no clock can be fitted. In 503 a clock fitted from running speed (spike
+times about 12 s late, drifting by about 1.4 ms per s) recovers trial-locked responses, but only to about half a
+second, too coarse for the timings the claims test; since 503 runs more in right turns than in left turns, these
+responses may in part reflect running. The population rate of 489 before the turn is
 6.65 to 7.80 Hz at any alignment, where the paper gives 2 Hz. The behaviour shares the trial clock, but the trials
 table of 489 repeats one row for its last 611 rows, and some 60 turns per session have stop times before their
 start times. The attempt record, with the reasons and the differences from the paper's method, is
