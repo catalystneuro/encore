@@ -18,7 +18,7 @@ need the ADN, cue rotation, ADN optogenetic and Neuropixel recordings use the pa
 | The first ten Fourier components hold 98% of the power | Partially reproduced |
 | Fourier signatures of FS, PoSub-HD and ADN-HD cells differ (figshare) | Not reproduced |
 | PoSub-HD spectra are closer to the FS signature than ADN-HD spectra (figshare) | Partially reproduced |
-| The same under three controls (figshare) | Partially reproduced |
+| The same under three controls (figshare) | Reproduced |
 | FS spectra exceed control in components 1 to 3 only | Reproduced |
 | Dominant components of FS cells (231, 141, 55) | Partially reproduced |
 | FS spectra are heterogeneous; FS phases are independent | Reproduced |
