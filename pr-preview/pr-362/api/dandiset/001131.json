@@ -1,0 +1,1238 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001131",
+  "label": "DANDI:001131"
+ },
+ "page": "datasets/dandi/001131/",
+ "generated": "2026-11-02T07:59:52+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 3,
+  "partially_reproduced": 1,
+  "not_reproduced": 10,
+  "blocked": 21
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001131-mountoufaris-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001131",
+    "version": "0.260601.1203",
+    "doi": "10.48324/dandi.001131/0.260601.1203"
+   },
+   "key": "dandi:001131",
+   "label": "DANDI:001131",
+   "dataset_version": "0.260601.1203",
+   "paper": "10.1016/j.cell.2024.08.015",
+   "paper_title": "A line attractor encoding a persistent internal state requires neuropeptide signaling",
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41280874828"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001131-mountoufaris-2024",
+   "entry_title": "VMHvl Esr1 activity and line attractor dynamics after Oxtr/Avpr1a co-editing (Mountoufaris et al. 2024)",
+   "description": "Tests the miniscope findings of Mountoufaris, Nair et al. (2024) on dandiset 001131, which holds z-scored VMHvl Esr1 traces and male-directed behaviour annotations of 4 control and 6 experimental male residents during interactions with a male intruder. It compares activity, behavioural selectivity, persistence (autocorrelation half-width) and rSLDS time constants between groups. The female-intruder sessions, the behaviour and photometry cohorts and the slice experiments are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_mountoufaris_2024.ipynb",
+     "title": "Activity, selectivity, decoding and persistence (dandiset 001131)",
+     "executed": null
+    },
+    {
+     "path": "rslds_seeds_0_1.ipynb",
+     "title": "rSLDS fits, seeds 0 and 1 (dandiset 001131)",
+     "executed": null
+    },
+    {
+     "path": "rslds_seeds_2_3.ipynb",
+     "title": "rSLDS fits, seeds 2 and 3 (dandiset 001131)",
+     "executed": null
+    },
+    {
+     "path": "rslds_checks.ipynb",
+     "title": "rSLDS checks, seed 0, sigma-normalized fits and a held-out score (dandiset 001131)",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1e-oxtr-avpr1a-coexpression",
+     "statement": "About 78% of Esr1+ VMHvl cells express Oxtr mRNA, and about 61% of these also express Avpr1a mRNA, in a single-cell RNA-seq atlas of VMHvl.",
+     "source": "Results, Most Esr1+ neurons co-express Oxytocin and Vasopressin receptors, paragraph 1; Figure 1E",
+     "quote": "Overall, ~78% of Esr1 + cells in VMHvl expressed Oxtr mRNA, and ~61% of these cells also expressed Avpr1a mRNAs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "Changed from blocked (other) in round 3, which agreed with the proposed change. The first run and the first revision did not find the atlas's archive, which neither the paper nor the claims file gives, and did not attempt the analysis. The second revision found it through the data links of the Kim et al. 2019 article in Europe PMC: Mendeley Data, doi:10.17632/ypx3sw2f7c.1. Its SMART-seq part gives counts per million (CPM), as Figure 1B plots, for 4,574 cells with cluster labels, of which 850 are in the eight clusters named for Esr1. Under the adopted reading (all cells of those clusters, a gene expressed at CPM above 0) 73.9% express Oxtr, inside 78 +/- 7.8%, and 49.4% of these also express Avpr1a, below 61 +/- 6.1%. Cells with Esr1 detected give the same split (73.9% and 48.6%). Male cells only (713) at CPM above 0 give 70.4% and 56.2%, both inside, near the lower edges; with a threshold of 1 CPM the male Oxtr fraction falls to 67.6%, and with 5 or 10 CPM every reading puts both values outside. Over all cells of the clusters the Avpr1a fraction is 43.6 to 49.4% under every threshold (43.0 to 48.6% for those with Esr1 detected). At CPM above 0 all eight clusters hold cells that co-express Avpr1a (the fewest, Tsix_Esr1_1, 3%), where the Results give 5 of 8, so the paper may have used a stricter criterion at least by cluster; higher thresholds lower both fractions. The paper gives no threshold and no subset of cells (\"analyzed as described previously\", STAR Methods, Transcriptomic analysis); that is asked of the authors (findings).",
+     "deviations": [
+      "The atlas is read from Mendeley Data (doi:10.17632/ypx3sw2f7c.1), the deposit of Kim et al. 2019 found through the article's data links; neither the paper nor the claims file names it. Its SMART-seq part is used, as Figure 1B plots counts per million; the 10x part gives raw counts per sample without cluster labels.",
+      "The Esr1+ VMHvl cells are the cells of the atlas's eight clusters named for Esr1 (Esr1_1 to Esr1_6, Tsix_Esr1_1, Tsix_Esr1_2), matching the Results' \"most clusters (5/8)\".",
+      "Assumption. All cells of those clusters, of both sexes, with a gene expressed at CPM above 0. The paper says \"~78% of Esr1+ cells in VMHvl expressed Oxtr mRNA\" (Results, Most Esr1+ neurons co-express Oxytocin and Vasopressin receptors, paragraph 1), naming no sex and no threshold, and the STAR Methods (Transcriptomic analysis) refer to the atlas paper; above 0 is the most inclusive threshold and gives the highest fractions. Male cells only and thresholds of 1, 5 and 10 CPM are shown; they give different outcomes."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-peptides-activate-slices",
+     "statement": "Bath application of OXT plus AVP (400 nM each), or of either peptide alone, evokes strong calcium responses (dF/F about 500-600%) in VMHvl Esr1 neurons in acute slices.",
+     "source": "Results, Most Esr1+ neurons co-express Oxytocin and Vasopressin receptors, paragraph 2; Figure 1F, S1F-G",
+     "quote": "Perfusing a mixture of 400nM (each) OXT plus AVP or individually administering these peptides elicited strong (\u0394F/F ~500\u2013600%) responses in VMHvl Esr1 cells",
+     "statistics": [
+      {
+       "about": "responses to OXT plus AVP",
+       "test": "Mann-Whitney test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "124 cells from 4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The slice two-photon imaging is not in the dandiset, which holds only miniscope traces and behaviour annotations, and the paper names no other archive for it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-editing-reduces-slice-responses",
+     "statement": "In slices from mice with Cre-dependent Oxtr/Avpr1a gRNAs, the fraction of GCaMP8s-expressing cells responsive to OXT plus AVP is reduced from 42.6 +/- 3% (scrambled gRNA) to 13 +/- 3.3%.",
+     "source": "Results, Altered VMHvl Esr1 neural activity during social interactions, paragraph 1; Figure 2E",
+     "quote": "The fraction of GCaMP8s-expressing cells responsive to mixed AVP and OXT peptides was reduced from 42.6\u00b1 3% in Scr gRNA controls to 13\u00b1 3.3% (~70% reduction) in Oxtr/Avpr1a gRNAs",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "brain slices from 2 control and 3 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The slice imaging of Figure 2E is not in the dandiset, and the paper names no other archive.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-bilateral-editing-reduces-aggression",
+     "statement": "Bilateral co-editing of Oxtr and Avpr1a in VMH (LV gRNAs plus Cas9 AAV) reduces attack towards male intruders (number, probability, total time and bout duration of attacks) and lengthens the latency to the first attack.",
+     "source": "Results, Oxtr/Avpr1a-mediated neuropeptidergic signaling in VMH is required for male territorial aggression, paragraph 3; Figure 2G, S2B-C",
+     "quote": "Experimental mice displayed a notable reduction in aggression towards male intruders, as evidenced by significant decreases in the number and time-varying probability of attack bouts, the total time spent attacking and the average duration of each attack bout; in addition, the latency to the 1st attack bout was significantly increased",
+     "statistics": [
+      {
+       "about": "attack measures of Figure 2G",
+       "test": "Mann-Whitney test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "11 mice per group"
+      },
+      {
+       "about": "attack measures of Figure S2B-C",
+       "test": "nested Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "11 mice per group"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The behaviour of the bilateral LV gRNA cohort (11 mice per group) is not in the dandiset; it holds only the 10 imaged mice.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-bilateral-editing-spares-sniff-and-mating",
+     "statement": "Bilateral co-editing does not change time spent sniffing male intruders, nor sniffing or mounting of female intruders.",
+     "source": "Results, Oxtr/Avpr1a-mediated neuropeptidergic signaling in VMH is required for male territorial aggression, paragraph 3; Figure 2G-H, S2D",
+     "quote": "the time spent in close investigation (sniffing) of male intruders did not differ significantly between experimental and control male residents ... Experimental males also did not differ significantly from controls in their sniffing or mounting behavior towards female intruders",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "11 mice per group"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The bilateral LV gRNA cohort and all female-intruder behaviour are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-cre-editing-reduces-aggression",
+     "statement": "Bilateral Cre-dependent co-editing in VMHvl Esr1 neurons reduces most measures of aggression towards males, less strongly than the constitutive system, while sniffing duration is unaffected.",
+     "source": "Results, Altered VMHvl Esr1 neural activity during social interactions, paragraph 2; Figure 3C, S3C",
+     "quote": "Bilateral co-disruption of Oxtr/Avpr1a in VMHvl Esr1 neurons significantly reduced most metrics of aggression towards male intruder compared to control mice, although to a somewhat lower extent than observed with the Cre-independent system",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "16 control and 13 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The behaviour of the bilateral Cre-dependent cohort (16 and 13 mice) is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3fh-photometry-reduced",
+     "statement": "Bulk calcium activity of VMHvl Esr1 neurons during male-directed sniffing and attack is reduced in mice with bilateral Cre-dependent co-editing.",
+     "source": "Results, Altered VMHvl Esr1 neural activity during social interactions, paragraph 2; Figure 3E-H",
+     "quote": "we observed a significant reduction in overall VMHvl Esr1 neuronal activity during the infrequent attack bouts exhibited by experimental mice ... A reduction in VMHvl Esr1 activity during sniffing episodes was also observed in these mice",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test, AUC and peak of the behavior-triggered average",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 mice per group; data points are bouts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The fiber photometry recordings are not in the dandiset, and the paper names no other archive.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3ef-photometry-female-unchanged",
+     "statement": "During interactions with females, bulk calcium activity during sniffing and mounting does not differ between experimental and control males.",
+     "source": "Results, Altered VMHvl Esr1 neural activity during social interactions, paragraph 2; Figure S3E-F",
+     "quote": "during male-female interactions, calcium signals in experimental males were not significantly different from controls",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "4 control and 5 experimental mice (sniffing), 3 and 4 (mounting)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The fiber photometry recordings are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4a-unilateral-no-behavior-deficit",
+     "statement": "Mice with unilateral editing and imaging (the CRISPRoscopy mice) show no deficit in sniffing or aggression compared with controls.",
+     "source": "Results, Single cell CRISPRoscopy imaging, paragraph 1; Figure S4A",
+     "quote": "Indeed, unilateral injected experimental animals displayed no deficits in sniffing or aggression compared to controls",
+     "statistics": [
+      {
+       "test": "not named in the S4 legend for panel A",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "5 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "No measure with a defined summary differs between groups at p < 0.05 (Mann-Whitney per mouse); the smallest p over the six is 0.114 (sniff time as a percentage of the interaction). Total sniff time 89.1 s control, 93.1 s experimental (p = 0.61); sniff bout duration 10.2 and 2.5 s (p = 0.17, the control mean raised by mouse 511's two long bouts); total attack time 54.1 and 91.5 s (p = 0.25); attack bout duration 3.3 and 2.4 s (p = 0.25); latency 261 and 91 s (p = 0.25); interval between attacks 30.9 and 11.7 s (p = 0.39). Attack probability, four readings. (a) attack-triggered probability of attacking over 0 to 10 s, mean 0.45 and 0.36 (p = 0.25), the adopted reading; (b) its decay to 1/e, 4.7 and 3.0 s (p = 0.25); (c) share of the interaction attacking, 4.3 and 10.7% (p = 0.14); (d) attack bouts per minute, 0.80 and 2.79 (p = 0.036, the smallest p 3 and 5 mice allow), the experimental mice attacking more often. Under reading (d) the criterion would fail, on a difference towards more aggression, not a deficit. The claims file may misread the paper, and a reader is asked (questions/001131.yaml): in Figure S4A, panels (iii), % time attacking, and (vi), interval between attacks, carry a star, with the experimental mice more aggressive, so the paper's \"no deficits\" means no reduction and the criterion \"none differs at p < 0.05\" is stricter than the paper. Tested as the paper's reading (a variant), no measure shows a deficit on a one-sided test (smallest one-sided p = 0.086, sniff bout duration), under every reading of attack probability. The two starred measures do not differ here (p = 0.14 and 0.39) with 3 and 5 mice.",
+     "deviations": [
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Mice 510 and 500 have no attack annotation, so attack measures use 3 control and 5 experimental mice.",
+      "The intruder's entry is not marked; the interaction is taken to start at the first annotated behaviour (an assumption), which sets the latency to the first attack and the duration used for percentages.",
+      "Assumption. The attack probability of panel S4A(vii) is plotted against time (0 to 10 s) with no per-mouse summary; it is read as the attack-triggered probability of attacking over the 10 s after an attack onset, averaged over onsets, as the S3C legend lists \"the number and the time-varying probability (iv-v) of attack bouts\" as two measures and S2C and S3C give a decay constant (\"tau attack probability\"), so a bout rate is the number of bouts per time, not the probability. Its decay, the share of time attacking and the bout rate are shown as the other readings; the bout rate differs between groups.",
+      "The interval between attacks is taken from the end of one bout to the start of the next; onset to onset is also shown, with the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-unit-counts",
+     "statement": "CRISPRoscopy recorded 585 units from 5 control mice and 546 units from 7 experimental mice.",
+     "source": "STAR Methods, Micro-endoscopic data extraction, last sentence",
+     "quote": "A total of 585 units (n=5 mice) from control and 546 units (n=7 mice) from experimental mice were recorded",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "The dandiset holds 4 control mice with 587 units (134, 225, 119, 109) and 6 experimental mice with 554 units (35, 31, 80, 96, 185, 127), against 5 mice with 585 units and 7 with 546 in the STAR Methods. One mouse per group is missing, yet each group has more units than the paper reports.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ef-male-activity-slightly-lower",
+     "statement": "During interactions with a male intruder, the activity of all VMHvl Esr1 units (sigma above pre-intruder baseline, and z-scored) is slightly but significantly lower in experimental than in control mice.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 1; Figure 4Ei, 4Fi, S4Di",
+     "quote": "During interactions with a male intruder, the experimental cumulative distribution function (ECDF) and mean activity of all units (pooled from n=4 control and n=7 experimental animals) were slightly but significantly decreased in experimental mice",
+     "statistics": [
+      {
+       "about": "mean activity (Figure 4E)",
+       "test": "nested Mann-Whitney test",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "cumulative distributions (Figure 4F, S4D)",
+       "test": "Kolmogorov-Smirnov test (nested in S4D)",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "Under the pooled reading of \"nested\", experimental activity in sigma is lower than control by both the Mann-Whitney and the KS test at p < 0.05 under every baseline reading and both windows (largest p 0.014 and 0.0012; baseline all, 1 min, 0.53 against 0.95 sigma, Mann-Whitney p = 0.002, KS p < 0.001, 587 control and 474 experimental units). The claims file records the paper's level as p < 0.01, which holds under the all and gap10 baselines (Mann-Whitney p 0.0002 to 0.002) but not for 1 min with the 7-s baseline (p = 0.014). On per-mouse means or medians (4 and 5 mice) no comparison reaches p < 0.05 (p from 0.06 to 0.73). Without mice 497, 510 and 500, whose clock alignment could not be established, the pooled tests still give p < 0.01 under the all and gap10 baselines, but the Mann-Whitney test with the 7-s baseline gives p = 0.051 and 0.060. The experimental mean is about half the control mean, more than \"slightly\". Z-scored activity is also lower when pooled (KS p = 0.009 at 1 min, 0.0005 at 2 min), but its Mann-Whitney test is not significant (p = 0.24 and 0.12).",
+     "deviations": [
+      "The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as the frames before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction as starting at that behaviour; this is an assumption (STAR Methods, Micro-endoscopic data extraction, baseline \"during 7sec or more\" before the first trial; Behavior annotations, a 5-min baseline starts every session). Mouse 488 has 6.2 s before its first annotation and is left out.",
+      "\"Nested\" tests are not defined; both readings of the claims file are run, units pooled and per-mouse means (or medians for KS claims).",
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper.",
+      "The claim's outcome rests on the pooled reading of \"nested\"; the per-mouse reading does not reproduce it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ef-female-activity-unchanged",
+     "statement": "During interactions with females, activity in units of sigma above baseline does not differ between experimental and control mice, while z-scored activity is slightly but significantly higher in experimental mice.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 1; Figure 4Eii, 4Fii, S4Dii",
+     "quote": "During interactions with females there was no significant difference in activity (measured in \u03c3 above baseline) between experimental and control animals ... although z-scored activity showed a slight but significant increase",
+     "statistics": [
+      {
+       "about": "sigma-normalized activity",
+       "test": "nested Mann-Whitney and Kolmogorov-Smirnov tests",
+       "p": 0.05,
+       "p_relation": ">"
+      },
+      {
+       "about": "z-scored activity",
+       "test": "nested Kolmogorov-Smirnov test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4e-active-units-unchanged",
+     "statement": "Among male-responsive units (at least 2 sigma above baseline), mean activity does not differ between control and experimental mice.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 1; Figure S4E",
+     "quote": "However, the mean activity among cells considered as \u201cactive\u201d (\u2265 2\u03c3 above baseline 66 ) did not differ between control and experimental mice",
+     "statistics": [
+      {
+       "test": "nested Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "With the baseline of all frames before the first annotated behaviour, neither reading of \"nested\" finds a difference (pooled p = 0.09 at 1 min and 0.76 at 2 min; per-mouse means p = 0.56 and 0.90; 3.90 against 3.42 sigma on per-mouse means at 1 min); the gap10 variant agrees (0.06, 0.27, 0.29, 0.56). With the 7-s baseline the per-mouse test finds none (p = 0.19) but the pooled test finds control higher at p < 0.001 (12.8 against 8.5 sigma at 1 min), so under the pooled reading the outcome depends on the baseline. Without mice 497, 510 and 500, whose clock alignment could not be established, the result is not robust: with the all baseline the pooled test finds control higher at 1 min (3.67 against 3.03 sigma, p = 0.012; 110 control and 17 experimental units) but not at 2 min (p = 0.63), and per mouse (3 and 3 mice) p = 0.2 and 1.0. The outcome is the one on all mice in the dandiset.",
+     "deviations": [
+      "The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as the frames before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction as starting at that behaviour; this is an assumption (STAR Methods, Micro-endoscopic data extraction, baseline \"during 7sec or more\" before the first trial; Behavior annotations, a 5-min baseline starts every session). Mouse 488 has 6.2 s before its first annotation and is left out.",
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper.",
+      "Assumption. The baseline is all frames before the first annotated behaviour, not the last 7 s of them. The Methods' baseline is a 5-min period alone in the home cage (Behavior annotations), of which those frames are the nearest stand-in; the last 7 s is only the Methods' minimum (\"during 7sec or more\", Micro-endoscopic data extraction) and gives a narrow baseline that inflates sigma (1.8 times as many control units, 157 against 279 at 1 min, and 2.5 times as many experimental units, 76 against 190, pass 2 sigma). With this baseline both readings of \"nested\" agree. The first run instead assumed \"nested\" to be a test across mice; the same all baseline with pooled units also reproduces fig4ef-male-activity-slightly-lower."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-male-selective-reduced",
+     "statement": "The fraction of male-activated units (selective or mixed) is slightly smaller in experimental than in control mice (34.6% against 38.3%), and male-selective units are reduced by about 56% (6.3 +/- 2% against 14.4 +/- 4%).",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 2; Figure 4G, S4F",
+     "quote": "The percentage of all male-activated neurons (selective or mixed) was slightly smaller in experimental than control mice (34.6% vs. 38.3%, respectively ... while there was a ~56% reduction in the small fraction of male-selective neurons (6.3 \u00b1 2% vs. 14.4 \u00b1 4%, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "The dandiset holds no female-intruder session, and the paper names no other archive for these data. Male-selective and mixed units are defined against activity during the female interaction, so two of the four values cannot be computed. The male part, shown and not deciding the outcome. The fraction of male-activated units (at least 2 sigma over the male window) is lower in experimental mice under every baseline and window (across mice p from 0.016 to 0.41); the control fraction is outside 38.3 +/- 3.83% under every reading (23.3 to 47.5% pooled, 23.4 to 46.7% as a mean over mice), and the experimental fraction is inside 34.6 +/- 3.46% only with the 7-s baseline, and there only as the mean over mice at 1 min (37.4%) and in both summaries at 2 min (37.1% pooled, 36.4% over mice); pooled at 1 min it is 40.1%, outside.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-female-selective-and-mixed-increased",
+     "statement": "During female interactions the fractions of female-selective and of mixed-selectivity units are increased by about 4% and 44% in experimental mice.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 2; Figure 4G, S4F",
+     "quote": "Conversely, during female interactions the fraction of female-selective and mixed selectivity neurons was increased by ~4% and ~44%, respectively, in experimental mice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-sex-decoding-intact",
+     "statement": "Linear SVM decoders trained on VMHvl Esr1 activity from either control or experimental mice predict intruder sex with virtually 100% accuracy.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 3; Figure 4D",
+     "quote": "linear SVM decoders trained on imaging data from either control or experimental mice correctly predicted intruder sex with virtually 100% accuracy",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.01,
+       "p_relation": "<",
+       "about": "decoder accuracy against shuffled decoders (Figure 4D)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-pls-sex-separation",
+     "statement": "Partial least-squares regression of population activity against intruder sex separates responses to males and females in both control and experimental mice.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on VMHvl Esr1 activity and intruder sex representations, paragraph 3; Figure 4C, S4B-C",
+     "quote": "This analysis revealed a clear separation of responses during encounters with males vs. females in both control and experimental animals",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ac-behavior-activity-male-lower",
+     "statement": "Single-unit activity during male-directed sniffing and attack is slightly but significantly lower in experimental than in control mice, while activity during female-directed sniffing and mounting is similar.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on behavior representation in VMHvl, paragraph 1; Figure 5A, 5C, S5A-B",
+     "quote": "The ECDF and average single unit activity during male-directed sniffing or attack was slightly but significantly lower in experimental than in control mice ... In contrast, during social interactions with females, activity during sniffing and mounting was similar",
+     "statistics": [
+      {
+       "about": "cumulative distributions (Figure 5A)",
+       "test": "nested Kolmogorov-Smirnov test",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "cumulative distributions, z-scored (Figure S5B)",
+       "test": "nested Kolmogorov-Smirnov test",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "mean single-unit activity (Figure 5C)",
+       "test": "nested Mann-Whitney test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data. The male part, shown in the notebook and not deciding the outcome: activity in sigma during male-directed sniffing and attack is lower in experimental mice with units pooled (baseline all, sniff 0.33 against 0.92, attack 0.21 against 0.50; Mann-Whitney p < 0.001 and 0.015), but not on per-mouse means (p = 0.11 and 0.40).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5c-peth-activity",
+     "statement": "Mean bout-triggered activity is slightly but significantly lower in experimental mice during male-directed sniffing and attack, higher during female-directed sniffing, and unchanged during mounting.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on behavior representation in VMHvl, paragraph 1; Figure S5C",
+     "quote": "The mean activity during male-directed sniffing or attack was slightly but significantly lower in experimental than in control mice ... while it was significantly higher during female-directed sniffing, but unchanged during mounting",
+     "statistics": [
+      {
+       "test": "nested Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "The male-directed half of the criterion fails. Bout-triggered z-scored activity over 15 s, minus a 2-s or 3-s pre-bout baseline, is not lower in experimental mice at p < 0.05 by the nested Mann-Whitney test for sniffing or attack under any reading (pooled and per-mouse means p from 0.11 to 0.61; per-mouse medians up to 0.79). The experimental means are lower (sniff 0.002 against 0.051, 2-s baseline, pooled), and the KS test, not the claim's test, separates the distributions (p < 0.002). The female-directed half (higher during female sniffing, unchanged during mounting) is not in the dandiset and is not tested; it cannot rescue the claim, which needs all four directions.",
+     "deviations": [
+      "The dandiset holds no female-intruder session, so the two female-directed directions are not tested; the outcome rests on the male-directed directions, which the criterion needs in any case.",
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper; attack uses 3 and 5.",
+      "\"Nested\" tests are not defined; both readings of the claims file are run, units pooled and per-mouse means."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5bd-behavior-selective-units-reduced",
+     "statement": "During male interactions, sniff-selective units are reduced from 8.9 +/- 3% to 3.9 +/- 2% and attack-selective units from 6 +/- 0.9% to 1.8 +/- 0.7% in experimental mice; the mixed-selectivity fraction is reduced by about 22%, and units active during male-directed behaviors fall from 36.2% to 22.4%; female-directed selective fractions are similar.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on behavior representation in VMHvl, paragraph 2; Figure 5B, 5D",
+     "quote": "In experimental mice, during male interactions the fraction of sniff-selective units was reduced by ~40% relative to controls (3.9 \u00b1 2% in OARs gRNAs mice vs. 8.9 \u00b1 3% in Scr gRNAs mice) while the small proportion of attack-selective units was reduced by ~70% (1.8 \u00b1 0.7% vs. 6 \u00b1 0.9% ... The fraction of neurons exhibiting mixed behavioral selectivity (i.e., active during both behaviors) was moderately reduced (~22% ... Overall, there was a ~38% reduction in the fraction of active units during all male-directed behaviors (from 36.2% in control to 22.4% in experimental mice). In contrast, the fraction of female-directed sniffing- or mount-selective units was similar between control and experimental males",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "Measured under the first readings (baseline all, pooled fractions), in the claim's order: sniff-selective 1.7% experimental and 9.6% control, attack-selective 2.4% and 6.0%, active 28.8% control and 11.4% experimental, mixed fraction reduced by 45.2%. Control sniff- and attack-selective fractions and experimental attack-selective are inside tolerance; experimental sniff-selective, both active fractions and the mixed reduction are not, under any reading (per-mouse means give 1.7, 9.5, 2.1, 6.2, 27.7, 12.5 and 27.5%). The directions hold under every reading. Across mice (3 and 4) the differences give p = 0.057 with the all baseline. With the 7-s baseline more units pass 2 sigma (active 54.7% and 42.6%). Without mouse 497, whose clock alignment could not be established (510 and 500 have no attack annotation and are not in this measure), every direction holds and 3 values are inside tolerance with the all and gap10 baselines (2 with the 7-s baseline). The female-directed fractions are not in the dandiset.",
+     "deviations": [
+      "The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as the frames before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction as starting at that behaviour; this is an assumption (STAR Methods, Micro-endoscopic data extraction, baseline \"during 7sec or more\" before the first trial; Behavior annotations, a 5-min baseline starts every session). Mouse 488 has 6.2 s before its first annotation and is left out.",
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Only mice with both sniffing and attack annotations and a baseline are used: control 482, 508, 511 and experimental 440, 441, 497, 501.",
+      "The two readings of \"active during all male-directed behaviors\" give the same number here (sniff-selective plus attack-selective plus mixed)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-cp-tuning-shift",
+     "statement": "By choice probability, the percentages of attack- and sniff-tuned units during male-male interactions are reduced by about 80% and 70% in experimental mice, mixed-selectivity units increase by about 18%, and units tuned to sniffing females against sniffing males rise from 28.8 +/- 3% to 41.1 +/- 3%.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on behavior representation in VMHvl, paragraph 3; Figure 5E, S5D",
+     "quote": "We observed an ~80% and ~70% reduction in the percentage of attack- and sniff-tuned units, respectively, in experimental vs. control mice during male-male interactions ... with a concomitant ~18% increase in the fraction of units exhibiting mixed selectivity ... In contrast, the percentage of units tuned to sniffing females (vs. sniffing males) was increased in experimental mice (28.8 \u00b1 3% vs. 41.1 \u00b1 3%",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "The dandiset holds no female-intruder session, and the paper names no other archive for these data. Two of the five expected values (units tuned to sniffing females against sniffing males) need the female interaction. The male attack-against-sniff part, shown and not deciding the outcome. Under every combination run (two shuffles, pooled or per-mouse fractions, mice with or without a baseline; the two direction readings and the two traces give the same CP), attack-tuned units are fewer in experimental mice (reduction 55.5 to 82.7%), sniff-tuned units are fewer (13.8 to 83.1%) and units tuned to neither are more (2.3 to 25.4%). At most two of the three male values are inside tolerance in any combination (reassigned bouts, per-mouse means, attack 78.9% and sniff 76.8% inside, mixed 24.0% outside 18 +/- 1.8%).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5e-behavior-decoding-intact",
+     "statement": "Linear decoders distinguish attack from sniffing equally well in control and experimental mice.",
+     "source": "Results, Effect of Oxtr/Avpr1a co-editing on behavior representation in VMHvl, paragraph 3; Figure S5E",
+     "quote": "there was no significant difference between control and experimental mice in the performance of linear decoders trained to distinguish attack from sniffing based on VMHvl Esr1 activity",
+     "statistics": [
+      {
+       "test": "nested Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "With the paper's frame-wise stratified five-fold split, every control mouse decodes attack against sniffing better than every experimental mouse (C = 1, 0.994 against 0.934; C = 0.1 and 10 alike), and the Mann-Whitney test across mice finds the difference at p = 0.036, the smallest p that 3 and 5 mice allow. With 31 units drawn per mouse in each repeat the difference is larger (0.12 to 0.13) and still at p = 0.036 for every C, so unit counts do not explain it. The measure is weak. The frame-wise split leaves frames of the same bout in training and test sets, so decoders trained on shuffled bout labels score 0.981 to 0.988 (control) and 0.904 to 0.925 (experimental) over C, far above the paper's 50% chance, and real and shuffled accuracy do not differ in either group at any C or unit count (p from 0.10 to 1.0). With whole bouts held out (a variant), accuracy is 0.79 and 0.53 against shuffled 0.53 and 0.50, and the groups differ at p = 0.036. The shuffled decoders also separate the groups (p = 0.036 with 31 units at every C; 0.036, 0.071 and 0.25 with all units), so the group difference exists without behaviour labels: the outcome follows the criterion, but the measure does not show that decoding of behaviour is impaired. Without mouse 497, whose clock alignment could not be established, every comparison gives p = 0.057 or more, the smallest p 3 and 4 mice allow, while every control mouse still decodes better than every experimental mouse.",
+     "deviations": [
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Mice 510 and 500 have no attack annotation; 3 control and 5 experimental mice are used.",
+      "The cross-validation scheme is the stratified five-fold split the claims file takes from the sex decoder; the SVM's C is not given, and C = 0.1, 1 and 10 all give the same outcome.",
+      "Shuffled decoders are repeated 20 times per mouse, not 1,000; they do not decide the outcome.",
+      "Units are not subsampled in the paper's method; a variant with 31 units per mouse (the smallest count among these mice) is shown and gives the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-rslds-fit-quality",
+     "statement": "rSLDS models with 5 latent dimensions and 3 discrete states, fit to each mouse with at least 31 units, capture about 85% of the variance, with similar performance in control and experimental mice; attack occurs within a single rSLDS state in both groups.",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 2; Figure S6D",
+     "quote": "In both the control and experimental groups, the fit models reduced the dimensionality of the data to 5 latent factors and three states (S1-S3) capturing ~85% of the observed variance in neural activity. Model performance (cvR 2) was similar between control and experimental mice ... During male-male interactions, attack behavior occurred during a single rSLDS state in both control and experimental males",
+     "statistics": [
+      {
+       "about": "model performance, control against experimental",
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "4 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "Under all four seeds the emissions reconstruction explains 59.4% of the variance in control and 58.4 to 58.7% in experimental mice (range 49.5 to 66.4% over mice), against 85 +/- 8.5%. The forward-prediction R2 does not differ between groups (p = 0.114 at 1 s and 5 s for every seed). Attack frames fall mostly in one state in 7, 8, 8 and 8 of the 8 mice with attack annotations (seeds 0 to 3), and at least 90% in one state in 3, 2, 3 and 5. Checks for seed 0 (rslds_checks.ipynb). Sigma-normalized fits explain 69.0% (control) and 63.6% (experimental), and their forward R2 differs between groups (p = 0.016). On held-out frames the reconstruction explains 47.9% and 41.0%, and forward predictions of the activity do not differ over 1 s (p = 0.26) but do over 5 s (0.371 against 0.198, p = 0.010). So the claim's \"similar performance\" part also fails on the held-out score at 5 s and on the sigma-normalized fits (p = 0.016 at both horizons); it holds on the in-sample score and the held-out score at 1 s. The 85% may be a measure other than the emissions R2; that is asked of a reader (questions/001131.yaml). The fits of mice 510 and 500 do not recover the authors' latent factor 1 (|Spearman r| at most 0.47 for dimension 1, 0.70 for any dimension). Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [
+      "The files appear to hold only the male-intruder part of each session (no description, keyword or series name mentions a female interaction), so the claims file's two readings of the frames fit (male-intruder part, whole session) are taken as the same, the whole file.",
+      "The fits use the z-scored traces; the sigma-normalized reading is fit for seed 0 only (rslds_checks.ipynb, 9 mice with a baseline), and does not change any outcome.",
+      "Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data. The paper's score uses held-out folds it does not describe (STAR Methods, Dynamical system models); a one-fold held-out score of the activity, for seed 0, is in rslds_checks.ipynb.",
+      "Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing frames.",
+      "The fit call uses alpha = 0.0, as in the fit call of the ssm notebook the claims file names (notebooks/4-Recurrent-SLDS.ipynb at eb6c8aa); the first run used ssm's default, 0.5.",
+      "Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.",
+      "ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports numpy and Cython without declaring them), so the notebooks install it at that commit without build isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-control-tau1-greater",
+     "statement": "In control mice, the time constant of the first rSLDS dimension (about 100-120 s) is significantly larger than that of the second (about 40 s).",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 2; Figure 6A",
+     "quote": "In control mice, the time constant (\u03c4) of the 1 st rSLDS dimension (derived from the first eigenvalue of the fit dynamics matrix; see Methods ) was significantly higher than that of the 2 nd dimension (~100\u2013120s vs. ~40s",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 control mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "Control time constants are several times the paper's under every seed and reading: mean tau1 409 to 964 s and tau2 285 to 706 s (expected 90 to 132 s and 36 to 44 s). Measured gives reading (a), seed 0. Kruskal-Wallis across the five sorted dimensions gives p from 0.002 to 0.105, and Dunn's comparison of dimension 1 with 2 gives p = 1.0 in every case; in reading (a) tau1 and tau2 are often equal, as the slowest eigenvalues come as a complex pair. The sigma-normalized fits (seed 0) give tau1 380 to 462 s and tau2 272 to 292 s. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [
+      "The files appear to hold only the male-intruder part of each session (no description, keyword or series name mentions a female interaction), so the claims file's two readings of the frames fit (male-intruder part, whole session) are taken as the same, the whole file.",
+      "The fits use the z-scored traces; the sigma-normalized reading is fit for seed 0 only (rslds_checks.ipynb, 9 mice with a baseline), and does not change any outcome.",
+      "Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data. The paper's score uses held-out folds it does not describe (STAR Methods, Dynamical system models); a one-fold held-out score of the activity, for seed 0, is in rslds_checks.ipynb.",
+      "Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing frames.",
+      "The fit call uses alpha = 0.0, as in the fit call of the ssm notebook the claims file names (notebooks/4-Recurrent-SLDS.ipynb at eb6c8aa); the first run used ssm's default, 0.5.",
+      "Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.",
+      "ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports numpy and Cython without declaring them), so the notebooks install it at that commit without build isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-experimental-tau-indistinguishable",
+     "statement": "In experimental mice the first two rSLDS dimensions have statistically indistinguishable time constants (below 50 s), because the first dimension's time constant is reduced relative to controls.",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 2; Figure 6C, S6E",
+     "quote": "In contrast, in experimental mice the first two rSLDS dimensions had statistically indistinguishable \u03c4 values (<50s; Figure 6C ) due to a reduced 1 st dimension \u03c4",
+     "statistics": [
+      {
+       "about": "tau 1 against tau 2, experimental mice (Figure 6C)",
+       "test": "Kruskal-Wallis test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "7 experimental mice"
+      },
+      {
+       "about": "tau 1, control against experimental (Figure S6E)",
+       "test": "Mann-Whitney test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "4 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "Experimental mean tau1 is 242 to 2087 s and tau2 134 to 424 s over seeds and readings, not below 55 s (measured gives tau1, reading (a), seed 0). The paper's Kruskal-Wallis test over the five dimensions finds a difference in every case (p from below 0.001 to 0.008); Dunn's comparison of dimension 1 with 2 does not (p = 1.0). Control tau1 is not longer than experimental at p < 0.01 under any seed or reading (smallest two-sided p = 0.038), and is shorter in three of the eight cases. In the sigma-normalized fits (seed 0) control tau1 is longer at p = 0.008 under reading (b), but experimental tau1 is 140 to 181 s. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [
+      "The files appear to hold only the male-intruder part of each session (no description, keyword or series name mentions a female interaction), so the claims file's two readings of the frames fit (male-intruder part, whole session) are taken as the same, the whole file.",
+      "The fits use the z-scored traces; the sigma-normalized reading is fit for seed 0 only (rslds_checks.ipynb, 9 mice with a baseline), and does not change any outcome.",
+      "Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data. The paper's score uses held-out folds it does not describe (STAR Methods, Dynamical system models); a one-fold held-out score of the activity, for seed 0, is in rslds_checks.ipynb.",
+      "Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing frames.",
+      "The fit call uses alpha = 0.0, as in the fit call of the ssm notebook the claims file names (notebooks/4-Recurrent-SLDS.ipynb at eb6c8aa); the first run used ssm's default, 0.5.",
+      "Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.",
+      "ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports numpy and Cython without declaring them), so the notebooks install it at that commit without build isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6f-line-attractor-score",
+     "statement": "The line attractor score, log2 of the ratio of the two largest time constants, is about 1.6 in control mice and close to zero in experimental mice.",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 2; Figure 6F",
+     "quote": "This yielded a line attractor score (calculated as the log 2 of the ratio of the \u03c4 \u2018s of the 1 st and 2 nd dimensions) of ~1.6 ... and consequently a line attractor score close to zero",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "The mean control score is 0.00 to 1.65 over seeds and readings (expected 1.44 to 1.76). It is inside the tolerance once (seed 3, reading (b), 1.65), where the experimental mean is 1.69, not below 1, and the groups do not differ (p = 0.61). The experimental mean is 0.36 to 1.69, and the Mann-Whitney test finds no difference in any case (p from 0.11 to 1.0). Many reading (a) scores are 0 because the two slowest eigenvalues are a complex pair. Measured gives reading (a), seed 0. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [
+      "The files appear to hold only the male-intruder part of each session (no description, keyword or series name mentions a female interaction), so the claims file's two readings of the frames fit (male-intruder part, whole session) are taken as the same, the whole file.",
+      "The fits use the z-scored traces; the sigma-normalized reading is fit for seed 0 only (rslds_checks.ipynb, 9 mice with a baseline), and does not change any outcome.",
+      "Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data. The paper's score uses held-out folds it does not describe (STAR Methods, Dynamical system models); a one-fold held-out score of the activity, for seed 0, is in rslds_checks.ipynb.",
+      "Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing frames.",
+      "The fit call uses alpha = 0.0, as in the fit call of the ssm notebook the claims file names (notebooks/4-Recurrent-SLDS.ipynb at eb6c8aa); the first run used ssm's default, 0.5.",
+      "Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.",
+      "ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports numpy and Cython without declaring them), so the notebooks install it at that commit without build isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6f-mating-attractor-intact",
+     "statement": "During mounting of female intruders, co-editing does not significantly reduce the first-dimension time constant or the line attractor score.",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 2; Figure S6F",
+     "quote": "during mounting behavior towards female intruders, co-perturbation of Oxtr/Avpr1a-mediated signaling did not significantly reduce the 1st dimension \u03c4 values or the line attractor score in experimental mice compared to controls",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "4 control and 6 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6g-flow-field-line-vs-point",
+     "statement": "Flow fields of the fit rSLDS in the plane of the first two principal components show a line attractor (a roughly linear region of low flow) in control mice and a point attractor in experimental mice.",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 3; Figure 6G-H, S6C",
+     "quote": "The 2D flow field of control mice (Scr gRNAs) revealed a roughly linear region of low vector flow constituting the line attractor ... In contrast, in experimental mice (OARs gRNAs) this line attractor was absent and was replaced by a point attractor",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "A majority of control mice score above 1 only once in the eight cases (seed 3, reading (b), 3 of 4), and there 3 of the 6 experimental mice score below 1, not a majority; in the other cases 0 to 2 of 4 control mice score above 1. The flow fields of all ten mice are drawn for seeds 0 and 2. The slowest-flow region is elongated (ratio of its two axes above 4) in 1 of 4 control and 3 of 6 experimental mice for seed 0, and in 0 of 4 control and 4 of 6 experimental mice for seed 2, so the shapes do not split by group as the paper's line and point attractors do. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [
+      "The files appear to hold only the male-intruder part of each session (no description, keyword or series name mentions a female interaction), so the claims file's two readings of the frames fit (male-intruder part, whole session) are taken as the same, the whole file.",
+      "The fits use the z-scored traces; the sigma-normalized reading is fit for seed 0 only (rslds_checks.ipynb, 9 mice with a baseline), and does not change any outcome.",
+      "Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data. The paper's score uses held-out folds it does not describe (STAR Methods, Dynamical system models); a one-fold held-out score of the activity, for seed 0, is in rslds_checks.ipynb.",
+      "Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing frames.",
+      "The fit call uses alpha = 0.0, as in the fit call of the ssm notebook the claims file names (notebooks/4-Recurrent-SLDS.ipynb at eb6c8aa); the first run used ssm's default, 0.5.",
+      "Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.",
+      "ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports numpy and Cython without declaring them), so the notebooks install it at that commit without build isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-integration-dimension-persistence",
+     "statement": "In control mice the activity of the first rSLDS dimension ramps up during sniffing and attack and stays elevated after the intruder is removed; in experimental mice it decays rapidly between attack bouts and is significantly lower in the post-intruder interval.",
+     "source": "Results, VMHvl Esr1 line attractor dynamics require Oxtr/Avpr1a-mediated signaling, paragraph 4; Figure 6B, 6D, 6E, S6A-B",
+     "quote": "in control mice this activity ramped up during the progression from male-directed sniffing to attack, eventually reaching a plateau where it decayed slowly between attack bouts towards a single intruder and remained elevated between sequential trials with different intruders ... In contrast, in experimental mice 1 st dimension neural activity decayed rapidly between attack bouts, displaying a \u201csawtooth\u201d profile, and was significantly lower during the post-intruder (i.e., inter-trial) interval",
+     "statistics": [
+      {
+       "about": "during bouts against post-intruder, within each group (Figure 6E)",
+       "test": "paired t-test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "The files do not mark when the intruder is removed, so the post-intruder period cannot be found. A variant comparing the first dimension's activity during bouts with the frames after the last annotated behaviour is shown and does not decide. No control paired t-test reaches p < 0.05 (p = 0.31 to 0.47 over the four seeds), and the experimental one does only for seed 1 (p = 0.049). Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-achw-first-dimension",
+     "statement": "The mean autocorrelation half-width of units weighted on the first rSLDS dimension, over the entire male-male interaction, is shorter in experimental (9.86 +/- 1 s) than in control mice (28.6 +/- 1.23 s); the reduction is about 66%, against about 61% for second-dimension units.",
+     "source": "Results, Oxtr/Avp1ra-mediating signaling controls VMHvl Esr1 persistent neural activity, paragraph 1; Figure 7B, S7A",
+     "quote": "The mean ACHW of these neurons across the entire social interaction was significantly shorter in experimental (9.86 \u00b1 1 s) than in control mice (28.6 \u00b1 1.23 s), by ~20 seconds ... A reduction in the average ACHW was also observed among 2 nd rSLDS dimension cells",
+     "statistics": [
+      {
+       "about": "first-dimension units (Figure 7Bi)",
+       "test": "nested Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 control and 7 experimental mice"
+      },
+      {
+       "about": "second-dimension units, cumulative distributions (Figure 7Bii)",
+       "test": "Kolmogorov-Smirnov test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_seeds_0_1.ipynb",
+     "notes": "First-dimension units have shorter ACHW in experimental mice under every combination (window-mean biased estimator, pooled means 19.0 to 26.8 s against 26.6 to 34.1 s; over the three estimators 19.0 to 34.3 s against 26.6 to 44.2 s; pooled Mann-Whitney p < 0.001; on per-mouse means p = 0.11 to 0.76, so the nested readings disagree on significance). The experimental values are two to three and a half times the paper's 9.86 +/- 1 s in every combination. Control values fall inside 28.6 +/- 1.23 s in three combinations (29.6 s, seed 1; 28.3 and 28.9 s, seed 3); the second-dimension reduction is 22 to 60% pooled and 4 to 73% on per-mouse means, inside 61 +/- 6.1% in a few combinations but never together with the other two values. Measured gives the first combination (window-mean biased estimator, seed 0, largest weight). Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.",
+     "deviations": [
+      "The files appear to hold only the male-intruder part of each session (no description, keyword or series name mentions a female interaction), so the claims file's two readings of the frames fit (male-intruder part, whole session) are taken as the same, the whole file.",
+      "The fits use the z-scored traces; the sigma-normalized reading is fit for seed 0 only (rslds_checks.ipynb, 9 mice with a baseline), and does not change any outcome.",
+      "Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data. The paper's score uses held-out folds it does not describe (STAR Methods, Dynamical system models); a one-fold held-out score of the activity, for seed 0, is in rslds_checks.ipynb.",
+      "Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing frames.",
+      "The fit call uses alpha = 0.0, as in the fit call of the ssm notebook the claims file names (notebooks/4-Recurrent-SLDS.ipynb at eb6c8aa); the first run used ssm's default, 0.5.",
+      "Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.",
+      "ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports numpy and Cython without declaring them), so the notebooks install it at that commit without build isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm).",
+      "The z-scored and sigma readings of the trace give the same ACHW under the window-mean estimators (an affine map does not change the autocorrelation), and with one intruder per file the mean over trials is the single autocorrelation; the readings left are the two unit assignments.",
+      "The estimator of the autocorrelation is not given (the paper cites Remedios et al. 2017). The window-mean biased estimator (the standard sample autocorrelation) is used, and the n - k and file-mean estimators are shown; all give the same outcome.",
+      "Unit weights on a dimension are |C Re(v)| for the eigenvector v of the reading (a) state. When the two slowest eigenvalues are a complex pair (4 to 8 of 10 mice per seed), dimension 2 takes |C Im(v)|, the other axis of the plane in which the pair rotates; the first run gave both dimensions the same weights.",
+      "The whole interaction is taken from the first annotated behaviour to the end of the file."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-achw-all-units",
+     "statement": "Across all VMHvl Esr1 units, the mean ACHW during the first 1-2 minutes of male-male interaction is reduced in experimental mice (by about 50.9%), less than for first-dimension units.",
+     "source": "Results, Oxtr/Avp1ra-mediating signaling controls VMHvl Esr1 persistent neural activity, paragraph 1; Figure 7C",
+     "quote": "A reduction in the average ACHW was also observed among 2 nd rSLDS dimension cells, as well as in the VMHvl Esr1 population as a whole ... the difference in mean ACHW between experimental and control animals was larger for 1 st dimension-weighted units (~66%) than for 2 nd dimension and total Esr1 + neurons (~61% and 50.9%, respectively",
+     "statistics": [
+      {
+       "test": "nested Mann-Whitney test (mean) and Kolmogorov-Smirnov test (distribution)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mountoufaris_2024.ipynb",
+     "notes": "Over the first 1 or 2 min the reduction is 15 to 31% under every estimator and both means (window mean removed and divided by n, 14.6 and 15.9% pooled, 19.2% per mouse; divided by n - k, 15.5 to 20.2%; no mean removed and divided by n - k, 24.8 to 31.5%), against 50.9 +/- 5.1%. Experimental units are shorter with units pooled (Mann-Whitney and KS p < 0.001 under every estimator), but not across mice (p from 0.07 to 0.26). A synthetic check shows the window-mean estimators shorten a known ACHW of 10 to 30 s to 4 to 11 s over 1 to 2 min, which compresses group differences; the no-mean estimator comes within 30% of the truth at 2 min but leaves 46 to 81 units undefined. Over the whole recording (a variant, not the claim's window) the reduction is 43 to 47%. The outcome is not robust to the estimator. The undefined units of the no-mean estimator are the slowest and more of them are control units (50 against 31 at 1 min, 34 against 12 at 2 min), so leaving them out understates the reduction. Set to the window's length, a lower bound, they give a reduction of the mean of 27.6 and 34.5% pooled (24.8 and 31.7% over mice), still outside tolerance; the median, which this censoring does not bias, falls by 49.6 and 53.3%, inside it, but the claim's measure is the mean. Without mice 497, 510 and 500, whose clock alignment could not be established, the reduction over 1 to 2 min is 5 to 18%.",
+     "deviations": [
+      "The interaction is taken to start at the first annotated behaviour (an assumption; the intruder's entry is not marked).",
+      "\"Nested\" tests are not defined; both readings of the claims file are run, units pooled and per-mouse means (or medians for KS claims).",
+      "The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper.",
+      "The z-scored and sigma readings give the same ACHW under the window-mean estimators, and the trial reading is the single autocorrelation, so the window readings and the estimator are what differ.",
+      "The estimator of the autocorrelation is not given (the paper cites Remedios et al. 2017); three are run (window mean removed and divided by n or by n - k, and no mean removed and divided by n - k, on the z-scored trace). All give the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7b-achw-female-slight",
+     "statement": "During male-female interactions, the mean ACHW of all VMHvl Esr1 units is only slightly reduced in experimental mice (by about 22%).",
+     "source": "Results, Oxtr/Avp1ra-mediating signaling controls VMHvl Esr1 persistent neural activity, paragraph 1; Figure S7B",
+     "quote": "In contrast, the average and cumulative distribution of ACHWs among all VMHvl Esr1 neurons were only slightly reduced (by ~22%) during male-female interactions",
+     "statistics": [
+      {
+       "test": "not named for panel B (the S7 legend names only a Kruskal-Wallis test with Dunn's correction over time points 0-1000 s, which belongs to the slice panels)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 control and 7 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no female-intruder session: every file has behaviour towards a male intruder only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The paper names no other archive for these data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7cd-slice-rslds",
+     "statement": "An rSLDS fit to slice calcium responses to OXT plus AVP captures 85% of the variance, with a first-dimension time constant (about 90 s) 8-9 times that of the second (about 15 s).",
+     "source": "Results, OXT and AVP evoke persistent responses in VMHvl Esr1 neurons ex vivo, paragraph 1; Figure S7C-D",
+     "quote": "This fit model captured 85% of the observed variance in neural activity. The time constant of dimension x1 (~90s) was ~8\u20139 -fold greater than that of x2 (~15s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The slice imaging is not in the dandiset, and the paper names no other archive.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7k-persistent-and-transient-slice-responses",
+     "statement": "Slice responses to OXT plus AVP fall into persistent responses that outlast the perfusion window and transient responses that decay within it.",
+     "source": "Results, OXT and AVP evoke persistent responses in VMHvl Esr1 neurons ex vivo, paragraph 1; Figure S7F-K",
+     "quote": "Plotting the time-varying weighted average activity of x1 and x2 neurons revealed that the former exhibited slowly decaying responses to OXT+AVP application, while the latter exhibited more transient responses",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The slice imaging is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-cre-editing-spares-mounting",
+     "statement": "Bilateral Cre-dependent co-editing in VMHvl Esr1 neurons does not change mounting of female intruders.",
+     "source": "Results, Altered VMHvl Esr1 neural activity during social interactions, paragraph 2; Figure 3D, S3D",
+     "quote": "consistent with the lack of an effect on mounting behavior",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "15 control and 13 experimental mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The behaviour of the bilateral Cre-dependent cohort, with female intruders, is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7l-blockers-slight-effect",
+     "statement": "In slices, synaptic transmission blockers (CNQX and MK-801) only slightly increase the decay rate of the peptide-evoked calcium response, during its later phases.",
+     "source": "Results, OXT and AVP evoke persistent responses in VMHvl Esr1 neurons ex vivo, paragraph 1; Figure S7L",
+     "quote": "the inclusion of synaptic transmission blockers (20 \u03bc M CNQX and 10 \u03bc M MK-801) only slightly increased the decay rate during later phases of the peptide response",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The slice imaging with synaptic blockers is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds the miniscope data of 4 control and 6 experimental mice, where the paper reports 5 and 7 (STAR Methods, Micro-endoscopic data extraction). The female-intruder part of every imaging session is absent, as are the behaviour cohorts of Figures 2 and 3, the fiber photometry and the slice imaging, although the paper's data statement says the source data will be deposited at DANDI. 20 of the 36 claims cannot be tested for these reasons.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files mark neither the 5-min pre-intruder baseline, nor the intruder's entry and removal. The paper's activity measures are in units of sigma relative to that baseline, and Figure 6E uses the post-intruder period; here the baseline had to be assumed from the first annotated behaviour, and the post-intruder claim could not be tested. Only z-scored traces are given, not dF/F.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The files of mice 510 and 500 describe their trace as \"DF/F\" with \"GCaMP6m\". The values are z-scores (every unit of mouse 510 has mean 0 and SD 1), and the paper says the imaged mice carried \"an AAV vector that encodes both the gRNAs and a Cre-dependent GCaMP8s\" (Results, Single cell CRISPRoscopy imaging).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The files of mice 510 and 500 hold only sniffing annotations (series named \"Ch1: sniffing\"), with no attack or mounting, although the paper's exemplar mice attack. Mouse 510's sniffing bouts all fall between 179 and 279 s of a 1200-s recording.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The unit counts per group differ from the STAR Methods in the other direction from the mouse counts: 587 control units in 4 mice and 554 experimental units in 6 mice, against 585 in 5 and 546 in 7.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The two files of the earlier version 0.240826.1647 (subjects ControlMouse and MutantMouse) are the same recordings as mice 510 and 500 of version 0.260601.1203, with identical traces, sniffing bouts and rSLDS weights under different subject ids.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The group of each mouse is given only by the prefix of its subject id (ctrl, mut) and, in eight files, a keyword; there is no genotype or description of the gRNA. Nine sessions carry the same start date (2023-02-01), apparently a placeholder.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The trace of mouse 500 is not z-scored over its file (unit SDs 0.65 to 1.05, means up to 0.23 away from 0), unlike the other nine, so it was z-scored over a longer recording and then cut.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The rSLDS weights deposited for mice 510 and 500 (\"latent factor 1\") are not recovered by fits with the settings of the claims file: over four seeds their |Spearman r| with the weights of the first fitted dimension is at most 0.47, and with those of any fitted dimension at most 0.70. The fits' time constants are hundreds of seconds and their variance explained 59%, against 85% in the paper.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors. (1) Where does the pre-intruder baseline lie in each file, and when did each intruder enter and leave? (2) What are the \"nested\" Mann-Whitney and KS tests: GraphPad nested tests across mice, or tests on pooled units? The outcomes of fig4ef and figs4e depend on this. (3) For the rSLDS, which frames were fit, with which seeds and restarts, how were the cross-validation folds and horizon of the performance score formed, which state's dynamics matrix gives the time constants, and how are complex eigenvalue pairs (two equal time constants) treated in the line attractor score? (4) How is ACHW computed (which estimator of the autocorrelation, whether the window's mean is removed, over which window)? (5) How is the attack probability of Figure S4A(vii) computed and summarized per mouse? (6) Mouse 511 has two sniffing bouts of 22 and 40 s; is that annotation complete? (7) For Figure 1E, which cells of the Kim et al. 2019 atlas were counted (both sexes, or male cells only) and above what expression threshold? The outcome of fig1e depends on both.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results give n=4 control mice for Figure 4E-F, while the Figure 4 and S4 legends and the STAR Methods give 5. The dandiset holds 4 control mice.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The handover of the first run, the executed notebooks with the conclusions and summaries removed, the helper module and the claims file, with the paper. The verifier also queried the archive API and fetched the ssm notebook the claims file names (4-Recurrent-SLDS.ipynb at eb6c8aa).",
+     "agreed": 33,
+     "of": 36,
+     "disagreements": [
+      {
+       "claim": "figs4a-unilateral-no-behavior-deficit",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 16, no listed measure reaches p < 0.05, but attack measures cover only 3 control and 5 experimental mice. \"Attack probability\" is undefined. Read as attack bouts per unit time, it separates the groups completely; experimental mice attack more, p = 0.036 (problem 4, it was run under only one undeclared reading, the share of time attacking)."
+      },
+      {
+       "claim": "figs4e-active-units-unchanged",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 18, no difference with the \"all\" and \"gap10\" baselines or on per-mouse means. With the 7 s baseline the pooled test gives p at most 0.0001, so the outcome depends on a reading the paper leaves open."
+      },
+      {
+       "claim": "figs5c-peth-activity",
+       "outcome": "not_reproduced",
+       "reason": "The notebook calls it blocked, but cell 23 already decides it. The paper's test (nested Mann-Whitney) finds male sniff and attack not lower at p < 0.05 under any reading (p 0.11 to 0.79). The claim needs all four directions, so it fails whatever the female data show (problem 1)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The full executed notebooks of the first revision, with conclusions and summaries, the helper module, the attempt record, the README and the claims file, with the paper. The verifier checked every number in the conclusions, summaries, README and notes against the printed outputs.",
+     "agreed": 36,
+     "of": 36,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 3. The one proposed change of outcome (fig1e-oxtr-avpr1a-coexpression, blocked to partially reproduced) and the analysis behind it in the executed notebook after the round-2 revision (cells 54 to 56), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/001131/verifier-3-report.md.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001131-mountoufaris-2024",
+   "type": "reproduction",
+   "title": "VMHvl Esr1 activity and line attractor dynamics after Oxtr/Avpr1a co-editing (Mountoufaris et al. 2024)",
+   "description": "Tests the miniscope findings of Mountoufaris, Nair et al. (2024) on dandiset 001131, which holds z-scored VMHvl Esr1 traces and male-directed behaviour annotations of 4 control and 6 experimental male residents during interactions with a male intruder. It compares activity, behavioural selectivity, persistence (autocorrelation half-width) and rSLDS time constants between groups. The female-intruder sessions, the behaviour and photometry cohorts and the slice experiments are not in the dandiset.",
+   "datasets": [
+    "dandi:001131"
+   ],
+   "papers": [
+    "10.1016/j.cell.2024.08.015"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mountoufaris_2024.ipynb",
+     "title": "Activity, selectivity, decoding and persistence (dandiset 001131)",
+     "executed": null
+    },
+    {
+     "path": "rslds_seeds_0_1.ipynb",
+     "title": "rSLDS fits, seeds 0 and 1 (dandiset 001131)",
+     "executed": null
+    },
+    {
+     "path": "rslds_seeds_2_3.ipynb",
+     "title": "rSLDS fits, seeds 2 and 3 (dandiset 001131)",
+     "executed": null
+    },
+    {
+     "path": "rslds_checks.ipynb",
+     "title": "rSLDS checks, seed 0, sigma-normalized fits and a held-out score (dandiset 001131)",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}
