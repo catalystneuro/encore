@@ -51,29 +51,32 @@ outcomes:
   output: claim:fig4de-response-clusters
   measured:
   - 11
-  - 941
-  - 786
-  - 755
-  - 713
-  - 645
-  - 643
-  - 568
-  - 542
-  - 526
-  - 392
-  - 187
+  - 963
+  - 772
+  - 664
+  - 657
+  - 651
+  - 604
+  - 590
+  - 579
+  - 554
+  - 491
+  - 173
   - 0
-  notes: 'With scanpy''s default Leiden seed, 11 clusters (within one of 12). In descending order the
-    sizes are 941, 786, 755, 713, 645, 643, 568, 542, 526, 392 and 187; 7 of the 12 expected sizes are
-    within tolerance and there is no 12th (expected 176). By the criterion''s measures (code find_decay,
-    absolute values) clusters 6 and 8 are rapid and brief (decay 0.10 and 0.24 s) and only cluster 10
-    is persistent (mean |1 to 2 s| 0.34 of the peak, peak at 0.28 s); the condition of three persistent
-    clusters with two early peaks fails under both numberings. Clusters 0, 1, 5 and 9 decay after 1.03
-    to 1.21 s, with means over 1 to 2 s of 0.14 to 0.16 of their peaks. Two of the 11 clusters (0 and
-    5) are suppressed. Over ten Leiden seeds the count is within 12 +- 1 in 6, 2 to 8 sizes are within
-    tolerance, 0 to 3 clusters are persistent, and the full condition holds in none. Changed from partially
-    reproduced after verification: the cluster count holds but the sizes and the persistent structure,
-    the substance of the claim, fail under every seed.'
+  notes: 'With scanpy''s default Leiden seed and BLAS on one thread, 11 clusters (within one of 12). In
+    descending order the sizes are 963, 772, 664, 657, 651, 604, 590, 579, 554, 491 and 173; 6 of the
+    12 expected sizes are within tolerance (the 3rd and the 8th to 11th are not) and there is no 12th
+    (expected 176). By the criterion''s measures (code find_decay, absolute values) clusters 9 and 6 are
+    rapid and brief (decay 0.10 and 0.18 s) and two are persistent, cluster 0 (mean |1 to 2 s| 0.26 of
+    the peak, peak at 0.11 s) and cluster 10 (0.42, peak at 0.77 s); the condition of three persistent
+    clusters with two early peaks fails under both numberings. Clusters 1, 4 and 5 decay after 1.35, 1.16
+    and 1.24 s, with means over 1 to 2 s of 0.22, 0.14 and 0.18 of their peaks. Two of the 11 clusters
+    (0 and 4) are suppressed. Over ten Leiden seeds the count is within 12 +- 1 in 6, 2 to 7 sizes are
+    within tolerance, 0 to 3 clusters are persistent, and the full condition holds in none. The PCA in
+    float64 gives 12 clusters with 7 sizes within tolerance, and the float32 PCA on 4 BLAS threads 11
+    clusters with 4 within (adjusted Rand index 0.71 against the main partition for both). Changed from
+    partially reproduced after verification round 1: the cluster count holds but the sizes and the persistent
+    structure, the substance of the claim, fail under every seed and both perturbations.'
   deviations:
   - Leiden runs on the neighbor graph, as scanpy does and as the code calls it, not on the UMAP embedding
     the Methods name (criterion).
@@ -81,31 +84,39 @@ outcomes:
     works on absolute values; the criterion cites it.
   - Leiden's partition depends on its random seed; the default (0), which the code uses by calling sc.tl.leiden
     without one, decides the outcome, and ten seeds are shown.
+  - The float32 PCA rounds differently with the number of BLAS threads, which changes the neighbor graph
+    and the partition (1, 2 and 4 threads gave three partitions on the same data). BLAS is limited to
+    one thread for the clustering so that the partition does not depend on the machine, a standard choice
+    for a detail of computation; the float64 PCA and 4 threads are shown as perturbations.
 - claim: figs31b-cluster-overrepresentation
   outcome: partially_reproduced
   notebook: reproduce_kauvar_2025.ipynb
   output: claim:figs31b-cluster-overrepresentation
-  notes: 'Default seed. 54 regions have more than 30 clustered cells. Under FDR 0.05 and 0.01 and under
-    both rankings of cluster speed (find_decay on the cluster mean of z-scored cells, and on the pooled
-    baseline-subtracted trace of Fig. 4G), PAG is overrepresented in clusters 4 and 6 and VPM in cluster
-    2 (faster half 2, 4, 6, 8, 10), and frontal or limbic regions in slower-half clusters (0.01 ACAv5,
-    AId5, ORBl5 and PL2/3 in cluster 0, ORBvl2/3 in 1 and 9, ORBvl5 in 9). VPM is also overrepresented
-    in cluster 3, of the slower half. Over ten Leiden seeds the PAG and frontal conditions hold in all
-    ten, but VPM is in a faster-half cluster in only 3 (seeds 0, 7, 9), under both thresholds and both
-    rankings. Chance is 1/11 here against the paper''s 1/12. Changed from reproduced after verification:
-    the VPM part depends on the partition.'
+  notes: 'Default seed, BLAS on one thread. 54 regions have more than 30 clustered cells. Under the criterion''s
+    ranking (find_decay on the cluster mean of z-scored cells; faster half 2, 6, 7, 8, 9) the condition
+    holds at FDR 0.05 and 0.01: PAG is overrepresented in cluster 9, VPM in clusters 2 and 8 at 0.05 and
+    in cluster 8 at 0.01, and frontal or limbic regions in slower-half clusters (at 0.01 ACAv5, AId5, ORBl5
+    and PL2/3 in cluster 0, ORBvl2/3 in 1 and 5, ORBvl5 in 3 and 5). ACAd5 (both thresholds) and PL5
+    (0.05) are also overrepresented in the faster-half cluster 2. Under the ranking by the pooled baseline-subtracted
+    trace of Fig. 4G (faster half 1, 6, 7, 9, 10) VPM is in no faster-half cluster, and the condition
+    fails at both thresholds. Over ten Leiden seeds the criterion''s ranking holds in 8 seeds at 0.05
+    and 7 at 0.01, the pooled ranking in 3 and 2, and all four combinations in 2 (seeds 4 and 8); every
+    failure is the VPM part, while PAG and frontal hold in every seed. Chance is 1/11 here against the
+    paper''s 1/12. Changed from reproduced after verification round 1, and kept: the VPM part depends
+    on the ranking and on the partition.'
   deviations:
   - With 11 clusters the faster half is taken as the 5 fastest by find_decay.
-  - Leiden seed as for fig4de-response-clusters; ten seeds shown.
+  - Leiden seed and BLAS threads as for fig4de-response-clusters; ten seeds shown.
 - claim: fig4g-ketamine-alters-slow-clusters
   outcome: not_reproduced
   notebook: reproduce_kauvar_2025.ipynb
   output: claim:fig4g-ketamine-alters-slow-clusters
   notes: Spearman correlation across 11 clusters between Pre decay time and the Pre to Ketamine change
-    is 0.127 (p = 0.71) for the cosine distance and 0.209 (p = 0.54) for the absolute difference over
-    1 to 2 s. The largest changes are in the suppressed clusters 0 and 5 (cosine distance 1.43 and 0.70);
-    the fast cluster 10 changes by 0.49 and the slow cluster 9 by 0.16. Over ten Leiden seeds no correlation
-    is positive with p < 0.05 (rho -0.10 to 0.33).
+    is -0.273 (p = 0.42) for the cosine distance and -0.409 (p = 0.21) for the absolute difference over
+    1 to 2 s. The largest changes are in clusters 0 and 10 (cosine distance 1.171 and 0.754, Pre decay
+    0.31 and 0.18 s); of the two slowest clusters, 4 changes by 0.622 and 5 by 0.139. Over ten Leiden
+    seeds no correlation is positive with p < 0.05 (rho -0.297 to 0.224 for the cosine distance, -0.486
+    to 0.248 for the difference).
   deviations:
   - Ketamine is series 23 to 32 (10 series, code), where table S3 gives 64 Ketamine puffs (8 series);
     the criterion names this conflict and follows the code.
@@ -114,13 +125,14 @@ outcomes:
   notebook: reproduce_kauvar_2025.ipynb
   output: claim:fig4i-rise-times-unchanged
   notes: 35 regions pass at the d' threshold 1.3 and 31 at 2. The median over regions of the bootstrap
-    median change in rise time is -0.0021 s (Ketamine 23 to 32) or -0.0021 s (22 to 32) under every setting,
-    within one 10 ms bin of zero. The Pre median rise is below 0.1 s in 31 of 35 and 29 of 31 regions.
+    median change in rise time is +0.0001 s (Ketamine 23 to 32) or -0.0030 s (22 to 32) under every setting,
+    within one 10 ms bin of zero. The Pre median rise is below 0.1 s in 32 of 35 and 30 of 31 regions.
     The more-than-30 and at-least-30 rules give the same regions. In the code's weighting a cluster without
-    a value (peak after 750 ms) adds zero; that weight averages 0.06 of a region in Pre and 0.24 under
+    a value (peak after 750 ms) adds zero; that weight averages 0.089 of a region in Pre and 0.246 under
     ketamine. With the weights renormalized over clusters with a value, with Pre from series 11 to 20
-    only (20 replicate puffs, as Ketamine), or both, the change is +0.006, -0.007 and +0.000 s, all within
-    one bin, and the Pre rise is below 0.1 s in 31 to 34 regions.
+    only (20 replicate puffs, as Ketamine), or both, the change is +0.0065, -0.0040 and +0.0040 s, all
+    within one bin, and the Pre rise is below 0.1 s in 31 to 35 regions. The regional values depend on
+    the partition (clustering of fig4de-response-clusters, BLAS on one thread).
   deviations:
   - The code skips cluster 11; this clustering has clusters 0 to 10, so none is skipped.
   - Bootstrap seed 0 is a standard choice.
@@ -130,21 +142,21 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_kauvar_2025.ipynb
   output: claim:fig4h-decay-shortened
-  notes: 'The median of the pooled bootstrapped decay changes is -0.168 s (threshold 1.3, code series),
-    -0.161 s (Methods-literal series), -0.170 and -0.163 s at threshold 2. The Ketamine median decay is
+  notes: 'The median of the pooled bootstrapped decay changes is -0.162 s (threshold 1.3, code series),
+    -0.158 s (Methods-literal series), -0.165 and -0.161 s at threshold 2. The Ketamine median decay is
     shorter in 33 of 35 regions (threshold 1.3) and 31 of 31 (threshold 2). Part of the shortening comes
-    from the code''s weighting, in which a cluster without a decay adds zero and which drops 0.24 of the
-    weight under ketamine against 0.06 in Pre. Renormalized weights give -0.118 s (29 of 35 regions shorter),
-    Pre from series 11 to 20 only -0.092 s (32 of 36), and both -0.058 s (26 of 36): the decay still shortens
-    under every control, by a third to two thirds as much.'
+    from the code''s weighting, in which a cluster without a decay adds zero and which drops 0.246 of
+    the weight under ketamine against 0.087 in Pre. Renormalized weights give -0.124 s (29 of 35 regions
+    shorter), Pre from series 11 to 20 only -0.083 s (31 of 36), and both -0.058 s (26 of 36): the decay
+    still shortens under every control, by 0.36 to 0.77 of the main change.'
 - claim: fig4h-decay-anatomical-progression
   outcome: reproduced
   notebook: reproduce_kauvar_2025.ipynb
   output: claim:fig4h-decay-anatomical-progression
   notes: Median Pre decay of the frontal and limbic regions (ACAd, ACAv, AIv, ILA, MOp, MOs, ORBl, ORBm,
-    ORBvl, PL) is 0.505 s at threshold 1.3 (0.521 s at 2, without MOp), against 0.290 s for the midbrain
-    regions MRN, NPC, PAG and SCig; VPM (0.531 s) and MD (0.565 s) lie above the median of all regions
-    (0.439 s).
+    ORBvl, PL) is 0.473 s at threshold 1.3 (0.513 s at 2, without MOp), against 0.301 s for the midbrain
+    regions MRN, NPC, PAG and SCig; VPM (0.557 s) and MD (0.571 s) lie above the median of all regions
+    (0.433 s).
 - claim: fig5d-emotion-dimension-accumulates
   outcome: partially_reproduced
   notebook: reproduce_kauvar_2025.ipynb
@@ -215,7 +227,7 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_kauvar_2025.ipynb
   output: claim:fig5g-tau-persist-model
-  notes: Variance explained 0.81 to 0.95 over 24 readings; fitted Ketamine tauP 0.13 to 0.38 s against
+  notes: Variance explained 0.81 to 0.95 over 24 readings; fitted Ketamine tauP 0.12 to 0.38 s against
     Pre 20.5 to 33.6 s. Main reading without sub-5 0.866, tauP 32.2 s against 0.25 s.
   deviations:
   - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
@@ -298,7 +310,7 @@ outcomes:
     the 30 s windows free of tone and light onsets it holds with per-unit weights (p = 0.005 to 0.036)
     and misses once with pooled weights (median, p = 0.053). Without sub-1 or sub-3 the code''s per-series
     reading fails (p = 0.56 and 0.48): degenerate fits enter the means (4 and 5 of 220 per-series fits
-    beyond the fit window; Ketamine up to 1.71 s, 610 s with pooled weights). Bounding the fit gives p
+    beyond the fit window; Ketamine up to 1.71 s with per-unit weights, 853 s with pooled weights). Bounding the fit gives p
     = 0.077 without sub-1 and 0.050 without sub-3; the concatenated reading holds (p = 0.012 and 0.010).'
   deviations:
   - The paper excludes one unnamed animal from Figs. 5 and 6 (Methods, Neuropixels recording and processing).
@@ -661,7 +673,8 @@ outcomes:
     as nmf_k_determination) is 0.466 at six factors (0.4655 under three other seeds), within 0.47 +- 0.047.
     Gains in held-out R2 are 0.081 from 2 to 4 factors, 0.056 from 4 to 6 and 0.015 from 6 to 8; the largest
     drop in marginal gain puts the elbow at six, the farthest point from the chord of the 2-to-38 curve
-    at eight.
+    at eight. The held-out R2 keeps rising slowly after six factors, to 0.507 at 22, so the elbow depends
+    on the rule; the paper picks it by eye.
   deviations:
   - Starts from the paper's deposited z-scored, train/test-averaged spectrograms (sub-H_ses-sgramPerChannel);
     the spectrograms are not recomputed from the raw iEEG.
@@ -719,7 +732,8 @@ outcomes:
     per participant, timescales, phase locking, or blink-locked ERPs), which was not built in either run:
     the first spent its five hours on the 001326 electrophysiology and the 001347 behavior, and the revision
     on the verifier''s points and on the three claims the derived sub-H files allow (fig2g, fig2i, fig3b).
-    Blocked for time, not for lack of data.'
+    Blocked for time, not for lack of data; the protocol records a claim that time stopped as too_large
+    (docs/protocol.md, Author, Time).'
 - claim: fig6c-human-persistent
   outcome: blocked
   blocked_by: too_large
@@ -729,7 +743,8 @@ outcomes:
     per participant, timescales, phase locking, or blink-locked ERPs), which was not built in either run:
     the first spent its five hours on the 001326 electrophysiology and the 001347 behavior, and the revision
     on the verifier''s points and on the three claims the derived sub-H files allow (fig2g, fig2i, fig3b).
-    Blocked for time, not for lack of data.'
+    Blocked for time, not for lack of data; the protocol records a claim that time stopped as too_large
+    (docs/protocol.md, Author, Time).'
 - claim: fig6e-human-fast-unchanged
   outcome: blocked
   blocked_by: too_large
@@ -739,7 +754,8 @@ outcomes:
     per participant, timescales, phase locking, or blink-locked ERPs), which was not built in either run:
     the first spent its five hours on the 001326 electrophysiology and the 001347 behavior, and the revision
     on the verifier''s points and on the three claims the derived sub-H files allow (fig2g, fig2i, fig3b).
-    Blocked for time, not for lack of data.'
+    Blocked for time, not for lack of data; the protocol records a claim that time stopped as too_large
+    (docs/protocol.md, Author, Time).'
 - claim: fig6g-human-timescale
   outcome: blocked
   blocked_by: too_large
@@ -749,7 +765,8 @@ outcomes:
     per participant, timescales, phase locking, or blink-locked ERPs), which was not built in either run:
     the first spent its five hours on the 001326 electrophysiology and the 001347 behavior, and the revision
     on the verifier''s points and on the three claims the derived sub-H files allow (fig2g, fig2i, fig3b).
-    Blocked for time, not for lack of data.'
+    Blocked for time, not for lack of data; the protocol records a claim that time stopped as too_large
+    (docs/protocol.md, Author, Time).'
 - claim: fig6i-human-phase-locking
   outcome: blocked
   blocked_by: too_large
@@ -759,7 +776,8 @@ outcomes:
     per participant, timescales, phase locking, or blink-locked ERPs), which was not built in either run:
     the first spent its five hours on the 001326 electrophysiology and the 001347 behavior, and the revision
     on the verifier''s points and on the three claims the derived sub-H files allow (fig2g, fig2i, fig3b).
-    Blocked for time, not for lack of data.'
+    Blocked for time, not for lack of data; the protocol records a claim that time stopped as too_large
+    (docs/protocol.md, Author, Time).'
 findings:
 - kind: format_error
   statement: 'The spike times of every one of the 9554 units are stored in no particular order (about
@@ -840,9 +858,10 @@ verifications:
   reviewed: Round 1. The executed notebooks of the author-answers run with the conclusion cells and the
     summaries removed, the helper modules and the claims file, with the paper. The verifier checked the
     archive file list and metadata for the blocked claims and gave its own outcome for each tested claim.
-    Its numbers for fig4de, figs31b, fig4g, fig4i and fig4h differ from those of the record and of this
-    revision's runs, which agree with each other; this fits a different Leiden partition in the copy it
-    reviewed, which is not kept.
+    Its numbers for fig4de, figs31b, fig4g, fig4i and fig4h differ from those this revision first recorded.
+    This revision said they fit a different Leiden partition in the copy the verifier reviewed; that
+    statement is withdrawn in round 2. The re-executed notebook printed the verifier's numbers, and the
+    partition changed between runs with the number of BLAS threads used by the float32 PCA.
   results:
   - claim: fig1e-human-ketamine-late-closure
     agrees: true
@@ -950,8 +969,9 @@ verifications:
     outcome: not_reproduced
     reason: 11 clusters, which is within +-1, but 7 of the 12 sizes are outside tolerance and the 12th
       is missing. Only 1 cluster is persistent where the criterion needs 3.
-    response: 'Outcome changed to not reproduced. The sizes the verifier quotes appear to come from a
-      different Leiden partition; the revision adds ten Leiden seeds on the same graph: the count is within
+    response: 'Outcome changed to not reproduced. (The statement first made here, that the sizes the verifier
+      quotes came from a different Leiden partition in the copy it reviewed, is withdrawn in round 2,
+      the partition changed with the number of BLAS threads.) The revision adds ten Leiden seeds on the same graph: the count is within
       12 +- 1 in 6 seeds, at most 8 of 12 sizes are within tolerance, 0 to 3 clusters are persistent,
       and the full condition holds in none.'
   - claim: figs31b-cluster-overrepresentation
@@ -971,8 +991,9 @@ verifications:
     outcome: not_reproduced
     reason: Spearman rho = -0.023 (p = 0.95) for cosine distance and -0.018 (p = 0.96) for the 1 to 2
       s difference.
-    response: No change of outcome. The rho the verifier quotes appears to come from another Leiden partition
-      (here 0.127 and 0.209 with the default seed); the ten-seed table shows no positive correlation with
+    response: No change of outcome. (The statement first made here, that the rho the verifier quotes came
+      from another Leiden partition, is withdrawn in round 2, as the partition changed with the number of
+      BLAS threads.) The ten-seed table shows no positive correlation with
       p < 0.05 under any seed.
   - claim: fig4i-rise-times-unchanged
     agrees: true
@@ -1253,3 +1274,434 @@ verifications:
     response: Agreed that the data are there; the block is for time, not absence, and the notes now say
       so. These claims need the analysis of the raw LFP, which was not built in this revision; kept blocked
       as too_large (time).
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks of the author-revise-1 run, with the conclusions and summaries,
+    the helper modules, the claims file and the attempt record, with the paper. The verifier agreed with every
+    outcome and quoted the conclusion sentences of the clustering and regional-timing sections that did not
+    match the printed outputs; the cause was a partition that changed with the number of BLAS threads, now
+    pinned, and those sections are rewritten from this revision's run.
+  results:
+  - claim: fig4-recordings-scale
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: fig4de-response-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 11 does not match the printed outputs: it gives 7 of 12 sizes within tolerance and sizes
+      941 ... 526, 392, 187 where cell 10 prints 1019, 730, 681, ..., 394, 192 with only 4 within tolerance;
+      decay 0.10 and 0.24 s (printed 0.12 and 0.20); 0.34 of the peak (printed 0.38); four clusters decaying
+      after 1.03 to 1.21 s (printed three, at 1.26, 1.30 and 1.37 s); within 12 +- 1 in 6, at most 8 sizes
+      (cell 19 prints 7 and 10). The record''s notes and measured repeat the unprinted numbers. Leiden partition:
+      it is not reproducible across runs; the conclusions and record describe a run that is not the one printed
+      and need to be rewritten from the printed outputs, or the PCA/neighbor steps pinned, or the results reported
+      as run-dependent.'
+    response: 'The cause was found: the float32 PCA rounds differently with the number of BLAS threads (1,
+      2 and 4 threads gave three partitions on the same data). BLAS is now limited to one thread for the clustering,
+      which gives the same partition under every thread setting tried, and the stability section adds the float64
+      PCA and the 4-thread partition as perturbations (adjusted Rand index 0.71 each). Cell 11, the notes and
+      measured are rewritten from this run: 11 clusters, sizes 963 to 173 with 6 of 12 within tolerance, two
+      rapid and brief clusters, two persistent (one with an early peak), full condition in none of ten seeds
+      and neither perturbation. Outcome unchanged.'
+  - claim: figs31b-cluster-overrepresentation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 14 says the result holds under both FDR thresholds and both rankings, with PAG in clusters
+      4 and 6 and VPM in cluster 2, ACAv5, and ORBvl in clusters 1 and 9; cell 13 prints PAG in cluster 5,
+      VPM in clusters 2 and 8 at 0.05 but only cluster 8 at 0.01, ACAd5, and ORBvl in clusters 3 and 7, and
+      the condition holds in 1 of the 4 combinations (cluster-mean ranking, FDR 0.05). Cell 14 says VPM holds
+      in only 3 seeds; cell 19 shows all four combinations hold in 4 seeds (1, 4, 7, 8), and VPM holds in 9
+      seeds under cluster-mean ranking at 0.05. Remaining point 2: in the printed run the result holds only
+      under the criterion''s cluster-mean ranking at FDR 0.05; partially reproduced still fits, but for different
+      reasons than the text gives. Leiden partition: it is not reproducible across runs; the conclusions and
+      record describe a run that is not the one printed and need to be rewritten from the printed outputs,
+      or the PCA/neighbor steps pinned, or the results reported as run-dependent.'
+    response: 'The cause was found: the float32 PCA rounds differently with the number of BLAS threads (1,
+      2 and 4 threads gave three partitions on the same data). BLAS is now limited to one thread for the clustering,
+      which gives the same partition under every thread setting tried, and the stability section adds the float64
+      PCA and the 4-thread partition as perturbations (adjusted Rand index 0.71 each). Cell 14 and the notes
+      are rewritten from this run: under the criterion''s cluster-mean ranking the condition holds at both
+      thresholds (PAG in cluster 9, VPM in 2 and 8, or 8 at 0.01); under the pooled Fig. 4G ranking VPM is
+      in no faster-half cluster; over ten seeds the criterion''s ranking holds in 8 and 7 seeds, the pooled
+      in 3 and 2. Outcome kept as partially reproduced, as the VPM part depends on the ranking and the partition.'
+  - claim: fig4g-ketamine-alters-slow-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 17 gives rho = 0.127 (p = 0.71) and 0.209 (p = 0.54), cosine distances 1.43 and 0.70, and
+      rho -0.10 to 0.33 over seeds; printed are -0.023 and -0.018, 1.003 and 0.115, and -0.183 to 0.273. The
+      statement in the round-1 response that the verifier''s rho came from another partition is wrong. Leiden
+      partition: it is not reproducible across runs; the conclusions and record describe a run that is not
+      the one printed and need to be rewritten from the printed outputs, or the PCA/neighbor steps pinned,
+      or the results reported as run-dependent.'
+    response: 'The cause was found: the float32 PCA rounds differently with the number of BLAS threads (1,
+      2 and 4 threads gave three partitions on the same data). BLAS is now limited to one thread for the clustering,
+      which gives the same partition under every thread setting tried, and the stability section adds the float64
+      PCA and the 4-thread partition as perturbations (adjusted Rand index 0.71 each). Cell 17 and the notes
+      are rewritten from this run (rho -0.273 and -0.409, p 0.42 and 0.21; seeds -0.297 to 0.224) and the round-1
+      statement is withdrawn. Outcome unchanged.'
+  - claim: fig4i-rise-times-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 22 gives -0.002 s, 31 of 35 and 29 of 31, +0.006, -0.007 and +0.000, 31 to 34 regions and
+      averages 0.06 and 0.24; printed are -0.0045 and -0.0069, 30 and 28, +0.0055, -0.0072 and +0.0027, 30
+      to 33, and means 0.065 and 0.262. Leiden partition: it is not reproducible across runs; the conclusions
+      and record describe a run that is not the one printed and need to be rewritten from the printed outputs,
+      or the PCA/neighbor steps pinned, or the results reported as run-dependent.'
+    response: 'The cause was found: the float32 PCA rounds differently with the number of BLAS threads (1,
+      2 and 4 threads gave three partitions on the same data). BLAS is now limited to one thread for the clustering,
+      which gives the same partition under every thread setting tried, and the stability section adds the float64
+      PCA and the 4-thread partition as perturbations (adjusted Rand index 0.71 each). Cell 22 and the notes
+      are rewritten from this run (+0.0001 and -0.0030 s; 32 of 35 and 30 of 31; NaN weight 0.089 and 0.246;
+      controls +0.0065, -0.0040 and +0.0040 s). Outcome unchanged.'
+  - claim: fig4h-decay-shortened
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25 gives -0.16 to -0.17 s and -0.118 s (29 of 35), -0.092 s (32 of 36) and -0.058 s (26 of
+      36); printed are -0.179 to -0.188 and -0.130 (30), -0.105 (32) and -0.063 (29). Leiden partition: it
+      is not reproducible across runs; the conclusions and record describe a run that is not the one printed
+      and need to be rewritten from the printed outputs, or the PCA/neighbor steps pinned, or the results reported
+      as run-dependent.'
+    response: 'The cause was found: the float32 PCA rounds differently with the number of BLAS threads (1,
+      2 and 4 threads gave three partitions on the same data). BLAS is now limited to one thread for the clustering,
+      which gives the same partition under every thread setting tried, and the stability section adds the float64
+      PCA and the 4-thread partition as perturbations (adjusted Rand index 0.71 each). Cell 25 and the notes
+      are rewritten from this run (-0.158 to -0.165 s; controls -0.124, -0.083 and -0.058 s). Outcome unchanged.'
+  - claim: fig4h-decay-anatomical-progression
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28 gives 0.51, 0.52, 0.29, VPM 0.53 s and MD 0.57 s; printed are 0.488, 0.532, 0.311, 0.541
+      and 0.590. Leiden partition: it is not reproducible across runs; the conclusions and record describe
+      a run that is not the one printed and need to be rewritten from the printed outputs, or the PCA/neighbor
+      steps pinned, or the results reported as run-dependent.'
+    response: 'The cause was found: the float32 PCA rounds differently with the number of BLAS threads (1,
+      2 and 4 threads gave three partitions on the same data). BLAS is now limited to one thread for the clustering,
+      which gives the same partition under every thread setting tried, and the stability section adds the float64
+      PCA and the 4-thread partition as perturbations (adjusted Rand index 0.71 each). Cell 28 and the notes
+      are rewritten from this run (0.473 and 0.513 s against 0.301 s; VPM 0.557 and MD 0.571 s above 0.433
+      s). Outcome unchanged.'
+  - claim: fig5d-emotion-dimension-accumulates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Round-1 point 7 resolved: the checks now use the criterion''s interval wording.'
+    response: No change needed.
+  - claim: fig5e-late-reduced
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: fig5e-rapid-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Round-1 disagreement withdrawn. The criterion judges an absence on the paper''s test, and on the
+      main reading q = 0.105 to 0.113 (main nb cell 53). One caution: on that same reading the late fall is
+      not significant either, so this absence carries little weight. Cell 54 says the early difference is significant
+      under the code''s 3 to 4 s window (q = 0.023 to 0.048); that holds only with per-unit variance and unit-vector
+      scaling; with pooled variance q = 0.059, 0.135 and 0.220 (cell 53).'
+    response: Cell 54 now says the code-window difference is significant only with per-unit variance and unit-vector
+      scaling, and gives the pooled-variance q values. Outcome unchanged.
+  - claim: figs32c-regional-emotion-dimension
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Round-1 point 7 resolved: the checks now use the criterion''s interval wording.'
+    response: No change needed.
+  - claim: fig5g-tau-persist-model
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. The record gives Ketamine tauP 0.13 to 0.38; the printed minimum is 0.122.
+    response: The notes now give 0.12 to 0.38 s. Outcome unchanged.
+  - claim: figs33-alternative-models
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (Methods window taken as main) is stated. Under the sub-5 assumption alone, tauP
+      is best in all 8 readings (cell 62). The Summary table leaves out the assumption mark the record gives
+      figs33.
+    response: The Summary table now marks the assumption. Outcome unchanged.
+  - claim: fig6d-mouse-persistent
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated in the deviations. It is reasonable, since only this exclusion gives
+      table S3''s 7 tone sessions from 7 mice (cell 30). Remaining point 3: this outcome changes if sub-1 or
+      sub-3 was the excluded animal; the assumption is stated and reasonable, and the question is open with
+      the authors. The reason given for round 1 adds problem 10, which the verifier had marked as not affecting
+      a conclusion.'
+    response: No change; the assumption and the question to the paper's authors (findings) stay as they are.
+  - claim: fig6f-mouse-fast-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: fig6b-persistent-dimension-distributed
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: fig6h-mouse-timescale
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated in the deviations. It is reasonable, since only this exclusion gives
+      table S3''s 7 tone sessions from 7 mice (cell 30). Remaining point 3: this outcome changes if sub-1 or
+      sub-3 was the excluded animal; the assumption is stated and reasonable, and the question is open with
+      the authors. Cell 42 and the record say "610 s with pooled weights"; cell 41 prints 853.339.'
+    response: Cell 42 and the notes now give 853 s with pooled weights (1.71 s with per-unit weights). No change;
+      the assumption and the question to the paper's authors (findings) stay as they are.
+  - claim: fig6j-mouse-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated in the deviations. It is reasonable, since only this exclusion gives table
+      S3's 7 tone sessions from 7 mice (cell 30). The Summary table leaves out the assumption mark the record
+      gives fig6j.
+    response: The Summary table now marks the assumption. No change; the assumption and the question to the
+      paper's authors (findings) stay as they are.
+  - claim: figs34d-tone-fast-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated in the deviations. It is reasonable, since only this exclusion gives
+      table S3''s 7 tone sessions from 7 mice (cell 30). Remaining point 3: this outcome changes if sub-1 or
+      sub-3 was the excluded animal; the assumption is stated and reasonable, and the question is open with
+      the authors.'
+    response: No change; the assumption and the question to the paper's authors (findings) stay as they are.
+  - claim: figs34e-tone-persistent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: figs34f-tone-shorter-than-puff
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: figs34g-tone-timescale
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption is stated in the deviations. It is reasonable, since only this exclusion gives
+      table S3''s 7 tone sessions from 7 mice (cell 30). Remaining point 3: this outcome changes if sub-1 or
+      sub-3 was the excluded animal; the assumption is stated and reasonable, and the question is open with
+      the authors.'
+    response: No change; the assumption and the question to the paper's authors (findings) stay as they are.
+  - claim: figs34h-tone-coupling
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print.
+    response: No change needed.
+  - claim: figs30-correlation-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Round-1 disagreement withdrawn. The RSP rise (9/10 sessions) and ORB rise (5/7) hold under both
+      windows. The within-region rise is significant from the file's infusion time (p = 0.010). The between-region
+      fall is absent (cell 80).
+    response: No change needed.
+  - claim: figs29-rsp-oscillations
+    agrees: true
+    outcome: reproduced
+    reason: Round-1 disagreement withdrawn; now counted as 7/9 and 5/9 sessions (cell 83).
+    response: No change needed.
+  - claim: link-001347-condition-labels
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: link-001347-recorded-sessions
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig4b-recorded-eye-closure-ketamine
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs. Round-1 point
+      8 resolved: outcomes changed, and the normalization question is put to the paper''s authors.'
+    response: No change needed.
+  - claim: fig5b-recorded-accumulation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs. Round-1 point
+      8 resolved: outcomes changed, and the normalization question is put to the paper''s authors.'
+    response: No change needed.
+  - claim: figs34c-tone-no-eye-closure
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig1k-mouse-ketamine-late-closure
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig1l-dissociatives-preinfusion
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: figs2bc-mouse-early-late
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig1m-accumulation-persistence
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs. Round-1 point
+      9 is unchanged; it does not affect a conclusion.
+    response: No change needed.
+  - claim: figs2g-scaling-puff-number
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: figs2h-dose-response
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig1p-anesthesia-abolishes-both
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: figs5-other-drugs
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: figs6-vpm-muscimol
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig5hi-behavior-model-doses
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: fig1e-human-ketamine-late-closure
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: figs1b-human-early-closure-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every tested outcome. The category of each still holds on the numbers the notebooks
+      now print. Every Result sentence in the behavior and iEEG notebooks matches their outputs.
+    response: No change needed.
+  - claim: figs4-reward-licking
+    agrees: true
+    outcome: blocked
+    reason: I agree. The search now covers 66 files and is computed, not a hard-coded print (behavior cell
+      3).
+    response: No change needed.
+  - claim: fig1f-human-reports
+    agrees: true
+    outcome: blocked
+    reason: I agree. The search now covers 66 files and is computed, not a hard-coded print (behavior cell
+      3).
+    response: No change needed.
+  - claim: fig2d-cadss-ketamine
+    agrees: true
+    outcome: blocked
+    reason: I agree. The search now covers 66 files and is computed, not a hard-coded print (behavior cell
+      3).
+    response: No change needed.
+  - claim: figs14g-cadss-correlation
+    agrees: true
+    outcome: blocked
+    reason: I agree. The search now covers 66 files and is computed, not a hard-coded print (behavior cell
+      3).
+    response: No change needed.
+  - claim: fig2g-six-factors
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption (the elbow is where the marginal gain drops most) is stated and reasonable, but
+      weak. The chord rule gives 8 factors, and the held-out R2 keeps rising up to 22 factors (iEEG cell 5).
+      Remaining point 5: elbow at six depends on the rule chosen.'
+    response: Assumption kept, as the verifier finds it reasonable; the notes now add that the held-out R2
+      rises slowly to 0.507 at 22 factors, beside the chord rule's eight. Outcome unchanged.
+  - claim: fig2i-factors-1-2-ketamine
+    agrees: true
+    outcome: reproduced
+    reason: I agree. The recomputed loadings equal the deposited ones (iEEG cell 8).
+    response: No change needed.
+  - claim: fig3b-cluster-test-networks
+    agrees: true
+    outcome: reproduced
+    reason: I agree. All three networks have q = 0.0039 under all three permutation seeds (iEEG cell 11).
+    response: No change needed.
+  - claim: figs12-erp-not-blink
+    agrees: true
+    outcome: blocked
+    reason: 'I agree they are untested, but the label is wrong. The record itself says they are "Blocked for
+      time, not for lack of data", and the files are 0.2 to 0.4 GB each. Remaining point 4: they are labelled
+      too_large but are blocked for time, and the data to test them are deposited.'
+    response: Label kept. docs/protocol.md (Author, Time) says a claim not tested when the time runs out is
+      recorded as blocked, too_large, saying how far it got; the notes now cite that rule and keep saying the
+      data are deposited and the block is for time. Testing these claims needs the analysis of the raw LFP,
+      an analysis not yet run, which by the protocol waits for a new attempt; no change of outcome is proposed.
+  - claim: fig6c-human-persistent
+    agrees: true
+    outcome: blocked
+    reason: 'I agree they are untested, but the label is wrong. The record itself says they are "Blocked for
+      time, not for lack of data", and the files are 0.2 to 0.4 GB each. Remaining point 4: they are labelled
+      too_large but are blocked for time, and the data to test them are deposited.'
+    response: Label kept. docs/protocol.md (Author, Time) says a claim not tested when the time runs out is
+      recorded as blocked, too_large, saying how far it got; the notes now cite that rule and keep saying the
+      data are deposited and the block is for time. Testing these claims needs the analysis of the raw LFP,
+      an analysis not yet run, which by the protocol waits for a new attempt; no change of outcome is proposed.
+  - claim: fig6e-human-fast-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'I agree they are untested, but the label is wrong. The record itself says they are "Blocked for
+      time, not for lack of data", and the files are 0.2 to 0.4 GB each. Remaining point 4: they are labelled
+      too_large but are blocked for time, and the data to test them are deposited.'
+    response: Label kept. docs/protocol.md (Author, Time) says a claim not tested when the time runs out is
+      recorded as blocked, too_large, saying how far it got; the notes now cite that rule and keep saying the
+      data are deposited and the block is for time. Testing these claims needs the analysis of the raw LFP,
+      an analysis not yet run, which by the protocol waits for a new attempt; no change of outcome is proposed.
+  - claim: fig6g-human-timescale
+    agrees: true
+    outcome: blocked
+    reason: 'I agree they are untested, but the label is wrong. The record itself says they are "Blocked for
+      time, not for lack of data", and the files are 0.2 to 0.4 GB each. Remaining point 4: they are labelled
+      too_large but are blocked for time, and the data to test them are deposited.'
+    response: Label kept. docs/protocol.md (Author, Time) says a claim not tested when the time runs out is
+      recorded as blocked, too_large, saying how far it got; the notes now cite that rule and keep saying the
+      data are deposited and the block is for time. Testing these claims needs the analysis of the raw LFP,
+      an analysis not yet run, which by the protocol waits for a new attempt; no change of outcome is proposed.
+  - claim: fig6i-human-phase-locking
+    agrees: true
+    outcome: blocked
+    reason: 'I agree they are untested, but the label is wrong. The record itself says they are "Blocked for
+      time, not for lack of data", and the files are 0.2 to 0.4 GB each. Remaining point 4: they are labelled
+      too_large but are blocked for time, and the data to test them are deposited.'
+    response: Label kept. docs/protocol.md (Author, Time) says a claim not tested when the time runs out is
+      recorded as blocked, too_large, saying how far it got; the notes now cite that rule and keep saying the
+      data are deposited and the block is for time. Testing these claims needs the analysis of the raw LFP,
+      an analysis not yet run, which by the protocol waits for a new attempt; no change of outcome is proposed.
