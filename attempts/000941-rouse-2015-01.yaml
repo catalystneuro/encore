@@ -35,29 +35,42 @@ outcomes:
   deviations:
   - Only the held-in-calib file of the session is counted; the minival file repeats its first two trials.
 - claim: table2-movement-time
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_rouse_2015.ipynb
   output: claim:table2-movement-time
-  measured:
-  - 200.0
-  notes: Monkey L only. Median contact_time minus move_onset_time over the 412 successful trials of session
-    L20120928 in the file is 200 ms (quartiles 160 and 240 ms), against 255 ms (225, 295) with tolerance
-    229.5 to 280.5 ms; 41 samples from M to C against 52. The approximation of the analyzed trials (preceding
-    trial number present, 387 trials) gives the same 200 ms. Event times lie on a 20 ms grid. Medians
-    by object run from 160 ms (perpendicular cylinder) to 280 ms (button), and by location from 160 ms
-    (157.5 degrees) to 300 ms (0 degrees); the other three monkey L sessions of the dandiset give 180
-    to 200 ms. Monkeys X and Y are not in the dandiset, so their medians, the difference among monkeys
-    and the Kruskal-Wallis test cannot be tested, and the claim is judged on the one median that can.
-    The dandiset does not say how move_onset_time was found; an onset defined differently from the paper's
-    marker-speed threshold would explain the difference, and the data cannot show which, as they hold
-    no kinematics.
+  notes: Monkey L only. Taken at face value, the median of contact_time minus move_onset_time over the
+    412 successful trials of session L20120928 in the file is 200 ms (quartiles 160 and 240 ms), against
+    255 ms (225, 295) with tolerance 229.5 to 280.5 ms, 41 samples from M to C against 52; the approximation
+    of the analyzed trials (preceding trial number present, 387 trials) gives the same 200 ms. The dandiset
+    does not define move_onset_time, and the notebook shows it is not the paper's onset M. In all four
+    monkey L sessions of the dandiset the file's median movement time (180, 200, 180, 200 ms) is 52 to
+    58 ms shorter than the authors' own median for the same session in Rouse and Schieber 2016, J Neurophysiol
+    115, Table 2 (238, 255, 232, 253 ms), three times the 20 ms step of the event times. The file's median
+    cue to onset is 300 to 320 ms, 57 to 77 ms longer than the shortest session median of I-M that Rouse
+    and Schieber 2016, J Neurosci 36, gives for monkey L (243 ms), while its median cue to contact (500
+    to 520 ms) is 4 to 25 ms above 243 ms plus the session's published movement time. Cue and contact
+    agree with the papers and the onset comes about 55 ms after the paper's M, as a later event such as
+    the release of the center object would. EMG aligned on the dataset's onset fits this (DLTa, BCPs and
+    TCPlat reach half their peak 40 ms before it, 8 of 16 muscles reach half their peak before it), though
+    EMG leads motion under any definition of onset. A movement time from a later event cannot test the
+    paper's, and the paper's onset cannot be recomputed without markers. Monkeys X and Y are not in the
+    dandiset (data_missing), so their medians, the difference among monkeys and the Kruskal-Wallis test
+    cannot be tested either.
   deviations:
   - The dataset's move_onset_time and contact_time are used, as the claims file directs when the dataset
     gives onset times; the paper's onset (average speed of 36 markers above 5 SD of a baseline, Methods,
-    Temporal Normalization) cannot be recomputed without markers.
+    Temporal Normalization) cannot be recomputed without markers. The notebook shows the dataset's onset
+    is a later event, so the result is shown but not compared.
+  - The dataset's onset is checked against reference values from two later papers of the same authors on
+    the same monkey and sessions, in paper/ (J Neurophysiol 115:3238, Table 2, median movement time per
+    session; J Neurosci 36:10640, Methods, which gives 243 ms as the minimum over monkey L's sessions
+    of the median time from instruction to movement onset). They are used only to check the event, not to judge the claim.
   - Event times are at 20 ms resolution, where the paper's onset is at 5 ms and contact at 1 ms.
   - Only 412 of the session's 717 successful trials are in the dandiset; reading (a), the analyzed trials,
     is approximated by the trials whose preceding trial number is present, as the error trials are absent.
+    Many absent numbers are more likely successful trials held back in FALCON splits not on DANDI, so
+    this drops more trials than the paper's rule would; both readings give 200 ms.
   - Monkey L only; X and Y are not in the dandiset.
 - claim: fig2-trial-count-coax-45
   outcome: blocked
@@ -270,9 +283,13 @@ findings:
     not identify a trial there.
 - kind: metadata_insufficient
   statement: The event times move_onset_time, contact_time and reward_time are not defined, and all event
-    times lie on a 20 ms grid. The median time from move_onset_time to contact_time in session 20120928
-    is 200 ms, where the paper reports 255 ms for the same session, so the onset is likely defined differently
-    from the paper's marker-speed threshold. reward_time follows contact by a median of 0.10 s (0 to 0.92
+    times lie on a 20 ms grid. move_onset_time is not the paper's movement onset. In each of the four
+    monkey L sessions of the dandiset the median time from move_onset_time to contact_time (180 to 200
+    ms) is 52 to 58 ms shorter than the authors' own median for the session (238 to 255 ms, Rouse and
+    Schieber 2016, J Neurophysiol 115, Table 2; 255 ms for 20120928 in the 2015 paper), and the median
+    cue to onset (300 to 320 ms) is longer than the shortest median the authors give for monkey L (243
+    ms, J Neurosci 2016), while cue to contact agrees; the onset is about 55 ms later than the marker-speed
+    onset, as the release of the center object would be. reward_time follows contact by a median of 0.10 s (0 to 0.92
     s), where the paper's task requires a 1,000 ms hold before the reward. start_time and stop_time are
     exactly 1 s before the cue and 1 s after reward_time in every trial, a window, not the trial's start
     and stop.
@@ -282,3 +299,236 @@ findings:
     description says. The EMG values of the two copies differ by a near-constant factor per file (0.955
     to 1.016), so each file's EMG was scaled on its own, and the same recording has two different EMG
     amplitudes in the dandiset.
+verifications:
+- date: 2026-11-02
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper and the authors' related papers
+    under paper/. The verifier also checked the archive's asset list and metadata for version 0.241029.1405.
+  results:
+  - claim: table2-trial-counts
+    agrees: true
+    outcome: blocked
+    reason: The paper's session file has 412 trials, all R, and no failed trials, numbered 201 to 673
+      against the paper's 768 total. The file is the FALCON calibration subset, so no count can be compared,
+      and monkeys X and Y are absent. The prev_present approximation treats every absent trial number
+      as an error trial, where many are more likely trials held back in other FALCON splits; the notebook
+      calls it an approximation (does not affect a conclusion).
+    response: No change of outcome. The notebook and the notes of table2-movement-time now say that the
+      approximation drops more trials than the paper's rule would, as absent numbers are likely trials
+      held back in other splits.
+  - claim: table2-movement-time
+    agrees: false
+    outcome: blocked
+    reason: Blocked, metadata_insufficient for L and data_missing for X and Y. The notebook assumes move_onset_time
+      is the paper's marker-speed onset M and never checks it. The EMG paper (jn.00008.2016) Table 2 gives
+      medians of 238, 255, 232 and 253 ms for the same four sessions where the files give 180, 200, 180
+      and 200 ms, a steady shortfall of about 40 to 55 ms that a 20 ms grid cannot explain, and the files'
+      median cue to onset of 300 ms exceeds the J Neurosci 2016 minimum median I-M of 243 ms. Together
+      these point to a later onset event in the dataset, such as release of the center object, so not
+      reproduced is not a sound reading. The verifier asked for the per-session medians next to that
+      Table 2, cue to onset next to the I-M value, and mean EMG aligned on move_onset_time. It also noted
+      floating-point residue in the printed per-session medians (cosmetic).
+    response: Outcome changed to blocked, metadata_insufficient. The notebook adds the three outputs asked
+      for. In all four sessions the file's movement time is 52 to 58 ms shorter than the authors' Table
+      2 median, cue to onset is 57 to 77 ms longer than 243 ms, and cue to contact is within 4 to 25 ms
+      of 243 ms plus the published movement time, so contact agrees and the onset is about 55 ms later
+      than the paper's M. In the EMG aligned on the dataset's onset DLTa, BCPs and TCPlat reach half their
+      peak 40 ms before it, which fits but does not decide. The face-value 200 ms is kept in the notes,
+      the finding on the undefined event times now says the onset is not the paper's, and the per-session
+      medians print as whole milliseconds.
+  - claim: fig2-trial-count-coax-45
+    agrees: true
+    outcome: blocked
+    reason: The notebook finds 19 trials (16 under the approximate reading (a)) against 28. The file holds
+      only 412 of the 717 successful trials (0.57 times 28 is about 16), so the count is not comparable.
+      The object naming is sound; tested on 200 synthetic block sequences with randomly coded objects,
+      infer_object_names named every code correctly, and the paper's constraints leave only the clockwise
+      assignment.
+    response: No change.
+  - claim: fig2-joint-patterns
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig2-hand-opening-two-phases
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig4-armps-time-course
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-location-proximal-object-distal
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-early-significance-concurrent
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-shoulderier-location
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-shoulder-object-effects
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-elbowflex-object
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-wrist-comparable
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-hand-object-predominates
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-location-early-object-late
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig5-interaction-small
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig6a-qm-30-90
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig6b-qx-small
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig7-mean-eta-30
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig7-mean-eta-90
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig7-time-course
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig8a-lda-location
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig8b-lda-object
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig8-hand-shape-invariant-to-location
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig9-hand-configuration-location
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: fig10-forearm-trajectory-object
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
+  - claim: elbow-point-trajectory-object
+    agrees: true
+    outcome: blocked
+    reason: The only series in all 11 files are eval_mask and preprocessed_emg. The archive's API for
+      version 0.241029.1405 lists the same 11 assets, its variableMeasured lists only Units, ElectrodeGroup
+      and BehavioralTimeSeries, and the description names only EMG, eval_mask, spikes and trial metadata.
+      There are no joint angles or markers, so no part of the claim can be tested.
+    response: No change.
