@@ -1,0 +1,78 @@
+# Questions from attempt 001272-semenov-2025-01 (author, 2026-11-01) about
+# claims/001272/10.1016-j.xcrp.2025.102660.yaml, asked under docs/protocol.md, Author, step 1.6. The
+# claims were tested as the file has them, and the reading the question proposes is shown as a variant.
+dandiset: "001272"
+paper: doi:10.1016/j.xcrp.2025.102660
+questions:
+- claim: fig1-pure-sine-excites-all
+  asked: 2026-11-01
+  question: Header item O3 requires an AP to be 2 to 20 ms wide at half height, citing the Methods'
+    "lasted about 10 ms". Is that the paper's measure? The Methods give the AP duration (8 +/- 0.7 ms,
+    excluding afterhyperpolarization), not its width at half height, and in the deposited FluoVolt
+    recordings the APs are about 2 ms wide at half height (42% under 2 ms), so the 2-ms lower bound
+    drops real APs. The same bound applies to every claim that uses the header's AP readings
+    (fig1-20khz-needs-twice-the-field, fig2d-modulated-thresholds-higher, fig2-modulated-locks-to-beats,
+    fig2c-pure-more-aps, fig3c-sustained-firing-2s, figs2-ttx-blocks-depolarization and the Figure S1
+    claims).
+  passage: For experiments, we selected neurons whose APs peaked at a more than 5% dF and lasted about
+    10 ms (typical values 11.3% +/- 0.9% dF and 8 +/- 0.7 ms duration, excluding afterhyperpolarization;
+    mean +/- SEM, n = 22) (STAR Methods, Recording of the optical APs and data analyses).
+  why: A lower bound of 1 ms, run as a variant in fluovolt_elsewhere.ipynb, changes the AP counts by up
+    to a factor of 2.7 under some readings. It changes no outcome of fig1-pure-sine-excites-all, but it
+    changes fig2-modulated-locks-to-beats from meeting its criterion under 8 of 12 readings to 4 of 12,
+    since more sessions then exceed 10 APs.
+  answered: 2026-11-01
+  answer: >-
+    The claims file changes. The Methods' "lasted about 10 ms (typical values 11.3% +/- 0.9% dF and
+    8 +/- 0.7 ms duration, excluding afterhyperpolarization)" is the AP's whole duration, not its
+    width at half height, so it bounds the half-height width from above but gives no reason for a
+    2-ms lower bound. Header item O3 now takes an AP's width at half height between 1 and 20 ms,
+    the 1 ms (about 3 frames at the Methods' "3,130 or 3,086.4 frames/s") only excluding
+    single-frame noise, and says why. The upper bound, the 5-ms separation and the height readings
+    are unchanged. The change applies to every claim that uses O3.
+- claim: fig2-modulated-locks-to-beats
+  asked: 2026-11-01
+  question: The statement says modulated waves "triggered no sustained firing or sustained
+    depolarization", but the criterion tests only sustained depolarization (O6). Should it also test
+    sustained firing, and if so by what rule? The header's O6 rule for sustained firing (at least 3
+    APs, one in the last 50 ms of the stimulus) is met by firing locked to the five beats, since the
+    last beat peaks 25 ms before the end, so that rule cannot be the paper's sense here. Raised by
+    the verifier in round 2.
+  passage: At the highest field strengths, each beat could elicit a pair of APs, so the maximum number
+    of APs evoked by five beats was limited to ten. Unlike pure sine waves, modulated stimuli did not
+    trigger sustained firing or sustained depolarization (Results, Stimulation by 2- and 20-kHz
+    sinusoids modulated at 20 Hz, paragraph 1).
+  why: With the O6 sustained-firing rule added, the criterion would fail under every reading, as 45 to
+    46 of the 84 modulated sessions meet that rule under the whole frame (fluovolt_elsewhere.ipynb,
+    claim:fig2-modulated-locks-to-beats); with a rule that excludes beat-locked firing it could pass.
+    The claim was tested as the file has it.
+- claim: figs2-ttx-blocks-depolarization
+  asked: 2026-11-01
+  question: The criterion is conditional (sustained depolarization present before TTX is absent
+    after), so it passes on the depolarization part when a TTX neuron shows no sustained
+    depolarization before TTX. Here 1 of 6 TTX neurons shows it before TTX. The paper says TTX
+    "fully blocked the sustained depolarization" induced by intense unmodulated sine waves, which
+    implies it was present before TTX. Should the criterion require sustained depolarization before
+    TTX in the TTX neurons (all, or most), so that this part is tested and not passed by default?
+    Raised by the verifier in round 2.
+  passage: Consistent with this hypothesis, the inhibition of sodium channels with 1 uM tetrodotoxin
+    not only abolished the APs but also fully blocked the sustained depolarization (Figure S2)
+    (Results, Tetrodotoxin blocks sustained depolarization); Figure S2 legend, "Tetrodotoxin (TTX)
+    abolishes both firing and sustained depolarization caused by unmodulated 250-ms-long, 2-kHz sine
+    waves".
+  why: The claim is reproduced as the file has it, with the depolarization part resting on 1 neuron.
+    If the criterion required sustained depolarization before TTX in most TTX neurons, it would fail,
+    since 5 of the 6 show none before TTX and none has a late mean dF above 5% (fluovolt_elsewhere.ipynb,
+    claim:figs2-ttx-blocks-depolarization).
+- claim: figs1-effects-same-as-fluovolt
+  asked: 2026-11-01
+  question: The criterion gives reproduced when the response pattern holds and the threshold test
+    finds no difference, and not reproduced when the test finds a difference. It gives no outcome
+    for a pattern that fails with no threshold difference. Which outcome applies then? Raised by the
+    verifier in round 2.
+  passage: Overall, stimulation effects were not different from those observed with FluoVolt dye
+    (Results, Sensitivity to unmodulated sine waves was not caused by FluoVolt dye).
+  why: That is the case here under the adopted unit reading (the pattern holds in part, with
+    figs1-culminates-in-sustained-depolarization not reproduced, and no threshold difference), and
+    the attempt records partially reproduced. If a failed pattern alone means not reproduced, the
+    outcome would be not reproduced.

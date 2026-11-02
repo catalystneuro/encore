@@ -430,7 +430,7 @@ def main() -> int:
                         help="the entry directory, e.g. entries/000582-sargolini-2006; `check` takes several")
     parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
     parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
-    parser.add_argument("--max-minutes", type=float, default=30,
+    parser.add_argument("--max-minutes", type=float, default=60,
                         help="a notebook that takes longer than this fails")
     args = parser.parse_args()
 

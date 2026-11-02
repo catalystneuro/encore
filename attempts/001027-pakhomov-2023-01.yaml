@@ -1,0 +1,527 @@
+schema_version: 2
+id: 001027-pakhomov-2023-01
+dataset:
+  archive: dandi
+  id: "001027"
+  version: 0.240605.1859
+  doi: 10.48324/dandi.001027/0.240605.1859
+paper: doi:10.1016/j.bioelechem.2023.108437
+date: 2026-11-01
+entry: 001027-pakhomov-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41260204353
+outcomes:
+- claim: fig4-unipolar-strongest
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-cell time-lapse of Figure 4 (confocal images every 10 s for 600 s, Section 2.2) is
+    not in the dandiset, whose ten files each hold one stitched monolayer image of the Figure 8
+    experiment. The paper names no other archive for its data.
+- claim: fig4-bipolar-weaker
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-cell time-lapse of Figure 4 is not in the dandiset (see fig4-unipolar-strongest).
+- claim: fig4-sham-no-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-cell time-lapse of Figure 4, sham group included, is not in the dandiset.
+- claim: fig4-twenty-fold-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-cell time-lapse of Figure 4 is not in the dandiset.
+- claim: fig5a-trains-stronger-throughout
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 5 dishes (Packet 2 at 6.4 kV, 40 packets or 40 trains) are not in the dandiset.
+    Every file's session description names a first pulse of 4.0 kV and one packet from each
+    electrode. Dandiset 000686 from the same group holds monolayer images of the Figure 5
+    conditions and is tested in its own registry entry (000686-pakhomov-2023); it is outside the
+    dataset the claims file names.
+- claim: fig5a-packet-center-peak-e1-stronger
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 5A dishes (40 packets from e1 at 6.4 kV) are not in the dandiset.
+- claim: fig5bc-rotation-focuses-center
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 5B and 5C dishes (1Px40 and 1T x 40 at 6.4 kV) are not in the dandiset.
+- claim: fig6a-more-packets-more-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 6 dishes (Packet 2, 1Px4, 5Px4 and 10Px4) are not in the dandiset. Its Packet 2
+    dishes at 4 kV, 1Px4, could be the 1Px4 group of Figure 6 only if Figure 6 used 4 kV, which the
+    paper does not say, and the 5Px4 and 10Px4 groups are absent in any case. Other dandisets from the same group (000875, on the number of
+    packets) may hold these data; they are outside the dataset the claims file names.
+- claim: fig6b-center-to-periphery-by-number
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 5Px4 and 10Px4 dishes of Figure 6 are not in the dandiset.
+- claim: fig6-peak-narrower
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 5Px4 and 10Px4 dishes of Figure 6 are not in the dandiset.
+- claim: fig7a-amplitude-scales-uniformly
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 7 dishes (first pulse 2.4 to 5.6 kV) are not in the dandiset; every file is at
+    4.0 kV. Other dandisets from the same group (001025, on voltage and
+    array size) may hold these data; they are outside the dataset the claims file names.
+- claim: fig7bd-targeting-independent-of-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 7 dishes at several amplitudes, in either array, are not in the dandiset.
+- claim: array-size-independence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7bd-targeting-independent-of-amplitude, whose data are not in the dandiset;
+    all ten files are from the small array.
+- claim: fig8a-equal-center-uptake
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig8a-equal-center-uptake
+  measured:
+  - 383.4
+  - 648.7
+  notes: Main reading (ROIs over +/-1.65 mm, 46 per diagonal, both diagonals, center the mean of the
+    two ROIs flanking 0, raw intensities), center means 648.7 a.u. (Packet 1), 388.5 (Packet 2) and
+    383.4 (Packet 3); measured gives the lowest and highest of the three. None is within 193.5 to
+    258.5, and Packet 1 differs from Packets 2 and 3 by the two-sided t-test (p = 0.00044 and
+    0.00093). All 48 readings give not reproduced; with the background subtracted Packet 1 is 332.5
+    to 381.1 a.u. and its largest p-values against the others are 0.047 and 0.026. Packets 2 and 3
+    do not differ in any reading (smallest p 0.174) and, with the background subtracted, are 213.4
+    to 225.2 and 171.5 to 232.8 a.u. The Packet 1 dishes were imaged on another day with a
+    background about twice as high (mean 308.1 a.u., against 161.8 on 17 March and 150.3 on 18
+    March); as a ratio to each dish's own
+    background the centers are 2.11, 2.37 and 2.50, and only Packet 1 against Packet 3 differs
+    (p = 0.047). Exchanging the Protocol 2 and 3 labels does not change this claim's outcome. The
+    failure rests largely on the Packet 1 dishes and so on a difference between imaging days; a gain
+    or exposure difference would scale all values and would not be removed by subtracting a
+    background, and the files record neither, so this is unresolved. Dish 10 (no device named,
+    imaged the evening after) has a center of 382.7 a.u. raw, between the other two Protocol 3
+    dishes (354.4 and 413.2).
+  deviations:
+  - ROIs were placed by code on images reduced to 8 x 8 pixel means, with electrodes found as the
+    dark footprints in each image; the paper measured ROIs in MetaMorph on the full images
+    (Section 2.4).
+  - The files give no pixel size; 0.65 um per pixel is taken from the ORCA-Flash4 camera (6.5-um
+    pixels) and 10x objective the Methods (Section 2.4) and the files name. A placement that needs
+    no scale (to 5% of the edge-to-edge diagonal short of each electrode, Section 2.4) gives the
+    same outcome.
+  - The ROI count, "92 ... ROI, placed along one or both diagonals" (Section 2.4), was run as 46 and
+    as 92 per diagonal; the ROI shape and size, which the paper does not give, is a square as wide
+    as the spacing. The center was run as the mean of the two flanking ROIs and as one ROI at 0,
+    and one diagonal (each) or both. Background subtraction, which the paper does not mention for
+    monolayers, was run both ways, with the background inside the electrode footprints, the only
+    region of the images where cells were not exposed (the files hold no cell-free region). Every
+    reading gives the same outcome. With one ROI at 0 the ROI centers run to +/-1.65 mm, so the
+    outermost ROIs reach about half a step past the stated span.
+- claim: fig8a-more-uptake-near-electrodes
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig8a-more-uptake-near-electrodes
+  measured:
+  - 296.2
+  - 806.9
+  - 480.9
+  notes: Main reading (mean of the ROIs closest to the four electrodes, raw), 806.9 a.u. (Packet 1),
+    480.9 (Packet 2) and 296.2 (Packet 3); measured gives the lower and higher of Packets 1 and 3,
+    then Packet 2. Packet 3 is below Packet 2 (t = -3.88, p = 0.012), where the claim has it above.
+    Packet 3 is below Packet 2 in all 48 readings (t from -5.3 to -1.84), so every reading gives not
+    reproduced. Packet 1 exceeds Packet 2 in every reading (t from 1.61 to 10.35, p from 0.00015 to
+    0.168). Reading (b), the ROI next to e1, cannot be decided because the files do not identify e1.
+    With the same image label as e1 in every dish, all 64 readings give not reproduced (main
+    geometry, raw, Packet 3 against Packet 2 is 238.8 against 439.7, 317.6 against 579.6, 270.2
+    against 446.7 and 358.1 against 457.4 a.u.). Taking in each dish the end most favourable to the
+    claim, all 16 readings give not reproduced (Packet 2 166.6 to 377.5 a.u., t for Packet 3 over
+    Packet 2 from -0.5 to 0.71). Over all 1,048,576 assignments of e1 to the four electrodes of the
+    ten dishes, none gives reproduced or partially reproduced in any reading. With the Protocol 2
+    and 3 labels exchanged, 43 of 48 readings still give not reproduced (with the background
+    subtracted, Packet 1 is 498.8 a.u., above 385, and Packet 3 over Packet 2 has p = 0.029).
+  deviations:
+  - ROI placement, scale and readings as in fig8a-equal-center-uptake.
+  - Reading (b) of the criterion, the ROI closest to e1, cannot be decided, as the files do not say
+    which electrode is e1 and the electrodes were labelled by angle in each image; it was run with
+    each label as e1 in every dish, with the end most favourable to the claim in each dish, and
+    over every assignment of e1.
+- claim: fig8b-packet2-best-targeting
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig8b-packet2-best-targeting
+  measured:
+  - 82.8
+  - 129.4
+  - 81.3
+  notes: Main reading, each dish normalized to the mean of its four most peripheral ROIs, then
+    averaged; 82.8% (Packet 2), 129.4% (Packet 3) and 81.3% (Packet 1), against 183, 83 and 74%.
+    Packet 3, not Packet 2, has the highest normalized center in all 96 readings (both
+    normalizations), and Packet 2 is 52.5 to 123.7%. Per dish the Protocol 3 files exceed the
+    Protocol 2 files (t = 4.25, p = 0.008). With the Protocol 2 and 3 labels exchanged, the main
+    geometry gives 162.3, 76.4 and 70.2% with the background subtracted (129.4, 82.8 and 81.3% raw),
+    and the claim would be partially reproduced in 92 of 96 readings and reproduced in 2. Reading
+    (b), normalizing to the ROI next to e1, cannot be decided because the files do not identify e1.
+    With the same image label as e1 in every dish, all 256 readings give not reproduced. Choosing
+    e1 in each dish to suit the claim (the lowest end in each Packet 2 dish, the highest in each
+    Packet 1 and 3 dish) gives partially reproduced in 27 of 64 readings, all with 92 ROIs per
+    diagonal. Over all 1,048,576 assignments of e1, none gives reproduced, none gives partially
+    reproduced with 46 ROIs per diagonal, and at most 1.5% do with 92. The outcome is decided by
+    reading (a), which can be run. Every Protocol 3 dish peaks at the center (125.0 to 137.0% per
+    dish, raw). Protocol 2 dishes 12, 13 and 14 are highest at the electrode ends (63.3 to 84.4%);
+    Protocol 2 dish 2 is highest at one end but its other end is below its center (105.9% raw,
+    112.3% with the background subtracted). Every Protocol 3 dish is still above every Protocol 2
+    dish, so the difference does not come from one dish.
+  deviations:
+  - ROI placement, scale and readings as in fig8a-equal-center-uptake; the normalization was run
+    per dish and on the mean profile, as the criterion names.
+  - Reading (b) of the most peripheral ROI, next to e1, cannot be decided, as the files do not
+    identify e1; it was run with each label as e1, with the most favourable end in each dish, and
+    over every assignment of e1, and does not decide the outcome.
+- claim: fig9-gap-fades-periphery-faster
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 9 dishes (large array 0 to 3 mm above the monolayer, 6.4 kV, 10Px4) are not in
+    the dandiset. Other dandisets from the same group (001028, 3D) may hold
+    related data; they are outside the dataset the claims file names.
+- claim: fig9b-gap-boosts-targeting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 9 dishes are not in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the Figure 8 experiment, ten monolayer images (Packet 1, 3
+    dishes; Packet 2, 4; Packet 3, 3; first pulse 4 kV, one rotation, small array). The single-cell
+    time-lapse of Figure 4 and the monolayer experiments of Figures 5, 6, 7 and 9 are not in it,
+    and the paper names no other archive, so 15 of the 18 claims cannot be tested.
+- kind: metadata_error
+  statement: The packet labels of the files labelled Protocol 2 and Protocol 3 appear exchanged
+    with respect to the paper. The files labelled Protocol 3 (8 phases with 5-us delays) show the
+    strongest central focusing (center 125 to 137% of the most peripheral ROIs per dish, raw) and
+    the least uptake next to the electrodes, which the paper reports for Packet 2 (8 phases without
+    delays), and the files labelled Protocol 2 show 63 to 106%, as the paper reports for Packet 3.
+    With the two labels exchanged the order of Figure 8B appears. The dandiset alone cannot say
+    whether its labels or the paper's figure are exchanged; each file's description defines the
+    protocols as the paper defines the packets, so the data were tested as labelled and the
+    question is unresolved.
+- kind: metadata_insufficient
+  statement: The images have no pixel size (ImageSeries resolution is 96 in nine files and 1.0 in
+    one, unit "n.a."), so distances, which the paper's ROIs are defined by (+/-1.65 mm), rest on the
+    camera's pixel and the objective. The files do not record where the electrodes are or which is
+    e1, so they were found in the images and a reading that needs e1 could not be run. Exposure and
+    gain are not recorded; the three Packet 1 dishes, imaged on 24 March 2021, have about twice the
+    background of the seven others (mean 308 a.u., against 162 and 150 on 17 and 18 March), so
+    a.u. values may not be comparable
+    between imaging days.
+- kind: metadata_error
+  statement: The dandiset's species summary is "Cricetulus griseus - Cricetulus aureus" for one
+    cell line (CHO, Chinese hamster); each subject is a dish with age P1D, which does not apply to
+    a cell line. The file of dish 10 names no microscope, camera or objective, where the other nine
+    name the ORCA-Flash4.0 and a 10x objective, and its session starts on 18 March 2021 at 18:50,
+    the evening after the other Packet 2 and 3 dishes.
+verifications:
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file. The verifier also read the paper and queried
+    the archive for the dandiset's assets.
+  results:
+  - claim: fig4-unipolar-strongest
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). The archive API lists 10 assets at 0.240605.1859, each a
+      single stitched monolayer image. There is no single-cell time-lapse.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig4-bipolar-weaker
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Same as fig4-unipolar-strongest; there is no single-cell
+      time-lapse.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig4-sham-no-uptake
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Same as fig4-unipolar-strongest; there is no single-cell
+      time-lapse.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig4-twenty-fold-cancellation
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Same as fig4-unipolar-strongest; there is no single-cell
+      time-lapse.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig5a-trains-stronger-throughout
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). The files have no trains, no 40-packet and no 1Px40
+      conditions. Every description says 1Px4 at 4 kV.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig5a-packet-center-peak-e1-stronger
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Same as fig5a-trains-stronger-throughout.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig5bc-rotation-focuses-center
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Same as fig5a-trains-stronger-throughout.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). There are no 5Px4 or 10Px4 dishes.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets. Its report notes that other dandisets from the same group
+      (000875, 001025, 001028, 000686) have titles that look like Figs. 6, 7 and 9; the notes of the
+      Figure 6, 7 and 9 claims now name 000875, 001025 and 001028 as outside the dataset the claims
+      file names (000686 was named in round 2). This is a scoping question for the registry, not a
+      misreading of the paper, so no question was added.
+  - claim: fig6b-center-to-periphery-by-number
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). There are no 5Px4 or 10Px4 dishes. Only the 1Px4 value could
+      be compared, and only by assuming Fig. 6 used these 4-kV small-array dishes.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Needs three packet numbers; the files have one.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig7a-amplitude-scales-uniformly
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Every file is at 4.0 kV.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets. The notes now name dandiset 001025 as possibly holding these
+      data, outside the dataset the claims file names.
+  - claim: fig7bd-targeting-independent-of-amplitude
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). Every file is at 4.0 kV.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: array-size-independence
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). One amplitude and one array (the small one).
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+  - claim: fig8a-equal-center-uptake
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the main reading, Packet 1 = 649 a.u., Packet 2 = 389, Packet 3 = 383. Packet 1 vs 2
+      gives p = 4e-4, and Packet 1 differs from both others at p < 0.05 in all 48 readings (largest
+      p 0.047 and 0.026). Packet 1 is also outside 193.5 to 258.5 a.u. even after background
+      subtraction (333 to 381). The three Packet 1 dishes were imaged on 24 March, with about twice
+      the in-footprint intensity of the 17 to 18 March dishes; a gain or exposure difference would
+      be multiplicative, so subtracting a background does not remove it, and the failure rests
+      largely on a between-day difference, which should be said. Dish 10 has different metadata and
+      is kept without comment on its effect.
+    response: The notebook summary, the README and the notes now say the failure rests largely
+      on the Packet 1 dishes and a between-day difference that the files cannot settle. The notes
+      give dish 10's center (382.7 a.u., between the other two Protocol 3 dishes), and the
+      deviations say the footprint background is the only unexposed region and that with one ROI at
+      0 the outermost ROIs reach about half a step past the span. A per-dish profile figure, raw and
+      background subtracted, was added. No change of outcome.
+  - claim: fig8a-more-uptake-near-electrodes
+    agrees: true
+    outcome: not_reproduced
+    reason: Packet 3 is below Packet 2 near the electrodes in 48 of 48 readings (t for 3 vs 2
+      runs from -5.3 to -1.8). Packet 2 is 217 to 575 a.u., never in 108 to 132. Reading (b), the
+      ROI closest to e1, was not run because e1 is not recorded; it could have been run with each
+      electrode in turn as e1. Taking the lowest electrode end in each Packet 2 dish and the highest
+      in each Packet 3 dish still gives Packet 2 a mean of 363.7 a.u. against 358.1 for Packet 3, so
+      no choice of e1 gives Packet 3 > Packet 2.
+    response: Reading (b) was added, with each image label as e1 in every dish (64 readings, all
+      not reproduced), with the end most favourable to the claim in each dish (16 readings, all not
+      reproduced, matching the verifier's 363.7 against 358.1 a.u.), and over all 1,048,576
+      assignments of e1 (none gives reproduced or partially reproduced in any reading). No change of
+      outcome.
+  - claim: fig8b-packet2-best-targeting
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the main reading, Packet 1 = 81%, Packet 2 = 83%, Packet 3 = 129%. Packet 3 is the
+      highest in 96 of 96 readings and Packet 2 never exceeds 124%, so even the partial condition
+      fails. The files labelled Protocol 3 behave like the paper's Packet 2 and the reverse; with
+      the labels swapped the claim becomes partially reproduced in 92 of 96 readings. The labels
+      look internally consistent, so testing the data as labelled is correct, but a possible
+      mislabelling in the deposit should be stated as unresolved, not ignored. No choice of e1 gives
+      a Packet 3 normalized center below 100%.
+    response: The notebook summary, the README and the finding now state the possible
+      mislabelling as unresolved. Reading (b) was added. The same label as e1 in every dish gives
+      not reproduced in all 256 readings; choosing e1 in each dish to suit the claim gives partially
+      reproduced in 27 of 64 readings, all with 92 ROIs per diagonal, and over all 1,048,576
+      assignments none gives reproduced and at most 1.5% give partially reproduced (none with 46 per
+      diagonal). The verifier's check was on the main raw reading, where the most favourable choice
+      leaves Packet 3 at 107%; the partial condition is met only in other readings and for a small
+      share of assignments, so the outcome stays decided by reading (a). A per-dish profile figure
+      shows the Protocol 2 and 3 difference in every dish. No change of outcome.
+  - claim: fig9-gap-fades-periphery-faster
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). There is no gap condition and no large array.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets. The notes now name dandiset 001028 as possibly holding related
+      data, outside the dataset the claims file names.
+  - claim: fig9b-gap-boosts-targeting
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). There is no gap condition and no large array.
+    response: No change of outcome. The verifier confirmed from the archive that the version
+      holds exactly these 10 assets.
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the revised run, with its conclusions and summary, the
+    helper module, the claims file, the README and the attempt record with the round-1 responses.
+    The verifier also read the paper.
+  results:
+  - claim: fig4-unipolar-strongest
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig4-bipolar-weaker
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig4-sham-no-uptake
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig4-twenty-fold-cancellation
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig5a-trains-stronger-throughout
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome. The notes now name dandiset 000686, which holds monolayer
+      images of the Figure 5 conditions, as outside the dataset the claims file names.
+  - claim: fig5a-packet-center-peak-e1-stronger
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig5bc-rotation-focuses-center
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome. The verifier found that the round-1 response said the notes
+      name 000686 when they did not. The round-1 response now says which dandisets the notes
+      named then, and the notes of fig5a-trains-stronger-throughout now name 000686, which holds
+      Figure 5 images.
+  - claim: fig6b-center-to-periphery-by-number
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig7a-amplitude-scales-uniformly
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig7bd-targeting-independent-of-amplitude
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: array-size-independence
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig9-gap-fades-periphery-faster
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig9b-gap-boosts-targeting
+    agrees: true
+    outcome: blocked
+    reason: blocked (data_missing). I agree. The dandiset holds only the Figure 8 experiment. Every
+      file is at 4 kV with one rotation and the small array.
+    response: No change of outcome.
+  - claim: fig8a-equal-center-uptake
+    agrees: true
+    outcome: not_reproduced
+    reason: Packet 1 is out of range and differs from both other packets in all 48 readings. The
+      failure rests largely on the Packet 1 dishes from another imaging day, and that is now said.
+      The gain and exposure of each imaging day remain unresolvable from this dataset and are
+      correctly recorded as such. Cell 8 says the tiles repeat every 1840 to 1850 pixels with dish 10
+      differing in one step, but cell 7 prints a step of 5736, not a multiple of about 1844, and
+      dish 10 differs in two steps (1632 and 2048); the scale-free rel geometry gives the same
+      outcomes, so no conclusion depends on this.
+    response: Cell 8 now gives the steps as printed, 1840 to 1848 or twice that, one step of 5736
+      that is not a multiple of the spacing, and dish 10's steps of 1632 and 2048; its footprint
+      range is corrected to 1.6 to 2.0 mm, as printed. No change of outcome.
+  - claim: fig8a-more-uptake-near-electrodes
+    agrees: true
+    outcome: not_reproduced
+    reason: Packet 3 is below Packet 2 in 48 of 48 readings. Reading (b) now gives no reproduced or
+      partial result under any of the 1,048,576 e1 assignments. Cell 21 still says reading (b)
+      cannot be run, which is stale, as cells 24 and 28 now run it in three ways.
+    response: Cell 21 now says reading (b) is run below in three ways. No change of outcome.
+  - claim: fig8b-packet2-best-targeting
+    agrees: true
+    outcome: not_reproduced
+    reason: Packet 3 has the highest normalized center in 96 of 96 readings. Under reading (b) the
+      partial condition holds in 27 of 64 readings only when e1 is chosen dish by dish to suit the
+      claim, and in at most 1.5% of all assignments; deciding on reading (a), which can be run, is
+      reasonable. Cell 16 and the notes say every Protocol 2 dish is highest at the electrode ends,
+      but dish 2 is a counterexample (normalized center 105.9% raw, 112.3% background subtracted,
+      its right end below its center), and cell 16 leaves out dish 11's spikes (maximum 548.0 near
+      -0.2 mm, and a second near +0.6 mm). None of this changes the outcome (Protocol 3 125 to 137%,
+      Protocol 2 63 to 106%, t = 4.25, p = 0.008). In the notes the raw triple of the exchanged-label
+      variant is in Packet order 1, 2, 3 where the other is in order 2, 3, 1; in that order it is
+      129.4, 82.8 and 81.3%.
+    response: Cell 16 and the notes now describe dish 2 as the exception, with its values, and cell
+      16 names dish 11's two spikes; both say every Protocol 3 dish is still above every Protocol 2
+      dish. The raw triple in the notes is now in Packet order 2, 3, 1 (129.4, 82.8 and 81.3%). No
+      change of outcome.
