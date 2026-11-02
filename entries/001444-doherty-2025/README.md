@@ -12,17 +12,17 @@ activated). The paper reports set sM1_12-12-2023, and the claims are tested on i
 | PT5B ISI CV in both conditions | Reproduced |
 | More negative PT5B potential in the parkinsonian activated state; more 20 to 35 Hz power | Reproduced |
 | PT5B activated rate, parkinsonian against control (one test of four above p = 0.001) | Partially reproduced |
+| IT2 rate increase with activation, control (values match under R3, every test finds the increase, two of four above p = 0.001) | Partially reproduced, resting on R3 and on which cells the paired tests pair |
 | Order-of-magnitude increase of 15 Hz power at rest (the ratio is 65 to 129) | Partially reproduced |
 | IT4, IT5A, IT5B and IT6 rates (seven claims), under rate reading R3 (cells that fired at least once) | Reproduced, resting on R3 as an assumption (and, for parkinsonian IT6, on which cells the paired tests pair) |
-| IT2 rate increase with activation, control and parkinsonian (values match under R3, paired or rank tests above p = 0.001 under every pairing) | Not reproduced (parkinsonian: resting on which cells the paired tests pair; control: a change to partially reproduced is proposed) |
+| IT2 rate increase with activation, parkinsonian (values match under R3, paired or rank tests above p = 0.001 under every pairing) | Not reproduced, resting on which cells the paired tests pair |
 | IT4 rest rate, parkinsonian against control (values match under R3, no test below p = 0.05) | Not reproduced |
 | Parkinsonian activated dominant frequency (27 Hz against 43) | Not reproduced |
 | Duty cycles, LFP burst rates, coincident spikes, unitary-event durations (ten claims) | Not reproduced |
-| Network size (the files store only cells that fired) | Not reproduced (a change to blocked, data missing, is proposed) |
 | More synchrony at rest in the parkinsonian condition | Reproduced, resting on counting pairs of coincident cells as an assumption |
 | Highest PT5B rate (PV5A fires faster) | Blocked: methods underspecified |
 | Robustness over four sets; subthreshold oscillations (three claims) | Blocked: methods underspecified |
-| PT5B current-injection excitability | Blocked: data missing |
+| PT5B current-injection excitability; network size (the files store only cells that fired) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -31,8 +31,8 @@ The units tables hold only cells that fired; the paper's IT rates match exactly 
 taken over those cells (reading R3, which a reader added to the claims file in answer to a
 question; the paper does not say which cells it averaged over). The paper's set holds 20 PT5B
 potentials per file (not 400), and in the analysis window they do not match the stored spikes of
-the same cells. Two changes of outcome found after the second verification round are proposed in the record
-for a third round to review. The attempt record, with the reasons and the differences from the paper's method,
+the same cells. Two changes of outcome found after the second verification round were reviewed in a third round,
+which agreed with both: network size is now blocked and the control IT2 rate claim partially reproduced. The attempt record, with the reasons and the differences from the paper's method,
 is [`attempts/001444-doherty-2025-01.yaml`](../../attempts/001444-doherty-2025-01.yaml).
 
 - `reproduce_doherty_2025.ipynb`: the analysis. It takes about six minutes, most of it streaming

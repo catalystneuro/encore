@@ -26,31 +26,24 @@ inputs:
   source: https://pypi.org/project/netpyne/1.0.5/ (netpyne-1.0.5-py2.py3-none-any.whl)
 outcomes:
 - claim: fig1-network-size
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig1-network-size
   measured: 4480
   notes: The four files of set sM1_12-12-2023 hold 4,480, 3,231, 2,919 and 2,917 M1 units, against
-    10,073, because the units table stores only cells that fired. All 15 M1 populations are
+    10,073, because the units table stores only cells that fired. No stored M1 unit is silent (0 in
+    each file), and 5,593 to 7,156 of the M1 gids 0 to 10072 have no row. All 15 M1 populations are
     present and the input generators start at gid 10073, so the gid numbering is consistent with
-    10,073 M1 cells (gids 0 to 10072); the smallest gid blocks seen in all 16 files and the 24 gids
-    never seen between them sum to 10,073. The units table has only the name, segment, block, spike
-    times and observation intervals of each unit and no row for a silent cell, so the silent cells
-    cannot be counted from the files. The model's size is not in doubt; the dataset does not hold
-    the silent cells the criterion counts, and the criterion's count fails.
+    10,073 M1 cells; the smallest gid blocks seen in all 16 files and the 24 gids never seen between
+    them sum to 10,073. The units table has only the name, segment, block, spike times and
+    observation intervals of each unit and no row for a silent cell, so the silent cells the
+    criterion counts are not in the dataset and the claim cannot be tested from these files. The
+    data do not contradict the paper's 10,073. The outcome was not reproduced until the third
+    verification round, which agreed with the change to blocked (data_missing).
   deviations:
   - The claims file's count assumes the files hold every cell, as the dandiset description says;
     they do not, so the gid range is shown as a variant.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: The count of 4,480 to 2,917 measures what the files store, not the model's size. No stored
-      M1 unit is silent (0 in each file), 5,593 to 7,156 M1 gids of 0 to 10072 have no row, and the
-      units table has no row or column for a cell that did not fire (data check), so the silent cells
-      the criterion counts are not in the dataset. The gids support 10,073 cells (inputs start at gid
-      10073; smallest blocks plus unseen gids sum to 10,073). Not reproduced would say the data
-      contradict the paper, and they do not; the claim cannot be tested from these files. Raised by
-      the round-2 verifier.
 - claim: model-pt5b-excitability-decrease
   outcome: blocked
   blocked_by: data_missing
@@ -109,7 +102,8 @@ outcomes:
   - R1 needs the population size, which the files do not state; PT5B is the gid block 5130 to 6564
     (1,435 cells), bounded exactly by the gids seen.
 - claim: fig2c-control-it23-rate-activated
-  outcome: not_reproduced
+  outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig2c-control-it23-rate-activated
   measured:
@@ -119,36 +113,27 @@ outcomes:
   - 8.858
   notes: Under R3 IT2 rates are 1.203 +/- 1.649 spikes/s at rest (137 cells) and 6.662 +/- 8.858
     activated (68 cells), all four within tolerance. The unpaired tests find the increase at p below
-    0.001 (Mann-Whitney 3.5e-05, Welch 3.6e-06). The paired tests do not under either pairing - on
-    the 25 cells kept in both files 0.016 (Wilcoxon) and 0.011 (paired t), on the 180 cells kept in
-    either file, at 0 where absent, 0.69 and 0.0013. The criterion's p < 0.001 under every test is
-    not met, and under the union pairing the Wilcoxon test finds no increase. Under R1 (0.095 +/-
-    0.565 and 0.262 +/- 2.172) and R2 (1.555 +/- 1.723 and 8.883 +/- 9.220) the values are outside
-    tolerance. The outcome was partially reproduced before the first verification; it is now not
-    reproduced, since the criterion fails under every reading and pairing and one test finds no
-    increase at all.
-    After round 2 a change to partially reproduced is proposed - under the pairing of the cells
-    kept in both files, adopted elsewhere in this record, every test finds the increase (largest p
-    0.016) and only the 0.001 bound fails.
+    0.001 (Mann-Whitney 3.5e-05, Welch 3.6e-06). With the paired tests on the 25 cells kept in both
+    files, the pairing this record adopts for pd-it6-rate-unchanged and fig5c-pd-it23-rate-activated,
+    they find it at 0.016 (Wilcoxon) and 0.011 (paired t), so every test finds the increase and two of
+    four miss the criterion's 0.001. That is the pattern graded partially reproduced for
+    activated-pt5b-rate-pd-vs-control, though weaker here - two tests miss the bound, not one, and the
+    paired p-values come from 25 cells. On the 180 cells kept in either file, at 0 where absent, the
+    paired tests give 0.69 and 0.0013. Under R1 (0.095 +/- 0.565 and 0.262 +/- 2.172) and R2 (1.555
+    +/- 1.723 and 8.883 +/- 9.220) the values are outside tolerance. The outcome was partially
+    reproduced before the first verification and not reproduced after it; the third verification
+    round agreed with the change back to partially reproduced, resting on R3 and on the pairing of
+    the cells kept in both files.
   deviations:
   - R1 uses the IT2 gid block bounded from the data (1,729 or 1,730 cells); both bounds give the
     same values to three decimals.
   - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
     pairings were run, the cells kept in both files and the cells kept in either file at 0 where
-    absent. Both fail the criterion, but they grade differently - with the cells kept in both every
-    test finds the increase (largest p 0.016) and two of four miss 0.001; with the cells kept in
-    either the Wilcoxon test finds no increase (0.69).
-  proposed:
-    outcome: partially_reproduced
-    reason: Under R3 with the paired tests on the cells kept in both files, the pairing this record
-      adopts for pd-it6-rate-unchanged and fig5c-pd-it23-rate-activated, all four values are within
-      tolerance and every test finds the increase (Mann-Whitney 3.5e-05, Welch 3.6e-06, Wilcoxon
-      0.016, paired t 0.011), with two of four tests above the criterion's 0.001. That is the
-      pattern graded partially reproduced for activated-pt5b-rate-pd-vs-control (an increase every
-      test finds, weaker than the paper's bound). The not reproduced outcome rests on the Wilcoxon p
-      of 0.69 under the union pairing, which the record does not adopt elsewhere. The change would
-      rest on R3 and on that pairing as assumptions. Found by the author after round 2, from the
-      round-2 verifier's remark on fig5c-pd-it23-rate-activated.
+    absent. The criterion's p < 0.001 under every test fails under both, but they grade differently.
+    With the cells kept in both every test finds the increase (largest p 0.016) and two of four
+    miss 0.001; with the cells kept in either the Wilcoxon test finds no increase (0.69). The outcome
+    rests on pairing the cells kept in both files, as for pd-it6-rate-unchanged, which keeps each
+    paired rate inside the R3 group whose mean is tested.
 - claim: fig2c-control-it6-rate-activated
   outcome: reproduced
   assumed: true
@@ -734,7 +719,7 @@ findings:
   statement: Question for the authors. Over which cells is a population's mean rate taken? The
     paper's IT rates match exactly when the cells are those that fired at least once in the 4.3 s
     simulation, with rates over the last 2.3 s (IT2 1.203 +/- 1.649 at control rest against 1.2 +/-
-    1.6), and not when all cells or only cells active in the last 2.3 s are counted; seven IT
+    1.6), and not when all cells or only cells active in the last 2.3 s are counted; eight IT
     outcomes here rest on that reading. Which test gave the rate p-values? Under that reading the
     Welch t-test meets every printed bound except for IT4 at rest (two parkinsonian cells, p =
     0.31), while paired tests do not for IT2. If paired tests were used, which cells were paired?
@@ -1325,3 +1310,37 @@ verifications:
     response: No change of outcome. The two caveats are now in the notes and the notebook conclusion, and
       cell 85 prints the median observed over expected pair counts at rest (1.38 to 1.41 against 1.04 to
       1.05) and the ratio of the largest PT5B SCH spectral power above 5 Hz (31.5).
+- date: 2026-11-02
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The two outcomes with a proposed change after round 2, fig1-network-size and
+    fig2c-control-it23-rate-activated, and the analysis behind them in the full executed notebook of the
+    second revision, with the attempt record and the claims file. Report transcripts/001444/verifier-3-report.md.
+  results:
+  - claim: fig1-network-size
+    agrees: true
+    outcome: blocked
+    reason: The analysis does not weaken the criterion's count. It shows that the quantity the criterion
+      counts, every M1 cell including silent ones, is not stored in the dataset (cell 18, 0 stored M1 units
+      without a spike and 5,593 to 7,156 gids of 0 to 10072 without a row; cell 13, no other table or column
+      lists cells; cell 7, the gids fit 10,073 cells). That is the definition of blocked (data_missing). The
+      data do not contradict the paper's 10,073, so not_reproduced would mislead a reader. The criterion
+      assumes each file's units table lists every neuron, which the reader took from the dandiset description,
+      not from the paper.
+    response: Outcome changed to blocked (data_missing) and proposed removed. The notes, the notebook conclusion,
+      the summary and the README now give blocked.
+  - claim: fig2c-control-it23-rate-activated
+    agrees: true
+    outcome: partially_reproduced
+    reason: The both-files pairing was adopted earlier for pd-it6-rate-unchanged on an independently stated
+      reason, and is also applied to fig5c-pd-it23-rate-activated, where it gives the worse outcome; applying
+      one pairing to all three claims is consistent. The criterion as written still fails, two of four tests
+      above p < 0.001, so partially reproduced is a grading judgment, matching activated-pt5b-rate-pd-vs-control.
+      This claim is weaker than activated-pt5b - two tests miss the bound, not one, and the paired p-values
+      (0.011 to 0.016) come from only 25 cells. The outcome should be marked assumed, because it rests on R3
+      and on the both-files pairing, and the README row and the deviation sentence "Both fail the criterion"
+      need updating.
+    response: Outcome changed to partially reproduced, marked assumed, and proposed removed. The notes and
+      the notebook conclusion give the two caveats; the deviation now says the outcome rests on the both-files
+      pairing; the README gives the control IT2 claim its own row; the summary and the finding on rate readings
+      now count eight IT outcomes resting on R3.
