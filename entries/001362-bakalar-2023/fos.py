@@ -23,18 +23,22 @@ Where the parameters come from:
   (`all components`), the reading that matches the dataset's count tables.
 - Counting is done in slabs of `CORE` z-planes with `OVERLAP` planes on each side, so that the
   volume never has to be held in memory. A component is counted in the slab where its first plane
-  lies; a component that reaches the edge of the extended slab (more than `OVERLAP` planes tall)
-  cannot be measured and is counted as dropped. This is a computational choice that changes no
-  count of components shorter than `OVERLAP` planes (cells are under 900 voxels).
+  lies; a component that reaches the edge of the extended slab (which takes more than `OVERLAP`
+  planes) cannot be measured and is dropped. This is a computational choice that changes no count
+  of components of at most `OVERLAP` planes (cells are under 900 voxels); the notebook checks it
+  against scipy.ndimage.label on a synthetic volume. The number dropped is counted in pieces, an
+  upper bound on the components dropped.
 - The labels counted on are `AtlasLabelMasked` where the dataset has it, else `AtlasLabel`: CATNIP.sh
   (commit 4fb92da, the code the paper links) counts on `atlaslabel_def_origspace_masked`, and the
   region volumes of the dataset's count tables equal the voxel counts of `AtlasLabelMasked`
-  (shown in the notebook).
+  (shown in the notebook). With `unmasked`, the counts on the unmasked `AtlasLabel` are returned
+  too, from the same pass, so that every hemisphere can be counted on the same kind of label image.
 - Thresholds: the FRST threshold the paper used is not stated ("An expert user determined which
   threshold(s) to use", Supplemental Methods, "Segmentation") and the dataset does not mark one.
-  `THRESHOLDS` are the five thresholds the segmentations of all 22 hemispheres share (claims
-  file, fig5-dg-fos, reading 1: every threshold the derivatives hold; the 14 higher thresholds
-  exist for only 18 hemispheres).
+  `THRESHOLDS` are the five thresholds the segmentations of all 22 hemispheres share. The claims
+  file (fig5-dg-fos, reading 1) asks for every threshold the derivatives hold: 14000 to 40000,
+  which 18 hemispheres hold, and 2000, 3000, 5000, 7000, 9000 and 11000, which the other 4 hold,
+  are counted by passing them to `count_hemisphere` (`HIGH_THRESHOLDS`).
 """
 
 from __future__ import annotations
@@ -55,6 +59,7 @@ DANDISET_VERSION = "0.260923.2152"
 API = "https://api.dandiarchive.org/api"
 
 THRESHOLDS = (4000, 6000, 8000, 10000, 12000)
+HIGH_THRESHOLDS = tuple(range(14000, 40001, 2000))
 VMIN, VMAX = 9, 900          # Supplemental Methods, "Cell counting"
 CONNECTIVITY = 26            # assumption, see docstring
 CORE, OVERLAP = 96, 48       # slab size in z-planes (computational choice)
@@ -148,18 +153,26 @@ def _bbox(seg: np.ndarray, lab_any: np.ndarray):
     return y[0], y[-1] + 1, x[0], x[-1] + 1
 
 
-def _components(seg: np.ndarray, lab: np.ndarray, box, a: int, z0: int, z1: int, b: int, nz: int):
-    """Components of one extended slab (`seg`, cropped to `box`; `lab`, not cropped) whose first
-    plane is in [z0, z1): (label, size) pairs, and how many were dropped for reaching the slab
-    edge."""
+def _components(seg: np.ndarray, labs: list, box, a: int, z0: int, z1: int, b: int, nz: int):
+    """Components of one extended slab (`seg`, cropped to `box`; `labs` a list of (label image,
+    y offset, x offset), each cropped to its labelled area) whose first plane is in [z0, z1). Returns, per label image, (label, size) pairs, and
+    the number of pieces dropped for reaching the slab edge.
+
+    A piece that does not touch the first or last plane of the extended slab is a whole component
+    (its neighbours all lie in the slab), so every kept count is exact. A component that reaches
+    the edge is dropped; it can appear as more than one piece in a slab and in more than one slab,
+    so `dropped` counts pieces and is an upper bound on the components dropped."""
     import cc3d
     y0, y1, x0, x1 = box
     cc = cc3d.connected_components(np.ascontiguousarray(seg[:, y0:y1, x0:x1]), connectivity=CONNECTIVITY)
     flat = cc.ravel()
     idx = np.flatnonzero(flat)
+    if idx.size and idx[-1] < 2 ** 31:                     # int32 indices halve the memory of a dense slab
+        idx = idx.astype(np.int32)
+    empty = [np.zeros((0, 2), np.int64) for _ in labs]
     if idx.size == 0:
-        return np.zeros((0, 2), np.int64), 0
-    ids = flat[idx].astype(np.int64)
+        return empty, 0
+    ids = flat[idx].astype(np.int32)
     del cc, flat
     ny, nx = y1 - y0, x1 - x0
     plane = ny * nx
@@ -173,74 +186,122 @@ def _components(seg: np.ndarray, lab: np.ndarray, box, a: int, z0: int, z1: int,
     keep &= ~edge
     kept_ids = u[keep]
     if kept_ids.size == 0:
-        return np.zeros((0, 2), np.int64), dropped
+        return empty, dropped
     sel = np.isin(ids, kept_ids)
     ids_k = ids[sel]
     i = idx[sel]
     zz, rem = np.divmod(i, plane)
     yy, xx = np.divmod(rem, nx)
-    labs = lab[zz, yy + y0, xx + x0].astype(np.int64)
-    key = ids_k * NLAB + labs
-    k, c = np.unique(key, return_counts=True)
-    cid, cl = k // NLAB, k % NLAB
-    order = np.lexsort((-c, cid))                          # largest overlap first within component
-    cid, cl = cid[order], cl[order]
-    firsts = np.r_[True, cid[1:] != cid[:-1]]
-    comp, comp_lab = cid[firsts], cl[firsts]
-    size = np.bincount(ids_k)[comp]
-    return np.c_[comp_lab, size], dropped
+    size_all = np.bincount(ids_k)
+    out = []
+    for lab, ly0, lx0 in labs:
+        Y, X = yy + y0 - ly0, xx + x0 - lx0                # label images are cropped to their labels
+        inside = (Y >= 0) & (Y < lab.shape[1]) & (X >= 0) & (X < lab.shape[2])
+        lv = np.zeros(len(zz), np.int64)
+        lv[inside] = lab[zz[inside], Y[inside], X[inside]]
+        key = ids_k.astype(np.int64) * NLAB + lv
+        del lv, inside, Y, X
+        k, c = np.unique(key, return_counts=True)
+        cid, cl = k // NLAB, k % NLAB
+        order = np.lexsort((-c, cid))                      # largest overlap first within component
+        cid, cl = cid[order], cl[order]
+        firsts = np.r_[True, cid[1:] != cid[:-1]]
+        comp, comp_lab = cid[firsts], cl[firsts]
+        out.append(np.c_[comp_lab, size_all[comp]])
+    return out, dropped
 
 
-def count_hemisphere(sub: str, hem: str, thresholds=THRESHOLDS, zlimit: int | None = None) -> dict:
+def count_slabs(read_labs: list, read_seg: dict, nz: int, core: int = CORE, overlap: int = OVERLAP) -> dict:
+    """Count components per label in slabs. `read_labs` are functions (planes) -> label array, one
+    per label image; `read_seg` maps threshold -> function (planes) -> binary array. Returns, per
+    label image k, `volume`[k] (voxels per label) and, per threshold, `all`[k][t] and `sized`[k][t]
+    (component counts per label without and with the 9 to 900 voxel rule); per threshold `dropped`
+    (pieces reaching the slab edge, see `_components`) and `n_components` (all, within 9 to 900,
+    below 9, above 900; on the first label image)."""
+    nl = len(read_labs)
+    volume = [np.zeros(NLAB, np.int64) for _ in range(nl)]
+    pairs = {t: [[] for _ in range(nl)] for t in read_seg}
+    dropped = {t: 0 for t in read_seg}
+    for z0 in range(0, nz, core):
+        z1 = min(z0 + core, nz)
+        a, b = max(0, z0 - overlap), min(nz, z1 + overlap)
+        labs, lab_any = [], None
+        for k, rd in enumerate(read_labs):
+            lab = rd(range(a, b))
+            any_k = np.zeros(lab.shape[1:], bool)
+            for zp in range(lab.shape[0]):
+                any_k |= lab[zp] > 0
+                if a + zp >= z0 and a + zp < z1:
+                    volume[k] += np.bincount(lab[zp].ravel(), minlength=NLAB)
+            lab_any = any_k if lab_any is None else lab_any | any_k
+            if any_k.any():                                # crop to the labelled area (all zero outside)
+                y = np.flatnonzero(any_k.any(axis=1)); x = np.flatnonzero(any_k.any(axis=0))
+                labs.append((lab[:, y[0]:y[-1] + 1, x[0]:x[-1] + 1].copy(), y[0], x[0]))
+            else:
+                labs.append((lab[:, :0, :0].copy(), 0, 0))
+            del lab
+        for t, rd in read_seg.items():
+            seg = rd(range(a, b))
+            box = _bbox(seg, lab_any)
+            if box is not None:
+                p, d = _components(seg, labs, box, a, z0, z1, b, nz)
+                for k in range(nl):
+                    pairs[t][k].append(p[k])
+                dropped[t] += d
+            del seg
+        del labs
+    out = {"volume": volume, "dropped": dropped, "all": [{} for _ in range(nl)],
+           "sized": [{} for _ in range(nl)], "n_components": {}}
+    for t in read_seg:
+        for k in range(nl):
+            p = np.concatenate(pairs[t][k]) if pairs[t][k] else np.zeros((0, 2), np.int64)
+            ok = (p[:, 1] >= VMIN) & (p[:, 1] <= VMAX)
+            out["all"][k][t] = np.bincount(p[:, 0], minlength=NLAB)
+            out["sized"][k][t] = np.bincount(p[ok, 0], minlength=NLAB)
+            if k == 0:
+                out["n_components"][t] = (len(p), int(ok.sum()), int((p[:, 1] < VMIN).sum()), int((p[:, 1] > VMAX).sum()))
+    return out
+
+
+def count_hemisphere(sub: str, hem: str, thresholds=THRESHOLDS, unmasked: bool = False,
+                     zlimit: int | None = None) -> dict:
     """Recount cells per atlas label from the binary segmentations of one hemisphere.
 
     Returns a dict with `volume` (voxels per label, length NLAB), and per threshold `all` and
     `sized` (component counts per label, without and with the 9 to 900 voxel rule), `dropped`
-    (components taller than the slab overlap) and `n_components` (all, within 9 to 900, below 9,
-    above 900)."""
-    lab_tf = open_tiff(label_path(sub, hem))
+    (pieces of components taller than the slab overlap) and `n_components` (all, within 9 to 900,
+    below 9, above 900), on the labels of `label_path` (masked where the dataset has them). With
+    `unmasked`, also `volume_u`, `all_u` and `sized_u` on the unmasked `AtlasLabel` (the same
+    image where no masked one exists)."""
+    lp = label_path(sub, hem)
+    paths = [lp]
+    lu = label_path(sub, hem, masked=False)
+    if unmasked and lu != lp:
+        paths.append(lu)
+    tfs = [open_tiff(p) for p in paths]
     segs = seg_paths(sub, hem)
     seg_tf = {t: open_tiff(segs[t]) for t in thresholds}
-    nz = len(lab_tf.pages) if zlimit is None else zlimit
-    volume = np.zeros(NLAB, np.int64)
-    pairs = {t: [] for t in thresholds}
-    dropped = {t: 0 for t in thresholds}
-    for z0 in range(0, nz, CORE):
-        z1 = min(z0 + CORE, nz)
-        a, b = max(0, z0 - OVERLAP), min(nz, z1 + OVERLAP)
-        lab = lab_tf.asarray(key=range(a, b), maxworkers=THREADS)
-        lab_any = np.zeros(lab.shape[1:], bool)
-        for zp in range(lab.shape[0]):
-            lab_any |= lab[zp] > 0
-            if a + zp >= z0 and a + zp < z1:
-                volume += np.bincount(lab[zp].ravel(), minlength=NLAB)
-        for t in thresholds:
-            seg = seg_tf[t].asarray(key=range(a, b), maxworkers=THREADS)
-            box = _bbox(seg, lab_any)
-            if box is not None:
-                p, d = _components(seg, lab, box, a, z0, z1, b, nz)
-                pairs[t].append(p)
-                dropped[t] += d
-            del seg
-        del lab
-    out = {"volume": volume, "dropped": dropped, "all": {}, "sized": {}, "n_components": {}}
-    for t in thresholds:
-        p = np.concatenate(pairs[t])
-        ok = (p[:, 1] >= VMIN) & (p[:, 1] <= VMAX)
-        out["all"][t] = np.bincount(p[:, 0], minlength=NLAB)
-        out["sized"][t] = np.bincount(p[ok, 0], minlength=NLAB)
-        out["n_components"][t] = (len(p), int(ok.sum()), int((p[:, 1] < VMIN).sum()), int((p[:, 1] > VMAX).sum()))
+    nz = len(tfs[0].pages) if zlimit is None else zlimit
+    r = count_slabs([lambda k, tf=tf: tf.asarray(key=k, maxworkers=THREADS) for tf in tfs],
+                    {t: (lambda k, tf=tf: tf.asarray(key=k, maxworkers=THREADS)) for t, tf in seg_tf.items()}, nz)
+    out = {"volume": r["volume"][0], "all": r["all"][0], "sized": r["sized"][0],
+           "dropped": r["dropped"], "n_components": r["n_components"]}
+    if unmasked:
+        k = len(paths) - 1
+        out.update(volume_u=r["volume"][k], all_u=r["all"][k], sized_u=r["sized"][k])
     return out
 
 
 def _count_job(args):
-    sub, hem, thresholds = args
-    return (sub, hem), count_hemisphere(sub, hem, thresholds)
+    sub, hem, thresholds, unmasked = args
+    return (sub, hem), count_hemisphere(sub, hem, thresholds, unmasked)
 
 
-def count_all(hemis, thresholds=THRESHOLDS, workers: int = 2) -> dict:
-    """count_hemisphere for a list of (subject, hemisphere), in parallel processes."""
-    jobs = [(s, h, tuple(thresholds)) for s, h in hemis]
+def count_all(hemis, thresholds=THRESHOLDS, workers: int = 2, unmasked: bool = False) -> dict:
+    """count_hemisphere for a list of (subject, hemisphere), in parallel processes. `thresholds` is
+    one tuple for every hemisphere or a dict (subject, hemisphere) -> tuple."""
+    jobs = [(s, h, tuple(thresholds[(s, h)] if isinstance(thresholds, dict) else thresholds), unmasked)
+            for s, h in hemis]
     with ProcessPoolExecutor(workers) as ex:
         return dict(ex.map(_count_job, jobs))
 
@@ -275,6 +336,8 @@ def regions() -> pd.DataFrame:
 def iqr_keep(x: np.ndarray) -> np.ndarray:
     """Supplemental Methods: outliers "more than 1.5 IQR below Q1 or more than 1.5 IQR above Q3".
     Quartiles by numpy's default (linear) interpolation, a standard choice."""
+    if x.size == 0:
+        return np.zeros(0, bool)
     q1, q3 = np.nanpercentile(x, [25, 75])
     r = q3 - q1
     return (x >= q1 - 1.5 * r) & (x <= q3 + 1.5 * r)
