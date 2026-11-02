@@ -27,12 +27,18 @@ Where each parameter comes from:
   terms are written here for unequal numbers of repeats per stimulus (the files have 3 to 10); with
   equal repeats they reduce to the published terms. The noise variance of a neuron is the pooled
   within-stimulus variance. Noise is taken as independent between the two response vectors, as in
-  Pospisil and Bair.
+  Pospisil and Bair; for two simultaneously recorded neurons this is an assumption, and
+  `nc_corr_shared` is a variant that also subtracts the pooled noise covariance of the pair from the
+  covariance of their means (a first-order correction; the bias of the squared covariance is left as
+  for independent noise).
 - Bootstrap: 500 resamples of the repeats of each stimulus, with replacement (same passage). The
   same repeat indices are used for all neurons of a session, since they were recorded together.
   The interval is the 2.5 to 97.5 percentile, an assumption (the paper gives no level; 95% is the
   level it uses for its regressions, as the claims file says). A value is unreliable when the
   interval's width (reading a) or half-width (reading b) exceeds 0.5 (claims file, opening comment).
+  The resampled estimates are not centred on the corrected estimate (resampling with replacement adds
+  noise that the bias terms, computed from the original repeats, do not remove), so the percentile
+  interval is not a confidence interval of the corrected r; only its width is used.
 - Isimilarity and Ssimilarity: ordinary least squares of a neuron's reliable similarities with the
   other responsive neurons of its penetration against distance; 95% t intervals (MATLAB `confint`),
   three or more points (Clusters of similarly tuned neurons).
@@ -130,6 +136,13 @@ def load_file(asset_id: str) -> dict:
         "templates": sorted(f["stimulus/templates"].keys()),
         "electrode_columns": sorted(f["general/extracellular_ephys/electrodes"].keys()),
         "electrode_locations": sorted({_s(x) for x in f["general/extracellular_ephys/electrodes/location"][:]}),
+        "trial_columns": {k: _s(t[k].attrs.get("description")) for k in t.keys()},
+        "unit_columns": {k: _s(u[k].attrs.get("description")) for k in u.keys()},
+        "electrode_table_columns": {k: _s(f["general/extracellular_ephys/electrodes"][k].attrs.get("description"))
+                                    for k in f["general/extracellular_ephys/electrodes"].keys()},
+        "analysis": sorted(f["analysis"].keys()),
+        "presentation": sorted(f["stimulus/presentation"].keys()),
+        "intervals": sorted(f["intervals"].keys()),
     }
     units["depth0"] = units.depth.max() - units.depth
     meta["unit_spikes"] = tuple(np.diff(np.r_[0, idx]).tolist())
@@ -253,6 +266,27 @@ def nc_corr(mx, sx2, ix, my, sy2, iy, pairwise=True):
         r2 = np.where(den > 0, num / den, np.nan)
     r = np.sign(sxy) * np.sqrt(np.clip(r2, 0, None))
     return np.clip(r, -1, 1)
+
+
+def nc_corr_shared(arr: np.ndarray, nrep: np.ndarray) -> np.ndarray:
+    """Variant of the pairwise noise-corrected correlation for simultaneously recorded units whose
+    noise may be correlated: the pooled within-stimulus covariance of the sqrt counts of each pair,
+    times (1 - 1/m) sum(1/n), is subtracted from the covariance of their means, as the variance
+    bias is subtracted from each variance. Otherwise as `nc_corr`."""
+    x = np.sqrt(arr)
+    mx, s2, inv = _moments(arr, nrep)
+    res = np.nan_to_num(x - np.nanmean(x, axis=2, keepdims=True)).reshape(len(x), -1)
+    cov = res @ res.T / (nrep - 1)[nrep > 1].sum()
+    m = mx.shape[1]
+    ix = np.broadcast_to(inv, mx.shape)
+    xc = mx - mx.mean(1, keepdims=True)
+    sxy = xc @ xc.T - cov * (1 - 1 / m) * inv.sum()
+    sxx = (xc**2).sum(1) - s2 * (1 - 1 / m) * inv.sum()
+    bias = s2[:, None] * (ix @ (xc**2).T) + s2[None, :] * ((xc**2) @ ix.T) - s2[:, None] * s2[None, :] * (ix @ ix.T)
+    den = sxx[:, None] * sxx[None, :]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        r2 = np.where(den > 0, (sxy**2 - bias) / den, np.nan)
+    return np.clip(np.sign(sxy) * np.sqrt(np.clip(r2, 0, None)), -1, 1)
 
 
 def pearson_rows(mx, my):

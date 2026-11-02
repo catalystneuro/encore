@@ -55,7 +55,9 @@ outcomes:
     540 um and are similarly tuned at both contrasts (mean similarity 0.70 dark, 0.86 bright, against -0.02 with
     deeper neurons). With dark shapes 13 neurons have a significant positive Isimilarity under both reliability
     readings, all with negative slopes; neurons 1 to 9 and 14 as in the paper, plus 12, 21 and 22, without 17. Count
-    and set are outside the margin of one neuron.
+    and set are outside the margin of one neuron. None has a significant negative intercept, so the two-sided count
+    is also 13. With shared noise subtracted the count is 12, within tolerance, but the set lacks 17 and adds 12
+    and 21.
   deviations:
   - Penetrations are found by the files' `pen_ID` label (reading c of the claims file); readings a and b give other
     sessions whose counts do not match.
@@ -66,8 +68,11 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
+  - The noise of two simultaneously recorded neurons is taken as independent, as in Pospisil and Bair (2021). Their
+    noise correlations are small but positive, largest within 100 um (mean 0.072); a variant subtracts each pair's
+    noise covariance (`nc_corr_shared`).
 - claim: ex-m2p6-pairs
   outcome: partially_reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -98,7 +103,9 @@ outcomes:
   measured: 20
   notes: Under reliability reading (a) 20 of 24 neurons have a reliable invariance above 0.5 (19 within 1.9); under
     reading (b) 22. The median invariance is 0.955 among neurons with a significant Isimilarity and 0.954 among
-    the others.
+    the others. The match rests on reading (a), which the paper's counts of neurons without a line argue against
+    (140 shape neurons here, dark, against the paper's 2; 64 under b); the criterion accepts either reading, and
+    a reader is asked whether it should (questions/001357.yaml).
   deviations:
   - Penetrations are found by the files' `pen_ID` label (reading c of the claims file); readings a and b give other
     sessions whose counts do not match.
@@ -107,8 +114,8 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: ex-csd-sinks
   outcome: blocked
   blocked_by: data_missing
@@ -116,17 +123,21 @@ outcomes:
     files, and the archive's assets summary lists only Units and ElectrodeGroup. The paper names no other archive
     for the LF data.
 - claim: ex-m1p12-no-cluster
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_namima_2025.ipynb
   output: claim:ex-m1p12-no-cluster
   measured:
   - 42
   - 2580
-  - 1
-  notes: The files' p12 of M1 (2019-10-24) has 42 responsive neurons over 2,580 um. With dark shapes one neuron
-    has a significant positive Isimilarity under both reliability readings; 35 (a) or 36 (b) of 42 have reliable
-    invariance above 0.5. With bright shapes 4 neurons have a significant positive Isimilarity, so the statement's
-    'at either contrast' holds less cleanly for bright shapes; the criterion judges dark.
+  - 4
+  notes: The files' p12 of M1 (2019-10-24) has 42 responsive neurons over 2,580 um, and 35 (a) or 36 (b) of 42 have
+    reliable invariance above 0.5. With dark shapes the intercept's 95% interval excludes zero for 4 neurons under
+    both reliability readings (1 positive, 3 negative). The claims file defines a significant intercept as one whose
+    interval excludes zero, and the paper says 'significantly different from zero for only one neuron', so the count
+    is 4, above the criterion's limit of 2; the partial rule needs the count to hold, so the outcome is not reproduced.
+    Counting significant positive intercepts only gives 1, the paper's number. With bright shapes 5 neurons have
+    a significant intercept (4 positive). With shared noise subtracted the dark counts are 1 positive and 4 of either
+    sign. Changed from reproduced after verification round 1.
   deviations:
   - Penetrations are found by the files' `pen_ID` label (reading c of the claims file); readings a and b give other
     sessions whose counts do not match.
@@ -137,8 +148,11 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
+  - The noise of two simultaneously recorded neurons is taken as independent, as in Pospisil and Bair (2021). Their
+    noise correlations are small but positive, largest within 100 um (mean 0.072); a variant subtracts each pair's
+    noise covariance (`nc_corr_shared`).
 - claim: ex-m1p12-strong-responses
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -152,7 +166,7 @@ outcomes:
   - Penetrations are found by the files' `pen_ID` label (reading c of the claims file); readings a and b give other
     sessions whose counts do not match.
 - claim: pop-significant-isimilarity
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_namima_2025.ipynb
   output: claim:pop-significant-isimilarity
   measured:
@@ -164,21 +178,27 @@ outcomes:
   - 77
   notes: Under all 12 readings a minority of the neurons with a line has a significantly positive Isimilarity (22%
     to 34%), nearly all with a negative slope, but no reading puts the four counts within tolerance. The closest,
-    bright shapes, reliability (a), rule (ii), gives 381 (226 in M1, 155 in M2) and 1,349 not significant; dark
-    (a)(i) gives 400 (233, 167) and 1,329. Penetrations hold 1 to 77 responsive neurons; the single-neuron one is
-    M2 p40 (2021-05-29), and the next smallest hold 6. Neurons with a line number 1,729 to 1,847 against the paper's
-    1,848. The criterion gives no rule for a partial outcome; the minority the statement describes holds and the
-    counts do not, which is the protocol's partially reproduced.
+    dark shapes, reliability (a), rule (ii), gives 394 (228 in M1, 166 in M2) and 1,335 not significant; bright
+    (a)(ii) gives 381 (226, 155) and 1,349; dark (a)(i) gives 400 (233, 167) and 1,329. Penetrations hold 1 to 77
+    responsive neurons (6 within 0.6 fails); the single-neuron one is M2 p40 (2021-05-29), and the next smallest
+    hold 6. Neurons with a line number 1,729 to 1,847 against the paper's 1,848. The criterion has no partial rule,
+    so the outcome is not reproduced (changed from partially reproduced after verification round 1); the minority
+    the statement describes holds. With shared noise subtracted the counts fall to 243 to 296 (M1 152 to 176, M2
+    91 to 121), also outside tolerance. The paper's 2 of 1,850 neurons without a line favour reliability reading
+    (b) (64 here, dark) over (a) (140); a reader is asked (questions/001357.yaml).
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
   - Depth is the unit's best-channel position from the files (20 um steps, `depth`, distance from the tip), measured
     from the most superficial good unit; the template center of mass of the Methods is not in the files.
+  - The noise of two simultaneously recorded neurons is taken as independent, as in Pospisil and Bair (2021). Their
+    noise correlations are small but positive, largest within 100 um (mean 0.072); a variant subtracts each pair's
+    noise covariance (`nc_corr_shared`).
 - claim: pop-intercept-slope-correlation
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -196,8 +216,8 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: pop-dark-bright-consistent
   outcome: not_reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -205,15 +225,16 @@ outcomes:
   measured: 0.484
   notes: Spearman's r between dark and bright Isimilarity is 0.484 (reliability a, n = 1,643) and 0.520 (b, n =
     1,757), p below 1e-90, above 0.435 within 0.0435. The consistency the statement describes holds, more strongly
-    than reported.
+    than reported. Neither reliability reading gives a match. Reading (b) gives n = 1,757 and either contrast 1,847
+    neurons with a line, the paper's n.
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: pop-contrast-invariance
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -229,8 +250,8 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: pop-sparse-across-penetrations
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -248,8 +269,8 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: pop-asymptote-20-percent
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -257,15 +278,16 @@ outcomes:
   measured: 21.5
   notes: Over the 20 penetrations with more than 30 neurons, the pooled percentage is 21.1% to 21.5% with dark or
     bright shapes under reliability (a) and the median per penetration 19.4% to 21.0% under (b). Per penetration
-    it ranges 0% to 60%. Either contrast gives 29% to 36%.
+    it ranges 0% to 60%. Either contrast gives 29% to 36%. Each reliability reading has a match (dark (a) pooled
+    21.5%, dark (b) median 21.0%), so the outcome does not rest on the reliability reading asked of a reader.
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: pop-mean-isimilarity-yield
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -280,8 +302,8 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: pop-recording-density
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -290,15 +312,17 @@ outcomes:
   notes: With density as neurons per um, Pearson's r is 0.257 (dark, reliability a, p = 0.028, 73 penetrations),
     within 0.236 of 0.0236; bright (a) 0.256. Reliability (b) and either contrast give 0.296 to 0.336. Density as
     um per neuron, the legend's quotient, gives -0.355 to -0.456. The penetration with one neuron has no depth range
-    and is left out.
+    and is left out. The match rests on reliability reading (a) (dark 0.323 and bright 0.296 under b), which the
+    paper's counts of neurons without a line argue against; the criterion accepts either, and a reader is asked
+    (questions/001357.yaml).
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
   - Depth is the unit's best-channel position from the files (20 um steps, `depth`, distance from the tip), measured
     from the most superficial good unit; the template center of mass of the Methods is not in the files.
 - claim: pop-within-vs-across-sessions
@@ -371,20 +395,24 @@ outcomes:
   - 26
   - 15
   - 83
-  notes: 985 texture neurons in 51 penetrations (6 to 83 each). No reading puts the counts within tolerance. Original
+  notes: '985 texture neurons in 51 penetrations (6 to 83 each). No reading puts the counts within tolerance. Original
     and reversed textures under reliability (a) give 193 and 198 neurons (207) but 30 and 27 penetrations (34),
     4 and 2 in M1 (7), and 12 and 7 M1 neurons (18). Reliability (b) gives 276 to 395 neurons in 37 to 42 penetrations.
     A minority of neurons with a line is clustered under every reading (27% to 41%). Neurons without a line are
-    304 and 322 under (a) and 62 and 44 under (b), against the paper's 48, which points to reading (b) for the paper's
-    reliability rule.
+    304 and 322 under (a) and 62 and 44 under (b), against the paper''s 48, which points to reading (b) for the
+    paper''s reliability rule. Five M1 texture files (2020-07-15, 07-19, 07-29, 07-30, 08-04) fail the clock check:
+    9% to 47% of their units fire more on stimuli than on blanks (median 41% across texture files) but 0% to 12%
+    are selective among the textures, so their stimulus labels may not match the presentations. No neuron in them
+    has a line under reliability (a) (original textures), so leaving them out leaves the (a) counts unchanged; under
+    (b) it gives 267 to 379 neurons in 33 to 38 penetrations (7 to 11 in M1). No reading matches either way.'
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
   - Rotations are pooled per texture; the files do not store the rotation of each presentation.
 - claim: texture-original-reversed-consistent
   outcome: not_reproduced
@@ -393,32 +421,37 @@ outcomes:
   measured:
   - 0.706
   - 624
-  notes: Spearman's r between original and reversed texture Isimilarity is 0.706 (reliability a, n = 624) and 0.642
-    (b, n = 894), p below 1e-90, against 0.464 within 0.0464. The neuron count under (b) is within 905 of 90.5.
-    The consistency holds, more strongly than reported.
+  notes: 'Spearman''s r between original and reversed texture Isimilarity is 0.706 (reliability a, n = 624) and
+    0.642 (b, n = 894), p below 1e-90, against 0.464 within 0.0464. The neuron count under (b) is within 905 of
+    90.5. The consistency holds, more strongly than reported. Five M1 texture files (2020-07-15, 07-19, 07-29, 07-30,
+    08-04) fail the clock check: 9% to 47% of their units fire more on stimuli than on blanks (median 41% across
+    texture files) but 0% to 12% are selective among the textures, so their stimulus labels may not match the presentations.
+    Without them r is 0.706 (a, n = 624) and 0.675 (b, n = 834).'
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: texture-asymptote-20-percent
   outcome: not_reproduced
   notebook: reproduce_namima_2025.ipynb
   output: claim:texture-asymptote-20-percent
   measured: 26.8
   notes: Seven texture penetrations have more than 30 neurons; the percentage with significant Isimilarity is 25.6%
-    to 52.1% pooled and 28.9% to 51.4% as a median under every reading, above 20 of 2.
+    to 52.1% pooled and 28.9% to 51.4% as a median under every reading, above 20 of 2. None of the seven is among
+    the five M1 texture files that fail the clock check, and leaving those out changes no value (pooled 25.6% to
+    52.1%, median 28.9% to 51.4%).
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: position-optimal-consistent
   outcome: reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -431,12 +464,17 @@ outcomes:
     gives Spearman's r = 0.297 (reliability a, n = 378) and 0.325 (b, n = 676), p below 1e-4. Against the position
     test's center (reading a), r is 0.447 to 0.474 with the inferred center, and 0.279 to 0.567 (p at most 2.1e-4)
     whichever position is taken as the center, so every reading gives a positive r and one is within tolerance.
+    Reading (b) does not use the position labels. Under reliability (b) the five choices of center give r = 0.274
+    to 0.406, all p below 1e-4, within tolerance only with position 3 (0.329); under (a) 0.279 to 0.567, p below
+    1e-4 except position 4 (p = 2.1e-4).
   deviations:
   - The files code positions 0 to 4 without saying which is the center; the position with the largest mean response
     of the penetration's responsive neurons is taken as the center (position 1 in 12 files, 2 in 11, others in 11),
     and all five are shown.
   - Neurons are those responsive in the main shape test; neurons responsive in the position test are a variant (603
     neurons, r = 0.298 and 0.348).
+  - Penetrations enter with 4 or more neurons, since a regression line needs 3 other neurons with reliable similarities
+    (Materials and Methods, Clusters of similarly tuned neurons); this follows from the line rule.
 - claim: position-examples-invariant
   outcome: not_reproduced
   notebook: reproduce_namima_2025.ipynb
@@ -451,7 +489,11 @@ outcomes:
     its 10% rule stand and the outcome is unchanged. On the data, the files' p28 has exactly 55 shape-responsive
     neurons (65 good, 44 responsive in the position test), consistent with matrices of shape-responsive neurons.
     No count of the files' p09 is within 10% of 16 (20 good, 18 shape-responsive, 12 position-responsive, 12 both,
-    18 either), so the rule still takes p12 as M2p9. The claim fails on M2p28 whichever session is M2p9.
+    18 either), so the rule still takes p12 as M2p9. The claim fails on M2p28 whichever session is M2p9. Over fixed
+    position labels, reading (a) fails for the files' p12 with every position as the center under both reliability
+    readings; for the files' p28 it holds only with position 0 as the center under reliability (b). Reading (b)
+    fails for p12 and p28 under both reliability readings, so the readings agree and the outcome is not reproduced,
+    not blocked.
   deviations:
   - Positions are not labelled; reading (a) is evaluated for every choice of center.
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
@@ -459,8 +501,8 @@ outcomes:
     stimulus (3 to 10 here), which reduce to the published terms with equal repeats. The paper's code is not public.
   - The bootstrap resamples each stimulus's repeats (500 times), with the same indices for all neurons of a session.
     Its distribution sits below the point estimate, since resampling with replacement inflates the noise the estimator
-    corrects for; only its width decides reliability. Both readings of the reliability rule (width or half-width
-    above 0.5) are run.
+    corrects for, so the percentile interval is not a confidence interval of the corrected r; only its width decides
+    reliability. Both readings of the reliability rule (width or half-width above 0.5) are run.
 - claim: simulation-random-with-domains
   outcome: blocked
   blocked_by: methods_underspecified
@@ -503,10 +545,212 @@ findings:
   statement: Spikes and presentations share a clock in 152 of 159 files (units are tuned to the stimuli at the photodiode
     onsets and not at onsets moved by -1.3 s). It could not be established in five M1 texture files (2020-07-15,
     07-19, 07-29, 07-30, 08-04), where 0% to 12% of units are tuned at the true onsets, nor in the two single-unit
-    files of 2021-05-29.
+    files of 2021-05-29. In the five texture files 9% to 47% of units fire more on stimuli than on blanks (median
+    41% across texture files), so the units respond to stimulus onset but not selectively among the textures, which
+    points to stimulus labels that do not match the presentations.
 - kind: methods_unavailable
   statement: For the paper's authors. Is a noise-corrected similarity unreliable when the width of its 95% bootstrap
     interval exceeds 0.5, or its half-width, and what interval level is used? Under the width reading, 1,729 neurons
     have a regression line with dark shapes and 681 texture neurons with original textures; under the half-width
     reading 1,805 and 923; the paper has 1,848 and 931. The significant-Isimilarity counts change by 10% to 60%
     between them. How are unequal repeats per stimulus handled in the bias correction?
+- kind: methods_unavailable
+  statement: For the paper's authors. Does the noise-corrected similarity between two simultaneously recorded neurons
+    correct for their noise correlation? Here noise correlations are small but positive and largest for near pairs
+    (mean 0.072 within 100 um, 0.023 beyond 800 um); subtracting them lowers the number of neurons with significant
+    positive Isimilarity from 400 to 274 (dark shapes, width reading) against the paper's 344.
+verifications:
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1, run 41414423834; same harness, separate context, did not
+    write the notebook)
+  reviewed: The handover of the author-answers run (commit b8c9f8a92), the executed notebook with the conclusions
+    and summary removed, the helper module and the claims file. The verifier also checked the archive's metadata
+    for the blocked claims, read the paper and tested the helper functions on synthetic inputs.
+  results:
+  - claim: methods-sessions-and-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: sessions 30/44/17/34/34 and neurons 1869/985 responsive, 427/360 excluded. All are within
+      tolerance.'
+    response: No change. Added a sanity cell listing every column of the trial, unit and electrode tables with its
+      description, and a cross-tabulation of cond_ID 0 against luminance, mode, position and stim_ID (cond_ID 0
+      is exactly the presentations with no stimulus).
+  - claim: ex-m2p6-cluster
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 17: p06 has 24 neurons over a 2,340 um span. 13 neurons have a significant positive intercept,
+      all with negative slopes; the paper has 11 (tolerance 1.1). Against the paper''s set, 17 is missing and 12,
+      21 and 22 are added. The session is found but the set and count do not match.'
+    response: No change of outcome. Added the two-sided count (13) and the variant with shared noise subtracted
+      (12 neurons, still without 17 and with 12 and 21 added).
+  - claim: ex-m2p6-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 19: pair 3-8 gives 0.780 dark and 0.894 bright, pair 18-19 gives -0.000 dark, and both distances
+      (260, 80 um) are within tolerance. Pair 18-19 bright is -0.144 against -0.25 +/- 0.025.'
+    response: No change.
+  - claim: ex-m2p6-invariance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: 20 of 24 under reliability (a), within 19 +/- 1.9. Reading (b) gives 22, outside. Matches
+      that rest on reading (a) are suspect, since the paper''s own counts of neurons without a line largely rule
+      it out (problem 1), but the claim has a match under the criterion''s readings.'
+    response: No change of outcome; the criterion accepts either reading. The notes say the match rests on reading
+      (a), and a question asks a reader whether the paper's counts of neurons without a line should exclude it (questions/001357.yaml).
+  - claim: ex-csd-sinks
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: 159 files, 0.24 GB in total, variableMeasured is only Units and ElectrodeGroup,
+      and the files have no acquisition or processing (cell 57). There is no LF signal, so no part can be tested.'
+    response: No change.
+  - claim: ex-m1p12-no-cluster
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 23: 42 neurons over 2,580 um, and 83-86% have reliable invariance above 0.5. The paper says the
+      intercept was ''significantly different from zero for only one neuron'', and the claims file defines significant
+      as the CI excluding zero. That count is 4 (dark), which exceeds the criterion''s limit of 2. Counting significant
+      positive intercepts only gives 1, which would make it reproduced. Borderline.'
+    response: 'Changed to not_reproduced, as the verifier gives it: the claims file''s opening comment defines a
+      significant intercept as one whose 95% interval excludes zero, and the paper''s text is two-sided, so the
+      count is 4 (1 positive, 3 negative). The cell now prints the negative count, and the positive-only count (1)
+      is kept in the notes.'
+  - claim: ex-m1p12-strong-responses
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: baseline-subtracted counts are exactly 28 and 26.'
+    response: No change.
+  - claim: pop-significant-isimilarity
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 27: none of the 12 readings puts the four counts within tolerance. The nearest, dark/(a)/(ii),
+      gives 394, M1 228, M2 166 against 344, 203, 141. The fewest neurons in a penetration is 1, against 6.'
+    response: 'Changed to not_reproduced: the criterion gives only a rule for reproduced, and no reading meets it.
+      The notes now name dark (a)(ii) as the closest reading and give the shared-noise variant (243 to 296), also
+      outside tolerance.'
+  - claim: pop-intercept-slope-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 29: Pearson r is -0.768 (dark, a) and -0.735 (dark, b), p near 0, and 0 neurons have both significantly
+      positive (criterion allows at most 2).'
+    response: No change.
+  - claim: pop-dark-bright-consistent
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 31: Spearman r is 0.484 (a) and 0.520 (b); the upper bound is 0.4785. n is 1643/1757 against 1847.'
+    response: No change. The new reliability cell shows that 1,847 neurons have a line at either contrast under
+      reading (b).
+  - claim: pop-contrast-invariance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 33: two of eight readings fall within 0.64 +/- 0.064, both under reliability (b) with unreliable
+      values counted as 0: 0.632 over all neurons and 0.619 from per-penetration medians. Leaving unreliable values
+      out gives about 0.77. Fragile.'
+    response: No change.
+  - claim: pop-sparse-across-penetrations
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 35: the dark and bright readings give 54-59 penetrations, 27-29 with five or more, and 20 with
+      more than 30 neurons.'
+    response: No change.
+  - claim: pop-asymptote-20-percent
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37: dark/(a) pooled is 21.5% and dark/(b) median is 21.0%. The other readings range from 16% to
+      35%. The dark/(a) pooled match rests on reading (a), which the paper''s counts largely rule out (problem 1).'
+    response: No change; the notes say that each reliability reading has a match.
+  - claim: pop-mean-isimilarity-yield
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 39: the SD of penetration means is smaller above 30 neurons in all four readings (0.084-0.107
+      against 0.127-0.204). Levene p is 0.015-0.18. No contrast reading reproduces pop-significant-isimilarity,
+      so the criterion''s choice of reading is moot.'
+    response: No change.
+  - claim: pop-recording-density
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: neurons per um gives r = 0.257 (dark, a) and 0.256 (bright, a), p near 0.03, within 0.236
+      +/- 0.0236. The match rests on reading (a), which the paper''s counts largely rule out (problem 1).'
+    response: No change of outcome; the criterion accepts either reading. The notes say the match rests on reading
+      (a) (0.296 to 0.323 under b), and a reader is asked (questions/001357.yaml).
+  - claim: pop-within-vs-across-sessions
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 43: direction holds and p < 1e-4 under every reading. No reading matches all four means; for example,
+      same-session pairs give 0.030 (Pearson) or 0.083 (noise-corrected) against 0.0582.'
+    response: No change.
+  - claim: orientation-sf-isimilarity
+    agrees: true
+    outcome: blocked
+    reason: Neither the dataset nor its stimulus templates hold the shape images. I did not verify the notebook's
+      statement that no public, pinned source exists.
+    response: No change. The notes list where the search for a public, pinned copy of the shapes looked; no new
+      search was run in this revision.
+  - claim: orientation-auc-coarse-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 45: two penetrations are all-one and two are switching. M2p6 has 2 sign changes and M1p5 has 12,
+      so neither is of one kind; this holds for every stim_ID taken as the spindle.'
+    response: No change.
+  - claim: apc-peaks-sparse-clustering
+    agrees: true
+    outcome: blocked
+    reason: Needs the shapes' curvature descriptions; same caveat as orientation-sf-isimilarity.
+    response: No change; as for orientation-sf-isimilarity.
+  - claim: apc-example-m2p51
+    agrees: true
+    outcome: blocked
+    reason: Same as apc-peaks-sparse-clustering.
+    response: No change.
+  - claim: gyrus-penetrations-consistent
+    agrees: true
+    outcome: blocked
+    reason: The asset metadata names only session and description, electrode location is only 'V4', and the dataset
+      has no RF-mapping files. The 18 gyral penetrations cannot be identified, so no part is testable.
+    response: 'No change. The new sanity cell lists every column of the trial, unit and electrode tables: none holds
+      grid coordinates, RF centres or position geometry.'
+  - claim: texture-sparse-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 47: no reading matches, and the partial condition (total and penetration counts) fails in all
+      readings. The nearest, original/(a)/(i), gives 193 neurons in 30 penetrations (needs at least 30.6). The five
+      M1 texture files that fail the clock check are used in every texture count, and no variant leaves them out
+      (problem 2).'
+    response: 'No change of outcome. Added a variant without the five files and their per-unit tuning: no neuron
+      in them has a line under reliability (a), so the (a) counts are unchanged, and under (b) the counts are 267
+      to 379 neurons in 33 to 38 penetrations; no reading matches.'
+  - claim: texture-original-reversed-consistent
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 49: r is 0.706 (a) and 0.642 (b) against 0.464 +/- 0.046.'
+    response: No change. Without the five files r is 0.706 (a) and 0.675 (b).
+  - claim: texture-asymptote-20-percent
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 51: only 7 penetrations have more than 30 neurons, and every reading gives 25.6-52%.'
+    response: No change. None of the seven is among the five files; the variant without them gives the same values.
+  - claim: position-optimal-consistent
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 53: against the main shape test, r is 0.297 (a) and 0.325 (b), within tolerance. Against the inferred
+      centre, r is 0.45-0.47. All p < 1e-4. Caveat: if file position 4 is the centre, p = 2.1e-4 (problem 4).'
+    response: No change. The variant over every position as the centre now runs under both reliability readings
+      (r = 0.274 to 0.406 under b, all p below 1e-4). The penetration minimum of 4 neurons is stated as following
+      from the line rule.
+  - claim: position-examples-invariant
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 55: for the accepted M2p9 session (20210421, labelled p12) both readings fail. For M2p28 (p28),
+      reading (b) fails: up to 2 (a) or 16 (b) neurons are significant at one position, and the limit is 1. Reading
+      (a) holds only under reliability (b) with position 0 as centre. The dataset''s own labels make p09 (18 neurons)
+      the likelier M2p9; under p09 the M2p9 half passes both readings, but the claim still fails on M2p28 under
+      reading (b) (problem 5).'
+    response: No change. The cell now tabulates reading (a) for each fixed position label under both reliability
+      readings. A reader had already answered that Figure 11's n is the matrices' count, so the 10% rule takes the
+      files' p12 as M2p9; the notes give the p09 result.
+  - claim: simulation-random-with-domains
+    agrees: true
+    outcome: blocked
+    reason: A simulation with unstated parameters, not a test on recorded data. (Blocked as other.)
+    response: No change. Kept blocked_by methods_underspecified, since the reason is the unstated parameters (peak
+      amplitudes, step sizes); the verifier would give other.

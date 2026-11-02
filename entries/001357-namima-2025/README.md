@@ -12,9 +12,9 @@ test (51) and the position control (34).
 | M2p6: similarity of two example pairs | Partially reproduced |
 | M2p6: contrast invariance in 19 of 24 neurons | Reproduced |
 | M2p6 and M1p12: CSD sinks | Blocked: no LF signal in the dandiset |
-| M1p12: no cluster, high invariance | Reproduced |
+| M1p12: no cluster, high invariance | Not reproduced |
 | M1p12: strong peak responses | Reproduced |
-| 344 of 1,850 neurons with significant Isimilarity | Partially reproduced |
+| 344 of 1,850 neurons with significant Isimilarity | Not reproduced |
 | Isimilarity and Ssimilarity correlated, r = -0.745 | Reproduced |
 | Dark and bright Isimilarity consistent, r = 0.435 | Not reproduced |
 | Median contrast invariance 0.64 | Reproduced |
@@ -40,7 +40,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001357-namima-2025-01.yaml`](../../attempts/001357-namima-2025-01.yaml).
 
-- `reproduce_namima_2025.ipynb`: the analysis. It takes about eight minutes, half of it streaming the
+- `reproduce_namima_2025.ipynb`: the analysis. It takes about five minutes, more than half of it streaming the
   files.
 - `v4clusters.py`: loading the files into spike counts per presentation, the noise-corrected
   correlation with its bootstrap, Isimilarity, and the per-session analyses. Other notebooks on this
