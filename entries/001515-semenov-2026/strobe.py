@@ -121,14 +121,26 @@ def read_metadata(asset: dict) -> dict:
     return out
 
 
+def read_stack(asset: dict) -> np.ndarray:
+    """All 70 frames of one file."""
+    with h5py.File(remfile.File(asset["url"]), "r") as f:
+        return f["acquisition/StrobeImaging/data"][:]
+
+
+def membrane_mask(mean_image: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Membrane mask of a background-subtracted mean image, its connected parts and their sizes (px)."""
+    mask = mean_image > np.percentile(mean_image, MASK_PERCENTILE)
+    labels, n = ndimage.label(mask)
+    sizes = ndimage.sum(mask, labels, range(1, n + 1))
+    return mask, labels, sizes
+
+
 def polarization_trace(stack: np.ndarray) -> dict:
     """Top-minus-bottom membrane index per frame (percent), as the module docstring describes."""
     a = stack.astype(np.float64)
     a -= np.percentile(a.reshape(len(a), -1), BACKGROUND_PERCENTILE, axis=1)[:, None, None]
     mean_image = a.mean(0)
-    mask = mean_image > np.percentile(mean_image, MASK_PERCENTILE)
-    labels, n = ndimage.label(mask)
-    sizes = ndimage.sum(mask, labels, range(1, n + 1))
+    mask, labels, sizes = membrane_mask(mean_image)
     rows = np.indices(mask.shape)[0]
     values = a[:, mask]
     norm = values / values.mean(1, keepdims=True)
@@ -164,8 +176,7 @@ def response_window(index: np.ndarray, first: int = 1) -> dict:
 
 def summarize_file(asset: dict) -> dict:
     """Read one file's pixels once: per-frame checksums and the polarization index."""
-    with h5py.File(remfile.File(asset["url"]), "r") as f:
-        stack = f["acquisition/StrobeImaging/data"][:]
+    stack = read_stack(asset)
     out = {"path": asset["path"],
            "frame_md5": [hashlib.md5(fr.tobytes()).hexdigest() for fr in stack],
            "min": int(stack.min()), "max": int(stack.max())}
