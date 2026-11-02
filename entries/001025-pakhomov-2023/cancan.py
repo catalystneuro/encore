@@ -20,12 +20,27 @@ Where each parameter comes from:
   it changes only how many pixels are averaged.
 - Pixel size: not in the files. Main reading, 0.65 um per pixel, from the camera and objective
   the files name (Hamamatsu ORCA-Flash4.0, 6.5 um pixels, behind a 10x objective; an
-  assumption that the stitched image is not binned). Variant, the scale at which the mean
-  centre-to-centre diagonal of the large array is 8.4 mm (paper, Section 3.5, "the larger
-  electrode array, with 8.4-mm diagonal").
+  assumption that the stitched image is not binned). It is checked against the needles: the
+  radius of each needle's dark footprint (`footprint_radius`) is compared with the 0.75 mm
+  radius of the 1.5 mm needles (paper, Section 2.3, "blunt, hollow, stainless-steel needles
+  1.5-mm in diameter"). An earlier variant, the scale at which the mean centre-to-centre
+  diagonal of the large array is 8.4 mm (paper, Section 3.5), is no longer run: with it the
+  needle edge lies at 3.45 mm (large array) and 1.55 mm (small array) from the centre, inside
+  the paper's ROI spans of 3.65 and 1.65 mm, so the end ROIs would lie on the needles.
+- Exclusion zone: "Areas immediately adjacent to the electrodes (<5% of the diagonal length)
+  were excluded" (paper, Section 2.4). On the camera scale the paper's spans end 0.12 mm (small
+  array) and 0.22 mm (large array) from the needle edge, inside that zone. The span is kept as
+  the paper states it; `inner_values` gives a variant that drops the end ROIs lying in the zone.
+- Packet: the session descriptions name the CANCAN protocol with 12.5% decrements but not the
+  packet; Packet 2 is assumed, as in Fig. 7 and the dandiset's title.
 - Electrode detection (a dark disk of radius 52 px, small array, or 40 px, large array, at a
   downsampling of 16, four disks on the corners of a square): a choice made here to place the ROIs, checked on overlays in the
-  notebook. The geometrical centre is the mean of the four electrode centres.
+  notebook. The geometrical centre is the mean of the four electrode centres. The disk radii
+  are detection templates, not the needle radius.
+- LOESS: local-linear (statsmodels lowess) with no robustness iterations (`it=0`), fitted over
+  the whole span of one diagonal with the standard span 0.75. A span this wide flattens a narrow
+  centre peak, so the LOESS readings sit below the raw centre ROI; they are readings, not the
+  main one.
 - Mean of the non-zero pixels: the stitched images are zero outside the imaged tiles.
 """
 
@@ -54,6 +69,8 @@ CAMERA_UM_PER_PX = 6.5 / 10  # ORCA-Flash4.0 pixel behind a 10x objective
 SPAN_MM = {"small": 1.65, "large": 3.65}  # paper, Section 2.4
 N_ROI = {"small": 92, "large": 224}  # paper, Section 2.4
 LARGE_DIAGONAL_MM = 8.4  # paper, Section 3.5
+NEEDLE_RADIUS_MM = 0.75  # paper, Section 2.3, needles 1.5 mm in diameter
+EXCLUDE_FRAC = 0.05  # paper, Section 2.4, areas within 5% of the diagonal length excluded
 
 
 def list_assets():
@@ -279,6 +296,37 @@ def roi_at(hist, bin_px, u0, w):
     return hs[np.ix_(um, vm)].sum() / nn if nn > 0 else np.nan
 
 
+def footprint_radius(s, n, pts_fd, rmax=600, step=4, inner=(0, 200), outer=(400, 550)):
+    """Radius of each needle's dark footprint, in stored-block (F) pixels.
+
+    Median of the non-zero pixel means in rings of `step` F pixels around each electrode
+    centre; the radius is where the smoothed profile last rises through the level half-way
+    between the inside (rings at `inner`) and the surround (rings at `outer`), within `outer[0]`.
+    The ring windows (0 to 0.52 mm and 1.04 to 1.43 mm at the camera scale) bracket the 0.75 mm
+    needle radius; they are a choice made here, used only to check the pixel size.
+    """
+    fine = np.where(n > 0, s / np.maximum(n, 1), np.nan)
+    out = []
+    for q in pts_fd * (FD / F):
+        x0, y0 = int(q[0]), int(q[1])
+        ya, xa = max(y0 - rmax, 0), max(x0 - rmax, 0)
+        sub = fine[ya:y0 + rmax, xa:x0 + rmax]
+        yy, xx = np.mgrid[ya:ya + sub.shape[0], xa:xa + sub.shape[1]]
+        rr = np.hypot(yy + 0.5 - q[1], xx + 0.5 - q[0])
+        edges = np.arange(0, rmax + step, step)
+        idx = np.digitize(rr, edges) - 1
+        ok = np.isfinite(sub) & (idx < len(edges) - 1)
+        prof = np.array([np.median(sub[ok & (idx == k)]) if (ok & (idx == k)).any() else np.nan
+                         for k in range(len(edges) - 1)])
+        rc = edges[:-1] + step / 2
+        lo = np.nanmedian(prof[(rc >= inner[0]) & (rc < inner[1])])
+        hi = np.nanmedian(prof[(rc >= outer[0]) & (rc < outer[1])])
+        sm = np.convolve(np.nan_to_num(prof, nan=lo), np.ones(5) / 5, "same")
+        k = np.where((sm[:-1] < (lo + hi) / 2) & (sm[1:] >= (lo + hi) / 2) & (rc[1:] < outer[0]))[0]
+        out.append(dict(r_px=float(rc[k[-1]] + step / 2) if len(k) else np.nan, inside=float(lo), outside=float(hi)))
+    return out
+
+
 def loess(x, y, frac=0.75):
     """LOESS fit (statsmodels lowess, span 0.75: a standard choice, the paper gives none)."""
     from statsmodels.nonparametric.smoothers_lowess import lowess
@@ -291,7 +339,7 @@ def loess(x, y, frac=0.75):
 
 
 # Readings of the ROI layout (claims file, opening comment, and the pixel size above).
-SCALES = ("camera", "diag8.4")
+SCALES = ("camera",)  # the 8.4 mm scale is not run (module docstring)
 COUNTS = ("both", "per")  # 92/224 ROIs over both diagonals, or per diagonal
 DIAGONALS = ("both", "d1", "d2")  # both averaged, or one diagonal alone (electrodes unlabelled)
 CENTERS = ("a", "b")  # a: one ROI centred on the array centre; b: mean of the two grid ROIs beside it
@@ -342,3 +390,25 @@ def summarize(dm, diagonals, center, source):
         nc_b=100 * np.mean([c[k // 2] / e[k] for k in range(len(e))]),
         nh_b=100 * np.mean(h / e),
     )
+
+
+def inner_values(hists, dm, half_diag_px, um_per_px):
+    """Variant that respects the paper's exclusion zone (Section 2.4): on each diagonal, drop the
+    end ROIs whose outer edge lies closer to the needle edge than 5% of the diagonal, take the
+    outermost remaining ROIs as the most peripheral, and the half-way ROIs at half their
+    distance from the centre. hists: strip_histograms of the two diagonals (bin of 1 F pixel);
+    dm: their diagonal_measures; half_diag_px: half of each centre-to-centre diagonal, in F
+    pixels. Raw ROI means, centre reading (a), both diagonals averaged, normalisation (a).
+    Returns the values and the number of ROIs dropped at each end of each diagonal."""
+    c, h, e, drop = [], [], [], []
+    for hist, d, hd in zip(hists, dm, half_diag_px):
+        u, w, raw = d["u"], d["w"], d["raw"]["profile"]
+        limit = hd - NEEDLE_RADIUS_MM * 1000 / um_per_px / F - EXCLUDE_FRAC * 2 * hd
+        k = int(np.argmax(np.abs(u) + w / 2 <= limit))  # first kept ROI; the grid is symmetric
+        drop.append(k)
+        e += [raw[k], raw[len(raw) - 1 - k]]
+        uh = abs(u[k]) / 2
+        c.append(d["raw"]["center_a"])
+        h += [roi_at(hist, 1.0, -uh, w), roi_at(hist, 1.0, uh, w)]
+    cen, half, per = np.mean(c), np.mean(h), np.mean(e)
+    return dict(center=cen, half=half, periph=per, nc_a=100 * cen / per, nh_a=100 * half / per, dropped=drop)
