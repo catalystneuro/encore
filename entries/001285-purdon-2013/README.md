@@ -7,6 +7,7 @@ induction of and emergence from propofol in 10 volunteers.
 | Claim | Outcome |
 |---|---|
 | All 22 claims (behaviour, Figure 1; EEG, Figures 2 to 5, S2 and S3) | Blocked: data missing |
+| Of these, 15 EEG claims that need channel identities | Second reason: metadata insufficient |
 
 The dandiset holds the 64-channel EEG of one of the ten subjects. It holds no behavioural responses,
 from which the paper defines loss and recovery of consciousness and aligns every EEG analysis, no

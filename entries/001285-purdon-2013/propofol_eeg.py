@@ -91,7 +91,7 @@ def describe_hdf5(f: h5py.File) -> list[str]:
 def channel_summaries(data: h5py.Dataset) -> dict[str, np.ndarray]:
     """Per channel (rows of `data`): mean, SD, min, max, NaN count, the longest run of identical
     consecutive samples, a hash of the samples (for exact duplicates), and a decimated copy
-    (every 25th sample after a 5 Hz anti-alias filter, i.e. 10 Hz) for correlations."""
+    (every 25th sample after a 4 Hz anti-alias filter, i.e. 10 Hz) for correlations."""
     n = data.shape[0]
     out = {k: np.zeros(n) for k in ("mean", "sd", "min", "max", "nan", "longest_flat")}
     out["hash"] = np.empty(n, dtype=object)
