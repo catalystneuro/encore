@@ -43,17 +43,18 @@ outcomes:
   notebook: reproduce_heeringa_2024.ipynb
   output: claim:table1-age-abr-weight
   measured:
-  - 5.55
+  - 5.547
   - 22.49
-  - 38.33
+  - 38.328
   - 18.1
-  - 34.17
-  - 49.03
-  - 74.61
-  - 83.35
-  - 86.41
+  - 34.167
+  - 49.032
+  - 74.607
+  - 83.354
+  - 86.413
   assumed: true
-  notes: All nine means are within tolerance and equal Table 1 after rounding; the SDs and ranges also
+  notes: All nine means are within tolerance and equal Table 1 when rounded to one decimal (5.547, 83.354 and
+    the others printed to three decimals); the SDs and ranges also
     match (ABR SD 5.33, 10.19 and 18.00). 10 young adults and 1 middle-aged animal have NaN for the ABR
     threshold and are left out, as the code's omitnan does. The ABR means rest on reading the stored character
     as its code point.
@@ -151,10 +152,12 @@ outcomes:
     more than 10. Of 13,904 short ISIs, 10,192 are 0.3 to 0.6 ms and 1171 below 0.1 ms. With a 0.3 ms
     limit 140 units fail under (a), with 0.1 ms 5 do. Spike times are sorted within trials and no spike
     train is duplicated. The paper's check was visual (checkAN.m plots the count); it does not say how
-    many short ISIs 'multiple' allows. Many short ISIs are double detections of one spike. In the
+    many short ISIs 'multiple' allows. Many short ISIs appear to be double detections of one spike. In the
     voltage trace, all ISIs below 0.1 ms (from 9 units), 91% of those from 0.1 to 0.3 ms and 39% of those
     from 0.3 to 0.6 ms lie on one waveform (the trace does not fall below half the smaller peak between
-    the two spike times), against none of 300 pairs from 0.8 to 1.5 ms. The outcome stands, since the
+    the two spike times), against none of 300 pairs from 0.8 to 1.5 ms. Below 0.1 ms
+    (median dip ratio 0.95) this shows a double detection; the rule was not checked at 0.3 to 0.6 ms,
+    so there it is a plausible reading, not a demonstration. The outcome stands, since the
     paper's check counts ISIs from the same spike times; counting only pairs that are not one waveform,
     176 units still fail under (a) and 179 under (b).
   deviations:
@@ -274,11 +277,10 @@ outcomes:
   output: claim:fig7b-click-latency-bf
   assumed: true
   notes: Over 268 units, Pearson r(latency, log BF) = -0.882 (p = 5.9e-89), Spearman -0.864; negative
-    in each age group (-0.78 to -0.92). Latencies span 0.42 to 2.78 ms, inside Fig. 7b's 0 to 3.5 ms axis.
+    in each age group (-0.78 to -0.92). Latencies span 0.42 to 2.78 ms; this range does not single out 7.75 ms.
     With a 5 ms click delay, r = -0.662 and Spearman -0.820 over 269 units, so the outcome is the same
-    under both delays. The data are consistent with 7.75 ms (recording-type-counts). The population PSTH
-    of the CLICK trials rises from 8.25 ms, and the 10 ms and 20 ms trials give latencies on the same
-    latency-BF line.
+    under both delays. The 10 ms and 20 ms trials give latencies on the same latency-BF line under the
+    assumed delay, so they share one delay (recording-type-counts); the absolute delay is not established.
   deviations:
   - The stored 2-bin latency is not in the files; it is recomputed with Clickextract_func.m and getFSL2bins.m
     (named in the Methods).
@@ -342,8 +344,9 @@ findings:
     recording (391 pooled over recordings, 148 in the BF recording alone), although the paper says units
     with multiple such intervals were excluded. Most short intervals are 0.3 to 0.6 ms. About half of
     the 13,904 short intervals lie on one spike waveform in the voltage trace (all 1171 below 0.1 ms, 91%
-    of those from 0.1 to 0.3 ms, 39% of those from 0.3 to 0.6 ms), so the spike times hold double
-    detections of single spikes. Counting only intervals between separate waveforms, 176 units still
+    of those from 0.1 to 0.3 ms, 39% of those from 0.3 to 0.6 ms) by a dip-ratio rule. The intervals
+    below 0.1 ms are double detections of single spikes; for those from 0.3 to 0.6 ms this is a plausible
+    reading, as the rule was checked only against intervals of 0.8 to 1.5 ms. Counting only intervals between separate waveforms, 176 units still
     have two or more in one recording.
 - kind: other
   statement: 275 units have a CLICK recording, one each, and 271 give a 2-bin latency with the paper's
@@ -538,4 +541,156 @@ verifications:
     outcome: blocked
     reason: The check was visual and has no rule. The spike times needed are in the files, but no criterion
       can be fixed from the paper.
+    response: No change needed.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and summary,
+    the helper module, the claims file, the attempt record and the README, with the paper. The verifier
+    agreed with all 23 outcomes and found no place where the claims file misreads the paper. It found
+    sentences the printed outputs do not support (cells 17, 37, 72 and 75, the README run time, and calling
+    the 0.3 to 0.6 ms ISIs double detections) and asked that cell 75 name the reading of 'none does' it
+    takes. All are corrected, and the Table 1 means are now printed to three decimals.
+  results:
+  - claim: table1-animals-units
+    agrees: true
+    outcome: reproduced
+    reason: Cell 13 shows all eleven counts matching.
+    response: No change needed.
+  - claim: table1-age-abr-weight
+    agrees: true
+    outcome: reproduced
+    reason: Cell 16 shows 9 of 9 means within tolerance; the SDs and ranges also match. The ABR code-point
+      assumption is stated and reasonable. The sentence 'equal the paper's after rounding' is not supported
+      by the output, since 5.55 (paper 5.5) and 83.35 (paper 83.4) at two decimals could round either way;
+      this does not affect the outcome.
+    response: The means are now printed to three decimals with a check of rounding to one decimal (5.547 and
+      83.354; 9 of 9 equal Table 1). The conclusion and the notes give these values, and measured is updated.
+  - claim: table1-bf-range
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19 matches all three ranges exactly.
+    response: No change needed.
+  - claim: fig3-abr-age
+    agrees: true
+    outcome: reproduced
+    reason: Cell 22 shows the means rising with age and the old group having the largest SD. The ABR assumption
+      is stated and reasonable.
+    response: No change needed.
+  - claim: females-fewer-in-old
+    agrees: true
+    outcome: reproduced
+    reason: Cell 25.
+    response: No change needed.
+  - claim: oxygen-78
+    agrees: true
+    outcome: reproduced
+    reason: Cell 28.
+    response: No change needed.
+  - claim: complex-stimuli-experiments
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31.
+    response: No change needed.
+  - claim: recording-type-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 34, 5 of 6 counts match under both readings; CLICK is 271 under reading 1 and 275 under
+      reading 2. Cell 37's 'the click comes at the same time in both trial lengths' rests on residuals under
+      the assumed delay and on 31 units from 9 animals; it supports 'the same within about 0.05 ms' and is
+      an inference, not a measurement. Why the paper counts 10 or 14 fewer CLICK units cannot be traced,
+      and the absolute delay is not established; neither changes an outcome.
+    response: Cell 37 now says the trial lengths agree to within about 0.05 ms under the assumed delay, that
+      this is inferred from 31 units from 9 animals, and that the checks do not fix the absolute delay.
+  - claim: fig7-sampling-by-age
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39.
+    response: No change needed.
+  - claim: isi-exclusion
+    agrees: true
+    outcome: not_reproduced
+    reason: In cell 42, 370, 391 and 148 units fail under readings (a), (b) and (c). Calling the short-ISI
+      pairs double detections of one spike rests on the dip-ratio rule, checked only against reference
+      pairs of 0.8 to 1.5 ms; for the pairs below 0.1 ms the inference is sound, for the 0.3 to 0.6 ms pairs
+      it is a plausible reading, not a demonstration.
+    response: Cell 45, the summary, the notes and the finding now call only the ISIs below 0.1 ms double
+      detections, and say that for the 0.3 to 0.6 ms pairs it is a plausible reading, since the rule was
+      not checked there.
+  - claim: no-prepotentials
+    agrees: true
+    outcome: blocked
+    reason: The check was visual and no rule can be fixed.
+    response: No change needed.
+  - claim: rlf-monotonic
+    agrees: true
+    outcome: blocked
+    reason: The check was visual and no rule can be fixed.
+    response: No change needed.
+  - claim: fig5b-example
+    agrees: true
+    outcome: reproduced
+    reason: Cell 50.
+    response: No change needed.
+  - claim: fig6a-young-two-sensitive-regions
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced under reading (b), which is enough for the criterion (cell 53). The two lowest bin
+      means overall are the regions used.
+    response: No change needed.
+  - claim: fig6b-young-bf-gap
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 56.
+    response: No change needed.
+  - claim: fig6c-sr-distributions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 59.
+    response: No change needed.
+  - claim: fig6d-max-phase-locking-bf
+    agrees: true
+    outcome: reproduced
+    reason: The highest young-adult BF is 4598 Hz (cell 62).
+    response: No change needed.
+  - claim: fig6d-highest-vs-low-bf-low-sr
+    agrees: true
+    outcome: reproduced
+    reason: Cell 65.
+    response: No change needed.
+  - claim: fig7a-cf-matches-bf
+    agrees: true
+    outcome: reproduced
+    reason: Cell 68 gives r = 0.973 and a median CF/BF ratio of 1.0028. Both level sources give the same
+      CF.
+    response: No change needed.
+  - claim: fig7b-click-latency-bf
+    agrees: true
+    outcome: reproduced
+    reason: Cell 71 gives correlations of -0.882 and -0.864 with the 7.75 ms delay, and -0.662 and -0.820
+      with 5 ms; the assumption is stated and reasonable. The axis limits in cell 72 are not in the claims
+      file or the outputs, and a range of 0.42 to 2.78 ms is weak support for 7.75 ms in particular; any
+      delay from about 7.1 to about 8.2 ms would also fit.
+    response: Cell 72 and the notes no longer cite the axis of Fig. 7b or call the range support for 7.75
+      ms; they say the range does not single out the delay and that the delay stays an assumption.
+  - claim: fig7ab-representative-sampling
+    agrees: true
+    outcome: not_reproduced
+    reason: This follows the record's reading of 'none does' as 'no reading holds for both CF and CLICK',
+      which matches how the criterion phrases its reproduced case. If 'none does' is checked per subset,
+      CLICK passes the KS test, so the claim would be blocked as methods_underspecified. Cell 75 says the
+      outcome does not depend on the choice, which is incorrect; it should name the reading it takes.
+    response: Cell 75 now names the reading taken, says the outcome does not depend on the choice of reference
+      or test under it, and states that under the per-subset reading the claim would be blocked as methods
+      underspecified, as the notes already did. Outcome kept, as the verifier agrees with it.
+  - claim: old-success-rate
+    agrees: true
+    outcome: blocked
+    reason: Cell 77 shows no animal without a unit file, and the description does not mention unsuccessful
+      experiments.
+    response: No change needed.
+  - claim: psth-primary-like
+    agrees: true
+    outcome: blocked
+    reason: The check was visual and no rule can be fixed.
     response: No change needed.
