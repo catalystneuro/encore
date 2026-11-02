@@ -1,0 +1,383 @@
+schema_version: 2
+id: 001521-semenov-2026-01
+dataset:
+  archive: dandi
+  id: '001521'
+  version: 0.261006.1845
+  doi: 10.48324/dandi.001521/0.261006.1845
+paper: doi:10.1016/j.bioelechem.2026.109283
+date: '2026-11-02'
+entry: 001521-semenov-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41538711548
+outcomes:
+- claim: fig6a-ca-entry-1000-1200
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig6a-ca-entry-1000-1200
+  notes: Under M1 (1000 and 1200 V/cm at 250 and 300 V) three of the four readings hold at both fields.
+    The end value (last 10 frames) is above the 0 V/cm group by 6.58 and 8.19% (Student's t-test p below
+    1e-8), and the peak is above zero (2.30 and 5.35%, p below 1e-6) and above the 0 V/cm peak (p below
+    1e-5); the group means at both fields exceed those at 650 V/cm or less (0 and 150 V, at most -10.26%
+    for the end value and 0.55% for the peak). The end value against zero fails, as it is negative at
+    both fields (-5.44 and -3.83%), with the sham at -12.02%. Under M2 (300 and 350 V) the same three
+    readings hold. The peak at 250 and 300 V is above that at 0 V in every field of view recorded at them.
+    Cells come from 6 fields of view (18 and 23 cell recordings at 250 and 300 V); the paper averaged
+    14 cells, which cannot be identified. The results hold with regions of 0.5 and 1.0 of the radius and
+    end windows of 5 and 20 frames.
+  deviations:
+  - The files give generator voltages and the paper field strengths, with no conversion in either. Two
+    readings are run, M1 at 3.9 V/cm per V (the single-pulse voltages fall on the paper's field series
+    570 to 1400 V/cm) and M2 at 3.3 V/cm per V (the train voltages 70, 200 and 230 V fall on the 230,
+    650 and 780 V/cm named for the trains in Section 3.6); a named field is assigned to the nearest voltage.
+    Both give the same outcome.
+  - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
+    of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as
+    background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown
+    with regions of 0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+  - Every detected cell in every file is used, as the dataset does not say which cells the paper used.
+  - The paper names no test for this panel; the claims file's readings (one-sample t-test or Student's
+    t-test against 0 V/cm, end value or peak) are all run.
+- claim: fig6a-ca-sustained
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig6a-ca-sustained
+  notes: The mean dF over the last 10 frames is below zero at 1000 and 1200 V/cm under M1 (-5.44 +- 0.55%
+    and -3.83 +- 0.71%) and at 1000 V/cm under M2 (-3.83%); at 1200 V/cm under M2 (350 V) it is +1.24
+    +- 1.95%, p = 0.53. The ratio of final to peak group mean is -63 and -2.4 under M1, -2.4 and 0.18
+    under M2. Unpulsed cells decline to -12.0% over the same window, a fall of the Fluo-4 signal through
+    the recording that the paper's dF (F0 before the pulse) does not correct. Against the 0 V/cm group
+    the end value is higher by 6.6 and 8.2% under M1 (p below 1e-8), and less the same field of view's
+    sham trace it is 6.4 and 8.4% above zero (p below 1e-5), so the signal stays above that of unpulsed
+    cells to the end of the 5 min, but not above its own pre-pulse level, which is what the criterion
+    tests. With other region sizes and end windows the end values move by less than 1% and stay negative
+    at 250 and 300 V. The question of how the paper's traces handle the decline is for the authors (see
+    findings).
+  deviations:
+  - The files give generator voltages and the paper field strengths, with no conversion in either. Two
+    readings are run, M1 at 3.9 V/cm per V (the single-pulse voltages fall on the paper's field series
+    570 to 1400 V/cm) and M2 at 3.3 V/cm per V (the train voltages 70, 200 and 230 V fall on the 230,
+    650 and 780 V/cm named for the trains in Section 3.6); a named field is assigned to the nearest voltage.
+    Both give the same outcome.
+  - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
+    of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as
+    background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown
+    with regions of 0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+  - Every detected cell in every file is used, as the dataset does not say which cells the paper used.
+- claim: fig6a-780-not-significant
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig6a-780-not-significant
+  notes: The criterion's test, a one-sample t-test of the end value against zero, finds no increase at
+    780 V/cm, with -7.42 +- 0.52% under M1 (200 V, n = 24) and -5.44 +- 0.55% under M2 (250 V, n = 18),
+    one-sided p = 1 for both. The variants find an effect. Against the 0 V/cm group the end value is higher
+    by 4.60% (M1, p = 1.3e-06), and the peak is 1.76 +- 0.61% (one-sample p = 0.0086; against the sham
+    peak p = 0.021). The decline of the signal in unpulsed cells biases the criterion's test toward finding
+    no increase, so the outcome says little about the detection limit.
+  deviations:
+  - The files give generator voltages and the paper field strengths, with no conversion in either. Two
+    readings are run, M1 at 3.9 V/cm per V (the single-pulse voltages fall on the paper's field series
+    570 to 1400 V/cm) and M2 at 3.3 V/cm per V (the train voltages 70, 200 and 230 V fall on the 230,
+    650 and 780 V/cm named for the trains in Section 3.6); a named field is assigned to the nearest voltage.
+    Both give the same outcome.
+  - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
+    of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as
+    background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown
+    with regions of 0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+  - Every detected cell in every file is used, as the dataset does not say which cells the paper used.
+- claim: fig6b-train-threshold
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig6b-train-threshold
+  measured:
+  - 4.4
+  - 311
+  notes: No reading meets the criterion. The fraction of strong responders at 780 V/cm is 4.4 to 22.1%
+    under M1 (200 V, 68 cell exposures) and 51.1 to 78.7% under M2 (230 V, 47), against 28 +- 2.8%; the
+    lowest fraction at a field above 780 V/cm is 18.2 to 54.5% under M1 and 61.5 to 79.5% under M2, against
+    at least 90%. With regions of 0.5 and 1.0 of the radius the criterion is met in none of the 24 combinations
+    of region, conversion and rule. The dataset holds 311 cell exposures to trains of 82 distinct cells
+    in 9 fields of view, each recorded at 1 to 7 voltages, where the paper states 224 cells each tested
+    once (measured gives the 780 V/cm fraction under M1 and rule (a) against 0 V/cm, and the number of
+    exposures). Taking only the first train of each field of view, 18.2% respond at 200 V and 90.9 to
+    100% at 250 V (11 cells each). The repeated exposure of the same cells, which the paper does not describe,
+    may change the responses.
+  deviations:
+  - The files give generator voltages and the paper field strengths, with no conversion in either. Two
+    readings are run, M1 at 3.9 V/cm per V (the single-pulse voltages fall on the paper's field series
+    570 to 1400 V/cm) and M2 at 3.3 V/cm per V (the train voltages 70, 200 and 230 V fall on the 230,
+    650 and 780 V/cm named for the trains in Section 3.6); a named field is assigned to the nearest voltage.
+    Both give the same outcome.
+  - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
+    of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as
+    background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown
+    with regions of 0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+  - The cells were tested more than once in the dataset; all exposures are used, and the first exposure
+    of each field of view is shown as a variant.
+  - Reading (b), above 3 s.d. of the reference group, is read as above its mean plus 3 s.d.
+- claim: fig6b-650-weak-but-significant
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig6b-650-weak-but-significant
+  notes: The paper defines no strong response, gives no voltage to field conversion, and does not fix
+    the region over each cell, and the count changes with each. Of 24 combinations of conversion, rule
+    and region size, one gives the expected 2 cells (M1, 170 V, rule above the largest of the lowest field,
+    region 0.7 of the radius, 2 of 36, 5.6%); regions of 0.5 and 1.0 give 1 cell (2.8%) under the same
+    rule, the other rules give 0 under M1, and M2 (200 V, 68 exposures) gives 3 to 17 cells (4.4 to 25.0%).
+    The statement's tests fail under M1, where the mean end value at 170 V is -9.17 +- 0.83%, below zero
+    (p = 6.4e-13), and not above the 70 V group (single-tailed p = 0.20). Under M2 the 200 V mean is -1.98
+    +- 1.77% (p = 0.27 against zero) and above the 70 V group (single-tailed p = 0.0023). Questions for
+    the authors are in the findings.
+  deviations:
+  - The files give generator voltages and the paper field strengths, with no conversion in either. Two
+    readings are run, M1 at 3.9 V/cm per V (the single-pulse voltages fall on the paper's field series
+    570 to 1400 V/cm) and M2 at 3.3 V/cm per V (the train voltages 70, 200 and 230 V fall on the 230,
+    650 and 780 V/cm named for the trains in Section 3.6); a named field is assigned to the nearest voltage.
+  - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
+    of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as
+    background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown
+    with regions of 0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+- claim: fig5b-conductivity-calibration
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig5b-conductivity-calibration
+  measured:
+  - 1.33
+  - 11.87
+  notes: Eq. 2 with the paper's constants gives f = 1.4801 for a 10-fold and 1.3220 for a 100-fold increase
+    from 3e-7 S/m, a reduction of 1.33% of IMPC (outside 2 +- 0.2%) and 11.87% (within 12 +- 1.2%). Relative
+    to f at the intact conductivity the reductions are 1.20 and 11.75%. This is a computation from the
+    paper's equation and uses no recordings, so it says nothing about the dataset.
+- claim: fig1-pole-leakage-pattern
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig2a-fluovolt-saturation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig2a-fluovolt-stable-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig2b-di8-decline-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig2cd-stable-then-drop
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig2c-1000-within-set-trend
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig3-dye-calibration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig3-fluovolt-nonlinear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+    It also depends on fig3-dye-calibration, blocked for the same reason.
+- claim: fig4a-fluovolt-maximum
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig4b-di8-maximum
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig4b-first-10-pulses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig4b-cathodic-asymmetry
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig4c-equator-cosine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig4d-short-pulses-same-limit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+    It also depends on fig4b-di8-maximum, blocked for the same reason.
+- claim: fig5a-gd-extends-anodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig5a-gd-cathodic-not-higher
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig5c-gd-reduces-conductivity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+    It also needs the pole IMP of Fig. 5A; its dependency fig5b-conductivity-calibration was tested.
+- claim: fig7a-test-pulse-cosine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+    It also depends on fig7b-test-pulse-recovery, blocked for the same reason.
+- claim: fig7b-conditioning-sublinear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig7b-test-pulse-recovery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+- claim: fig7c-fast-resealing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which
+    holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six
+    other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518,
+    001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their
+    own, and the claims file does not name them as data the paper relies on, so they were not used here.
+    It also depends on fig7b-test-pulse-recovery, blocked for the same reason.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the Fluo-4 imaging of Fig. 6. The pulsed-laser potentiometric imaging
+    behind Figs. 1 to 5 and 7, which carries most of the paper's findings (21 of 27 claims), is not in
+    it. Six other dandisets of the lab (001515, 001516, 001517, 001518, 001525, 001526) name the same
+    paper and by their titles hold these experiments, but neither the paper's Data availability (on request)
+    nor this dandiset's description points to them.
+- kind: metadata_insufficient
+  statement: The files give each pulse as a generator voltage (0 to 400 V); the paper reports only field
+    strengths and gives no conversion. The voltages of the single-pulse session fit the paper's field
+    series at about 3.9 V/cm per V, while the fields the paper names for the trains (230, 650, 780 V/cm)
+    fit the train voltages at about 3.3 V/cm per V, so which recordings form the paper's groups cannot
+    be settled from the data.
+- kind: metadata_error
+  statement: Every file states an electrode gap of 1.00 mm and an electrode diameter of 0.5 mm; the paper's
+    Methods 2.2 give tungsten rods 500 um in diameter at 1.6 mm spacing.
+- kind: other
+  statement: In the train session (2025-05-02) each subject is one field of view recorded at 1 to 7 escalating
+    voltages after a sham, so the same 82 cells account for 311 exposures to trains. The paper states
+    that each cell was tested only once, 28 to 54 cells per field strength, 224 cells in all. Either the
+    dandiset holds different recordings from Fig. 6B, or the paper's description is wrong.
+- kind: selection_undocumented
+  statement: The single-pulse session holds 27 cells in 6 fields of view, recorded at 0 to 400 V; Fig.
+    6A averages 14 cells over 0 to 1200 V/cm. The dandiset does not say which cells or recordings the
+    paper used, and it holds no cell regions or traces, so the paper's selection cannot be repeated.
+- kind: metadata_error
+  statement: The dandiset's description and title describe only single 1-us pulses with recordings of
+    5 min at 1 frame/s, but 42 of the 73 files are 60-pulse 6 Hz trains recorded for 3 min at 0.5 frame/s.
+    Subjects are fields of view of a cell line, yet each has an age of P1D, and the species is named 'Cricetulus
+    griseus - Cricetulus aureus' for NCBITaxon 10029 (Cricetulus griseus).
+- kind: methods_unavailable
+  statement: Question for the authors. How were generator voltages converted to the field strengths of
+    Fig. 6, and was the same conversion used for single pulses and trains? Under 3.9 V/cm per V the single-pulse
+    voltages fall on the paper's series, under 3.3 V/cm per V the train voltages fall on 230, 650 and
+    780 V/cm; the train results (fig6b-train-threshold, fig6b-650-weak-but-significant) differ between
+    the two. Both were run; neither was assumed for an outcome.
+- kind: methods_unavailable
+  statement: Question for the authors. How was a strong Ca2+ response defined in Fig. 6B, how large was
+    the region over each cell, and which cells formed each group? The count of 2 responders at 650 V/cm
+    is met under one of 24 combinations of conversion, rule and region size here, so fig6b-650-weak-but-significant
+    was blocked.
+- kind: methods_unavailable
+  statement: Question for the authors. Unpulsed cells lose 12% (single-pulse session) and 16% (train session)
+    of their Fluo-4 signal by the end of a recording relative to the pre-pulse mean. Were the dF traces
+    of Fig. 6 corrected for this decline, and which test gave 'not statistically significant' at 780 V/cm?
+    Without a correction the end-of-recording dF at 1000 and 1200 V/cm is below zero, and fig6a-ca-sustained
+    is not reproduced, while against unpulsed cells the signal stays elevated.
+- kind: paper_inconsistency
+  statement: Eq. 2 with the constants of Methods 2.3 gives a 1.3% reduction of pole IMP for a 10-fold
+    increase of membrane conductivity, where Section 3.5 states about 2%.
