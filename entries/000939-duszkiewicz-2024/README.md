@@ -26,9 +26,9 @@ need the ADN, cue rotation, ADN optogenetic and Neuropixel recordings use the pa
 | Putative HD-to-FS synaptic weights are dispersed | Reproduced |
 | Thalamic disinhibition: ADN (figshare) and PoSub rates, preserved tuning | Reproduced |
 | HD gain multiplicative, FS gain additive | Partially reproduced |
-| Gain simulations | Partially reproduced |
+| Gain simulations | Partially reproduced (reproduced proposed after round 2) |
 | ADN-HD mixed gain (figshare) | Reproduced |
-| GLM coupling preserved across WAKE and REM; follows tuning | Reproduced |
+| GLM coupling preserved across WAKE and REM; follows tuning | Reproduced (assumed: a Python mirror of MATLAB's glmfit flags the fits glmfit would) |
 | Ring manifold: WAKE and REM tuning from the virtual HD, ring radius | Reproduced |
 | HD tuning steps up at the PoSub border (figshare Neuropixel) | Reproduced (qualitative) |
 | Simulations, model fit and anatomy (three claims) | Blocked |
@@ -42,7 +42,7 @@ sleep states run past the end of the recording. The attempt record, with the rea
 differences from the paper's method, is
 [`attempts/000939-duszkiewicz-2024-01.yaml`](../../attempts/000939-duszkiewicz-2024-01.yaml).
 
-- `reproduce_duszkiewicz_2024.ipynb`: the analysis. It takes about 35 minutes, ten of them in the
+- `reproduce_duszkiewicz_2024.ipynb`: the analysis. It takes about 37 minutes, fifteen of them in the
   GLM fits.
 - `posub.py`: streaming the NWB files and the figshare tarballs, tuning curves, HD information,
   Fourier spectra, decoding, GLMs and synapse detection, each parameter with its source. Other

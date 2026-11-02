@@ -69,7 +69,7 @@ def _str(x):
     return x.decode() if isinstance(x, bytes) else str(x)
 
 
-def light_pulses(f) -> np.ndarray:
+def light_pulses(f, info=None) -> np.ndarray:
     """Onset and offset times (s) of the light pulses, from processing/ogen/optogenetic_stim.
 
     The series' length is either the session's sample count at the stated 20 kHz (one file,
@@ -77,6 +77,9 @@ def light_pulses(f) -> np.ndarray:
     four channels interleaved in one dimension. It is read as (n, channels) at 20 kHz, with the
     number of channels the ratio of its length to that of the raw ElectricalSeries; the
     channel with the largest value is the light, high above half its maximum (standard choice).
+    info, if given, receives what was read about the series: its length, rate and unit, the
+    number of channels, each channel's largest and smallest value, and the distinct values of
+    the light channel.
     """
     d = f["processing/ogen/optogenetic_stim/data"]
     rate = float(f["processing/ogen/optogenetic_stim/starting_time"].attrs["rate"])
@@ -84,13 +87,20 @@ def light_pulses(f) -> np.ndarray:
     nch = int(round(n / f["acquisition/ElectricalSeries/data"].shape[0]))
     block = nch * 2 ** 22
     segs, top = [], 0
+    cmax, cmin, vals = np.full(nch, -np.inf), np.full(nch, np.inf), set()
     for i in range(0, n, block):
         x = d[i:i + block]
+        x = x[: len(x) // nch * nch].reshape(-1, nch)
+        cmax = np.maximum(cmax, x.max(0)); cmin = np.minimum(cmin, x.min(0))
         if x.max() <= 0:
             continue
-        x = x[: len(x) // nch * nch].reshape(-1, nch)
         top = max(top, int(x.max()))
         segs.append((i // nch, x[:, np.argmax(x.max(0))]))
+        if len(vals) < 50:
+            vals |= set(np.unique(segs[-1][1]).tolist())
+    if info is not None:
+        info.update(length=n, rate=rate, unit=d.attrs.get("unit"), channels=nch,
+                    channel_max=cmax.tolist(), channel_min=cmin.tolist(), light_values=sorted(vals)[:50])
     on, off, prev = [], [], False
     for i0, x in segs:
         x = x > top / 2
@@ -155,7 +165,10 @@ def load_session(asset: dict) -> dict:
     if "processing/ogen/optogenetic_stim" in f:
         s["ogen_len"] = f["processing/ogen/optogenetic_stim/data"].shape[0]
         s["ephys_len"] = f["acquisition/ElectricalSeries/data"].shape[0]
-        s["pulses"] = light_pulses(f)
+        es = f["acquisition/ElectricalSeries"]
+        s["ephys_rate"] = float(es["starting_time"].attrs["rate"]) if "starting_time" in es else np.nan
+        s["ogen_info"] = {}
+        s["pulses"] = light_pulses(f, s["ogen_info"])
     return s
 
 

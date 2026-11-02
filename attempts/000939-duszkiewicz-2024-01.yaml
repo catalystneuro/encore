@@ -335,22 +335,33 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_duszkiewicz_2024.ipynb
   output: claim:ed8cd-multiplicative-detectable
+  proposed:
+    outcome: reproduced
+    reason: The criterion titrates the noise, so the code's fixed noise of 1.8 x 1.8 Hz is a variant, not
+      a reading the criterion asks for; the verified outcome counted it. With titrated noise only the
+      control is open. The recorded control fails its own check, as the titrated no-gain simulation already
+      differs from it (multiplicative p = 0.0026, additive p = 0.039), so it cannot tell gain types apart.
+      Against the simulated control, as Figure_GainSimulation.m builds it, the criterion holds (p = 0.022,
+      8e-5 and 0.13), in 80% of 50 seeds. Notebook, ed8cd-multiplicative-detectable, second block.
   notes: With the noise titrated to the observed correlations (4.25 Hz; no-gain median r 0.731 against
     the observed 0.730) and the simulated control, the multiplicative simulation gives multiplicative
     factors above control (p = 0.022) and the additive simulation reproduces the data's pattern (additive
     p = 8e-5, multiplicative p = 0.13; data p = 3e-4 and 0.27); over 50 seeds all three hold in 80% of
     runs. Against the recorded control factors the titrated additive simulation also changes the multiplicative
-    factor (p = 0.0008). With the code's fixed noise of 1.8 x 1.8 Hz (simulated r 0.82), the additive
-    simulation changes the multiplicative factor against the simulated control (p = 0.008), and against
-    the recorded control the multiplicative simulation is not detected (p = 0.80). The criterion holds
-    under one of the four combinations of noise and control, so the claim holds in part. With the three
-    figshare ArchT mice, a variant, the same split (titrated noise 4.00 Hz; simulated control p = 0.019,
-    3e-7 and 0.38; recorded control, additive simulation multiplicative p = 7e-5).
+    factor (p = 0.0008), but the titrated no-gain simulation already differs from the recorded control
+    (multiplicative p = 0.0026, additive p = 0.039), so that comparison cannot tell gain types apart.
+    Variant with the code's fixed noise of 1.8 x 1.8 Hz (simulated r 0.82, above the observed 0.73), which
+    the criterion does not call for, as it titrates the noise. The additive simulation changes the multiplicative
+    factor against the simulated control (p = 0.008), and against the recorded control the multiplicative
+    simulation is not detected (p = 0.80). The verified outcome, partially_reproduced, counted the fixed-noise
+    readings; round 2 found that they are not readings of the criterion, and reproduced is proposed. With
+    the three figshare ArchT mice, a variant, the same split (titrated noise 4.00 Hz; simulated control
+    p = 0.019, 3e-7 and 0.38; recorded control, additive simulation multiplicative p = 7e-5).
   deviations:
-  - The noise is titrated as the Methods describe (simulated high-gain curves "until we obtained a similar
-    distribution of tuning curve correlations to the one observed experimentally"), on a grid of s.d.
-    matched by the median correlation; the code's fixed s.d. of 1.8 x 1.8 Hz is a second reading. The
-    match by median is a choice.
+  - The noise is titrated as the Methods and the criterion describe (simulated high-gain curves "until
+    we obtained a similar distribution of tuning curve correlations to the one observed experimentally"),
+    on a grid of s.d. matched by the median correlation; the code's fixed s.d. of 1.8 x 1.8 Hz is a variant.
+    The match by median is a choice.
   - Simulated factors are compared with the simulated control group (control cells with ON = OFF plus
     noise, as Figure_GainSimulation.m builds it) and with the recorded control factors, two readings of
     the criterion's control group.
@@ -375,10 +386,13 @@ outcomes:
     diverge (median |coupling| 2.77 in WAKE, up to 3e73, against 0.28 in kept pairs; the lower REM rate
     of the pair is below 1 Hz in 32% of them). Keeping them gives a pooled HD-HD Pearson r of 0.000 and
     a Spearman r of 0.759. The round-1 selection of cells above 1 Hz in both states gives 0.698, 0.380
-    and 0.425.
+    and 0.425. Fitted at four more lags (-10, -1, 1 and 10 s) in 9 of the 27 sessions, warnings flag 60
+    more HD-HD pairs of 10,507 (0.6%; 417 at lag 0) and no more FS-FS or HD-FS pairs; removing them moves
+    the HD-HD r of those sessions from 0.638 to 0.647, with FS-FS (0.282) and HD-FS (0.479) unchanged.
   deviations:
-  - Only lag 0 is fitted, so a pair is removed for warnings at lag 0 (WAKE or REM, either order); the
-    code removes a pair with a warning at any of 201 lags.
+  - Only lag 0 is fitted for the result, so a pair is removed for warnings at lag 0 (WAKE or REM, either
+    order); the code removes a pair with a warning at any of 201 lags. A check at four more lags in every
+    third session, chosen for time, removes 0.6% more HD-HD pairs and changes their r by 0.009.
   - The fits mirror glmfit's iteratively reweighted least squares in Python (start at y + 0.25, weights
     sqrt(mu), bad-scaling warning when a weight falls below eps^(2/3) of the largest at any iteration,
     iteration limit 100, convergence at 1e-6 relative change). That this flags the pairs MATLAB's glmfit
@@ -432,8 +446,9 @@ outcomes:
   notebook: reproduce_duszkiewicz_2024.ipynb
   output: claim:fig1ac-posub-border
   notes: Qualitative, as the criterion says. 134 excitatory cells (the file's own count 137). The running
-    mean HD information is 0.01 to 0.24 bits per spike over the top 1.4 mm and 0.78 to 1.19 from 1.8 mm
-    down, with one crossing of its half-range level, at -1.675 mm; a smaller bump to 0.19 near -0.6 mm.
+    mean HD information is 0.008 to 0.240 bits per spike over the top 1.4 mm and 0.777 to 1.192 from 1.8
+    mm down, with one crossing of its half-range level, at -1.675 mm; a smaller local maximum of 0.191
+    at -0.625 mm, and two more of 0.107 and 0.240 at -0.925 and -1.375 mm.
     The crossing lies at cellDep = -35 um in the file's units. GetCellTypes_PoSub.m carries, commented
     out, a line that drops units above cellDep = 0 from the PoSub cells for this recording, so the low
     end is the pRSC side (71 excitatory cells, mean 0.145 bits per spike) and the high end the PoSub side
@@ -462,9 +477,10 @@ findings:
     figshare mice added).
 - kind: format_error
   statement: In eight files processing/ogen/optogenetic_stim holds four channels interleaved in one dimension,
-    so its length at the stated 20 kHz is four times the session's (933,367,680 samples for an 11,667
-    s session); only every fourth sample carries the light. In A1808 it holds one channel of 0 and 1 at
-    the session's length. The light pulses are recoverable, but the series' shape and units (watts) do
+    so its length at the stated 20 kHz is four times the session's (in A1813, 933,367,680 samples against
+    233,341,920 of the ElectricalSeries, an 11,667 s session); only every fourth sample carries the light,
+    with values 0 and 16368, and the other three channels are 0 throughout. In A1808 it holds one channel
+    of 0 and 1 at the session's length. The light pulses are recoverable, but the series' shape and units (watts) do
     not describe it. The decoded pulses match the figshare Opto_TS.csv tables within 0.1 ms.
 - kind: metadata_insufficient
   statement: The files hold no speed series, though every analysis restricts tuning curves by speed, and
@@ -473,8 +489,9 @@ findings:
 - kind: metadata_error
   statement: The sleep states (intervals/sleep_states) of A3711, A3717 and A3723 run to about twice the
     session's length (to 24,351 s in a 12,177 s session), so that 298, 518 and 223 s of their REM lie
-    after the recording ends; in A1821 (57 s, during the optogenetic exploration) and A3712 (12 s, during
-    the square exploration) REM intervals lie inside exploration epochs. The REM intervals are the same
+    after the recording ends; in A1821 (16 s in the square epoch and 41 s in the optogenetic epoch), A3712
+    (12 s in the square epoch) and A3701 (0.3 s in the triangle epoch) REM intervals lie inside exploration
+    epochs. The REM intervals are the same
     in version 0.250207.0025, whose 2026 successor says it fixed the indexing of the sleep scoring epochs.
 - kind: metadata_error
   statement: The units' is_excitatory and is_fast_spiking labels follow the code's 0.35 ms trough-to-peak
@@ -766,3 +783,242 @@ verifications:
     response: Kept as blocked for other, as the claims file gives the claim data elsewhere, and the protocol
       and tools/entry.py forbid data_missing for such claims. The disagreement on blocked_by is recorded
       in the notes.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, run 41404549909; same harness, separate context,
+    did not write the notebook)
+  reviewed: The author-revise-1 run (commit fa06f2894), the full executed notebook with its conclusions
+    and summary, the helper module, the attempt record, the README and the claims file.
+  results:
+  - claim: cell-classes-counts
+    agrees: true
+    outcome: reproduced
+    reason: The code's session list shows that the one missing session is the Neuropixel recording, with
+      239 units, and 1,760 + 239 = 1,999 (cell 6). My round-1 argument assumed the missing session was
+      one of the H5 recordings (185 units at most), so it does not apply. The criterion foresees exactly
+      this case. Cell 7, 'The dandiset's own labels agree with the code's classes for 99.9% of units',
+      holds for excitatory and FS only; HD agreement is 0.9967, which the record states correctly as 99.7%.
+    response: Cell 7 now gives 99.9% for the excitatory and FS labels and 99.7% for the HD label. No change
+      of outcome.
+  - claim: ed2b-excitatory-hd-information
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig2a-fs-hd-information
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig2b-decoding-from-fs
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes. Problem 5 (decoder chance level scored against the reversed
+      HD) is resolved.
+    response: No change.
+  - claim: fig2c-geometry-independent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed2hi-within-epoch-stability
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes. Problem 6 resolved (the HD series is reversed before the
+      speed mask; viable units at 0.5 Hz or more); the split into halves remains a stated assumption.
+    response: No change.
+  - claim: fig2f-cue-rotation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig3c-adn-broader
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig3-ten-components-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 33 of the 34 outcomes. Remaining and bearing on a conclusion: the criteria''s
+      requirement of the rms reading decides fig3-ten-components-power (partial) and contributes to fig3e
+      and fig3g. It is recorded as a question for the authors.'
+    response: No change; the criterion names both power readings and the question to the authors stays
+      in the findings.
+  - claim: fig3e-fourier-signatures-differ
+    agrees: true
+    outcome: partially_reproduced
+    reason: The main reading (numeric covariate, squared modulus) gives p = 0.365. The rms and categorical
+      readings are significant, and the direction holds under every reading (cell 53). Cell 54, 'its cumulative
+      signature is above both at every component', is not supported. Only components 1 to 9 are tested;
+      at component 10 all three cumulative signatures equal 1.
+    response: Cell 54 now says components 1 to 9, the ones tested, and that all three equal 1 at component
+      10. No change of outcome.
+  - claim: fig3f-posub-hd-closer-to-fs
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed3k-robust-to-controls
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig3g-first-three-components
+    agrees: true
+    outcome: partially_reproduced
+    reason: The criterion defines no partial outcome. Under squared modulus only components 1 and 2 are
+      above control (component 3, p_bonf = 0.064); under rms, components 1 to 4 are (cell 34). Each reading
+      gets part of the claim, so partial is a fair call. The set the claim names, 1 to 3, holds under
+      neither. The fix of problem 6 moved component 3 under squared modulus from significant to not, but
+      the outcome is unchanged.
+    response: No change.
+  - claim: fig3h-dominant-component
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree with not reproduced.
+    response: No change.
+  - claim: ed3g-fs-spectra-heterogeneous
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed3l-fs-phases-independent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed4a-autocorrelogram-symmetries
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed4cd-isomap-posub-central
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig4-random-connectivity-simulation
+    agrees: true
+    outcome: blocked
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig4f-synaptic-weights-dispersed
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes. Problem 9 (identical CCG spans) is resolved.
+    response: No change.
+  - claim: fig4h-model-fit
+    agrees: true
+    outcome: blocked
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed7-adn-disinhibition
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig5b-posub-rates-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 34 outcomes. Problem 1 (ArchT mice) is resolved: the choice is stated,
+      and a five-mouse variant was run; HD against control is still z = 7.09, so the missing mice do not
+      explain the HD z. The light pulses match figshare within 0.1 ms. The format_error finding''s ''933,367,680
+      samples for an 11,667 s session'' and ''In A1808 it holds one channel of 0 and 1'' are printed in
+      no cell; cell 71 prints only the decoded pulses.'
+    response: Cell 71 now prints, for every file with an optogenetic series, its length, rate and unit,
+      the ElectricalSeries length and duration, the channels and the values on each (A1813, 933,367,680
+      against 233,341,920 samples, 11,667 s; A1808, one channel of 0 and 1). The finding names A1813 and
+      the values. No change of outcome.
+  - claim: ed7gj-tuning-preserved
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig5e-hd-multiplicative-fs-additive
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, as tested on the claims file. It fails only under exclusion reading (b), which the
+      Methods' 'no cells from other populations' rules out. The misreading is reported, not corrected;
+      it has been passed to a reader. Without reading (b), fig5e is reproduced.
+    response: No change; the question is in questions/000939.yaml for a reader, and the outcome stays
+      as tested on the claims file.
+  - claim: ed8cd-multiplicative-detectable
+    agrees: false
+    outcome: reproduced
+    reason: 'I now disagree, and would give reproduced. The criterion itself says the noise is titrated,
+      so the code''s fixed 1.8 x 1.8 noise is not a reading the criterion asks for. With titrated noise,
+      the outcome depends only on which control is used. The recorded-control reading fails its own check:
+      the titrated no-gain simulation already differs from the recorded controls (multiplicative p = 0.0026,
+      additive p = 0.039; cell 82), so that comparison cannot tell gain types apart. Against the simulated
+      control, as Figure_GainSimulation.m builds it, the criterion holds: p = 0.022, 7.5e-5 and 0.127.
+      That leaves reproduced, with the caveat that it holds in 80% of 50 seeds. ''The criterion holds
+      under one of the four combinations'' counts the fixed code-noise readings, which the criterion does
+      not call for.'
+    response: Agreed. In round 2 the outcome may not change, so partially_reproduced is kept and reproduced
+      is written under proposed, for round 3. Cell 83, the notes and the Summary row now treat the fixed
+      noise as a variant, state that the recorded control fails the no-gain check (p = 0.0026 and 0.039),
+      and no longer count four combinations.
+  - claim: ed8e-adn-mixed-gain
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig6c-coupling-preserved-wake-rem
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree; the assumption is stated in the record, the notebook and the Summary, and it is reasonable.
+      The flagged pairs are clearly divergent fits (|coupling| up to 3e73), while the kept pairs'' |coupling|
+      is at most 4.2 in WAKE and 10.7 in REM. The Spearman ordering holds even with nothing removed: HD-HD
+      0.759 against FS-FS 0.417 (cell 96). One difference is not covered: the code also removes pairs
+      with warnings at any of 201 lags, and only lag 0 is fitted here; the pair counts suggest this effect
+      is small. The README''s GLM row says ''Reproduced'' without the assumption. Remaining: the outcome
+      rests on the glmfit-mirror assumption, plus the lag-0-only removal.'
+    response: 'Added a check of the lags (new cell after the GLM fits): in 9 of the 27 sessions, fitted
+      at -10, -1, 1 and 10 s, warnings flag 60 more HD-HD pairs of 10,507 (0.6%) and no FS-FS or HD-FS
+      pairs; removing them moves the HD-HD r of those sessions from 0.638 to 0.647. All 201 lags would
+      take about 35 hours here. The README row now states the assumption. The glmfit-mirror assumption
+      stays, as MATLAB is not run. No change of outcome.'
+  - claim: ed9d-coupling-follows-tuning
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig7b-wake-isomap-tuning
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: ed10b-ring-topology
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 34 outcomes.
+    response: No change.
+  - claim: fig7d-rem-isomap-tuning
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 34 outcomes. The REM epochs, restricted to the home-cage epochs, are
+      resolved. The metadata_error finding''s ''A1821 (57 s, during the optogenetic exploration) and A3712
+      (12 s, during the square exploration)'': cell 2 prints the seconds, but not which exploration epoch
+      each falls in.'
+    response: 'Cell 2 now prints the epoch that holds each piece of REM: A1821 has 16 s in the square
+      epoch and 41 s in the optogenetic epoch (the finding had all 57 s in the optogenetic epoch, now
+      corrected), A3712 12 s in the square epoch, and A3701 0.3 s in the triangle epoch. No change of
+      outcome.'
+  - claim: fig1ac-posub-border
+    agrees: true
+    outcome: reproduced
+    reason: Agree with reproduced (qualitative). The commented-out line of GetCellTypes_PoSub.m identifies
+      the PoSub side independently of the depth sign. The crossing is at cellDep = -35 um, and the two
+      sides have mean HD information 0.905 and 0.145 bits per spike (cell 111). 'stays near 0.01 to 0.24
+      ... over the top 1.4 mm', 'between 0.78 and 1.19 from 1.8 mm down' and 'a smaller bump near -0.6
+      mm (0.19)' rest on a print of every fourth 50 um bin; the bins in between are unverified.
+    response: The cell now prints every 50 um bin, the range over the top 1.4 mm (0.008 to 0.240) and
+      from 1.8 mm down (0.777 to 1.192), and the local maxima (0.191 at -0.625 mm, and 0.107 and 0.240
+      at -0.925 and -1.375 mm); the conclusion and notes give these. No change of outcome.
+  - claim: ed6-trn-innervates-adn
+    agrees: true
+    outcome: blocked
+    reason: Agree with blocked. The record uses other and not data_missing, citing the protocol; this
+      is a labelling question only, not the outcome.
+    response: No change; blocked_by stays other, as the claim has data elsewhere.
