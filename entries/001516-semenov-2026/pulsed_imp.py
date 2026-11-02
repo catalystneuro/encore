@@ -15,10 +15,10 @@ Where each parameter comes from:
   common method of the claims file. The files hold 20 baseline and 40 pulse frames (the dandiset's
   description), so the collapsed images are the means of those (claims file header).
 - Per-frame pole dF with F0 the mean of the baseline frames: Methods 2.3, the Fig. 2 measure.
-- F0 leaves out frame 0 (`BASE_FIRST = 1`): in these files the first frame of every set is about
-  a third dimmer than the rest (notebook, data check), an artefact the paper does not report, so
-  F0 is the mean of baseline frames 1 to 19. A deviation from Methods 2.3, which uses every
-  baseline image; the notebook shows the effect of including frame 0.
+- F0 leaves out frame 0 (`BASE_FIRST = 1`): in 65 of the 72 files the first frame is more
+  than 10% dimmer than frames 1 to 19 (median 0.64 over files; notebook, data check), an artefact
+  the paper does not report, so F0 is the mean of baseline frames 1 to 19. A deviation from
+  Methods 2.3, which uses every baseline image; the notebook shows the effect of including frame 0.
 - The trace is placed, for each degree of angle about the cell centre, on the brightest radius of the
   set's mean image, and averaged over 6 pixels across it. The paper drew it by hand in MetaMorph;
   this placement is a standard choice that follows the membrane ring.
@@ -58,7 +58,7 @@ DANDISET_VERSION = "0.261006.1833"
 API = "https://api.dandiarchive.org/api"
 
 N_BASE = 20  # sham frames at the start of each set (dandiset description: 20 sham, 40 pulse)
-BASE_FIRST = 1  # first baseline frame in F0; frame 0 is dimmed in every set (see the docstring)
+BASE_FIRST = 1  # first baseline frame in F0; frame 0 is dimmed in most sets (see the docstring)
 N_ANG = 360  # points along the perimeter (Methods 2.3)
 TRACE_WIDTH = 6  # pixels (Methods 2.3)
 POLE_HALF = 5  # degrees (Methods 2.3)
