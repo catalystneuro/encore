@@ -31,6 +31,12 @@ Where the parameters come from:
 - `vs_baseline`: one-tailed two-sample Wilcoxon (rank-sum) test, readings T1 (window rates
   against prestimulus rates, spikes/s) and T2 (normalized values against 100%), claims file,
   header T. The Bonferroni factor is applied by the caller (readings B1 and B2 of header T).
+- `onset_correlogram`: population spike count around each trial start, at lags of up to
+  +/- 60 s in 10 ms bins, smoothed over 70 ms (about the 67 ms sonication) and given as a robust
+  z-score over lags. The lag range, bin and smoothing are standard choices for the clock check;
+  60 s spans many intersonication intervals, and the 10% jitter of the intervals (Methods) makes
+  the trial sequence unique, so a constant offset between the clocks would show as a peak at
+  that lag.
 - `SHIFT_S = 1.25` s for the clock check: half the 2.5 s intersonication interval (Methods,
   Transcranial focused ultrasound stimulation), a standard choice that puts the shifted onsets
   between sonications.
@@ -226,3 +232,24 @@ def modulation_fraction(spikes, onsets, window=(0.0, 0.4), alpha=0.01) -> float:
             continue
         sig.append(stats.wilcoxon(a, b).pvalue < alpha)
     return float(np.mean(sig)) if sig else np.nan
+
+
+def onset_correlogram(spikes, onsets, max_lag=60.0, bin_s=0.01, smooth_bins=7):
+    """Robust z-score of the population spike count at each lag from the trial starts.
+
+    Returns (lags in s, z). The count is summed over units and trials in `bin_s` bins, smoothed
+    by a boxcar of `smooth_bins` bins, and scaled by the median and MAD over lags."""
+    allsp = np.concatenate(spikes)
+    nl = int(round(max_lag / bin_s))
+    n = int((max(allsp.max(), np.max(onsets)) + max_lag + 1) / bin_s)
+    pop = np.bincount((allsp / bin_s).astype(int), minlength=n + 1)[: n + 1].astype(float)
+    pop = np.concatenate([np.zeros(nl), pop, np.zeros(nl)])
+    c = np.zeros(2 * nl + 1)
+    for o in (np.asarray(onsets) / bin_s).astype(int) + nl:
+        c += pop[o - nl: o + nl + 1]
+    edge = smooth_bins
+    cs = np.convolve(c, np.ones(smooth_bins) / smooth_bins, mode="same")[edge:-edge]
+    lags = (np.arange(-nl, nl + 1) * bin_s)[edge:-edge]
+    med = np.median(cs)
+    mad = 1.4826 * np.median(np.abs(cs - med))
+    return lags, (cs - med) / mad if mad > 0 else np.zeros_like(cs)

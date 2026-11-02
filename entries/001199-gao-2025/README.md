@@ -7,10 +7,11 @@ cortex (AC) during transcranial focused ultrasound at 30 to 4,500 Hz PRF with 20
 
 | Claim | Outcome |
 |---|---|
-| Rats with S1 and POm (16) and S1 and AC (12) recordings | Partially reproduced |
+| Rats with S1 and POm (16) and S1 and AC (12) recordings | Not reproduced |
+| RSU and FSU counts of Fig. 4 and Fig. 5 (by upper bounds from untyped units) | Not reproduced |
 | AC neurons respond to 1,500 and 3,000 Hz during sonication, and to four PRFs after it | Not reproduced |
 | Target determination artefact (Fig. 2) | Blocked: data missing |
-| 20 claims on RSUs and FSUs (Fig. 4 to 6, 10A to 10C, 11C, 11D) | Blocked: data missing |
+| 18 other claims on RSUs and FSUs (Fig. 4 to 6, 10A to 10C, 11C, 11D) | Blocked: data missing |
 | 12 claims on the duty-cycle series (Fig. 7 to 9, 10D to 10F) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -24,7 +25,7 @@ this dandiset may not hold the paper's recordings. The attempt record, with the 
 differences from the paper's method, is
 [`attempts/001199-gao-2025-01.yaml`](../../attempts/001199-gao-2025-01.yaml).
 
-- `reproduce_gao_2025.ipynb`: the analysis. It takes about four minutes, most of it streaming the
+- `reproduce_gao_2025.ipynb`: the analysis. It takes about three minutes, most of it streaming the
   files.
 - `tfus.py`: listing and reading the files, the condition of each file from its identifier and
   notes, window spike counts, the normalized rates and tests of the paper. Other notebooks on this
