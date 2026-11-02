@@ -278,7 +278,8 @@ outcomes:
   - Artefact rejection without the visual inspection (O1). For band reading B the amplitude
     bandwidth is twice the band's centre frequency, by analogy with the comodulogram (not stated).
 - claim: fig2f-rt-single-trial-pac
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_daume_2024_lfp.ipynb
   output: claim:fig2f-rt-single-trial-pac
   notes: Refitted after round 2 with load 3 as the reference level, as Table S2 codes load (its load
@@ -295,9 +296,11 @@ outcomes:
     hippocampus p = 0.0045, amygdala 0.22, vmPFC 0.87). With RTs below 10 s (87 trials dropped),
     both readings meet the criterion (hippocampus p = 2.8e-7 and 0.00046; amygdala 0.097 and 0.097;
     vmPFC 0.99 and 0.61). Under artefact reading (b) every response scale and both O5 readings meet
-    it (hippocampus p <= 0.031, amygdala >= 0.48, vmPFC >= 0.26). The slope in load 1 trials, which
-    the first coding tested, has p = 0.25 and 0.64 with RT in s. The verified outcome is kept; the
-    change is proposed below.
+    it (hippocampus p <= 0.031, amygdala >= 0.479, vmPFC >= 0.26). The slope in load 1 trials, which
+    the first coding tested, has p = 0.25 and 0.64 with RT in s. On the scales that fit Table S2 the
+    two readings of O5 disagree, which the criterion makes methods_underspecified; the change from
+    not_reproduced was agreed in the third verification round. Table S2's PAC estimate (-49.07)
+    points to O5 (a), under which the outcome would be not reproduced; this is asked of a reader.
   deviations:
   - The single-trial PAC is not described (O5); both readings of the claims file were run. Mixed
     model fitted with statsmodels MixedLM (REML), random intercepts for patient and for channel
@@ -308,19 +311,8 @@ outcomes:
     log10 RT and z-scored over each session's correct trials; the hippocampal trials under reading
     (a) have RTs up to 56.3 s (87 above 10 s), and a variant drops RTs above 10 s. The paper states
     no trimming.
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: With load 3 as the reference level, as Table S2 codes it, the outcome depends on the RT
-      scale, which the paper does not give. RT in s cannot give Table S2's intercept (1.70 here
-      against 0.38); RT z-scored within session gives 0.28 and a Load1 term of -0.32 (paper -0.48),
-      and a hippocampal term of -49.39, t = -4.19 (paper -49.07, t = -4.01), so it is the scale best
-      supported. On that scale, under the adopted artefact reading (a), O5 (a) fails only because
-      the amygdala term is also significant (p = 0.015) and O5 (b) meets the criterion; the
-      criterion makes such a disagreement methods_underspecified. log10 RT gives the same split,
-      and artefact reading (b) or RTs below 10 s meet the criterion under both readings. The
-      question of the RT transform is asked of the authors (findings) and the coding of the
-      criterion of a reader (questions/000673.yaml).
+  - Assumed artefact reading (a), as for edf2b-hippocampus-load-patients; under reading (b) every
+    RT scale and both readings of O5 meet the criterion, which would give reproduced.
 - claim: edf3-hippocampus-pac-controls
   outcome: not_reproduced
   assumed: true
@@ -442,7 +434,7 @@ outcomes:
   blocked_by: other
   notes: Depends on fig3f-gamma-sfc-preferred, which was not run.
 - claim: fig3h-pac-category-firing
-  outcome: not_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_daume_2024_lfp.ipynb
   output: claim:fig3h-pac-category-firing
@@ -452,14 +444,14 @@ outcomes:
     term is the slope in load 3 trials. The hippocampal SC term is positive with p < 0.05 under every
     reading - all correct trials, O5 (a) t = 6.34, p = 2.3e-10, O5 (b) 0.0045, t = 3.09, p = 0.0020
     (paper 0.002, t = 2.40, p = 0.017); preferred trials, O5 (a) t = 3.09, p = 0.0020, O5 (b) 0.0028,
-    t = 2.16, p = 0.031. The amygdala term has p >= 0.33 under every reading (paper p = 0.45). Under
+    t = 2.16, p = 0.031. The amygdala term has p >= 0.326 under every reading (paper p = 0.45). Under
     O5 (b) on all trials the other terms are close to Table S3 - intercept -0.057 (paper -0.044),
     Load1 0.078 (0.076), SC x Load1 -0.0049, p = 0.0002 (-0.004, p = 0.010). The slope in load 1
     trials, which the first coding tested, is not positive (all trials O5 b, p = 0.77; preferred O5
     b, -0.0045, p = 0.015), and neither is the paper's (0.002 - 0.004). Under artefact reading (b)
     (145 and 410 pairs) the hippocampal term is positive with p <= 0.014 under three readings and p
     = 0.056 under the fourth (preferred, O5 b); the amygdala term has p >= 0.32 (one of its fits did
-    not converge). The verified outcome is kept; the change is proposed below.
+    not converge). The change from not_reproduced was agreed in the third verification round.
   deviations:
   - Pairs as in the criterion; the claim's depends_on (fig3f-gamma-sfc-preferred) names the SFC
     pairs, which are the same category neuron and PAC channel pairs, so the claim was run without
@@ -469,14 +461,6 @@ outcomes:
     "Load 1 are tested against load 3 trials", with a term named "Load1"). Artefact reading (a)
     assumed, as for edf2b-hippocampus-load-patients; under reading (b) one of the four readings has
     p = 0.056.
-  proposed:
-    outcome: reproduced
-    reason: Coded as Table S3 codes load (load 3 the reference), the hippocampal SC term is positive
-      with p < 0.05 under all four readings of the criterion (p = 2.3e-10 to 0.031) and the amygdala
-      term has p >= 0.33, which meets the criterion; under O5 (b) the intercept, Load1 and
-      interaction terms are close to Table S3's. The first coding tested the load 1 slope, which is
-      not the paper's SC term. The outcome still rests on artefact reading (a); under reading (b) one
-      reading gives p = 0.056.
 - claim: pac-neuron-counts
   outcome: partially_reproduced
   notebook: reproduce_daume_2024_pac_neurons.ipynb
@@ -1534,3 +1518,42 @@ verifications:
     reason: Agreed. Every other number in the conclusions, the Summaries, the README table and the record's notes
       matches the outputs.
     response: No change to the outcome.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. The two changes of outcome proposed by the round-2 revision (fig2f-rt-single-trial-pac and
+    fig3h-pac-category-firing), with the re-executed reproduce_daume_2024_lfp.ipynb (cells 27 and 44). Nothing else
+    was reviewed. The verifier agreed with both.
+  results:
+  - claim: fig2f-rt-single-trial-pac
+    agrees: true
+    outcome: blocked
+    reason: Yes, with reservations (blocked, methods_underspecified). Making load 3 the reference follows Supplementary Table S2, and dropping RT in
+      seconds rests on evidence that does not depend on the outcome (intercept 1.697 against 0.38, Load1 -0.285
+      against -0.48; Table S2's Load1 term is the same for the hippocampus and the amygdala, which points to a
+      standardised RT). On RT z-scored within session and on log10 RT the two O5 readings disagree, and the
+      criterion says methods_underspecified when they do. Reservations - the claims file leaves the RT scale open,
+      and on RT in seconds both readings fail; Table S2's PAC estimate of -49.07 can only come from an
+      unstandardised single-trial MI, so it seems to settle O5 as reading (a), under which the outcome would be not
+      reproduced (reported, not corrected); the amygdala fit with z-scored RT under O5 (a) has an implausible
+      intercept of -1.695e-11, though RT in seconds and log10 RT give the same split; the outcome rests on artefact
+      reading (a) and should carry assumed true; the amygdala minimum under artefact reading (b) is 0.4787, not
+      >= 0.48.
+    response: Outcome changed to blocked (methods_underspecified). The record's schema does not allow assumed true
+      on a blocked outcome, so a deviation says instead that the outcome assumes artefact reading (a), and that under
+      reading (b) every scale and both O5 readings meet the criterion. Corrected the amygdala minimum
+      to 0.479 in the notes and the notebook. Asked a reader whether O5 should be fixed as reading (a) for this
+      claim (questions/000673.yaml); the outcome stays as tested on the claims file.
+  - claim: fig3h-pac-category-firing
+    agrees: true
+    outcome: reproduced
+    reason: Yes. Load 3 as the reference follows Table S3's wording and is supported by the other terms under O5 (b)
+      on all trials (intercept -0.0565 against -0.044, Load1 0.0779 against 0.076, SC x Load1 -0.00485 against
+      -0.004). Under artefact reading (a) the hippocampal SC term is positive with p < 0.05 under all four readings
+      (2.3e-10, 0.0020, 0.0020, 0.031) and the amygdala term has p of 0.90, 0.33, 0.80 and 0.92, which meets the
+      criterion. Keep assumed true - under artefact reading (b), preferred trials with O5 (b) give p = 0.056, which
+      would make the claim methods_underspecified, and one amygdala fit did not converge. Rounding slip - the
+      amygdala minimum is 0.3263, not >= 0.33. Table S3's scale matches O5 (b) while Table S2's matches O5 (a), so
+      the paper may use a different single-trial PAC in its two tables; this does not change fig3h.
+    response: Outcome changed to reproduced, keeping assumed true. Corrected the amygdala minimum to 0.326 in the
+      notes and the notebook.
