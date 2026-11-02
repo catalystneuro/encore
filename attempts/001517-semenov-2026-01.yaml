@@ -1,0 +1,723 @@
+schema_version: 2
+id: 001517-semenov-2026-01
+dataset:
+  archive: dandi
+  id: '001517'
+  version: 0.261006.1856
+  doi: 10.48324/dandi.001517/0.261006.1856
+paper: doi:10.1016/j.bioelechem.2026.109283
+date: '2026-11-02'
+entry: 001517-semenov-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41521850217
+inputs:
+- what: The charging time constant of Eq. (1), tau = 44.5 ns per um of cell radius (the linear fit through the origin
+    of Fig. 5C), and the background method for the strobe images (ROIs near the poles outside the cell, section
+    2.4), from reference [20] of the paper, Semenov et al. 2025, Bioelectrochemistry 168, 109143 (PMC12553484).
+  source: doi:10.1016/j.bioelechem.2025.109143
+outcomes:
+- claim: fig1-pole-dimming
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig1-pole-dimming
+  notes: Under every background reading the cathodic pole is lower at 780 than at 570 V/cm (far 38.6 against 41.7%;
+    near 65.0 against 67.9; none 15.2 against 16.0), and at 1400 V/cm the largest mean dF of the cathode-facing
+    hemisphere lies away from the pole (far 22.0% at -65 degrees against 8.3% at the pole; near +56; none -65).
+    In each of the 8 cells the 1400 V/cm maximum lies 43 to 78 degrees from the pole. Five-cell subsets passing
+    56 of 56 (far), 45 (near), 51 (none). The Fig. 1 cell is not identified; the test uses the Fig. 4B cells as
+    the criterion says.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig2a-fluovolt-saturation
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2a-fluovolt-saturation
+  measured:
+  - 49.4
+  - -69.8
+  notes: Per-image pole dF over the 60 pulse images, mean of 4 cells, far background. The shape conditions hold;
+    cathodic 48.1 and 37.4% at 570 and 780 V/cm against 49.4% at 360; anodic -72.2 to -61.9% from 780 to 1400 V/cm
+    against -69.8% at 570; cathodic 36.6, 35.4 and 40.9% at 1000 to 1400 V/cm. The two values miss under every background
+    reading (cathodic at 360 V/cm 49.4 far, 78.5 near, 23.7 none, against 66 +- 6.6; anodic at 570 V/cm -69.8, -88.6
+    (within) and -37.6, against -83 +- 8.3). The near reading fails the 1000 to 1400 V/cm condition (80.4% at 1400).
+    With c5 added, 55.2 and -71.2% (far); with dark frames kept, 45.6 and -69.8%.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - FluoVolt cells c2, c3, c4 and c6 are used, the four with exactly the nine-set escalation of Fig. 2A (n = 4);
+    c5, whose escalation follows an extra 350 V set, is a variant.
+  assumed: true
+- claim: fig2a-fluovolt-stable
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2a-fluovolt-stable
+  notes: Claim of absence, 2-tailed paired t-test over 4 cells, 24 tests per reading (6 pulse comparisons at 1000
+    to 1400 V/cm and 18 baselines). Far background, reading (a) first and last image, 1 pulse set (1400 V/cm anodic,
+    -3.2% dF, p = 0.043) and 1 baseline (1000 V/cm anodic, -7.0%, p = 0.005) change; reading (b) first and last
+    10 images, 2 pulse sets (1200 V/cm cathodic +8.0%, p = 0.011; 1400 V/cm anodic +2.5%, p = 0.037) and 4 baselines
+    (changes -4.2 to +3.7%, p 0.000 to 0.045). Both readings find changes, so not reproduced. Without background
+    both readings also find changes; with the near background reading (a) finds none and (b) five, so under that
+    background the claim would be blocked as methods_underspecified. About one test in 24 is expected below p =
+    0.05 by chance, and the changes are a few percent dF against responses of 40 to 70%.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - FluoVolt cells c2, c3, c4 and c6 are used, the four with exactly the nine-set escalation of Fig. 2A (n = 4);
+    c5, whose escalation follows an extra 350 V set, is a variant.
+  - The first lit image stands for the first image where frame 0 has no flash.
+  assumed: true
+- claim: fig2b-di8-climbs-to-570
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2b-di8-climbs-to-570
+  notes: Mean |dF| over the 60 pulse images rises at every step from 43 to 570 V/cm at both poles under every background
+    (far cathodic 1.1, 15.9, 23.3, 33.3, 41.5%; anodic 9.1, 17.2, 25.8, 32.6, 39.4%), and in all 56 five-cell subsets.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig2b-di8-bleaching
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2b-di8-bleaching
+  measured: -5.11
+  notes: Reading (b), the offset common to both poles in the 43 V/cm set, is -5.11% (far) and -5.00% (near), within
+    -5 +- 0.5; without background -2.63%. Reading (a), last 10 minus first 10 pulse images, misses at the anodic
+    pole under every background (far cathodic -5.32, anodic -3.39%). With dark frames kept reading (b) gives -2.18%
+    (far), so the outcome rests on leaving those frames out as well as on the background. Over the last 10 pulse
+    images both poles sit 7.2% below baseline (far), a downward drift through the set at both poles, as the text
+    describes.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig2b-di8-decline-within-set
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2b-di8-decline-within-set
+  notes: Far background, cathodic |dF| from start to end of each set, reading (a) 40.1 to 35.8, 40.8 to 22.4, 30.0
+    to 17.9, 16.3 to 8.4% at 780 to 1400 V/cm; reading (b) 41.1 to 34.3, 37.0 to 25.2, 24.2 to 15.2, 15.6 to 9.2%
+    (paired p 0.017, 0.001, 0.002, 0.119). Both readings decline in every set without background too; with the near
+    background reading (a) rises at 1400 V/cm. Five-cell subsets passing 41 (a) and 53 (b) of 56. The anodic variant
+    does not decline at 780 V/cm.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig3-dye-sensitivity
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig3-dye-sensitivity
+  measured:
+  - 21.57
+  - 7.38
+  - 0.964
+  - 0.762
+  notes: Far background, perimeter radius, slopes 21.57 (FluoVolt, 3008 points) and 7.38% per 100 mV (Di-8-ANEPPS,
+    5776 points) against 26 +- 2.6 and 9.1 +- 0.91; Pearson r 0.964 and 0.762, uncentred 0.950 and 0.660. The equal-area
+    radius gives 21.62 and 7.48. Near background 30.69 and 11.46, none 10.95 and 3.33; no reading brings both slopes
+    within tolerance. With the pixel that gives the paper's average radius of 8 um (0.192 um) the far background
+    gives 26.62 and 9.53 with Pearson 0.976 and 0.831, all within tolerance. The outcome turns on the pixel size
+    and the background, neither given by the paper or the files. Di-8-ANEPPS slope over the 56 five-cell subsets
+    6.48 to 8.27.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - FluoVolt cells c2, c3, c4 and c6 are used, the four with exactly the nine-set escalation of Fig. 2A (n = 4);
+    c5, whose escalation follows an extra 350 V set, is a variant.
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - The pixel size is taken as 0.267 um (16-um pixels of the iXon Ultra 897 behind the 60x objective, Methods 2.3);
+    the files do not give it. Radii are then 7.7 to 14.6 um by cell against the paper's average of about 8 um; a
+    variant uses the 0.192-um pixel that gives 8 um.
+  - The charging time constant is 44.5 ns per um of radius, the fit of reference [20] Fig. 5C, as Methods 2.3 says.
+  assumed: true
+- claim: fig3-fluovolt-nonlinear
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig3-fluovolt-nonlinear
+  notes: Di-8-ANEPPS departs from the shared line on the cathodic side under every smooth and background (far, 2709
+    of 5418 LOESS points from 150 to 500 mV, 5 of 14 bins; smooth over line down to 0.73). Fit side by side (far),
+    the anodic slope is 11.63 and the cathodic 3.13% per 100 mV, so the departure reflects an asymmetry between
+    the poles, with the cathodic fit pulled down by the negative 43 V/cm cathodic values of the bleaching. FluoVolt
+    departs at every |IMPC| from 220 mV under LOESS 0.5 and 0.75 but not under LOESS 0.3 or 50-mV bins (far); under
+    the near background it does under all four.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - FluoVolt cells c2, c3, c4 and c6 are used, the four with exactly the nine-set escalation of Fig. 2A (n = 4);
+    c5, whose escalation follows an extra 350 V set, is a variant.
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - The pixel size is taken as 0.267 um (16-um pixels of the iXon Ultra 897 behind the 60x objective, Methods 2.3);
+    the files do not give it. Radii are then 7.7 to 14.6 um by cell against the paper's average of about 8 um; a
+    variant uses the 0.192-um pixel that gives 8 um.
+  - The charging time constant is 44.5 ns per um of radius, the fit of reference [20] Fig. 5C, as Methods 2.3 says.
+  assumed: true
+- claim: fig4a-fluovolt-limits
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4a-fluovolt-limits
+  measured:
+  - 49.3
+  - -72.1
+  notes: Far background, maxima 49.3% (cathodic, 360 V/cm) and -72.1% (anodic, 780 V/cm), outside 71 +- 10 and -83.5
+    +- 5; near 80.6% (within, at 1400 V/cm) and -89.1%; none 23.6 and -40.4%. Measured IMP (dF / 26%) is below IMPC
+    at every strength from 230 V/cm (paired p 0.0006 to 0.0029), but already at 150 V/cm (cathodic 155 against 205
+    mV, paired p = 0.037; anodic -168 against -205, p = 0.0045), so measured and calculated match at 43 V/cm only.
+    With the near background the test conditions hold under the paired reading.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - FluoVolt cells c2, c3, c4 and c6 are used, the four with exactly the nine-set escalation of Fig. 2A (n = 4);
+    c5, whose escalation follows an extra 350 V set, is a variant.
+  - The pixel size is taken as 0.267 um (16-um pixels of the iXon Ultra 897 behind the 60x objective, Methods 2.3);
+    the files do not give it. Radii are then 7.7 to 14.6 um by cell against the paper's average of about 8 um; a
+    variant uses the 0.192-um pixel that gives 8 um.
+  - The charging time constant is 44.5 ns per um of radius, the fit of reference [20] Fig. 5C, as Methods 2.3 says.
+  assumed: true
+- claim: fig4a-fluovolt-cathodic-decline
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4a-fluovolt-cathodic-decline
+  measured:
+  - 49.3
+  - 37.6
+  notes: Far background, collapsed cathodic dF 49.3% (s.e. 4.3) at 360 V/cm, outside 71 +- 10, and 36.5, 35.4 and
+    40.9% at 1000, 1200 and 1400 V/cm, of which only the last is inside 40.5 to 55 (measured gives the mean of the
+    three, 37.6). Near 78.3 then 66.6 to 80.6; none 23.6 then 16.2 to 18.1. The decline from 360 V/cm is 17 to 28%
+    (the paper's 71 to 45-50% is 30 to 37%). Three of four cells are higher at 1400 than at 1000 V/cm.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - FluoVolt cells c2, c3, c4 and c6 are used, the four with exactly the nine-set escalation of Fig. 2A (n = 4);
+    c5, whose escalation follows an extra 350 V set, is a variant.
+  assumed: true
+- claim: fig4b-di8-limits
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4b-di8-limits
+  measured:
+  - 41.7
+  - -41.4
+  notes: Far background, the cathodic maximum is at 570 V/cm (41.7%, below 57 +- 14 by 1.3 points), the anodic maximum
+    at 780 V/cm (-41.4%, against -40.4% at 570), outside -55 +- 4. Measured IMP (dF / 9.1%) is below IMPC at 570
+    V/cm (cathodic 458 against 804 mV, paired p = 0.0035; anodic p < 0.0001) but also at 360 V/cm anodic (p = 0.0012)
+    and at 43 V/cm (cathodic -11 against 60 mV, from the bleaching). No background reading and none of the 56 five-cell
+    subsets meets every condition; with the near background the cathodic maximum is at 1200 V/cm (71.3%).
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  - The pixel size is taken as 0.267 um (16-um pixels of the iXon Ultra 897 behind the 60x objective, Methods 2.3);
+    the files do not give it. Radii are then 7.7 to 14.6 um by cell against the paper's average of about 8 um; a
+    variant uses the 0.192-um pixel that gives 8 um.
+  - The charging time constant is 44.5 ns per um of radius, the fit of reference [20] Fig. 5C, as Methods 2.3 says.
+  assumed: true
+- claim: fig4b-first-10-pulses
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4b-first-10-pulses
+  measured: 43.1
+  notes: Far background, the first-10 cathodic maximum is 43.1% (s.e. 6.8) at 570 V/cm, above the 60-image maximum
+    (41.7%) but outside 66 +- 15; 5 of 56 five-cell subsets pass. Near 88.5% at 1200 V/cm (s.e. 38.1), none 16.5%.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig4b-cathodic-asymmetry
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4b-cathodic-asymmetry
+  measured: -18.5
+  notes: Far background, both poles fall from 780 V/cm (cathodic 38.6, 31.4, 19.1, 8.3%; anodic 41.4, 36.9, 26.8,
+    18.5%), the cathodic pole loses more (78 against 55%), and its 1400 V/cm value does not differ from zero (8.3%,
+    one-sample p = 0.24). The anodic value at 1400 V/cm is -18.5%, outside -30 +- 3 (near -21.7, none -9.4). Conditions
+    1 to 3 hold under the far and no-background readings; under the near background the cathodic pole rises at 1200
+    V/cm.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig4c-equator-follows-cosine
+  outcome: not_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4c-equator-follows-cosine
+  notes: Far background, 16 of 24 equatorial arcs (2 widths, 3 strengths, 4 arcs) differ from IMPC under both the
+    paired and the unpaired t-test; ratios of measured to calculated 0.40 to 0.98, lowest on the cathodic side of
+    the 270-degree equator (0.40 to 0.61). Near background, 1 arc differs under both; no background, 24. With the
+    8-um pixel variant 7 (paired) and 9 (unpaired). At 570 and 780 V/cm the 15-degree arcs beside 90 degrees and
+    on the anodic side at 270 degrees match (ratios 0.75 to 0.98, p 0.08 to 0.93).
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  - The pixel size is taken as 0.267 um (16-um pixels of the iXon Ultra 897 behind the 60x objective, Methods 2.3);
+    the files do not give it. Radii are then 7.7 to 14.6 um by cell against the paper's average of about 8 um; a
+    variant uses the 0.192-um pixel that gives 8 um.
+  - The charging time constant is 44.5 ns per um of radius, the fit of reference [20] Fig. 5C, as Methods 2.3 says.
+  assumed: true
+- claim: fig5b-conductivity-calibration
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig5b-conductivity-calibration
+  measured:
+  - 1.33
+  - 11.87
+  notes: Eq. (2) with the Methods constants gives f = 1.498 at 3e-7 S/m. A 100-fold rise reduces IMP by 11.87% (reading
+    a, 1 - f/1.5) or 11.75% (b), within 12 +- 1.2; a 10-fold rise by 1.33% (a) or 1.20% (b), outside 2 +- 0.2. Under
+    Eq. (2) a 2% reduction needs a 15.2-fold rise. The first part of the statement (little effect while the conductivity
+    is far below the cytosol and medium) holds (99.6% of 1.5 at 1e-6 S/m).
+  deviations:
+  - None; the computation uses the equation and constants of Methods 2.3 and no recordings.
+- claim: fig7b-charging-during-pulse
+  outcome: reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig7b-charging-during-pulse
+  measured:
+  - 1.465
+  - 2.153
+  notes: Far background, first reading (normalised per cell, cathodic pole), line over measured 1.465 at 570 and
+    2.153 at 780 V/cm, 3.4, 6.2 and 12.5 at 1000 to 1400 V/cm, every point from 570 V/cm below the line (largest
+    one-sample p 0.001). All six readings pass under the far background (1.45 to 1.64 and 2.09 to 2.15), four of
+    six near and five of six without background; 43 (far), 46 (near) and 46 (none) of 56 five-cell subsets pass.
+  deviations:
+  - Field strengths are matched in order to the generator volts the files give (25 V as 43 V/cm, 50 as 150, 70 as
+    230, 100 as 360, 150 as 570, 200 as 780, 250 as 1000, 300 as 1200, 350 as 1400), an assumption. The paper names
+    nine field strengths for its 1-us escalations and the files nine amplitudes, but the two are not proportional,
+    and below electroporation the data fit a proportional response about as well on the volts as on the paper's
+    V/cm.
+  - Background is subtracted from ROIs 30 to 36 pixels (8 to 10 um) outside the membrane, 20 degrees wide, near
+    each pole (the far reading), an assumption. The paper does not state a background method for the laser images;
+    its Methods follow reference [20] ('Most methods were identical to those described in detail recently [20]'),
+    which places background ROIs 'near the poles outside of the cell' with no distance. The data check shows the
+    membrane's glow is still a third of its excess 2 um out and a few percent 8 um out. The near (2 to 4 um) and
+    no-background readings are shown and change dF by up to a factor of three.
+  - The perimeter trace (6 pixels wide, Methods 2.3) is found automatically as the peak of intensity on 360 rays
+    of each set's baseline image, with polar angles from the cell centre; the paper drew it by hand in MetaMorph
+    and resampled by perimeter length.
+  - Frames without a laser flash, which the files do not flag (frame 0 of 137 of 141 sets and 290 others), are left
+    out of every average; the paper does not mention them. Keeping them is shown as a variant.
+  - The field direction is not stored. The cathode-facing pole is placed where dF is positive (Methods 2.3, emission
+    increased in the cathode-facing hemisphere), on one axis for all sets estimated from the 50 to 100 V sets (per-set
+    median deviation 1.6 degrees).
+  - All eight Di-8-ANEPPS escalation cells (c7 to c14) are used where the paper reports n = 5 without naming them;
+    the criterion is also run on each of the 56 five-cell subsets.
+  - Di-8-ANEPPS c13 has two 150 V sets; the first, in escalation order, is used.
+  assumed: true
+- claim: fig2cd-stable-before-electroporation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The alternating 150 and 230 V/cm sets followed by 1000 V/cm (Fig. 2C/D, n = 8) are not in the dandiset;
+    every cell there follows an escalation of amplitudes. The paper says its data are available on request; the
+    only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and Di-8-ANEPPS comparison
+    at varying field strengths, and its files were not read.
+- claim: fig2c-1000-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Fig. 2C experiment (alternating sets, then 1000 V/cm, n = 8), which is not in the dandiset. The
+    paper says its data are available on request; the only other dandiset naming the paper, 001518, is by its title
+    and description a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and its files were not read.
+- claim: fig2d-lasting-reduction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Fig. 2C/D experiment, which is not in the dandiset. The paper says its data are available on
+    request; the only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and Di-8-ANEPPS
+    comparison at varying field strengths, and its files were not read.
+- claim: fig4d-short-pulses-same-limit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every file states a 1-us pulse; the 0.3-us experiments of Fig. 4D are not in the dandiset. The paper says
+    its data are available on request; the only other dandiset naming the paper, 001518, is by its title and description
+    a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and its files were not read.
+- claim: fig5a-gd-extends-anodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No set mentions Gd3+, and there is no group of parallel controls; the Fig. 5A data are not in the dandiset.
+    The paper says its data are available on request; the only other dandiset naming the paper, 001518, is by its
+    title and description a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and its files were not
+    read.
+- claim: fig5a-gd-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Gd3+ cells of Fig. 5A are not in the dandiset. The paper says its data are available on request; the
+    only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and Di-8-ANEPPS comparison
+    at varying field strengths, and its files were not read.
+- claim: fig5a-gd-cathodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Gd3+ cells and parallel controls of Fig. 5A are not in the dandiset. The paper says its data are available
+    on request; the only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and
+    Di-8-ANEPPS comparison at varying field strengths, and its files were not read.
+- claim: fig5a-gd-differences
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Gd3+ cells and parallel controls of Fig. 5A are not in the dandiset. The paper says its data are available
+    on request; the only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and
+    Di-8-ANEPPS comparison at varying field strengths, and its files were not read.
+- claim: fig5c-gd-reduces-conductivity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Uses the Fig. 5A Gd3+ and control datapoints, which are not in the dandiset (it also depends on fig5b-conductivity-calibration,
+    which was tested). The paper says its data are available on request; the only other dandiset naming the paper,
+    001518, is by its title and description a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and
+    its files were not read.
+- claim: fig6a-ca-single-pulse
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fluo-4 Ca2+ imaging of Fig. 6A is not in the dandiset, which holds strobe images only. The paper says
+    its data are available on request; the only other dandiset naming the paper, 001518, is by its title and description
+    a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and its files were not read.
+- claim: fig6b-ca-train-responders
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fluo-4 Ca2+ imaging of Fig. 6B (224 cells) is not in the dandiset. The paper says its data are available
+    on request; the only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and
+    Di-8-ANEPPS comparison at varying field strengths, and its files were not read.
+- claim: fig6b-ca-650
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fluo-4 Ca2+ imaging of Fig. 6B is not in the dandiset. The paper says its data are available on request;
+    the only other dandiset naming the paper, 001518, is by its title and description a FluoVolt and Di-8-ANEPPS
+    comparison at varying field strengths, and its files were not read.
+- claim: fig7ab-test-pulse-recovery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every file states a single pulse; the two-pulse experiments with a 150 V/cm test pulse (Fig. 7A) are not
+    in the dandiset. The paper says its data are available on request; the only other dandiset naming the paper,
+    001518, is by its title and description a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and
+    its files were not read.
+- claim: fig7c-fast-conductivity-drop
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the test-pulse data of Fig. 7A/B, which are not in the dandiset (depends on fig7ab-test-pulse-recovery).
+    The paper says its data are available on request; the only other dandiset naming the paper, 001518, is by its
+    title and description a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and its files were not
+    read.
+- claim: fig7c-full-reseal-mild
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the test-pulse data of Fig. 7A/B, which are not in the dandiset (depends on fig7ab-test-pulse-recovery).
+    The paper says its data are available on request; the only other dandiset naming the paper, 001518, is by its
+    title and description a FluoVolt and Di-8-ANEPPS comparison at varying field strengths, and its files were not
+    read.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the 1-us escalation strobe images (6 FluoVolt and 13 Di-8-ANEPPS cells). The
+    alternating 150/230 V/cm sets of Fig. 2C/D, the 0.3-us pulses of Fig. 4D, the Gd3+ cells and controls of Fig.
+    5A, the Ca2+ imaging of Fig. 6 and the two-pulse experiments of Fig. 7 are not in it; 15 of the paper's 31 claims
+    cannot be tested.
+- kind: metadata_insufficient
+  statement: The pulse amplitude is given only as generator volts inside a free-text session description (25 to
+    350 V). The paper reports field strengths in V/cm from Sim4Life modelling (43 to 1400 V/cm), which are not proportional
+    to the volts, and no file or dandiset field gives the conversion; the nine steps had to be matched in order.
+- kind: metadata_insufficient
+  statement: The files hold raw images only. The pixel size, the field direction, the cell outline or ROIs, and
+    which frames are baseline and which carry the pulse are not stored; the 40/60 split is stated in the paper and
+    is consistent with the data.
+- kind: metadata_error
+  statement: Every session description gives an electrode distance of 1.00 mm; the paper (Methods 2.2) and its reference
+    [20] give 1.6 mm.
+- kind: metadata_error
+  statement: The dandiset description says Di-8-ANEPPS was used, replacing FluoVolt, but 68 of the 220 sets (6 cells)
+    are stated in their session descriptions to be FluoVolt.
+- kind: other
+  statement: Frame 0 of 137 of 141 sets examined and 290 further frames hold no laser flash (frame mean near the
+    camera floor) and are not flagged. Apart from frame 0 they are five times as frequent among pulse frames (257
+    of 8460) as among baseline frames (33 of 5499). Averaging them in changes dF by several percent (the Di-8-ANEPPS
+    43 V/cm offset goes from -5.1 to -2.2%).
+- kind: selection_undocumented
+  statement: The dandiset has eight Di-8-ANEPPS cells with the nine-step escalation where Fig. 2B and 4B report
+    n = 5, five FluoVolt cells with it (one with an extra 350 V set first) and a sixth with a finer escalation where
+    Fig. 2A and 4A report n = 4, and five Di-8-ANEPPS cells recorded on 2025-01-22 with other steps that the paper
+    does not describe. Which cells the paper used is not stated.
+- kind: methods_unavailable
+  statement: Question for the authors. Where were the background ROIs of the strobe images placed, and how far from
+    the membrane? Reference [20] says near the poles outside the cell. Here a background 2 to 4 um out, 8 to 10
+    um out, or none changes the pole dF by up to a factor of three (FluoVolt cathodic at 360 V/cm 78.5, 49.4 and
+    23.7%), and the 8 to 10 um reading was assumed.
+- kind: methods_unavailable
+  statement: Question for the authors. What is the pixel size of the images, and how was the cell radius measured?
+    With 16-um camera pixels behind the 60x objective (0.267 um) the cells have radii of 7.7 to 14.6 um, larger
+    than the 8 um the paper gives as typical, and the dye slopes of Fig. 3 come out 21.6 and 7.4% per 100 mV; with
+    0.192 um (radius 8 um) they come out 26.6 and 9.5, as in the paper.
+- kind: methods_unavailable
+  statement: Question for the authors. Which generator amplitude in the files corresponds to each field strength
+    of the paper (is 25 V the 43 V/cm set, and so on), and which cells form the n = 4 FluoVolt and n = 5 Di-8-ANEPPS
+    groups of Fig. 2 and 4? Both were assumed here (amplitudes matched in order; four FluoVolt cells with exactly
+    nine sets; all eight Di-8-ANEPPS cells, with the 56 five-cell subsets shown).
+- kind: paper_inconsistency
+  statement: Results 3.5 says a 10-fold rise of the effective membrane conductivity reduces IMP by about 2%; Eq.
+    (2) with the constants of Methods 2.3 gives 1.3% (a 2% reduction needs a 15-fold rise). The 100-fold value (12%)
+    agrees with the equation.
