@@ -23,7 +23,9 @@ Where each parameter comes from:
   assumption that the stitched image is not binned). It is checked against the needles: the
   radius of each needle's dark footprint (`footprint_radius`) is compared with the 0.75 mm
   radius of the 1.5 mm needles (paper, Section 2.3, "blunt, hollow, stainless-steel needles
-  1.5-mm in diameter"). An earlier variant, the scale at which the mean centre-to-centre
+  1.5-mm in diameter"). The footprints rule out the 8.4 mm scale below but do not confirm the
+  camera scale: their median radii imply about 0.68 um (small array) and 0.75 um (large array),
+  which the notebook runs as a variant of the main reading. An earlier variant, the scale at which the mean centre-to-centre
   diagonal of the large array is 8.4 mm (paper, Section 3.5), is no longer run: with it the
   needle edge lies at 3.45 mm (large array) and 1.55 mm (small array) from the centre, inside
   the paper's ROI spans of 3.65 and 1.65 mm, so the end ROIs would lie on the needles.

@@ -73,7 +73,9 @@ outcomes:
     on average at 2.4 kV, 375.9 at 5.6 kV), a variant the criterion excludes, the main reading
     gives 13.37, 15.87 and 15.16 (two of three within tolerance), 2 of 18 readings put all three
     within tolerance, and with the exclusion-zone ROIs also dropped all three are within it (14.88,
-    17.10 and 15.16). The outcome turns on whether an offset was removed. The criterion says none
+    17.10 and 15.16). At the pixel size implied by the needle footprints (a variant) the ratios are
+    5.71, 5.45 and 7.32 without background and 14.17, 14.82 and 15.39 with it. The outcome turns on
+    whether an offset was removed. The criterion says none
     is, "as in the Methods"; the Methods do not say, and whether the claims file reads the paper
     correctly here is asked of a reader in questions/001025.yaml.
   deviations:
@@ -83,10 +85,13 @@ outcomes:
   - The pixel size is not in the dataset. 0.65 um is used, from the ORCA-Flash4.0 camera and 10x
     objective the files name, assuming no binning. The dark footprint of each needle has a median
     radius of 0.650 mm (large array) and 0.718 mm (small array) at this scale, against the 0.75 mm
-    radius of the 1.5 mm needles (Section 2.3), which is consistent with it. The round-1 variant at
-    which the large diagonal is 8.4 mm (0.591 um) is dropped, since it puts the needle edge inside
-    the paper's ROI span on both arrays.
-  - At the camera scale the paper's ROI spans (Section 2.4) end 0.13 mm (small array) and 0.22 mm
+    radius of the 1.5 mm needles (Section 2.3). The footprints rule out the round-1 variant at which
+    the large diagonal is 8.4 mm (0.591 um), which puts the needle edge inside the paper's ROI span
+    on both arrays and is dropped, but they do not confirm the camera scale; they imply 0.679 um
+    (small array) and 0.750 um (large array), at which the large diagonal is 10.65 mm, further from
+    the paper's 8.4 mm than the 9.23 mm of the camera scale. The camera scale is kept for the main
+    reading and the footprint scale is run as a variant; it does not change this claim's result.
+  - At the camera scale the paper's ROI spans (Section 2.4) end 0.12 mm (small array) and 0.22 mm
     (large array) from the needle edge, inside the paper's exclusion zone of 5% of the diagonal
     (0.25 and 0.46 mm). The spans are kept as the paper states them; a variant drops the end ROIs
     inside the zone.
@@ -105,13 +110,18 @@ outcomes:
     2.4 kV (108.6%) against 4.8 kV (136.9%), p = 0.0037; no half-way pair differs (smallest p =
     0.12). The pair stays significant whichever 2.4 kV dish is left out (p = 0.0012 to 0.0116). The
     readings disagree, 10 of 36 (18 layouts by 2 normalisations) give no significant pair and 26
-    give one to five. With 20 uncorrected tests and no effect, at least one p below 0.05 is expected
-    with probability 0.64, so this is weak evidence against the absence; the normalised centre
-    means lie between 108.6% and 136.9% across the five voltages. With the footprint background
+    give one to five. With no effect, the chance of at least one p below 0.05 among the 20
+    uncorrected tests would be 0.64 if they were independent; they share groups and dishes, and a
+    simulation of this design gives 0.47 with the two positions correlated as in the data (r =
+    0.64). p = 0.0037 would not pass a Bonferroni threshold for 20 tests (0.0025), which the
+    criterion does not apply. The normalised centre means lie between 108.6% and 136.9% across the
+    five voltages. With the footprint background
     subtracted (a variant the claims file excludes) the main reading finds no pair (smallest p =
     0.18), and 30 of 36 readings find none; whether a background should be removed is asked of a
     reader (questions/001025.yaml). With the end ROIs inside the exclusion zone dropped, 4 of 20
-    pairs differ without background and 2 of 20 with it. Over all ROIs of the folded profile, 23 of
+    pairs differ without background and 2 of 20 with it. At the pixel size implied by the needle
+    footprints the same pair differs without background (p = 0.0279) and no pair with it (smallest
+    p = 0.14). Over all ROIs of the folded profile, 23 of
     220 tests are below 0.05.
   deviations:
   - Assumed the main reading of the ROI layout (92 ROIs over both diagonals, both diagonals
@@ -137,13 +147,16 @@ outcomes:
     gives p = 0.0705 (25 of 36 readings find none), so the outcome rests on the main reading and a
     two-dish group; with 2 dishes against 3 a non-significant reading could not show the absence
     either. With the end ROIs inside the exclusion zone dropped the centre differs more clearly (p =
-    0.0173; 0.0089 with background subtracted). The a.u. values rise from 4.8 to 6.4 kV at all
+    0.0173; 0.0089 with background subtracted). At the pixel size implied by the needle footprints
+    the difference is gone (249.5% against 226.6%, p = 0.57; p = 0.25 with background subtracted),
+    so the outcome also rests on the camera scale. The a.u. values rise from 4.8 to 6.4 kV at all
     three positions (ratios 3.53 at the periphery, 1.89 half-way, 2.00 at the centre).
   deviations:
   - Only two voltages, one with 2 dishes, where the paper shows Figure 7C and 7D with n = 3 and
     voltages marked in the figure; the others are not in the dandiset.
   - Assumed the main reading of the ROI layout, as for fig7b-targeting-independent-of-amplitude;
-    the outcome rests on it.
+    the outcome rests on it, and on the camera pixel size (the footprint scale, a variant, finds no
+    difference).
   - Electrode detection, pixel size, exclusion zone, ROI width and packet as for
     fig7a-amplitude-scales-uptake.
 - claim: discussion-independent-of-array-size
@@ -153,12 +166,13 @@ outcomes:
   output: claim:discussion-independent-of-array-size
   notes: The criterion requires fig7b-targeting-independent-of-amplitude and
     fig7cd-holds-for-large-array to be reproduced; neither is, under the main reading. The folded
-    normalised profiles reach a centre of 109.5% to 140.1% on the small array (1Px4) and 145.0% to
-    212.3% on the large one (10Px4); the two arrays received different packet numbers, so array
+    normalised profiles reach, at their first position (the mean of the two grid ROIs beside the
+    centre, each dish normalised to its end ROIs), 109.5% to 140.1% on the small array (1Px4) and
+    145.0% to 212.3% on the large one (10Px4); the two arrays received different packet numbers, so array
     size is not isolated.
   deviations:
-  - Rests on the main reading assumed for the two claims it depends on, and on the claims file's
-    reading that no background is subtracted.
+  - Rests on the main reading assumed for the two claims it depends on, on the camera pixel size
+    (fig7cd), and on the claims file's reading that no background is subtracted.
 - claim: fig8a-packets-differ-near-electrodes
   outcome: blocked
   blocked_by: other
@@ -180,8 +194,10 @@ outcomes:
   notes: No dish of this dandiset was treated with the array above the monolayer. The Figure 9
     images appear to be in dandiset 001028 ("CANCAN focusing of electroporation in 3D"), which
     cites the same paper. The 6.4 kV 10Px4 large-array dishes here match the 0 mm condition, but
-    the gaps are missing. Their profile is printed in the notebook (centre 126.0% of the
-    periphery); the text gives no a.u. for the 0 mm group to compare it with.
+    the gaps are missing. Their profile is printed in the notebook. The centre ROI of the main
+    reading is 126.0% of the end ROIs; the first position of the folded profile (the mean of the two
+    grid ROIs beside the centre), the value used for discussion-independent-of-array-size, is
+    145.0%. The text gives no a.u. for the 0 mm group to compare them with.
 - claim: fig9c-restricted-to-center
   outcome: blocked
   blocked_by: other
@@ -189,7 +205,8 @@ outcomes:
 findings:
 - kind: data_missing
   statement: The dandiset holds only the 21 monolayer images of Figure 7. The images of Figures 5,
-    6, 8 and 9 are in four other dandisets that cite the same paper (000686, 000875, 001027 and
+    6, 8 and 9 appear, from their titles and descriptions, to be in four other dandisets that cite
+    the same paper (000686, 000875, 001027 and
     001028), which the dandiset does not mention, and the single-cell time-lapse data of Figure 4
     are in no dandiset that cites the paper.
 - kind: metadata_insufficient
@@ -221,9 +238,10 @@ findings:
   statement: Question for the paper's authors. How were the 92 and 224 ROIs laid out (per diagonal
     or over both, their width, which diagonals for Figure 7), what is the pixel size of the stitched
     images, and how is the 8.4 mm diagonal of the large array measured? At the 0.65 um pixel of the
-    named camera and objective, which the needle footprints support, the electrode centres of the
-    large array are 9.2 mm apart on the diagonal, and the paper's ROI spans end inside its own 5%
-    exclusion zone. Under the readings of the layout, the voltage comparisons of Figure 7B and 7D
+    named camera and objective the electrode centres of the large array are 9.2 mm apart on the
+    diagonal, and the paper's ROI spans end inside its own 5% exclusion zone; the needle footprints
+    imply a larger pixel still (0.75 um, a 10.65 mm diagonal), at which the comparison of Figure 7D
+    finds no difference. Under the readings of the layout, the voltage comparisons of Figure 7B and 7D
     find a significant pair in 26 of 36 and 9 of 36 readings, so the outcomes of fig7b and fig7cd
     rest on the reading assumed.
 - kind: metadata_insufficient
@@ -231,7 +249,8 @@ findings:
     packet (Packets 1, 2 and 3 all use that decrement); Packet 2 is inferred from the dandiset's
     title and Figure 7.
 - kind: other
-  statement: The 4.0 kV 1Px4 dishes, the Packet 2 condition of Figure 8, read 614.9 a.u. at the
+  statement: The 4.0 kV 1Px4 dishes, the Packet 2 condition of Figure 8 if Figure 8 used the small
+    array (its legend does not say), read 614.9 a.u. at the
     periphery and 718.8 a.u. in the centre, against about 120 and 215 to 235 a.u. in Section 3.4, so
     the paper's a.u. do not appear to be the raw image values, or these are not the Figure 8
     dishes. The paper does not say how its a.u. relate to the images.
@@ -357,4 +376,139 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Blocked (data_missing). There are no gap dishes.
+    response: As fig9-gap-boosts-targeting.
+- date: 2026-11-02
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the author-revise-1 run (commit f8df3d1f3), with its
+    conclusions and summary, the helper module, the claims file and the attempt record, with the
+    paper under paper/.
+  results:
+  - claim: fig4-unipolar-strongest
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Cell 5 shows only 21 monolayer images.
+    response: No change.
+  - claim: fig4-bipolar-cancellation
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Cell 5 shows only 21 monolayer images.
+    response: No change.
+  - claim: fig5a-center-enhanced-without-rotation
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked; cell 5 shows only 1Px4 and 10Px4 dishes, all Packet 2, with no
+      gaps. Could not check the switch from data_missing to other, since docs/protocol.md was not
+      provided, nor whether dandisets 000686, 000875, 001027 and 001028 hold the figures, since no
+      notebook cell queries them. The README says Figures 5, 6, 8 and 9 "are in" those dandisets,
+      which no output supports.
+    response: Outcome kept. Added a cell that reads the four dandisets' titles, descriptions, asset
+      counts and related resources from the archive; all four cite the paper, and their titles and
+      descriptions match Figures 5, 6, 8 and 9 (their files are not opened). The README, the
+      notebook header and summary and the data_missing finding now say the images appear to be
+      there, from those titles and descriptions. blocked_by other follows author step 4 of the
+      protocol, which reserves data_missing for data public nowhere.
+  - claim: fig5bc-rotation-focuses-center
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation.
+    response: As fig5a-center-enhanced-without-rotation.
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation.
+    response: As fig5a-center-enhanced-without-rotation.
+  - claim: fig6b-normalized-center-by-packets
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation.
+    response: As fig5a-center-enhanced-without-rotation.
+  - claim: fig7a-amplitude-scales-uptake
+    agrees: true
+    outcome: not_reproduced
+    reason: All 18 readings give ratios of 5.11 to 7.59 against about 15.5 to 16.8, and it is right
+      not to mark it assumed, since the no-background condition comes from the criterion. But the
+      outcome depends entirely on that condition, which may misread the paper (Section 2.4 says
+      nothing, Section 2.2 corrects for background, F-F0); with background subtracted 2 of 18
+      readings, and the exclusion-zone variant (14.88, 17.10, 15.16), meet the criterion. The
+      deviation and cell 6 call the footprints consistent with the 0.65 um scale, but the large
+      array's median radius of 0.650 mm implies 0.750 um per pixel and the small array's 0.679 um;
+      the footprints rule out the 8.4 mm scale but do not confirm 0.65 um on the large array, and
+      point further from the paper's 8.4 mm diagonal. LOESS over the whole diagonal (round-1 B7) is
+      not addressed and affects no conclusion.
+    response: Outcome kept, as the criterion fixes no background; the question stays with a reader
+      in questions/001025.yaml. The footprint wording is corrected in the data check, the readings
+      cell, the summary, the helper docstring, this deviation and the methods_unavailable finding.
+      Added the footprint-implied scale (0.679 um small, 0.750 um large) as a variant of the main
+      reading for fig7a, fig7b and fig7cd, with and without background and with the exclusion zone;
+      for fig7a it gives 5.71, 5.45, 7.32 without background and 14.17, 14.82, 15.39 with it, so the
+      outcome is unchanged. The LOESS readings are kept as they are; the span 0.75 is the claims
+      file's, the docstring says the fit flattens a narrow centre peak, and no outcome rests on them.
+  - claim: fig7b-targeting-independent-of-amplitude
+    agrees: true
+    outcome: not_reproduced
+    reason: One of 20 pairs differs, p = 0.0037, under every leave-one-out; the main reading is
+      stated and reasonable, and the record says 10 of 36 readings find no pair. The 0.64 probability
+      is printed as the chance with 20 independent tests, but the tests share groups, so the true
+      chance is lower and the "weak evidence" wording overstates how weak the evidence is; p =
+      0.0037 would not survive a correction (0.05/20 = 0.0025), though the criterion applies none.
+      With background subtracted no pair differs under the main reading, and 2 of 20 with the
+      exclusion-zone ROIs also dropped.
+    response: Outcome kept. Added a simulation of the design (the dataset's group sizes, seed 2023)
+      that gives 0.47 with the two positions correlated as in the data (0.50 independent, 0.29
+      identical) against 0.64 for independent tests; the "weak evidence" wording is removed, and the
+      notes and conclusion give the Bonferroni threshold. At the footprint-implied scale the same
+      pair differs without background (p = 0.0279) and none with it.
+  - claim: fig7cd-holds-for-large-array
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, but the case is weak, p = 0.0494 with 2 dishes against 3 and 27 of 36 readings
+      finding no difference; the per-dish separation and the exclusion-zone variant (p = 0.0173)
+      support it, and the assumption is stated and reasonable. It flips under the background variant
+      (p = 0.0705). Whether these are the paper's Figure 7 dishes remains open (4 dishes at 2.4 kV,
+      2 at 4.8 kV on the large array).
+    response: Outcome kept. The new footprint-scale variant finds no difference (249.5% against
+      226.6%, p = 0.57), so the notes and the deviation now say the outcome also rests on the camera
+      pixel size. The camera scale is kept for the main reading because it rests on the hardware the
+      files name and gives a large diagonal (9.23 mm) closer to the paper's 8.4 mm than the
+      footprint scale (10.65 mm); no change of outcome is proposed. Which dishes the paper used is
+      already recorded as a selection_undocumented finding.
+  - claim: discussion-independent-of-array-size
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its two dependencies, and the deviation correctly names both the main
+      reading and the no-background reading. The fig9 notes give the 6.4 kV centre as 126.0% and
+      the discussion notes as 145.0% for the same group; both are in the outputs but are different
+      centre definitions, and the record does not say which is which.
+    response: Outcome kept. The notes here and for fig9-gap-boosts-targeting, and the conclusion of
+      the Packet 2 section, now say that 145.0% is the first position of the folded profile (the
+      mean of the two grid ROIs beside the centre, centre reading b) and 126.0% the centre ROI of
+      the main reading; the notebook prints both. The deviation adds the camera pixel size.
+  - claim: fig8a-packets-differ-near-electrodes
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation. The summary calls the 4.0 kV 1Px4 dishes "the
+      Packet 2 condition of Fig. 8", dropping the qualifier of cell 27 (if Fig. 8 used the small
+      array, which its legend does not say); the Packet 2 values at 4.0 kV are far off the paper's
+      (615 and 719 against about 120 and 215 to 235 a.u.).
+    response: Outcome kept. The qualifier is restored in the summary, the notebook header and the
+      finding of kind other.
+  - claim: fig8b-packet2-best-targeting
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation.
+    response: As fig8a-packets-differ-near-electrodes.
+  - claim: fig9-gap-boosts-targeting
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation. Cell 29 gives "a trough near 45%" read from
+      the profile sampled at tenths, where cell 25 gives the minimum of the same profile as 40.9%.
+    response: Outcome kept. The Packet 2 section now prints the minimum of the folded profile (40.9%
+      at 0.76 of the span) and its conclusion quotes it; the two centre definitions are named, as
+      for discussion-independent-of-array-size.
+  - claim: fig9c-restricted-to-center
+    agrees: true
+    outcome: blocked
+    reason: As fig5a-center-enhanced-without-rotation.
     response: As fig9-gap-boosts-targeting.

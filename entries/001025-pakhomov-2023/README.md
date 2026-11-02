@@ -8,7 +8,9 @@ The dandiset holds one stitched YO-PRO-1 image per dish for the experiments of F
 notebook `reproduce_pakhomov_2023.ipynb` streams the images, finds the four electrodes in each,
 places the paper's ROIs along the diagonals (helper `cancan.py`), and tests the Figure 7 claims
 under every reading of the ROI layout the paper allows. The other figures' data are not in this
-dandiset: Figures 5, 6, 8 and 9 are in dandisets 000686, 000875, 001027 and 001028, and the
+dandiset: those of Figures 5, 6, 8 and 9 appear to be in dandisets 000686, 000875, 001027 and
+001028, judging from their titles and descriptions (printed in the notebook; their files are not
+opened), and the
 single-cell data of Figure 4 were not found.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
