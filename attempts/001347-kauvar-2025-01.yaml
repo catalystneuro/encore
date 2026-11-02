@@ -1,0 +1,1390 @@
+schema_version: 2
+id: 001347-kauvar-2025-01
+dataset:
+  archive: dandi
+  id: '001347'
+  version: 0.250528.0702
+  doi: 10.48324/dandi.001347/0.250528.0702
+paper: doi:10.1126/science.adt3971
+date: '2026-11-02'
+entry: 001347-kauvar-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41394955120
+inputs:
+- what: >-
+    The paper's code record, fetched at run time and md5-checked, used for: the experiment-id lists, trial
+    counts and skipped puffs of the mouse scripts (mouse_eyepuff/scripts/fig1_*.py), which name the conditions
+    of the sub-mouse sessions; the saline and ketamine labels and CADSS constants of the non-iEEG cohort
+    (human_ieeg/scripts/analyze_airpuff_p50.py); the iEEG CADSS scores (data/cadss_across_pts.csv); the
+    per-channel Yeo7 and region labels (anat/pts_ch_labels.pkl); and the bad-channel lists (ketman/analyze/utils.py,
+    bad_ch).
+  source: >-
+    doi:10.5281/zenodo.14920570, kauvar-richman-liu-2025_zenodo.zip (md5 bd1fb567121aaf0291337783df57bcfc),
+    a git repository at commit b873ca5
+- what: >-
+    Mouse Neuropixels recordings, 13 NWB files (units, stimulus presentations, ketamine injection time),
+    streamed; the data of the data-elsewhere claims and the mouse side of figs37a.
+  source: doi:10.48324/dandi.001326/0.250528.1957
+- what: >-
+    The mouse analysis code analysis.py (md5 6cc7aa5059737c3bd753aad1f116019d), read for method details;
+    not run.
+  source: doi:10.5281/zenodo.14876694
+outcomes:
+- claim: fig1e-human-late-eye-closure-ketamine
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:fig1e-human-late-eye-closure-ketamine
+  measured:
+  - 0.706
+  - 0.426
+  notes: >-
+    Trials 3 to 40, ratio of trial means (Open A a, Open B a) gives saline 0.706 (s.e.m. 0.084) and ketamine
+    0.426 (0.121), lower in 4 of 4 participants, paired t = 3.703, p = 0.0342, the values of Table S3.
+    The three other readings of Open A and Open B give 0.703 to 0.705 and 0.424 to 0.426, p = 0.030 to
+    0.035.
+  deviations:
+  - >-
+    The eye-closure traces are taken as deposited (already normalised to the open eye); the eye sizes
+    behind them are not in the files, so the normalisation cannot be repeated.
+  - >-
+    Saline is the pre_trials_data series by the code's label (p50-condition-labels-link).
+- claim: figs1b-human-early-eye-closure-unchanged
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:figs1b-human-early-eye-closure-unchanged
+  measured:
+  - 0.839
+  - 0.777
+  notes: >-
+    Early eye closure 0.839 (s.e.m. 0.014) on saline and 0.777 (0.042) on ketamine, difference 0.062,
+    Cohen dz 0.81; paired t = 1.622, p = 0.2032, not significant, as in Table S3. Trials 2 to 40 give
+    t = 1.617, p = 0.2042.
+  deviations:
+  - As fig1e.
+- claim: figs1c-human-late-eye-closure-decrease
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:figs1c-human-late-eye-closure-decrease
+  measured:
+  - 0.591
+  - 0.343
+  notes: >-
+    Late eye closure 0.591 (s.e.m. 0.066) on saline and 0.343 (0.103) on ketamine, paired t = 3.653, p
+    = 0.0354, lower in 4 of 4; trials 2 to 40 give t = 3.813, p = 0.0317.
+  deviations:
+  - As fig1e.
+- claim: figs1d-human-cadss-saline-ketamine
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:figs1d-human-cadss-saline-ketamine
+  measured:
+  - 0.5
+  - 9.75
+  notes: >-
+    CADSS 0.50 (s.e.m. 0.29) on saline and 9.75 (1.25) on ketamine, paired t = 7.034 (ketamine higher),
+    p = 0.0059. The scores are the code's constants (analyze_airpuff_p50.py), read from the code record;
+    nothing in the dataset bears on them.
+  deviations:
+  - >-
+    CADSS scores from the code record, as the criterion allows; the dataset holds none.
+- claim: fig1f-human-subjective-reports
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The verbal reports are not in the dataset. The four sub-h files hold only the 40 saline and 40 ketamine
+    eye-closure trials and their time axis, and no other asset of 0.250528.0702 holds text from the non-iEEG
+    cohort; the code record holds none either.
+- claim: fig2c-ieeg-cohort-selective-affective-decrease
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:fig2c-ieeg-cohort-selective-affective-decrease
+  notes: >-
+    Means over the 7 participants of each participant's median trace. Late eye closure 0.541 preinfusion,
+    0.306 ketamine, 0.518 postinfusion, lower on ketamine in 7 of 7 against both (paired t = 2.908, p
+    = 0.027 and 3.447, p = 0.014). Early eye closure 0.877, 0.850, 0.875; ketamine against preinfusion
+    paired t = 1.318, p = 0.236. With the windows shifted 0.05 s later (the code's plotting origin) late
+    0.523, 0.284, 0.503 and early p = 0.210.
+  deviations:
+  - >-
+    The paper reports no test; the criterion's paired t-test of early eye closure is applied to the per-participant
+    window means of the median traces.
+- claim: figs8a-ieeg-inclusion-per-participant
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:figs8a-ieeg-inclusion-per-participant
+  measured:
+  - 0.94
+  - 0.832
+  - 0.897
+  - 0.532
+  - 0.35
+  - 0.753
+  - 0.848
+  - 0.211
+  - 0.533
+  - 0.604
+  - 0.452
+  - 0.668
+  - 0.542
+  - 0.353
+  - 0.554
+  - 0.312
+  - 0.153
+  - 0.359
+  - 0.547
+  - 0.402
+  - 0.505
+  notes: >-
+    All 7 participants show a significant decrease from preinfusion to ketamine and a significant recovery
+    (14 of 14 corrected tests p < 0.05 in the stated direction), with the trial counts of Table S3 (24,
+    39, 30, 31, 12, 39, 39) and 21 of 21 means within tolerance. Thirteen of the 14 t values equal Table
+    S3's; SD245's preinfusion against ketamine test gives t = 5.288 where the table has 5.2553.
+  deviations:
+  - >-
+    The per-trial values are recomputed from the deposited trial windows; they equal the stored per-trial
+    values to rounding. The file session called baseline is the preinfusion session for SD168, SD172 and
+    SD245, as the code renames it (airpuff_utils.load_airpuff_behavior).
+- claim: figs8b-ieeg-excluded-participants
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:figs8b-ieeg-excluded-participants
+  notes: >-
+    None of SD163, SD170, SD178, SD184, SD207, SD215 and SD242 meets both criteria; over all 14 participants
+    the ones that do are the 7 of figs8a. The statistics Table S3 lists for the excluded participants
+    are matched (for example SD207 postinfusion against ketamine |t| = 2.167, corrected p = 0.0555; SD242
+    |t| = 0.217, p = 0.8294).
+  deviations:
+  - As figs8a.
+- claim: fig2d-ieeg-cadss-reversible
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:fig2d-ieeg-cadss-reversible
+  measured:
+  - 0.86
+  - 22.43
+  - 0.86
+  notes: >-
+    CADSS 0.86 before, 22.43 during and 0.86 after ketamine (7 participants), paired t = 4.807 and 4.513,
+    both corrected p = 0.0040. Without SD185's retrospective rating the infusion mean is 21.00. The scores
+    are the code record's; nothing in the dataset bears on them.
+  deviations:
+  - >-
+    CADSS scores from the code record (data/cadss_across_pts.csv), as the criterion allows.
+- claim: figs14g-cadss-correlates-with-affective-decrease
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:figs14g-cadss-correlates-with-affective-decrease
+  measured: 0.744
+  notes: >-
+    Ten participants remain after excluding SD170, SD184, SD211 and SD215 (preinfusion median below 0.5).
+    Reading (a), the code's eye-closure change, gives Spearman rho = 0.744, p = 0.0136; reading (b), ketamine
+    minus preinfusion, rho = 0.561, p = 0.0916, not significant. With all 14 participants rho = 0.355,
+    p = 0.213.
+  deviations:
+  - >-
+    CADSS scores from the code record. The claim holds under reading (a) of the criterion only.
+- claim: figs12-erp-not-explained-by-eyelid-closure
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 03_ieeg_spectral.ipynb
+  output: sanity
+  notes: >-
+    The behaviour files hold continuous eye-closure traces, puff on/off events, per-trial closure and
+    trial lists, but no spontaneous blink onsets (no field mentions blinks in any behaviour file). The
+    onsets exist only as a hand-made list in the code record (for_reference/analyze_airpuff_ieeg_natural_blinks.py
+    lines 42 to 79; 52 in the baseline sessions, matching Table S3). The claims file says to block in
+    this case.
+- claim: figs13-auditory-control-no-response
+  outcome: reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:figs13-auditory-control-no-response
+  notes: >-
+    Control-session trial means of the 275 channels of the 5 participants with a control (SD181, SD185,
+    SD186, SD211, SD245; 151 control trials) projected on the fig2g factors, channels excluded per factor
+    as in fig2i. Mean control loading is below the preinfusion mean of the same channels for 6 of 6 factors
+    (ratios 0.33 to 0.70) and for 30 of 30 participant and factor pairs.
+  deviations:
+  - >-
+    Control means read from sub-H_ses-sgramPerChannelPerTrial.nwb (all control trials, code X_ctrl); the
+    dataset has no deposited control loadings to compare with.
+- claim: figs15-ketamine-spectral-changes-frontal
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 03_ieeg_spectral.ipynb
+  output: sanity
+  notes: >-
+    Needs a 25-min pre-ketamine baseline and the 30 to 40 min window after infusion start. The dataset's
+    30 LFP files (7 participants) are each 20.0 min at 200 Hz, 10 min before and 10 min after the first
+    puff of a puff session (Baseline, Preinfusion, Infusion, Postinfusion, Control), with session_start_time
+    a placeholder (2000-01-01) and no infusion start time, epochs or annotations. Neither window can be
+    placed, and a 25-min baseline does not fit in a 20-min file. The code record has no fig. S15 script.
+- claim: fig2g-nmf-six-factors
+  outcome: reproduced
+  assumed: true
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:fig2g-nmf-six-factors
+  measured:
+  - 0.466
+  notes: >-
+    458 channels from 7 participants (SD168 86, SD172 97, SD181 58, SD185 43, SD186 47, SD211 44, SD245
+    83) in the 21 regions. Refitting NMF (3 positive, 3 negative components) on the mean of the preinfusion
+    and postinfusion training halves reproduces the deposited factors to within 3e-13 and the deposited
+    loadings exactly, so the dataset's per-channel file is the input the paper factored. Held-out explained
+    variance with six components is 0.466 under the code's reading (training reconstruction against test
+    data, decode_utils.nmf_k_determination with do_refit_W_for_test = False) and 0.535 with loadings refitted
+    on the test data. The test curve gains 0.081 (2 to 4 components) and 0.056 (4 to 6), then 0.014 or
+    less per step. Elbow at 6 by the largest fall in gain (both readings), at 8 by the largest distance
+    from the chord over 2 to 28 components, and at 6 by the chord rule when the range ends at 16, 20 or
+    24 components. The criterion holds under the largest-fall rule, which is assumed. Per participant
+    the test explained variance is 0.292 (SD186) to 0.654 (SD211). Both Open G readings give the code's
+    numbering [0, 2, 4, 5, 1, 3]. 12 of the 28 fits stop at scikit-learn's default 200 iterations, as
+    in the paper's code.
+  deviations:
+  - >-
+    The fit starts from the dataset's per-channel train and test means (sub-H_ses-sgramPerChannel.nwb),
+    not from the LFP; these were shown to equal the means of odd and even trials of the per-trial file
+    (code split 1 and 0) for one channel per participant and session.
+  - >-
+    Held-out explained variance follows decode_utils.nmf_k_determination (lines 136 to 291), which compares
+    the training reconstruction with the test data; the refit reading is shown as a variant.
+  - >-
+    Assumed elbow rule: the largest fall in the gain of test explained variance between successive steps.
+    The paper and code give none (the code hard-codes k_elbow = 3); the chord-distance rule gives 8 over
+    the full range of fig. S17A.
+- claim: fig2h-factor-network-loading
+  outcome: partially_reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:fig2h-factor-network-loading
+  notes: >-
+    Row-normalised preinfusion loadings. Factors 0 to 2 carry 0.671 of dorsal attention (8 channels),
+    0.651 of ventral attention (57) and 0.662 of somatomotor (37); factors 3 to 5 carry 0.536 of default
+    (72), 0.495 of limbic (28) and 0.463 of frontoparietal (19). Four of six rows meet the criterion (partial
+    range). The refit loadings are identical to the deposited ones and the matrix to the deposited Fig.
+    2H matrix, so the two failing rows are in the paper's own numbers. Both Open G readings give the same
+    numbering. By participant the share of factors 0 to 2 in limbic runs 0.27 to 0.73.
+  deviations:
+  - Channel Yeo7 labels from the code record (link-ieeg-yeo-labels).
+- claim: fig2i-ketamine-reduces-factors-1-2
+  outcome: reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:fig2i-ketamine-reduces-factors-1-2
+  measured:
+  - 0.508
+  - 0.318
+  - 0.379
+  - 0.354
+  - 0.214
+  - 0.302
+  notes: >-
+    Infusion against the mean of pre and post (BH over six): factor 0 -0.049 (p 0.121, 312 channels),
+    factor 1 -0.125 (2.56e-05, 260), factor 2 -0.115 (5.51e-08, 185), factor 3 -0.041 (0.0159, 158, not
+    converged), factor 4 0.013 (0.406, 370), factor 5 0.013 (0.341, 378). Post hoc (BH over 12), infusion
+    minus postinfusion -0.061 (0.0464) for factor 1 and -0.089 (5.16e-05) for factor 2, so both recover.
+    All six means within tolerance. Every coefficient, p and channel count equals Table S3; Table S3 reports
+    post-hoc coefficients with the opposite sign (comparison minus infusion) and gives 5 participants
+    for factor 3 and 6 for factor 4, where all 7 participants have kept channels for every factor here.
+    Factor 1 falls from pre to infusion in 7 of 7 participants, factor 2 in 6 of 7 (SD181 rises 0.199
+    to 0.294). Post-hoc tests are significant for factor 0 (pre, 0.036), factor 4 (pre 0.000299, post
+    0.0464) and factor 5 (pre 0.00985), as in Table S3.
+  deviations:
+  - >-
+    The loading threshold is applied to the loading of the averaged pre/postinfusion test spectrogram
+    (code W_prepost, script lines 507 to 528), which the claims file words as the mean of the pre and
+    post loadings.
+- claim: fig2j-factor-change-by-network
+  outcome: reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:fig2j-factor-change-by-network
+  notes: >-
+    Reading (a) holds for both factors. Factor 1 change limbic -0.184, dorsal attention -0.225, ventral
+    attention -0.266; factor 2 somatomotor -0.108, dorsal attention -0.190, ventral attention -0.157.
+    Reading (b) holds for factor 2 and not for factor 1 (three most negative default -0.269, ventral attention,
+    dorsal attention; limbic fourth); factor 1 falls in all six networks (-0.083 to -0.269). Dorsal attention
+    rests on 7 channels from 3 participants (factor 1) and 5 from 2 (factor 2). The matrix equals the
+    deposited Fig. 2J matrix.
+  deviations:
+  - Channel Yeo7 labels from the code record (link-ieeg-yeo-labels).
+- claim: fig3b-cluster-test-yeo-networks
+  outcome: reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:fig3b-cluster-test-yeo-networks
+  notes: >-
+    Trial counts as in the criterion (178, 214, 153, 214, 214, 214). Limbic, ventral attention and somatomotor
+    have significant clusters (lowest p 0.00195, the 1/512 floor; BH 0.0039); frontoparietal 0.027, default
+    0.045, dorsal attention 0.10, none below 0.01. t maps and contours equal the deposited ketChangePermutationClusterTest
+    maps exactly in all six networks. Cluster-forming threshold 0.05 adds dorsal attention; 0.001 drops
+    somatomotor. Inside the clusters the limbic change is negative and the somatomotor change positive
+    in each of the 7 participants.
+  deviations:
+  - >-
+    Uses the dataset's per-network per-trial spectrograms as deposited; their channel selection (both
+    contacts in the same region) cannot be checked from the dataset.
+- claim: fig3c-cluster-test-regions
+  outcome: reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:fig3c-cluster-test-regions
+  notes: >-
+    Trial counts equal the criterion's for all 21 regions. Reading (a), BH across 21 regions: INS, ACC,
+    MCC, ORB, PMC, SMG, MOT, HIPP, BG, THAL ANT and THAL POS significant (lowest p 0.00195, corrected
+    0.0037); IFG, MFG, SS, PHG, STG, STS, MTG, ITG, TP, AMY not (10 of 10; 10 of 11 counting THAL POS
+    among the others). The significant set is the same with BH across all 35 regions plus PRECG (one participant),
+    which equals the set of regions with a deposited contour; t maps equal the deposited ones in all 33
+    deposited regions. ACC, MCC and MOT rest on 2 participants. Threshold 0.001 keeps all listed but THAL
+    POS; 0.05 adds MTG and STG. Reading (b) not run, as (a) holds.
+  deviations:
+  - >-
+    Uses the dataset's per-region per-trial spectrograms as deposited. The paper's correction family appears
+    to be every region in its file (33 deposited, 35 in the per-region file); the criterion's 21 is used,
+    with 35 shown.
+- claim: figs27-slow-oscillations-with-strong-dissociation
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 03_ieeg_spectral.ipynb
+  output: sanity
+  notes: >-
+    Needs preinfusion and peak-ketamine windows free of sleep and ictal activity and each participant's
+    CADSS score. The 20-min puff LFP files carry no infusion timing and no sleep or seizure annotations,
+    so neither the paper's windows nor the criterion's fallback (30 to 40 min after infusion start) can
+    be placed; no behaviour file holds CADSS. The code for fig. S27 is not in the code record. Also needs
+    FOOOF, not run.
+- claim: fig6c-human-persistent-activity-reduced
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:fig6c-human-persistent-activity-reduced
+  measured:
+  - 1.363
+  - 0.411
+  - 0.724
+  notes: >-
+    Main reading (Open C b, the code's z-scoring; Open D a, white matter excluded; the code's bad-channel
+    list; per-trial 2-s baseline; SD245 Baseline file as in the code) gives 1.363, 0.411, 0.724, t = 5.876
+    (BH p = 0.002) preinfusion against ketamine and t = 3.172 (BH p = 0.019) postinfusion against ketamine,
+    the paper's 1.36, 0.41, 0.72, t = 5.887 and 3.171. Ketamine below preinfusion in 7 of 7 participants,
+    postinfusion above ketamine in 6 of 7. Of 32 combinations (Open C x Open D x bad list x trial baseline
+    x SD245 file) the tests hold in 27 and tests plus means in 15, all 15 under Open C b (8 of 8 with
+    the code's list, 7 of 8 with the dataset-only channel set; the exception has ketamine 0.482 against
+    an upper bound of 0.48). Under Open C a (Methods) the preinfusion mean is 1.616 to 1.661, outside
+    tolerance, in all 16 readings, and the postinfusion test holds in 11 of 16.
+  deviations:
+  - >-
+    Bad channels are not marked in the dataset; the code's list (ketman/analyze/utils.py, bad_ch, read
+    from the code record at run time) is used in the main reading, and every result is also shown with
+    only the dataset's out-of-brain and EXCLUDE labels removed.
+  - >-
+    Preinfusion session per the code (ketman/DATASETS.py airpuff_sessions with the rename of 'baseline'
+    to 'preinfusion' in load_and_organize_raw_traces and load_patients_erp), which for SD168, SD172 and
+    SD245 is the Baseline file of the day before; SD245's Preinfusion file is run as a variant.
+  - >-
+    Each trial's epoch is baseline-subtracted by its mean over the 2 s before the puff before the weights
+    and averages are computed (load_patients_erp, do_baseline_sub=True), a code detail not in the Methods;
+    shown with and without.
+  - >-
+    Bipolar pairs are formed between neighbouring contacts of each electrode group (shank).
+  - 60-Hz notch with Q = 20 (Methods) where the code uses Q = 30.
+- claim: fig6e-human-fast-activity-unchanged
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:fig6e-human-fast-activity-unchanged
+  measured:
+  - 4.12
+  - 4.006
+  - 3.866
+  assumed: true
+  notes: >-
+    Main reading as fig6c with the fast window gives 4.120, 4.006, 3.866, t = 0.433 (BH p = 0.680) preinfusion
+    against ketamine and t = -1.072 (BH p = 0.650) postinfusion against ketamine; the paper gives 4.12,
+    4.00, 3.86, t = 0.432, p = 0.681. Pre minus ketamine mean 0.114, Cohen dz 0.16, 95% CI of the difference
+    -0.529 to 0.756. Under Open C b both tests are non-significant in all 16 readings; with the dataset-only
+    channel set they are non-significant in all 16 readings of both Open C readings. Only with the code's
+    bad-channel list and the Methods z-scoring (Open C a) does postinfusion against ketamine reach BH
+    p = 0.029 to 0.039 (postinfusion higher), in 8 of 8 such readings. The preinfusion against ketamine
+    test is not significant in any of the 32 readings (smallest BH p 0.131). The postinfusion statistic
+    matches the fig. S37B beta row of Table S3 (t = 1.063, p = 0.657), not the Fig. 6E row (t = 0.576,
+    p = 0.585).
+  deviations:
+  - As fig6c.
+  - >-
+    Assumed Open C reading b (the code's z-scoring over -1.0 to 1.5 s and the 0.05-s shifted summary axis),
+    because the readings differ with the code's bad-channel list and this one reproduces the paper's values
+    to the third decimal.
+- claim: figs37c-persistent-reduction-across-bands
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs37c-persistent-reduction-across-bands
+  measured:
+  - 0.793
+  - 0.177
+  - 0.818
+  - 0.109
+  - 0.972
+  - 0.249
+  - 1.316
+  - 0.49
+  - 0.898
+  - 0.267
+  - 1.658
+  - 1.367
+  assumed: true
+  notes: >-
+    Main reading (Open C b, white matter excluded, code bad list) BH p preinfusion against ketamine delta
+    0.015 (t = 3.929), theta 0.035 (3.241), alpha 0.007 (4.621), low gamma 0.002 (6.233), high gamma 0.001
+    (6.863), broadband 0.078 (2.629); postinfusion against ketamine delta 0.047, beta 0.019; all twelve
+    means within tolerance and close to Table S3. Dataset-only channel set, same readings, 5 of 5 filtered
+    bands, broadband 0.086, delta recovery 0.048. With white matter kept (Open D b, which also reproduces
+    fig6c) 4 of 5 filtered bands hold (theta BH p = 0.084 to 0.102), the delta recovery fails (0.25) and
+    broadband is significant (0.008), a partial reproduction. Under Open C a broadband is significant
+    (0.002 to 0.017).
+  deviations:
+  - As fig6c; each band's weights are computed in that band.
+  - >-
+    Assumed Open D reading a (white matter excluded, the code's use_all_channels = False), since the two
+    readings that reproduce fig6c give different outcomes here.
+- claim: figs37b-fast-unchanged-across-bands
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs37b-fast-unchanged-across-bands
+  assumed: true
+  notes: >-
+    Under Open C b no test in any of the 7 bands gives BH p < 0.05 in any of the 4 Open D and bad-list
+    readings; main reading delta t = 0.817, BH p = 0.859 (Table S3 0.817, 0.859). Under Open C a the low-gamma
+    preinfusion against ketamine test is significant in all 4 readings (BH p = 0.020 to 0.049, ketamine
+    lower) and, with the code's list, the beta postinfusion test (0.034, 0.039).
+  deviations:
+  - As fig6c.
+  - Assumed Open C reading b, as for fig6e.
+- claim: figs37a-beta-most-similar-to-mouse
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs37a-beta-most-similar-to-mouse
+  assumed: true
+  notes: >-
+    Human mean preinfusion persistent projections (Open C b, white matter excluded, code bad list) averaged
+    into 10-ms bins from -0.5 to 1.5 s, against the mean of 13 mouse sessions of DANDI:001326 (mouse_npx.py;
+    first puff of each series, per-neuron variances). Pearson r beta 0.901, broadband 0.894, low gamma
+    0.769, high gamma 0.657, alpha 0.617, delta 0.580, theta 0.464. With the pooled-variance mouse weights
+    beta 0.889, broadband 0.871. Over 16 readings (Open C, Open D, mouse variance, first puff or all puffs)
+    beta is highest in 10, broadband in 4 (all-puff mouse average, or white matter kept with per-neuron
+    variances), low gamma in 2 (Methods z-scoring with pooled variance). The margin of beta over broadband
+    is small.
+  deviations:
+  - >-
+    Assumed the human readings that reproduce fig6c and the mouse first-puff projection (the mouse code's
+    limit=1); the readings give different outcomes.
+  - >-
+    All 13 sessions of DANDI:001326 used; the paper does not say which sessions enter fig. S37A. Mouse
+    processing (unit selection, weights, projection) is the entry's mouse_npx.py; its docstring gives
+    the sources.
+  - >-
+    The human trace is averaged into the mouse's 10-ms bins; the paper gives no time range or resampling.
+- claim: fig6g-human-timescale-shorter
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:fig6g-human-timescale-shorter
+  measured:
+  - 0.115
+  - 0.092
+  notes: >-
+    Open E reading b (first 10 min of the epoch, fit from lag one sample; code) with the fig6c weights
+    and SD245's Preinfusion file (the file the code's timescale path loads) gives 0.115 s and 0.092 s,
+    t = 4.78, p = 0.003 (paper 0.11, 0.09, t = 4.74, p = 0.0032), shorter in 7 of 7. Reading a (8 min
+    before the first puff, from lag 0) gives 0.117 and 0.089, p = 0.016, also within tolerance. The test
+    holds in 28 of 32 readings (fails only with white matter kept, the code's list and SD245's Baseline
+    file, p = 0.058 to 0.080). Every reading with SD245's Baseline file has the preinfusion mean outside
+    tolerance (0.122 to 0.143 s). Dataset-only channel set, reading b, 0.120 and 0.092, p = 0.0005.
+  deviations:
+  - As fig6c for the weights.
+  - >-
+    Timescale input is the beta power of the z-scored LFP (not z-scored again) projected on the weights,
+    without mean removal before the autocorrelation (get_cd_timescales, extract_timescale).
+- claim: fig6i-human-coupling-reduced
+  outcome: partially_reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:fig6i-human-coupling-reduced
+  measured:
+  - 0.96
+  notes: >-
+    Open F reading b (10 min before each eyepuff session, Table S3), persistent sites the top 10% of |beta
+    persistent weight|, white matter excluded, code bad list, 184 edges; ketamine/ preinfusion ratio 0.960
+    (s.e.m. 0.014), paired t = 2.834, p = 0.030, lower in 6 of 7; the z-scored change (Methods) -0.082,
+    p = 0.034. Across 8 readings (white matter, bad list, SD245 file) the test holds in all (p = 0.0013
+    to 0.040) and the ratio is 0.926 to 0.963, outside 0.979 +/- 0.0061 in every reading. Reading a (25-min
+    windows before and during the infusion) cannot be run, as the dataset holds only the 20-min eyepuff
+    epochs.
+  deviations:
+  - >-
+    PLV in non-overlapping 5-s windows (the Methods give 5-s sliding windows without a stride); no exclusion
+    of epileptic or sleep periods; the paper's code for Fig. 6I is not released.
+  - Persistent sites per cd_utils.cd_pctile (int(10% of channels) largest |weight|).
+- claim: figs38a-baseline-coupling-not-different
+  outcome: not_reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs38a-baseline-coupling-not-different
+  notes: >-
+    Preinfusion PLV (10 min before the session) on high against low edge identity, mixedlm with a random
+    intercept per participant, BH over 6 bands. White matter excluded, code bad list (368 edges) theta
+    0.0227 (BH p = 0.012), alpha 0.0140 (0.033), low gamma 0.0094 (0.042), high gamma 0.0161 (0.012);
+    dataset-only (462 edges) theta and alpha (0.029); white matter kept (792 and 896 edges) theta, alpha
+    and high gamma (BH p < 0.001 to 0.010). Theta and alpha differ in every reading. The paper reports
+    716 edges; none of the selections here gives that count.
+  deviations:
+  - >-
+    Edge sets formed here (top and bottom int(10%) of |weight| per participant and band, white matter
+    excluded per the Methods, and kept as a variant); the code reads them from a precomputed file (top_v_bot_cd_plv_edges.h5)
+    that is not in the record.
+  - Bands as the claims file (gamma 30 to 50 Hz); PLV windows as fig6i.
+- claim: figs38b-ketamine-coupling-loss-larger-at-persistent-sites
+  outcome: partially_reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs38b-ketamine-coupling-loss-larger-at-persistent-sites
+  measured:
+  - -0.045
+  notes: >-
+    Outcome the ketamine minus preinfusion PLV change z-scored by each edge's preinfusion window SD (the
+    figure's 'phase locking (z)' units). Beta holds in all 4 channel readings (coefficients -0.040 to
+    -0.063, BH p = 0.001 to 0.027), within -0.038 +/- 0.019 in 3 (main reading -0.045, CI -0.081 to -0.009,
+    BH p = 0.027); alpha holds in 3 of 4 (not in the main reading, BH p = 0.057); low gamma is never significant
+    (positive coefficients). With the raw change the beta coefficients are -0.0025 to -0.0044. The edge
+    counts differ from the paper's 716, as for figs38a. Bonferroni (the code's pval_bonf) gives the same
+    pattern.
+  deviations:
+  - As figs38a.
+- claim: figs38h-prepuff-coupling-predicts-persistence
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs38h-prepuff-coupling-predicts-persistence
+  assumed: true
+  notes: >-
+    Main reading (code bad list, PLV over all kept channels including white matter, Open C b, per-trial
+    2-s baseline, per-trial 0.5-0 s pre-puff subtraction), 214 trials of 7 participants, persistence on
+    pre-puff PLV 12.38 (CI 3.09 to 21.68, p = 0.009) preinfusion and -6.21 (p = 0.35) during ketamine;
+    affective eye closure 2.57 (p = 0.003) and 0.03 (p = 0.98). Paper 12.12 (p = 0.0006), -2.15 (0.36),
+    3.35 (0.0017), -0.065 (0.96). Eye closure meets its part in every reading. The persistence part is
+    met with the code's list in 8 of 8 readings with the pre-puff subtraction and 2 of 8 without; dataset-only,
+    4 of 8 and 2 of 8 (with the PLV excluding white matter, either the preinfusion coefficient has p >=
+    0.05 or the infusion one p < 0.05, for example p = 0.03). Without the subtraction the preinfusion
+    coefficient is mostly 2.5 to 6 with p >= 0.05.
+  deviations:
+  - >-
+    Assumed the per-trial pre-puff subtraction of the projection (Methods, Coding Dimension, 'baseline
+    subtracted, using a window from 0.5 to 0 s'), which the code comments out for single trials (compute_all_cd);
+    adopted because it gives the paper's coefficient.
+  - >-
+    Pre-puff PLV computed on the session-filtered beta phase over the 100 samples before each puff, averaged
+    over all edges between kept channels; the code's per-trial function (compute_plv_per_puff_tr) filters
+    each epoch and uses rolling windows whose parameters are not given.
+  - Affective eye closure is the per-trial 'affective' series of the behaviour file.
+- claim: figs35-persistent-dimension-distributed
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:figs35-persistent-dimension-distributed
+  measured:
+  - 0.446
+  - 0.35
+  notes: >-
+    Main reading (beta weights, white matter excluded, code bad list) 570 channels, 275 with a single
+    Yeo7 label; counts Default 87, Dorsal Attention 18, Frontoparietal 23, Limbic 34, Somatomotor 50,
+    Ventral Attention 63 (claims file 88, 18, 23, 34, 50, 63). Persistent, no network BH p < 0.05 (smallest
+    0.684, frontoparietal, median 0.350); fast, somatomotor median 0.446 above every shuffle (BH p = 0),
+    frontoparietal under-represented (BH p = 0.030). Dataset-only channel set, persistent smallest BH
+    p 0.516, fast somatomotor 0.404 (BH p = 0). The measured values are medians (the legend's measure);
+    the means are 0.437 and 0.339.
+  deviations:
+  - >-
+    Yeo7 labels from the code record (with_labels); channels with a mixed or 'Depth' label take part in
+    the shuffle but belong to no network, as in cd_utils.plot_cd_weights.
+  - >-
+    Shuffle seed 1 with numpy's default_rng (the code uses np.random.seed(1) with permutation).
+- claim: fig1k-mouse-late-eye-closure-ketamine
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:fig1k-mouse-late-eye-closure-ketamine
+  measured:
+  - 0.262
+  - -0.068
+  notes: >-
+    Open I reading (a), code trials: saline 0.262 (s.e.m. 0.065), ketamine -0.068 (s.e.m. 0.056), paired
+    t = 4.737, p = 0.0091, identical to Table S3. Reading (b), trials 23-40: 0.272 and -0.064, t = 4.751,
+    p = 0.0090. Per-mouse values printed; pairing by list position follows the code and cannot be checked
+    in the data.
+  deviations:
+  - >-
+    Per-mouse late/early is mean(late)/mean(early) over trials (eye_trace_utils.get_data_by_trial with
+    mean_ref=True and plot_drug_comparison_bar_from_df), as M-EYE states.
+  - >-
+    Open I reading (b) is run as trials 23 to 40 (18 trials, fig. S2B/S2C legends), because the sub-mouse
+    files carry no trial times with which to apply the Methods' 3-min rule.
+- claim: fig1l-mouse-dissociatives-reduce-late
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:fig1l-mouse-dissociatives-reduce-late
+  measured:
+  - 0.286
+  - 0.262
+  - 0.371
+  - -0.068
+  - 0.349
+  - -0.033
+  notes: >-
+    Reading (a): saline t = 0.733 BH p = 0.504; ketamine t = 9.525 BH p = 0.0020; PCP t = 3.409 BH p =
+    0.0406; all six means within tolerance; ketamine and PCP lower in 5/5 mice. Reading (b): BH p 0.626,
+    0.0032, 0.0363.
+  deviations:
+  - As fig1k.
+- claim: figs2bc-mouse-ketamine-early-present-late-abolished
+  outcome: partially_reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs2bc-mouse-ketamine-early-present-late-abolished
+  measured:
+  - 0.778
+  - 0.451
+  - 0.203
+  - -0.025
+  notes: >-
+    Reading (a), code scale: early saline 0.778, ketamine 0.451 (t = 6.854, p = 0.0024); late saline 0.203,
+    ketamine -0.025 (t = 4.951, p = 0.0078); ketamine early above zero in every mouse. Both test statistics
+    equal Table S3 to three decimals, so the per-mouse values are the paper's, yet the saline late mean
+    is 0.203 (s.e.m. 0.047, median 0.19) against Table S3's 0.34 +/- 0.07, outside tolerance under every
+    reading and scale (0.186 to 0.208). Three of four means within tolerance.34 inconsistent with its
+    own test).
+  deviations:
+  - >-
+    Absolute values use the code's scale factor (one, since get_mean_traces computes the baseline after
+    prox_norm); the Methods' 1/(1 - raw baseline of trials 1-2) is shown as a variant (early saline 0.722,
+    ketamine 0.463, t = 2.873). The code scale reproduces Table S3's t values exactly; the late-saline
+    mismatch holds under both.
+- claim: fig1m-mouse-late-closure-accumulates-and-persists
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:fig1m-mouse-late-closure-accumulates-and-persists
+  measured: 15.45
+  notes: >-
+    20 preinfusion trials per saline mouse (100 trials, 86 reopen): pooled KM median 15.45 s from 0.3
+    s after the eighth puff (reading b, within 15.16 +/- 1.52) and 13.05 s from the code's start 3.3 s
+    after it (reading a, outside). Late eye closure on the eighth puff (mean 0.517) above the first (0.244)
+    in 5/5 mice. The code's own run uses all 40 trials of each saline session (200 trials) and gives exactly
+    15.16 s from its start frame, while Table S3 says 20 trials per mouse, 100 trials; finding recorded.
+    Threshold 1.1/1.2/1.3 x baseline gives 14.92/15.45/16.84 s (reading b).
+  deviations:
+  - >-
+    Trials 1-20 of each saline session as the criterion and Table S3 say; the code (fig1_persistence.py)
+    uses all 40.
+- claim: figs2g-mouse-scaling-with-puff-number-not-pressure
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs2g-mouse-scaling-with-puff-number-not-pressure
+  measured:
+  - 0.256
+  - 0.517
+  - 0.239
+  - 0.515
+  - 0.286
+  - 0.447
+  notes: >-
+    Puff 1 vs 8: t = -4.834, -9.243, -11.633 (8, 18, 28 PSI), BH p 0.0038, 0.0001, <0.0001. Puff 8 between
+    pressures: BH p 0.98 (8 vs 18), 0.46 (8 vs 28), 0.60 (18 vs 28). All six means within tolerance; statistics
+    identical to Table S3. 28 PSI sessions are the preinfusion halves of the ketamine 35 mg/kg sessions.
+  deviations:
+  - >-
+    Per-puff late/early follows plot_puff_comparison_bar_trials (mean_ref=True), trials 3 to 17 of the
+    first 20 (fig1_psi.py which_pre).
+- claim: figs2h-mouse-dose-threshold
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs2h-mouse-dose-threshold
+  notes: >-
+    Reading (a): ketamine 50 (BH p 0.0106), 35 (0.0159), PCP 20 (0.0159), 10 (0.0159) drop; saline 0.43,
+    ketamine 25 0.36, 13 0.36, 6 0.76, PCP 5 0.11, PCP 1 0.18 do not; 10/10 as claimed, t values identical
+    to Table S3. Reading (b): 10/10.
+  deviations:
+  - As fig1k.
+- claim: figs5c-mouse-other-drugs-no-disconnection
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs5c-mouse-other-drugs-no-disconnection
+  notes: >-
+    Reading (a): ketamine t = 8.4882 BH p = 0.0053, PCP t = 6.0804 BH p = 0.0092, buprenorphine t = 0.0878
+    BH p = 0.9342, diazepam t = 1.6120 BH p = 0.3038, saline BH p = 0.4784; identical to Table S3. Reading
+    (b): 0.0046, 0.0098, 0.97, 0.17.
+  deviations:
+  - As fig1k.
+- claim: fig1p-mouse-anesthesia-abolishes-both
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:fig1p-mouse-anesthesia-abolishes-both
+  measured:
+  - 0.025
+  - 0.024
+  notes: >-
+    Reading (a), code scale: K/X early 0.773 to 0.025 (t = 8.6017, BH p = 0.0060), late 0.470 to 0.024
+    (t = 12.0602, BH p = 0.0016), BH over six drugs; identical to Table S3. Methods scale and reading
+    (b) give K/X means 0.023 to 0.027 and BH p <= 0.003.
+  deviations:
+  - Scale factor as figs2bc; the outcome does not depend on it.
+- claim: fig1no-mouse-dissociatives-no-accumulation
+  outcome: partially_reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:fig1no-mouse-dissociatives-no-accumulation
+  measured:
+  - 3.53
+  - 11.89
+  - 3.04
+  - 13.2
+  notes: >-
+    Decay rate (21.2-23.2 s fit, reading a): ketamine 3.53 to 11.89 (t = -4.5198), PCP 3.04 to 13.20 (t
+    = -5.3534), BH p = 0.0266 each; saline 0.76, buprenorphine and diazepam 0.82; all fits converged;
+    legend window (to 23.0 s) and reading (b) agree. Early eye closure on the first puff remains (0.451
+    ketamine, 0.427 PCP). The criterion's last part fails as written: infusion late eye closure on the
+    eighth puff is slightly above that on the first under ketamine (-0.007 against -0.025, 4/5 mice, paired
+    p = 0.175) and PCP (0.000 against -0.010, 4/5, p = 0.404), against a saline rise of 0.203 to 0.553
+    (5/5, p = 0.006). On a test reading of "not above" the part holds; asked as a question.
+  deviations:
+  - >-
+    Decay fit as eye_trace_utils.fit_exponential_decay with curve_fit default initial values (the code
+    passes none).
+- claim: figs2l-mouse-repeatable-across-days
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs2l-mouse-repeatable-across-days
+  notes: >-
+    0 of 12 tests with BH p < 0.05 under reading (a) (smallest 0.119, reflexive day 1 vs 4, |t| = 3.31)
+    and under reading (b) (smallest 0.118); t values identical to Table S3. Days and mouse pairing come
+    from the code's lists.
+  deviations:
+  - Days compared by get_drug_comparison_pvals with do_paired=True (fig1_days.py).
+- claim: figs2n-mouse-no-sex-difference
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs2n-mouse-no-sex-difference
+  notes: >-
+    BH p 0.2851 (pre male vs female, t = -2.079), 0.3827 (saline male vs female, t = -0.983; male pre
+    vs saline, t = -1.080; female pre vs saline, t = -0.980); identical to Table S3. Reading (b): smallest
+    0.35. Sex is not in the files (all "O"); it comes from fig1_sex.py, whose female group is the saline
+    sessions 282-286.
+  deviations:
+  - Tests as get_sex_comparison_pvals (independent between sexes, paired within).
+- claim: figs2o-mouse-no-anticipation
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs2o-mouse-no-anticipation
+  notes: >-
+    Skip-puff sessions 411, 412, 413, 420, 421 are in the dataset; SKIP_PUFFS read from fig1_skippuff.py
+    (10 preinfusion trials per mouse per skipped position) and confirmed by the data (link claim). Skipped
+    sixth puff: mean rise 0.0008 (s.e.m. 0.0079), level 0.204 above baseline; skipped seventh: rise 0.0004
+    (s.e.m. 0.0035), level 0.182; the delivered puff before rises 0.369 and 0.373.
+  deviations:
+  - >-
+    The criterion's reading as fixed in the claims file; the rise compared with the across-mouse s.e.m.
+    of the rise.
+- claim: figs4-mouse-reward-seeking-reduced
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs4-mouse-reward-seeking-reduced
+  notes: >-
+    No lick data. Looked in: every asset path of 001347 at 0.250528.0702 (none with lick or reward); the
+    only acquisition of the 142 sub-mouse files (eye_closure); every acquisition of the 10 Neuropixels-rig
+    files; the 13 ecephys files of 001326 (units, electrodes, stimulus intervals and the ketamine time,
+    no behaviour); all 142 sub-mouse sessions are accounted for by the scripts' lists, so none is an unlabelled
+    lick session; the code record has no file that mentions licking.
+- claim: figs6-mouse-vpm-inhibition-reduces-affective
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:figs6-mouse-vpm-inhibition-reduces-affective
+  measured:
+  - 0.602
+  - 0.105
+  notes: >-
+    Late/early, eighth puff: no injection 0.633, saline 0.602, muscimol 0.105; saline vs no injection
+    t = -0.455 BH p = 0.6727, saline vs muscimol t = 3.845 BH p = 0.0289, no injection vs muscimol t =
+    3.789 BH p = 0.0289. Fast early (0-40 ms): saline vs muscimol t = -0.367 BH p = 0.8898 with the script's
+    independent t-tests (the values of Table S3, which calls them paired); paired t-tests give t = -0.379,
+    BH p = 0.9013.
+  deviations:
+  - >-
+    The fast-early test follows the script (get_drug_comparison_pvals without do_paired, i.e. independent
+    t-tests); Table S3 labels it paired; both shown, same conclusion.
+- claim: fig4b-mouse-recorded-affective-reduced
+  outcome: reproduced
+  assumed: true
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:fig4b-mouse-recorded-affective-reduced
+  notes: >-
+    10 of the 13 sessions of Table S3 are in the dataset (9 mice); the 001326 sessions of 2023-02-25 (sub-3)
+    and 2023-07-06 and 2023-08-22 (sub-5) have no behaviour file. With the code's normalisation (each
+    condition's mean trace divided by its maximum), first-puff late eye closure is 0.630 +/- 0.076 preinfusion
+    and 0.322 +/- 0.051 on ketamine (1.96 s.e.m., intervals separate, lower in 10/10 sessions); accumulation
+    (late after puff 8 minus puff 1) 0.200 +/- 0.079 against 0.074 +/- 0.042 (lower in 9/10). With the
+    files' stored ketamine trials (23-30): 0.630 against 0.318, accumulation 0.200 against 0.087. Without
+    the normalisation late is 0.174 +/- 0.058 against 0.148 +/- 0.035 (intervals overlap, lower in 6/10)
+    and accumulation 0.058 against 0.040 (lower in 8/10). The stored per-puff values puff_aff/puff_ref
+    fall from 0.86-1.10 to 0.52-0.88 on the first puff in every session. The outcome rests on the normalisation,
+    which divides by the early peak that ketamine also lowers. Fig. 5B's 11 sessions are not identifiable;
+    the accumulation uses all 10.
+  deviations:
+  - >-
+    The across-session summary follows make_puffseries_behavior_plot in analysis.py (Zenodo 10.5281/zenodo.14876694),
+    reimplemented, not fig1_npx_behavior.py, which plots single sessions; first puff 5 s after each events-on
+    (confirmed from t_trial_eyeclosure and the data), trials 1-20 and 23-32 (Table S3, 10 ketamine trials),
+    np.std (ddof 0) for the 95% interval as the code.
+  - >-
+    Assumption, the max normalisation of analysis.py is kept although Table S3's description names only
+    baseline subtraction; it is the paper's code and Fig. 4B's axis runs to 1. The unnormalised result
+    is shown and does not separate.
+  - 10 of 13 sessions (data missing for 3).
+- claim: fig4hi-mouse-rise-unchanged-decay-shortened
+  outcome: partially_reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig4hi-mouse-rise-unchanged-decay-shortened
+  notes: >-
+    13 sessions, 36 regions with peak d' of at least 1.3 (30 with 2). Decay: median change -0.189 s, bootstrap
+    interval of the median -0.231 to -0.150 s, 34 of 36 regions shorter (d' 2: -0.186 s, -0.228 to -0.149).
+    Rise: median change -0.009 s, interval of the median -0.018 to -0.002 s, excluding zero; 29 of 36
+    regions rise earlier. Under the other reading of the interval (2.5 to 97.5 percentiles of the code's
+    pooled distribution over regions and bootstrap samples) rise includes zero (-0.083 to 0.068) but decay
+    does too (-0.486 to 0.088). No reading satisfies both conditions; the decay shortening is clear and
+    the rise change is small (a twentieth of the decay change) but not zero. Methods ketamine trials (22
+    to 32) give the same (-0.183 and -0.009 s). The subcortical-to-frontal ordering is not in the criterion
+    and was not judged.
+  deviations:
+  - >-
+    Clusters from the fig4g refit (11 clusters, the paper 12); no cluster dropped (the code skips its
+    cluster 11 for low activity).
+  - >-
+    Regions: layer suffixes merged (code reduce_region), at least 30 modulated cells (Methods; the code
+    uses more than 30), 'NA', 'STR', 'MB' and 'HY' left out (code, plotting).
+  - >-
+    Ketamine series 23 to 32 (code region_time_course, puff_psth_ket[:, 2:12]); 22 to 32 run as a variant.
+    Bootstrap 1000 resamples of puff replicates, seed 0 (standard choice).
+  - >-
+    Interval reading: the claims file's 'its bootstrap 95% interval' is run as the interval of the median
+    over regions across bootstrap samples and as the pooled distribution's percentiles.
+- claim: fig4g-mouse-slow-clusters-altered
+  outcome: reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig4g-mouse-slow-clusters-altered
+  notes: >-
+    6553 puff-modulated cells from 13 sessions and 10 mice, 11 Leiden clusters (paper 12), each with cells
+    from all 10 mice. Ketamine trials 23 to 32: non-overlap fraction rises with preinfusion decay time
+    (Spearman rho = 0.47, p = 0.14); three slowest clusters 0.507, three fastest 0.368. Trials 22 to 32:
+    rho = 0.27 (0.475 against 0.355). Resolutions giving 13 and 17 clusters: rho = 0.54 and 0.33, slowest
+    above fastest. The correlation is positive but not significant in any version, and the fastest clusters
+    still separate over 0.255 to 0.515 of the 0 to 2 s window, so "minimally altered" holds only relatively.
+  deviations:
+  - >-
+    Scanpy 1.12.5 with leidenalg (resolution 1), random_state 0, numpy seed 42 (code); the code's Scanpy
+    version is not pinned.
+  - >-
+    z-scoring within cluster and condition: the transform set by the cluster mean trace is applied to
+    each cell, intervals over cells (claims file); the code's interval is over the trace's bins.
+  - >-
+    Decay time of the cluster average by the code's find_decay (25% of the normalised peak; 2 s when the
+    peak z is below 1 or no fall within 2 s).
+- claim: fig5d-mouse-emotion-dimension-accumulates
+  outcome: reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig5d-mouse-emotion-dimension-accumulates
+  notes: >-
+    Main reading (dimension of fig5e): before ketamine the 1 s before the eighth puff exceeds the 1 s
+    before the second by 0.846 (95% interval ± 0.170; every session positive, 0.354 to 1.291); 10 to 20
+    s after the last puff 0.838 ± 0.169, above zero; on ketamine the accumulation is -0.048 ± 0.114. All
+    16 readings (window 5 to 6 s or 3 to 4 s, variance, fast-dimension source, ketamine trials) pass all
+    three conditions. The saturation is not part of the criterion.
+  deviations:
+  - >-
+    Dimension, sign, epochs and exclusion as in fig5e; the signal is unfiltered (the Methods' 200-ms Butterworth
+    smoothing is for display only); the 23 to 25 s stretch is left out as in the code (plot_affective_projection_late).
+- claim: fig5e-mouse-emotion-dimension-late-reduced
+  outcome: not_reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig5e-mouse-emotion-dimension-late-reduced
+  measured:
+  - 0.899
+  - 0.362
+  - 0.343
+  - 0.009
+  notes: >-
+    Criterion's dimension (target 5 to 6 s after the last puff onset, per-neuron variance, fast dimension
+    from puffs 5 to 8, ketamine trials 23 to 32): early 0.899 ± 0.300 against 0.362 ± 0.160 (t = 1.95),
+    late 0.343 ± 0.143 against 0.009 ± 0.076 (t = 1.90), both corrected p = 0.086. Late is lower on ketamine
+    but not significant, and both preinfusion means are outside tolerance. Over the 8 readings with the
+    5 to 6 s window the corrected late p runs 0.066 to 0.158. The code's window (bins 400:500 of a post-series
+    window whose plotting offsets place its start 1 s before the last puff, so 3 to 4 s after it) with
+    pooled variance gives early 0.608 and 0.308 (t = 1.30, corrected p = 0.22), late 0.534 and 0.004 (t
+    = 2.77, corrected p = 0.039), all four means within tolerance, close to Table S3 (t = 1.209 and 2.874,
+    p = 0.254 and 0.033). With the 3 to 4 s window and per-neuron variance the early test is also significant
+    (corrected p = 0.036).
+  deviations:
+  - >-
+    Target window 1 s starting 5 s after the last puff onset, as the criterion and the Methods (Emotion-like
+    neural dimension) state; the code's window (analysis.py, get_affective_projections, post_psth bins
+    400:500, read with plot_affective_projection_late, start = 500 plotted at 25 s) is inferred to be
+    3 to 4 s after the last puff and run as a variant.
+  - >-
+    Sign of the dimension set so that puff 8 exceeds puff 1 and QR sign correction (code my_qr, get_affective_projections);
+    the Methods do not say.
+  - >-
+    Ketamine trials 23 to 32 (code ket_proj_normed [2:12], Table S3 10 trials); 22 to 32 run as a variant.
+  - Session exclusion and rate z-scoring as in fig6d.
+- claim: fig5g-mouse-first-order-model
+  outcome: reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig5g-mouse-first-order-model
+  measured:
+  - 0.881
+  - 0.93
+  - 0.87
+  assumed: true
+  notes: >-
+    Neural fit (fig5e main dimension, 11 sessions): persistence model 0.881, within 0.954 ± 0.095 (0.947
+    with the code's 3 to 4 s window); broadcast and saturation alternatives 0.871 and 0.871 overall and
+    0.896 and 0.897 on the ketamine half against 0.918 (0.941, 0.941 against 0.947 with the code's window).
+    Dose fits on DANDI:001347 eye closure: ketamine (6, 13, 25, 35 mg/kg) 0.930, PCP (1, 5, 10 mg/kg)
+    0.870, within 10% of 0.927 and 0.870 when 0.927 is ketamine (Fig. 5H); the 10% tolerance also admits
+    the other assignment, so it cannot decide which panel carries which value. Adding the highest dose
+    gives 0.941 and 0.919; adding saline as well 0.885 and 0.884.
+  deviations:
+  - >-
+    Dose conditions: the code's just_ket and just_pcp orderings in mouse_eyepuff/scripts/ fig1_dose.py
+    (assumed to be the conditions of Fig. 5H and 5I); session ids per dose from the same file's experiments
+    dict, read at run time from Zenodo 14920570.
+  - >-
+    Behavioural traces: prox_norm, 1/(1 - baseline) scaling and the median over trials 23 to 37 (code
+    get_mean_traces as called in fig1_dose.py with agg_fn = np.median, which_post 22..36); mean over mice
+    (Methods); 200 frames/s averaged to 10 ms bins; -1 to 43 s, 750 ms after each puff removed (code theoretical_behavior,
+    filter_reflex). The driver of Fig. 5H and 5I is not in either code record.
+  - >-
+    Neural data: the across-session mean of the fig5e signal (unsmoothed), preinfusion and ketamine (trials
+    23 to 32) concatenated; null model with the condition multipliers fixed near 1 (code compare_models).
+  - >-
+    The dose session lists are checked by the link claim mouse-session-labels-link, which covers fig1_dose.py
+    with the other mouse scripts.
+- claim: fig6d-mouse-persistent-activity-reduced
+  outcome: reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig6d-mouse-persistent-activity-reduced
+  measured:
+  - 0.867
+  - -0.002
+  - 0.515
+  assumed: true
+  notes: >-
+    11 sessions from 9 mice (mouse 5 excluded, see deviations). Main reading (per-neuron variance, first
+    puff of each series, trials 23 to 32 and 35 to 40): 0.867 ± 0.059 pre, -0.002 ± 0.133 ketamine, 0.515
+    ± 0.219 post, each within tolerance; pre against ketamine t = 5.48, corrected p = 0.0005; post against
+    ketamine t = -2.54, corrected p = 0.029. The code's pooled variance gives 0.855, 0.019, 0.513, t =
+    5.64 and -2.61, corrected p = 0.0004 and 0.026, close to Table S3 (t = 5.662, 2.657; p = 0.0004, 0.024).
+    With the Methods' trials (22 to 32, 34 to 40) the fall holds (corrected p = 0.0008) but post against
+    ketamine is not significant with the first puff (corrected p = 0.17; 0.017 when all 8 puffs are averaged).
+    Averaged within mouse (9 mice) corrected p = 0.0033 and 0.030; all 13 sessions 0.0001 and 0.032.
+  deviations:
+  - >-
+    Epochs: the Methods (Comparison of rates) give trials 22 to 32 and 34 to 40, Table S3 gives 10 and
+    6 trials, and the code's slices (analysis.py, plot_coding_dimension_early_late, ket_range (2,12) and
+    late_range (14,20) of the post-ketamine series) give 23 to 32 and 35 to 40. Assumed the Table S3 and
+    code epochs, as two sources agree; both are shown and differ on the recovery test.
+  - >-
+    First puff of each series only for the projection: code (limit = 1 for the puff); the Methods do not
+    say. The all-puff average is shown as a variant.
+  - >-
+    Coding-dimension variance per neuron (Methods, Coding dimension, mouse peri-puff); the code's pooled
+    scalar (compute_cd_cov) is a variant.
+  - >-
+    Projection z-scored over the 3-s window with the 1-s baseline subtracted (code); the Methods do not
+    describe the normalisation.
+  - >-
+    Excluded animal: the Methods exclude one stressed animal without naming it; mouse 5 is assumed, the
+    only choice giving 11 sessions from 9 mice and 7 tone sessions from 7 mice.
+  - >-
+    Rates z-scored per unit over the whole recording (assumed; the code's all_zfr driver is not in the
+    record); a z-scored projection does not depend on it.
+- claim: fig6f-mouse-fast-activity-unchanged
+  outcome: not_reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig6f-mouse-fast-activity-unchanged
+  measured:
+  - 4.226
+  - 4.279
+  - 3.957
+  assumed: true
+  notes: >-
+    Pre against ketamine is not significant in any of 8 readings (main: t = -0.43, corrected p = 0.67;
+    difference -0.054, 95% CI -0.296 to 0.189, dz = -0.13). Ketamine against post is significant in every
+    reading (main: t = 4.07, corrected p = 0.0045; post lower by 0.322, dz = -1.23; range of corrected
+    p 0.0045 to 0.016), where Table S3 gives t = 2.468, p = 0.066. This is a claim of absence judged on
+    the paper's two tests, and the ketamine against post test finds a difference, so the claim is not
+    reproduced; the pre against ketamine part, the ketamine effect itself, holds. Main means 4.226 ± 0.097,
+    4.279 ± 0.137, 3.957 ± 0.130 are below the paper's 4.48, 4.59, 4.32 by more than the reported s.e.m.;
+    the code's reading (pooled variance, 70-ms reference) gives 4.433, 4.496, 4.161, within them. Within
+    mouse: corrected p = 0.36 and 0.020; 13 sessions 0.57 and 0.010.
+  deviations:
+  - >-
+    Reference window 1 s before each puff (Methods, Coding dimension, mouse peri-puff: 'average activity
+    in the 1s before each puff'); the code uses the 70 ms before (bins 93:100), run as a variant.
+  - Epochs, variance, z-scoring and session exclusion as in fig6d.
+- claim: fig6h-mouse-timescale-shorter
+  outcome: reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig6h-mouse-timescale-shorter
+  measured:
+  - 0.437
+  - 0.162
+  assumed: true
+  notes: >-
+    Main reading (per-neuron variance, series 11 to 20 and 23 to 32, fit from lag 0, per-series fits averaged):
+    0.437 ± 0.077 s pre and 0.162 ± 0.079 s ketamine, within tolerance; t = 3.51, p = 0.0057 (Table S3
+    t = 3.357, p = 0.0073); 9 of 11 sessions shorter; no fit failed. All 16 readings give p between 0.004
+    and 0.038 with ketamine shorter; preinfusion means 0.323 to 0.557 s, some outside tolerance. Within
+    mouse t = 3.14, p = 0.014.
+  deviations:
+  - >-
+    Series 11 to 20 and 23 to 32: code (stimulus_timescales, pre 10:20 and post 2:12), matching Table
+    S3's 10 and 10 trials; the Methods do not say which. Methods epochs (1 to 20, 22 to 32) run as a variant.
+  - >-
+    Fit from lag 0 (Methods, 'from the peak of the autocorrelation'); the code's start at lag one bin
+    (extract_timescale) is a variant. Per-series fits averaged (Methods, Table S3); the code's concatenation
+    of the series is a variant. p0 b = 0.2 (Methods; code t0 = 0.2).
+  - >-
+    Window: the 30 s before the first puff of each series (Methods); the code's shifted psth driver is
+    not in the record.
+- claim: fig6j-mouse-coupling-reduced
+  outcome: not_reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:fig6j-mouse-coupling-reduced
+  measured:
+  - 0.852
+  notes: >-
+    Methods reading (per-neuron-variance dimension, cells with |w| above the 90th percentile, mean Pearson
+    r within each 30-s window averaged over series, series 1 to 10 and 23 to 32): ratio 0.852 ± 0.128,
+    t = 1.10, p = 0.30, outside 0.49 ± 0.07; 31 to 76 cells per session. The variance of the coding dimension
+    decides the outcome: with the code's pooled variance, signed selection and median |r| over concatenated
+    windows (the code's full reading) the ratio is 0.559 ± 0.067, t = 6.32, p = 8.7e-05, within tolerance
+    (Table S3 t = 7.463, p = 2.2e-5); pooled variance with the Methods' selection and averaging gives
+    0.576 ± 0.101, p = 0.0025. With per-neuron variance only the code's selection rule gives a reduction
+    (0.832, p = 0.005 per series; 0.724, p = 0.012 concatenated), outside tolerance. With the Methods'
+    series (1 to 20, 22 to 32) concatenated readings give no reduction (ratios 0.92 to 1.45).
+  deviations:
+  - >-
+    Series 1 to 10 and 23 to 32: code (plot_coding_dimension_early_late, pre_bins pid 0..9 and ket_bins
+    22+pid), matching Table S3's 10 and 10 trials; Methods epochs run as a variant.
+  - >-
+    Correlations within each 30-s window averaged over series (Methods, Table S3 'Values averaged within
+    session across trials'); the code's concatenation is a variant.
+  - >-
+    Coding-dimension variance per neuron (Methods); the code's pooled scalar is a variant. The test is
+    the code's paired t-test of 1 against the normalised ketamine value.
+  - Session exclusion as in fig6d.
+- claim: figs34-mouse-tone-persistence-reduced
+  outcome: partially_reproduced
+  notebook: 05_mouse_npx.ipynb
+  output: claim:figs34-mouse-tone-persistence-reduced
+  measured:
+  - 1.639
+  - 0.481
+  - 0.304
+  - 0.115
+  - 1.238
+  assumed: true
+  notes: >-
+    7 tone sessions from 7 mice. Fast tone activity not significantly changed (main corrected p = 0.16
+    pre against ketamine and 0.43 post against ketamine; every reading above 0.08). Persistent tone activity
+    falls from 1.639 ± 0.053 to 0.481 ± 0.162 (t = 7.30, corrected p = 0.0007) and recovers (t = -2.91,
+    corrected p = 0.027); preinfusion mean outside 1.531 ± 0.081 (the code's pooled variance gives 1.512
+    to 1.522, within; t = 7.10, p = 0.0008 with the code's split, as Table S3's 6.942, 0.0009). Timescale
+    0.304 ± 0.043 to 0.115 ± 0.027 s (t = 5.43, p = 0.0016); preinfusion within tolerance, ketamine outside
+    0.089 ± 0.012; all 16 timescale readings p < 0.04. Coupling not reduced under the Methods' reading
+    (ratio 1.238 ± 0.451, p = 0.64); reductions only with pooled variance and median |r| (per series 0.741,
+    p = 0.041; over the code's windows before puff series 0.535 ± 0.104, p = 0.006, within 0.46 ± 0.08).
+    The eye-closure part of the statement is not in the criterion and not tested; the Neuropixels-rig
+    behaviour files hold puff trials only.
+  deviations:
+  - >-
+    Tone epochs: up to 10 tone series before the split, tone series 2 to 6 and 8 to 10 after it (code,
+    ket_range (1,6) and late_range (7,10) for 'tone'). Split at the file's injection time, giving Table
+    S3's 10 preinfusion trials (assumed); the code's split (30 s after puff series 20) gives 9 and is
+    run as a variant.
+  - >-
+    Tone dimensions on the puff-modulated cells (code get_windowed_tone_psth selects with the puff tests).
+  - >-
+    Timescale and coupling over the 30 s before each tone series (Methods, Table S3); the code's coupling
+    uses the windows before puff series 1 to 10 and 23 to 32 even for the tone dimension, run as a variant.
+  - >-
+    Variance, reference window, lag and averaging readings as in fig6d, fig6f, fig6h, fig6j.
+- claim: p50-condition-labels-link
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:p50-condition-labels-link
+  notes: >-
+    The code's four non-iEEG participants (h009, h011, h012, h013) are the dataset's four, each with one
+    saline and one ketamine session, and every dataset series has 40 trials. Which series is saline rests
+    on the code alone (it reads pre_trials_data as saline); the files do not label it, and the first visit
+    was saline for three participants and ketamine for one, so the series names do not follow visit order.
+  deviations:
+  - Link claim written by this attempt.
+- claim: cadss-scores-link
+  outcome: reproduced
+  notebook: 01_human_behavior.ipynb
+  output: claim:cadss-scores-link
+  notes: >-
+    All 14 iEEG participants with behaviour in the dataset are in the code record's CADSS table (data/cadss_across_pts.csv),
+    each with a total before ketamine, during infusion and at 110 min; the table also holds 7 participants
+    without behaviour in the dataset. Matched by participant identifier; nothing in the dataset can be
+    compared with the scores.
+  deviations:
+  - Link claim written by this attempt.
+- claim: mouse-session-labels-link
+  outcome: reproduced
+  notebook: 02_mouse_behavior.ipynb
+  output: claim:mouse-session-labels-link
+  notes: >-
+    All 142 experiment ids named by the experiment lists of the ten mouse scripts are sub-mouse files,
+    and every sub-mouse file is listed; no session is shorter than the ntrials its script reads (103 files
+    of 40 trials, 39 of 20, the 20-trial ones listed only by fig1_psi.py and fig1_muscimol.py). Ids 1020
+    to 1027 serve as ketamine 35 mg/kg (40 trials) and as 28 PSI (first 20 trials); 282 to 286 serve as
+    saline and as the female group. Label checks from the data, eighth puff, trials 6-20 against 23-37:
+    all 5 ketamine 50 and all 5 PCP 20 sessions drop in late/early (median change -0.695 and -0.668) while
+    the saline median change is 0.027; all 5 K/X sessions have infusion early (max 0.062) and late (max
+    0.051) below 0.1; the skipped puff inferred from the data (smallest early response) matches SKIP_PUFFS
+    in 100% of infusion trials and 95% of preinfusion trials of the skip sessions. Not checkable from
+    the data: the mouse behind each session (the scripts pair sessions by list position), sex, day, dose
+    and pressure.
+  deviations:
+  - Link claim written by this attempt (criterion in the link_claims section).
+- claim: link-ieeg-yeo-labels
+  outcome: reproduced
+  notebook: 03_ieeg_spectral.ipynb
+  output: claim:link-ieeg-yeo-labels
+  notes: >-
+    458 of 458 channels found; atlas region equals the channel-name region for 458 of 458. Of 126 participant,
+    network and region counts in the dataset's per-network file, 120 equal the label file's and in the
+    other 14 rows the label file has more electrodes (including labels marked EXCLUDE), never fewer. With
+    these labels the deposited channel loadings give the deposited Fig. 2H and 2J matrices to 6e-17. 221
+    of the 458 channels carry a single Yeo7 network label; the others (Depth, mixed labels) are excluded
+    from network means as in the code.
+- claim: ieeg-channel-atlas-link
+  outcome: reproduced
+  notebook: 04_ieeg_cd.ipynb
+  output: claim:ieeg-channel-atlas-link
+  notes: >-
+    All 986 contacts and all 911 within-shank bipolar pairs of the 7 participants are found by name in
+    anat/pts_ch_labels.pkl (pt_elec_names_mono, pt_elec_names_bipo), and the record's region label equals
+    the dataset's electrode location for 100% of contacts in every participant.
+  deviations:
+  - Link claim written by this attempt (criterion in link_claims).
+findings:
+- kind: metadata_insufficient
+  statement: >-
+    The non-iEEG files (sub-h009, h011, h012, h013, ses-P50) call their two series pre_trials_data and
+    post_trials_data and do not say which is the saline and which the ketamine visit; the visits were
+    a blinded crossover, so the names are not a visit order either. Only the paper's code (analyze_airpuff_p50.py)
+    reads pre as saline.
+- kind: data_missing
+  statement: >-
+    The CADSS dissociation scores of both human cohorts (Figs. 1, 2D, figs. S1D, S14G, S27) and the non-iEEG
+    participants' verbal reports (Fig. 1F, fig. S1F) are not in the dataset; the scores are in the paper's
+    code record (data/cadss_across_pts.csv and constants in analyze_airpuff_p50.py).
+- kind: metadata_insufficient
+  statement: >-
+    The iEEG behaviour and LFP files name sessions baseline, preinfusion, infusion, postinfusion, postinfusionfast
+    and control without saying when each was recorded; the code's DATASETS.py says baseline is the day
+    before infusion. For SD168, SD172, SD242 and SD245 the behaviour file holds a baseline session and
+    no preinfusion session, and the paper treats that baseline as preinfusion.
+- kind: metadata_insufficient
+  statement: >-
+    The 142 head-fixed mouse behaviour files (sub-mouse/sub-mouse_ses-<id>_behavior.nwb) carry no label
+    of drug, dose, mouse, sex, day, puff pressure or skipped puff; subject_id equals the session id, sex
+    is "O" and age "P8W/" in every file, and the trials have no timestamps. The labels exist only as experiment-id
+    lists in the paper's scripts (Zenodo 14920570, mouse_eyepuff/scripts/fig1_*.py), so no analysis can
+    be run from the dataset alone, sessions of the same mouse cannot be paired from the data, and the
+    Methods' rule for post-infusion trials (at least 3 min after injection) cannot be applied.
+- kind: data_missing
+  statement: >-
+    The Neuropixels-rig behaviour (eye closure) of 3 of the 13 recorded sessions of Fig. 4B (Table S3)
+    is not in 001347: the 001326 sessions of 2023-02-25 (sub-3) and 2023-07-06 and 2023-08-22 (sub-5)
+    have no sub-m* behaviour file; the paper's converter lists only the 10 deposited sessions (its commented
+    "extra" list names m11210-961, m11217-1104, m11217-1107).
+- kind: data_missing
+  statement: >-
+    The lick data of the liquid-reward eyepuff assay (fig. S4, 6 mice) are not in the dataset or in 001326,
+    and the code record has no script for them.
+- kind: paper_inconsistency
+  statement: >-
+    Table S3, fig. S2 C, gives saline affective eye closure on the first puff as 0.34 +/- 0.07, while
+    the per-mouse values that reproduce its paired test exactly (t = 4.951) have mean 0.203 (s.e.m. 0.047).
+- kind: code_mismatch
+  statement: >-
+    Table S3, fig. S2 E, reports the Kaplan-Meier persistence of 15.16 s for 20 preinfusion trials per
+    mouse (100 trials); fig1_persistence.py uses all 40 trials of each saline session (200 trials, pre
+    and post injection), which gives 15.16 s exactly; the 100 preinfusion trials give 13.05 s from the
+    code's start frame. The code's start frame is also 3.3 s after the eighth puff while the figure axis
+    reads time from the final puff.
+- kind: code_mismatch
+  statement: >-
+    Table S3, fig. S6 F, calls the fast early (0-40 ms) comparison a paired t-test; fig1_muscimol.py runs
+    independent t-tests (get_drug_comparison_pvals without do_paired), whose values (t = 0.37, p = 0.8898)
+    are those reported.
+- kind: methods_unavailable
+  statement: >-
+    Open I: the Methods count as post infusion only trials at least 3 min after the injection, the code
+    uses trials 23 to 37, and the fig. S2B/S2C legends give 18 trials. The sub-mouse files hold no trial
+    times. Which trials did the paper use, and how long after the injection did trial 21 start? (Here
+    the code's trials are used, trials 23 to 40 as a variant; all conclusions agree.)
+- kind: methods_unavailable
+  statement: >-
+    The Methods scale each mouse trial by 1/(1 - baseline), the baseline averaged over the first two trials;
+    the code computes the baseline after subtracting each trial's own first 2 s, so the factor is one.
+    Which was used for the absolute values of figs. S2B, S2C, S5D and S5E? (The code's reproduces Table
+    S3's t values exactly; the Methods' changes fig. S2B's saline early value to 0.72.)
+- kind: other
+  statement: >-
+    No recording is deposited twice among the 142 sub-mouse files (no identical file, first 20 trials
+    or single 81-s trial; highest correlation between sessions 0.91, 1023 and 1026) or the 10 Neuropixels-rig
+    files. Ids 282-286 are reused by the scripts for saline, female and the converter's sal_skip; ids
+    1020-1027 for ketamine 35 mg/kg and 28 PSI.
+- kind: data_missing
+  statement: >-
+    The per-participant LFP files are 20-min windows around each eyepuff session with no infusion start
+    time, no epochs and no sleep or seizure annotations, so the 25-min pre-infusion baseline and peak-ketamine
+    windows of fig. S15, fig. S27 and the phase-locking analysis are not in the dataset. No CADSS scores
+    are in the behaviour files.
+- kind: data_missing
+  statement: >-
+    Spontaneous blink onsets for fig. S12 are not in the dataset; they are a hand-made list in the code
+    record (for_reference/analyze_airpuff_ieeg_natural_blinks.py lines 42 to 79).
+- kind: methods_unavailable
+  statement: >-
+    For authors - how was the elbow of fig. S17A at six components chosen? The code hard-codes k_elbow
+    = 3. On the dataset the test curve's largest fall in gain is at six components, but the point farthest
+    from the chord over the plotted range (2 to 28 components) is at eight.
+- kind: paper_inconsistency
+  statement: >-
+    Table S3 (Fig. 2I) gives 5 participants for factor 3 and 6 for factor 4, but the deposited loadings,
+    which reproduce every coefficient and channel count of Table S3, have kept channels from all 7 participants
+    for every factor (factor 3 - SD168 19, SD172 28, SD181 22, SD185 23, SD186 13, SD211 19, SD245 34).
+- kind: other
+  statement: >-
+    The deposited Fig. 2H matrix (yeo_loading_mtx_pre) does not fully match the Results text - factors
+    3 to 5 carry 0.495 of the limbic row and 0.463 of the frontoparietal row, while the text says these
+    networks load heavily on factors 3 to 5.
+- kind: other
+  statement: >-
+    The time bins of the per-network and per-region files (-0.531 to 1.444 s) are offset by 0.6 ms from
+    the corresponding bins of the per-channel per-trial file (-0.532 to 1.443 s); immaterial for the analyses
+    here.
+- kind: metadata_insufficient
+  statement: >-
+    The iEEG files do not mark bad channels, although the paper removes them; the list exists only in
+    the paper's code (ketman/analyze/utils.py, bad_ch, 10 to 33 contacts per participant). With and without
+    it the CD results differ in the second decimal and decide two readings of fig6e.
+- kind: metadata_insufficient
+  statement: >-
+    The electrode tables hold a region label per contact but no Yeo7 or Yeo17 network label, and x, y,
+    z and impedance are NaN for every contact; the network labels used by figs. S19 to S25 and S35 are
+    only in the code record (anat/pts_ch_labels.pkl).
+- kind: metadata_error
+  statement: >-
+    The LFP ElectricalSeries (processing/ecephys/LFP/v_trace) declares unit 'volts' with conversion 1.0,
+    but the values are digitiser units (1st to 99th percentiles of order 300 to 3000); the scale (0.390625
+    or 0.09765625 microvolts per unit) is only in the series comment and the device description.
+- kind: metadata_insufficient
+  statement: >-
+    The puff TTL is DC channel index 2, named 'CCEP' in four participants' files and 'DC03' in three (SD168,
+    SD172, SD245); no description identifies it as the puff sync channel.
+- kind: code_mismatch
+  statement: >-
+    For SD245 the code's coding-dimension path loads both the Baseline and Preinfusion files and renames
+    'baseline' to 'preinfusion', so the Baseline file (day before) replaces the Preinfusion file, while
+    the timescale path keeps the Preinfusion file. The behaviour file of SD245 holds only 'baseline' events.
+    The paper's numbers for Fig. 6C and 6G are recovered only with this mixture (fig6g means with the
+    Baseline file are outside tolerance).
+- kind: paper_inconsistency
+  statement: >-
+    Table S3 gives two statistics for the same postinfusion against ketamine test of the beta fast projection,
+    t = 0.576, p = 0.585 (Fig. 6E) and t = 1.063, p = 0.657 (fig. S37B beta); the data give t = 1.072,
+    BH p = 0.650, matching the fig. S37B row.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors, Open C. Is the human projection z-scored over -1.0 to 1.5 s with the -1.0
+    to 0 s mean subtracted and summarised on a time axis shifted by 0.05 s (code), or over -0.5 to 1.5
+    s with the -0.5 to 0 s baseline (Methods)? The code's reading reproduces Table S3 to the third decimal;
+    the Methods' reading gives a preinfusion persistent mean of about 1.63 and makes the low-gamma fast
+    test significant.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors, fig. S38H. Were the single-trial persistent projections baseline-subtracted
+    over 0.5 to 0 s before each puff? The code comments this out, but the paper's coefficient (12.12)
+    is recovered only with it (12.38 here; about 2.5 to 6 without).
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors, Fig. 6I and fig. S38. Which channels, windows (stride, exclusion of epileptic
+    and sleep periods) and sessions enter the phase-locking analysis, and how were the 716 edges of fig.
+    S38 selected? Selections here give 368 to 896 edges, a ketamine ratio of 0.926 to 0.963 against 0.979,
+    and baseline differences between high and low edges in theta and alpha.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors, fig. S37A. Which mouse sessions, mouse projection (first puff or all puffs
+    of a series) and time range enter the cross-species correlation? Beta and broadband differ by less
+    than 0.03 in r, and the order changes with these choices.
+- kind: format_error
+  statement: >-
+    In all 13 NWB files of DANDI:001326 (0.250528.1957) the spike times of every unit (9554 of 9554) are
+    stored out of order; they must be sorted before use.
+- kind: identifier_missing
+  statement: >-
+    DANDI:001326 numbers its subjects 0 to 9 and gives recording dates, with no link to the paper's mouse
+    or experiment identifiers or to the Neuropixels-rig behaviour files of DANDI:001347 (sub-m<mouse>-<experiment>).
+    Matching inter-series intervals links 10 of the 13 sessions to a behaviour file (all intervals equal
+    within 0.02 s); sub-3 ses-20230225 and both sub-5 sessions have no behaviour file in DANDI:001347.
+- kind: selection_undocumented
+  statement: >-
+    The Methods exclude one animal "that exhibited notable stress response" from the cross-puff and population
+    analyses (11 sessions from 9 mice), but neither the paper, the code nor the dataset says which. Mouse
+    5 is the only exclusion that also gives the tone analysis its 7 sessions from 7 mice; with it the
+    Fig. 6D statistics come out as in Table S3. Which animal was excluded?
+- kind: code_mismatch
+  statement: >-
+    The mouse code (Zenodo 14876694, analysis.py) differs from the Methods in several mouse analyses:
+    coding-dimension weights are divided by a pooled scalar variance (compute_cd_cov), not per-neuron
+    variances; the emotion-like dimension's target window is bins 400:500 of the post-series window, which
+    the plotting offsets place 3 to 4 s after the last puff, not 5 s; the fast dimension's reference is
+    the 70 ms before the puff, not the 1 s; coupling selects signed weights above the 90th percentile
+    of |w| and takes the median |r| over concatenated windows; tone coupling uses windows before puff
+    series. The pooled variance decides the mouse coupling result (Fig. 6J, fig. S34H) and the 3 to 4
+    s window the Fig. 5E test.
+- kind: paper_inconsistency
+  statement: >-
+    The Methods (Comparison of rates) define the Ketamine and Post epochs as trials 22 to 32 and 34 to
+    40 (11 and 7 trials), while Table S3 gives 10 and 6 trials for Figs. 5D, 5E, 6D and 6F, as the code's
+    slices (23 to 32, 35 to 40) do. The recovery test of Fig. 6D is significant with the code's trials
+    (corrected p = 0.029) and not with the Methods' (0.17).
+- kind: methods_unavailable
+  statement: >-
+    The mouse code record holds no driver script: the z-scoring that makes all_zfr, the session filter
+    (filter_session), the shifted windows used for the timescale (shift_psth_pre/post), the start of the
+    post-series window used for the emotion-like dimension, and the dose conditions and trace processing
+    of the Fig. 5H and 5I fits are not given. Which window (3 to 4 s or 5 to 6 s after the last puff)
+    and which variance (per neuron or pooled) did the published Figs. 5E and 6J use?
+- kind: other
+  statement: >-
+    sub-5 ses-20230706 has 2 Neuropixels probes and 154 units, where the Methods state 3 to 4 probes per
+    session; it belongs to the mouse taken as excluded.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors, Fig. 4B and 5B. Were the across-session eye-closure traces of the Neuropixels
+    mice divided by each condition's maximum, as make_puffseries_behavior_plot in analysis.py (Zenodo
+    14876694) does? With that normalisation late eye closure separates between preinfusion and ketamine
+    (0.630 against 0.322); without it the 95% intervals overlap (0.174 against 0.148).
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors, human coding dimension. Are white-matter contacts excluded from the coding
+    dimension, as the code does (use_all_channels = False), while the Methods say so only for the phase-locking
+    analysis? Both readings reproduce Fig. 6C, but with white matter kept the theta reduction and the
+    delta recovery of fig. S37C lose significance and broadband becomes significant.
