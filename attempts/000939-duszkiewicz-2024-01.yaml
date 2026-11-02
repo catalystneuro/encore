@@ -332,17 +332,9 @@ outcomes:
   deviations:
   - Two of five ArchT mice (see fig5b-posub-rates-increase); the five-mouse result is a variant.
 - claim: ed8cd-multiplicative-detectable
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_duszkiewicz_2024.ipynb
   output: claim:ed8cd-multiplicative-detectable
-  proposed:
-    outcome: reproduced
-    reason: The criterion titrates the noise, so the code's fixed noise of 1.8 x 1.8 Hz is a variant, not
-      a reading the criterion asks for; the verified outcome counted it. With titrated noise only the
-      control is open. The recorded control fails its own check, as the titrated no-gain simulation already
-      differs from it (multiplicative p = 0.0026, additive p = 0.039), so it cannot tell gain types apart.
-      Against the simulated control, as Figure_GainSimulation.m builds it, the criterion holds (p = 0.022,
-      8e-5 and 0.13), in 80% of 50 seeds. Notebook, ed8cd-multiplicative-detectable, second block.
   notes: With the noise titrated to the observed correlations (4.25 Hz; no-gain median r 0.731 against
     the observed 0.730) and the simulated control, the multiplicative simulation gives multiplicative
     factors above control (p = 0.022) and the additive simulation reproduces the data's pattern (additive
@@ -353,8 +345,9 @@ outcomes:
     Variant with the code's fixed noise of 1.8 x 1.8 Hz (simulated r 0.82, above the observed 0.73), which
     the criterion does not call for, as it titrates the noise. The additive simulation changes the multiplicative
     factor against the simulated control (p = 0.008), and against the recorded control the multiplicative
-    simulation is not detected (p = 0.80). The verified outcome, partially_reproduced, counted the fixed-noise
-    readings; round 2 found that they are not readings of the criterion, and reproduced is proposed. With
+    simulation is not detected (p = 0.80). The outcome was partially_reproduced until round 3, as it counted
+    the fixed-noise readings; round 2 found that they are not readings of the criterion, and round 3 agreed
+    with reproduced. With
     the three figshare ArchT mice, a variant, the same split (titrated noise 4.00 Hz; simulated control
     p = 0.019, 3e-7 and 0.38; recorded control, additive simulation multiplicative p = 7e-5).
   deviations:
@@ -1022,3 +1015,27 @@ verifications:
     reason: Agree with blocked. The record uses other and not data_missing, citing the protocol; this
       is a labelling question only, not the outcome.
     response: No change; blocked_by stays other, as the claim has data elsewhere.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3, run 41483808182; same harness, separate context,
+    did not write the notebook)
+  reviewed: The proposed change of outcome of the author-revise-2 run (commit 94fe6c3de), ed8cd-multiplicative-detectable
+    only, with the analysis behind it in the full executed notebook (cells 81 to 83), the attempt record
+    and the claims file.
+  results:
+  - claim: ed8cd-multiplicative-detectable
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the one proposed change: ed8cd-multiplicative-detectable should move from partially
+      reproduced to reproduced. The criterion says the Gaussian noise is "titrated to the observed distribution
+      of baseline-high-gain correlations". The code''s fixed noise of 1.8 x 1.8 Hz is not titrated, so
+      it is a variant, not a reading the criterion asks for. With titrated noise, only the choice of control
+      group is left open. The choice was not made to reach the result: both control readings were already
+      in the round-1 notebook, and with no gain added the simulation does not differ from the simulated
+      control (p = 0.114 and 0.094) but does from the recorded control (p = 0.0026 and 0.039). Caveats,
+      none of which changes the outcome: the control built "as Figure_GainSimulation.m builds it" is unchecked,
+      as the MATLAB code is not among my materials; in the seed-81 run the simulated median r values are
+      0.69 to 0.71, slightly below the observed 0.73; and the result holds in 80% of seeds.'
+    response: Outcome changed from partially_reproduced to reproduced and proposed removed. Cell 83, the
+      Summary row, the README and the notes now give reproduced; cell 83 now also states that in the seed-81
+      run the simulated median correlations are 0.69 to 0.71, below the observed 0.73.

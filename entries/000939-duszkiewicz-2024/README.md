@@ -26,7 +26,7 @@ need the ADN, cue rotation, ADN optogenetic and Neuropixel recordings use the pa
 | Putative HD-to-FS synaptic weights are dispersed | Reproduced |
 | Thalamic disinhibition: ADN (figshare) and PoSub rates, preserved tuning | Reproduced |
 | HD gain multiplicative, FS gain additive | Partially reproduced |
-| Gain simulations | Partially reproduced (reproduced proposed after round 2) |
+| Gain simulations | Reproduced (holds in 80% of 50 seeds) |
 | ADN-HD mixed gain (figshare) | Reproduced |
 | GLM coupling preserved across WAKE and REM; follows tuning | Reproduced (assumed: a Python mirror of MATLAB's glmfit flags the fits glmfit would) |
 | Ring manifold: WAKE and REM tuning from the virtual HD, ring radius | Reproduced |
