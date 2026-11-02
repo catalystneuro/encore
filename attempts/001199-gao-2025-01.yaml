@@ -95,33 +95,21 @@ outcomes:
   blocked_by: data_missing
   notes: Needs FSU types (see fig4-unit-counts), which the files do not hold.
 - claim: fig5-unit-counts
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_gao_2025.ipynb
   output: claim:fig5-unit-counts
-  notes: The typed counts cannot be measured (see fig4-unit-counts), but the untyped counts bound
-    them. Sham sessions hold 151 S1 and 37 POm units with more than 2,000 spikes; the paper's 67
-    POm RSUs and 67 POm FSUs each need at least 60.3. There is no CG1 session at 3,000 Hz, the
-    paper's control; every CG1 session (300 Hz in BH658, 4,500 Hz in BH655, BH657 and BH658) holds
-    11 S1 and 8 POm units together, too few for the control S1 FSUs (30.6) and the POm RSUs and
-    FSUs (49.5 and 37.8). Counting these as the control, at most 3 of the 8 counts can be within
-    10%, where a partial result needs 6. Taking the four control counts as not measurable, as the
-    paper's CG1 sessions at 3,000 Hz are not deposited, only the 2 sham POm counts are ruled out and
-    at most 6 of 8 can be within 10%, so a partial result stays possible (see proposed).
+  notes: The typed counts cannot be measured (see fig4-unit-counts), and the paper's control, CG1 at
+    3,000 Hz (claims file header and fig5b), is not in the dandiset. The untyped counts bound the sham
+    half. Sham sessions hold 151 S1 and 37 POm units with more than 2,000 spikes; the paper's 67 POm
+    RSUs and 67 POm FSUs each need at least 60.3, so these 2 counts cannot be within 10%. The S1 sham
+    counts (31 and 53, needing 75.6 together) can. CG1 sessions at 300 and 4,500 Hz (11 S1 and 8 POm
+    units) do not bound the units of control sessions at 3,000 Hz that were not deposited, so the four
+    control counts cannot be measured, as for fig5b-cg1-control-no-response. At most 6 of the 8 counts
+    can then be within 10%, which is what a partial result needs, so the claim cannot be decided. Had
+    the CG1 sessions at other PRFs been counted as the control, at most 3 of 8 could be within 10%.
   deviations:
-  - The typed counts are not measured; the outcome rests on upper bounds from the untyped counts.
-  - Every CG1 session is counted as the control, though none is at the paper's 3,000 Hz. Sessions at
-    other PRFs do not bound the units of control sessions that are not deposited, so this does not
-    only raise the bounds; the proposed change follows from it.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: The paper's control is CG1 at 3,000 Hz (claims file header and fig5b), and the dandiset
-      holds no CG1 session at that PRF. CG1 sessions at 300 and 4,500 Hz do not bound the units of
-      control sessions that were not deposited, so the four control counts cannot be measured, as
-      fig5b and fig7-9-unit-counts treat an absent condition. The sham half rules out only the 2 POm
-      counts (37 units, where 67 RSUs and 67 FSUs each need 60.3); the notebook's fig5-unit-counts
-      section prints that at most 6 of 8 counts can then be within 10%, which a partial result
-      needs. The claim cannot be decided from the dandiset.
+  - The typed counts are not measured; the bound on the sham half rests on the untyped counts.
 - claim: fig5a-sham-no-response
   outcome: blocked
   blocked_by: data_missing
@@ -882,3 +870,29 @@ verifications:
     outcome: blocked
     reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
     response: No change needed.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig5-unit-counts, to blocked, data_missing) and
+    the analysis behind it in the full executed notebook after the round-2 revision (cells 14, 22 to 24
+    and the Summary), with the claims file, the attempt record and the paper. The verifier agreed with
+    it.
+  results:
+  - claim: fig5-unit-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Numbers come from the data (cells 14 and 23): 151 S1 and 37 POm sham units; the CG1
+      sessions hold 11 S1 and 8 POm units, at 300 and 4,500 Hz. For sham POm, 37 units are fewer than
+      the 60.3 needed for either the 67 RSUs or the 67 FSUs, so those 2 counts are ruled out; that
+      leaves at most 6 of 8 within 10%, and a partial result needs 6. The choice was not made to reach
+      a result: it follows the claims file, whose header defines the control as CG1 at 3,000 Hz PRF,
+      as does the paper (Results, Fig. 5 paragraph). Cell 23 prints 0 units in CG1 sessions at 3,000
+      Hz, and sessions at 300 and 4,500 Hz cannot bound unit counts from sessions that were never
+      deposited. fig5b-cg1-control-no-response already treats this missing condition as data_missing.
+      With 2 counts ruled out and the other 6 unmeasurable, the data cannot decide between partially
+      reproduced and not reproduced, so blocked, data_missing is right. The proposed reason also cites
+      fig7-9-unit-counts as a parallel, which is not quite the same case, as its bound already rules
+      out a partial result; fig5b is the direct parallel and is enough.'
+    response: Outcome changed to blocked, data_missing, and proposed removed. The notes and the notebook's
+      fig5-unit-counts section now cite fig5b-cg1-control-no-response as the parallel and no longer
+      fig7-9-unit-counts. The conclusion, the Summary and the README give the outcome as blocked.
