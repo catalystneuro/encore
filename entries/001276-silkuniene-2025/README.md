@@ -22,8 +22,9 @@ pulses) and its thermometry are not in this dandiset.
 | Center YP shows no effect of packet rate | Reproduced |
 | YP at 6 and 7 mm declines with packet rate | Reproduced |
 | FWHM falls from about 4 mm at 1 Hz to about 2 mm at higher rates | Partially reproduced |
-| Figure 4C log fit | Blocked: no 1 kHz or 10 kHz wells in this or the three other dandisets citing the paper |
-| Figures 5 and 6 (seven claims) | Blocked: in other dandisets (DANDI:001277, 001284) |
+| Figure 4C log fit | Blocked: data missing, no 1 kHz or 10 kHz wells in this or the three other dandisets citing the paper |
+| Center YP stays above every distance from 2 to 7 mm, with cells present in the footprint (Figure 5C) | Reproduced (assumption) |
+| Figures 5 and 6 (six other claims) | Blocked: in other dandisets (DANDI:001277, 001284) |
 | Heating (Figure 2) and field simulation (Figure 1E) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -31,14 +32,13 @@ reasoning and the differences from the paper's method.
 
 The files give no electrode positions; the pixel size, 1.625 um, is only in OME-XML appended to each
 image description. The analysis finds the electrode footprints in each image by fitting a square of the
-paper's size, and places the paper's ROIs along the diagonals from its center. Four outcomes rest on
+paper's size, and places the paper's ROIs along the diagonals from its center. Five outcomes rest on
 choices the paper leaves open: which wells can be placed (the CT26 slope of Figure 7B reaches
 p < 0.001 with three left-out wells added, for fits to individual experiments), which electrode
-footprint gives the background (the two ratio claims fall in range under some single footprints), and
+footprint gives the background (the two ratio claims fall in range under some single footprints),
 the spacing of the ROIs along the diagonal (the 1-burst FWHM claim holds with 0.5 mm spacing, not
-with 1 mm). Two blocked claims carry proposed changes for a third verification round: the Figure 4C
-log fit to data missing, and the Figure 5C claim to reproduced, with the camera offset as the Hoechst
-background. The
+with 1 mm), and the Hoechst background of Figure 5C (the camera offset; the dandiset's Hoechst images
+were taken before exposure, the paper's check after it). The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001276-silkuniene-2025-01.yaml`](../../attempts/001276-silkuniene-2025-01.yaml).
 
