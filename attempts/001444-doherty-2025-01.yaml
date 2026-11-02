@@ -1,0 +1,548 @@
+schema_version: 2
+id: 001444-doherty-2025-01
+dataset:
+  archive: dandi
+  id: "001444"
+  version: 0.250805.2002
+  doi: 10.48324/dandi.001444/0.250805.2002
+paper: doi:10.1038/s41531-025-01070-4
+date: 2026-11-02
+entry: 001444-doherty-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41486399888
+inputs:
+- what: The Morlet spectrogram of NetPyNE 1.0.5 (netpyne/support/morlet.py) and the defaults of
+    netpyne.analysis.lfp.prepareSpectrogram, copied into the helper for spectrogram reading S1.
+    Software the Methods name, not data.
+  source: https://pypi.org/project/netpyne/1.0.5/ (netpyne-1.0.5-py2.py3-none-any.whl)
+outcomes:
+- claim: fig1-network-size
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig1-network-size
+  measured: 4480
+  notes: The four files of set sM1_12-12-2023 hold 4,480, 3,231, 2,919 and 2,917 M1 units, against
+    10,073, because the units table stores only cells that fired. All 15 M1 populations are
+    present and the input generators start at gid 10073, so the gid numbering is consistent with
+    10,073 M1 cells (gids 0 to 10072); the smallest gid blocks seen in all 16 files and the 24 gids
+    never seen between them sum to 10,073. The model's size is not in doubt; the dataset does not
+    hold the silent cells the criterion counts.
+  deviations:
+  - The claims file's count assumes the files hold every cell, as the dandiset description says;
+    they do not, so the gid range is shown as a variant.
+- claim: model-pt5b-excitability-decrease
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:model-pt5b-excitability-decrease
+  notes: The dandiset holds only the 16 network simulations (and one duplicate); no single-cell
+    current-injection simulations of the control or parkinsonian PT5B model are in it, and the
+    supplement that gives the protocol (Supplementary Fig. 1) was not available.
+- claim: robustness-four-sets
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:robustness-four-sets
+  notes: The claims file gives no measures, values or rule for this claim (Supplementary Table 2 was
+    not available), so it is blocked as its criterion says. The measures are reported per set
+    without an outcome. In the other three sets, PT5B rates are 11.3 to 13.4 spikes/s at control
+    rest, 19.1 to 24.6 at parkinsonian rest, 25.7 to 26.6 control activated and 29.1 to 30.7
+    parkinsonian activated; the PT5B SCH peaks at 17 to 19 Hz at control rest, 15 to 16 Hz at
+    parkinsonian rest, 40 to 42 Hz control activated and 28 to 31 Hz parkinsonian activated; the
+    parkinsonian over control ratio of 14 to 16 Hz LFP power at rest (S1) is 65.5, 11.5 and 7.0,
+    against 111.0 in the paper's set.
+- claim: fig2-control-rest-beta
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig2-control-rest-beta
+  measured: 19
+  notes: The PT5B SCH spectrum in W peaks at 19 Hz searched above 0 Hz and above 5 Hz. The LFP
+    variant peaks at 1 Hz above 0 Hz and at 19 Hz above 5 Hz.
+  deviations:
+  - The files hold one LFP trace ("LFP 0"), taken as electrode 0 (reading E1); the mean over 11
+    electrodes (E2) cannot be computed. The LFP is a variant here.
+- claim: fig2-control-activated-gamma
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig2-control-activated-gamma
+  measured: 44
+  notes: The PT5B SCH spectrum in W peaks at 44 Hz under both search ranges. The LFP variant peaks
+    at 1 Hz and 13 Hz.
+  deviations:
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+- claim: fig2c-control-pt5b-rate-activated
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig2c-control-pt5b-rate-activated
+  measured:
+  - 11.69
+  - 9.40
+  - 26.76
+  - 18.17
+  notes: Under R1, 11.69 +/- 9.40 spikes/s at rest and 26.76 +/- 18.17 activated, all within
+    tolerance; T1 to T4 give p from 2.7e-116 down to 5.4e-147 (Mann-Whitney 2.2e-99). Under R2 the
+    activated values (30.60 +/- 16.13) are outside tolerance. All 1,435 PT5B cells are in every
+    file.
+  deviations:
+  - R1 needs the population size, which the files do not state; PT5B is the gid block 5130 to 6564
+    (1,435 cells), bounded exactly by the gids seen.
+- claim: fig2c-control-it23-rate-activated
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig2c-control-it23-rate-activated
+  measured:
+  - 0.095
+  - 0.565
+  - 0.262
+  - 2.172
+  notes: Under R1 IT2 rates are 0.095 +/- 0.565 and 0.262 +/- 2.172 spikes/s, under R2 1.555 +/-
+    1.723 and 8.883 +/- 9.220; neither reading has all four values within tolerance, and neither
+    has all four tests below 0.001 (R1 Wilcoxon 0.69). The R3 variant (cells the file holds, those
+    that fired at least once in the simulation) gives 1.203 +/- 1.649 and 6.662 +/- 8.858, all
+    within tolerance; there the unpaired tests give 3.5e-05 and 3.6e-06 and the paired ones 0.016
+    and 0.011 (25 cells in both files). Whether R3 should be a reading is asked of a reader
+    (questions/001444.yaml).
+  deviations:
+  - R1 uses the IT2 gid block bounded from the data (1,729 or 1,730 cells); both bounds give the
+    same values to three decimals.
+- claim: fig2c-control-it6-rate-activated
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig2c-control-it6-rate-activated
+  measured:
+  - 4.28
+  - 5.58
+  - 0.95
+  - 3.13
+  notes: Under R1 IT6 rates are 4.28 +/- 5.58 and 0.95 +/- 3.13, under R2 6.27 +/- 5.75 and 4.87 +/-
+    5.57, so no reading has the four values within tolerance, though every test finds the decrease
+    at p below 0.001 under both. The R3 variant gives 5.82 +/- 5.78 and 3.47 +/- 5.19, all four
+    within tolerance, every test below 1e-10. Asked of a reader (questions/001444.yaml).
+- claim: control-it5-silenced-activated
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:control-it5-silenced-activated
+  measured:
+  - 1.21
+  - 1.75
+  - 0
+  - 0
+  notes: No IT5A or IT5B spike falls in W in the activated file (the one IT5A and two IT5B units in
+    it fired before 0.05 s), so the activated zeros hold. The rest rates are 1.21 and 1.75 spikes/s
+    under R1 and 3.57 and 3.58 under R2, against 3.3 and 3.1. The R3 variant gives 3.25 and 3.08,
+    within tolerance. Asked of a reader.
+- claim: control-it4-rate-activated
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:control-it4-rate-activated
+  measured:
+  - 0.037
+  - 0.586
+  notes: IT4 rates are 0.037 and 0.586 spikes/s under R1 and 3.14 (9 cells) and 8.18 (55 cells)
+    under R2. The R3 variant gives 2.57 (11 cells) and 4.74 (95 cells), within tolerance. Asked of
+    a reader.
+- claim: pt5b-highest-rate
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pt5b-highest-rate
+  notes: The criterion blocks the claim when its two population readings disagree, and they do.
+    Among the seven excitatory types PT5B has the highest mean in control rest, parkinsonian rest
+    and parkinsonian activated under R1, R2 and R3. Among all 15 populations PV5A is higher in all
+    three under every reading (R1 22.51, 22.79 and 42.10 spikes/s against PT5B 11.69, 14.24 and
+    29.68), and PV5B also under R1 (16.66, 17.37 and 36.16). The Results' context (rates of
+    excitatory cell types in Figs. 2C and 5C) supports the excitatory reading, but the paper does
+    not say which populations "any" covers; the question is for the authors (findings).
+- claim: control-cv-isi
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:control-cv-isi
+  measured:
+  - 0.611
+  - 0.354
+  - 45.9
+  - 0.618
+  - 0.295
+  - 24.7
+  notes: In W, with cells of at least two ISIs, 0.611 +/- 0.354 (45.9% regular) at rest and 0.618
+    +/- 0.295 (24.7%) activated; with at least one ISI, 0.590 +/- 0.365 (47.8%) and 0.610 +/- 0.301
+    (25.7%), the paper's values to the printed decimal. Both readings in W have all six values
+    within tolerance; over 0 to 4.3 s none is. NetPyNE's own statistic (cells with more than 10
+    spikes, a variant) misses one value (54.4% regular at rest).
+- claim: control-subthreshold-oscillations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:control-subthreshold-oscillations
+  notes: Neither the paper nor its code gives a rule for detecting a subthreshold oscillation or the
+    cells over which the 57.4% is taken (claims file). The paper's set holds the potentials of 20
+    of the 1,435 PT5B cells per file; 57.4% of 20 is 11.48, not a whole number of cells, so the
+    percentage was not taken over these 20. In W these potentials also do not match the stored
+    spikes of the same cells (findings).
+- claim: control-duty-cycle
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:control-duty-cycle
+  measured:
+  - 37.53
+  - 44.99
+  notes: Under none of the eight combinations are both values within tolerance. Measured is the
+    first combination (global half-height, 2.0 to 2.25 s, mean of periods). The closest is global
+    half-height in 2.0 to 2.25 s with the total summary, 27.88% at rest (tolerance from 27.9) and
+    46.49% activated (within). On the unsmoothed 2 ms SCH the half-height is crossed every 10 ms
+    (median period over W), much shorter than a beta or gamma period, so the duty cycles depend on
+    noise in the histogram; the paper does not say whether it smoothed it.
+- claim: fig3a-control-rest-spectrogram
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig3a-control-rest-spectrogram
+  measured: 1.30
+  notes: Neither reading has a local maximum of time-averaged power in 1 to 3 Hz (under S1 power
+    falls from 1 Hz), and the 15 to 25 Hz burst rate is 1.30 Hz (S1, 3 bursts) and 0.96 Hz (S2),
+    outside 1.53 to 1.87 Hz. The paper does not define a burst; the half-height reading is the
+    claims file's.
+  deviations:
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+  - S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults
+    (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands.
+- claim: fig3b-control-activated-spectrogram
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig3b-control-activated-spectrogram
+  measured:
+  - 1.30
+  - 1.30
+  - 66.9
+  notes: Two parts hold under both readings, no 1 to 3 Hz maximum and lower 15 to 20 Hz power than
+    at rest (ratio 0.42 under S1, 0.57 under S2). The 14 to 16 Hz burst rate is 1.30 and 2.89 Hz,
+    the 25 to 35 Hz burst rate 1.30 and 0.96 Hz (within only under S2), its median duration 66.9
+    and 100 ms against 50 +/- 5, and the 14 to 16 Hz bursts last 155 to 557 ms (S1) and 50 to 300
+    ms (S2), outside 90 to 550 ms. Measured values are under S1.
+  deviations:
+  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+- claim: control-coincident-spikes
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:control-coincident-spikes
+  measured:
+  - 100.0
+  - 100.0
+  notes: Under all six combinations 99.99% to 100% of PT5B spikes have a spike of another PT5B cell
+    within 1 ms, against 1% and 3%. The 1,435 PT5B cells fire 17.0 (rest) and 42.3 (activated)
+    spikes per ms together, so with the paper's definition over the whole population nearly every
+    spike is coincident. Among the 20 cells with recorded potentials (a variant) the share is 24.8%
+    to 72.8%. The paper's 1% to 3% must come from a smaller set of cells or another definition,
+    which it does not state (findings).
+- claim: fig4-control-unitary-events
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig4-control-unitary-events
+  notes: Under all eight combinations no 100 ms window is significant (0 of 3,901 slid windows, 0
+    of 40 non-overlapping), so the significant duration is 0 s at rest and activated, against 0.7
+    and 1.1 s, and no periodicity can be measured. Two or more PT5B cells fire in 96.5% to 100% of
+    1 ms bins, so the observed and expected coincidence counts are both about 100 per window. The
+    method of the claims file cannot find excess synchrony over the whole PT5B population; the
+    paper does not say which cells it analysed (findings).
+- claim: fig5-pd-rest-beta
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig5-pd-rest-beta
+  measured: 15
+  notes: The PT5B SCH spectrum peaks at 15 Hz under both search ranges; the LFP variant also at 15
+    Hz.
+  deviations:
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+- claim: fig5-pd-activated-gamma
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig5-pd-activated-gamma
+  measured: 27
+  notes: The parkinsonian activated PT5B SCH spectrum peaks at 27 Hz under both search ranges,
+    outside 38.7 to 47.3 Hz; its next local maxima are 30 Hz (0.43 of the peak's power) and 21 Hz
+    (0.39). The LFP variant also peaks at 27 Hz. In the other three sets the parkinsonian activated
+    SCH peaks at 28 to 31 Hz.
+  deviations:
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+- claim: fig5c-pd-pt5b-rate-activated
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig5c-pd-pt5b-rate-activated
+  measured:
+  - 14.24
+  - 7.13
+  - 29.68
+  - 12.67
+  notes: Under R1 14.24 +/- 7.13 and 29.68 +/- 12.67 spikes/s, under R2 14.70 +/- 6.76 and 30.57 +/-
+    11.75, all within tolerance under both; every test gives p below 1e-200.
+- claim: fig5c-pd-it23-rate-activated
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig5c-pd-it23-rate-activated
+  measured:
+  - 0.025
+  - 0.239
+  - 0.164
+  - 1.598
+  notes: Under R1 0.025 +/- 0.239 and 0.164 +/- 1.598, under R2 1.163 +/- 1.173 and 6.163 +/- 7.769;
+    neither has all four within tolerance, and under R2 the paired tests give 0.26 and 0.18 (12
+    cells). The R3 variant gives 0.783 +/- 1.105 and 4.295 +/- 7.066, all within tolerance, but
+    only the Welch test is below 0.001 there (1.7e-04; Mann-Whitney 0.0018, paired 0.60 and 0.21 on
+    22 cells). Asked of a reader.
+- claim: pd-it5-silenced-activated
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-it5-silenced-activated
+  measured:
+  - 0.47
+  - 0.47
+  - 0
+  - 0
+  notes: No IT5A or IT5B spike falls in W in the parkinsonian activated file, so the zeros hold; the
+    rest rates are 0.47 and 0.47 under R1 and 2.57 and 2.19 under R2, against 2.2 and 1.2. The R3
+    variant gives 2.17 and 1.25, within tolerance. Asked of a reader.
+- claim: pd-it6-rate-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-it6-rate-unchanged
+  measured:
+  - 1.33
+  - 1.73
+  notes: A claim of absence. Under R1 the means, 1.33 and 1.73 spikes/s, are outside tolerance and
+    all four tests find a difference at p < 0.05 (0.00017 to 0.019; activated higher by 0.40
+    spikes/s). Under R2 no test finds a difference (p 0.62 to 0.93, difference -0.155) but the
+    means, 6.79 and 6.64, are outside 5.4 to 6.6. The R3 variant gives 6.00 and 5.99 with no test
+    below 0.05 (smallest 0.49), which would meet the criterion. Asked of a reader.
+  deviations:
+  - The paper names no test or threshold for this absence; the claims file's p < 0.05 under T1 to
+    T4 is used.
+- claim: pd-cv-isi
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-cv-isi
+  measured:
+  - 0.343
+  - 0.267
+  - 80.4
+  - 0.185
+  - 0.191
+  - 93.8
+  notes: In W with at least two ISIs 0.343 +/- 0.267 (80.4% regular) and 0.185 +/- 0.191 (93.8%);
+    with at least one ISI 0.339 +/- 0.267 (80.6%) and 0.184 +/- 0.191 (93.8%). All six values are
+    within tolerance under both readings in W.
+- claim: pd-no-subthreshold-oscillations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-no-subthreshold-oscillations
+  notes: Depends on control-subthreshold-oscillations, blocked for want of a detection rule; the
+    same 20 PT5B potentials per file are available.
+- claim: pd-activated-vm-more-negative
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-activated-vm-more-negative
+  notes: In W the mean potential over the 20 recorded PT5B cells is -60.84 mV in the control and
+    -66.46 mV in the parkinsonian activated file (difference -5.62 mV), and the median -63.98 and
+    -71.11 mV (difference -7.13); all 20 cells are lower in the parkinsonian file under both
+    readings (Wilcoxon p = 1.9e-06). The potentials of this set do not match the stored spikes in W
+    (findings); in the three other sets, whose potentials do, the first 40 cells are lower in the
+    parkinsonian file in 39, 39 and 40 of 40 by the mean (by 4.98 to 5.67 mV) and 40 of 40 by the
+    median.
+  deviations:
+  - The paper's set holds 20 PT5B potentials, not the 400 the dandiset describes.
+- claim: pd-duty-cycle
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-duty-cycle
+  measured:
+  - 48.53
+  - 41.51
+  notes: No combination puts both values within tolerance. Measured is the first combination
+    (global half-height, 2.0 to 2.25 s, mean of periods). Global half-height in 2.0 to 2.25 s with
+    the total summary gives 26.42% at rest (within 26.1 to 31.9) and 36.45% activated (tolerance
+    22.5 to 27.5); every combination gives 36% or more for the activated state.
+- claim: fig6a-pd-rest-spectrogram
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig6a-pd-rest-spectrogram
+  measured: 1.74
+  notes: The 25 to 35 Hz burst rate is 1.74 Hz (S1) and 1.45 Hz (S2), against 4.5 to 5.5 Hz; burst
+    durations run 42 to 160 ms (S1) and 50 to 425 ms (S2), each outside 45 to 275 ms at one end.
+    The 14 to 16 Hz power is above its half-height 83% of the time under S1 and 36% under S2.
+  deviations:
+  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+- claim: fig6b-pd-activated-spectrogram
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig6b-pd-activated-spectrogram
+  notes: The 20 to 35 Hz burst rate is 2.61 Hz (S1) and 2.89 Hz (S2), outside 9 to 22 Hz; the median
+    burst duration, 65.1 and 75 ms, is within 22.5 to 110 ms.
+  deviations:
+  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+- claim: pd-coincident-spikes
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:pd-coincident-spikes
+  measured:
+  - 100.0
+  - 100.0
+  notes: Under all six combinations 99.95% to 100% of parkinsonian PT5B spikes are coincident,
+    against 2% and 3% (19.9 and 42.5 PT5B spikes per ms). Among the 20 recorded cells the share is
+    27.0% to 72.2%. See control-coincident-spikes.
+- claim: fig7-pd-unitary-events
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:fig7-pd-unitary-events
+  notes: As for the control files, no window is significant under any combination (0 s against 3.1
+    and 1.4 s), with two or more PT5B spikes in 95.2% to 100% of 1 ms bins. See
+    fig4-control-unitary-events.
+- claim: rest-pt5b-rate-pd-vs-control
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:rest-pt5b-rate-pd-vs-control
+  notes: Under R1 11.69 +/- 9.40 (control) and 14.24 +/- 7.13 spikes/s (parkinsonian), all within
+    tolerance, every test p below 1e-15 (paired by gid, 1,435 cells), and the standard deviation is
+    lower in the parkinsonian file. R2 also meets the criterion.
+- claim: rest-it4-rate-pd-vs-control
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:rest-it4-rate-pd-vs-control
+  measured:
+  - 0.037
+  - 0.037
+  notes: Under R1 both means are 0.037 spikes/s; under R2 3.14 (9 cells) and 14.13 (2 cells), the
+    control value outside tolerance; no reading has every test below 0.05. The R3 variant gives
+    2.57 and 14.13, within tolerance, but the parkinsonian value rests on 2 cells and no test
+    reaches 0.05 (smallest 0.077), so it would still fail.
+- claim: rest-it5a-rate-pd-vs-control
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:rest-it5a-rate-pd-vs-control
+  measured:
+  - 1.21
+  - 0.47
+  notes: Under R1 1.21 and 0.47 spikes/s (every test below 0.01); under R2 3.57 and 2.57, the
+    parkinsonian value outside 1.98 to 2.42, unpaired tests 0.017 and 0.012. The R3 variant gives
+    3.25 and 2.16, within tolerance, with every test below 0.01 (largest 0.0027). Asked of a reader.
+- claim: activated-pt5b-rate-pd-vs-control
+  outcome: partially_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:activated-pt5b-rate-pd-vs-control
+  notes: Under R1 26.76 +/- 18.17 (control) and 29.68 +/- 12.67 spikes/s (parkinsonian), all four
+    within tolerance, standard deviation lower; Wilcoxon, paired t and Welch give p 3.2e-07, 1.6e-08
+    and 6.5e-07, but Mann-Whitney gives 0.0052, above the 0.001 the criterion asks under every
+    test. The increase is present, with one of four tests weaker than the paper's bound. Under R2
+    the means are 30.60 and 30.57 and no test is below 0.05. The Discussion's statement of no
+    significant change in the activated state holds under R2 and not under R1.
+- claim: activated-it6-rate-pd-vs-control
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:activated-it6-rate-pd-vs-control
+  measured:
+  - 0.95
+  - 1.73
+  notes: Under R1 0.95 and 1.73 spikes/s, under R2 4.87 and 6.64, outside tolerance under both,
+    though the parkinsonian rate is higher (R1 tests p below 3e-05). The R3 variant gives 3.47 and
+    5.99, within tolerance, with every test below 1e-07. Asked of a reader.
+- claim: rest-beta-power-order-of-magnitude
+  outcome: partially_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:rest-beta-power-order-of-magnitude
+  notes: The parkinsonian over control ratio of rest LFP power is 129 (S1, at 15 Hz), 111 (S1, 14 to
+    16 Hz) and 65 (S2, both measures), above the criterion's 3.16 to 31.6 under every reading. The
+    criterion names a range for reproduced and one for not reproduced (below 3.16) and none for a
+    larger increase; the increase is present and about two orders of magnitude, so the outcome is
+    partially reproduced. The ratio of the spectrograms' maxima (the colour bars of Figs. 3 and 6),
+    a variant, is 21.2 under S1 and 3.0 under S2. In the other three sets the S1 ratio at 14 to 16
+    Hz is 65.5, 11.5 and 7.0.
+  deviations:
+  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+  - The criterion leaves ratios above 31.6 without an outcome; partially reproduced was chosen
+    because the claimed direction holds and its size does not.
+- claim: activated-20-35hz-power-pd-vs-control
+  outcome: reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:activated-20-35hz-power-pd-vs-control
+  notes: Mean 20 to 35 Hz power is higher in the parkinsonian activated file under every reading,
+    by a factor of 4.55 (LFP, S1), 4.71 (LFP, S2) and 11.8 (PT5B SCH).
+  deviations:
+  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+- claim: rest-synchrony-increase
+  outcome: not_reproduced
+  notebook: reproduce_doherty_2025.ipynb
+  output: claim:rest-synchrony-increase
+  notes: The significant synchrony at rest is 0 s in both files under every reading, so it is not
+    larger in the parkinsonian file. It follows from fig4-control-unitary-events and
+    fig7-pd-unitary-events, whose method finds no significant window on these data.
+findings:
+- kind: metadata_error
+  statement: The dandiset description says each file holds spike trains of all 10,073 neurons. The
+    units tables hold only the cells that fired, 2,917 to 4,480 M1 cells per file in set
+    sM1_12-12-2023 and 2,765 to 4,714 in the others, and input generators that did not fire are
+    missing too. The size of each population is not stated and can be recovered only from the gid
+    blocks in the unit names (24 gids between blocks are never seen).
+- kind: metadata_error
+  statement: The dandiset description says each file holds membrane potentials of 400 PT5B
+    neurons. The four files of the paper's set, sM1_12-12-2023, hold 20 each (gids 5201 to 6502);
+    the other twelve hold 400 (gids 5130 to 5529).
+- kind: other
+  statement: In the paper's set the PT5B membrane potentials do not belong to the run whose spikes
+    are stored. Their 0 mV crossings match the same gid's unit spikes in the first 0.5 s (94.8% to
+    100%) but only 1.5% to 5.6% of unit spikes in 2.0 to 4.3 s, while spike counts stay similar. In
+    set sM1-04-22-2024 the potentials match the spikes throughout. The potentials of the paper's
+    set seem to come from a run that diverged from the stored one.
+- kind: other
+  statement: sub-001/sub-001.nwb is the same blob as sub-001/sub-001_ses-sM1-04-22-2024-01.nwb, so
+    one simulation is deposited twice under two names.
+- kind: metadata_insufficient
+  statement: Each file holds one LFP trace, "Segment 0 LFP 0", with no electrode position, where
+    the model records 11 electrodes at 200 to 1200 um depth. Which electrode it is cannot be told
+    from the files, and the mean over electrodes cannot be computed.
+- kind: metadata_error
+  statement: The files name the bioRxiv preprint as their related publication, the dandiset lists
+    no related resource for the published paper, and the archive's summary gives "spike sorting
+    technique" as the measurement technique of a simulation, with "Units" as the only variable
+    measured though the files hold LFP and membrane potentials.
+- kind: data_missing
+  statement: The single-cell current-injection simulations of the control and parkinsonian PT5B
+    models behind the 64% decrease in excitability (Supplementary Fig. 1) are not in the dandiset.
+- kind: methods_unavailable
+  statement: Question for the authors. Over which cells is a population's mean rate taken? The
+    paper's IT rates match exactly when the cells are those that fired at least once in the 4.3 s
+    simulation, with rates over the last 2.3 s (IT2 1.203 +/- 1.649 at control rest against 1.2 +/-
+    1.6), and not when all cells or only cells active in the last 2.3 s are counted. Which test
+    gave the rate p-values? Under that reading the Welch t-test meets every printed bound except
+    for IT4 at rest (two parkinsonian cells, p = 0.31), while paired tests do not for IT2.
+- kind: methods_unavailable
+  statement: Question for the authors. Which PT5B cells, and what definition, gave 1% to 3% of
+    spikes coincident within 1 ms and the unitary-event durations of Figs. 4 and 7? Over all 1,435
+    PT5B cells (17 to 42 spikes per ms) nearly every spike has another PT5B spike within 1 ms, two
+    or more cells fire in 95% to 100% of 1 ms bins, and a joint-surprise test against rate-matched
+    Poisson cells finds no significant 100 ms window.
+- kind: methods_unavailable
+  statement: Question for the authors. How were LFP bursts (Figs. 3 and 6) defined, which
+    spectrogram parameters and electrode were used, and was the PT5B spike count histogram smoothed
+    before the duty cycle was measured? Unsmoothed 2 ms histograms cross half-height every 10 ms,
+    and a half-height rule on band power gives burst rates of 1 to 3 Hz where the paper reports 5
+    Hz and 10 to 20 Hz.
+- kind: methods_unavailable
+  statement: Question for the authors. Does "highest spike rate of any neuron population" cover
+    interneurons? PV5A (22.5 to 42.1 spikes/s by all cells) fires faster than PT5B (11.7 to 29.7)
+    in control rest and both parkinsonian states; among excitatory types PT5B is highest.
+- kind: methods_unavailable
+  statement: Question for the authors. How were subthreshold membrane-potential oscillations
+    detected, and over which cells is the 57.4% taken? The paper's set holds 20 PT5B potentials per
+    file, and 57.4% of 20 is not a whole number.
+- kind: paper_inconsistency
+  statement: The Results report a significant increase in PT5B rate from control to parkinsonian in
+    the activated state (p < 0.001), while the Discussion says there was no significant change in
+    PT5B population firing rate in the activated state. On the data, counting all PT5B cells, three
+    tests give p below 1e-06 and the Mann-Whitney test 0.0052.
