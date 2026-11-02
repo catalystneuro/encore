@@ -161,7 +161,7 @@ def polarization_trace(stack: np.ndarray) -> dict:
 def response_window(index: np.ndarray, first: int = 1) -> dict:
     """Baseline, peak and the frames where the index exceeds half its peak change.
 
-    Frame 0 is left out by default: in many files it is about half as bright as the others
+    Frame 0 is left out by default: in many files it is about 0.6 times as bright as the others
     (shown in the notebook's data check), which the per-frame normalization does not remove.
     """
     index = np.asarray(index, dtype=float).copy()

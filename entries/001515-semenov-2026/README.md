@@ -16,7 +16,7 @@ reasoning and the differences from the paper's method.
 
 The attempt record is [`attempts/001515-semenov-2026-01.yaml`](../../attempts/001515-semenov-2026-01.yaml).
 
-- `reproduce_semenov_2026.ipynb`: the data check and the one tested claim. It takes about six
-  minutes, most of it streaming the files.
+- `reproduce_semenov_2026.ipynb`: the data check and the one tested claim. It takes about four
+  minutes (231 s in the last run), most of it streaming the files.
 - `strobe.py`: listing and reading the files, a membrane mask and polarization index per frame, and Eq. (2)
   of the paper. Other notebooks on this dandiset can import it.
