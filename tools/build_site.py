@@ -564,7 +564,10 @@ def pipeline_rows(data: dict) -> list[dict]:
         rerun = bool(deprecated_on) and not reread
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
-            else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
+            else ("waiting", f"{len(missing)} not in store") if papers
+            # The manifest is written by hand from the private store (tools/papers_manifest.py), so a target
+            # added since its last run names papers the manifest has not checked yet.
+            else ("waiting", "not checked") if t.get("papers") else ("waiting", "no paper named"),
             "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
             if check != "absent" else ("todo", ""),
             "check": ("todo", "") if rerun else ("done", "ready") if check is True
