@@ -127,8 +127,10 @@ def read_file(asset_id: str, spikes: bool = True) -> dict:
         idx = f["units/spike_times_index"][:]
         units = np.split(st, idx[:-1])
         # Some units hold spike times out of order (a few per unit); they are sorted here, as the
-        # window counts need, and the number of such units is kept for the data check.
+        # window counts need, and the number of such units, and of places out of order in each, is kept
+        # for the data check.
         out["n_unsorted"] = int(sum(np.any(np.diff(u) < 0) for u in units))
+        out["unsorted_places"] = [int((np.diff(u) < 0).sum()) for u in units if np.any(np.diff(u) < 0)]
         out["spikes"] = [np.sort(u) for u in units]
     f.close()
     return out

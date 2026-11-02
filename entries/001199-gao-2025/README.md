@@ -8,8 +8,9 @@ cortex (AC) during transcranial focused ultrasound at 30 to 4,500 Hz PRF with 20
 | Claim | Outcome |
 |---|---|
 | Rats with S1 and POm (16) and S1 and AC (12) recordings | Not reproduced |
-| RSU and FSU counts of Fig. 4 and Fig. 5 (by upper bounds from untyped units) | Not reproduced |
-| AC neurons respond to 1,500 and 3,000 Hz during sonication, and to four PRFs after it | Not reproduced |
+| RSU and FSU counts of Fig. 4 (by upper bounds from untyped units) | Not reproduced |
+| RSU and FSU counts of Fig. 5 (by upper bounds from untyped units) | Not reproduced; a change to blocked (data missing) is proposed, as the paper's CG1 control at 3,000 Hz is not in the dandiset |
+| AC neurons respond to 1,500 and 3,000 Hz during sonication, and to four PRFs after it | Not reproduced, assuming the 2025 sessions (every AC file) were at the paper's 5 V and their trial starts are the sonication onsets; the spikes support the onsets only in part |
 | Target determination artefact (Fig. 2) | Blocked: data missing |
 | 18 other claims on RSUs and FSUs (Fig. 4 to 6, 10A to 10C, 11C, 11D) | Blocked: data missing |
 | 12 claims on the duty-cycle series (Fig. 7 to 9, 10D to 10F) | Blocked: data missing |
