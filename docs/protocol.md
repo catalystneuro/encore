@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-12`. Record this version in the attempt's provenance.
+Version: `pilot-13`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -357,7 +357,7 @@ module.
   (say what and why), or a standard choice for a detail that cannot change a
   result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
-  Aim for under ten minutes; CI fails a notebook over thirty. If the analysis
+  Aim for under ten minutes; CI fails a notebook over sixty. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
 - **Develop on a subset.** Build and debug each analysis on one or two
   sessions, or a few units, and run it on the whole dataset once, when it
