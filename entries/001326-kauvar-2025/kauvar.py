@@ -26,6 +26,10 @@ Where each parameter comes from:
   get_affective_projections for the eye-reflex dimension, the QR step and the sign.
 - Timescale fits. analysis.py extract_timescale (fit_time 2.5 s, initial b 0.2).
 - Model. analysis.py model_system, theoretical_* and compare_model.
+- Verification checks (added after the first verification round, not the paper's method): the series
+  onsets against the file's infusion time, tone and light onsets inside the analysis windows, the
+  correlation structure from the file's infusion time, persistent weights from half the Pre series,
+  and the bounded and mean-removed timescale fits of `extract_timescale`.
 
 Cite Kauvar, Richman, Liu et al., Science (2025) for the methods reimplemented here.
 """
@@ -209,16 +213,24 @@ def my_qr(mat):
     return q, r
 
 
-def extract_timescale(signal, fit_time=2.5, t0=0.2):
+def extract_timescale(signal, fit_time=2.5, t0=0.2, demean=False, bounded=False):
     """analysis.py extract_timescale: autocorrelation (scipy.signal.correlate) from lag 1, normalized to
-    its maximum, a*exp(-x/b)+c fitted over fit_time with p0 (1, t0, 0). Returns b, or nan if the fit fails."""
+    its maximum, a*exp(-x/b)+c fitted over fit_time with p0 (1, t0, 0). Returns b, or nan if the fit fails.
+
+    Verification variants, not in the code: `demean` subtracts the signal's mean before the autocorrelation
+    (the code does not, so a mean level adds a constant that the fit must absorb); `bounded` limits b to
+    0.001 to 2.5 s (the fit window), where the code's fit is unbounded."""
     def curve(x, a, b, c):
         return a * np.exp(-x / b) + c
+    signal = np.asarray(signal, float)
+    if demean:
+        signal = signal - signal.mean()
     sig = scipy.signal.correlate(signal, signal)[len(signal):][:int(round(fit_time / BIN))]
     sig = sig / sig.max()
     x = np.arange(len(sig)) * BIN
+    kw = dict(bounds=([-np.inf, 0.001, -np.inf], [np.inf, fit_time, np.inf])) if bounded else {}
     try:
-        popt, _ = curve_fit(curve, x, sig, p0=[1, t0, 0], maxfev=2000)
+        popt, _ = curve_fit(curve, x, sig, p0=[1, t0, 0], maxfev=2000, **kw)
         return popt[1]
     except RuntimeError:
         return np.nan
@@ -286,6 +298,15 @@ def process_session(sess, paths, top_frac=0.1):
     ket_start = P[19, -1] + 30
     out["ket_start_code"] = ket_start
     out["ket_infusion_nwb"] = sess.ket_infusion
+    # first and last puff of every series relative to the file's infusion time (verification check of the epochs)
+    out["series_rel_infusion"] = np.c_[P[:, 0], P[:, -1]] - sess.ket_infusion
+    # tone and light onsets inside the windows the analyses use: the 30 s before each puff series (timescale,
+    # coupling) and the 50 s post-series window from 1 s before the last puff (emotion-like dimension)
+    def n_in(t, lo, hi):
+        return int(((t >= lo) & (t < hi)).sum())
+    out["stim_in_windows"] = {kind: {"30 s before series": np.array([n_in(sess.onsets(kind), a - 30, a) for a in P[:, 0]]),
+                                     "50 s after series": np.array([n_in(sess.onsets(kind), b - 1, b + 49) for b in P[:, -1]])}
+                              for kind in ("tone", "light")}
     pb = onset_bins(puffs, nb)
     sta = pb - 100
     W = windows(z, sta, 300).reshape(z.shape[0], nser, 8, 300)       # all units, all series
@@ -341,6 +362,15 @@ def process_session(sess, paths, top_frac=0.1):
             pr = np.tensordot(w, block, axes=([0], [0]))      # (series, 8, 300)
             proj[key + (cond,)] = {"first": pr[:, 0].mean(0), "all": pr.mean((0, 1))}
     out["cd_proj"] = proj
+    # held-out check: persistent weights from the odd Pre series (1, 3, ..., 19), projections of the even Pre
+    # series (2, 4, ..., 20), which the weights never saw, and of Ketamine and Post with the same weights
+    ho = {}
+    for var in ("unit", "pooled"):
+        tr = Wm[:, 0:20:2]
+        w = cd_weights(tr[:, :, :, 150:200].mean(2).mean(-1), tr[:, :, :, :100].mean(2).mean(-1), var, "unit")
+        for cond, block in (("pre_train", Wm[:, 0:20:2]), ("pre_test", Wm[:, 1:20:2]), ("ket", ket), ("post", post)):
+            ho[(var, cond)] = np.tensordot(w, block, axes=([0], [0]))[:, 0].mean(0)
+    out["cd_proj_heldout"] = ho
     # ---- baseline windows (30 s before the first puff of each series): timescale and coupling
     first = P[:, 0]
     fb = onset_bins(first, nb)
@@ -449,6 +479,11 @@ def process_session(sess, paths, top_frac=0.1):
         return a @ a.T
     out["corr_pre"] = corr(pre_seg.copy()).astype(np.float32)
     out["corr_ket"] = corr(ket_seg.copy()).astype(np.float32)
+    # variant: the 10 minutes from the file's infusion time (Methods, "the 10-minute period following the onset
+    # of ketamine infusion"); Pre is then everything before the infusion
+    b_inf = int(sess.ket_infusion / BIN)
+    out["corr_pre_inf"] = corr(z[:, :b_inf].copy()).astype(np.float32)
+    out["corr_ket_inf"] = corr(z[:, b_inf:b_inf + 60000].copy()).astype(np.float32)
     # ---- spectra (fig. S29): minute before infusion and minutes from 5 and 10 min after
     t_inf = sess.ket_infusion
     spec = {}

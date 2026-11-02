@@ -5,23 +5,23 @@ Tests the findings of [Kauvar, Richman, Liu et al. (2025)](https://doi.org/10.11
 recordings (13 sessions, 10 mice), and on the behavior in
 [DANDI:001347](https://dandiarchive.org/dandiset/001347/0.250528.0702).
 
-The claims file has 52 findings of the paper and two link claims added by this attempt. 42 are tested: 31 reproduced, 8 partially reproduced and 3 not reproduced; 12 are blocked (8 human iEEG findings for lack of time, 4 whose data are not in DANDI:001347).
+The claims file has 52 findings of the paper and two link claims added by this attempt. 45 are tested: 31 reproduced, 11 partially reproduced and 3 not reproduced; 9 are blocked (5 human iEEG findings that need the raw LFP, for lack of time, and 4 whose data are not in DANDI:001347).
 
 | Claim | Outcome |
 |---|---|
 | `fig4-recordings-scale` | Reproduced |
-| `fig4de-response-clusters` | Partially reproduced |
-| `figs31b-cluster-overrepresentation` | Reproduced |
+| `fig4de-response-clusters` | Not reproduced |
+| `figs31b-cluster-overrepresentation` | Partially reproduced |
 | `fig4g-ketamine-alters-slow-clusters` | Not reproduced |
 | `fig4i-rise-times-unchanged` | Reproduced |
 | `fig4h-decay-shortened` | Reproduced |
 | `fig4h-decay-anatomical-progression` | Reproduced |
 | `fig5d-emotion-dimension-accumulates` | Partially reproduced |
-| `fig5e-late-reduced` | Not reproduced |
+| `fig5e-late-reduced` | Partially reproduced |
 | `fig5e-rapid-unchanged` | Reproduced |
-| `figs32c-regional-emotion-dimension` | Reproduced |
+| `figs32c-regional-emotion-dimension` | Partially reproduced |
 | `fig5g-tau-persist-model` | Reproduced |
-| `figs33-alternative-models` | Reproduced |
+| `figs33-alternative-models` | Reproduced (rests on an assumption) |
 | `fig6d-mouse-persistent` | Reproduced (rests on an assumption) |
 | `fig6f-mouse-fast-unchanged` | Reproduced |
 | `fig6b-persistent-dimension-distributed` | Reproduced |
@@ -33,11 +33,11 @@ The claims file has 52 findings of the paper and two link claims added by this a
 | `figs34g-tone-timescale` | Partially reproduced (rests on an assumption) |
 | `figs34h-tone-coupling` | Not reproduced |
 | `figs30-correlation-structure` | Partially reproduced |
-| `figs29-rsp-oscillations` | Partially reproduced |
+| `figs29-rsp-oscillations` | Reproduced |
 | `link-001347-condition-labels` | Reproduced |
 | `link-001347-recorded-sessions` | Partially reproduced |
-| `fig4b-recorded-eye-closure-ketamine` | Reproduced (rests on an assumption) |
-| `fig5b-recorded-accumulation` | Reproduced (rests on an assumption) |
+| `fig4b-recorded-eye-closure-ketamine` | Partially reproduced |
+| `fig5b-recorded-accumulation` | Partially reproduced |
 | `figs34c-tone-no-eye-closure` | Reproduced |
 | `fig1k-mouse-ketamine-late-closure` | Reproduced |
 | `fig1l-dissociatives-preinfusion` | Reproduced |
@@ -55,9 +55,9 @@ The claims file has 52 findings of the paper and two link claims added by this a
 | `fig1f-human-reports` | Blocked: other |
 | `fig2d-cadss-ketamine` | Blocked: other |
 | `figs14g-cadss-correlation` | Blocked: other |
-| `fig2g-six-factors` | Blocked: too large |
-| `fig2i-factors-1-2-ketamine` | Blocked: too large |
-| `fig3b-cluster-test-networks` | Blocked: too large |
+| `fig2g-six-factors` | Reproduced (rests on an assumption) |
+| `fig2i-factors-1-2-ketamine` | Reproduced |
+| `fig3b-cluster-test-networks` | Reproduced |
 | `figs12-erp-not-blink` | Blocked: too large |
 | `fig6c-human-persistent` | Blocked: too large |
 | `fig6e-human-fast-unchanged` | Blocked: too large |
@@ -70,7 +70,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001326-kauvar-2025-01.yaml`](../../attempts/001326-kauvar-2025-01.yaml).
 
-- `reproduce_kauvar_2025.ipynb`: the electrophysiology of DANDI:001326. It takes about seven minutes, most of it streaming and reducing the files.
-- `reproduce_kauvar_2025_behavior.ipynb`: the eye closure of the recorded mice, the behavior-only mouse experiments and the non-implanted participants, from DANDI:001347. It takes about three minutes.
+- `reproduce_kauvar_2025.ipynb`: the electrophysiology of DANDI:001326. It takes about nine minutes, most of it streaming and reducing the files.
+- `reproduce_kauvar_2025_behavior.ipynb`: the eye closure of the recorded mice, the behavior-only mouse experiments and the non-implanted participants, from DANDI:001347. It takes about two minutes.
+- `reproduce_kauvar_2025_ieeg.ipynb`: the human iEEG factor analysis (fig. 2G, 2I) and network cluster tests (Fig. 3B), from the derived spectrograms in DANDI:001347. It takes under a minute.
 - `kauvar.py`: loading and the measures of the paper's code (unit selection, coding and emotion-like dimensions, timescales, coupling, the first-order model) for DANDI:001326.
-- `behavior.py`: loading, the session lists of the paper's code and the eye-closure measures for DANDI:001347.
+- `behavior.py`: loading, the session lists of the paper's code and the eye-closure measures for DANDI:001347, and the NMF, mixed-model and cluster-test steps for its derived iEEG files.

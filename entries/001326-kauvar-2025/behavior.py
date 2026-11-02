@@ -70,6 +70,8 @@ Cite Kauvar, Richman, Liu et al., Science (2025) for the methods reimplemented h
 
 from __future__ import annotations
 
+import warnings
+
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -163,6 +165,14 @@ def _open(url):
 def _pmap(fn, items, workers=16):
     with ThreadPoolExecutor(workers) as ex:
         return list(ex.map(fn, items))
+
+
+def file_objects(url):
+    """Every dataset path in one file, with its shape (metadata only; no data are read)."""
+    out = {}
+    with _open(url) as f:
+        f.visititems(lambda n, o: out.__setitem__(n, o.shape) if isinstance(o, h5py.Dataset) else None)
+    return out
 
 
 # ---------------------------------------------------------------- behavior-rig mice
@@ -460,3 +470,113 @@ def model_trace(data, cond, which=None):
         seg = m[int(FPS * (T_FIRST - 1)): int(FPS * (T_FIRST - 1)) + 2 * 4400]
         per.append(seg.reshape(-1, 2).mean(1))
     return np.mean(per, axis=0)
+
+
+# ---------------------------------------------------------------- human iEEG, derived files (sub-H)
+# The sub-H files of DANDI 001347 hold the paper's spectrograms of the iEEG channels, already z-scored and
+# averaged (sgramPerChannel: per channel, train and test halves of each session; sgramPerYeoPerTrial: per Yeo7
+# network and trial), and the paper's NMF factors and loadings. The raw iEEG (sub-SD*_ecephys) is not used.
+
+def _dec(a):
+    return np.array([x.decode() if isinstance(x, bytes) else x for x in a])
+
+
+def load_sgram_per_channel(urls):
+    """{session_half: (channels, 65 freq, 28 time)}, channel labels ([region]_[patient]_[bipolar pair]),
+    frequencies (Hz) and times (s from puff onset)."""
+    with _open(urls["sub-H/sub-H_ses-sgramPerChannel.nwb"]) as f:
+        S = {k.replace("puff_sgram_", "").replace("_trials", ""): f["scratch/" + k][:] for k in f["scratch"].keys()
+             if k.startswith("puff_sgram")}
+        return S, _dec(f["scratch/channel/channel"][:]), f["scratch/freq_hz/frequency"][:], f["scratch/time_sec/time"][:]
+
+
+def load_nmf_deposit(urls):
+    """The paper's own NMF output: loadings per channel and session (NaN where a channel is below the 0.1
+    loading threshold of the factor) and the six factors (65 freq x 28 time), in the deposit's order."""
+    with _open(urls["sub-H/sub-H_ses-sgramNMFLoadings.nwb"]) as f:
+        L = {s: f[f"scratch/channel_loading_mtx_{s}"][:] for s in ("pre", "inf", "post")}
+        ch = _dec(f["scratch/channel/channel"][:])
+    with _open(urls["sub-H/sub-H_ses-sgramNMFFactors.nwb"]) as f:
+        F = np.array([f[f"scratch/factor_{i}"][:] for i in range(6)])
+    return L, ch, F
+
+
+def split_pos_neg(X):
+    """decode_utils.split_pos_neg (paper's code): positive part and absolute negative part."""
+    return np.clip(X, 0, None), np.clip(-X, 0, None)
+
+
+def fit_nmf(train, k, random_state=1):
+    """decode_utils.get_nmf: sklearn NMF (solver 'mu', Frobenius, random_state 1) of the positive and the
+    negative parts of a (channels, features) array, k factors each. Returns the two fitted models."""
+    from sklearn.decomposition import NMF
+    p, n = split_pos_neg(train)
+    return (NMF(k, solver="mu", random_state=random_state).fit(p), NMF(k, solver="mu", random_state=random_state).fit(n))
+
+
+def nmf_loadings(models, X):
+    """Loadings of each channel on the 2k factors (positive factors first), as the code's unsplit_pos_neg."""
+    p, n = split_pos_neg(X)
+    return np.hstack([models[0].transform(p), models[1].transform(n)])
+
+
+def nmf_factors(models, shape):
+    """The 2k factors as (2k, freq, time), negative factors sign-flipped (get_nmf is_neg)."""
+    return np.vstack([models[0].components_, -models[1].components_]).reshape((-1,) + shape)
+
+
+def mixed_loading_test(W_pre, W_inf, W_post, ch):
+    """decode_utils.compare_nmf_loadings_by_condition, comparison 'prepost': per factor, channels with a
+    loading (not NaN); W ~ X with X = 0 for the mean of pre- and postinfusion and 1 for infusion, mixed-effects
+    linear model grouped by patient (statsmodels mixedlm); BH-FDR over the factors."""
+    import statsmodels.formula.api as smf
+    rows = []
+    for j in range(W_pre.shape[1]):
+        keep = ~np.isnan(W_pre[:, j])
+        pt = np.array([c.split("_")[1] for c in ch[keep]])
+        avg = (W_pre[keep, j] + W_post[keep, j]) / 2
+        d = pd.DataFrame({"W": np.r_[avg, W_inf[keep, j]], "X": np.r_[np.zeros(keep.sum()), np.ones(keep.sum())], "pt": np.r_[pt, pt]})
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            r = smf.mixedlm("W ~ X", d, groups=d["pt"]).fit()
+        rows.append({"factor": j, "channels": int(keep.sum()), "patients": len(set(pt)), "pre": W_pre[keep, j].mean(),
+                     "infusion": W_inf[keep, j].mean(), "post": W_post[keep, j].mean(), "coefficient": r.params["X"], "p": r.pvalues["X"],
+                     "converged": bool(r.converged)})
+    out = pd.DataFrame(rows)
+    out["corrected p"] = scipy.stats.false_discovery_control(out["p"])
+    return out
+
+
+def load_yeo_trials(urls):
+    """Per Yeo7 network, the per-trial spectrograms of each session with the patient and trial number of each
+    trial (sgramPerYeoPerTrial; trials past a network's count are NaN padding)."""
+    import re
+    with _open(urls["sub-H/sub-H_ses-sgramPerYeoPerTrial.nwb"]) as f:
+        reg = _dec(f["scratch/region/region"][:])
+        cond = _dec(f["acquisition/session_trial_data/condition"][:])
+        creg = _dec(f["acquisition/session_trial_data/region"][:])
+        trials = [np.array(re.findall(r"\d+", s), int) for s in _dec(f["acquisition/session_trial_data/trial_data"][:])]
+        pts = [np.array(re.findall(r"'([^']+)'", s)) for s in _dec(f["acquisition/session_patient_data/patient_data"][:])]
+        data = {c: f[f"scratch/puff_region_sgram_{c}"][:] for c in ("preinfusion", "infusion")}
+        ff, tt = f["acquisition/ff/data"][:], f["acquisition/tt/data"][:]
+    out = {}
+    for i, r in enumerate(reg):
+        d = {}
+        for c in ("preinfusion", "infusion"):
+            j = [m for m in range(len(cond)) if creg[m] == r and cond[m] == c][0]
+            d[c] = {(p, t): data[c][i, n] for n, (p, t) in enumerate(zip(pts[j], trials[j]))}
+        out[r] = d
+    return out, ff, tt
+
+
+def paired_cluster_test(d, n_permutations=512, p_form=0.01, seed=0):
+    """Methods, Permutation cluster test: infusion minus preinfusion for trials paired by patient and position
+    in the puff sequence, mne permutation_cluster_1samp_test (two-sided t, cluster-forming threshold
+    p_form, n_permutations as the code's default 512). Returns (pairs, patients, cluster p-values)."""
+    import mne
+    mne.set_log_level("ERROR")
+    common = sorted(set(d["preinfusion"]) & set(d["infusion"]))
+    X = np.array([d["infusion"][c] - d["preinfusion"][c] for c in common])
+    thr = scipy.stats.t.ppf(1 - p_form / 2, len(X) - 1)
+    _, _, pv, _ = mne.stats.permutation_cluster_1samp_test(X, threshold=thr, n_permutations=n_permutations, tail=0, seed=seed, out_type="mask")
+    return len(X), len({c[0] for c in common}), np.asarray(pv)
