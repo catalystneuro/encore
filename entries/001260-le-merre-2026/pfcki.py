@@ -14,14 +14,18 @@ Where each parameter comes from:
 - Epochs overlapping licking or spike-band saturation are dropped: Methods, Epoch selection.
   Licking is read from LickOnset/LickOffset in the files; saturation from the "spike saturation
   start/stop" series.
-- Sleep-like periods: Methods, Detection of sleep-like periods (10-ms bins of all cortical
-  spikes, Savitzky-Golay 11 points order 3, troughs below 0.2 of the geometric mean for longer
+- Sleep-like periods: Methods, Detection of sleep-like periods ("detected per recording
+  session", 10-ms bins of all cortical spikes, pooled here over the probes of a session,
+  Savitzky-Golay 11 points order 3, troughs below 0.2 of the geometric mean for longer
   than 5 ms, extended to the geometric mean, merged within 1.5 s, padded by 1 s around merged
   and 0.3 s around single off periods). The geometric mean is taken over the bins with a
   positive smoothed rate (assumption: the geometric mean of a vector with zeros is zero, which
-  would make the threshold meaningless). The probe whose cortical units are used for a probe
-  without enough of them is the code's table (config/datatables/allrecs_allprobes.xlsx,
-  quietdet_src, "from-other"); hippocampal recordings are not checked ("ignore" in that table).
+  would make the threshold meaningless). Sessions where the detector marks 1% of the time or
+  more in a Poisson population of the same pooled rate (NULL_MAX, an assumption: too few
+  cortical units, see the notebook) and the probes the code's table marks "ignore"
+  (config/datatables/allrecs_allprobes.xlsx, quietdet_src) get no sleep-like period. The
+  per-probe detection of round 1 (with the table's "from-other" probe) and the code's detector
+  are variants.
   Active epochs lie at least 1 s from a sleep-like period (Methods; code active_buff = [-1, 1]);
   sleep-like epochs overlap one.
 - Per-epoch metrics: log10 FR of the count over 3 s, B and M from ISIs (Methods, equations 2
@@ -239,12 +243,19 @@ def epoch_metrics(st, idx_end, ep):
     return cnt, B, M
 
 
-def offperiod_sleep(st_cortical, n_units, t0, t1, binw=0.01):
-    """Sleep-like periods from the pooled spikes of cortical units (Methods)."""
-    if n_units == 0 or len(st_cortical) == 0:
+def cortical_counts(st_cortical, t1, binw=0.01):
+    """10-ms counts of the pooled cortical spikes from time 0 to t1 (Methods: 10 ms bin width)."""
+    return np.histogram(st_cortical, np.arange(0, t1 + binw, binw))[0].astype(np.int32)
+
+
+def offperiod_sleep(counts, n_units, t0=0.0, binw=0.01):
+    """Sleep-like periods from the pooled 10-ms counts of n_units cortical units (Methods),
+    using the bins from t0 on."""
+    if n_units == 0 or counts.sum() == 0:
         return np.empty((0, 2))
-    edges = np.arange(t0, t1 + binw, binw)
-    fr = np.histogram(st_cortical, edges)[0] / n_units / binw
+    i0 = int(round(t0 / binw))
+    fr = counts[i0:] / n_units / binw
+    edges = (i0 + np.arange(len(fr) + 1)) * binw
     frs = savgol_filter(fr.astype(float), 11, 3)
     pos = frs[frs > 0]
     gmean = np.exp(np.mean(np.log(pos)))
@@ -285,17 +296,16 @@ def offperiod_sleep(st_cortical, n_units, t0, t1, binw=0.01):
     return np.array(res)
 
 
-def offperiod_sleep_code(st_cortical, n_units, t0, t1, binw=0.01):
+def offperiod_sleep_code(counts, n_units, t0=0.0, binw=0.01):
     """Variant: the code's detector (utils/statedet_helpers.py get_detdict with
     config/config_statedet/offdetection_defaultparams.yaml): off periods are runs below the
     geometric mean whose minimum is at most 0.2 of it, lasting more than 50 ms (mindur_trough
     0.05 s, where the Methods say 5 ms) and at most 0.6 s (maxdur_off); merged within 1.5 s;
     groups of at least 3 off periods padded by 1 s, others by 0.3 s; free gaps of 1.5 s or less
-    filled. The Savitzky-Golay output is clipped at 0."""
-    if n_units == 0 or len(st_cortical) == 0:
+    filled. The Savitzky-Golay output is clipped at 0. Counts are binned from time 0."""
+    if n_units == 0 or counts.sum() == 0:
         return np.empty((0, 2))
-    edges = np.arange(0, t1, binw)
-    fr = np.histogram(st_cortical, edges)[0] / n_units / binw
+    fr = counts / n_units / binw
     v = np.clip(savgol_filter(fr.astype(float), 11, 3), 0, None)
     gm = np.exp(np.mean(np.log(v[v > 0])))
     sg = np.diff(np.sign(v - gm))
@@ -326,6 +336,41 @@ def offperiod_sleep_code(st_cortical, n_units, t0, t1, binw=0.01):
         else:
             res.append([a, b])
     return np.array(res) * binw
+
+
+def sleep_fraction(sl, t0, t1):
+    """Fraction of [t0, t1] covered by the periods sl."""
+    if sl is None or len(sl) == 0:
+        return 0.0
+    return float((np.minimum(sl[:, 1], t1) - np.maximum(sl[:, 0], t0)).clip(0).sum() / (t1 - t0))
+
+
+def null_sleep_fraction(counts, n_units, t0, t1, detector, seed=0, binw=0.01):
+    """Fraction of time a detector marks sleep-like in a stationary Poisson population with the
+    same mean pooled rate as `counts` and no off periods (a check of the detector's false
+    detections for a given number of units; the paper reports none)."""
+    rng = np.random.default_rng(seed)
+    i0 = int(round(t0 / binw))
+    lam = counts[i0:].mean()
+    sim = np.zeros_like(counts)
+    sim[i0:] = rng.poisson(lam, len(counts) - i0)
+    fn = offperiod_sleep if detector == "methods" else offperiod_sleep_code
+    return sleep_fraction(fn(sim, n_units, t0), t0, t1)
+
+
+def emg_rms(f, step=1.0):
+    """RMS of the EMG (processing/ecephys/EMG, 1 kHz) in consecutive 1-s windows (a standard
+    choice), with the window start times; None when a file has no EMG."""
+    if "processing/ecephys/EMG/ElectricalSeries" not in f:
+        return None
+    e = f["processing/ecephys/EMG/ElectricalSeries"]
+    rate = float(e["starting_time"].attrs["rate"])
+    x = e["data"][:]
+    x = x[:, 0] if x.ndim == 2 else x
+    n = int(rate * step)
+    k = len(x) // n
+    rms = np.sqrt((x[: k * n].reshape(k, n) ** 2).mean(1)).astype(np.float32)
+    return np.c_[float(e["starting_time"][()]) + np.arange(k) * step, rms]
 
 
 def blocks_for(f, onsets):
@@ -395,13 +440,16 @@ def load_file(asset):
     cort = units.area.isin(CORTICAL).values
     starts = np.r_[0, idx[:-1]]
     cst = np.concatenate([st[a:b] for a, b, c in zip(starts, idx, cort) if c]) if cort.any() else np.empty(0)
-    sleep = offperiod_sleep(np.sort(cst), int(cort.sum()), t0, t1)
-    sleep_code = offperiod_sleep_code(np.sort(cst), int(cort.sum()), t0, t1)
+    ccounts = cortical_counts(cst, t1)
+    sleep = offperiod_sleep(ccounts, int(cort.sum()), t0)
+    sleep_code = offperiod_sleep_code(ccounts, int(cort.sum()), t0)
+    emg = emg_rms(f)
     blk, blkmode = blocks_for(f, onsets)
     tones = tone_times(f)
     out = dict(path=asset["path"], session=sess, subject=subj, setting=setting, desc=desc,
                units=units, onsets=onsets, epochs=ep, lick=lick, sat=sat, cnt=cnt, B=B, M=M,
                sleep_own=sleep, sleep_own_code=sleep_code, n_cortical=int(cort.sum()), t0=t0, t1=t1, blocks=blk,
+               ccounts=ccounts, cortical_rate=float(len(cst) / max(cort.sum(), 1) / (t1 - t0)), emg=emg,
                blockmode=blkmode, tones=tones, asset_id=asset["asset_id"],
                n_trials=len(f["intervals/trials/start_time"]))
     f.close()
@@ -440,21 +488,59 @@ def load_all(assets, workers=12):
     return sorted(recs, key=lambda r: r["path"])
 
 
-def classify_epochs(recs, detector="methods"):
-    """Adds to each record its sleep-like periods (own or from the probe the code's table names)
-    and the epoch states: 'active', 'sleep', 'near_sleep' (within 1 s of a sleep-like period) or
-    'excluded' (licking or saturation). detector 'methods' (main) or 'code' (variant)."""
-    key = "sleep_own" if detector == "methods" else "sleep_own_code"
+NULL_MAX = 0.01  # largest fraction of time the detector may mark sleep-like in a Poisson null
+
+
+def session_sleep(recs):
+    """Sleep-like periods per recording session (Methods: "detected per recording session ...
+    across all cortical spikes"): the 10-ms counts of the cortical units of all probes recorded
+    together are pooled. Returns {day: (periods, n_units, null fraction)}, where the null fraction
+    is the share of time the detector marks in a Poisson population of the same pooled rate."""
+    by = {}
+    for r in recs:
+        by.setdefault(r["session"].rsplit("-", 1)[0], []).append(r)
+    out = {}
+    for day, lst in by.items():
+        L = max(len(r["ccounts"]) for r in lst)
+        pooled = np.zeros(L, np.int64)
+        for r in lst:
+            pooled[: len(r["ccounts"])] += r["ccounts"]
+        n = sum(r["n_cortical"] for r in lst)
+        t0, t1 = min(r["t0"] for r in lst), max(r["t1"] for r in lst)
+        null = null_sleep_fraction(pooled, n, t0, t1, "methods") if n else 1.0
+        out[day] = (offperiod_sleep(pooled, n, t0), n, null)
+    return out
+
+
+def classify_epochs(recs, detector="session"):
+    """Adds to each record its sleep-like periods and the epoch states: 'active', 'sleep',
+    'near_sleep' (within 1 s of a sleep-like period) or 'excluded' (licking or saturation).
+
+    detector 'session' (main): the Methods detector on the pooled cortical units of the
+    recording session; where that detector marks NULL_MAX or more of the time in a Poisson
+    population of the same rate, the session has too few cortical units for it (the Methods
+    rest the detection on sessions that "consistently featured a sufficient number of cortical
+    units to detect collective off periods") and no sleep-like period is marked, as the code
+    does for the probes its table marks "ignore" (assumption, see the notebook). 'methods' (variant, the main reading of round 1): the same
+    detector on each probe's own cortical units, or on the probe the code's table names.
+    'code' (variant): the code's detector per probe, with the code's table."""
     by_sess = {r["session"]: r for r in recs}
+    ses = session_sleep(recs) if detector == "session" else None
     for r in recs:
         sid = r["session"]
-        if sid in QUIET_IGNORE:
-            r["sleep"] = None
-        elif sid in QUIET_FROM_OTHER:
-            other = sid.rsplit("-", 1)[0] + "-" + QUIET_FROM_OTHER[sid]
-            r["sleep"] = by_sess[other][key] if other in by_sess else r[key]
+        if detector == "session":
+            per, n, null = ses[sid.rsplit("-", 1)[0]]
+            r["sleep_units"], r["sleep_null"] = n, null
+            r["sleep"] = None if (sid in QUIET_IGNORE or null >= NULL_MAX) else per
         else:
-            r["sleep"] = r[key]
+            key = "sleep_own" if detector == "methods" else "sleep_own_code"
+            if sid in QUIET_IGNORE:
+                r["sleep"] = None
+            elif sid in QUIET_FROM_OTHER:
+                other = sid.rsplit("-", 1)[0] + "-" + QUIET_FROM_OTHER[sid]
+                r["sleep"] = by_sess[other][key] if other in by_sess else r[key]
+            else:
+                r["sleep"] = r[key]
         ep = r["epochs"]
         bad = overlaps(ep, r["lick"]) | overlaps(ep, r["sat"])
         if r["sleep"] is None or len(r["sleep"]) == 0:
@@ -775,6 +861,73 @@ def flatmap_polygons(name):
     z = zipfile.ZipFile(io.BytesIO(zenodo_bytes("flatmaps.zip")))
     with h5py.File(io.BytesIO(z.read("flatmaps/" + name)), "r") as f:
         return {k: f[k][()] for k in f.keys()}
+
+
+def paper_quiet():
+    """The paper's own sleep-like ("quiet") detection per recording (Zenodo
+    quiet_active_detection.zip, folder quiet_active_stats): whether off-period detection was used
+    (attribute off_used), the quiet periods (s), and the quiet and recording durations (s).
+    Recording ids with a day suffix (518804_1_..., 560171_2_...) are given the dataset's ids."""
+    import io
+    import zipfile
+    z = zipfile.ZipFile(io.BytesIO(zenodo_bytes("quiet_active_detection.zip")))
+    out = {}
+    for n in z.namelist():
+        if "/quiet_active_stats/" not in n or not n.endswith(".h5") or "MACOSX" in n:
+            continue
+        with h5py.File(io.BytesIO(z.read(n)), "r") as f:
+            rid = re.sub(r"^(\d+)_[12]_", r"\1_", dec(f.attrs["recid"]))
+            out[rid] = dict(used=dec(f.attrs["off_used"]), quiet=f["quiettimes"][()].reshape(-1, 2),
+                            quietdur=float(f["quietdur"][0]), recdur=float(f["recdur"][0]))
+    return out
+
+
+def raster_polygons(polys, step=2.0):
+    """Pixels of the flatmap (grid of `step` flatmap units, a standard choice) inside each
+    polygon; returns pixel coordinates and the polygon name of each."""
+    import shapely
+    allc = np.vstack(list(polys.values()))
+    xs = np.arange(allc[:, 0].min(), allc[:, 0].max(), step)
+    ys = np.arange(allc[:, 1].min(), allc[:, 1].max(), step)
+    gx, gy = np.meshgrid(xs, ys)
+    gx, gy = gx.ravel(), gy.ravel()
+    lab = np.array([None] * len(gx), dtype=object)
+    for k, c in polys.items():
+        inside = shapely.contains_xy(shapely.Polygon(c), gx, gy) & (lab == None)  # noqa: E711
+        lab[inside] = k
+    keep = lab != None  # noqa: E711
+    return np.c_[gx[keep], gy[keep]], lab[keep]
+
+
+def project_categories(fit, units):
+    """Categories (readings a and b) of units projected on a trained SOM: features standardized
+    with the training means and s.d., best matching node, its cluster's category."""
+    Z = (units[["log10FR", "B", "M"]].values - fit["mu"]) / fit["sd"]
+    cl = fit["lab"][bmus(Z, fit["som"]["W"])]
+    return fit["map_a"][cl], (None if fit["map_b"] is None else fit["map_b"][cl])
+
+
+def paper_som(name="runC00dMP3_brain_SOM_kShape17_24.h5"):
+    """The paper's trained ww SOM (Zenodo SOMs.zip; run runC00dMP3_brain, 8 Ward clusters as the
+    code renumbers them, clustering_resorted/ward/8). Returns the node prototypes (standardized),
+    the means and s.d. used to standardize, the feature order mapped to this module's names, and
+    each node's category 1..8."""
+    import io
+    import zipfile
+    z = zipfile.ZipFile(io.BytesIO(zenodo_bytes("SOMs.zip")))
+    with h5py.File(io.BytesIO(z.read("SOMs/" + name)), "r") as f:
+        feats = [dec(x) for x in f["results/features"][()]]
+        ms = f["results/refmeanstd"][()]
+        W = f["results/weights"][()].T
+        cat = f["clustering_resorted/ward/8"][()] + 1
+    names = {"B_mean": "B", "M_mean": "M", "rate_mean": "log10FR"}
+    return dict(W=W, mu=ms[0], sd=ms[1], features=[names[x] for x in feats], cat=cat)
+
+
+def project_paper_som(som, units):
+    """Category of each unit's best matching node on the paper's SOM."""
+    Z = (units[som["features"]].values - som["mu"]) / som["sd"]
+    return som["cat"][bmus(Z, som["W"])]
 
 
 def gao_hierarchy():
