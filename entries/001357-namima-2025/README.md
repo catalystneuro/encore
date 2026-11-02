@@ -23,9 +23,9 @@ test (51) and the position control (34).
 | Mean Isimilarity levels off with yield | Reproduced |
 | Weak relation to recording density, r = 0.236 | Reproduced |
 | Same-session pairs slightly more similar | Partially reproduced |
-| Orientation x SF fits | Blocked: shape images not public |
+| Orientation x SF fits | Blocked: shape images and their stim_IDs not in the dandiset |
 | Coarse orientation preference along the probe | Not reproduced |
-| APC peak clustering (two claims) | Blocked: shape descriptions not public |
+| APC peak clustering (two claims) | Blocked: shape descriptions and their stim_IDs not in the dandiset |
 | 18 gyral penetrations | Blocked: penetration coordinates not in the dandiset |
 | Texture: 207 of 979 neurons clustered | Not reproduced |
 | Texture: original and reversed Isimilarity consistent, r = 0.464 | Not reproduced |
@@ -40,8 +40,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001357-namima-2025-01.yaml`](../../attempts/001357-namima-2025-01.yaml).
 
-- `reproduce_namima_2025.ipynb`: the analysis. It takes about five minutes, more than half of it streaming the
-  files.
+- `reproduce_namima_2025.ipynb`: the analysis. It takes five to seven minutes, of which streaming the files takes 100 to
+  240 s depending on the network.
 - `v4clusters.py`: loading the files into spike counts per presentation, the noise-corrected
   correlation with its bootstrap, Isimilarity, and the per-session analyses. Other notebooks on this
   dandiset can import it.

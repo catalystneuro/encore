@@ -225,8 +225,8 @@ outcomes:
   measured: 0.484
   notes: Spearman's r between dark and bright Isimilarity is 0.484 (reliability a, n = 1,643) and 0.520 (b, n =
     1,757), p below 1e-90, above 0.435 within 0.0435. The consistency the statement describes holds, more strongly
-    than reported. Neither reliability reading gives a match. Reading (b) gives n = 1,757 and either contrast 1,847
-    neurons with a line, the paper's n.
+    than reported. Neither reliability reading gives a match. The paper's n of 1,847 counts neurons with a line at
+    both contrasts; reading (b) gives 1,757 of these (1,847 with a line at either contrast, a different quantity).
   deviations:
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
     and Methods, Tuning similarity and contrast invariance); its bias terms are written for unequal repeats per
@@ -351,13 +351,18 @@ outcomes:
   notes: Needs the 120 shape images to compute Gabor filter outputs. The dandiset holds none (`stimulus/templates`
     is empty) and does not say which shape each stim_ID is. A search for a public, pinned copy of the Pasupathy
     and Connor (2001) shapes (the shape lab's publication pages, Pospisil et al. 2018 eLife, github.com/deanpospisil/er_est,
-    the SparseShape OSF project) found none; other groups report obtaining them from the lab.
+    the SparseShape OSF project) found none; other groups report obtaining them from the lab. A second search, in
+    the final revision, found the outlines of the 370 shapes of the Pasupathy and Connor set at a pinned commit
+    (github.com/deanpospisil/v4cnn, commit b0532e9083eb023c2247e5b53833229e7e6eb740, img_gen/PC3702001ShapeVerts.mat,
+    401 vertices per shape). The dataset still does not say which 15 of them the shape test used or which stim_ID
+    each is, so the claim stays blocked here; using them needs the 15 shapes of Figure 1B identified in that set
+    and a mapping of stim_ID to them, an analysis left to a new attempt.
 - claim: orientation-auc-coarse-clusters
   outcome: not_reproduced
   notebook: reproduce_namima_2025.ipynb
   output: claim:orientation-auc-coarse-clusters
   notes: With stim_ID 0 as the spindle, 2 of 74 penetrations are all one preference and 2 switch once, so both kinds
-    exist, but M2p6 (horizontal from 0 to 500 um, vertical below, horizontal in its two deepest bins; 2 changes)
+    exist, but M2p6 (horizontal in bins 0 to 5, 0 to 599 um, vertical below, horizontal in its two deepest bins; 2 changes)
     and M1p5 (12 changes) are of neither kind. Under every stim_ID taken as the spindle, neither penetration is
     of one kind (M2p6 2 to 12 changes, M1p5 7 to 15), so the outcome does not rest on that mapping.
   deviations:
@@ -370,8 +375,9 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs the boundary curvature and angular position descriptions of the shapes (Pasupathy and Connor 2001)
-    and which stim_ID is which shape. Neither is in the dandiset or, as far as a search found, public and pinned
-    (see orientation-sf-isimilarity).
+    and which stim_ID is which shape. Neither is in the dandiset. The shape outlines are public at a pinned commit
+    (see orientation-sf-isimilarity), found in the final revision, but which stim_ID is which shape is not, and
+    the analysis with them is left to a new attempt.
 - claim: apc-example-m2p51
   outcome: blocked
   blocked_by: data_missing
@@ -462,15 +468,19 @@ outcomes:
   notes: 721 shape-responsive neurons in 33 M2 penetrations (723 in the paper) enter the position test (penetrations
     with 4 or more). Isimilarity at the optimal position against the main shape test with dark shapes (reading b)
     gives Spearman's r = 0.297 (reliability a, n = 378) and 0.325 (b, n = 676), p below 1e-4. Against the position
-    test's center (reading a), r is 0.447 to 0.474 with the inferred center, and 0.279 to 0.567 (p at most 2.1e-4)
-    whichever position is taken as the center, so every reading gives a positive r and one is within tolerance.
-    Reading (b) does not use the position labels. Under reliability (b) the five choices of center give r = 0.274
-    to 0.406, all p below 1e-4, within tolerance only with position 3 (0.329); under (a) 0.279 to 0.567, p below
-    1e-4 except position 4 (p = 2.1e-4).
+    test's center (reading a), r is 0.447 to 0.474 with the inferred center, p below 1e-4, so with the inferred
+    center every reading gives a positive r with p below 0.0001 and reading (b) is within tolerance. Reading (b)
+    does not use the position labels. Under reliability (b) the five choices of center give r = 0.274 to 0.406,
+    all p below 1e-4, within tolerance only with position 3 (0.329); under (a) 0.279 to 0.567, p below 1e-4 except
+    position 4 (r = 0.279, p = 2.1e-4), which fails the criterion's p below 0.0001. The outcome therefore assumes
+    that the center is not position 4.
+  assumed: true
   deviations:
   - The files code positions 0 to 4 without saying which is the center; the position with the largest mean response
-    of the penetration's responsive neurons is taken as the center (position 1 in 12 files, 2 in 11, others in 11),
-    and all five are shown.
+    of the penetration's responsive neurons is taken as the center (position 1 in 12 files, 2 in 11, 4 in 5, 0 in
+    3, 3 in 3), and all five are shown. The aggregate RF center is where the stimuli were placed on the neurons'
+    RFs, so the population response should peak there; this is assumed, since the files do not label it. With
+    position 4 as the center under reliability (a), p = 2.1e-4 and the claim would not be reproduced.
   - Neurons are those responsive in the main shape test; neurons responsive in the position test are a variant (603
     neurons, r = 0.298 and 0.348).
   - Penetrations enter with 4 or more neurons, since a regression line needs 3 other neurons with reliable similarities
@@ -481,19 +491,23 @@ outcomes:
   output: claim:position-examples-invariant
   notes: Under the criterion's rule M2p9 is the session whose responsive count is within 10% of 16, the files' p12
     (2021-04-21, 16 neurons); there reading (a) fails for every choice of center and reading (b) finds 0 to 3 neurons
-    with significant Isimilarity per position. M2p28 (the files' p28, 55 neurons) fails both readings, with up to
-    2 (reliability a) or 3 to 16 (b) such neurons per position against at most 1, and position correlations from
-    -0.06 to 1.00 with few reliable pairs (23 to 60 of 1,485 under a). With the files' label p09 for M2p9 (18 neurons),
-    both readings hold for M2p9. Asked whether Figure 11's n is the matrix count, a reader answered that it is (16
+    with significant Isimilarity per position. Under reliability (a) this is not a test of p12, since only 0 or
+    1 of its 120 pairs is reliable at each position and no neuron has a line; under reliability (b) it has 13 to
+    39 reliable pairs. For M2p28 (the files' p28, 55 neurons) reading (b) fails, with up to 2 (reliability a) or
+    3 to 16 (b) such neurons per position against at most 1. Reading (a) fails for p28 under reliability (a), with
+    position correlations from -0.06 to 1.00 and few reliable pairs (23 to 60 of 1,485), and holds under reliability
+    (b) with position 0 as the center only. With the files' label p09 for M2p9 (18 neurons), reading (b) holds for
+    M2p9 under both reliability readings, and reading (a) holds under reliability (b) for every center and under
+    reliability (a) only with position 1 as the center. So with p09 as M2p9, position 0 as the center and reliability
+    (b), reading (a) holds for both penetrations and reading (b) fails, which the criterion would call blocked; under
+    every other choice both readings fail. Asked whether Figure 11's n is the matrix count, a reader answered that it is (16
     and 55 sit with the matrices of panels A and C and Figure 12A; the RF insets read 8 and 26), so the claim and
     its 10% rule stand and the outcome is unchanged. On the data, the files' p28 has exactly 55 shape-responsive
     neurons (65 good, 44 responsive in the position test), consistent with matrices of shape-responsive neurons.
     No count of the files' p09 is within 10% of 16 (20 good, 18 shape-responsive, 12 position-responsive, 12 both,
-    18 either), so the rule still takes p12 as M2p9. The claim fails on M2p28 whichever session is M2p9. Over fixed
-    position labels, reading (a) fails for the files' p12 with every position as the center under both reliability
-    readings; for the files' p28 it holds only with position 0 as the center under reliability (b). Reading (b)
-    fails for p12 and p28 under both reliability readings, so the readings agree and the outcome is not reproduced,
-    not blocked.
+    18 either), so the rule still takes p12 as M2p9. Under that rule reading (b) fails on both p12 and p28 under
+    both reliability readings, and reading (a) fails on p12 for every center under both, so the readings agree
+    and the outcome is not reproduced, not blocked.
   deviations:
   - Positions are not labelled; reading (a) is evaluated for every choice of center.
   - The noise-corrected correlation was written from the Methods' description and Pospisil and Bair (2021) (Materials
@@ -516,8 +530,8 @@ findings:
     and gyral-penetration findings cannot be tested.
 - kind: metadata_insufficient
   statement: Shapes are coded by stim_ID 0 to 14 and the position test's positions 0 to 4 without saying which shape
-    each code is or which position is the aggregate RF center. The penetration with the largest population response
-    is position 1 in 12 files, 2 in 11 and another in 11, so the center cannot be read from the data either.
+    each code is or which position is the aggregate RF center. The position with the largest population response
+    is position 1 in 12 files, 2 in 11, 4 in 5, 0 in 3 and 3 in 3, so the center cannot be read from the data either.
 - kind: metadata_error
   statement: The trial tables of all 34 position-test files give the session as '...SL' (the shape test's code),
     while their units tables and file names give '...SP'.
@@ -553,7 +567,9 @@ findings:
     interval exceeds 0.5, or its half-width, and what interval level is used? Under the width reading, 1,729 neurons
     have a regression line with dark shapes and 681 texture neurons with original textures; under the half-width
     reading 1,805 and 923; the paper has 1,848 and 931. The significant-Isimilarity counts change by 10% to 60%
-    between them. How are unequal repeats per stimulus handled in the bias correction?
+    between them. How are unequal repeats per stimulus handled in the bias correction? And what does the estimator
+    give when a neuron's bias-corrected variance is not positive? Here its similarities are undefined, and 62 of
+    the 64 shape neurons without a line under the half-width reading lack one for that reason (the paper has 2).
 - kind: methods_unavailable
   statement: For the paper's authors. Does the noise-corrected similarity between two simultaneously recorded neurons
     correct for their noise correlation? Here noise correlations are small but positive and largest for near pairs
@@ -566,7 +582,11 @@ verifications:
     write the notebook)
   reviewed: The handover of the author-answers run (commit b8c9f8a92), the executed notebook with the conclusions
     and summary removed, the helper module and the claims file. The verifier also checked the archive's metadata
-    for the blocked claims, read the paper and tested the helper functions on synthetic inputs.
+    for the blocked claims, read the paper and tested the helper functions on synthetic inputs. Cell numbers in
+    the reasons below are those of that handover notebook. In the current notebook (cells counted from 0) they
+    are 13 to 15, 17 to 26, 19 to 29, 21 to 32, 23 to 35, 25 to 38, 27 to 41, 29 to 44, 31 to 47, 33 to 50, 35
+    to 53, 37 to 56, 39 to 59, 41 to 62, 43 to 65, 45 to 68, 47 to 71, 49 to 74, 51 to 77, 53 to 80, 55 to 83
+    and 57 to 86.
   results:
   - claim: methods-sessions-and-neurons
     agrees: true
@@ -754,3 +774,197 @@ verifications:
     reason: A simulation with unstated parameters, not a test on recorded data. (Blocked as other.)
     response: No change. Kept blocked_by methods_underspecified, since the reason is the unstated parameters (peak
       amplitudes, step sizes); the verifier would give other.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, run 41476669788; same harness, separate context, did not write
+    the notebook)
+  reviewed: The full executed notebook of the author-revise-1 run (commit 071c3001a) with its conclusions and summary,
+    the helper module, the claims file and the attempt record. The verifier did not download the data or re-run the notebook.
+    Cell numbers in the reasons count the current notebook's cells from 0. Its general points, answered here, were that
+    its round-1 reasons cite round-1 cell numbers (the round-1 entry now maps them) and that cell 19 said most neurons
+    without a line under (b) are in small penetrations, which the outputs contradict (corrected, see ex-m2p6-invariance).
+  results:
+  - claim: methods-sessions-and-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: ex-m2p6-cluster
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: ex-m2p6-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: ex-m2p6-invariance
+    agrees: true
+    outcome: reproduced
+    reason: Matches only under reliability reading (a); 22 under (b), outside 19 +/- 1.9 (cell 32). The criterion accepts
+      either reading, so the outcome stands, and the notes say so. In round 1 I wrote that each such claim also has a
+      match under (b) or another reading; that was wrong for this claim. The paper's own counts argue against (a) and
+      the question to a reader is open. The new evidence in cell 18 also weakens the argument for (b), since the 64 shape
+      neurons without a line under (b) come from undefined similarities, not from the reliability rule, so the gap to
+      the paper's 2 points to a difference in the estimator or its NaN handling.
+    response: No change of outcome. Cell 18 now counts the neurons without a line by cause. Under (b), 62 of the 64 shape
+      neurons (dark) have fewer than 3 defined similarities (15 with none, their own bias-corrected variance not being
+      positive), 1 has too few defined intervals and 1 is in the single-neuron penetration; none lacks a line for too
+      wide intervals. Under (a) 76 more lack one for too wide intervals. Cell 19, the summary, the reader question on
+      the reliability reading and the methods_unavailable finding now say this, and ask the paper's authors what the
+      estimator gives for such neurons.
+  - claim: ex-csd-sinks
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: ex-m1p12-no-cluster
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced. Cell 35 gives 4 neurons with a significant intercept (1 positive, 3 negative), and the criterion
+      allows at most 2. The partial rule needs that count to hold.
+    response: No change.
+  - claim: ex-m1p12-strong-responses
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: pop-significant-isimilarity
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced. The criterion has no partial rule, and no reading in cell 41 matches.
+    response: No change.
+  - claim: pop-intercept-slope-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: pop-dark-bright-consistent
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The record's notes say "either contrast 1,847 neurons with a line, the paper's n",
+      but the paper's 1,847 is the count with a line at both contrasts (cell 17); under (b) the both-contrast count is
+      1,757 (cell 18), so the match is to a different quantity.
+    response: 'Corrected the notes: the paper''s n counts neurons with a line at both contrasts, 1,757 under (b); 1,847
+      is the count at either contrast, a different quantity.'
+  - claim: pop-contrast-invariance
+    agrees: true
+    outcome: reproduced
+    reason: Matches only under reliability (b) with unreliable values counted as 0 (cell 50).
+    response: No change; the notes and cell 51 already say so.
+  - claim: pop-sparse-across-penetrations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: pop-asymptote-20-percent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: pop-mean-isimilarity-yield
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: pop-recording-density
+    agrees: true
+    outcome: reproduced
+    reason: Matches only under reliability reading (a); r = 0.296 to 0.336 under (b), outside 0.236 +/- 0.024 (cell 62).
+      The criterion accepts either reading, so the outcome stands, and the notes say so. In round 1 I wrote that each
+      such claim also has a match under (b) or another reading; that was wrong for this claim. The question to a reader
+      is open.
+    response: No change of outcome; as for ex-m2p6-invariance, the new cause counts in cell 18 are added to the reader
+      question on the reliability reading.
+  - claim: pop-within-vs-across-sessions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: orientation-sf-isimilarity
+    agrees: true
+    outcome: blocked
+    reason: Rests on the author's search for a public, pinned copy of the Pasupathy and Connor shapes. The record lists
+      where it looked, but no new search was run and I have not verified it.
+    response: Ran a second search. The outlines of the 370 shapes of the Pasupathy and Connor set are public at a pinned
+      commit (github.com/deanpospisil/v4cnn, commit b0532e9, img_gen/PC3702001ShapeVerts.mat, 401 vertices per shape;
+      downloaded and read). The notes, the blocked-claims cell and the README now say so. The outcome stays blocked,
+      since the dataset does not say which 15 shapes were used or which stim_ID each is; the analysis with these outlines
+      needs that mapping and is left to a new attempt.
+  - claim: orientation-auc-coarse-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Cell 69 and the record say horizontal (0 to 500 um), but the horizontal bins are
+      0 to 5, which cover 0 to 599 um (cell 68). This is minor.
+    response: Corrected cell 69 and the notes to bins 0 to 5, 0 to 599 um.
+  - claim: apc-peaks-sparse-clustering
+    agrees: true
+    outcome: blocked
+    reason: Rests on the author's search for a public, pinned copy of the shapes, as for orientation-sf-isimilarity;
+      not verified.
+    response: As for orientation-sf-isimilarity. The outcome stays blocked.
+  - claim: apc-example-m2p51
+    agrees: true
+    outcome: blocked
+    reason: Rests on the author's search for a public, pinned copy of the shapes, as for orientation-sf-isimilarity;
+      not verified.
+    response: As for orientation-sf-isimilarity. The outcome stays blocked.
+  - claim: gyrus-penetrations-consistent
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
+  - claim: texture-sparse-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs. Leaving out the five suspect
+      texture files changes no outcome (cell 71).
+    response: No change.
+  - claim: texture-original-reversed-consistent
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs. Leaving out the five suspect
+      texture files changes no outcome (cell 74).
+    response: No change.
+  - claim: texture-asymptote-20-percent
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs. Leaving out the five suspect
+      texture files changes no outcome (cell 77).
+    response: No change.
+  - claim: position-optimal-consistent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with reproduced, but the outcome should carry assumed true. It rests on the inferred aggregate RF
+      centre, which is not marked as an assumption. The criterion needs every reading to give r > 0 with p < 0.0001;
+      with file position 4 as the centre under reliability (a), r = 0.279 with p = 2.1e-4, which fails (cell 80). So
+      reproduced assumes the centre is not position 4, which is reasonable but unverifiable, since the files do not label
+      the centre. The record's notes ("every reading gives a positive r and one is within tolerance") leave out the p
+      < 0.0001 condition.
+    response: Marked the outcome assumed true. The deviation says what is assumed (the center is the position with the
+      largest population response) and why, and that with position 4 under reliability (a) the claim would not be reproduced.
+      The notes and cell 81 now state the p < 0.0001 condition and that the outcome assumes the center is not position
+      4 (the inferred center is position 4 in 5 of 34 files).
+  - claim: position-examples-invariant
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced only under the claims file's 10% rule, which makes the files' p12 the M2p9 session. With p09
+      as M2p9 (the files' label) and position 0 as the centre under reliability (b), reading (a) holds for both penetrations
+      while (b) fails, and the criterion gives blocked. For p12 under reliability (a), reading (a) fails because only
+      0 to 1 of 120 pairs are reliable; that is a non-test, not evidence that the patterns differ. Cell 84 and the record
+      say M2p28 fails both readings, but reading (a) holds for p28 with position 0 as the centre under reliability (b);
+      they say the claim fails on M2p28 whichever session is M2p9, true only of reading (b); and they say that with p09
+      both readings hold for M2p9, but under reliability (a) reading (a) holds only with position 1 as the centre (cell
+      83).
+    response: No change of outcome; the claims file's rule takes p12. Corrected cell 84 and the notes. For p28 reading
+      (b) fails under both reliability readings, and reading (a) fails under (a) and holds under (b) with position 0
+      as the center only. With p09, reading (b) holds for M2p9 under both reliability readings, and reading (a) under
+      (b) for every center and under (a) only with position 1. With p09, position 0 and reliability (b) the readings
+      differ, which the criterion would call blocked; under every other choice both fail. The notes say p12 under reliability
+      (a) is not a test (0 or 1 reliable pairs of 120, no lines).
+  - claim: simulation-random-with-domains
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentences agree with the outputs.
+    response: No change.
