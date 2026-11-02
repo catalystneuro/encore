@@ -200,9 +200,15 @@ def measure_image(axonmyelin: np.ndarray, uaxon: np.ndarray, px_um: float) -> di
                "edge": _touches_edge(p.bbox, shape)}
               for p in regionprops(u_lab) if p.area >= MIN_OBJECT_PX]
     n_u_all = int(u_lab.max())
+    # Variant: unmyelinated axons with any pixel of a myelinated fibre removed, so that no pixel
+    # counts as both kinds of axon (the masks overlap in the cKO images).
+    ux_lab = label((uaxon > 0) & ~(axon | myelin), connectivity=CONNECTIVITY)
+    ux_rows = [{"area_px": p.area, "edge": _touches_edge(p.bbox, shape)}
+               for p in regionprops(ux_lab) if p.area >= MIN_OBJECT_PX]
     return {
         "myelinated": my,
         "unmyelinated": pd.DataFrame(u_rows),
+        "unmyelinated_exclusive": pd.DataFrame(ux_rows, columns=["area_px", "edge"]),
         "area_um2": shape[0] * shape[1] * px_um ** 2,
         "shape": shape,
         "axon_specks_dropped": int(len(small)),
@@ -214,9 +220,11 @@ def measure_image(axonmyelin: np.ndarray, uaxon: np.ndarray, px_um: float) -> di
     }
 
 
-def per_image_counts(measures: dict, keep_edge: bool) -> dict:
-    """Counts for percent myelinated and density in one image, under reading O4."""
-    my, un = measures["myelinated"], measures["unmyelinated"]
+def per_image_counts(measures: dict, keep_edge: bool, exclusive: bool = False) -> dict:
+    """Counts for percent myelinated and density in one image, under reading O4. With
+    `exclusive`, unmyelinated axons are counted from the mask with myelinated fibres removed."""
+    my = measures["myelinated"]
+    un = measures["unmyelinated_exclusive" if exclusive else "unmyelinated"]
     if not keep_edge:
         my = my[~my.fibre_edge]
         un = un[~un.edge]

@@ -82,6 +82,13 @@ FLANK_OFFSET = 3000
 SHUFFLE_SEED = 241561
 CARG = re.compile(r"(?=(CC[AT]{6}GG))")
 
+# Variant for figs4ef: the paper names no list of actin assembly genes; these are the standard
+# nucleation and elongation factors (Arp2/3 complex, WASP/WAVE, formins, profilins, Ena/VASP),
+# with actin itself. An assumption, stated in the notebook.
+ASSEMBLY_GENES = ["Actb", "Actg1", "Actr2", "Actr3", "Arpc1a", "Arpc1b", "Arpc2", "Arpc3", "Arpc4",
+                  "Arpc5", "Arpc5l", "Wasl", "Wasf1", "Wasf2", "Wasf3", "Diaph1", "Diaph2", "Diaph3",
+                  "Fmnl1", "Fmnl2", "Fmnl3", "Pfn1", "Pfn2", "Enah", "Vasp", "Evl"]
+
 # Fig. S4E of the paper: "the main actin disassembly genes expressed by OPCs and oligodendrocytes".
 DISASSEMBLY_GENES = ["Cfl1", "Cfl2", "Dstn", "Gsn", "Cap1", "Coro1a", "Coro1b", "Coro2b", "Ssh3",
                      "Mical3", "Twf1", "Gmfb", "Rhoa"]
@@ -108,6 +115,36 @@ def get(url: str, tries: int = 45) -> bytes:
     retries[url] = k
     fetched[url] = hashlib.sha256(r.content).hexdigest()
     return r.content
+
+
+def geo_record(acc: str) -> list[str]:
+    """The lines of a GEO record in GEO's SOFT text form (series or sample)."""
+    url = f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={acc}&targ=self&form=text&view=brief"
+    return get(url).decode().splitlines()
+
+
+PAPER_SUPPLEMENT = "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10962977/supplementaryFiles"
+
+
+def paper_datasets() -> dict[str, dict[str, pd.DataFrame]]:
+    """The paper's Datasets S1 to S3 (XLSX), from Europe PMC's archive of the article's
+    supplementary files. S1 holds the SRF peaks of each group with their HOMER annotation, S2 and
+    S3 the paper's DESeq2 normalized counts and statistics for OPCs and oligodendrocytes. They are
+    the paper's published values, used here to check which reading the paper used; no result is
+    computed from them. The server sometimes ends a download early, so the archive is read
+    again until it is complete."""
+    import zipfile
+    for k in range(10):
+        content = get(PAPER_SUPPLEMENT)
+        try:
+            z = zipfile.ZipFile(io.BytesIO(content))
+            break
+        except zipfile.BadZipFile:
+            if k == 9:
+                raise
+            time.sleep(10)
+    return {name: pd.read_excel(io.BytesIO(z.read(f"pnas.2307250121.{name}.xlsx")), sheet_name=None)
+            for name in ["sd01", "sd02", "sd03"]}
 
 
 def get_gz_text(url: str) -> str:
