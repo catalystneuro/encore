@@ -39915,6 +39915,41 @@
       "source": "fig. S34C to S34H; Table S3, fig. S34 C to H; Results, Conserved emotion-related population dynamics across mammalian species, paragraph 6",
       "quote": "Whereas fast tone-related neural activity was unchanged on ketamine (fig. S34D), persistent tone-related activity decreased on ketamine and then recovered (fig. S34E)",
       "criterion": "Methods, Coding dimension, mouse peri-tone (fast 0 to 70 ms; persistent built on 150 to 350 ms and quantified 350 to 500 ms) and the timescale and coupling methods of fig6h and fig6j applied to tone series; 7 sessions from 7 mice (Table S3). Reproduced when the fast tests are not significant, the persistent, timescale and coupling tests give p < 0.05 with ketamine lower, and the means are within tolerance."
+     },
+     {
+      "id": "p50-condition-labels-link",
+      "statement": "The paper's code (analyze_airpuff_p50.py) names which of the two eye-closure series of each non-iEEG participant (pre_trials_data, post_trials_data) is the saline and which the ketamine visit, for the same four participants the dataset holds.",
+      "source": "Zenodo 10.5281/zenodo.14920570, human_ieeg/scripts/analyze_airpuff_p50.py (subjects, cadss and the treatment column); dataset files sub-h*/sub-h*_ses-P50_behavior.nwb",
+      "quote": "",
+      "criterion": "Match by participant identifier. Holds when the code's participants are the dataset's four, each with one saline and one ketamine session, and each dataset series has 40 trials. The label itself (pre is saline) cannot be checked against the data; the notebook says so."
+     },
+     {
+      "id": "cadss-scores-link",
+      "statement": "The CADSS scores of the paper's code record (data/cadss_across_pts.csv) cover every iEEG participant whose behaviour the dataset holds.",
+      "source": "Zenodo 10.5281/zenodo.14920570, data/cadss_across_pts.csv; dataset files sub-SD*/sub-SD*_ses-puff_behavior.nwb",
+      "quote": "",
+      "criterion": "Match by participant identifier. Holds when every iEEG participant with behaviour in the dataset is in the table with a total before ketamine, during infusion and at 110 min. Nothing in the dataset can be compared with the scores."
+     },
+     {
+      "id": "mouse-session-labels-link",
+      "statement": "The experiment lists in the paper's mouse scripts (code record, mouse_eyepuff/scripts/fig1_*.py) name sessions the dandiset holds, with the session lengths the scripts read, and the conditions they assign agree with what the eye-closure data show.",
+      "source": "Zenodo 10.5281/zenodo.14920570 (commit b873ca5), mouse_eyepuff/scripts/fig1_*.py experiments, ntrials and SKIP_PUFFS; dandiset sub-mouse files",
+      "quote": "",
+      "criterion": "Match by experiment id (file name and NWB identifier). Holds when (1) every listed id is a sub-mouse file; (2) every session has at least the number of 81-s trials its script reads (ntrials); (3) the data agree with the labels that leave a mark in them: (a) every ketamine 50 mg/kg and PCP 20 mg/kg session has lower late/early (M-EYE, eighth puff) in trials 23 to 37 than in trials 6 to 20, and the median change of the saline sessions is smaller in magnitude than that of either group; (b) in every K/X session, early and late eye closure on the eighth puff in trials 23 to 37 are below 0.1; (c) in the skip-puff sessions the puff with the smallest early response in each infusion trial is the one SKIP_PUFFS names, in at least 90% of trials. Holds in part when (1) and (2) hold and part of (3) fails. Mouse identity across lists, sex, day and dose cannot be checked from the data."
+     },
+     {
+      "id": "link-ieeg-yeo-labels",
+      "statement": "The Yeo7 labels of the code record's anat/pts_ch_labels.pkl apply to the 458 channels of the dataset's NMF products (sub-H_ses-sgramPerChannel.nwb, sub-H_ses-sgramNMFLoadings.nwb).",
+      "source": "code analyze_airpuff_ieeg_sgram_load_allpt.py lines 561 to 576 (channel to Yeo7 label by participant and bipolar electrode name); Fig. 2H and 2J",
+      "quote": "",
+      "criterion": "Channels are matched by participant and bipolar electrode name, as the code does. The link holds when every one of the 458 channels is found, the label file's atlas region equals the region in the dataset's channel name for every channel, the dataset's per-network electrode counts (anatomy_data of sub-H_ses-sgramPerYeoPerTrial.nwb, by participant, network and region) are never larger than the label file's and equal in most rows, and the labels turn the deposited channel loadings into the deposited network matrices (yeo_loading_mtx_pre, yeo_loading_mtx_inf_minus_pre) to within 1e-9."
+     },
+     {
+      "id": "ieeg-channel-atlas-link",
+      "statement": "The channel labels of the paper's code record (anat/pts_ch_labels.pkl) name the dataset's iEEG contacts and bipolar channels, and their region labels agree with the dataset's electrode locations.",
+      "source": "Zenodo 10.5281/zenodo.14920570, anat/pts_ch_labels.pkl; dataset electrode tables",
+      "quote": "",
+      "criterion": "For the 7 included participants, contacts are matched by participant and contact label (pt_elec_names_mono) and within-shank bipolar pairs by participant and pair name (pt_elec_names_bipo). Holds when every contact and pair used is matched and the record's region label (pt_elec_anats_mono) equals the dataset's location for at least 95% of matched contacts in every participant."
      }
     ]
    }
@@ -63038,7 +63073,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-11-02T09:01:26+00:00",
+ "generated": "2026-11-02T15:33:07+00:00",
  "queue_generated": "2026-10-31T12:28:44+00:00",
  "queue_counts": {
   "public_dandisets": 668,
@@ -217178,10 +217213,6 @@
    "000636",
    "000935",
    "001354",
-   "001361",
-   "001362",
-   "001371",
-   "001436",
    "001444",
    "001454",
    "001474",
@@ -217288,7 +217319,11 @@
    "001349",
    "001350",
    "001357",
+   "001361",
+   "001362",
+   "001371",
    "001414",
+   "001436",
    "001777",
    "001871",
    "001955",
@@ -217299,25 +217334,29 @@
    "claims": 1
   },
   "hours": {
-   "full": 4.689722222222223,
+   "full": 4.79125,
    "claims": 0.29944444444444446
   },
   "running": {
-   "001290": {
+   "001357": {
     "kind": "full",
-    "hours": 0.6479572975000001
+    "hours": 2.1553105597222224
    },
-   "000939": {
+   "001361": {
     "kind": "full",
-    "hours": 0.0
-   },
-   "001350": {
-    "kind": "full",
-    "hours": 1.5865684086111114
+    "hours": 3.036699448611111
    },
    "001347": {
     "kind": "full",
-    "hours": 2.019068408611111
+    "hours": 2.167255004166667
+   },
+   "001350": {
+    "kind": "full",
+    "hours": 1.1948938930555557
+   },
+   "001290": {
+    "kind": "full",
+    "hours": 1.2004494486111112
    }
   }
  },
