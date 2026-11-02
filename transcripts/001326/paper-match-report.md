@@ -1,0 +1,5 @@
+I gave the paper a `partial` verdict in `papers/match/001326.yaml`, and the file passes `python tools/paper_match.py validate`.
+
+**doi:10.1126/science.adt3971** ("Conserved brain-wide emergence of emotional response from sensory experience in humans and mice"): **partial**
+- **What decided it:** the paper's Data and materials availability section says "For mouse electrophysiology analyses ... data can be found at (104)". Reference 104 is https://dandiarchive.org/dandiset/001326. The paper's figure legends also give "n = 13 sessions, 10 mice", which matches the archive's 13 files across 10 subjects.
+- **Why not primary:** the paper's human intracranial electrophysiology, human behavior and mouse behavior findings rest on data stored elsewhere. Those are reference 102 (DANDI:001347) and Zenodo 14920570, and both are listed in `data_in`. An attempt on this dataset can only test the mouse Neuropixels findings, such as the fast broadcast and persistent activity after air puffs and the ketamine effects.

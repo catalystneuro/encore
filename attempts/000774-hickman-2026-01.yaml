@@ -1,0 +1,1309 @@
+schema_version: 2
+id: 000774-hickman-2026-01
+dataset:
+  archive: dandi
+  id: '000774'
+  version: 0.260520.1753
+  doi: 10.48324/dandi.000774/0.260520.1753
+paper: doi:10.1016/j.celrep.2026.117420
+date: 2026-10-31
+entry: 000774-hickman-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41222527911
+inputs:
+- what: Per-channel CCF coordinates of each probe and of the 16 stimulation contacts (recordings/*/final_coords/probe_coords_adj.pkl),
+    used to check the dataset's coordinates and as a variant of the distances in fig4h-extent-constant,
+    fig4h-distance-decreases, fig4h-ks-distinct and fig5j-fs-closer. No outcome rests on them.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+- what: The paper's cached ZETA p-values (recordings/*/zetascores300ms.pkl), compared with the p-values
+    recomputed from the dataset in fig6e-circuit-responders. No outcome rests on them.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+- what: The evoked-potential boundaries the paper's code computed from the raw AP band (intermediates/EP_distances.pkl,
+    per polarity and amplitude the superficial and deep boundary of each probe), averaged over probes
+    as the code does, used for the boundaries in fig4f-responders-within-ep, fig4i-proportion-within-ep,
+    fig5i-fs-within-ep and reading (b) of fig5-fsrs-proportion, whose criteria name it. The units' signed
+    distances and responses come from the dataset.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+- what: The code's intermediate table of units and conditions (intermediates/direct_df.csv), used only
+    as a check of the number of good stable units per condition and of the sign the code gives its raw
+    distance (reading c of fig4i-proportion-within-ep). No outcome rests on it.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+outcomes:
+- claim: fig1l-saturation-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Saturation is measured on the raw AP band, which the dandiset does not hold (its NWB files have
+    units and trials only, no acquisition). The paper says the raw AP, LFP and NI-DAQ binaries are available
+    on request; no public copy was found on DANDI (searches for Denman and Hickman return only this dandiset)
+    or in the code repository.
+- claim: figs1b-saturation-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band (see fig1l-saturation-amplitude), and depends on that claim.
+- claim: fig2g-extent-increases
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The evoked-potential extents are computed from the raw AP band, which is not in the dandiset
+    (see fig1l-saturation-amplitude). The code repository holds the extents it computed (EP_boundaries_w_array_distances_curated.pkl,
+    EP_distances.pkl), but these are results derived from the missing data, not data, so the claim was
+    not tested on them.
+- claim: fig2g-extent-sublinear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: fig2-extent-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: fig2h-probe-identity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: figs2gh-magnitude-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: fig3c-volume
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The volumes are built from the six evoked-potential extents, which need the raw AP band; depends
+    on fig2g-extent-increases.
+- claim: fig3e-ventral-compression
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig3c-volume.
+- claim: fig3fg-anisotropy-strength
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig3c-volume.
+- claim: fig3h-com-displacement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig3c-volume.
+- claim: fig4d-latency-trough
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4d-latency-trough
+  measured: 1.95
+  notes: The trough of the first-spike latency histogram (0.1 ms bins, centre in 0.5 to 5 ms) lies at
+    1.95, 1.75, 1.95 and 1.95 ms for 5 to 100 uA cathodal pulses, median 1.95 ms, with a higher bin before
+    and after it in all 12 conditions. Over all 12 polarity and amplitude conditions the median is 1.45
+    ms (anodal and bipolar troughs 1.05 to 1.45 ms); the criterion takes the four cathodal amplitudes,
+    as the code does. The later cathodal peaks are at 3.75 to 11.85 ms. With the first 75 trials and stable
+    units only, the cathodal median is 1.85 ms. The verifier reads the paper's "median across parameters"
+    as all 12 conditions (1.45 ms, outside tolerance); this is asked of a reader (questions/000774.yaml).
+  deviations:
+  - Latencies come from all trials of the condition's contact and all good units, as the code (figure4_figure5_figure6.ipynb
+    cell 20), from the seven recordings that hold cathodal pulses.
+- claim: figs3cd-gmm-window
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs3cd-gmm-window
+  measured:
+  - 0.683
+  - 1.139
+  - 1.221
+  - 1.47
+  notes: Four-component mixtures give windows of 0.683, 1.139, 1.221 and 1.470 ms, and BIC chooses four
+    components at every amplitude, so readings (a) and (b) agree. Over the seven recordings with cathodal
+    pulses the responder proportion with the GMM windows does not differ from the 2 ms window at any amplitude
+    (Wilcoxon, FDR-adjusted p 1.0, 0.667, 0.25 and 0.25) under both baseline readings. Pooled over amplitudes,
+    the GMM windows give fewer responders (Wilcoxon p = 0.0022), a test the legend does not name.
+  deviations:
+  - Seven recordings, where the S3D legend implies nine; two recordings hold no cathodal pulses.
+  - The crossover is taken as the first latency after the earliest component's mean where the second component's
+    posterior reaches the first's; the Methods say only "crossover points where adjacent component responsibilities
+    were equal" (STAR Methods, Gaussian mixture models).
+- claim: fig4f-responders-within-ep
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4f-responders-within-ep
+  measured:
+  - 0.4
+  - 0.778
+  - 0.882
+  - 1.0
+  notes: With the code's mean evoked-potential boundaries (outside input; -424 to 510, -725 to 605, -812
+    to 747 and -750 to 888 um at 5 to 100 uA) and the dataset's coordinates, the fractions of RS responders
+    within (reading b, the code's classes) are 0.400, 0.778, 0.882 and 1.000; three are within 10% and
+    5 uA is the lowest, but 0.400 is outside 0.333 +- 0.033. Over all responders (reading a) they are
+    0.552, 0.794, 0.889 and 1.000. The 5 uA fraction is outside tolerance under every reading run, and
+    the criterion has no partial clause, so the claim is not reproduced. With the code's coordinates reading (b) gives 0.333, 0.741, 0.882 and
+    1.000 and reading (a) 0.483, 0.765, 0.889 and 1.000, the paper's and the code's values; the 5 uA difference
+    comes from the contact coordinates of jlh31 and jlh32. Under the Methods' k-means classes the RS fractions
+    are 0.520, 0.774, 0.900 and 1.000. The claim depends on fig2g-extent-increases, which is blocked;
+    it is tested on the boundaries the code computed, which its criterion names as an outside input. Whether
+    such claims should be marked as using outside inputs is asked of a reader.
+  deviations:
+  - The evoked-potential boundaries are the code's EP_distances.pkl (outside input), not computed from
+    the raw AP band, which the dandiset does not hold.
+  - Assumed the code's FS and RS classes for reading (b) (see fig5-fsrs-proportion).
+  - Signed distances as in fig4h-extent-constant (fitted channel coordinates, the dataset's contact coordinates).
+- claim: fig4h-extent-constant
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4h-extent-constant
+  measured:
+  - 1121
+  - 825
+  - 813
+  - 452
+  notes: The per-recording extent of cathodal responders does not change with amplitude (one-way ANOVA
+    F = 1.250, p = 0.317, 6, 6, 6 and 7 recordings). The means are 1121, 825, 813 and 452 um; those at
+    50 and 100 uA are outside 10% of 965 and 522 um. With the code's coordinates the means are 1179, 884,
+    868 and 522 um and F = 1.265, p = 0.312, the paper's F and p and its means at 5, 25 and 100 uA;
+    868 um at 50 uA (which the code also prints) is just outside 10% of the paper's 965 um.
+  deviations:
+  - The signed distance needs CCF coordinates of every channel, which the dandiset does not give; they
+    are fitted per probe by a straight line through the units' coordinates on their channel number. The
+    distances use the dataset's stimulation contact coordinates, which differ from the code's for jlh31
+    and jlh32.
+- claim: fig4h-distance-decreases
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4h-distance-decreases
+  measured:
+  - 414
+  - 264
+  - 129
+  - 142
+  notes: Mean signed distances of cathodal responders are 414, 264, 129 and 142 um (29, 34, 45 and 45
+    responders). The tests hold (ANOVA F = 3.97, p = 0.0094; Tukey 5 against 50 uA p = 0.0134, 5 against
+    100 uA p = 0.0199, other pairs above 0.42). The 25 uA mean is outside 10% of 300 um. With the code's
+    coordinates the means are 426, 300, 137 and 146 um and F = 4.15, p = 0.0074, the paper's values; the
+    difference is the dataset's contact coordinates for jlh31 and jlh32.
+  deviations:
+  - Signed distances as in fig4h-extent-constant (fitted channel coordinates, the dataset's contact coordinates).
+- claim: fig4h-ks-distinct
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4h-ks-distinct
+  notes: With the dataset's coordinates, 5 against 100 uA has KS p = 0.0193 and Holm-Sidak adjusted p
+    = 0.1105, so the two populations do not differ after correction; 5-25, 25-50, 25-100 and 50-100 do
+    not differ (adjusted p 0.5255, 0.8290, 0.7439, 0.8290), and 5-50 has adjusted p 0.1309 (not judged).
+    With the code's coordinates the adjusted p are 0.5662, 0.0164, 0.5662, 0.3625 and 0.8245 for 5-25,
+    5-100, 25-50, 25-100 and 50-100, which reproduce the claim (for 50-100 the paper prints 0.083,
+    against 0.8245 here). The
+    outcome turns on the stimulation contact coordinates of jlh31 and jlh32, which in the dataset differ
+    from those the paper used.
+  deviations:
+  - Signed distances as in fig4h-extent-constant.
+- claim: fig4i-proportion-within-ep
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4i-proportion-within-ep
+  measured:
+  - 0.0133
+  - 0.0208
+  - 0.0307
+  - 0.0301
+  notes: Under reading (c), the amplitude's own boundaries on the raw signed distance, the proportions
+    of responders among units within the evoked potential are 0.0133, 0.0208, 0.0307 and 0.0301 (678 to
+    1427 units), all within 10% and below 0.05, rising with amplitude (OLS F = 4.99, p = 0.0256). With
+    the code's coordinates reading (c) gives F = 5.41, p = 0.0201, the paper's values. Readings (a) and
+    (b) give the trend (p = 0.0154 and 0.0015) with values below the paper's at 50 and 100 uA (0.0242
+    and 0.0254 under a). Reading (c) signs the raw distance as the code does (figure4_figure5_figure6.ipynb
+    cell 7 makes it negative from the channel closest to the contact on); in the code's direct_df.csv
+    distance <= 0 exactly where norm_distance <= 0 (all rows). The unsigned raw distance gives 0.0129,
+    0.0221, 0.0312 and 0.0293 (F = 4.55, p = 0.0330), with 0.0221 just outside 0.020 +- 0.002, so the
+    outcome rests on the code's sign. The boundaries are the code's (outside input); the claim depends
+    on fig2g-extent-increases, which is blocked.
+  deviations:
+  - The evoked-potential boundaries are the code's EP_distances.pkl (outside input).
+- claim: fig4j-drp-increases
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4j-drp-increases
+  measured:
+  - 99
+  - 0.116
+  - 0.142
+  - 0.194
+  - 0.233
+  notes: 103 units respond (nDRP > 0.15) at some cathodal amplitude and 99 have a value at all four (from
+    7 recordings, 2 to 28 each). Mean nDRP is 0.116, 0.142, 0.194 and 0.233. Reading (a), the code's regression
+    on numeric amplitude, gives F = 12.779, p = 0.00039 (paper F = 12.78, p = 0.0004); (b) a one-way ANOVA
+    with amplitude categorical gives F = 4.44, p = 0.0044 and (c) a repeated-measures ANOVA F = 4.66,
+    p = 0.0034. The number of good stable units per cathodal condition (2056, 2068, 2070, 2071) equals
+    that of the code's intermediate table direct_df.csv (outside input, printed as a check). jlh31 and jlh34 ran most cathodal conditions
+    twice at the one cathodal contact; the first run is used. With the second run, 91 units respond with
+    values at all four amplitudes, mean nDRP 0.125, 0.092, 0.157 and 0.223, F = 12.41, p = 0.00048.
+  deviations:
+  - The stability filter is recomputed from the Methods (the paper's flags are not in the dataset); the
+    time origin of the fit and the set of units the quartiles are taken over are not stated and were chosen
+    as the first spike of the recording and all units (a standard choice). The unit counts per cathodal
+    and anodal condition match the code's; bipolar ones differ by 1 to 5 units.
+- claim: figs3e-early-windows
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs3e-early-windows
+  measured:
+  - 0.058
+  - 0.106
+  notes: Broader windows give more responders and a stronger amplitude dependence. Under reading (a) the
+    mean proportions at 100 uA are 0.021 (2 ms), 0.058 (5 ms) and 0.106 (10 ms), and both broader windows
+    exceed 2 ms (FDR p = 0.0208; 0.0417 under reading b); from 5 to 100 uA the proportion rises by 0.005,
+    0.041 and 0.073. The 100 uA proportions are below the paper's 0.092 and 0.175 under both readings
+    (b gives 0.057 and 0.091), and the criterion has no partial clause, so the claim is not reproduced.
+    With seven recordings the smallest exact Wilcoxon p is 0.0156.
+  deviations:
+  - Seven recordings in place of nine.
+- claim: fig5bc-amplitude-clusters
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5bc-amplitude-clusters
+  measured:
+  - 0.702
+  - 0.352
+  - 0.586
+  - 0.192
+  - 0.152
+  - 0.071
+  notes: Under reading (a), the code's unscaled nDRP, Ward clustering of the 99 responders gives CCC =
+    0.702, silhouette = 0.352 and clusters of 15, 19, 40, 13, 7 and 5 units. Labelling them 25 uA, 5 uA,
+    dose, dose, 100 uA and dose gives 15.2%, 19.2%, 58.6% and 7.1%, the paper's fractions, the assignment
+    the criterion allows. By the claims file's half-peak rule the 7-unit cluster peaks at 50 uA (mean
+    nDRP 0.651 against 0.343 at 100 uA) and the 13-unit cluster is the one selective for 100 uA, so no
+    assignment that follows the clusters' peaks matches; the paper's "100 uA" cluster is better described
+    as selective for 50 uA. Reading (b), vectors divided by their maximum, gives CCC 0.840, silhouette
+    0.501 and no matching assignment. Whether the criterion's "some assignment" clause is meant to pass
+    clusters that do not respond almost only at one amplitude is asked of a reader.
+- claim: fig5ef-polarity-clusters
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5ef-polarity-clusters
+  measured:
+  - 0.773
+  - 0.538
+  - 0.705
+  - 0.287
+  - 0.232
+  - 0.186
+  notes: Under reading (a), the code's population of units responsive to any polarity (220 units), CCC
+    = 0.773 and silhouette = 0.538 are within 10%. Five assignments of the six clusters to the three polarities
+    or none give all three fractions within 10%, and in two of them each labelled cluster's highest mean
+    is at its label; the first of these gives bipolar 0.287, anodal 0.232 and cathodal 0.186 (polarity-specific
+    0.705), the criterion's "some assignment". It labels as bipolar both a cluster of 45 units (mean 1.0,
+    0.04, 0.03 for bipolar, cathodal, anodal) and one of 18 units (0.98, 0.40, 0.79), whose anodal response
+    is 0.79 of its bipolar one. By the half-maximum rule only the first prefers bipolar, giving 0.205,
+    0.232 and 0.186 (total 0.623). With the bipolar contact nearest layer 5 units (235 units), the half-maximum
+    rule gives 0.260, 0.213 and 0.196. Among the 99 cathodal responders (reading b) CCC 0.711 and silhouette
+    0.393 are outside tolerance. Whether the "some assignment" clause is meant this loosely is asked of
+    a reader.
+  deviations:
+  - The contact nearest layer 5 is judged from the region of the nearest unit, as the dataset gives no
+    region for the contacts.
+- claim: fig5-fsrs-proportion
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5-fsrs-proportion
+  measured:
+  - 0.0196
+  - 0.0227
+  - 0.0111
+  - 0.0221
+  notes: No reading gives the four proportions within 10%. Over all FS and RS units (reading a), under
+    the code's classes (616 FS and 1352 RS units), FS 0.0196 and 0.0227 and RS 0.0111 and 0.0221 at 5
+    and 100 uA. Within the evoked potential (reading b, the code's boundaries as outside input) the closest
+    is reading (c) of fig4i, FS 0.0275 and 0.0324 and RS 0.0069 and 0.0299. Responders are sparse in both
+    classes, and class and interaction have no effect under the code's classes (class p 0.437 over all units;
+    0.983, 0.608 and 0.821 within, under readings a, b and c of fig4i). The amplitude term, which the paper's F = 3.04 with p = 0.028 implies is categorical,
+    has p = 0.123 over all units and 0.039, 0.005 and 0.051 within under the three readings; with amplitude
+    numeric p is 0.037 or less. Under the Methods' k-means (one run) the class effect is significant (F
+    = 4.85, p = 0.028), and in 4 of 20 k-means runs (that run and 19 from other seeds and initialisations).
+  deviations:
+  - FS and RS classes shown under the code's 0.4 ms duration threshold and the Methods' k-means; the outcome
+    is the same under both.
+  - Reading (b) uses the code's evoked-potential boundaries (outside input).
+- claim: fig5j-fs-closer
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5j-fs-closer
+  measured:
+  - 205
+  - 556
+  - 183
+  notes: With the code's classes and the dataset's coordinates FS responders lie closer than RS (mean
+    111 against 267 um; waveform F = 7.02, p = 0.0090) and amplitude has an effect (F = 3.95, p = 0.0097);
+    FS 205 um at 5 uA and RS 556 and 183 um at 5 and 100 uA are within 10%. With the code's coordinates
+    F = 8.04, p = 0.0052 and F = 4.10, p = 0.0080, the paper's values. Under the Methods' k-means classes
+    the waveform effect is not significant (F = 2.96, p = 0.0874). Over 20 k-means runs (that run and 19 from
+    other seeds and initialisations; 296 to 470 FS units) the waveform effect is never significant (p 0.087 to 0.401);
+    the run of lowest within-cluster sum of squares gives p = 0.127.
+  deviations:
+  - Assumed the code's FS and RS classes (a 0.4 ms duration threshold), where the Methods describe k-means.
+    The code is what the paper ran, its classes give the paper's statistics exactly here, they are deterministic,
+    and the k-means classes change with the initialisation (296 to 470 FS units over 20 runs); the k-means
+    reading is shown. Asked of the authors (see findings).
+  - Signed distances as in fig4h-extent-constant.
+- claim: fig5i-fs-within-ep
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5i-fs-within-ep
+  measured:
+  - 0.75
+  - 0.833
+  - 0.4
+  - 0.778
+  notes: Under the code's threshold classes and the dataset's coordinates, FS responders lie within the
+    evoked potential at 0.750, 0.833, 1.000 and 1.000 and RS responders at 0.400, 0.778, 0.882 and 1.000
+    at 5 to 100 uA. FS at 5 and 25 uA and RS at 25 uA are within 10% and FS is at or above RS at every
+    amplitude; RS at 5 uA (0.400) is outside 0.33 +- 0.033. With the code's coordinates RS gives 0.333
+    and 0.741, and all four match. Under the Methods' k-means FS responders are 2, 2, 4 and 7 units, all
+    within (1.000), outside tolerance. No class choice gives the four values, and the criterion has no
+    partial clause, so the claim is not reproduced. The boundaries are the code's (outside input); the claim depends
+    on fig4f-responders-within-ep.
+  deviations:
+  - The evoked-potential boundaries are the code's EP_distances.pkl (outside input).
+  - Assumed the code's FS and RS classes (see fig5j-fs-closer).
+  - Signed distances as in fig4h-extent-constant.
+- claim: figs6b-fsrs-early-firing
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs6b-fsrs-early-firing
+  notes: With the code's classes and 1 ms bins (the code's), FS and RS early firing differ at every amplitude
+    (Holm-Sidak adjusted p 0.0056, 0.0038, 0.0127, 0.0127; 70 bins per class). With the legend's 2 ms
+    bins no adjusted p is below 0.05 (0.0598 to 0.1151). Under the Methods' k-means classes only 100 uA
+    differs (1 ms bins, adjusted p 0.0139). Over 20 k-means runs (that run and 19 from other seeds
+    and initialisations) all four amplitudes differ in 9 and one in 11.
+  deviations:
+  - Assumed the code's FS and RS classes (see fig5j-fs-closer).
+  - Seven recordings with cathodal pulses, where the legend gives nine.
+- claim: fig6c-modulation-cortex
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6c-modulation-cortex
+  measured:
+  - 12.6
+  - 20.21
+  - 12.27
+  - 13.48
+  notes: Under reading (a), the code's (0 to 500 ms, 10 ms bins), the magnitudes are 12.60, 13.37, 15.11,
+    20.21 (cortical, 1287 units) and 12.27, 12.60, 12.08, 13.48 (subcortical, 351 units), the paper's
+    values, with region F = 106.27, amplitude F = 487.36 and interaction F = 90.88 (all p < 1e-20), and
+    cortical against subcortical Student p = 4.65e-09 at 50 uA and 5.50e-29 at 100 uA. Under the legend's
+    5 ms bins (b) the three terms hold (p 4.76e-05 or less) but the 50 uA comparison has p = 1.10e-02.
+    Under the Methods' window (c, 500 to 1000 ms) there is no region effect (p = 0.457), the amplitude
+    term has p = 1.06e-03, and no amplitude comparison has p < 0.001. The criterion asks for every reading
+    and has no partial clause, so the claim is not reproduced.
+  deviations:
+  - Seven recordings with cathodal pulses, where the legend gives nine.
+- claim: fig6d-hva-subcortical
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6d-hva-subcortical
+  measured:
+  - 13.91
+  - 13.48
+  notes: With the legend's groups (HVA LM, AM and PM, 120 units; subcortical CA1, subiculum, dentate gyrus
+    and superior colliculus, 460 units in the seven recordings with cathodal pulses, 273 of them CA1
+    units that the code's list leaves out) HVA units
+    have a magnitude of 13.91 at 100 uA and subcortical units 13.26, Tukey p = 0.784; the distances do
+    not differ (Mann-Whitney p = 0.54), as in the paper. With the code's subcortical list (351 units)
+    the values are 13.91 and 13.48, Tukey p = 0.902. With the code's broader HVA group (any layered name
+    outside V1, 349 units, of which 91 are superior colliculus or dentate gyrus units) the values are
+    15.82 and 13.68 and Tukey p = 0.0202, but the distances then differ (p = 5.92e-08). The paper's 15.82
+    is the code's group; the legend's groups show no difference.
+  deviations:
+  - In the code's variant each unit is put in one group (V1, then HVA, then subcortical); the code lets
+    superior colliculus units fall in both its HVA and subcortical groups.
+- claim: fig6e-circuit-responders
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6e-circuit-responders
+  measured:
+  - 0.125
+  - 0.209
+  - 0.52
+  - 0.785
+  - 0.089
+  - 0.36
+  notes: With zetapy 2.7.2 getZeta (the function the code calls) the proportion of cortical circuit responders
+    is 0.125, 0.209, 0.520 and 0.785 and of subcortical ones 0.089, 0.094, 0.164 and 0.360 (7 recordings),
+    above one half for cortex at 50 and 100 uA. The cathodal model gives amplitude F = 89.48 (p = 6.84e-13),
+    region F = 36.59 (p = 1.61e-07) and interaction F = 15.26 (p = 2.72e-04); the Results print F region 40.14
+    and interaction 15.61 next to F amplitude 175.18, without naming the model. Two values are just outside 10% (cortical 0.125 against
+    0.14, subcortical 0.089 against 0.08 at 5 uA). The recomputed p-values agree with the paper's cached
+    ones (Pearson r = 0.992, same decision for 0.970 of 7980 tests), and the cached ones give 0.14, 0.21,
+    0.52, 0.79 and 0.08, 0.09, 0.17, 0.35 on the dataset's units, the paper's values, and amplitude F
+    = 172.99 and region F = 85.99 in the code's full model (paper 175.18 and 81.50). The difference is
+    the resampling of the ZETA test.
+  deviations:
+  - Only the cathodal conditions were tested with ZETA (7980 tests, 9 minutes); the code's full model
+    over three polarities would take about 20 minutes more and is shown with the cached p-values.
+  - zetapy 2.7.2 imports scipy.signal.gaussian, which current scipy keeps under scipy.signal.windows;
+    the helper adds it before importing zetapy.
+  - As the code (get_zetas), the trials are all those of the run that holds the condition's first trial,
+    with no other filter; each run holds only the condition's single 100 us pulses, except in jlh53concat,
+    where a run number covers 150 trials of monopolar and bipolar pulses. With jlh53concat's own 75 cathodal
+    trials the proportions are 0.121, 0.203, 0.514 and 0.756 (cortical) and 0.095 and 0.339 (subcortical
+    at 5 and 100 uA).
+- claim: fig6f-no-propagating-wave
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6f-no-propagating-wave
+  notes: With the code's peak rule, among 614 cortical circuit responders at 50 uA cathodal, time to peak
+    excitation (median 205 ms) and to peak inhibition (median 70 ms) do not correlate with signed distance
+    (Pearson r = -0.001, p = 0.987; r = 0.047, p = 0.244); with the cathodal contact for jlh32 too, r
+    = 0.004 and 0.047 (p = 0.918 and 0.240); dropping the 19 units without a prominent peak, r = 0.002
+    and 0.050 (p = 0.969 and 0.219). With the criterion's 4 ms minimum width applied, both correlate (r
+    = 0.131, p = 0.001 and r = -0.115, p = 0.004; with units without such a peak dropped, r = 0.153, p
+    < 0.001 and r = -0.121, p = 0.004). jlh39 and jlh49v1 hold no cathodal pulses, so the readings with
+    and without them are the same.
+  assumed: true
+  deviations:
+  - Assumed the code's peak rule. The criterion lists a minimum width of 4 ms and a centre of mass over
+    +-6 ms, the values in the code's configuration (figure7.ipynb cell 11); the code converts them to
+    5 ms bins with round(), so the width (0.8 bins, rounded to 1) is not applied, as the code applies
+    it only above 1 bin, and the centre of mass spans +-1 bin. The paper's r values come from this rule
+    and the Methods give none. Applying the width filter changes the outcome; asked of a reader and of
+    the authors.
+- claim: figs9-state-drp
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs9-state-drp
+  measured:
+  - 0.012
+  - 0.0124
+  - 0.0159
+  - 0.0165
+  notes: Under readings (a, i, x), all good stable units, the whole population and DRP, DRP is higher
+    on high-state trials at every amplitude (0.0124 against 0.0120 at 5 uA, 0.0143 against 0.0126, 0.0159
+    against 0.0150, 0.0165 against 0.0159 at 100 uA; FDR p 0.0016 or less); the cortical population gives
+    the same (FDR p up to 0.0156). The values are about a quarter of the paper's at 5 uA (0.051 and
+    0.056) and a sixth at 100 uA (0.104 and 0.107), and no reading reaches them; among the 99 direct responders the values
+    are 0.12 to 0.25 and no difference is significant (FDR p 0.3008 to 0.9463). With nDRP over all units
+    the low state is higher at every amplitude (FDR p 0.0336 or less).
+- claim: fig6g-dimensionality-collapse
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6g-dimensionality-collapse
+  notes: With 2 ms bins the normalised participation ratio in 12 to 150 ms is 0.982, 0.951, 0.765 and
+    0.459 and the effective dimensionality 0.986, 0.961, 0.778 and 0.476 at 5 to 100 uA, all below 1.
+    Within 0 to 20 ms the largest bin of effective dimensionality is 1.024, 1.087 and 1.094 at 5, 25 and
+    50 uA (reading b; 1.043 at 100 uA as well), while its mean over the window is 0.929, 0.994 and 0.960
+    (reading a). With 5 ms bins the largest bin exceeds 1 only at 25 and 50 uA. The code's "layer" unit
+    filter gives the same pattern. Against the pre-stimulus spread (-200 to -4 ms; largest normalised
+    effective dimensionality 1.079, 1.056, 1.091 and 1.054 at 5 to 100 uA), the largest bin in 0 to 20
+    ms exceeds the pre-stimulus maximum at 25 uA (5 bins) and 50 uA (3 bins) but not at 5 uA (1.024) or
+    100 uA; the criterion does not compare with it.
+  deviations:
+  - Seven recordings with cathodal pulses, where the legend gives nine.
+- claim: fig7d-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaviour of the four trained mice is not in the dandiset, which holds only the acute recordings;
+    the paper names only these NWB files as deposited, and its code reads the behaviour from local CSV
+    files. No other dandiset of the lab holds it (DANDI search for Denman and Hickman).
+- claim: fig7e-generalization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7g-no-amplitude-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7h-pulses-detected
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: figs10c-anodal-cathodal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7h-trains-better
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7i-contrast-and-equivalence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7j-habituation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: no-learning-across-sessions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: figs10e-reaction-times
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+findings:
+- kind: data_missing
+  statement: The raw AP band, LFP band and NI-DAQ files are not deposited (the paper says they are available
+    on request), so the evoked-potential analyses of Figures 1 to 3, S1 and S2 cannot be repeated (11
+    claims blocked), and the comparisons of units with the evoked-potential boundaries (Figures 4F, 4I
+    and 5I) can be made only with the boundaries the paper's code computed, taken here from its repository.
+- kind: data_missing
+  statement: The behaviour of the four trained mice (Figure 7 and S10) is not deposited on DANDI or elsewhere
+    that the paper names; the paper's code reads it from local CSV files. 10 claims are blocked for this
+    reason.
+- kind: code_mismatch
+  statement: The stimulation contact coordinates of jlh31 and jlh32 in the trials table differ from those
+    in the paper's code repository by 206 um (100, 150, -100) and 373 um (370, 0, -50); the other seven
+    recordings agree exactly. With the code's coordinates the distance results of Figure 4H give the
+    paper's statistics and most of its values (not the 50 uA extent, 868 against 965 um, or the 50 against
+    100 uA KS p, 0.8245 against 0.083); with the dataset's, the 5 against 100 uA KS test is no longer significant after correction.
+- kind: metadata_error
+  statement: The file of session jlh49v1, which the paper and its code treat as a separate recording and
+    mouse, is filed under subject jlh48. Its subject age (P381D) is one day more than that of the jlh48
+    file, which was recorded four months later.
+- kind: metadata_insufficient
+  statement: The electrodes table holds placeholders (location "none" for all 1152 channels, x 5 to 53,
+    y 0, z 3820, impedance 0), so channel CCF coordinates and regions are not given; the paper's signed
+    distances need them and here they are fitted from the units' coordinates. The stimulation contacts
+    have coordinates but no region.
+- kind: metadata_insufficient
+  statement: The units table holds neither the waveform classes (FS, RS, up, axon) nor the stability flags
+    the paper uses to select units; both are recomputed here (the stability filter gives the same number
+    of units per cathodal and anodal condition as the code's intermediate table direct_df.csv, and 1 to
+    5 more or fewer per bipolar condition).
+- kind: selection_undocumented
+  statement: The dandiset holds ten recordings; the paper analyses nine. The tenth, jlh41 ("lots of noise
+    issues ... not much analyzed yet here"), has no CCF coordinates or regions, and the dandiset does
+    not say it was left out.
+- kind: other
+  statement: Cathodal single pulses are in seven of the nine recordings (jlh39 and jlh49v1 hold only bipolar
+    pulses, jlh40 no bipolar), while the legends of the cathodal analyses give n = 9 recordings. jlh33
+    has 60 trials per condition, where the Methods state 75, and no anodal 50 uA single pulse. Trial and
+    spike times of jlh40 and jlh53concat are negative in part.
+- kind: code_mismatch
+  statement: The FS and RS classes of the paper's code are a 0.4 ms threshold on waveform duration (dlab
+    classify_waveform_shape called with kmeans=0), where the Methods describe k-means on three normalised
+    features. The two give 616 and 332 FS units and different outcomes for fig5j-fs-closer and figs6b-fsrs-early-firing.
+- kind: methods_unavailable
+  statement: Question for the authors. Were the FS and RS classes of Figures 5G to 5J and S6 assigned
+    by k-means (Methods) or by the 0.4 ms duration threshold the code runs? This attempt assumed the threshold,
+    whose classes give the paper's statistics exactly; k-means on the Methods' three features depends
+    on its initialisation here (296 to 470 FS units over 20 runs), and under none of those runs are FS
+    responders significantly closer than RS responders (p 0.087 to 0.401).
+- kind: code_mismatch
+  statement: For Figure 6D the code's HVA group takes any CCF name with "layer" outside V1, which adds
+    superior colliculus and dentate gyrus units to LM, AM, PM and other areas (151 good stable units in
+    the nine recordings, 91 in the seven with cathodal pulses), and its subcortical
+    list has no CA1 (315 good stable units); the legend names LM, AM and PM, and CA1, subiculum, dentate
+    gyrus and superior colliculus. The paper's 15.82 comes from the code's groups; with the legend's groups
+    HVA and subcortical modulation do not differ (13.91 against 13.26, Tukey p = 0.784).
+- kind: code_mismatch
+  statement: The code's map_region_to_group looks for "posteromedial area", which matches no CCF name
+    in the files ("posteromedial visual area"), so 16 PM units are left out of the cortical circuit responders
+    of Figure 6E.
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods compute the modulation index over 500 to 1000 ms with
+    5 ms bins, the Figure 6C legend over a 500 ms window from onset with 5 ms bins, and the code over
+    0 to 500 ms with 10 ms bins; the printed magnitudes are the code's. Which is meant? Over 500 to 1000
+    ms there is no cortical against subcortical difference (p = 0.457).
+- kind: metadata_error
+  statement: In jlh53concat, a concatenated recording, the trials table's run numbers 0 to 7 are each
+    used by a monopolar and a bipolar run, so a run number does not identify one condition; code that
+    selects trials by run, as the paper's ZETA code does, takes 150 trials of both polarities.
+- kind: other
+  statement: In all nine recordings the population fires less in the 3 ms before the logged pulse onset,
+    down to 0.07 to 0.20 spikes per trial from 2 to 1 ms before it (0.61 in jlh31), against 0.81 to 2.03
+    from 8 to 7 ms before; the trials table does not say whether the onset is logged after the pulse begins
+    or spikes were removed around it.
+- kind: methods_unavailable
+  statement: Question for the authors. Was the 4 ms minimum peak width of the Figure 6F peak times meant
+    to apply? The code's configuration sets it, but its conversion to 5 ms bins rounds it to one bin and
+    skips it, and the Methods give no rule. Without it time to peak does not correlate with distance (r
+    = -0.001 and 0.047); with it both correlate (r = 0.131, p = 0.001 and r = -0.115, p = 0.004).
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write
+    the notebook)
+  reviewed: Round 1. The executed notebook of the author run (commit 432df9787) with the conclusion cells
+    and the summary removed, the helper module and the claims file, with the paper. The verifier read
+    the archive metadata and tested helper functions on synthetic inputs. Its outcomes differ from the
+    record on fig5ef-polarity-clusters and fig5-fsrs-proportion; it asked for fig4f, fig4i, fig5i and
+    reading (b) of fig5-fsrs to be run with the code's EP_distances.pkl.
+  results:
+  - claim: fig1l-saturation-amplitude
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: figs1b-saturation-polarity
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig2g-extent-increases
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig2g-extent-sublinear
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig2-extent-polarity
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig2h-probe-identity
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: figs2gh-magnitude-linear
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig3c-volume
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig3e-ventral-compression
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig3fg-anisotropy-strength
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig3h-com-displacement
+    agrees: true
+    outcome: blocked
+    reason: The archive's metadata lists only variableMeasured Units and ElectrodeGroup, with 10 files
+      of 57 to 212 MB, far too small to hold the raw AP band of three Neuropixels probes, so there is
+      no raw data. The draft has the same 10 assets.
+    response: No change.
+  - claim: fig4d-latency-trough
+    agrees: true
+    outcome: reproduced
+    reason: The median trough over the four cathodal conditions is 1.95 ms, and all 12 conditions have
+      a higher bin before and after the trough. Taking "across parameters" as all 12 conditions gives
+      1.45 ms, which is outside tolerance; the criterion follows the code and uses cathodal only. The
+      claims file may misread the paper here (B7).
+    response: Outcome kept, as tested on the claims file. The reading of "median across parameters" is
+      asked of a reader in questions/000774.yaml.
+  - claim: figs3cd-gmm-window
+    agrees: true
+    outcome: reproduced
+    reason: The windows are 0.683, 1.139, 1.221 and 1.470 ms, with k = 4 chosen by BIC too. No FDR-adjusted
+      p is below 0.05 under any reading. This rests on 7 recordings, so the test of absence has little
+      power; pooled over amplitudes, p = 0.0022.
+    response: No change; the notes already give the pooled test and the seven recordings.
+  - claim: fig4f-responders-within-ep
+    agrees: true
+    outcome: blocked
+    reason: 'The evoked-potential boundaries need the raw AP band, which is not in the archive. They could
+      be tested conditionally: the claims file points to the code''s EP_distances.pkl as an outside input,
+      and the unit side comes from the dataset. The notebook already uses other outside inputs from the
+      same repository (B2).'
+    response: Tested with the code's EP_distances.pkl as the outside input the criterion names (listed
+      under inputs); outcome changed from blocked to partially_reproduced (dataset coordinates, RS at
+      5 uA 0.400 against 0.333; the code's coordinates give the paper's values). Whether such claims should
+      be marked as using outside inputs is asked of a reader.
+  - claim: fig4h-extent-constant
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA F = 1.250, p = 0.317, so the test of absence holds. With the dataset's coordinates the
+      means at 50 and 100 uA are out of tolerance (813 and 452 um); the criterion only reports the means.
+    response: No change.
+  - claim: fig4h-distance-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: With the dataset's coordinates ANOVA p = 0.0094, Tukey 5-50 p = 0.013 and 5-100 p = 0.020;
+      means 414, 264, 129, 142 um, and the 25 uA mean is out of tolerance. The code's coordinates (outside
+      input) give the paper's values exactly. The notebook cannot say which coordinates are right (B5).
+    response: No change; which coordinates are right needs the authors, and the code_mismatch finding
+      asks it.
+  - claim: fig4h-ks-distinct
+    agrees: true
+    outcome: not_reproduced
+    reason: With the dataset's coordinates, 5 against 100 uA has Holm-Sidak adjusted p = 0.11, so the
+      first part fails; the code's coordinates give p = 0.0164, so the outcome depends on the coordinates
+      (B5).
+    response: No change.
+  - claim: fig4i-proportion-within-ep
+    agrees: true
+    outcome: blocked
+    reason: 'The evoked-potential boundaries need the raw AP band, which is not in the archive. They could
+      be tested conditionally: the claims file points to the code''s EP_distances.pkl as an outside input,
+      and the unit side comes from the dataset. The notebook already uses other outside inputs from the
+      same repository (B2).'
+    response: Tested with the code's EP_distances.pkl (listed under inputs); outcome changed from blocked
+      to reproduced (reading c, 0.0133, 0.0208, 0.0307, 0.0301, p = 0.0256).
+  - claim: fig4j-drp-increases
+    agrees: true
+    outcome: reproduced
+    reason: 99 units; mean nDRP 0.116, 0.142, 0.194, 0.233; OLS F = 12.78, p = 0.00039. Some cathodal
+      conditions have 150 trials (jlh31, jlh34) and only the first run is used; these two recordings hold
+      54 of the 99 responders (B6).
+    response: 'Printed the runs and contacts of every cathodal condition: the 150-trial conditions are
+      two runs at the recording''s one cathodal contact, so the layer 5 reading takes the same trials.
+      Added the second run as a variant (91 units, F = 12.41, p = 0.00048; 25 uA mean 0.092). Outcome
+      kept.'
+  - claim: figs3e-early-windows
+    agrees: true
+    outcome: partially_reproduced
+    reason: At 100 uA the proportions are 0.058 and 0.106 (reading a) or 0.057 and 0.091 (reading b),
+      against 0.092 and 0.175; both windows exceed 2 ms and the rise with amplitude is larger. The direction
+      holds; the values are 35 to 40% low. The criterion has no partial clause, so read strictly this
+      is not_reproduced.
+    response: Outcome kept as partially_reproduced, the outcome the verifier gives.
+  - claim: fig5bc-amplitude-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Reading a gives CCC 0.702, silhouette 0.352 and sizes 15/19/40/13/7/5; one assignment matches
+      all four fractions. In it the "100 uA-selective" cluster peaks at 50 uA and the "25 uA" cluster
+      is not selective; the "some assignment" clause is lax enough to pass clusters that do not respond
+      almost only at one amplitude, a weakness in the claims file (B8).
+    response: Outcome kept, as tested on the claims file; the laxness of the clause is asked of a reader
+      in questions/000774.yaml.
+  - claim: fig5ef-polarity-clusters
+    agrees: false
+    outcome: reproduced
+    reason: Reading a gives n = 220, CCC 0.773, silhouette 0.538. Under the criterion's "some assignment"
+      (clusters 2 and 5 bipolar 0.286, cluster 1 anodal 0.232, cluster 3 cathodal 0.186; each is that
+      cluster's highest polarity) all three fractions are within tolerance. The notebook did no assignment
+      search, although it does one for fig5bc, and its half-maximum rule gives bipolar 0.205 (B1).
+    response: 'Added the assignment search: five assignments match, two with each label at its cluster''s
+      highest mean (bipolar 0.287, anodal 0.232, cathodal 0.186). Outcome changed from partially_reproduced
+      to reproduced, as the criterion rests on some assignment; the notes say one bipolar-labelled cluster
+      has an anodal response 0.79 of its bipolar one, and the clause is asked of a reader.'
+  - claim: fig5-fsrs-proportion
+    agrees: false
+    outcome: not_reproduced
+    reason: No reading gets the proportions within tolerance (FS at 5 uA 0.006 or 0.020 against 0.032,
+      RS at 100 uA 0.022 against 0.037). The paper's F = 3.04 with p = 0.028 implies 3 df, so amplitude
+      was categorical, and then the amplitude term has p = 0.12. Under the k-means classes the class effect
+      is significant. Reading b, units within the evoked potential, was not run, and the paper's proportions
+      look like that population (B2).
+    response: 'Ran reading (b) with the code''s boundaries under the three readings of fig4i: no reading
+      gives the four proportions (closest FS 0.0275 and 0.0324, RS 0.0069 and 0.0299). Outcome changed
+      from partially_reproduced to not_reproduced, as the criterion has no partial clause; the assumption
+      on FS/RS classes is dropped from this claim, since both classes give the same outcome.'
+  - claim: fig5j-fs-closer
+    agrees: true
+    outcome: reproduced
+    reason: 'Threshold classes, dataset distances: waveform p = 0.009, amplitude p = 0.0097, FS 111 below
+      RS 267 um, and the three means within tolerance. The Methods'' k-means classes give waveform p =
+      0.087. The k-means reading uses one kmeans2 run whose stability is never checked (B4).'
+    response: 'Added the k-means classes from 10 seeds with each of two initialisations and the run of
+      lowest within-cluster sum of squares: 296 to 470 FS units, waveform p never below 0.05 (0.087 to
+      0.401). Outcome kept, resting on the code''s deterministic threshold classes.'
+  - claim: fig5i-fs-within-ep
+    agrees: true
+    outcome: blocked
+    reason: 'The evoked-potential boundaries need the raw AP band, which is not in the archive. They could
+      be tested conditionally: the claims file points to the code''s EP_distances.pkl as an outside input,
+      and the unit side comes from the dataset. The notebook already uses other outside inputs from the
+      same repository (B2).'
+    response: Tested with the code's EP_distances.pkl (listed under inputs); outcome changed from blocked
+      to partially_reproduced, resting on the code's FS/RS classes (RS at 5 uA 0.400 against 0.33; the
+      code's coordinates give all four values).
+  - claim: figs6b-fsrs-early-firing
+    agrees: true
+    outcome: reproduced
+    reason: Threshold classes with 1 ms bins give Holm-Sidak p = 0.0056, 0.0038, 0.0127, 0.0127. The k-means
+      classes and the 2 ms bins fail; the k-means reading rests on one initialisation (B4).
+    response: 'Added the k-means stability check: all four amplitudes differ in 9 of 20 runs and in the
+      lowest-WCSS run. Outcome kept.'
+  - claim: fig6c-modulation-cortex
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Under reading a the values and F statistics match the paper exactly. The criterion also requires
+      every reading to hold: under reading b the 50 uA t-test has p = 0.011, and under reading c the region
+      term has p = 0.46 and the 50 and 100 uA comparisons are not significant.'
+    response: No change.
+  - claim: fig6d-hva-subcortical
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the legend's groups HVA is 13.91 and Tukey p = 0.90; the code's groups give 15.82 and
+      13.68 with p = 0.020 but the distance test gives p = 6e-8. The legend grouping still takes subcortical
+      units from the code's list, which has no CA1 or subiculum, so the Tukey test under the legend's
+      groups was never run as the criterion asks (B3).
+    response: 'Rerun with the legend''s subcortical group (Field CA1, Postsubiculum, dentate gyrus and
+      superior colliculus layers; 460 units, 273 of them CA1) and region-name counts printed: 13.91 against
+      13.26, Tukey p = 0.784, distances p = 0.54. Outcome kept.'
+  - claim: fig6e-circuit-responders
+    agrees: true
+    outcome: partially_reproduced
+    reason: Recomputed ZETA gives 0.125, 0.209, 0.520, 0.785 and 0.089, 0.360; two values fall just outside
+      tolerance. Amplitude p = 7e-13, region p = 2e-7. The markdown says the trials are restricted to
+      single 100 us pulses, but the code takes tr[tr.run == run] with no filter; the full model is fitted
+      only on the cached p-values (B11).
+    response: 'Corrected the text and printed the composition of each run: each holds only the condition''s
+      trials, except jlh53concat, where a run number covers 150 monopolar and bipolar trials (recorded
+      as a finding). Added jlh53concat with its own trials (cortical 0.121 to 0.756) and the agreement
+      with the cache by recording. The full model on recomputed p-values would take about 20 more minutes
+      of ZETA and was not run. Outcome kept.'
+  - claim: fig6f-no-propagating-wave
+    agrees: true
+    outcome: reproduced
+    reason: Pearson r is -0.001 or 0.004 (p >= 0.92) for excitation and 0.047 (p = 0.24) for inhibition,
+      n = 614. Peak picking leaves out the criterion's width >= 4 ms condition, the centre of mass covers
+      +-5 ms, not +-6 ms, and units without a prominent peak fall back to the argmax (B9).
+    response: 'The code''s own rule rounds the 4 ms width to one 5 ms bin and then skips it, and +-6 ms
+      is +-1 bin, as the notebook now says. Ran the criterion''s width filter and dropping units as variants:
+      with the width filter both correlations are significant (r = 0.131, p = 0.001; r = -0.115, p = 0.004).
+      Outcome kept, now marked as resting on the code''s rule (assumed), asked of a reader and of the
+      authors.'
+  - claim: figs9-state-drp
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading a/i/x gives higher DRP on high-state trials at all four amplitudes, FDR p <= 0.0016,
+      but the values (0.012 to 0.017) are far from 0.051 to 0.107. Raw DRP rises with spontaneous rate,
+      so this is expected from baseline firing alone, and with nDRP the direction reverses (B12).
+    response: No change; the notes already give the nDRP reversal.
+  - claim: fig6g-dimensionality-collapse
+    agrees: true
+    outcome: reproduced
+    reason: With 2 ms bins the middle-epoch PR and ED are below 1 at every amplitude; the largest bin
+      in 0 to 20 ms is above 1 at 5, 25 and 50 uA (reading b), while the window mean never exceeds 1.
+      Reading b does not discriminate, as the 100 uA trace also exceeds 1, and no pre-stimulus noise floor
+      is shown (B10).
+    response: 'Printed the pre-stimulus spread: the 0 to 20 ms maximum exceeds the pre-stimulus maximum
+      at 25 and 50 uA, not at 5 or 100 uA. The two bins before onset are left out of the spread, as firing
+      falls there (data check, recorded as a finding). Outcome kept, as the criterion does not compare
+      with the spread; stated in the notes.'
+  - claim: fig7d-learning
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: fig7e-generalization
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: fig7g-no-amplitude-effect
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: fig7h-pulses-detected
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: figs10c-anodal-cathodal
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: fig7h-trains-better
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: fig7i-contrast-and-equivalence
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: fig7j-habituation
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: no-learning-across-sessions
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+  - claim: figs10e-reaction-times
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
+      Nothing in these claims can be tested.
+    response: No change.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write
+    the notebook)
+  reviewed: 'Round 2. The full executed notebook of the author-revise-1 run (commit b357179b9) with its
+    conclusions and summary, the README, the attempt record, the helper module and the claims file, with
+    the paper. The verifier disagrees with four outcomes (fig4f, fig5i, figs3e, fig6c: partially reproduced
+    where the criteria have no partial clause) and quoted sentences of the conclusions and the record
+    that the outputs do not support.'
+  results:
+  - claim: fig1l-saturation-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs1b-saturation-polarity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2g-extent-increases
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2g-extent-sublinear
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2-extent-polarity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2h-probe-identity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs2gh-magnitude-linear
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3c-volume
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3e-ventral-compression
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3fg-anisotropy-strength
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3h-com-displacement
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig4d-latency-trough
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Its earlier point B7 ("across parameters") is a claims-file question that does not
+      bear on a conclusion; the record asks it of a reader.
+    response: No change.
+  - claim: figs3cd-gmm-window
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig4f-responders-within-ep
+    agrees: false
+    outcome: not_reproduced
+    reason: 'N1. The criterion has no partial clause; RS at 5 uA is 0.400 against 0.333 +- 0.033 (cell
+      16), so by the rule used for fig5-fsrs this is not reproduced. The FS/RS assumption is stated but
+      the outcome does not depend on it: k-means RS fractions also fail at 5 uA (0.520). The outcome turns
+      on the contact coordinates.'
+    response: Outcome kept as partially_reproduced, the verified outcome cannot change in round 2; not_reproduced
+      written under proposed, for a third round, with a note in the Result cell and the Summary.
+  - claim: fig4h-extent-constant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The sentence that with the code's coordinates the distance results match the paper
+      exactly is contradicted by the 50 uA extent of 868 against the paper's 965 +- 96.5 (cell 19), and
+      cell 20 calls 1179, 884, 868 and 522 the paper's values. B5 (the coordinates of jlh31 and jlh32)
+      only the authors can settle.
+    response: 'Corrected the notes, the Result cell, the README, the Summary and the coordinate finding:
+      with the code''s coordinates the F and p and the means at 5, 25 and 100 uA match, and 868 um at
+      50 uA is just outside 10% of 965 um.'
+  - claim: fig4h-distance-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the criterion has a partial clause. The 25 uA mean turns on the contact coordinates
+      of jlh31 and jlh32 (B5), which only the authors can settle.
+    response: No change; the code_mismatch finding asks the authors.
+  - claim: fig4h-ks-distinct
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome turns on the contact coordinates of jlh31 and jlh32 (B5). With the code's
+      coordinates the 50-100 uA adjusted KS p is 0.8245 against the paper's 0.083 (cell 25), so they do
+      not match the paper exactly.
+    response: Notes, README, Summary and finding now give 0.8245 against 0.083 and no longer say the code's
+      coordinates match the paper exactly.
+  - claim: fig4i-proportion-within-ep
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (N2). The outcome rests on reading (c), the raw CCF distance signed like norm_distance
+      (cell 2); the criterion says raw CCF distance without a sign, the claim that the code's distance
+      column is signed this way is shown in no output, and the unsigned version was not run. Readings
+      (a) and (b) fail at 50 and 100 uA; the near-exact match with the code's coordinates (F = 5.41, p
+      = 0.0201) supports reading (c).
+    response: 'Cited the code''s passage (figure4_figure5_figure6.ipynb cell 7, dists[cross_index:] =
+      -np.abs(...)) and added a check on the code''s direct_df.csv, which has distance <= 0 exactly where
+      norm_distance <= 0 in all rows. Ran the unsigned distance as a variant: 0.0129, 0.0221, 0.0312,
+      0.0293 (F = 4.55, p = 0.0330), 0.0221 just outside 0.020 +- 0.002. Outcome kept; it rests on the
+      code''s sign, which the code applies, and the notes say so.'
+  - claim: fig4j-drp-increases
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The sentence that the number of good stable units per condition equals that of the
+      code''s direct_df.csv is not backed by any output: cell 8 prints the counts, but nothing compares
+      them with direct_df.csv.'
+    response: 'Added a cell that loads direct_df.csv (listed under inputs as a check) and prints both
+      counts: the four cathodal and four anodal conditions are equal, the bipolar ones differ by 1 to
+      5 units. Notes, deviation, finding and Summary corrected to say so.'
+  - claim: figs3e-early-windows
+    agrees: false
+    outcome: not_reproduced
+    reason: N1. The criterion has no partial clause; the 100 uA proportions are 0.058 and 0.106 against
+      0.092 and 0.175 (cell 34). The rule the record used to change fig5-fsrs makes this not reproduced;
+      in round 1 it accepted partial and revises that so one rule is applied throughout.
+    response: Outcome kept as verified in round 1; not_reproduced written under proposed, for a third
+      round, with a note in the Result cell and the Summary.
+  - claim: fig5bc-amplitude-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Its earlier point B8 (the lax "some assignment" clause) is a claims-file question
+      asked of a reader.
+    response: No change.
+  - claim: fig5ef-polarity-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assignment search was added (B1 resolved).
+    response: No change.
+  - claim: fig5-fsrs-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees: no reading gets the four proportions within tolerance (cell 43) and the criterion
+      has no partial clause. The FS/RS assumption is stated, and the outcome does not depend on it. "20
+      k-means runs from other seeds" is wrong, as one of the 20 (points 0) is the original run. "class
+      p ... 0.821 within the evoked potential" holds only under reading (c); readings (a) and (b) give
+      0.983 and 0.608.'
+    response: The notes, Result cell and stability table now say the 20 runs are the original run and
+      19 others, and give class p 0.983, 0.608 and 0.821 under the three readings.
+  - claim: fig5j-fs-closer
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The assumption of the code''s 0.4 ms threshold classes is stated and reasonable:
+      with the code''s coordinates they give the paper''s F = 8.04 and 4.10 exactly (cell 46). Under k-means
+      the waveform term is never significant over 20 runs (cell 55), so the outcome rests on the assumption.
+      "20 k-means runs from other seeds" is wrong: one is the original run.'
+    response: Corrected to the original run and 19 others in the notes and the Result cell; the table
+      now says which run is the original.
+  - claim: fig5i-fs-within-ep
+    agrees: false
+    outcome: not_reproduced
+    reason: 'N1. The criterion has no partial clause; RS at 5 uA is 0.400 (cell 49). The FS/RS assumption
+      is stated but the outcome does not depend on it: under k-means FS is 1.000 at 5 uA from n = 2. The
+      outcome turns on the contact coordinates.'
+    response: Outcome kept as partially_reproduced; not_reproduced written under proposed, for a third
+      round, with a note in the Result cell and the Summary.
+  - claim: figs6b-fsrs-early-firing
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The threshold-class assumption is reasonable; the claim holds at all four amplitudes
+      in 9 of 20 k-means runs and in the lowest-WCSS run, so it depends on the assumption less. "20 k-means
+      runs from other seeds" is wrong: one is the original run.'
+    response: Corrected to the original run and 19 others in the notes and the Result cell.
+  - claim: fig6c-modulation-cortex
+    agrees: false
+    outcome: not_reproduced
+    reason: N1. The criterion has no partial clause and requires every reading to hold; under reading
+      (c) the region term has p = 0.457 (cell 57). In round 1 it accepted partial and revises that so
+      one rule is applied throughout.
+    response: Outcome kept as verified in round 1; not_reproduced written under proposed, for a third
+      round, with a note in the Result cell and the Summary.
+  - claim: fig6d-hva-subcortical
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. "460 units, of which 273 are CA1": 273 is printed nowhere; cell 60 prints 315 Field
+      CA1 units over all nine recordings, while the 460 come from the seven cathodal recordings. "349
+      units, of which 151 are superior colliculus or dentate gyrus units": 151 is the nine-recording count,
+      and the 349 are from seven recordings.'
+    response: 'The cell now prints, per grouping, the Field CA1 units among the subcortical and the superior
+      colliculus and dentate gyrus units among the HVA, in the seven recordings: 273 of 460, and 91 of
+      349. The notes say 91, and the code_mismatch finding gives 151 over nine recordings and 91 over
+      seven.'
+  - claim: fig6e-circuit-responders
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the criterion has a partial clause. The full Amplitude x Polarity x Region model
+      is fitted only on the cached p-values (B11 remainder); the outcome is partial either way. "The Results''
+      cathodal values are F region 40.14 and interaction 15.61": the Results print these next to F amplitude
+      = 175.18 and do not call them cathodal.'
+    response: 'Notes corrected: the Results print F region 40.14 and interaction 15.61 next to F amplitude
+      175.18 without naming the model. The full model on recomputed p-values was not run (about 20 more
+      minutes of ZETA); the outcome does not turn on it.'
+  - claim: fig6f-no-propagating-wave
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The assumption of the code''s peak rule without the 4 ms width filter is stated and
+      reasonable: the criterion says its peaks come from the code, which applies no width filter, and
+      the paper''s r (-0.03, 0.09) fit the code''s rule (-0.001, 0.047) better than the width-filtered
+      one (0.131, -0.115; cell 66). It contradicts the criterion''s literal "width at least 4 ms", under
+      which the outcome is not reproduced; the claims file probably mis-transcribed the code. Its round-1
+      statement that the width filter does not affect the conclusion was wrong.'
+    response: No change; the question is already in questions/000774.yaml and in a methods_unavailable
+      finding.
+  - claim: figs9-state-drp
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the criterion has a partial clause. "about a quarter of the paper''s ... 0.104 and
+      0.107 at 100 uA": at 100 uA, 0.0159 against 0.104 is about one sixth (cell 69).'
+    response: Notes and Result cell now say about a quarter at 5 uA and a sixth at 100 uA.
+  - claim: fig6g-dimensionality-collapse
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. At 5 uA the 0-20 ms rise (1.024) does not exceed the pre-stimulus maximum (1.079),
+      so the rise stands out from baseline only at 25 and 50 uA; the criterion does not ask for this comparison,
+      so the outcome stands, and the notes now say so (B10).
+    response: No change.
+  - claim: fig7d-learning
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7e-generalization
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7g-no-amplitude-effect
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7h-pulses-detected
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs10c-anodal-cathodal
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7h-trains-better
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7i-contrast-and-equivalence
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7j-habituation
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: no-learning-across-sessions
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs10e-reaction-times
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3; same harness, separate context, did not write
+    the notebook)
+  reviewed: Round 3. The four outcome changes proposed by the author-revise-2 run (commit 05897771f) and
+    the analysis behind them in the executed notebook, with the claims file and the paper. Nothing else
+    was reviewed.
+  results:
+  - claim: fig4f-responders-within-ep
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion asks for the four fractions within tolerance under one reading, with 5 uA the
+      lowest. In cell 17, with the dataset''s coordinates, the 5 uA fraction fails under every reading
+      run: reading (a) 0.552 (n=29), reading (b) threshold classes 0.400 (n=15), reading (b) k-means 0.520
+      (n=25), against 0.333 +- 0.033. The dataset''s coordinates are the default, not a choice made to
+      reach a result; the code''s coordinates give 0.333, but the record says no outcome rests on them.
+      At 5 uA one RS unit moves the fraction by 0.067, twice the tolerance, so the criterion in effect
+      asks for 5 of 15; 0.400 is 6 of 15. This is not a misreading and does not change the outcome.'
+    response: Outcome set to not_reproduced and the proposal removed; notes, Result cell, Summary and README
+      updated.
+  - claim: figs3e-early-windows
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion asks for both 100 uA proportions within tolerance under one reading. Cell 35
+      gives 0.058 and 0.106 under reading (a) and 0.057 and 0.091 under reading (b), against 0.092 +-
+      0.0092 and 0.175 +- 0.0175, so all four fail. Both baselines match the criterion''s wording. The
+      other parts pass (FDR p = 0.0208 or 0.0417 at 100 uA; larger increase from 5 to 100 uA for the broader
+      windows), which does not make up for the missing values. The cathodal data has seven recordings,
+      not nine, as the record states; to reach 0.083 at 5 ms the two missing recordings would each need
+      about 0.17.'
+    response: Outcome set to not_reproduced and the proposal removed; notes, Result cell, Summary and README
+      updated.
+  - claim: fig5i-fs-within-ep
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion asks for the four values within tolerance and FS at or above RS. In cell 50,
+      with threshold classes and the dataset''s coordinates, RS at 5 uA is 0.400 (n=15), outside 0.33 +-
+      0.033, while FS 0.750 and 0.833 and RS 0.778 at 25 uA pass. With k-means classes FS is 1.000 from
+      2 units at 5 and 25 uA and RS is 0.520 at 5 uA, all out of tolerance. No class choice reproduces
+      the claim. The coordinate point made for fig4f applies.'
+    response: Outcome set to not_reproduced and the proposal removed; notes, Result cell, Summary and README
+      updated.
+  - claim: fig6c-modulation-cortex
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion asks that under every reading the region, amplitude and interaction terms
+      have p < 0.001. In cell 58, under reading (c), the Methods'' 500 to 1000 ms window, region F = 0.55,
+      p = 0.457; the amplitude term (p = 1.06e-03) also misses p < 0.001, a point the proposed reason left
+      out. No per-amplitude cortical against subcortical t test has p < 0.001 (smallest 0.015). Under
+      reading (b) the 50 uA comparison has p = 0.011. Reading (a) matches the paper exactly, but the criterion
+      as written is not met. The notes and the heading of cell 59 should be updated if the proposal is
+      adopted. Reported on the claims file, not corrected: the paper''s printed values come only from
+      the code''s 0 to 500 ms window, so the outcome turns on a window that does not produce them, and
+      the Methods may have mis-stated it; a reader should decide whether "under every reading" is the
+      intended test.'
+    response: Outcome set to not_reproduced and the proposal removed; the notes and the Result cell (cell
+      59) now say not reproduced and name the amplitude term under reading (c). The claims-file point
+      is added to the questions for a reader.

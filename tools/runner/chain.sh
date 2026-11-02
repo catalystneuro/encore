@@ -43,8 +43,9 @@
 # deleted, and the attempt is left for a later chain, which then starts from those claims.
 #
 # A dataset with no published version is skipped. The last line printed is "<dataset> MERGED <pr>",
-# "<dataset> CLAIMS MERGED", "<dataset> SKIPPED ...", "<dataset> STOPPED ...", or "<dataset> CHECKS
-# FAILED <pr>", which leaves the pull request open.
+# "<dataset> CLAIMS MERGED", "<dataset> SKIPPED ...", "<dataset> STOPPED ...", "<dataset> CHECKS
+# FAILED <pr>", which leaves the pull request open, or "<dataset> RESTART: ..." (exit 75), when gh can no
+# longer verify TLS from this process and the chain is to be resumed from a fresh one.
 set -uo pipefail
 VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
@@ -81,15 +82,30 @@ is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
 run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
   | python "$here/describe.py" run "$d" "$1"; }
+# After macOS updates its trust store (trustd restarts), every gh call from a process that started before then can
+# fail TLS ("x509: OSStatus -26276") while gh from a fresh shell works: on 2026-10-29 for 15 hours, on 2026-11-02
+# for 7. The chain cannot recover from inside, so after STALE_TRIES such failures in a row it hands the dataset
+# back: it prints "<dataset> RESTART: ..." and exits 75, and the lane (pool_lane.sh) puts the dataset back in
+# its queue and stops, for the pacer to start a fresh lane, which resumes it. A run going on GitHub keeps going
+# and is waited for by the resumed chain.
+STALE_TLS="OSStatus -26276"; STALE_TRIES=${STALE_TRIES:-10}; tls_fails=0
+stale(){ last=""; log "gh failed TLS ($STALE_TLS) $STALE_TRIES times in a row; this process needs restarting" >&2
+  echo "$d RESTART: gh cannot verify TLS from this process (x509 $STALE_TLS); resume the chain from a fresh one"
+  exit 75; }
+# Counts a failed gh call's output towards the stale-TLS limit, and stops the chain at the limit.
+gh_failed(){ if grep -q "$STALE_TLS" <<<"$1"; then tls_fails=$((tls_fails + 1)); [ $tls_fails -lt "$STALE_TRIES" ] || stale
+             else tls_fails=0; fi; }
 # A failed check is retried, but logged after 5 in a row and then hourly, so that a chain that cannot reach
-# GitHub (as on 2026-10-29, when every gh call from the running chains failed TLS for 15 hours) shows in its log.
-wait_run(){ local st fails=0; while true; do
+# GitHub shows in its log. Prints stale-tls after STALE_TRIES TLS failures in a row.
+wait_run(){ local st fails=0 tls=0; while true; do
   if ! st=$(gh run view "$1" --json status,conclusion --jq '"\(.status) \(.conclusion)"' 2>&1); then
     fails=$((fails + 1))
     [ $((fails % 60)) = 5 ] && log "cannot check run $1 ($fails tries): $(echo "$st" | head -n 1)" >&2
+    if grep -q "$STALE_TLS" <<<"$st"; then tls=$((tls + 1)); [ $tls -lt "$STALE_TRIES" ] || { echo stale-tls; return; }
+    else tls=0; fi
     sleep 60; continue
   fi
-  fails=0
+  fails=0; tls=0
   case "$st" in completed*) echo "${st#completed }"; return;; esac; sleep 60; done; }
 
 # Put the branch back where a run started, and check that it took.
@@ -98,7 +114,7 @@ reset_branch(){ local start=$1
   else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
   [ "$(remote_branch)" = "$start" ]; }
 
-run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct
+run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct out
   while true; do
     fetch; start=$(remote_branch)
     read -r id st <<<"$(run_of "$role")"
@@ -110,22 +126,25 @@ run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct
       # was flagged; only a flag on the recorder's own run moves it to the verified one.
       acct=$account; [ "$role" = recorder ] && acct=${recorder_account:-${RUNNER_ACCOUNT:-unverified}}
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
-        gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
+        out=$(gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" 2>&1) \
+          || { gh_failed "$out"; sleep 60; continue; }
       else
-        gh workflow run "$(workflow_of "$role")" -f dataset="$d" -f role="$role" -f account="$acct" || { sleep 60; continue; }
+        out=$(gh workflow run "$(workflow_of "$role")" -f dataset="$d" -f role="$role" -f account="$acct" 2>&1) \
+          || { gh_failed "$out"; sleep 60; continue; }
       fi
+      tls_fails=0
       id=""
       for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
       [ -n "$id" ] || { last_why="the run of $role was not found"; log "STOPPED: $last_why"; return 1; }
       log "$role started: run $id"
     fi
-    last_run=$id; st=$(wait_run "$id"); log "$role $st (run $id)"
+    last_run=$id; st=$(wait_run "$id"); [ "$st" = stale-tls ] && stale; log "$role $st (run $id)"
     [ "$st" = success ] && return 0
     runlog=$(gh run view "$id" --log-failed 2>/dev/null || gh run view "$id" --log 2>/dev/null)
-    if echo "$runlog" | grep -qE "FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE"; then
+    if echo "$runlog" | grep -qE "FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE"; then
       # Put the branch back where the run started, and run the role, and the rest, on the verified account.
       reset_branch "$start" || { last_why="could not reset attempt/$d after the flag"; log "STOPPED: $last_why"; return 1; }
-      why=$(echo "$runlog" | grep -oE "(FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
+      why=$(echo "$runlog" | grep -oE "(FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
       if [ "${RUNNER_FALLBACK:-verified}" = none ]; then
         # The verified account is not to be used (out of budget, say): leave the dataset for later.
         last_why="$why; no fallback to the verified account"
