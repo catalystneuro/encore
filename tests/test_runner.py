@@ -30,6 +30,11 @@ def test_a_run_on_either_account_is_found():
     assert describe.newest_run(runs, "001636", "claims") == "5 queued"
     assert describe.newest_run(runs[1:], "001636", "claims") == "4 completed"
     assert describe.newest_run(runs, "001636", "claims-check") == ""
+    # Any account's runs carry its name, the API key's too; another dataset's runs are not taken.
+    runs = [{"databaseId": 7, "displayTitle": "Agent run: 001636 author (api)", "status": "in_progress"},
+            {"databaseId": 6, "displayTitle": "Agent run: 0016361 author", "status": "completed"}]
+    assert describe.newest_run(runs, "001636", "author") == "7 in_progress"
+    assert describe.newest_run(runs[1:], "001636", "author") == ""
 
 
 def test_only_published_datasets_are_taken():
