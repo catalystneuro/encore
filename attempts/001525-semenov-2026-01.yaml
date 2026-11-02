@@ -22,21 +22,26 @@ provenance:
 inputs: []
 outcomes:
 - claim: fig7a-test-pulse-cosine-up-to-1000
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_semenov_2026.ipynb
   output: claim:fig7a-test-pulse-cosine-up-to-1000
-  notes: Under the main reading (six 5-us cells, annulus background, dark frames dropped), the mean
-    polarization of the two poles does not differ from the 150/150 benchmark after 360 to 1000 V/cm
-    conditioning (paired p 0.27 to 0.39) and is below it after 1200 V/cm (p = 0.039) and 1400 V/cm
-    (p = 0.012); the claim holds under reading (b) with the paired test and the mean-of-poles
-    reading. Cosine amplitudes are 10.9% dF (benchmark), 9.4% (1000 V/cm) and 4.8% (1400 V/cm), R^2
-    0.61, 0.53 and -0.63 (R^2 of A cos(theta - phi) without an offset term). Reading (a), the s.e.
-    band, fails at every pole because the profiles carry a uniform negative offset (-4.6% dF at the
-    benchmark); the fit misses the cathodic pole by 4.7% dF against an s.e. of 2.8%. Over 18
-    variants the claim holds in 9. The cosine part under reading (b) holds in all 18; the 1200 V/cm
-    hindrance fails in the four background-free variants with the control taken as the mean or the
-    first single-pulse file, and in five of the six five-cell subsets. The 1400 V/cm reduction is present in every variant.
+  notes: The reader's answer (questions/001525.yaml) made the Fig. 7B test the unpaired two-sample
+    t-test against the control group, with the paired test a variant; this claim takes that test.
+    The earlier run gave reproduced, on the paired test with the mean-of-poles reading; with the
+    unpaired test the 1200 V/cm hindrance is no longer significant, so the outcome is now partially
+    reproduced. Under the main reading (six 5-us cells, annulus background, dark frames dropped), with
+    the unpaired test no pole differs from the 150/150 benchmark after 360 to 1000 V/cm conditioning
+    (smallest p 0.17), so the cosine part holds under reading (b). Pole dF is below the benchmark after
+    1400 V/cm at every pole (unpaired p 0.018 cathodic, 0.016 anodic, 0.0061 mean) and after 1200 V/cm
+    (22.1%, 73.3% and 59.3% of control) but not significantly (p 0.19, 0.15 and 0.067). Cosine
+    amplitudes are 10.9% dF (benchmark), 9.4% (1000 V/cm) and 4.8% (1400 V/cm), R^2 0.61, 0.53 and
+    -0.63 (R^2 of A cos(theta - phi) without an offset term). Reading (a), the s.e. band, fails at
+    every pole because the profiles carry a uniform negative offset (-4.6% dF at the benchmark); the
+    fit misses the cathodic pole by 4.7% dF against an s.e. of 2.8%. Over 18 variants the claim holds
+    with the unpaired test in 1 (the five cells without c5, mean of poles); the cosine part under
+    reading (b) holds in all 18, and the 1200 V/cm hindrance fails in the other 17. With the paired
+    test, a variant, it holds in 9 of 18.
   deviations:
   - The perimeter trace is found automatically (peak of membrane intensity along rays from the
     cell centre, 6 pixels wide), where the paper draws it by hand in MetaMorph (Methods 2.3).
@@ -57,27 +62,29 @@ outcomes:
     5.0%), and the files' camera floor is about 209 counts under a membrane trace of 459 to 694.
     All four combinations are shown.
   - The criterion's pole dF is tested under the pole readings of fig7b-test-pulse-unchanged-to-760
-    (cathodic, anodic, mean of both), and its test under the paired and unpaired readings named
-    there; reading (a) compares the fit at each pole with the s.e. of the pole mean over cells, for
-    the legend's gray outline.
+    (cathodic, anodic, mean of both), with its test, the unpaired two-sample t-test against the
+    control group (the paired test shown as a variant); reading (a) compares the fit at each pole
+    with the s.e. of the pole mean over cells, for the legend's gray outline.
 - claim: fig7b-test-pulse-unchanged-to-760
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_semenov_2026.ipynb
   output: claim:fig7b-test-pulse-unchanged-to-760
   measured: 80.0
-  notes: The criterion makes the claim methods_underspecified when the paired and unpaired tests
-    disagree, and they do. Under the main reading the unpaired t-test finds no difference from
-    control at 360 to 1000 V/cm at either pole (smallest p 0.17); the paired t-test finds the
-    cathodic test response higher after 360 V/cm (133% of control, +2.07% dF, s.e. 0.41, p =
-    0.0038). Over 18 variants the paired test finds a difference in 16 and the unpaired test in
-    none; the one-sample variant finds none in 17. At 1000 V/cm the test response is 80.0% of control
-    at the cathodic pole, 85.6% at the anodic and 84.0% for their mean (all within 80 +- 8; in 17 of
-    18 variants at least one pole reading is), with paired p 0.68 and 0.40. The paper reports its
-    360 V/cm cathodic point (about 120%) as p > 0.1, which fits the unpaired test; a reader is asked
-    whether the criterion should take that reading (questions/001525.yaml). Under the unpaired
-    reading the claim would be reproduced. For the paper's authors, which t-test Fig. 7B used
-    (paired over cells, or unpaired against the control group).
+  notes: The earlier run blocked this claim as methods_underspecified, because the criterion then
+    required it when the paired and unpaired tests disagree, and they did. The reader's answer
+    (questions/001525.yaml) amended the criterion to take the unpaired two-sample t-test against the
+    control group as the paper's test, with the paired and one-sample tests as variants, and dropped
+    that rule; the outcome is now reproduced. Under the main reading the unpaired t-test finds no
+    difference from control at 360 to 1000 V/cm at either pole (smallest p 0.17, anodic at 760 V/cm;
+    cathodic p 0.41 to 0.75), and the absence holds in all 18 variants (smallest p 0.057). At 1000
+    V/cm the test response is 80.0% of control at the cathodic pole, 85.6% at the anodic and 84.0%
+    for their mean (all within 80 +- 8; in 17 of 18 variants at least one pole reading is), unpaired
+    p 0.74 and 0.41. Unpaired effect sizes up to 1000 V/cm run from d = -0.86 to +0.50. In the
+    variants, the paired test finds the cathodic test response higher after 360 V/cm (133% of
+    control, +2.07% dF, p = 0.0038, paired d +2.08) and a difference in 16 of 18 variants; the
+    one-sample test finds one in 1 of 18. The outcome rests on the rank mapping of strengths and the
+    single-pulse benchmark, assumptions shared with fig7a-test-pulse-cosine-up-to-1000.
   deviations:
   - Same trace, cell, field direction, strength mapping, benchmark, cell count and main reading as
     fig7a-test-pulse-cosine-up-to-1000.
@@ -89,16 +96,19 @@ outcomes:
   measured:
   - 22.1
   - -32.9
-  notes: Measured values are the cathodic pole, the first pole reading the criterion lists. Under the
-    main reading the anodic pole falls to 73.3% of control after 1200 V/cm and 50.1% after 1400 V/cm,
-    both within tolerance, but the 1200 V/cm reduction is not significant (paired p = 0.21, unpaired
-    0.15) and the 1400 V/cm one reaches p = 0.031 and 0.016, not p < 0.01. The cathodic pole falls to
-    22.1% and -32.9% (paired p 0.045 and 0.018), the mean of both poles to 59.3% and 27.4% (paired p
-    0.039 and 0.012, unpaired 0.067 and 0.0061). No pole and test combination meets the criterion in
-    any of 18 variants; in 3 variants one combination reaches both significance levels with values
-    outside tolerance, which the criterion calls partial. The reductions are present at both poles
-    (1400 V/cm difference from control -8.2% dF at each, paired d -1.42 and -1.22); what fails is
-    their significance at n = 6 and the cathodic values, which fall well below the paper's.
+  notes: The reader's answer (questions/001525.yaml) made the test the unpaired two-sample t-test
+    against the control group, with the paired test a variant, where the earlier criterion accepted
+    either; the outcome stays not reproduced, as before. Measured values are the cathodic pole, the
+    first pole reading the criterion lists. Under the main reading the anodic pole falls to 73.3% of
+    control after 1200 V/cm and 50.1% after 1400 V/cm, both within tolerance, but with the unpaired
+    test the 1200 V/cm reduction is not significant (p = 0.15) and the 1400 V/cm one reaches p =
+    0.016, not p < 0.01. The cathodic pole falls to 22.1% and -32.9% (unpaired p 0.19 and 0.018), the
+    mean of both poles to 59.3% and 27.4% (unpaired p 0.067 and 0.0061). No pole reading meets the
+    criterion in any of 18 variants; in 1 (without c5, mean of poles) both significance levels are
+    reached with values outside tolerance, which the criterion calls partial. The paired variant
+    meets the criterion in none. The reductions are present at both poles (1400 V/cm difference from
+    control -8.2% dF at each, unpaired d -1.63 and -1.67); what fails is their significance at n = 6
+    and the cathodic values, which fall well below the paper's.
   deviations:
   - Same trace, cell, field direction, strength mapping, benchmark, cell count and main reading as
     fig7a-test-pulse-cosine-up-to-1000.
@@ -262,11 +272,6 @@ findings:
   statement: The files give no pixel size, no direction of the electric field in image coordinates,
     and no position of the analysed cell, while each field holds several cells. The field direction
     can be recovered from the polarization (per-file phases within 6.6 degrees sd).
-- kind: methods_unavailable
-  statement: For the paper's authors, which t-test Fig. 7B used for the test-pulse comparison with
-    the undamaged membrane, paired over cells or unpaired against the control group. On this dataset
-    the paired test finds the 360 V/cm cathodic point higher (p = 0.0038) and the unpaired test does
-    not (p = 0.61), which decides fig7b-test-pulse-unchanged-to-760.
 - kind: methods_unavailable
   statement: For the paper's authors, whether a background was subtracted from the potentiometric
     images and whether images without a laser flash were kept when the 40 baseline and 60 pulse

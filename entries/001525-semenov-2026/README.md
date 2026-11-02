@@ -7,8 +7,8 @@ Fig. 7A and the bottom panel of Fig. 7B). The other experiments of the paper are
 
 | Claim | Outcome |
 |---|---|
-| After conditioning up to 1000 V/cm the test-pulse profile still follows a cosine; 1200 and 1400 V/cm hinder pole charging | Reproduced, resting on assumptions |
-| Test-pulse polarization does not differ from control up to 760 V/cm, about 80% after 1000 V/cm | Blocked: methods underspecified |
+| After conditioning up to 1000 V/cm the test-pulse profile still follows a cosine; 1200 and 1400 V/cm hinder pole charging | Partially reproduced, resting on assumptions |
+| Test-pulse polarization does not differ from control up to 760 V/cm, about 80% after 1000 V/cm | Reproduced, resting on assumptions |
 | 1200 and 1400 V/cm conditioning reduce the test response to about 70% and 50% | Not reproduced |
 | Eq. (2): a 10-fold conductivity rise lowers IMP by about 2%, a 100-fold rise by 12% | Partially reproduced |
 | Conditioning-pulse polarization below linear scaling, and the conductivity of Fig. 7C (3 claims) | Blocked: data missing |
