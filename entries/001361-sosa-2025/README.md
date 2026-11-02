@@ -7,7 +7,7 @@ the 11 switch mice over 14 days of a virtual-reality task with a hidden, moving 
 Of 50 claims, 35 are reproduced, 1 partially reproduced and 7 not reproduced. 7 are blocked: the decoder and
 the GLM (too large for the run), and the k-means remap-trial and teleport analyses (not attempted in the
 run's time). After the first round of verification, place cells come from the spatial-information test as
-the paper's code runs it, which gives the paper's fraction of place cells (48.7% against 48.5%).
+the paper's code runs it, which gives the paper's fraction of place cells (48.7% against 48.5%). That match rests mostly on the code's 0.001 offset in the SI. After the second round no outcome changed; a change of ed4l-disappearing-decrease to not reproduced is proposed for a third round.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -19,6 +19,6 @@ not the paper's signal. Cells are matched across days by this entry, because the
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001361-sosa-2025-01.yaml`](../../attempts/001361-sosa-2025-01.yaml).
 
-- `reproduce_sosa_2025.ipynb`: the analysis. It takes about 41 minutes, most of it streaming the 152 files.
+- `reproduce_sosa_2025.ipynb`: the analysis. It takes about 41 minutes (the notebook prints its run time before the summary), most of it streaming the 152 files.
 - `sosa.py`: loading, dF/F, OASIS deconvolution, spatial information and its shuffle, the RR
   cross-correlation and individual place fields, done for each session in parallel. Other notebooks on this dandiset can import it.

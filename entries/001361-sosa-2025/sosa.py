@@ -277,13 +277,15 @@ def _si(fmap, p):
     return si
 
 
-def spatial_info_shuffle(X, pos, speed, bounds, rng, nperm=100, min_shift=15, nb=NBINS):
+def spatial_info_shuffle(X, pos, speed, bounds, rng, nperm=100, min_shift=15, nb=NBINS, also_code=False):
     """A variant since round 1 of verification; the main procedure is spatial_info_shuffle_code.
     SI and its shuffle for one trial set (Methods, Place cell identification): occupancy p_i
     from the per-trial occupancy fractions summed over trials; f_i the trial-averaged activity
     per bin; the shuffle circularly shifts activity against position within each trial by a
     random amount between ~1 s (15 samples) and the trial length, 100 times. Returns the real
-    SI (cells) and the shuffled SI (nperm x cells)."""
+    SI (cells) and the shuffled SI (nperm x cells). With also_code, it also returns SI with the
+    code's offset (`_si_code`) on the same maps and shuffles: activity rolled, with the offset, a
+    variant asked for in round 2 of verification to separate the roll from the offset."""
     bidx = bin_index(pos, nb)
     nt = len(bounds)
     # weights: per trial, frames at speed >= thr in bin b get 1/(occ[t,b] * ntrials_visiting[b])
@@ -304,10 +306,13 @@ def spatial_info_shuffle(X, pos, speed, bounds, rng, nperm=100, min_shift=15, nb
     p = p / p.sum()
     Xn = np.nan_to_num(X)
     M = sps.csr_matrix((w, (b_all, fr_all)), shape=(nb, X.shape[0]))
-    si = _si(M @ Xn, p)
+    fm = M @ Xn
+    si = _si(fm, p)
+    si_c = _si_code(fm, p) if also_code else None
     # shuffles: roll activity within each trial (start..teleport); the frames used and the
     # weights stay, the activity they read is shifted
     shuf = np.zeros((nperm, X.shape[1]))
+    shuf_c = np.zeros((nperm, X.shape[1])) if also_code else None
     lens = bounds[:, 1] - bounds[:, 0]
     for k in range(nperm):
         src = np.empty(len(fr_all), dtype=int)
@@ -316,21 +321,26 @@ def spatial_info_shuffle(X, pos, speed, bounds, rng, nperm=100, min_shift=15, nb
         L = lens[t_all]
         src = s0 + (fr_all - s0 + shifts[t_all]) % L
         Mk = sps.csr_matrix((w, (b_all, src)), shape=(nb, X.shape[0]))
-        shuf[k] = _si(Mk @ Xn, p)
+        fm = Mk @ Xn
+        shuf[k] = _si(fm, p)
+        if also_code:
+            shuf_c[k] = _si_code(fm, p)
+    if also_code:
+        return si, shuf, si_c, shuf_c
     return si, shuf
 
 
-def _si_code(fmap, occ):
+def _si_code(fmap, occ, offset=0.001):
     """SI as TwoPUtils computes it (spatial_analyses.spatial_info, called by the paper's
     spatial.py:1260-1289): the rate map minus its minimum over all bins and cells, plus 0.001,
     then the Methods' formula. fmap bins x cells, occ the occupancy probabilities."""
-    P = fmap - np.nanmin(fmap) + 0.001
+    P = fmap - np.nanmin(fmap) + offset
     mr = (P * occ[:, None]).sum(0, keepdims=True)
     Pn = P / mr
     return np.nansum(Pn * occ[:, None] * np.log2(Pn), 0)
 
 
-def spatial_info_shuffle_code(X, pos, speed, bounds, rng, nperm=100, nb=NBINS, min_shift=15):
+def spatial_info_shuffle_code(X, pos, speed, bounds, rng, nperm=100, nb=NBINS, min_shift=15, plain=False):
     """SI and its shuffle as the paper's code runs them (TwoPUtils spatial_analyses.place_cells_calc
     and trial_matrix with perm=True, github.com/GiocomoLab/TwoPUtils at commit 3714d32, which the
     paper's spatial.py:1260-1289 calls; the claims criterion cites those lines). Frames at speed
@@ -339,7 +349,10 @@ def spatial_info_shuffle_code(X, pos, speed, bounds, rng, nperm=100, nb=NBINS, m
     one offset per trial shared by all cells, so the speed mask on position moves with it while
     the mask on activity stays. f_i is the mean over trials of the per-trial bin means; occupancy
     is the per-trial occupancy fractions summed over trials, plus 0.001, normalized; SI is
-    `_si_code`. Returns the real SI (cells) and the shuffled SI (nperm x cells)."""
+    `_si_code`. Returns the real SI (cells) and the shuffled SI (nperm x cells). With plain, it
+    also returns SI by the Methods' formula alone (`_si`, no minimum subtracted and no offset) on
+    the same maps and shuffles: position rolled, without the offset, a variant asked for in round
+    2 of verification. It draws nothing more from rng, so the main result does not change."""
     bidx = bin_index(pos, nb)
     Xn = np.nan_to_num(X)
     act_ok = speed >= SPEED_THR
@@ -363,13 +376,18 @@ def spatial_info_shuffle_code(X, pos, speed, bounds, rng, nperm=100, nb=NBINS, m
         fmap = sps.csr_matrix((w, (b_all, fr_all)), shape=(nb, X.shape[0])) @ Xn
         fmap[nvis == 0] = np.nan
         occ = (cnt / (cnt.sum(1, keepdims=True) + 1e-3)).sum(0) + 1e-3
-        return _si_code(fmap, occ / occ.sum())
+        occ = occ / occ.sum()
+        if plain:
+            return _si_code(fmap, occ), _si(fmap, occ)
+        return _si_code(fmap, occ)
 
     si = one(np.zeros(nt, dtype=int))
     lens = bounds[:, 1] - bounds[:, 0]
-    shuf = np.array([one(np.array([rng.integers(min(min_shift, L - 1), L) if L > 1 else 0
-                                   for L in lens])) for _ in range(nperm)])
-    return si, shuf
+    shuf = [one(np.array([rng.integers(min(min_shift, L - 1), L) if L > 1 else 0 for L in lens]))
+            for _ in range(nperm)]
+    if plain:
+        return si[0], np.array([x[0] for x in shuf]), si[1], np.array([x[1] for x in shuf])
+    return si, np.array(shuf)
 
 
 def pop_shuffle_p(si, shuf):
@@ -515,6 +533,7 @@ def read_ophys(f, n):
     rois = np.concatenate(rois)
     pix, cx, cy = [], [], []
     H, W = f[O + "Backgrounds_0/meanImg"].shape
+    mask_range = dict(x_max=int(pm["x"].max()), y_max=int(pm["y"].max()), img_rows=H, img_cols=W)
     for i in rois:
         m = pm[starts[i]:pmi[i]]
         z = m["z"].astype(np.int64) if key == "voxel_mask" else 0
@@ -524,7 +543,8 @@ def read_ophys(f, n):
     mean_imgs = [f[O + f"Backgrounds_{k}/meanImg"][:] for k in range(len(planes))]
     return dict(F=np.concatenate(F, 1), Fneu=np.concatenate(N, 1), D=np.concatenate(D, 1),
                 roi=rois, plane=plane_idx[rois], cx=np.array(cx), cy=np.array(cy), pix=pix,
-                n_rois_total=len(iscell), n_iscell=int(iscell.sum()), mean_imgs=mean_imgs)
+                n_rois_total=len(iscell), n_iscell=int(iscell.sum()), mean_imgs=mean_imgs,
+                mask_range=mask_range)
 
 
 def trial_zone_from_flags(beh, bounds):
@@ -650,7 +670,9 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
     res = dict(mouse=row["mouse"], day=row["day"], scene=scene, envs=envs, zones=zones,
                zone_starts=zs, n_img=n_img, n_beh=len(beh["position"]), n_trials=nt,
                sets=sets, flag_zone=flag_zone, is_switch=is_switch,
-               beh=behavior_per_trial(beh, bounds, zs, n))
+               beh=behavior_per_trial(beh, bounds, zs, n),
+               reward_zone_values=np.unique(beh["reward_zone"]),
+               reward_zone_rises=np.array([np.any(beh["reward_zone"][s:e] > 0) for s, e in bounds]))
     if not with_rr:
         return res
     op = read_ophys(f, n)
@@ -670,22 +692,26 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
     is_int = r_speed > 0.5
     clock["split_half"] = clock_check_maps(D, pos, spd, bounds)
     # spatial information on the deconvolved activity, per trial set, as the paper's code runs it
-    si, sig, shuf_q95 = [], [], []
+    # (with, on the same shuffles, the Methods' formula without the code's offset: sig_pos_plain)
+    si, sig, shuf_q95, sig_pos_plain = [], [], [], []
     for s in sets:
-        v, sh = spatial_info_shuffle_code(D, pos, spd, bounds[s], rng, nperm=nperm_si)
+        v, sh, v0, sh0 = spatial_info_shuffle_code(D, pos, spd, bounds[s], rng, nperm=nperm_si, plain=True)
         p = pop_shuffle_p(v, sh)
         si.append(v); sig.append(p < 0.05); shuf_q95.append(np.percentile(sh, 95))
+        sig_pos_plain.append(pop_shuffle_p(v0, sh0) < 0.05)
     # variants, from a generator of their own so that they do not change the main result:
     # (1) the procedure of the first round (activity rolled against fixed frames, the Methods'
     # SI without the code's offset); (2) the main procedure on the dataset's own deconvolved
     # series; (3) the main procedure on OASIS events with tau = 1.0 s. Switch days only, where
-    # the notebook uses them
+    # the notebook uses them. (1) also gives, on its own shuffles, activity rolled with the
+    # code's offset (sig_act_code)
     rng_v = np.random.default_rng(seed + 10 ** 6)
-    sig_meth, sig_ds, sig_tau1 = [], [], []
+    sig_meth, sig_ds, sig_tau1, sig_act_code = [], [], [], []
     if is_switch:
         for s in sets:
-            v, sh = spatial_info_shuffle(D, pos, spd, bounds[s], rng_v, nperm=nperm_si)
+            v, sh, vc, shc = spatial_info_shuffle(D, pos, spd, bounds[s], rng_v, nperm=nperm_si, also_code=True)
             sig_meth.append(pop_shuffle_p(v, sh) < 0.05)
+            sig_act_code.append(pop_shuffle_p(vc, shc) < 0.05)
             v, sh = spatial_info_shuffle_code(D_ds, pos, spd, bounds[s], rng_v, nperm=nperm_si)
             sig_ds.append(pop_shuffle_p(v, sh) < 0.05)
         D1 = events_from_dff(dff, bounds, tau=1.0)
@@ -750,10 +776,11 @@ def process_session(row, seed, nperm_si=100, with_rr=True, with_xcorr=True):
         )
     res.update(dict(
         n_cells=ncell, n_rois_total=op["n_rois_total"], is_int=is_int, r_speed=r_speed,
-        si=si, sig=sig, sig_ds=sig_ds, sig_meth=sig_meth, sig_tau1=sig_tau1, shuf_q95=shuf_q95, clock=clock, peak_lin=peak_lin, trial_mean=trial_mean,
+        si=si, sig=sig, sig_ds=sig_ds, sig_meth=sig_meth, sig_tau1=sig_tau1,
+        sig_pos_plain=sig_pos_plain, sig_act_code=sig_act_code, shuf_q95=shuf_q95, clock=clock, peak_lin=peak_lin, trial_mean=trial_mean,
         mean_dff=mean_dff, mean_dec=[np.nanmean(tm_dec[s], 0) for s in sets],
         circ=circ, roi=op["roi"], plane=op["plane"], cx=op["cx"], cy=op["cy"], pix=op["pix"],
-        mean_imgs=op["mean_imgs"],
+        mean_imgs=op["mean_imgs"], mask_range=op["mask_range"],
         # per-trial deconvolved maps of place cells, for the field analyses (float16)
         pc_idx=np.where((sig[0] | sig[1]) & ~is_int)[0],
         tm_dec_pc=(tm_dec[:, :, (sig[0] | sig[1]) & ~is_int].astype(np.float16) if is_switch

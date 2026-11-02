@@ -51,3 +51,21 @@ questions:
   why: The test decides whether the place-cell fraction matches. With the offset, and position rolled as the
     code does, 48.7% of cells are place cells (paper 48.5 +/- 4.85); with the formula alone and activity
     rolled against fixed frames, 59.9%. The cell classes of most other claims follow from this test.
+- claim: place-cell-fraction
+  asked: 2026-11-02
+  question: The criterion asks for "100 shuffles per cell circularly shifting position against
+    activity independently on each trial", and it cites spatial.py:1260-1289 for the procedure. That
+    code calls TwoPUtils place_cells_calc, which draws one shift per trial and applies it to all cells
+    at once (the position is rolled, not each cell's activity), and adds 0.001 to the rate map before
+    the SI. Does "per cell" in the criterion mean an independent shift for each cell, as its wording
+    says, or the shared shift of the code it cites? Together with the earlier question on the offset,
+    which of the two readings should the criterion fix?
+  passage: Methods, Place cell identification ("circularly permuting the position data relative to
+    the timeseries of each cell, by a random amount between ~1 s and the length of the trial,
+    independently on each trial", "repeated 100 times per cell", "pooled across cells"); the paper's
+    spatial.py:1260-1289 and TwoPUtils
+    spatial_analyses.place_cells_calc (github.com/GiocomoLab/TwoPUtils, commit 3714d32).
+  why: The criterion is ambiguous on the point that decides the place cells, and with them eleven
+    outcomes. The code's procedure gives 48.7% of cells (paper 48.5 +/- 4.85). Activity rolled per
+    trial with the Methods' formula gives 59.9%; position rolled without the offset 56.4%; activity
+    rolled with the offset 51.0%.
