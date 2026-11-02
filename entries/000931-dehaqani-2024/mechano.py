@@ -21,12 +21,21 @@ Where the parameters come from:
   where activity was "breathing-coupled" (Stereotaxic probe insertion). A standard choice; it
   decides no claim.
 - ``CLAIM_NEEDS``: for each claim of ``claims/000931/10.1016-j.celrep.2024.114013.yaml``, the data
-  its criterion uses, read from the criterion and from the STAR Methods sections it cites.
+  its criterion uses, read from the criterion and from the STAR Methods sections it cites. Claims on
+  "odorless inhalations" need the odor trial times: the Methods define them as "those occurring
+  within the -13 to -4 seconds window before the delivery of an odor" (Analysis of sniff-by-sniff
+  responses), and the ten control mice are the mice of the odor experiments (Mice: four
+  concentration-series, two four-odor and four odor-identity mice). The Methods do not say whether
+  the neurectomized mice were given odors, so ``figs3-aen-neurectomy`` is not listed as needing them.
+- ``HARMONIC_RATIO`` = 0.5: the spectral peak of the population rate is moved to its subharmonic
+  when the power there is at least half the peak power, so that a harmonic of the rhythm is not
+  reported as the rhythm. A standard choice for a check; it decides no claim.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 
 import h5py
 import numpy as np
@@ -44,6 +53,7 @@ ISI_THRESHOLD_S = 0.0015
 COINCIDENCE_S = 0.0002
 NEAR_CHANNELS = 4
 BIN_S = 0.01
+HARMONIC_RATIO = 0.5
 
 # What each kind of data is, and how its presence in an NWB file is tested (see `streams_present`).
 STREAMS = {
@@ -64,7 +74,7 @@ STREAMS = {
 CLAIM_NEEDS = {
     "inhalation-sorting": ["breathing", "other_groups"],
     "figs1a-phase-decoding": ["spikes", "breathing", "regions", "other_groups"],
-    "figs1b-speed-decoding-single-mice": ["spikes", "breathing", "odor_trials", "regions"],
+    "figs1b-speed-decoding-single-mice": ["spikes", "breathing", "odor_trials", "regions", "other_groups"],
     "fig1-odor-responsive-fraction": ["spikes", "odor_trials", "regions", "other_groups"],
     "fig1hi-sniff-changes-responses": ["spikes", "breathing", "odor_trials", "regions", "other_groups"],
     "fig1h-direction-of-change": ["spikes", "breathing", "odor_trials", "regions", "other_groups"],
@@ -163,6 +173,41 @@ def contents(f: h5py.File) -> pd.DataFrame:
                      "description": desc if isinstance(desc, str) else str(desc)})
     f.visititems(visit)
     return pd.DataFrame(rows)
+
+
+def specifications(f: h5py.File) -> pd.DataFrame:
+    """The namespaces and versions cached under /specifications, with the data types each defines."""
+    rows = []
+    for ns, versions_ in f["specifications"].items():
+        for ver, group in versions_.items():
+            for name, obj in group.items():
+                text = _text(obj[()]) if isinstance(obj, h5py.Dataset) else ""
+                types = []
+                if isinstance(text, str):
+                    spec = json.loads(text)
+                    for key in ("groups", "datasets"):
+                        types += [t.get("neurodata_type_def", t.get("data_type_def", "")) for t in spec.get(key, [])]
+                rows.append({"namespace": ns, "version": ver, "file": name,
+                             "types_defined": len([t for t in types if t]),
+                             "types": ", ".join(t for t in types if t)[:200]})
+    return pd.DataFrame(rows)
+
+
+def data_outside_units(f: h5py.File) -> pd.DataFrame:
+    """Every dataset of the file outside /units, /general and /specifications and the file's own
+    scalar metadata: any event times, signals or tables, wherever stored, would be listed here."""
+    top_meta = {"file_create_date", "identifier", "session_description", "session_start_time",
+                "timestamps_reference_time"}
+    rows = []
+
+    def visit(name, obj):
+        if not isinstance(obj, h5py.Dataset):
+            return
+        if name.split("/")[0] in ("units", "general", "specifications") or name in top_meta:
+            return
+        rows.append({"path": "/" + name, "shape": obj.shape, "dtype": str(obj.dtype)})
+    f.visititems(visit)
+    return pd.DataFrame(rows, columns=["path", "shape", "dtype"])
 
 
 def general(f: h5py.File) -> dict:
@@ -271,6 +316,22 @@ def duplicates(table: pd.DataFrame, trains: list[np.ndarray]) -> tuple[int, pd.D
             rows.append({"unit_a": table.index[i], "unit_b": table.index[j], "ch_a": ch[i], "ch_b": ch[j],
                          "spikes_smaller": len(a), "coincident": float(np.mean(gap <= COINCIDENCE_S))})
     return identical, pd.DataFrame(rows)
+
+
+def spectral_peak(freq: np.ndarray, power: np.ndarray, lo: float = 1.0, hi: float = 15.0) -> float:
+    """The frequency of the largest power between lo and hi, moved to its subharmonic (repeatedly)
+    while the power near half the frequency, still within the band, is at least HARMONIC_RATIO of
+    the peak power."""
+    band = (freq >= lo) & (freq <= hi)
+    peak = float(freq[band][np.argmax(power[band])])
+    top = power[band].max()
+    df = freq[1] - freq[0]
+    while peak / 2 >= lo:
+        near = band & (np.abs(freq - peak / 2) <= 1.5 * df)
+        if not near.any() or power[near].max() < HARMONIC_RATIO * top:
+            break
+        peak = float(freq[near][np.argmax(power[near])])
+    return peak
 
 
 def rate_spectrum(trains: list[np.ndarray], duration: float) -> tuple[np.ndarray, np.ndarray]:

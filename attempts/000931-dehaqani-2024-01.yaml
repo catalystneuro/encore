@@ -46,8 +46,8 @@ outcomes:
   notes: The dandiset's one file holds spike times of one mouse and none of the nasal airflow signal or
     inhalation times, the odor trial times with odor and concentration or the brain area of each unit,
     which the criterion needs. The paper says its processed data are available on request, and no public
-    source holds them. Even the one mouse in the file cannot be tested, as its inhalations are not in
-    it.
+    source holds them. The criterion asks for every mouse, and the other five mice of Figure 1 are not
+    in the dandiset; even the one mouse in the file cannot be tested, as its inhalations are not in it.
 - claim: fig1-odor-responsive-fraction
   outcome: blocked
   blocked_by: data_missing
@@ -411,5 +411,197 @@ findings:
   statement: What could be checked is consistent with the paper. The Phy-good units have ISI violation
     rates (median 0.0066, Q1 0, Q3 0.029, by the Hill et al. formula at 1.5 ms) and presence ratios (1
     in every quartile) in the ranges the Methods report, all fire above the 0.5 Hz threshold, no unit
-    is duplicated, and the summed activity of the good units nearest the probe tip peaks at 2.78 Hz, within
-    the range of mouse breathing.
+    is duplicated, and the summed activity of the good units nearest the probe tip (by the standard Neuropixels
+    1.0 channel map, which depth follows; the file names no probe) peaks at 2.78 Hz, within the range of
+    mouse breathing, and this peak is not a harmonic.
+verifications:
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the archive API and tested helper functions on synthetic inputs. It gave its own outcome for each claim; all 37 agree with the record. Its points that concern no single claim were answered as follows. B3, the claims file path is outside the bundle - the cell now prints the 37 claim ids of mechano.CLAIM_NEEDS and runs the comparison only where the claims file is present. B4, the spectral argmax can report a harmonic - mechano.spectral_peak now moves the peak to its subharmonic when the power there is at least half the peak, shown on synthetic 3 Hz trains (largest power 6.01 Hz, checked peak 2.98 Hz); the 0 to 1000 band stays at 2.78 Hz, and the 2000 to 3000 band moves from 2.93 to 1.51 Hz. The depth convention is now checked against the data - depth lies within 20 of 20 + 20 floor(ch / 2), the standard Neuropixels 1.0 map with channel 0 at the tip, and the notebook says the probe type is assumed, as the file names none.
+  results:
+  - claim: inhalation-sorting
+    agrees: true
+    outcome: blocked
+    reason: Needs the nasal airflow signal, or inhalation times, from about eight mice. Cell 5 shows /acquisition, /processing and /stimulus are empty, and the API lists 1 subject.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs1a-phase-decoding
+    agrees: true
+    outcome: blocked
+    reason: Phase runs from each inhalation's onset to its offset, and the file has no inhalation times (cell 7, "breathing NOT HELD").
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs1b-speed-decoding-single-mice
+    agrees: true
+    outcome: blocked
+    reason: Needs slow and fast labels on odorless inhalations; none are in the file (cell 7).
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B2, other_groups is added to its needs in mechano.CLAIM_NEEDS, and its notes and the summary row now name the other five mice of Figure 1.
+  - claim: fig1-odor-responsive-fraction
+    agrees: true
+    outcome: blocked
+    reason: Every reading needs odor onset times with odor and concentration. There is no /intervals and no stimulus (cell 5). The claim pools 6 mice; the file has 1.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig1hi-sniff-changes-responses
+    agrees: true
+    outcome: blocked
+    reason: Needs odor trials and inhalation onsets with speed labels (cell 7).
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig1h-direction-of-change
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1hi.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs1c-early-70ms
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1hi.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs1d-rs-fs-similar
+    agrees: true
+    outcome: blocked
+    reason: Also needs unit waveforms; the units table has no waveform_mean (cell 5).
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig1j-sniff-change-larger-than-concentration
+    agrees: true
+    outcome: blocked
+    reason: Needs odor trials and inhalation speed labels (cell 7).
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig1l-cdi-mixed-lower
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1j.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig2-glm-variance
+    agrees: true
+    outcome: blocked
+    reason: The GLM needs counts aligned to inhalations, plus each inhalation's speed and concentration (cell 7).
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig2c-interaction-small
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-glm-variance.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig2d-mixed-sensitivities
+    agrees: true
+    outcome: blocked
+    reason: Depends on the fig2c weights.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs2ab-rs-fs-heterogeneous
+    agrees: true
+    outcome: blocked
+    reason: Needs the GLM weights and waveforms.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs2c-waveform-no-prediction
+    agrees: true
+    outcome: blocked
+    reason: Needs waveforms and the encoding weights.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs2d-70ms-similar
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2c.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig3c-airflow-tuning-anesthetized
+    agrees: true
+    outcome: blocked
+    reason: Needs the suction pulse times and rates from the 3 tracheostomized mice. The file is one awake "Concentration Series" mouse (cell 5).
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig3b-latency-shortens
+    agrees: true
+    outcome: blocked
+    reason: Same as fig3c.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig3f-airflow-tuning-awake
+    agrees: true
+    outcome: blocked
+    reason: Needs peak airflow per inhalation in the 10 control mice. Neither the signal nor those mice are present.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: figs3-aen-neurectomy
+    agrees: true
+    outcome: blocked
+    reason: The neurectomy mice and the breathing signal are absent.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, this claim was not listed as needing odor trials; the Methods do not say whether the neurectomized mice were given odors, and the notebook now says so.
+  - claim: figs4-bulbectomy-no-odor-no-phase
+    agrees: true
+    outcome: blocked
+    reason: The bulbectomized mice, odor trials and breathing are absent.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: its criterion includes the odor responses of fig1-odor-responsive-fraction, and its phase part uses odorless inhalations, defined from odor deliveries (Analysis of sniff-by-sniff responses).'
+  - claim: fig4-sniff-preferring-fraction
+    agrees: true
+    outcome: blocked
+    reason: Needs first-sniff and slow inhalation onsets in the control and bulbectomized mice.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: fig4e-sniff-response-smaller
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: fig4f-sniff-response-more-variable
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: fig4g-sniff-decoding-reduced
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: fig4d-pre-sniff-rise
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: figs4-motor-cortex-sniff
+    agrees: true
+    outcome: blocked
+    reason: Needs motor-cortex units with area labels, which the file lacks (no electrodes table), and inhalation times.
+    response: 'No change to the outcome. The data check now also prints the units table''s colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C). On B1, odor_trials is kept for this claim: the Methods define odorless inhalations as those within -13 to -4 s before an odor delivery (Analysis of sniff-by-sniff responses), and the ten control mice are the mice of the odor experiments (Mice), so odor onsets are needed to find them. The notebook now says so, so the count of 31 claims missing odor trial times stands.'
+  - claim: fig5b-pc1-speed-pc23-concentration
+    agrees: true
+    outcome: blocked
+    reason: Needs odor and inhalation events from the 4-mouse pseudo-population. The file is at most one of those mice and has no events.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig5c-encoding-angles
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5b.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig5d-sniff-invariant-decoding
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5b.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs5gh-other-windows-and-codes
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5b. The per-mouse schemes also need breathing phase.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig5ef-correlated-subpopulations
+    agrees: true
+    outcome: blocked
+    reason: Needs the linear-model weights, which come from inhalation events.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig5gh-mechanosensitive-as-good
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5ef.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig5i-time-course-similar
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5ef.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs5i-coefficients-similar
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5ef.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: fig6-simulation-mechanosensory-rescues
+    agrees: true
+    outcome: blocked
+    reason: Needs fitted linear-model coefficients, which cannot be fitted without events.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
+  - claim: figs6h-waveforms-homogeneous
+    agrees: true
+    outcome: blocked
+    reason: Needs waveforms from units across experimental conditions. The file has neither waveforms nor more than one condition.
+    response: No change to the outcome. The data check now also prints the units table's colnames, every dataset stored outside /units, /general and /specifications (there is none) and the namespaces cached under /specifications (only ndx-dandi-icephys besides core and hdmf, with two metadata types and no events), as the report asked (B5, C).
