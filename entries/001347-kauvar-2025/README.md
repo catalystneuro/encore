@@ -81,7 +81,7 @@ method, is [`attempts/001347-kauvar-2025-01.yaml`](../../attempts/001347-kauvar-
 | link-ieeg-yeo-labels | The Yeo7 labels of the code record's anat/pts_ch_labels.pkl apply to the 458 channels of the dataset's NMF ... | dataset | Reproduced |
 | ieeg-channel-atlas-link | The channel labels of the paper's code record (anat/pts_ch_labels.pkl) name the dataset's iEEG contacts ... | dataset | Reproduced |
 
-Notebooks (each streams its data; about 45 minutes in all):
+Notebooks (each streams its data; about 40 minutes in all, from 1 min for 01 to 17 min for 04):
 
 - `01_human_behavior.ipynb`: human eye closure (non-iEEG and iEEG cohorts) and CADSS.
 - `02_mouse_behavior.ipynb`: head-fixed mouse eye closure under ketamine, PCP and other drugs.
