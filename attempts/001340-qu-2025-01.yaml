@@ -1,0 +1,642 @@
+schema_version: 2
+id: 001340-qu-2025-01
+dataset:
+  archive: dandi
+  id: '001340'
+  version: 0.250221.0527
+  doi: 10.48324/dandi.001340/0.250221.0527
+paper: doi:10.1371/journal.pcbi.1013226
+date: '2026-11-02'
+entry: 001340-qu-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41379065479
+inputs:
+- what: The paper's cognitive model code (cogmodels). Its LR class is run as it is; its models are re-implemented
+    in qu2025.py and checked against its own likelihood; its fitting, simulation and recovery settings
+    are followed.
+  source: https://github.com/Wilbrecht-Lab/cogmodels at commit 589555c49bd5ec3ea77b7d0979e644ab80716ae0
+- what: airPLS parameters (lambda 5e4, order 1, 50 iterations) and the Lasso variant of the photometry
+    procedure the paper cites (ref 70).
+  source: doi:10.3791/60278
+outcomes:
+- claim: data-composition
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:data-composition
+  measured:
+  - 5
+  - 13.8
+  notes: The dataset holds 5 male mice and 69 sessions, 14 for four mice and 13 for BSD017 (days 153 to
+    164 and 167; days 165 and 166 are absent). 48 of 69 sessions (0.696) have a photometry file, close
+    to two of three, but BSD011 has one in all 14 sessions with no no-recording day, and two BSD016 files
+    hold 30 and 40 samples. measured gives the mice and the mean sessions per mouse (13.8).
+- claim: perf-after-pretraining
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:perf-after-pretraining
+  measured: 0.7373
+  notes: First full-task session, pooled over trials 0.737 (bootstrap CI 0.724 to 0.751), mean of mice
+    0.732; both inside [0.669, 0.767]. Over all sessions 0.769 and 0.768, just above. Mice range 0.639
+    to 0.786 in the first session.
+- claim: fig1f-performance-increase
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig1f-performance-increase
+  measured: 0.00273
+  notes: OLS of the 69 mouse-session fractions on session number, slope 0.00273 (95% CI 0.00082 to 0.00464),
+    t = 2.859, p = 0.0057, df 67 (69 points, not 70, as BSD017 has 13 sessions). Per trial, slope 0.00241,
+    p = 7.6e-08. Every mouse's slope is positive (0.0010 to 0.0050).
+- claim: trials-to-switch
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:trials-to-switch
+  measured:
+  - 2.46
+  - 2.328
+  notes: Counting the first trial of a new block as 0 (reading b), pooled over block switches 2.460 in
+    sessions 1 to 7 and 2.328 in 8 to 14, inside [2.39, 2.59] and [2.28, 2.45]; mean of mice 2.471 and
+    2.326, also inside. Counting from 1 both are 1 higher and outside. 11 of 2273 block switches have
+    no choice of the new port before the next switch and are left out.
+- claim: trials-to-commit
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:trials-to-commit
+  measured: 3.034
+  notes: Sessions 8 to 14 (reading a), count from 0, pooled 3.034 (bootstrap CI 2.907 to 3.167), mean
+    of mice 3.084, inside [3.00, 3.26]. Sessions 1 to 7 give 3.471. 21 block switches without 3 consecutive
+    correct choices are left out.
+- claim: figs1-switch-measures-decrease
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs1-switch-measures-decrease
+  notes: All four OLS slopes are negative. trial2sw on block number -0.0076 (p = 0.0097) and on session
+    -0.024 (p = 0.0027); trial2asymp on block number -0.0036 (p = 0.48) and on session -0.081 (p = 2.2e-09).
+    The within-session slope of trial2asymp is not significant.
+- claim: fig1e-stay-after-omission
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig1e-stay-after-omission
+  measured:
+  - 6.496
+  - 4.016
+  - 0.6253
+  - 0.6749
+  - 23302
+  - 9297
+  - 5649
+  - 8429
+  notes: Stay rates RR 0.961, RU 0.791, UU 0.485. RR against RU odds ratio 6.496, Cohen's d 0.6253; RU
+    against UU 4.016 and 0.6749; Fisher p printed as 0 for both. All four within tolerance, so the statistics
+    hold. Counts RR 23302 and UU 8429 are within 10% of the paper's. Here RU (reward at t-2, omission
+    at t-1, the comparison the test makes) has 9297 trials and UR 5649, against the paper's RU 5719 and
+    UR 9428; the paper's two labels are reversed with respect to its own test, so the RU and UR counts
+    given in measured are outside tolerance under the paper's labels and inside under the reversed ones.
+    The criterion says the counts are reported.
+  deviations:
+  - Trials with a missed choice at t, t-1 or t-2 are left out (Methods, Task behavior analysis, trials
+    without a choice are dropped); the code's plot keeps them.
+- claim: figs6a-decaying-history-weights
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs6a-decaying-history-weights
+  notes: The paper code's LR class (4 lags, binomial GLM) per mouse. The lag-1 choice-by-reward weight
+    is positive and the largest in all 5 mice (1.97 to 2.91); the mean over mice is 2.40, 0.88, 0.36 and
+    0.08 at lags 1 to 4.
+- claim: fig2c-bayesian-beat-rl4p
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig2c-bayesian-beat-rl4p
+  measured:
+  - -535.36
+  - -530.09
+  notes: Mean AIC relative to RL4p over the 5 mice, BIfp -535.36 (sd 151.2) and BRLfwr -530.09 (sd 155.9),
+    against -536.57 and -530.59. Holm-corrected p 0.0014 to 0.0041 in both families, two- and one-sided.
+  deviations:
+  - The models are a numba re-implementation of the paper's code (cogmodels at 589555c); the notebook
+    shows it gives the code's own likelihood to 5e-11 and its RPEs to 3e-15 on the dataset's trials.
+- claim: fig2c-complex-rl-beat-rl4p
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig2c-complex-rl-beat-rl4p
+  measured:
+  - -648.75
+  - -679.73
+  - -678.01
+  - -645.17
+  notes: RFLR -648.75, RL_meta -679.73, PearceHall -678.01, RLFQ3p -645.17 (paper -652.53, -677.84, -656.44,
+    -646.45), all within the paper's spreads; Holm-corrected p 0.0020 to 0.0029 (two-sided). RLFQ3p with
+    the Methods' forgetting rule gives -460.66, outside tolerance; the code's rule matches the paper.
+- claim: fig2c-rlcf
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig2c-rlcf
+  measured:
+  - -364.5
+  - 170.87
+  notes: RLCF -364.50 relative to RL4p (paper -361.92) and 170.87 above BIfp (paper 174.64). AIC(BRLfwr)
+    - AIC(RLCF) is -165.59 on average and negative in every mouse; Holm-corrected p = 0.0097 two-sided,
+    0.0049 one-sided.
+- claim: fig2c-no-bayes-vs-complex-rl
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig2c-no-bayes-vs-complex-rl
+  notes: Two-sided t-tests of AIC(BRLfwr) - AIC(model), Holm-corrected over five comparisons. RL_meta
+    +149.6 (corrected p 0.201), PearceHall +147.9 (0.201), RFLR +118.7 (0.214), RLFQ3p +115.1 (0.214),
+    none below 0.05. The complex RL models have the lower AIC on average. One-sided in the direction BRLfwr
+    better, corrected p 1.0.
+- claim: fig2b-model-identifiability
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig2b-model-identifiability
+  notes: All four parts hold under both readings (code, 500 sessions of 500 trials, blocks of 8 to 15
+    rewards; Methods, 1000 per model, blocks of 7 to 23). Code reading. BRLfwr sessions go to BIfp 0.456
+    and BRLfwr 0.404; BIfp sessions to BRLfwr 0.106, above any non-Bayesian model. RL_meta sessions go
+    to RLFQ3p 0.448 and RFLR 0.306 (diagonal 0.044). Own-family probability 0.69 to 0.91 in every row.
+    RL4p diagonal 0.838, and no other row gives RL4p more than 0.054.
+  deviations:
+  - The Methods give no session length for their 1000 simulations; the code's 500 trials are used in both
+    readings.
+- claim: figs2-parameter-recovery
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs2-parameter-recovery
+  notes: RL_meta recovers poorly (alpha_nu r = -0.04, psi r = 0.01 in the code reading; its stickiness
+    range fitted over the mice is 0 to 0.0004, so the code's 6 SD rule drops most values). BRLfwr does
+    not recover well either. stickiness r = 0.85, but beta 0.64, q 0.46 and alpha 0.32 (Methods reading
+    0.60, 0.42, 0.40). No model has every r >= 0.7. The parameter ranges fitted over the 5 mice are narrow
+    for several parameters, which limits these correlations.
+- claim: brlfw-alpha-zero
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:brlfw-alpha-zero
+  notes: BRLfw alpha is 0 (at the bound) in 4 of 5 mice and 0.029 in BSD015; with alpha 0 its AIC is BIfp's
+    plus 2.
+- claim: figs8-brlwrp-no-difference
+  outcome: not_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs8-brlwrp-no-difference
+  notes: Behaviour. AIC(BRLwrp) - AIC(BRLfwr) per mouse -82.3, -114.8, -44.2, -160.3 and 0.04, mean -80.31,
+    t = -2.899, p = 0.044. Dopamine. llk_CV(BRLwrp) - llk_CV(BRLfwr) per animal 60.95, 95% CI 56.66 to
+    65.37 (trial splits), excluding 0 under all three readings. The variant BRLfw against BRLfwr gives
+    behaviour p = 0.187 and dopamine 29.04 (CI 25.51 to 32.46). The dopamine part rests on the session
+    assumption of fig4f-bayesian-rpe-fit, which this claim depends on.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: figs7-no-change-across-sessions
+  outcome: not_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs7-no-change-across-sessions
+  notes: RL4p, BIfp and BRLfwr fitted to each of the 69 sessions. Relative to RL4p, the AIC of BIfp falls
+    by 1.94 per session (p = 0.0068) and of BRLfwr by 1.96 (p = 0.0038); per choice by 0.0122 per session
+    (p = 0.0077 and 0.0074). The relative-AIC slope is negative in every mouse for both models. The Bayesian
+    models fit better in later sessions by the claim's test.
+- claim: fig2f-adaptation-after-switch
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig2f-adaptation-after-switch
+  notes: Mean P(correct) over block trials 0 to 10 after a switch. Mice 0.702. Emulated, BRLfwr 0.687,
+    RLCF 0.681, RL4p 0.617; generated on blocks of 8 to 15 rewards 0.667, 0.667, 0.597; on 7 to 23 0.675,
+    0.667, 0.589. Under every reading BRLfwr and RLCF exceed RL4p and are closer to the mice.
+- claim: fig3b-sse
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig3b-sse
+  measured:
+  - 0.1885
+  - 0.8451
+  - 0.2838
+  - 0.158
+  - 0.0816
+  - 0.0813
+  notes: Reading a-i (mouse values pooled, model predicted switch probabilities) gives RL4p 0.845, RLCF
+    0.284, BRLfwr 0.189, RFLR 0.158 and RL_meta 0.082 within tolerance, and PearceHall 0.081, outside
+    0.1084 +- 0.0108. RL4p is the largest under every reading; no reading puts all six within tolerance.
+    30 of 32 histories have trials (18 to 15800). PearceHall's behavioural fit also differs most from
+    the paper's (relative AIC -678 against -656).
+  deviations:
+  - measured gives reading a-i, the closest; the criterion's first reading.
+- claim: fig3a-both-port-contexts
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig3a-both-port-contexts
+  measured:
+  - 0.2099
+  - 0.1806
+  - 0.4299
+  - 0.2226
+  - 0.2756
+  notes: Averaged over the 7 contexts with rewards at both ports (reading b), with predicted switch probabilities.
+    mice 0.2099, BRLfwr 0.1806, RL4p 0.4299, RLCF 0.2226, RFLR 0.2756, all within tolerance. Pooled over
+    the 685 trials (reading a) the mice switch at 0.117 and the values are lower for every model.
+- claim: fig3c-aic-around-switch
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig3c-aic-around-switch
+  measured:
+  - -165.42
+  - -164.59
+  - -166.2
+  notes: Block trials 0 to 4 after each switch, 2k - 2 log L, mean over mice. BRLfwr -165.42, RL_meta
+    -164.59, PearceHall -166.20, all within tolerance. Block trials 1 to 5 give -203.85 to -207.94, outside;
+    sums over mice are five times larger.
+- claim: rl4p-learning-rates
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:rl4p-learning-rates
+  measured:
+  - 0.8484
+  - 0.7309
+  notes: Per-mouse fits, mean alpha+ 0.848 (bootstrap CI over mice 0.770 to 0.935) and alpha- 0.731 (0.711
+    to 0.753), inside [0.77, 0.94] and [0.71, 0.75]. Per-session fits give 0.800 and 0.738, also inside.
+- claim: fig4bc-reward-omission
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4bc-reward-omission
+  measured:
+  - 1.7166
+  - -1.5593
+  notes: Cleaned trials, DA-PT, S38 (22370 trials). reward 1.717 [1.692, 1.742], omission -1.559 [-1.584,
+    -1.535], p printed as 0. All trials. reward 1.927, omission -1.587 (inside its interval). Mean over
+    0 to 1 s gives 0.47 and -0.70. S46 cleaned 1.683 and -1.513. Lasso preprocessing 1.731 and -1.555.
+    The signs hold with p far below 1e-5 under every reading; no reading puts both inside the intervals.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  - Z(DA) uses airPLS with lambda 5e4, order 1 and 50 iterations, the parameters of the procedure the
+    paper cites (Methods, Fiber Photometry, ref 70, Martianova et al. 2019), and a Huber robust regression
+    of 415 nm onto 470 nm, as the loss is not given; the Lasso procedure of the same reference is shown
+    as a variant for the four-factor OLS.
+  assumed: true
+- claim: fig4bc-switch-effect
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4bc-switch-effect
+  measured:
+  - 0.5168
+  notes: Cleaned trials, DA-PT, S38. switch 0.517 [0.483, 0.551], p printed as 0, inside [0.454, 0.552].
+    Rewarded switch 2.345 against rewarded stay 1.669; unrewarded stay -1.564 against unrewarded switch
+    -1.132; the pattern holds under every reading and session set. All trials 0.637 (outside); S46 cleaned
+    0.467 (inside).
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  - Z(DA) uses airPLS with lambda 5e4, order 1 and 50 iterations, the parameters of the procedure the
+    paper cites (Methods, Fiber Photometry, ref 70, Martianova et al. 2019), and a Huber robust regression
+    of 415 nm onto 470 nm, as the loss is not given; the Lasso procedure of the same reference is shown
+    as a variant for the four-factor OLS.
+  assumed: true
+- claim: fig4bc-no-laterality
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4bc-no-laterality
+  notes: The laterality coefficient is -0.003 to -0.050 z under every reading. Adopted reading a-ii (DA-PT,
+    all trials) p = 0.234 in S38 and 0.816 in S46. Cleaned trials give p = 0.0003 (S38) and 0.010 (S46);
+    the 0 to 1 s mean on all S38 trials p = 0.144. Question for the authors recorded under findings.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  - Trials. The four-factor OLS is described with Fig 4B and 4C; the Methods describe the trial cleaning
+    for the RPE regression and, for trial-averaged plots, only dropping rows with missing entries. Assumed.
+    all trials with a choice and a previous choice (reading ii). The claim's readings give p from 0.0003
+    to 0.82, so the outcome rests on this choice.
+  - Z(DA) uses airPLS with lambda 5e4, order 1 and 50 iterations, the parameters of the procedure the
+    paper cites (Methods, Fiber Photometry, ref 70, Martianova et al. 2019), and a Huber robust regression
+    of 415 nm onto 470 nm, as the loss is not given; the Lasso procedure of the same reference is shown
+    as a variant for the four-factor OLS.
+  assumed: true
+- claim: fig4de-port-duration
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4de-port-duration
+  notes: Cleaned S38 trials. (1) Rewarded, Spearman rho between port_dur and the half-decay time 0.467
+    (p printed as 0, n 10110). (2) Unrewarded, rho between port_dur and trough time 0.062, p = 8.6e-12,
+    but the median of trough time minus port_dur is 1.70 s, outside 0 to 1 s. S46 gives 0.426, 0.038 and
+    1.81 s.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: trial-cleaning-counts
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:trial-cleaning-counts
+  measured:
+  - 22370
+  - 38
+  notes: S38 with SO_lat <= 1 s leaves 22370 of 33415 trials (0.669), within tolerance of 20952, from
+    38 sessions, not 34. SO_lat <= 6 s leaves 30152. S46 leaves 25585 (1 s) and 35444 (6 s).
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4f-bayesian-rpe-fit
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4f-bayesian-rpe-fit
+  measured:
+  - 75.85
+  - 115.3
+  - -21.7
+  - 21.91
+  - 30.61
+  - -14.17
+  notes: Under every reading the Delta llk_CV of BRLfwr and BIfp has a CI above 0 and exceeds RLCF, RLFQ3p,
+    RL_meta and PearceHall. Per animal with trial splits (reading b). BRLfwr 75.85 [74.16, 77.63], BIfp
+    115.30, RLCF -21.70, RLFQ3p 21.91, RL_meta 30.61 inside the paper's intervals; PearceHall -14.17,
+    outside [6.04, 32.83]. Session splits (c) give the same pattern; sums over animals (a) are about five
+    times larger. With the Methods' BIfp RPE 110.70; with the Methods' RLFQ3p rule 40.79. measured gives
+    reading b, the closest; no reading puts all six inside.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  - Z(DA) uses airPLS with lambda 5e4, order 1 and 50 iterations, the parameters of the procedure the
+    paper cites (Methods, Fiber Photometry, ref 70, Martianova et al. 2019), and a Huber robust regression
+    of 415 nm onto 470 nm, as the loss is not given; the Lasso procedure of the same reference is shown
+    as a variant for the four-factor OLS.
+  - The bootstrap for reading b resamples animal and repeat pairs; the paper does not give the unit of
+    its bootstrap (the claim's readings).
+  assumed: true
+- claim: figs3-other-metrics
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs3-other-metrics
+  notes: Relative AIC and BIC (fits to all cleaned trials per animal, summed over animals), CV R2 and
+    CV llk all rank BIfp (AIC 3885.9 better than RL4p) and BRLfwr (2538.8) above RL4p, RLCF, RLFQ3p, RL_meta
+    and PearceHall; CV R2 0.050 and 0.036 above RL4p.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4g-history-decrease
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4g-history-decrease
+  notes: 6345 Fig 4G trials. Spearman rho between rewards in the history and DA-PT -0.163, p = 6.6e-39,
+    negative in every mouse (-0.095 to -0.291). AAA trials (3202) mean de-based Z(DA) over 0 to 1 s 0.327,
+    95% CI 0.293 to 0.359.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4h-rpe-only-llk
+  outcome: not_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4h-rpe-only-llk
+  measured:
+  - -575.4
+  - -572.64
+  - -573.2
+  - -573.82
+  - -573.11
+  - -573.61
+  notes: On the Fig 4G trials RL4p has the highest cross-validated log-likelihood (-572.64 per animal,
+    split RPE terms) and BRLfwr the lowest (-575.40), under both codings of the RPE. On all cleaned trials
+    BRLfwr is highest of the six (-1963.88; BIfp -1853.70). The criterion asks the order under every reading.
+    No reading gives values near the paper's -986 to -995 (per animal about -573 or -1964 to -2350; summed
+    about -2870 or -9800 to -11750). measured gives reading a-i per animal.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4h-nonnegative-rpe-aaa
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4h-nonnegative-rpe-aaa
+  notes: Mean RPE on AAA Fig 4G trials. BRLfwr 0.278, BIfp 0.591; RL4p 0.002, RLCF 0.018, RLFQ3p 0.009,
+    RL_meta 0.016, PearceHall 0.016.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4-consistent-after-reward
+  outcome: partially_reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4-consistent-after-reward
+  notes: (1) One-way ANOVA of DA-PT over aaA, AaA, aAA, AAA F = 1.675, p = 0.17 (means 1.509 to 1.601),
+    so consistent. (2) Range over these four histories relative to the range over all eight. BIfp 0.0007,
+    RL4p 0.144, BRLfwr 0.192, RLFQ3p 0.208, PearceHall 0.239, RL_meta 0.270, RLCF 0.371; BRLfwr is not
+    the smallest.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4i-lmer-switch
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4i-lmer-switch
+  measured:
+  - -0.1651
+  - 0.1
+  notes: statsmodels MixedLM, 22321 cleaned S38 trials with 4 previous trials. Reading a-i (correlated
+    random effects, DA-PT). R_chosen:Switch -0.165 [-0.216, -0.115], R_unchosen:Switch 0.100 [0.036, 0.164],
+    both inside the paper's intervals. Uncorrelated (b-i) -0.159 and 0.100; the 0 to 1 s mean -0.129 and
+    0.090; all inside.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  - lme4 is not in the environment; statsmodels' MixedLM fits the same linear mixed model by REML, with
+    Wald CIs.
+  assumed: true
+- claim: fig4j-lmer-stay
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4j-lmer-stay
+  measured:
+  - -0.0994
+  notes: R_chosen:Stay -0.099 [-0.141, -0.058] (reading a-i), inside [-0.11, -0.07]; uncorrelated -0.103.
+    Every model's R_chosen:Stay coefficient is negative under every reading (-0.043 to -0.206).
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: fig4i-model-runchosen
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:fig4i-model-runchosen
+  notes: R_unchosen:Switch from OLS of model RPEs. Mice's trials. BIfp 0.051, BRLfwr 0.066, RLCF 0.140
+    (all p < 1e-4); RL4p 0.0086, RLFQ3p -0.0004, RL_meta -0.0011, PearceHall -0.0011. Generated sessions
+    (7 to 23 and 8 to 15 reward blocks) give the same pattern. RL4p is significantly positive in two readings
+    but below half the smallest Bayesian or RLCF value (0.026).
+- claim: figs5-per-animal
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs5-per-animal
+  notes: Per-animal OLS. 4 of 5 animals have R_chosen:Switch < 0 and R_unchosen:Switch > 0; BSD016 has
+    R_unchosen:Switch -0.007 (p = 0.85). In all 5, rewarded switch exceeds rewarded stay and unrewarded
+    stay is below unrewarded switch.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: reward-switch-reward-count
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:reward-switch-reward-count
+  measured:
+  - 94
+  - 33415
+  notes: In S38 (reading a), 94 trials start a reward-switch-reward sequence out of 33415 trials, within
+    tolerance of 94 and 30707. S46 102 of 39132; all 69 sessions 157 of 58729.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  assumed: true
+- claim: figs4-lmer-feature-sets
+  outcome: reproduced
+  notebook: reproduce_qu_2025.ipynb
+  output: claim:figs4-lmer-feature-sets
+  notes: Cross-validated R2 (70-30 splits within animals) on 22255 cleaned trials with 8 previous trials.
+    OLS. 3R+Sw at 4 lags 0.7158, L0:R at 4 lags 0.7209 (difference -0.0051); 3R+Sw best over lags 0.0044
+    above its 4-lag value, L0:R best 0.0063 above. MixedLM. -0.0050, 0.0000 and 0.0050. Both parts hold
+    under both readings.
+  deviations:
+  - Sessions. The paper's 34 sessions with valid dopamine cannot be identified. The claims file's reading
+    of the AUC rule (470 nm samples against rescaled 415 nm samples, above 0.9) keeps no session, as every
+    AUC is 0.46 to 0.51, and visual inspection cannot be redone. Assumed. the 38 sessions in which outcome
+    dopamine responds to reward at the true event times (t above 5 for rewarded against unrewarded trials),
+    since the 8 others show no response at any clock offset up to 400 s and would fail a visual inspection.
+    All 46 usable sessions are shown as a variant where the claim's readings are run.
+  - L0:R codes the choice at t-k as +1 when at the port chosen at t and -1 otherwise, with the reward
+    at t included; the S4 Fig legend does not give the coding (assumption, question recorded under findings).
+  - MixedLM is cross-validated with 3 repeats and predicts test trials from its fixed effects, for time;
+    OLS uses 20 repeats.
+  assumed: true
+findings:
+- kind: data_missing
+  statement: BSD017 has 13 sessions (days 153 to 164 and 167); the paper states 14 full-task sessions
+    for each of the 5 mice. Days 165 and 166 are not in the dandiset.
+- kind: selection_undocumented
+  statement: The paper analyses dopamine from 34 sessions with valid recordings, chosen by visual inspection
+    and an AUC rule. The files do not mark which sessions are valid, and neither the processed dLight
+    signal nor the AUC values are deposited. 46 sessions have usable photometry; 38 of them show an outcome
+    response.
+- kind: other
+  statement: 8 of BSD011's 14 photometry sessions (days 148, 149, 152, 153, 158, 159, 160, 161) show no
+    difference between rewarded and unrewarded outcome responses at the recorded event times or at any
+    clock offset up to 400 s. Days 148 and 149 are sampled at 30.5 Hz per channel, the others at 20.4
+    Hz.
+- kind: format_error
+  statement: The photometry series of BSD016 days 118 and 119 hold 30 and 40 samples, at 49 s intervals
+    and timestamps near 5e7 s, not on the session clock.
+- kind: metadata_error
+  statement: The fiber photometry table gives the same coordinates (AP 1.2, ML 1.2, DV 4.1 mm) for sessions
+    recorded in the left and in the right NAc.
+- kind: metadata_error
+  statement: The indicator is described as a calcium indicator (it is dLight), the dichroic mirrors as
+    for a red indicator, and the filter and mirror wavelengths are -1.
+- kind: metadata_error
+  statement: The trial table's stop_time equals the session end (tmax) on every trial, so it does not
+    mark the end of the trial.
+- kind: other
+  statement: BSD011 has a photometry file in all 14 sessions, alternating left and right, where the Methods
+    describe a left, right, no-recording cycle, which the other mice follow.
+- kind: other
+  statement: Each photometry series starts with one or a few isolated samples up to 140 s before the continuous
+    recording.
+- kind: other
+  statement: related_publications names the bioRxiv preprint (10.1101/2023.11.10.566306, v2), not the
+    published paper.
+- kind: paper_inconsistency
+  statement: The Results list the counts of two-trial histories as RR 23607, RU 5719, UR 9428. In the
+    data the history with reward then omission, the one the RR against RU test compares, has 9297 trials
+    and omission then reward 5649, so the printed RU and UR counts are swapped with respect to the test;
+    the odds ratios and d values match the paper.
+- kind: paper_inconsistency
+  statement: The Results print the reward coefficient of the four-factor OLS as -1.6345 with the interval
+    [1.613, 1.656].
+- kind: code_mismatch
+  statement: The Methods define RLFQ3p forgetting as zeta = (alpha+ + alpha-)/2; the code (RL_Forgetting3p)
+    and Table 1 use 1 - (alpha+ + alpha-)/2. On the data the code's rule gives the paper's relative AIC
+    (-645.17 against -646.45) and the Methods' rule does not (-460.66).
+- kind: methods_unavailable
+  statement: Question for the authors. Which 34 sessions were kept for the dopamine analyses, and how
+    was the AUC-ROC computed? The AUC of 470 nm samples against rescaled 415 nm samples is 0.46 to 0.51
+    in every session, so no session passes 0.9 under that reading. This attempt assumed the 38 sessions
+    with an outcome response.
+- kind: methods_unavailable
+  statement: Question for the authors. Which trials does the four-factor OLS of Fig 4B and 4C use (cleaned
+    or all), and which response (DA-PT or a mean)? The laterality p is 0.23 on all trials and 0.0003 on
+    cleaned trials in the 38 sessions; this attempt assumed all trials.
+- kind: methods_unavailable
+  statement: Question for the authors. In S4 Fig, how is the trial-back choice of L0:R coded (left or
+    right, or relative to the current choice), and is the current reward included? This attempt coded
+    it relative to the current choice and included the reward at t.
+- kind: methods_unavailable
+  statement: Question for the authors. For the RPE-only regressions of Fig 4H (log-likelihoods near -986),
+    which trials, RPE terms and cross-validation aggregate were used? On the Fig 4G trials RL4p fits best
+    and on all cleaned trials BRLfwr does; neither gives values near -986.
