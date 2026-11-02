@@ -29,11 +29,20 @@ The processing reimplements ketmouse/eye_trace_utils.py of the code record (not 
 - Decay fit: fit_exponential_decay, a*exp(-b*x) + c with scipy.optimize.curve_fit (default
   initial values) on the trial-mean trace from 21.2 to 23.2 s (claims file, fig1no).
 - Persistence: fig1_persistence.py (claims file, fig1m).
-- Neuropixels-rig traces: make_puffseries_behavior_plot in analysis.py of Zenodo
-  10.5281/zenodo.14876694 (md5 6cc7aa5059737c3bd753aad1f116019d): first puff 5 s after each
-  `events-on`, puffs 3 s apart, 1 s before to 2 s after each puff (5 s more after the eighth),
-  minus the mean of the 1 s before the first puff, trials 0 to 19 preinfusion and 22 to 31
-  ketamine, each session's mean trace divided by its maximum (`npx_series`).
+- Neuropixels-rig traces (`npx_series`). The claims file (fig4b) cites fig1_npx_behavior.py,
+  which calls eye_trace_utils.plot_npx_eyeclosure: one plot per session of the stored
+  `eyeclosure_by_trial`, the median over the stored `trial_range_preket` and `trial_range_ket`,
+  with no baseline subtraction and no normalisation, and no across-session summary. The
+  across-session trace of Fig. 4B is made by make_puffseries_behavior_plot in analysis.py of
+  Zenodo 10.5281/zenodo.14876694 (md5 6cc7aa5059737c3bd753aad1f116019d, `fetch_analysis_py`):
+  first puff 5 s after each `events-on`, puffs 3 s apart, 1 s before to 2 s after each puff (5 s
+  more after the eighth), minus the mean of the 1 s before the first puff, trials 0 to 19
+  preinfusion and 22 to 31 ketamine, and each session's mean trace divided by its own maximum.
+  The main reading follows the criterion and Table S3, Fig. 4B ("Traces are baseline subtracted
+  with a 1s window before puffs ... trials averaged within session"): the same traces, the
+  stored trial ranges, no normalisation (max_norm=False). The baseline mean skips NaN frames
+  (np.nanmean); analysis.py uses np.mean, which would drop a trial with a NaN in its baseline
+  second from the nanmean over trials (2 of the 400 trials of the 10 files; the notebook prints the count).
 """
 from __future__ import annotations
 
@@ -72,6 +81,54 @@ TRIALS_20 = np.arange(2, 17)
 
 
 # ---------------------------------------------------------------- code record
+ANALYSIS_URL = "https://zenodo.org/api/records/14876694/files/analysis.py/content"
+ANALYSIS_MD5 = "6cc7aa5059737c3bd753aad1f116019d"
+
+
+def fetch_analysis_py() -> str:
+    """Fetch analysis.py of the mouse code record (Zenodo 14876694) and check its md5."""
+    r = requests.get(ANALYSIS_URL, timeout=120)
+    r.raise_for_status()
+    md5 = hashlib.md5(r.content).hexdigest()
+    if md5 != ANALYSIS_MD5:
+        raise ValueError(f"analysis.py md5 {md5} != {ANALYSIS_MD5}")
+    return r.content.decode()
+
+
+def def_lines(source: str, name: str) -> tuple[int, int]:
+    """First and last line (1-based) of the top-level function `name` in a source text."""
+    for node in ast.parse(source).body:
+        if isinstance(node, ast.FunctionDef) and node.name == name:
+            return node.lineno, node.end_lineno
+    raise KeyError(name)
+
+
+def show_lines(source: str, first: int, last: int) -> str:
+    """Lines first to last (1-based, inclusive) of a source text, numbered."""
+    lines = source.splitlines()
+    return "\n".join(f"{i:5d}  {lines[i - 1]}" for i in range(first, last + 1))
+
+
+def def_source(source: str, name: str) -> str:
+    """Source text of the top-level function `name`."""
+    a, b = def_lines(source, name)
+    return "\n".join(source.splitlines()[a - 1:b])
+
+
+def grep_lines(source: str, keys, first: int = 1, last: int | None = None) -> str:
+    """Numbered lines first to last (1-based) of a source text that contain any of keys."""
+    lines = source.splitlines()
+    last = len(lines) if last is None else last
+    return "\n".join(f"{i:5d}  {lines[i - 1]}" for i in range(first, last + 1)
+                     if any(k in lines[i - 1] for k in keys))
+
+
+def def_grep(source: str, name: str, keys) -> str:
+    """The def line of top-level function `name` and its lines that contain any of keys."""
+    a, b = def_lines(source, name)
+    return show_lines(source, a, a) + "\n" + grep_lines(source, keys, a + 1, b)
+
+
 def fetch_code_zip() -> zipfile.ZipFile:
     """Fetch the code record from Zenodo into memory and check its md5."""
     r = requests.get(CODE_URL, timeout=120)
@@ -227,10 +284,13 @@ def npx_load(path):
     return out
 
 
-def npx_series(b, first_only=False, max_norm=True, pre=slice(0, 20), ket=slice(22, 32)):
-    """make_puffseries_behavior_plot (analysis.py, Zenodo 14876694): per-trial series traces,
-    baseline the mean of the 1 s before the first puff; returns (t, pre mean, ket mean, per-trial
-    array). With max_norm each condition's mean trace is divided by its own maximum."""
+def npx_series(b, first_only=False, max_norm=False, pre=slice(0, 20), ket=slice(22, 32),
+               agg="mean"):
+    """Per-trial puff-series traces as make_puffseries_behavior_plot (analysis.py, Zenodo
+    14876694) cuts them, each minus the mean of the 1 s before the first puff; returns (t, pre
+    trace, ketamine trace, per-trial array). `agg` aggregates trials ("mean" as analysis.py,
+    "median" as plot_npx_eyeclosure). With max_norm each condition's trace is divided by its own
+    maximum (analysis.py lines 78 and 80); the default, no normalisation, is the criterion's."""
     fps = int(b["fps"][0])
     on = b["events-on"] + 5 * fps
     ec = b["eyeclosure"]
@@ -243,8 +303,9 @@ def npx_series(b, first_only=False, max_norm=True, pre=slice(0, 20), ket=slice(2
             segs.append(ec[p - fps: p + 2 * fps + extra])
         per_trial.append(np.concatenate(segs) - np.nanmean(segs[0][:fps]))
     per_trial = np.stack(per_trial)
-    m_pre = np.nanmean(per_trial[pre], 0)
-    m_ket = np.nanmean(per_trial[ket], 0)
+    f = np.nanmean if agg == "mean" else np.nanmedian
+    m_pre = f(per_trial[pre], 0)
+    m_ket = f(per_trial[ket], 0)
     if max_norm:
         m_pre, m_ket = m_pre / np.nanmax(m_pre), m_ket / np.nanmax(m_ket)
     t = np.arange(per_trial.shape[1]) / fps - 1   # time from the first puff for the first segment

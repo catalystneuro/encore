@@ -1,0 +1,41 @@
+dandiset: "001347"
+paper: doi:10.1126/science.adt3971
+questions:
+- claim: figs2bc-mouse-ketamine-early-present-late-abolished
+  asked: 2026-11-02
+  question: Is the expected late saline value of 0.34 (tolerance 0.07) the paper's late eye closure on
+    the first puff, given that the paper's own normalised value and early value imply about 0.20? The
+    same per-mouse data reproduce both of Table S3's t values exactly with a late saline mean of 0.203.
+  passage: Table S3, fig. S2 B and C (early 0.78 to 0.45, late 0.34 to -0.02, t = 6.854 and 4.951),
+    and Table S3, Fig. 1K (late/early on the first puff, saline 0.26); 0.26 x 0.78 is about 0.20.
+  why: The late saline mean here is 0.203 under every reading and scale (0.186 to 0.208), outside 0.34
+    +/- 0.07, and it is the only one of the four means outside tolerance, so it alone makes the outcome
+    partially reproduced. If 0.34 is a misprint or belongs to another quantity, the claim would be
+    reproduced.
+- claim: fig1m-mouse-late-closure-accumulates-and-persists
+  asked: 2026-11-02
+  question: Does the paper's median survival of 15.16 s use the 20 preinfusion trials per mouse (100
+    trials) that the criterion sets from Table S3, or all 40 trials of each saline session as the code
+    does? The code's trial choice and start frame give 15.16 s exactly, the criterion's trials do not.
+  passage: Table S3, fig. S2 E ("Preinfusion", 5 mice, 20 trials each); the code record's
+    mouse_eyepuff/scripts/fig1_persistence.py sets ntrials = 40 and starts at frame 6060, 3.3 s after
+    the eighth puff (printed in the notebook).
+  why: With 20 trials the median is 15.45 s from 0.3 s after the eighth puff (reading b, within
+    tolerance) and 13.05 s from the code's start (reading a, outside). With all 40 trials it is 15.16
+    s from the code's start and 18.16 s from 0.3 s after the eighth puff. The outcome is reproduced
+    either way, but under reading (b) it is not the paper's computation, and a corrected criterion
+    would pass under reading (a) only.
+- claim: fig5e-mouse-emotion-dimension-late-reduced
+  asked: 2026-11-02
+  question: The criterion builds the emotion-like dimension on the 1 s window starting 5 s after the
+    last puff, as the Methods say. The mouse code (analysis.py) uses bins 400 to 500 of a post-series
+    window that its plotting offsets place 3 to 4 s after the last puff, and only that window returns
+    Table S3's values. Should the criterion name this conflict as an open detail with both windows as
+    readings?
+  passage: Methods, Emotion-like neural dimension ("the 1 s window starting 5 s after the last puff
+    onset of each preinfusion puff-series"); analysis.py lines 432, 1436 to 1438, 1482 to 1494 and
+    2833 to 2838 (printed in the notebook).
+  why: Under the 5 to 6 s window the late test fails in all 8 readings (corrected p 0.066 to 0.158) and
+    the claim is not reproduced. Under the 3 to 4 s window with pooled variance the late test gives
+    corrected p = 0.039, the early test is not significant (0.22) and the four means (0.608, 0.308,
+    0.534, 0.004) are within tolerance, so the claim would be reproduced.

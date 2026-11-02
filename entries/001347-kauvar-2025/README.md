@@ -31,14 +31,14 @@ method, is [`attempts/001347-kauvar-2025-01.yaml`](../../attempts/001347-kauvar-
 | figs14g-cadss-correlates-with-affective-decrease | Across participants, the ketamine increase in CADSS correlates with the ketamine reduction of normalised ... | with inputs | Reproduced |
 | figs12-erp-not-explained-by-eyelid-closure | Puff-triggered ERPs are much larger than the activity around spontaneous blinks, although eyelid closure ... | dataset | Blocked: data missing |
 | figs13-auditory-control-no-response | The brain-wide eyepuff-evoked response is absent in the auditory control, where the device sounds but the ... | dataset | Reproduced |
-| figs15-ketamine-spectral-changes-frontal | Ketamine changes spectral power across the brain, with the largest changes in frontal cortex, led by ... | dataset | Blocked: data missing |
+| figs15-ketamine-spectral-changes-frontal | Ketamine changes spectral power across the brain, with the largest changes in frontal cortex, led by ... | dataset | Not reproduced (assumption) |
 | fig2g-nmf-six-factors | Non-negative matrix factorisation of trial-averaged, puff-triggered channel spectrograms yields six shared ... | dataset | Reproduced (assumption) |
 | fig2h-factor-network-loading | Factors 0 to 2 load mostly on attentional and somatomotor networks, and factors 3 to 5 mostly on limbic, ... | with labels | Partially reproduced |
 | fig2i-ketamine-reduces-factors-1-2 | Factors 1 and 2 are reduced during ketamine and recover after infusion; in the comparison of infusion with ... | dataset | Reproduced |
 | fig2j-factor-change-by-network | During ketamine, factor 1 is suppressed in limbic, dorsal attention and ventral attention networks, and ... | with labels | Reproduced |
 | fig3b-cluster-test-yeo-networks | Permutation cluster tests find ketamine-altered spectrotemporal clusters in the limbic, ventral attention ... | dataset | Reproduced |
 | fig3c-cluster-test-regions | Ketamine alters the eyepuff spectrotemporal response in insula, cingulate, orbitofrontal, posteromedial, ... | dataset | Reproduced |
-| figs27-slow-oscillations-with-strong-dissociation | All participants with strong dissociation (CADSS above 10) show ketamine-induced oscillations below 10 Hz, ... | dataset | Blocked: data missing |
+| figs27-slow-oscillations-with-strong-dissociation | All participants with strong dissociation (CADSS above 10) show ketamine-induced oscillations below 10 Hz, ... | with inputs | Reproduced (assumption) |
 | fig6c-human-persistent-activity-reduced | In humans, eyepuff-evoked activity along the persistent (beta band power) dimension falls during ketamine ... | dataset | Reproduced |
 | fig6e-human-fast-activity-unchanged | In humans, activity along the fast dimension (0.05 to 0.10 s) is not changed by ketamine (4.12, 4.00, 3.86). | dataset | Reproduced (assumption) |
 | figs37c-persistent-reduction-across-bands | The ketamine reduction of the persistent projection holds in every band except broadband LFP, and recovers ... | dataset | Reproduced (assumption) |
@@ -58,13 +58,13 @@ method, is [`attempts/001347-kauvar-2025-01.yaml`](../../attempts/001347-kauvar-
 | figs2h-mouse-dose-threshold | The dissociative effect on normalised late eye closure (eighth puff) is significant from about 35 mg/kg ... | with labels | Reproduced |
 | figs5c-mouse-other-drugs-no-disconnection | Buprenorphine and diazepam do not reduce normalised late eye closure, whereas ketamine and PCP do. | with labels | Reproduced |
 | fig1p-mouse-anesthesia-abolishes-both | An anaesthetic dose of ketamine with xylazine abolishes both reflexive and affective eye closure. | with labels | Reproduced |
-| fig1no-mouse-dissociatives-no-accumulation | Under ketamine and PCP, reflexive blinks remain but affective eye closure does not accumulate or persist; ... | with labels | Partially reproduced |
+| fig1no-mouse-dissociatives-no-accumulation | Under ketamine and PCP, reflexive blinks remain but affective eye closure does not accumulate or persist; ... | with labels | Reproduced (assumption) |
 | figs2l-mouse-repeatable-across-days | Preinfusion eye closure (reflexive, affective, normalised) on days 2 to 5 does not differ from day 1. | with labels | Reproduced |
 | figs2n-mouse-no-sex-difference | Male and female mice do not differ in normalised late eye closure, and saline does not change it in either ... | with labels | Reproduced |
 | figs2o-mouse-no-anticipation | When a puff in the sequence is skipped, mice do not blink at its expected time, while late eye closure ... | with labels | Reproduced |
 | figs4-mouse-reward-seeking-reduced | Eyepuff sequences cause a persistent reduction in licking for a liquid reward that recovers slowly after ... | dataset | Blocked: data missing |
 | figs6-mouse-vpm-inhibition-reduces-affective | Muscimol inhibition of VPM thalamus reduces normalised late eye closure (0.60 to 0.11) without changing ... | with labels | Reproduced |
-| fig4b-mouse-recorded-affective-reduced | Mice recorded with Neuropixels also show affective eye closure that ketamine reduces. | dataset | Reproduced (assumption) |
+| fig4b-mouse-recorded-affective-reduced | Mice recorded with Neuropixels also show affective eye closure that ketamine reduces. | dataset | Not reproduced |
 | fig4hi-mouse-rise-unchanged-decay-shortened | Ketamine leaves the rise times of puff-evoked regional activity unchanged but shortens regional decay ... | elsewhere | Partially reproduced |
 | fig4g-mouse-slow-clusters-altered | Ketamine leaves neuron clusters with rapid preinfusion puff responses little changed and substantially ... | elsewhere | Reproduced |
 | fig5d-mouse-emotion-dimension-accumulates | In mice, activity along the emotion-like dimension rises and saturates across the eight-puff series and ... | elsewhere | Reproduced |
@@ -73,7 +73,7 @@ method, is [`attempts/001347-kauvar-2025-01.yaml`](../../attempts/001347-kauvar-
 | fig6d-mouse-persistent-activity-reduced | In mice, activity along the persistent dimension (1 to 2 s after the puff) falls during ketamine (0.86 to ... | elsewhere | Reproduced (assumption) |
 | fig6f-mouse-fast-activity-unchanged | In mice, activity along the fast dimension (0 to 70 ms) is not changed by ketamine. | elsewhere | Not reproduced (assumption) |
 | fig6h-mouse-timescale-shorter | In mice, the baseline intrinsic timescale of the persistent population is shorter during ketamine (0.14 s) ... | elsewhere | Reproduced (assumption) |
-| fig6j-mouse-coupling-reduced | In mice, baseline pairwise correlation among the most persistent neurons halves during ketamine (0.49 of ... | elsewhere | Not reproduced |
+| fig6j-mouse-coupling-reduced | In mice, baseline pairwise correlation among the most persistent neurons halves during ketamine (0.49 of ... | elsewhere | Partially reproduced |
 | figs34-mouse-tone-persistence-reduced | For a neutral tone, mice do not close their eyes; fast tone activity is unchanged by ketamine, while ... | elsewhere | Partially reproduced (assumption) |
 | p50-condition-labels-link | The paper's code (analyze_airpuff_p50.py) names which of the two eye-closure series of each non-iEEG ... | dataset | Reproduced |
 | cadss-scores-link | The CADSS scores of the paper's code record (data/cadss_across_pts.csv) cover every iEEG participant whose ... | dataset | Reproduced |
@@ -81,7 +81,7 @@ method, is [`attempts/001347-kauvar-2025-01.yaml`](../../attempts/001347-kauvar-
 | link-ieeg-yeo-labels | The Yeo7 labels of the code record's anat/pts_ch_labels.pkl apply to the 458 channels of the dataset's NMF ... | dataset | Reproduced |
 | ieeg-channel-atlas-link | The channel labels of the paper's code record (anat/pts_ch_labels.pkl) name the dataset's iEEG contacts ... | dataset | Reproduced |
 
-Notebooks (each streams its data; about 22 minutes in all):
+Notebooks (each streams its data; about 45 minutes in all):
 
 - `01_human_behavior.ipynb`: human eye closure (non-iEEG and iEEG cohorts) and CADSS.
 - `02_mouse_behavior.ipynb`: head-fixed mouse eye closure under ketamine, PCP and other drugs.

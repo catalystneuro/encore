@@ -51,7 +51,10 @@ Parameters and where they come from
   0 to 200 ms after against 200 ms before puffs 5 to 8 (the claims file's reading of "last 4
   trials"); QR orthogonalisation, sign set so that puff 8 exceeds puff 1 (code). Code variant:
   target 3 to 4 s after the last puff onset (inferred from bins 400:500 of a window that, from the
-  plotting code, starts 1 s before the last puff) with pooled variance.
+  plotting code, starts 1 s before the last puff) with pooled variance. The code that builds the
+  post-series window is not in the record, so this offset is an inference; the notebook prints
+  the analysis.py lines it rests on (get_windowed_puff_psth, get_affective_projections,
+  plot_affective_projection_late).
 - Intrinsic timescale (Methods, "Intrinsic timescale analysis, mouse"; code extract_timescale):
   30 s before each series projected on the persistent dimension; autocorrelation
   (scipy.signal.correlate), normalised to its maximum over the fitted lags, a*exp(-x/b)+c fitted
@@ -95,6 +98,31 @@ PUFF_EPOCHS = {
 
 def npx_paths():
     return sorted(dandi_io.list_assets(dandi_io.NPX_DANDISET, dandi_io.NPX_VERSION))
+
+
+# The mouse code record (Zenodo 14876694) holds the single file analysis.py. It is fetched into
+# memory at run time and its md5 checked, so that the notebook can print the code lines a
+# reading rests on; the line numbers below refer to this exact file.
+CODE_NPX_URL = "https://zenodo.org/api/records/14876694/files/analysis.py/content"
+CODE_NPX_MD5 = "6cc7aa5059737c3bd753aad1f116019d"
+
+
+def fetch_analysis_py():
+    """Fetch analysis.py of Zenodo 14876694, check its md5, and return its lines."""
+    import hashlib
+    import requests
+    r = requests.get(CODE_NPX_URL, timeout=120)
+    r.raise_for_status()
+    md5 = hashlib.md5(r.content).hexdigest()
+    if md5 != CODE_NPX_MD5:
+        raise ValueError(f"analysis.py md5 {md5} != {CODE_NPX_MD5}")
+    return r.content.decode().splitlines()
+
+
+def show_code(lines, first, last, width=150):
+    """Print lines first..last (1-based, inclusive) of a source file with their numbers."""
+    for i in range(first, last + 1):
+        print(f"{i:5d}: {lines[i - 1][:width]}")
 
 
 def _series(times, n=8):

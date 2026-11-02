@@ -47,8 +47,30 @@ Where each parameter comes from
   extract_timescale). Open E: 10 min (the first 10 min of the epoch, code) or 8 min before
   the first puff (Methods); fit from lag one sample (code) or lag 0 (Methods).
 - Phase locking: phase of the 5th-order Butterworth band-passed (sosfiltfilt) bipolar
-  voltage via Hilbert; PLV = |mean(exp(i(phi_a - phi_b)))| in 5-s windows (Methods). The
-  windows are non-overlapping (a standard choice; the Methods do not give the stride).
+  voltage via Hilbert; PLV = |mean(exp(i(phi_a - phi_b)))| in 5-s windows (Methods: "we used
+  sliding 5-second windows to compute phase locking value"). The Methods do not give the
+  stride. The main reading uses non-overlapping windows (stride 5 s): the fig. S38 code
+  describes its input as "5 sec w+s plv data" (analyze_airpuff_ieeg_top_cd_network.py,
+  line 230), read here as window and stride of 5 s, and coh_over_time.roll_spec_sync steps
+  windows by a stride argument. Strides of 2.5 s and 1 s (STRIDES) are variants. Phase is
+  computed only for the preinfusion and infusion sessions (the only ones the claims use).
+- Fig. S38 band edges: BANDS (Table S3 bands, gamma 30 to 50 Hz) in the main reading; the
+  fig. S38 code (analyze_airpuff_ieeg_top_cd_network.py, main(), lines 88 to 89) uses
+  CODE_BANDS, (1, 4), (5, 8), (9, 12), (13, 30), (31, 70), (71, 95), as a variant, with
+  weights, sites and PLV all computed in those bands.
+- Fig. S38 sites (S38_SELECTIONS). 'int': top and bottom int(10 % of kept channels) of
+  |weight| (cd_utils.cd_pctile); 'ceil': the same with ceil; 'rank_wm_kept': ranked with
+  white matter kept (weights computed over all non-excluded channels), then white-matter
+  sites removed from the two sets (Methods: "the top and bottom tenth percentile of sites per
+  patient were classified ... and white matter contacts were excluded"; only for the
+  white-matter-excluded reading). Weight source (S38_WEIGHTS): 'band', the persistent weights
+  computed in the band of the PLV (fig. S38B legend: "for CDs computed using power in each
+  spectral band"); 'beta', the beta persistent weights for every band (code comment, lines 231
+  to 232: "version 24-06-07 uses beta CD weights 0.5-1.5 to sort top v bot CD electrodes").
+  The code reads the edges from a precomputed file (top_v_bot_cd_plv_edges.h5), so its
+  selection cannot be checked. An edge filter dropping pairs of bipolar channels on the same
+  shank whose first contact numbers differ by at most 1 (plot_utils, to_mask_adj_contacts,
+  used there for a heatmap) is a further variant.
 """
 import ast
 import hashlib
@@ -74,6 +96,12 @@ PRE_SESSION_ALT = dict(PRE_SESSION_CODE, SD245="Preinfusion")
 BEHAVIOUR_PRE = {"Baseline": "baseline", "Preinfusion": "preinfusion"}
 BANDS = {"delta": (1, 4), "theta": (4, 8), "alpha": (8, 12), "beta": (12, 30),
          "low gamma": (30, 50), "high gamma": (65, 95), "broadband": None}
+PLV_BANDS = {k: v for k, v in BANDS.items() if v is not None}
+CODE_BANDS = {"delta": (1, 4), "theta": (5, 8), "alpha": (9, 12), "beta": (13, 30),
+              "gamma": (31, 70), "high gamma": (71, 95)}
+STRIDES = (5.0, 2.5, 1.0)
+S38_SELECTIONS = ("int", "ceil", "rank_wm_kept")
+S38_WEIGHTS = ("band", "beta")
 EXCLUDE_LOCATIONS = {"OUT OF BRAIN", "EXCLUDE", "EXCLUDE AREA"}
 WINDOWS = {"persistent": (0.5, 1.5), "fast": (0.05, 0.10)}
 PRE_WINDOW = (-0.5, 0.0)
@@ -274,26 +302,74 @@ def extract_timescale(signal, fit_time=2.5, t0=0.2, start_lag=1):
     return popt[1]
 
 
-def plv_windows(phase_a, phase_b, win_s=5.0):
-    """PLV in consecutive non-overlapping windows; phase arrays (time, n) -> (windows, n)."""
+def plv_windows(phase_a, phase_b, win_s=5.0, stride_s=None):
+    """PLV in 5-s windows starting every stride_s seconds (default: non-overlapping) that fit
+    in the segment; phase arrays (time, n) -> (windows, n). Window sums by cumulative sum."""
     n = int(win_s * FS)
-    m = phase_a.shape[0] // n
-    d = np.exp(1j * (phase_a[:m * n] - phase_b[:m * n])).reshape(m, n, -1)
-    return np.abs(d.mean(1))
+    step = n if stride_s is None else int(round(stride_s * FS))
+    d = np.exp(1j * (phase_a - phase_b).astype(np.float64))
+    cs = np.concatenate([np.zeros((1, d.shape[1]), complex), np.cumsum(d, axis=0)])
+    starts = np.arange(0, d.shape[0] - n + 1, step)
+    return np.abs(cs[starts + n] - cs[starts]) / n
 
 
-def edge_plv(phase, sites, win_s=5.0):
+def edge_plv(phase, sites, win_s=5.0, stride_s=None):
     """Per edge among `sites` (indices into phase columns): PLV per window (windows, edges)."""
     sites = np.asarray(sites)
     ia, ib = np.triu_indices(len(sites), 1)
-    return plv_windows(phase[:, sites[ia]], phase[:, sites[ib]], win_s)
+    return plv_windows(phase[:, sites[ia]], phase[:, sites[ib]], win_s, stride_s)
 
 
-def top_bottom(w, pct=10):
-    """Indices of the top and bottom pct % of |w| (cd_utils.cd_pctile)."""
+def top_bottom(w, pct=10, rounding="int"):
+    """Indices of the top and bottom pct % of |w| (cd_utils.cd_pctile uses int; 'ceil' is a
+    variant)."""
     order = np.argsort(np.abs(w))
-    k = int(pct / 100.0 * len(w))
+    x = pct / 100.0 * len(w)
+    k = int(np.ceil(x)) if rounding == "ceil" else int(x)
     return order[-k:], order[:k]
+
+
+def s38_sites(weights, masks, pairs, key, wm, bad, sel):
+    """High and low sites for fig. S38 as indices into `pairs` (see the module docstring for
+    the readings). key is the (band key, window) of the weights."""
+    if sel == "rank_wm_kept":
+        if not wm:
+            return None
+        m = masks[(False, bad)]
+        top, bot = top_bottom(weights[key + (False, bad, True)])
+        g = np.where(m)[0]
+        keep = ~pairs["wm"].values
+        return g[top][keep[g[top]]], g[bot][keep[g[bot]]]
+    g = np.where(masks[(wm, bad)])[0]
+    top, bot = top_bottom(weights[key + (wm, bad, True)], rounding=sel)
+    return g[top], g[bot]
+
+
+def edge_stats(z, sites):
+    """Per edge among `sites`: for each stride in STRIDES, mean and SD (ddof 0) of the PLVs of
+    5-s windows (as plv_windows, computed from 0.5-s block sums); z is exp(i phase) of the
+    sites, (time, len(sites)). Also returns the sites and the two sites of each edge."""
+    sites = np.asarray(sites)
+    ia, ib = np.triu_indices(len(sites), 1)
+    out = {"edges": (sites[ia], sites[ib]), "sites": sites}
+    blk = FS // 2
+    nb = z.shape[0] // blk
+    d = (z[:nb * blk, ia] * z[:nb * blk, ib].conj()).reshape(nb, blk, len(ia))
+    cs = np.concatenate([np.zeros((1, len(ia)), complex), np.cumsum(d.sum(1, dtype=complex), 0)])
+    for s in STRIDES:
+        starts = np.arange(0, nb - 10 + 1, int(round(s * 2)))
+        p = np.abs(cs[starts + 10] - cs[starts]) / (10 * blk)
+        out[s] = (p.mean(0), p.std(0))
+    return out
+
+
+def adjacent(pairs, ia, ib):
+    """True for edges whose bipolar channels are on the same shank with first contact numbers
+    differing by at most 1 (plot_utils, to_mask_adj_contacts)."""
+    import re
+    shank = np.array([re.findall("[A-Za-z]+", a)[0] for a in pairs["a"]])
+    num = np.array([int(re.findall("[0-9]+", a)[0]) for a in pairs["a"]])
+    return (shank[ia] == shank[ib]) & (np.abs(num[ia] - num[ib]) <= 1)
 
 
 def process_participant(pt, pre_ses, bad_code, beh, seed=0, light=False):
@@ -362,6 +438,20 @@ def process_participant(pt, pre_ses, bad_code, beh, seed=0, light=False):
                 out["clock"][band] = {"true": evoked(ep), "null": np.array(null),
                                       "shift": shifted, "window": resp}
             del pz, ep
+        if cond == "preinfusion" and not light:
+            # persistent weights in the fig. S38 code's band edges (delta is the same band)
+            for band, rng_hz in CODE_BANDS.items():
+                if rng_hz == BANDS.get(band):
+                    for (wm, b) in masks:
+                        out["weights"][(("code", band), "persistent", wm, b, True)] = \
+                            out["weights"][(band, "persistent", wm, b, True)]
+                    continue
+                pz = st.zscore(band_power(lfp, rng_hz), axis=0).astype(np.float32)
+                ep = epochs(pz, puffs, trials)
+                for (wm, b), m in masks.items():
+                    out["weights"][(("code", band), "persistent", wm, b, True)] = \
+                        cd_weights(ep[m], WINDOWS["persistent"], True)
+                del pz, ep
         if light:
             continue
         # timescale traces: beta power of the z-scored LFP projected on persistent weights
@@ -370,25 +460,39 @@ def process_participant(pt, pre_ses, bad_code, beh, seed=0, light=False):
             w = out["weights"][("beta", "persistent", wm, b, True)]
             out["ts_proj"][(cond, wm, b)] = (bp[:, m] @ w).astype(np.float64)
         del bp
-        # phase for PLV in the 10 min before the first puff
+        # phase for PLV in the 10 min before the first puff (preinfusion and infusion only)
         seg = slice(max(puffs[0] - 10 * 60 * FS, 0), puffs[0])
         pre_part = lfp[:puffs[0] + 2 * FS]
         base = np.where(out["masks"][(False, "none")])[0]
-        for band, rng_hz in BANDS.items():
-            if rng_hz is None:
-                continue
-            ph_all = np.angle(ss.hilbert(bandpass(pre_part[:, base], *rng_hz), axis=0))[seg]
-            for (wm, b), mk in out["masks"].items():
-                ph = ph_all[:, np.searchsorted(base, np.where(mk)[0])]
-                # fig S38A/B: per band weights, top and bottom 10 % sets
-                w = out["weights"][(band, "persistent", wm, b, True)]
-                top, bot = top_bottom(w)
-                out["s38"][(cond, band, wm, b, "high")] = edge_plv(ph, top)
-                out["s38"][(cond, band, wm, b, "low")] = edge_plv(ph, bot)
-                if band == "beta":
-                    # fig 6I: persistent sites (top 10 % of |beta persistent weight|)
-                    out["plv6i"][(cond, wm, b)] = edge_plv(ph, top)
-            del ph_all
+        pairs0 = out["pairs"]
+        for bset, bands in (("main", PLV_BANDS), ("code", CODE_BANDS)):
+            if cond == "postinfusion":
+                break
+            for band, rng_hz in bands.items():
+                bkey = band if bset == "main" else ("code", band)
+                ph_all = np.angle(ss.hilbert(bandpass(pre_part[:, base], *rng_hz),
+                                             axis=0))[seg]
+                z_all = np.exp(1j * ph_all).astype(np.complex64)
+                for (wm, b) in out["masks"]:
+                    for wsrc in S38_WEIGHTS:
+                        if wsrc == "beta" and bkey == "beta":
+                            continue      # the same sets as wsrc 'band'
+                        wkey = (bkey if wsrc == "band" else "beta", "persistent")
+                        for sel in S38_SELECTIONS:
+                            sites = s38_sites(out["weights"], out["masks"], pairs0, wkey, wm, b, sel)
+                            if sites is None:
+                                continue
+                            for hl, ss_ in zip(("high", "low"), sites):
+                                out["s38"][(cond, bset, band, wm, b, wsrc, sel, hl)] = \
+                                    edge_stats(z_all[:, np.searchsorted(base, ss_)], ss_)
+                    if bset == "main" and band == "beta":
+                        # fig 6I: persistent sites (top 10 % of |beta persistent weight|)
+                        top, _ = s38_sites(out["weights"], out["masks"], pairs0,
+                                           ("beta", "persistent"), wm, b, "int")
+                        ph = ph_all[:, np.searchsorted(base, top)]
+                        out["plv6i"][(cond, wm, b)] = {
+                            st_: edge_plv(ph, np.arange(len(top)), 5.0, st_) for st_ in STRIDES}
+                del ph_all, z_all
         phases = {"beta": np.angle(ss.hilbert(bandpass(lfp, *BANDS["beta"]), axis=0)).astype(np.float32)}
         # fig S38H: per-trial pre-puff beta PLV over all edges between kept channels
         n = int(0.5 * FS)
@@ -479,7 +583,7 @@ def extra_session(r, ses):
         idx = np.where(m)[0][top]
         ph = np.angle(ss.hilbert(bandpass(lfp[:puffs[0] + 2 * FS, idx], *BANDS["beta"]),
                                  axis=0))[seg]
-        out["plv6i"][(wm, b)] = edge_plv(ph, np.arange(len(idx)))
+        out["plv6i"][(wm, b)] = {s: edge_plv(ph, np.arange(len(idx)), 5.0, s) for s in STRIDES}
     return out
 
 
@@ -504,38 +608,66 @@ def timescales(res, ex, wm, bad, period, start_lag, sd245_pre="Preinfusion"):
     return {c: np.array(v) for c, v in out.items()}
 
 
-def plv_ratio(res, ex, wm, bad, sd245_pre="Baseline"):
-    """Fig. 6I: mean beta PLV over 5-s windows and persistent edges, ketamine / preinfusion,
-    per participant; also the per-edge z-scored change (Methods), averaged over edges."""
+def plv_ratio(res, ex, wm, bad, sd245_pre="Baseline", stride=5.0):
+    """Fig. 6I: mean beta PLV over 5-s windows (starting every `stride` s) and persistent
+    edges, ketamine / preinfusion, per participant; also the per-edge z-scored change
+    (Methods), averaged over edges."""
     ratio, z, pre, ket = [], [], [], []
     for pt in PARTICIPANTS:
-        P = res[pt]["plv6i"][("preinfusion", wm, bad)]
+        P = res[pt]["plv6i"][("preinfusion", wm, bad)][stride]
         if pt == "SD245" and sd245_pre == "Preinfusion":
-            P = ex["plv6i"][(wm, bad)]
-        K = res[pt]["plv6i"][("infusion", wm, bad)]
+            P = ex["plv6i"][(wm, bad)][stride]
+        K = res[pt]["plv6i"][("infusion", wm, bad)][stride]
         ratio.append(K.mean() / P.mean())
         pre.append(P.mean())
         ket.append(K.mean())
         z.append(((K.mean(0) - P.mean(0)) / P.std(0)).mean())
     return {"ratio": np.array(ratio), "z": np.array(z), "pre": np.array(pre),
-            "ket": np.array(ket), "n_edges": [res[pt]["plv6i"][("preinfusion", wm, bad)].shape[1]
-                                               for pt in PARTICIPANTS]}
+            "ket": np.array(ket), "n_windows": [res[pt]["plv6i"][("infusion", wm, bad)][stride].shape[0]
+                                                for pt in PARTICIPANTS],
+            "n_edges": [res[pt]["plv6i"][("preinfusion", wm, bad)][stride].shape[1]
+                        for pt in PARTICIPANTS]}
 
 
-def edge_table(res, band, wm, bad):
+def edge_table(res, band, wm, bad, bset="main", wsrc="band", sel="int", stride=5.0,
+               drop_adjacent=False):
     """Fig. S38: one row per edge within the high or within the low set, with preinfusion PLV,
-    ketamine PLV, their difference and the difference z-scored by the preinfusion window SD."""
+    ketamine PLV, their difference and the difference z-scored by the preinfusion window SD.
+    bset 'main' (BANDS) or 'code' (CODE_BANDS); wsrc, sel: see the module docstring;
+    drop_adjacent removes edges between neighbouring bipolar channels (`adjacent`)."""
     rows = []
     for pt in PARTICIPANTS:
         for hl in ("high", "low"):
-            P = res[pt]["s38"][("preinfusion", band, wm, bad, hl)]
-            K = res[pt]["s38"][("infusion", band, wm, bad, hl)]
-            for e in range(P.shape[1]):
-                rows.append(dict(pt=pt, top_cd=(hl == "high"), sync_base=P[:, e].mean(),
-                                 sync_ket=K[:, e].mean(),
-                                 sync_change=K[:, e].mean() - P[:, e].mean(),
-                                 sync_change_z=(K[:, e].mean() - P[:, e].mean()) / P[:, e].std()))
+            ws = "band" if (bset, band) == ("main", "beta") else wsrc   # identical sets
+            key = (bset, band, wm, bad, ws, sel, hl)
+            P, K = res[pt]["s38"][("preinfusion",) + key], res[pt]["s38"][("infusion",) + key]
+            keep = np.ones(len(P["edges"][0]), bool)
+            if drop_adjacent:
+                keep = ~adjacent(res[pt]["pairs"], *P["edges"])
+            pm, ps = P[stride]
+            km, _ = K[stride]
+            for e in np.where(keep)[0]:
+                rows.append(dict(pt=pt, top_cd=(hl == "high"), sync_base=pm[e], sync_ket=km[e],
+                                 sync_change=km[e] - pm[e], sync_change_z=(km[e] - pm[e]) / ps[e]))
     return pd.DataFrame(rows)
+
+
+def s38_counts(res, wm, bad, sel, drop_adjacent=False, bset="main", band="beta", wsrc="band"):
+    """Per participant, numbers of high and low sites and of edges within each set. For 'int'
+    and 'ceil' they depend only on the channel count, not on the band or weights; for
+    'rank_wm_kept' and with drop_adjacent they depend on which sites are selected."""
+    out = {}
+    for pt in PARTICIPANTS:
+        d = {}
+        for hl in ("high", "low"):
+            ws = "band" if (bset, band) == ("main", "beta") else wsrc   # identical sets
+            P = res[pt]["s38"][("preinfusion", bset, band, wm, bad, ws, sel, hl)]
+            ia, ib = P["edges"]
+            keep = ~adjacent(res[pt]["pairs"], ia, ib) if drop_adjacent else np.ones(len(ia), bool)
+            d[f"{hl}_sites"] = len(P["sites"])
+            d[f"{hl}_edges"] = int(keep.sum())
+        out[pt] = d
+    return pd.DataFrame(out).T
 
 
 def mixed(df, formula, term):
@@ -623,3 +755,27 @@ def yeo_shuffle(df, n_boot=1000, seed=1):
                          "shuffle_2.5": [np.percentile(boots[k], 2.5) for k in YEO7],
                          "shuffle_97.5": [np.percentile(boots[k], 97.5) for k in YEO7],
                          "p": p, "p_bh": pc})
+
+
+def s38_models(res, bset, wm, bad, wsrc="band", sel="int", stride=5.0, drop_adjacent=False,
+               outcomes=("sync_base", "sync_change", "sync_change_z")):
+    """Fig. S38 mixed models per band (analyze_airpuff_ieeg_top_cd_network.plot_top_v_bot_cd_plv):
+    outcome ~ top_cd, random intercept per participant, BH (fdrcorrection, 'indep') over the
+    six bands and Bonferroni (the code's 'pval_bonf')."""
+    from statsmodels.stats.multitest import multipletests
+    bands = PLV_BANDS if bset == "main" else CODE_BANDS
+    tabs = {band: edge_table(res, band, wm, bad, bset, wsrc, sel, stride, drop_adjacent)
+            for band in bands}
+    rows = []
+    for y in outcomes:
+        g = pd.DataFrame([dict(outcome=y, band=band, **mixed(tabs[band], f"{y} ~ top_cd",
+                                                               "top_cd[T.True]"))
+                          for band in bands])
+        g["p_bh"] = multipletests(g.p, method="fdr_bh")[1]
+        g["p_bonf"] = np.minimum(g.p * len(bands), 1)
+        rows.append(g)
+    out = pd.concat(rows, ignore_index=True)
+    for k, v in dict(bands=bset, wm_excluded=wm, bad_list=bad, weights=wsrc, sites=sel,
+                     stride_s=stride, drop_adjacent=drop_adjacent).items().__reversed__():
+        out.insert(0, k, v)
+    return out
