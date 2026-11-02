@@ -1,0 +1,693 @@
+schema_version: 2
+id: 001326-kauvar-2025-01
+dataset:
+  archive: dandi
+  id: '001326'
+  version: 0.250528.1957
+  doi: 10.48324/dandi.001326/0.250528.1957
+paper: doi:10.1126/science.adt3971
+date: '2026-11-02'
+entry: 001326-kauvar-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41376274989
+inputs:
+- what: Eye closure of the recorded mice, behavior-only mouse experiments and the eye closure of four
+    non-implanted participants (DANDI 001347, the paper's ref. 102), for the claims whose data are there.
+  source: doi:10.48324/dandi.001347/0.250528.0702
+- what: Session lists naming the condition, dose and pressure of each behavior-rig experiment, the file-to-session
+    map of the recorded mice, and the trial selections and windows of the behavior analyses (mouse_eyepuff/scripts,
+    ketmouse, human_ieeg/scripts).
+  source: doi:10.5281/zenodo.14920570
+- what: Allen CCFv3 2017 structure tree (structure_tree_safe_2017.csv, the file brainwide-npix loads),
+    used only to place region acronyms in the Allen hierarchy.
+  source: https://github.com/cortex-lab/allenCCF at commit e5a57fe7e1c9fb333fec51c29a8471131c233a76
+outcomes:
+- claim: fig4-recordings-scale
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig4-recordings-scale
+  measured:
+  - 13
+  - 10
+  - 6698
+  notes: 13 sessions from 10 mice, 9554 curated units, 6698 puff-modulated units (6491 if the code's minimum
+    of 250 is read as spikes). The median session has units in 32 finest-level regions (range 11 to 37;
+    10 of 13 sessions have at least 24).
+  deviations:
+  - The units in the files are already curated (all labelled good, SNR at least 2.0, at least 517 spikes);
+    the BombCell and ISI criteria cannot be re-applied, as the files hold no waveforms or ISI metrics.
+- claim: fig4de-response-clusters
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig4de-response-clusters
+  measured:
+  - 11
+  - 941
+  - 786
+  - 755
+  - 713
+  - 645
+  - 643
+  - 568
+  - 542
+  - 526
+  - 392
+  - 187
+  - 0
+  notes: Leiden gives 11 clusters (within one of 12). In descending order the sizes are 941, 786, 755,
+    713, 645, 643, 568, 542, 526, 392 and 187; 7 of 11 are within tolerance and there is no 12th (expected
+    176). By the criterion's measures (code find_decay, absolute values) clusters 6 and 8 are rapid and
+    brief (decay 0.10 and 0.24 s) and only cluster 10 is persistent (mean |1 to 2 s| 0.34 of the peak,
+    peak at 0.28 s); the condition of three persistent clusters with two early peaks fails under both
+    numberings. Clusters 0, 1, 5 and 9 decay after 1.03 to 1.21 s, with means over 1 to 2 s of 0.14 to
+    0.16 of their peaks. Two of the 11 clusters (0 and 5) are suppressed, not excited.
+  deviations:
+  - Leiden runs on the neighbor graph, as scanpy does and as the code calls it, not on the UMAP embedding
+    the Methods name (criterion).
+  - Peak, decay and the |z| < 1 rule follow analysis.py find_decay (plot_cluster_distribution), which
+    works on absolute values; the criterion cites it.
+- claim: figs31b-cluster-overrepresentation
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs31b-cluster-overrepresentation
+  notes: '54 regions have more than 30 clustered cells. Under FDR 0.05 and 0.01, PAG is overrepresented
+    in clusters 4 and 6 and VPM in cluster 2 (faster half by decay: clusters 6, 8, 4, 2, 10), and frontal
+    or limbic regions in slower-half clusters (0.01: ACAv5, AId5, ORBl5 and PL2/3 in cluster 0, ORBvl2/3
+    in 1 and 9, ORBvl5 in 9). VPM is also overrepresented in cluster 3, of the slower half.'
+  deviations:
+  - With 11 clusters the faster half is taken as the 5 fastest by find_decay.
+- claim: fig4g-ketamine-alters-slow-clusters
+  outcome: not_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig4g-ketamine-alters-slow-clusters
+  notes: Spearman correlation across 11 clusters between Pre decay time and the Pre to Ketamine change
+    is 0.127 (p = 0.71) for the cosine distance and 0.209 (p = 0.54) for the absolute difference over
+    1 to 2 s. The largest changes are in the suppressed clusters 0 and 5 (cosine distance 1.43 and 0.70);
+    the fast cluster 10 changes by 0.49 and the slow cluster 9 by 0.16.
+  deviations:
+  - Ketamine is series 23 to 32 (10 series, code), where table S3 gives 64 Ketamine puffs (8 series);
+    the criterion names this conflict and follows the code.
+- claim: fig4i-rise-times-unchanged
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig4i-rise-times-unchanged
+  notes: 35 regions pass at the d' threshold 1.3 and 31 at 2. The median over regions of the bootstrap
+    median change in rise time is -0.0021 s (Ketamine 23 to 32) or -0.0021 s (22 to 32) under every setting,
+    within one 10 ms bin of zero. The Pre median rise is below 0.1 s in 31 of 35 and 29 of 31 regions.
+    The more-than-30 and at-least-30 rules give the same regions.
+  deviations:
+  - The code skips cluster 11; this clustering has clusters 0 to 10, so none is skipped.
+  - Bootstrap seed 0 is a standard choice.
+- claim: fig4h-decay-shortened
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig4h-decay-shortened
+  notes: The median of the pooled bootstrapped decay changes is -0.168 s (threshold 1.3, code series),
+    -0.161 s (Methods-literal series), -0.170 and -0.163 s at threshold 2. The Ketamine median decay is
+    shorter in 33 of 35 regions (threshold 1.3) and 31 of 31 (threshold 2).
+- claim: fig4h-decay-anatomical-progression
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig4h-decay-anatomical-progression
+  notes: Median Pre decay of the frontal and limbic regions (ACAd, ACAv, AIv, ILA, MOp, MOs, ORBl, ORBm,
+    ORBvl, PL) is 0.505 s at threshold 1.3 (0.521 s at 2, without MOp), against 0.290 s for the midbrain
+    regions MRN, NPC, PAG and SCig; VPM (0.531 s) and MD (0.565 s) lie above the median of all regions
+    (0.439 s).
+- claim: fig5d-emotion-dimension-accumulates
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig5d-emotion-dimension-accumulates
+  notes: 'Main reading (Methods window, per-unit variance, unit vector), without sub-5: before puff 8
+    1.033 [0.767, 1.300], before puff 2 0.255; 10 to 11 s after the last puff 0.790 [0.609, 0.971]; last
+    5 s of the 45 s after the series 0.303 [0.203, 0.403]; Ketamine before puff 8 -0.018 [-0.203, 0.167].
+    Every reading (3 exclusions, 2 windows, 2 variances, 2 scalings) gives the same pattern: accumulation,
+    persistence at 10 to 11 s and its loss under ketamine hold, but the projection does not return to
+    baseline within 45 s.'
+  deviations:
+  - The post-series window is taken to start 1 s before the last puff onset, the claims file's reading
+    of the plotting code; the code's driver is not released.
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: fig5e-late-reduced
+  outcome: not_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig5e-late-reduced
+  measured:
+  - 0.302
+  - 0.035
+  notes: 'Main reading (Methods window, per-unit variance): late projection Pre 0.302 and Ketamine 0.035
+    without sub-5 (0.311 and 0.040 without sub-1, 0.359 and 0.041 without sub-3), within tolerance under
+    the unit-vector scaling, but corrected p = 0.105, 0.109 and 0.113, above 0.05. The code''s target
+    window (3 to 4 s) gives corrected p = 0.015 to 0.023, and the pooled variance with the Methods window
+    0.034 to 0.073; the criterion names these as variants.'
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: fig5e-rapid-unchanged
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig5e-rapid-unchanged
+  measured:
+  - 0.804
+  - 0.329
+  notes: 'Main reading: early projection Pre 0.804 and Ketamine 0.329 without sub-5, corrected p = 0.105
+    (0.109 and 0.113 under the other exclusions), within tolerance. Under the code''s target window the
+    early difference is significant (corrected p 0.023 to 0.048).'
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: figs32c-regional-emotion-dimension
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs32c-regional-emotion-dimension
+  notes: Seven areas (Isocortex, OLF, HPF, STR, TH, HY, MB) have at least two sessions with 20 or more
+    puff-modulated units; all seven meet the puff-8 conditions under every exclusion and both target windows
+    (without sub-5, Methods window, Isocortex 0.533 [0.333, 0.733] before puff 8 against 0.180 before
+    puff 2, Ketamine 0.008 [-0.096, 0.113]).
+  deviations:
+  - High-level areas are the top-level divisions of brainwide-npix anatomy.py, placed through the Allen
+    CCFv3 2017 tree; the paper does not list them.
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: fig5g-tau-persist-model
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig5g-tau-persist-model
+  notes: Variance explained 0.81 to 0.95 over 24 readings; fitted Ketamine tauP 0.13 to 0.38 s against
+    Pre 20.5 to 33.6 s. Main reading without sub-5 0.866, tauP 32.2 s against 0.25 s.
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: figs33-alternative-models
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs33-alternative-models
+  notes: 'On the Ketamine segment the tauP model has the highest variance explained in 22 of 24 readings
+    and in every reading with the Methods window (main, without sub-5: tauP 0.884, S 0.869, tauB 0.868,
+    symmetric 0.456). The margin over the S and tauB models is 0.0002 to 0.04; with the code''s window
+    and pooled variance without sub-3 the S model is best (0.9573 against 0.9565; 0.9619 against 0.9556
+    with the L1 scaling).'
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: fig6d-mouse-persistent
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig6d-mouse-persistent
+  measured:
+  - 0.867
+  - 0.007
+  - 0.511
+  notes: 'Main reading (per-unit variance, first puff, code epochs), without sub-5: Pre 0.867, Ketamine
+    0.007, Post 0.511, corrected p 0.001 and 0.032. Without sub-3 also reproduced (0.813, 0.000, 0.514;
+    q 0.001 and 0.012); without sub-1 only Pre against Ketamine holds (Post q = 0.051). All eight puffs
+    give Pre 0.45, outside tolerance; the Methods-literal epochs fail the Post test in two of three exclusions.'
+  deviations:
+  - Weights from series means over the eight puffs, as the code computes them; the Methods do not say.
+  - The paper excludes one unnamed animal from Figs. 5 and 6 (Methods, Neuropixels recording and processing).
+    Removing sub-1, sub-3 or sub-5 each leaves 11 sessions from 9 mice; only removing sub-5 also leaves
+    the 7 tone sessions from 7 mice of table S3 (fig. S34), so where the readings disagree sub-5 is assumed
+    to be the excluded animal. All three readings are shown.
+  assumed: true
+- claim: fig6f-mouse-fast-unchanged
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig6f-mouse-fast-unchanged
+  measured:
+  - 4.225
+  - 4.175
+  - 3.977
+  notes: 'Pre against Ketamine corrected p is 0.27 to 0.98 in every reading (main, without sub-5: 4.23
+    against 4.18, q = 0.69). The per-unit-variance Pre means (4.01 to 4.23) are just below 4.48 +- 0.25;
+    the pooled-variance ones are within it without sub-5 (4.43 to 4.47). Post against Ketamine is significant
+    in three pooled or 70 ms readings without sub-5 (q 0.022 to 0.028), which the claim does not test.'
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: fig6b-persistent-dimension-distributed
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig6b-persistent-dimension-distributed
+  notes: Every top-level division with at least 30 included units holds top-10% units in every reading;
+    the largest share is 0.209 (Isocortex, per-unit variance, without sub-5) and at most 0.318 in any
+    reading.
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: fig6h-mouse-timescale
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig6h-mouse-timescale
+  measured:
+  - 0.484
+  - 0.2
+  notes: 'Without sub-5, per-unit weights: per-series fits 0.484 and 0.200 s (p = 0.0097); concatenated
+    0.388 and 0.119 s (p = 0.0041); pooled weights 0.557 and 0.221 s (p = 0.015) and 0.417 and 0.161 s
+    (p = 0.016). Without sub-1 or sub-3 the per-series reading fails (p = 0.56 and 0.48), as a sub-5 session
+    enters with a per-series Ketamine mean of 1.71 s (1075 s with pooled weights); the concatenated reading
+    holds (p = 0.012 and 0.010). No fit failed to converge.'
+  assumed: true
+  deviations:
+  - The paper excludes one unnamed animal from Figs. 5 and 6 (Methods, Neuropixels recording and processing).
+    Removing sub-1, sub-3 or sub-5 each leaves 11 sessions from 9 mice; only removing sub-5 also leaves
+    the 7 tone sessions from 7 mice of table S3 (fig. S34), so where the readings disagree sub-5 is assumed
+    to be the excluded animal. All three readings are shown.
+- claim: fig6j-mouse-coupling
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:fig6j-mouse-coupling
+  measured: 0.564
+  notes: 'Without sub-5: code reading with the code''s pooled-variance weights 0.564 of Pre (p = 0.0012),
+    with per-unit weights 0.742 (p = 0.021); Methods reading with per-unit weights 0.817 (p = 0.058),
+    with pooled weights 0.586 (p = 0.0039). Coupling falls under every reading but not significantly under
+    the Methods reading with the Methods weights, so the criterion''s both-readings condition fails. Without
+    sub-1 or sub-3 the code reading leaves out one session whose silent units give no correlation.'
+  assumed: true
+  deviations:
+  - The paper excludes one unnamed animal from Figs. 5 and 6 (Methods, Neuropixels recording and processing).
+    Removing sub-1, sub-3 or sub-5 each leaves 11 sessions from 9 mice; only removing sub-5 also leaves
+    the 7 tone sessions from 7 mice of table S3 (fig. S34), so where the readings disagree sub-5 is assumed
+    to be the excluded animal. All three readings are shown.
+- claim: figs34d-tone-fast-unchanged
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs34d-tone-fast-unchanged
+  measured:
+  - 2.713
+  - 1.374
+  - 1.216
+  notes: 'Without sub-5 (7 sessions from 7 mice): Pre against Ketamine corrected p 0.14 to 0.39 in every
+    reading (main 2.71 against 1.37, q = 0.14). Without sub-1 or sub-3 (8 sessions) the main reading gives
+    q = 0.028 and 0.033, which would not reproduce it.'
+  deviations:
+  - Tone Pre is the 10 tone series before the infusion time of the file, Ketamine and Post count from
+    the infusion (criterion). The code splits at its ketamine onset, which falls before the infusion,
+    so its Pre has 9 tone series and its first post series precedes the infusion; that split is shown
+    too.
+  - The paper excludes one unnamed animal from Figs. 5 and 6 (Methods, Neuropixels recording and processing).
+    Removing sub-1, sub-3 or sub-5 each leaves 11 sessions from 9 mice; only removing sub-5 also leaves
+    the 7 tone sessions from 7 mice of table S3 (fig. S34), so where the readings disagree sub-5 is assumed
+    to be the excluded animal. All three readings are shown.
+  assumed: true
+- claim: figs34e-tone-persistent
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs34e-tone-persistent
+  measured:
+  - 1.639
+  - 0.467
+  - 1.5
+  notes: 'Without sub-5, infusion split, per-unit variance: Pre 1.639, Ketamine 0.467, Post 1.500, corrected
+    p 0.0004 and 0.028, all within tolerance. All per-unit readings hold; two pooled-variance readings
+    miss on Post (q = 0.054 and 0.055).'
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: figs34f-tone-shorter-than-puff
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs34f-tone-shorter-than-puff
+  notes: Mean puff d' falls to half its peak 0.90 to 0.99 s after onset against 0.16 to 0.17 s for the
+    tone; over 1 to 2 s puff d' 1.04 to 1.10 against tone 0.09 to 0.21, with non-overlapping intervals
+    in every reading.
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: figs34g-tone-timescale
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs34g-tone-timescale
+  measured:
+  - 0.283
+  - 0.082
+  notes: 'Without sub-5 the Ketamine timescale is shorter in every reading (p 0.0008 to 0.037). Concatenated
+    fits are within tolerance (main: 0.283 against 0.082 s, p = 0.0077); per-series fits give Ketamine
+    0.140 to 0.161 s, outside 0.089 +- 0.024. Without sub-1 or sub-3 the per-series reading fails the
+    test (p 0.24 to 0.91).'
+  assumed: true
+  deviations:
+  - The paper excludes one unnamed animal from Figs. 5 and 6 (Methods, Neuropixels recording and processing).
+    Removing sub-1, sub-3 or sub-5 each leaves 11 sessions from 9 mice; only removing sub-5 also leaves
+    the 7 tone sessions from 7 mice of table S3 (fig. S34), so where the readings disagree sub-5 is assumed
+    to be the excluded animal. All three readings are shown.
+- claim: figs34h-tone-coupling
+  outcome: not_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs34h-tone-coupling
+  measured: 0.82
+  notes: 'With the 30 s before each tone series, without sub-5: Methods reading 1.23 of Pre (p = 0.90)
+    and code reading 0.82 (p = 0.18) with per-unit weights; 0.87 (p = 0.40) and 0.66 (p = 0.061) with
+    pooled weights. No reading under any exclusion meets the criterion on both measures. The code''s own
+    loop takes the windows before puff series 1 to 10 and 23 to 32 for any stimulus; that gives 0.53 (p
+    = 0.019, pooled) and 0.67 (p = 0.051, per-unit).'
+  deviations:
+  - The excluded animal is not named; the three readings (without sub-1, sub-3 or sub-5) give the same
+    outcome.
+- claim: figs30-correlation-structure
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs30-correlation-structure
+  notes: Across 13 sessions the within-region change is +0.0063 (p = 0.052) and the between-region change
+    -0.0001 (p = 0.89); within exceeds between (paired p = 0.016). Within-region correlations rise in
+    RSP in 9 of 10 sessions that record it and in ORB in 5 of 7. 0 to 6715 pairs per session have no correlation
+    because a unit is silent in a period.
+  deviations:
+  - The correlation analysis is not in the released code; rates are the smoothed 10 ms rates of all units.
+- claim: figs29-rsp-oscillations
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025.ipynb
+  output: claim:figs29-rsp-oscillations
+  notes: 'Minute from 5 min after the infusion: RSP units rise in 7 of 10 sessions recording RSP and RSPv
+    has the largest rise of the 52 regions with at least 30 units (2.13). Minute from 10 min: RSPd has
+    the largest rise (2.13) but RSP units rise in only 5 of 10 sessions. The criterion''s both-readings
+    condition holds for the RSP ranking and fails for the sessions count under one reading. sub-7 has
+    no defined RSP spectrum (two RSP units, silent in a window).'
+  deviations:
+  - The infusion time is the approximate time stored in the files.
+- claim: link-001347-condition-labels
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: sanity
+  notes: All 99 experiment ids that the code lists for the conditions these claims use are files of DANDI
+    001347 (142 files in all; the other 43 are in code lists of other panels; no listed id is missing
+    and no file is unlisted), each with the trial count the code reads, and the matched files reproduce
+    the t values of table S3 (fig. 1K t = 4.737, fig. S5 D and E t = 8.6017 and 12.0602).
+- claim: link-001347-recorded-sessions
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: sanity
+  notes: 10 files map to 001326 sessions by the conversion script; every matched series onset falls within
+    14 ms of one linear clock fit (slope 1.00003). sub-3_ses-20230225, sub-5_ses-20230706 and sub-5_ses-20230822
+    have no file. In 9 files the video holds 2 fewer series than 001326; m94-549 (sub-8) holds 79 series
+    events against 40 series in 001326, of which the first 40 match.
+- claim: fig4b-recorded-eye-closure-ketamine
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig4b-recorded-eye-closure-ketamine
+  notes: 10 of 13 sessions. With each condition's mean trace divided by its own maximum (analysis.py make_puffseries_behavior_plot),
+    Pre minus Ketamine late closure is 0.308 [0.243, 0.373] (code epochs; 0.311 Methods-literal, 0.312
+    with the file's own Ketamine range 23 to 30). Unnormalized it is 0.026 [-0.030, 0.082] (Pre 0.174,
+    Ketamine 0.148), and with both conditions divided by the Pre maximum -0.033 [-0.285, 0.219], so the
+    outcome rests on the code's normalization. Depends on link-001347-recorded-sessions, which holds for
+    10 sessions.
+  deviations:
+  - The eye closure of the recorded mice is in DANDI 001347, not in 001326; it is read there.
+  - The code's per-condition maximum normalization is assumed to be the paper's; table S3 says only baseline-subtracted.
+  assumed: true
+- claim: fig5b-recorded-accumulation
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig5b-recorded-accumulation
+  notes: 'Code normalization: Pre accumulation 0.200 [0.122, 0.279] (10 sessions, no sub-5 file) and Ketamine
+    0.074 [0.032, 0.116], below the Pre mean; without sub-1 0.167 and 0.085, without sub-3 0.202 and 0.076.
+    Unnormalized: Pre 0.058 [0.031, 0.085], Ketamine 0.040 [0.012, 0.067], neither including zero nor
+    below the Pre mean. At most 10 sessions where the paper uses 11.'
+  deviations:
+  - Read from DANDI 001347; sub-3_ses-20230225 and both sub-5 sessions have no file.
+  assumed: true
+- claim: figs34c-tone-no-eye-closure
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs34c-tone-no-eye-closure
+  notes: '6 of the 7 tone sessions have a file. Raw closure 0.3 to 0.8 s after the tones, code split:
+    Pre -0.071 [-0.108, -0.034], Ketamine -0.010 [-0.024, 0.004], against puff 0.157 and 0.152 in the
+    same sessions; below the puff value and below 0.1 under every split, Ketamine count and normalization.'
+  deviations:
+  - The recorded-mouse files hold no tone events; the 001326 tone onsets are placed on the video clock
+    through the fit of link-001347-recorded-sessions.
+- claim: fig1k-mouse-ketamine-late-closure
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig1k-mouse-ketamine-late-closure
+  measured:
+  - 0.262
+  - -0.068
+  notes: Saline 0.262 and ketamine -0.068 (5 mice), paired t = 4.737, p = 0.0091.
+- claim: fig1l-dissociatives-preinfusion
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig1l-dissociatives-preinfusion
+  measured:
+  - 0.286
+  - 0.262
+  - 0.371
+  - -0.068
+  - 0.349
+  - -0.033
+  notes: 'Pre and infusion: saline 0.286 and 0.262, ketamine 0.371 and -0.068, PCP 0.349 and -0.033, all
+    within tolerance; FDR p 0.504, 0.002 and 0.041.'
+- claim: figs2bc-mouse-early-late
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs2bc-mouse-early-late
+  measured:
+  - 0.778
+  - 0.451
+  - 0.203
+  - -0.025
+  notes: Early 0.778 to 0.451 (t = 6.854, p = 0.0024), late 0.203 to -0.025 (t = 4.951, p = 0.0078), all
+    within tolerance; ketamine early closure stays above zero (t = 7.62, p = 0.0016). The saline late
+    mean 0.203 is near the lower edge of 0.34 +- 0.14 while the t value matches table S3.
+- claim: fig1m-accumulation-persistence
+  outcome: partially_reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig1m-accumulation-persistence
+  measured: 13.05
+  notes: Accumulation holds (puff 1 0.244 [0.154, 0.333], puff 8 0.517 [0.413, 0.621]). Kaplan-Meier median
+    13.05 s with the criterion's preinfusion trials (100 trials, 86 events), outside 15.16 +- 1.5 s; the
+    code's all-40-trial set gives 14.68 s, within it.
+  deviations:
+  - The survival event is not stated in the paper (criterion); it is taken from fig1_persistence.py, closure
+    falling to 1.2 times baseline, scanned from 30.3 s and censored at 50 s.
+- claim: figs2g-scaling-puff-number
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs2g-scaling-puff-number
+  measured:
+  - 0.256
+  - 0.517
+  - 0.239
+  - 0.515
+  - 0.286
+  - 0.447
+  notes: Puff 1 against 8 corrected p 0.0038, 0.0001 and below 0.0001 at 8, 18 and 28 PSI; pressures at
+    puff 8 corrected p 0.98, 0.46, 0.60; all six means within tolerance.
+  deviations:
+  - The code's 28 PSI experiments are the preinfusion trials of the ketamine 35 mg/kg experiments (ids
+    1020 to 1027).
+- claim: figs2h-dose-response
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs2h-dose-response
+  measured:
+  - 0.169
+  - 0.205
+  notes: Under both FDR families ketamine 50 and 35 and PCP 20 and 10 mg/kg give corrected p 0.005 to
+    0.016 with decreases and the lower doses 0.074 to 0.759. Ketamine 35 0.169 and PCP 10 0.205.
+- claim: fig1p-anesthesia-abolishes-both
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig1p-anesthesia-abolishes-both
+  measured:
+  - 0.773
+  - 0.025
+  - 0.47
+  - 0.024
+  - 0.436
+  - 0.428
+  notes: K/X reflexive 0.773 to 0.025 (t = 8.6017, FDR p 0.006), affective 0.470 to 0.024 (t = 12.0602,
+    FDR p 0.0016); reflexive closure under ketamine 0.436 and PCP 0.428; all within tolerance.
+- claim: figs5-other-drugs
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs5-other-drugs
+  notes: 'Code family of five comparisons: ketamine FDR p 0.0053, PCP 0.0092, buprenorphine 0.934, diazepam
+    0.304; four- and six-comparison families give the same pattern.'
+- claim: figs6-vpm-muscimol
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs6-vpm-muscimol
+  measured:
+  - 0.602
+  - 0.105
+  notes: Saline injection 0.602 and muscimol 0.105 (t = 3.845 and 3.789, FDR p 0.0289); fast early closure
+    0.089 under muscimol against 0.075 after saline.
+- claim: fig5hi-behavior-model-doses
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig5hi-behavior-model-doses
+  notes: Variance explained 0.917 (ketamine) and 0.886 (PCP); tauP ketamine 24.5, 9.7, 5.1, 0.6 s and
+    PCP 18.4, 10.4, 2.2 s, falling with each dose. The ketamine fit has tauB at its upper bound of 100
+    s.
+  deviations:
+  - The data fed to the behavior model are not in the released code; the across-mouse mean of the infusion-trial
+    (23 to 37) traces from -1 to 43 s at 100 Hz, with the 750 ms after each puff removed (filter_reflex),
+    is used.
+- claim: fig1e-human-ketamine-late-closure
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:fig1e-human-ketamine-late-closure
+  measured:
+  - 0.706
+  - 0.426
+  notes: Saline 0.706 and ketamine 0.426 (4 participants, 38 trials each), paired t = 3.703, p = 0.0342.
+  deviations:
+  - The files label trials only as pre and post; the code takes them as saline and ketamine.
+- claim: figs1b-human-early-closure-unchanged
+  outcome: reproduced
+  notebook: reproduce_kauvar_2025_behavior.ipynb
+  output: claim:figs1b-human-early-closure-unchanged
+  measured:
+  - 0.839
+  - 0.777
+  notes: Saline 0.839 and ketamine 0.777, paired t = 1.622, p = 0.2032.
+- claim: figs4-reward-licking
+  outcome: blocked
+  blocked_by: other
+  notes: No lick data are in DANDI 001347 or in the code archive (Zenodo 14920570); the behavior-rig files
+    hold only eye closure. The claims file places these data in DANDI 001347 (data elsewhere), so the
+    checker does not accept data_missing; the block is recorded as other, the data being absent from the
+    archive the claims file names.
+- claim: fig1f-human-reports
+  outcome: blocked
+  blocked_by: other
+  notes: No participant reports are in DANDI 001347; the human behavior files hold only eye-closure trials.
+    The claims file places these data in DANDI 001347 (data elsewhere), so the checker does not accept
+    data_missing; the block is recorded as other, the data being absent from the archive the claims file
+    names.
+- claim: fig2d-cadss-ketamine
+  outcome: blocked
+  blocked_by: other
+  notes: No CADSS scores are in DANDI 001347; the iEEG analysis code loads them from a file that is neither
+    in the dandiset nor in the code archive. The claims file places these data in DANDI 001347 (data elsewhere),
+    so the checker does not accept data_missing; the block is recorded as other, the data being absent
+    from the archive the claims file names.
+- claim: figs14g-cadss-correlation
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the CADSS scores, which are not in DANDI 001347 nor in the code archive. The claims file
+    places these data in DANDI 001347 (data elsewhere), so the checker does not accept data_missing; the
+    block is recorded as other, the data being absent from the archive the claims file names.
+- claim: fig2g-six-factors
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: fig2i-factors-1-2-ketamine
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: fig3b-cluster-test-networks
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: figs12-erp-not-blink
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: fig6c-human-persistent
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: fig6e-human-fast-unchanged
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: fig6g-human-timescale
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+- claim: fig6i-human-phase-locking
+  outcome: blocked
+  blocked_by: too_large
+  notes: The human iEEG data are public in DANDI 001347 (about 30 ecephys files of 0.2 to 0.4 GB per session
+    and derived spectrogram files up to 5.2 GB). The run listed the files but its five hours went to the
+    001326 electrophysiology and the 001347 behavior; the iEEG pipeline (multitaper spectrograms, NMF,
+    permutation cluster tests, coding dimensions, phase locking) was not built or run.
+findings:
+- kind: format_error
+  statement: 'The spike times of every one of the 9554 units are stored in no particular order (about
+    half of successive differences are negative); NWB expects them ascending. Sorted, they agree with
+    the stimulus table: the population response 0 to 200 ms after each puff is 0.03 to 0.19 z in every
+    session and -0.03 to 0.003 at onsets shifted by 1.5 s.'
+- kind: metadata_insufficient
+  statement: The animal excluded from the paper's Figure 5 and 6 analyses (Harderian gland secretion)
+    is not identified in the dandiset or the paper. Removing sub-1, sub-3 or sub-5 each leaves 11 sessions
+    from 9 mice; only removing sub-5 also leaves 7 tone sessions from 7 mice as table S3 reports, and
+    several outcomes depend on the choice.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which animal was excluded from the cross-puff and population
+    analyses (Figs. 5 and 6, fig. S34)? This attempt assumes sub-5 (both sessions), the only choice that
+    gives the 7 tone sessions from 7 mice of table S3; fig6d, fig6h, figs34d and figs34g change outcome
+    if sub-1 or sub-3 was excluded instead.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Fig. 4B and 5B normalize each condition's mean eye-closure
+    trace by its own maximum in analysis.py; is that the normalization behind the reported reduction?
+    Without it, or with both conditions divided by the Pre maximum, the late closure of the recorded mice
+    does not differ between Pre and Ketamine (0.026 [-0.030, 0.082]).
+- kind: other
+  statement: Tone series are in 9 sessions from 8 mice, where table S3 reports 7 sessions from 7 mice,
+    and 9 sessions also hold light stimuli (240 to 248 per session) that the paper does not describe.
+- kind: metadata_insufficient
+  statement: The ketamine infusion time in each file is described as approximate and falls 94 to 420 s
+    after the code's ketamine onset (30 s after the last puff of series 20); with the code's onset, the
+    tenth pre-infusion tone series counts as post-infusion.
+- kind: metadata_insufficient
+  statement: 867 of 9554 units carry the region label NA, and the files give no description of the region
+    labels beyond the acronyms.
+- kind: data_missing
+  statement: DANDI 001326 holds no eye closure; the recorded mice's eye closure is in DANDI 001347, with
+    no file for sub-3_ses-20230225, sub-5_ses-20230706 or sub-5_ses-20230822, and with no tone events.
+- kind: metadata_insufficient
+  statement: In DANDI 001347 the behavior-rig files hold only an eye-closure trace and an experiment id,
+    with no drug, dose, pressure or injection label, and the human P50 files label trials only as pre
+    and post. The conditions come only from the session lists of the paper's code (Zenodo doi:10.5281/zenodo.14920570).
+- kind: identifier_missing
+  statement: The recorded-mouse eye-closure files of DANDI 001347 (sub-m<mouse>-<recording>) carry no
+    identifier of the 001326 sessions; the link comes from the paper's conversion script and a clock fit
+    to the series onsets.
+- kind: data_missing
+  statement: Lick data (fig. S4), participant reports (Fig. 1F) and CADSS scores (Fig. 2D, fig. S14G)
+    are not in DANDI 001347 or the code archive.
+- kind: paper_inconsistency
+  statement: Table S3 gives a saline late eye closure of 0.34 for fig. S2C; the data give 0.203 while
+    reproducing the table's t value (4.951) exactly, so the reported mean appears inconsistent with the
+    reported test.
+- kind: code_mismatch
+  statement: Table S3 gives 64 Ketamine puffs per cluster for Fig. 4G (8 series), while analysis.py takes
+    series 23 to 32 (10 series); the recorded-mouse files of DANDI 001347 store a Ketamine range of series
+    23 to 30, which matches the table.
+- kind: code_mismatch
+  statement: The coupling loop of analysis.py plot_coding_dimension_early_late takes the windows before
+    puff series 1 to 10 and 23 to 32 whatever the stimulus, so the tone coupling of fig. S34H is computed
+    before puff series, not before tone series as the Methods say; only that version shows a significant
+    fall here.
