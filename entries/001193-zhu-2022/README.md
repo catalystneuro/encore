@@ -24,7 +24,7 @@ paper's supplement and the bigram counts of the corpus the paper names (Jun Da, 
 computing), pooled over its news and fiction sub-corpora. That site is not versioned.
 
 - `reproduce_zhu_2022.ipynb`: the data check, the participant counts and the keyword frequencies.
-  It takes about a minute, most of it streaming the 40 files.
+  It takes about two minutes, most of it streaming the 40 files.
 - `ifg_hga.py`: loading and per-file summaries (scale, duplicates, block lengths). Other notebooks
   on this dandiset can import it.
 - `keyword_frequency.py`: the stimulus lists of the supplement and the keyword counts of the
