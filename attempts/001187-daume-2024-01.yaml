@@ -1,0 +1,853 @@
+schema_version: 2
+id: 001187-daume-2024-01
+dataset:
+  archive: dandi
+  id: "001187"
+  version: 0.240904.2347
+  doi: 10.48324/dandi.001187/0.240904.2347
+paper: doi:10.1016/j.neuron.2024.09.013
+date: 2026-11-01
+entry: 001187-daume-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41284150060
+outcomes:
+- claim: sessions-and-neurons
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:sessions-and-neurons
+  measured: [46, 950, 351, 532]
+  notes: The dandiset holds 46 sessions of 39 subjects and 950 units (380 hippocampus, 570
+    amygdala). The rate filter of the paper's code removes 67 units (7.1%) and leaves 351 and 532.
+    Table S1's recorded counts sum to 973 (386 and 587); see table-s1-counts.
+- claim: table-s1-counts
+  outcome: partially_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:table-s1-counts
+  notes: All 46 sessions are matched to Table S1 by the label in the file identifier; the WM and
+    LTM accuracies agree with the table to within 0.18 and 1.52 points. 42 sessions match the
+    recorded counts before the rate filter (21 after it). Four differ, P1809jh (hippocampus 1
+    against 6), P61cs_2 (hippocampus 1 against 2), P68cs (amygdala 7 against 17) and P82cs
+    (amygdala 17 against 24); these 23 units are the difference between Table S1's 973 and the
+    950 of the text. As a report (printed under ms-neuron-counts), the per-session
+    category counts equal Table S1's in 42 (hippocampus) and 40 (amygdala) of 46 sessions, and
+    the MS counts in 40 and 44.
+- claim: behaviour-overall-accuracy
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:behaviour-overall-accuracy
+  measured: [93.33, 70.32, 1.189]
+  notes: WM accuracy 93.33% (SD 7.60), LTM accuracy 70.32% (SD 9.89), d' 1.189 (SD 0.620); no hit
+    or false-alarm rate is 0 or 1. Both accuracies exceed 50% with the smallest permutation p the
+    test gives (about 1e-4, below 0.0001), t(45) = 38.67 and 13.93.
+- claim: fig1c-wm-accuracy-load
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig1c-wm-accuracy-load
+  notes: Load 1 95.09%, load 3 91.58%; t(45) = 4.91 (paper 4.89), permutation p below 0.0001.
+- claim: fig1d-wm-rt-load
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig1d-wm-rt-load
+  notes: With response times above 5 s set to missing, load 1 1.393 s and load 3 1.525 s, t(45) =
+    -4.28 (paper -4.29). The criterion's bar, p < 0.0001, lies at the resolution of a
+    10,000-permutation test; the draw printed first gives p = 0.0003, and over 100 seeds 63 draws
+    give p below 0.0001 (median 0.0001). With 2,000,000 permutations the p the test estimates is
+    6.0e-05 (95% upper bound 7.0e-05), below 0.0001, so load 1 is faster at p < 0.0001. Changed from
+    partially reproduced after verification round 1. Without the 5 s cut (variant), t = 0.20, p =
+    0.86.
+  deviations:
+  - The permutation p is estimated with 2,000,000 sign flips in place of the 10,000 of the Methods,
+    since 10,000 cannot resolve a p near the criterion's bar of 0.0001; the 10,000-permutation p is
+    shown over 100 seeds.
+- claim: fig1e-ltm-confidence-accuracy
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig1e-ltm-confidence-accuracy
+  notes: 45 sessions (sub-11, whose ratings are all 1 or 6, left out). High 77.31%; low 61.40%
+    pooled, t(44) = 8.51 (paper 8.66), or 62.48% averaged, t(44) = 7.34; p below 0.0001 in both.
+- claim: ltm-rt-confidence
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:ltm-rt-confidence
+  measured: [1.838, 2.618]
+  notes: Reading (b), response times above 5 s set to missing, matches with low confidence pooled
+    (1.838 and 2.618 s, t(44) = -11.37) and averaged (1.838 and 2.659 s, t(44) = -11.22), p below
+    0.0001. Reading (a), all response times, gives 2.205 and 3.565 s, outside tolerance, with high
+    still faster (t(44) = -7.30).
+  deviations:
+  - The paper's means match only with response times above 5 s set to missing, the code's rule
+    (plot_behavior.m), which the text does not state; the criterion lists it as a reading.
+- claim: fig1f-ltm-load
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig1f-ltm-load
+  notes: Hit rate 68.59% for load 1 pictures and 65.77% for load 3, t(45) = 2.65, p = 0.0097
+    (paper t = 2.42, p = 0.018).
+- claim: fig1g-ltm-probe
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig1g-ltm-probe
+  notes: Hit rate 72.10% for pictures shown twice, 63.99% for pictures shown once, t(45) = 6.80
+    (paper 7.25), p below 0.0001.
+- claim: category-neuron-counts
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:category-neuron-counts
+  measured: [102, 222]
+  notes: 102 of 351 hippocampal (29.06%) and 222 of 532 amygdala (41.73%) units. Reading the
+    second test as a two-sided p < 0.05 gives 96 and 205.
+- claim: fig2b-hippocampus-persistent
+  outcome: partially_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig2b-hippocampus-persistent
+  measured: [20.22, 14.11]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    for this GLM in place of O-M. Under all four readings with O-G the intercept and the preferred
+    effect are positive at p < 0.05 with at least one beta outside tolerance. One row per trial,
+    baseline B1, gives intercept 20.22 (p = 0.00096) and preferred 14.11 (p = 0.000001), both
+    above tolerance; B2 gives 22.38 and 11.86 (preferred within tolerance); the code's rows give
+    22.98 and 8.82 (B1) or 25.42 and 6.90 (B2). O-G removes 1 or 2 of 102 neurons. The code's
+    rule (O-C, variant) with one row per trial and B1 gives 19.39 and 13.12, both within
+    tolerance. The outcome is the same as under O-M in a run before that answer (partially
+    reproduced); O-M is no longer run, so its betas are not shown in the notebook.
+  deviations:
+  - O-G takes each neuron's mean normalized rate over all rows of its table before trial
+    selection (incorrect trials included), as NWB_computeGLM.m takes the means for O-C; claims
+    header O, as amended.
+  - Mixed models are fitted by maximum likelihood with statsmodels MixedLM, not MATLAB fitglme;
+    p-values from the t distribution on n - p degrees of freedom.
+- claim: fig2c-hippocampus-correct-load
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig2c-hippocampus-correct-load
+  notes: The readings the criterion names give different outcomes, and the claims file (shared
+    method, opening paragraph) blocks such a claim; changed from partially reproduced (assumed)
+    after verification round 1. With main effects (reading a) and O-G, 101 of 102 neurons, baseline
+    B1 gives accuracy 18.48 (p = 0.0499) and load 18.64 (p = 0.0003), both above tolerance; B2 gives
+    load 12.94 (p = 0.0069, within tolerance) and accuracy 16.46 (p = 0.060). Both grade the claim
+    partially reproduced. With the interaction term (reading b) the load term is -14.24 (p = 0.56)
+    or -18.66 (p = 0.41), which grades it not reproduced. With 0/1 coding that term is the load
+    effect in incorrect trials (59 rows with load 1), not a main effect; whether reading (b) is the
+    paper's model is asked of a reader (questions/001187.yaml). With -0.5/+0.5 coding (a variant)
+    the load main effect is 2.96 (p = 0.81) with B1 and -2.12 (p = 0.86) with B2, and accuracy 30.62
+    (p = 0.018) and 28.09 (p = 0.019). O-C under reading (a) with B1 gives accuracy 18.68 (p =
+    0.028) and load 13.63 (p = 0.0034). The earlier outcome under O-M was not reproduced.
+  deviations:
+  - O-G as in fig2b-hippocampus-persistent.
+- claim: fig2e-amygdala-persistent
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig2e-amygdala-persistent
+  notes: The two row readings the criterion names give different outcomes, and the claims file
+    blocks such a claim; changed from reproduced (assumed) after verification round 1. With one row
+    per trial (reading a) and O-G both terms are positive at p < 0.05 with both betas within
+    tolerance, intercept 10.50 and preferred 6.88 with B1 (p = 0.00046 and 0.000002; 220 of 222
+    neurons), 10.06 and 6.55 with B2, which grades the claim reproduced. With the code's rows
+    (reading b) the intercept is above tolerance and the preferred beta below it (13.06 and 5.62
+    with B1, 11.26 and 5.61 with B2), which grades it partially reproduced. O-C gives 10.50 and 6.88
+    (B1) and 9.34 and 5.89 (B2) with one row per trial.
+  deviations:
+  - O-G and the fitting as in fig2b-hippocampus-persistent.
+- claim: fig2f-amygdala-load-not-accuracy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig2f-amygdala-load-not-accuracy
+  notes: The readings the criterion names give different outcomes, and the claims file blocks such
+    a claim; changed from reproduced (assumed) after verification round 1. The accuracy effect has
+    p >= 0.05 under every reading and outlier rule (O-G p 0.19 to 0.24, betas -6.39 to -7.44; paper
+    -6.13, p = 0.24). With main effects (reading a), B1 and O-G the load effect is 11.55 (p =
+    0.00002), within 12.309 +- 1.231, with 220 of 222 neurons, which grades the claim reproduced.
+    With B2 it is 9.51 (p = 0.00025), below tolerance, and with the interaction term (reading b)
+    not significant (p = 0.70 and 0.82); these grade it partially reproduced. As in fig2c, the load
+    term of reading (b) is the effect in incorrect trials (asked of a reader); with -0.5/+0.5 coding
+    (a variant) the load main effect is 8.67 (p = 0.24) with B1 and 6.47 (p = 0.36) with B2. O-C
+    gives the same as O-G with B1.
+  deviations:
+  - O-G and the fitting as in fig2b-hippocampus-persistent.
+- claim: fig3a-area-interactions
+  outcome: partially_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3a-area-interactions
+  measured: [19.12, 70.57, -32.52]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the main outlier
+    rule in the criterion in place of O-M. The earlier outcome under O-M was partially
+    reproduced and rested on the assumption of which conditions O-M compares; O-G removes that
+    assumption. With O-G (5 neurons removed, 313 remain) confidence x area 19.12 (p = 0.019),
+    LTM accuracy x area 70.57 (p = 0.0011) and the three-way -32.52 (p = 0.0017) have the
+    paper's signs, and no main effect or the LTM accuracy x confidence term has p < 0.05
+    (smallest 0.24); all three betas are outside tolerance, larger than the paper's. With the
+    all-sure session kept, as the code does, 20.23, 73.60 and -33.74. The code's rule (O-C,
+    variant, 8 removed) gives 16.60, 56.61 and -27.83, all within tolerance (17.84, 59.96 and
+    -29.16 with the all-sure session kept).
+  deviations:
+  - O-G takes each neuron's mean normalized rate over all rows of the code's table, before the
+    selection of correct, preferred and rated rows and with the all-sure session's neurons
+    included, as NWB_computeGLM.m takes the means for O-C.
+  - The session whose ratings are all sure (sub-11, P69cs) is left out, as the paper says one
+    patient was excluded from all confidence analyses (Results, paragraph 2); the code keeps it,
+    shown as a variant.
+- claim: fig3b-hippocampus-predicts-ltm
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3b-hippocampus-predicts-ltm
+  measured: [21.25, 67.37, -30.69]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the main outlier
+    rule in the criterion in place of O-M; the earlier outcome under O-M, in a run before that
+    answer and not shown in the notebook, was partially reproduced. With O-G, outliers over both areas (5 removed) or within
+    the hippocampus (2 removed) leave the same 98 neurons, and confidence 21.25 (p = 0.0045),
+    LTM accuracy 67.37 (p = 0.00085) and the interaction -30.69 (p = 0.0014) are all within
+    tolerance with the paper's signs. With the all-sure session kept, 21.51, 68.18 and -31.05.
+    The code's rule (O-C) gives the same within the area; over both areas, 20.25, 57.52 and
+    -27.98, with LTM accuracy below tolerance.
+  deviations:
+  - As fig3a-area-interactions. For outliers over both areas, the neuron means are taken over
+    the full table of both areas.
+- claim: fig3b-amygdala-no-prediction
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3b-amygdala-no-prediction
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    in place of O-M; the outcome is unchanged. No effect has p < 0.05 under any reading or
+    outlier rule (smallest p 0.43). With O-G and outliers over both areas, confidence 1.81 (p =
+    0.68), LTM accuracy -4.08 (p = 0.71), interaction 2.28 (p = 0.67).
+  deviations:
+  - As fig3a-area-interactions.
+- claim: fig3c-hippocampus-high-confidence
+  outcome: not_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3c-hippocampus-high-confidence
+  notes: High confidence, remembered against forgotten, t(68) = 1.17, p = 0.26 (normalized) and
+    t(70) = 1.79, p = 0.078 (spikes per second); low confidence p = 0.30 and 0.10. Keeping the
+    all-sure session gives p = 0.33 and 0.054 for high confidence. Of 102 hippocampal category
+    neurons, 100 are outside the all-sure session and have rows, 98 have a remembered and 82 a
+    forgotten high-confidence row, 80 both, 73 spikes in both, and 69 or 71 remain after O-M,
+    against 83 in the paper. The forgotten condition has a median of 5 rows per neuron, and 13
+    neurons have one. Since 80 neurons have both conditions before any removal, the paper's rows
+    likely differ from the claims file's (correct WM trials, preferred pictures later tested);
+    adding incorrect WM trials (a diagnostic) still gives 80 neurons and p = 0.46 and 0.12.
+  deviations:
+  - The all-sure session is left out (variant shown with it).
+- claim: fig3d-amygdala-no-difference
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3d-amygdala-no-difference
+  notes: High confidence p = 0.85 and 0.64 (mean differences -0.97% and -0.04 Hz), low p = 0.30
+    and 0.51; 146 to 147 neurons (paper 159 and 153).
+- claim: fig3e-early-delay-cluster
+  outcome: partially_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3e-early-delay-cluster
+  measured: 1050
+  notes: Under all four readings (binning and rate) a cluster with remembered above forgotten has
+    cluster p < 0.025, from about 0.875 to 1.05 s (p 0.0001 to 0.0196), not 0 to 650 ms. Early
+    clusters exist only below significance (0 to 0.125 s, p = 0.061, spikes per second in 200 ms
+    windows; 0 to 0.025 s, p = 0.25, normalized). The time-resolved t in 0 to 650 ms exceeds the
+    cluster-forming threshold (about 2.0) at 3 of 27 points (normalized) and 6 of 27 (spikes per
+    second) with 200 ms windows, largest at onset (3.09 at 0 s, normalized; 3.47 at 0.025 s,
+    spikes per second), where the windows take in 100 and 75 ms of the last encoding picture, and
+    at 1 of 13 points with 50 ms bins. The largest |t| over the whole delay lies at 0.925 to 1.025 s
+    under every reading (4.05 and 4.41 with 200 ms windows, 3.43 and 3.60 with 50 ms bins). The criterion's partial grade is met, but the data
+    do not support an early effect. The measured end is that of the significant cluster under the
+    first reading (200 ms windows, normalized).
+  deviations:
+  - The cluster-forming threshold is FieldTrip's default 0.05 (two-sided), as the claims file
+    names; the paper does not give it.
+- claim: fig3f-amygdala-no-cluster
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3f-amygdala-no-cluster
+  notes: No cluster has p < 0.025 under any reading; the smallest cluster p is 0.40 (normalized, 50 ms bins).
+- claim: fig3g-nonpreferred-no-effect
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3g-nonpreferred-no-effect
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    in place of O-M. The outcome is unchanged and no longer rests on an assumption (under O-M it
+    rested on which conditions O-M compares). With O-G no fixed effect other than the intercept
+    has p < 0.05 in either set of rows (smallest p 0.089 for all non-preferred pictures, 0.11 for
+    trials without a preferred picture); with O-C 0.067 and 0.11.
+  deviations:
+  - As fig3a-area-interactions.
+- claim: fig3h-encoding-no-effect
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3h-encoding-no-effect
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    in place of O-M; the earlier outcome under O-M, in a run before that answer and not shown in
+    the notebook, was not reproduced (assumed), an effect reaching p < 0.05 under each reading.
+    With O-G (5 neurons removed) no fixed effect other than the intercept has
+    p < 0.05 under either reading (smallest p 0.30 with picture 1 preferred, 0.078 with a
+    preferred picture in any slot); with O-C 0.35 and 0.074.
+  deviations:
+  - O-G as in fig3a-area-interactions, on the neuron means of the picture 1 rate over all rows
+    of the table.
+- claim: ms-neuron-counts
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:ms-neuron-counts
+  measured: [53, 26]
+  notes: 53 of 351 hippocampal units (15.10%), 26 familiarity- and 27 novelty-selective. The
+    amygdala has 69 (Table S1 68).
+- claim: fig4b-ms-confidence-auc
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig4b-ms-confidence-auc
+  notes: Reading (a), 49 neurons, AUC 0.5975 high against 0.5577 low, t(48) = 3.87, p = 0.0005;
+    reading (b), 40 neurons (paper 41), 0.5994 against 0.5621, t(39) = 3.55, p = 0.0009.
+  deviations:
+  - The ROC thresholds span the counts of the two groups compared; the Methods say "the minimal
+    and maximal spike count observed" without naming the trials.
+  - The all-sure session is left out (one MS neuron).
+- claim: fig4c-overlap-chance
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig4c-overlap-chance
+  measured: 19
+  notes: 19 neurons are both MS and category neurons (of 53 and 102); the null has mean 15.55
+    (7 to 26) and p = 0.179.
+- claim: fig4d-category-no-memory-signal
+  outcome: reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig4d-category-no-memory-signal
+  notes: Changed from blocked (metadata insufficient) after verification round 1. The dataset's
+    metadata gives no category for the new LTM pictures (IDs 1001 to 1200), but their images are in
+    the files. All 600 new images of the three task variants were viewed; in each, IDs 1001 to 1040
+    show people, 1041 to 1080 animals, 1081 to 1120 cars (variants 1 and 3) or tools (variant 2),
+    1121 to 1160 food and fruit, and 1161 to 1200 landscapes, the order of the old pictures' leading
+    digits 1 to 5, with no image outside its block. These were the images of one session per
+    variant; the new images of every session (8809 over 46 sessions) are identical to those of the
+    viewed session of its variant, and every new picture shown has its image in the file. The notebook shows contact sheets of every new image with eight old pictures per
+    category. The category neurons agree (best block is the preferred category for 58.0% of them,
+    against 60.5% for old pictures). With these categories no GLM effect reaches p < 0.05 under any
+    reading (smallest p 0.079 with O-M; 0.063 with O-C), and no old against new t-test does (p 0.22
+    to 0.92, 96 or 98 neurons; paper t(94) = -0.28, p = 0.78).
+  deviations:
+  - The categories of the new pictures are read from their images in the dataset by the author, as
+    blocks of 40 IDs; the dataset does not label them.
+- claim: fig4e-fs-strong-maintenance
+  outcome: not_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig4e-fs-strong-maintenance
+  measured: [197, 84, -0.17]
+  notes: 197 MS and category pairs (178 without self-pairs), 84 FS pairs (74). Under all 16 GLM
+    readings the maintenance beta is negative (-0.14 to -0.19 Hz, -6.5 to -9.4 normalized; p
+    0.059 to 0.45), and under all 8 t-test readings strong is below weak (t -1.00 to -1.60, p 0.11
+    to 0.33). Per FS pair, strong minus weak has median -0.044 Hz, 37 pairs positive and 47
+    negative (sign test p = 0.33); per MS neuron, 9 of 20 positive. With the median split over both
+    loads pooled (a variant the Methods do not describe), strong is below weak in all 24 readings,
+    at p < 0.05 in four GLM readings and one t-test reading. The measured beta is that of the first
+    reading, in spikes per second.
+  deviations:
+  - A rate equal to the category neuron's median goes to weak (a standard choice).
+- claim: fig4f-ns-no-effect
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig4f-ns-no-effect
+  notes: The readings the criterion names do not all give the same outcome, and the claims file
+    blocks such a claim; changed from reproduced (assumed) after verification round 1. No GLM
+    reading reaches p < 0.05 (smallest 0.42), and seven of the eight t-test readings do not (p 0.14
+    to 0.98), but one does (pictures answered old, self-pairs dropped, spikes per second, t(81) =
+    2.04, p = 0.040), so the claim is neither reproduced (no p < 0.05 under every reading) nor not
+    reproduced (p < 0.05 under every reading). The single p of 0.040 is one of 24 uncorrected tests.
+    With all trials of the old pictures, self-pairs kept and spikes per second, the GLM gives beta
+    0.006 (p = 0.90) or 0.010 (p = 0.85) and the t-test t(106) = -1.03, p = 0.31, with 107 NS pairs
+    (paper 122).
+findings:
+- kind: paper_inconsistency
+  statement: Table S1's recorded unit counts sum to 973 (386 hippocampus, 587 amygdala), while
+    the Methods say 950 units were isolated. The dandiset holds 950, and four sessions have fewer
+    units than Table S1 lists (P1809jh hippocampus 1 against 6, P61cs_2 hippocampus 1 against 2,
+    P68cs amygdala 7 against 17, P82cs amygdala 17 against 24).
+- kind: metadata_error
+  statement: Every file gives Cedars-Sinai Medical Center as the institution, though 14 sessions
+    have Toronto Western identifiers (TWH) and 6 Johns Hopkins identifiers (JHU), and the paper
+    says the patients were recorded at three institutions.
+- kind: metadata_insufficient
+  statement: The new pictures of the LTM test (IDs 1001 to 1200) carry no category, and their
+    stimulus images are named only by ID, so analyses of preferred-category new pictures (Fig. 4d)
+    need the images to be viewed. Viewed for this attempt, the images of each of the three task
+    variants form consecutive blocks of 40 IDs per category, in the order of the old pictures'
+    leading digits.
+- kind: metadata_insufficient
+  statement: The LTM confidence column is described as 1 to 6 with no coding. The accuracy column
+    agrees in every trial with 1 to 3 meaning new and 4 to 6 old, 1 and 6 being sure as the
+    paper's code reads it, but the coding is not stated in the files.
+- kind: metadata_error
+  statement: One LTM trial of sub-24 session 2 has confidence 7, outside the documented 1 to 6.
+- kind: format_error
+  statement: Five units have spike times out of order in the units table (sub-13 session 1 units
+    1 and 2, sub-2 session 2 units 19 and 29, sub-24 session 2 unit 10).
+- kind: other
+  statement: Eight sessions have fewer than 400 LTM trials (161, 187, 228, 257, 384, 390, 395, 399)
+    and one has 139 WM trials, where the paper describes 400 and 140. Picture 1 lasts 1.57 to 2.04
+    s and the maintenance period 2.53 to 3.20 s, where the Methods say 2 s and 2.55 to 2.85 s.
+- kind: code_mismatch
+  statement: The paper's code for the Fig. 3a GLM (NWB_computeGLM.m) removes outlier neurons whose
+    mean normalized rate exceeds 3 SD of the neuron means, without centring and on the upper side
+    only, where the Methods remove neurons that differ by more than 3 SD from the mean; and it
+    keeps the session whose ratings are all sure, which the Results say was excluded from
+    confidence analyses. With the code's rule the Fig. 3a GLM gives the paper's betas within
+    tolerance (16.60, 56.61, -27.83); with the Methods' threshold on the same neuron means it
+    gives 19.12, 70.57 and -32.52.
+- kind: methods_unavailable
+  statement: For the authors. Which outlier rule was applied to the mixed-effects GLMs, the
+    Methods' "±3 SD from the mean" or the code's threshold of 3 SD without centring
+    (NWB_computeGLM.m), and on which values; and for the GLMs of Fig. 2, which the code does not
+    cover, were the rows one per trial or one per picture, and to which baseline mean were rates
+    normalized? For Fig. 2c and 2f, was the model fitted with main effects only, or with the
+    interaction of accuracy and load, and with which coding? Here the code's neuron means with the
+    Methods' threshold were used, and every row, baseline and model reading was run; these choices
+    change the outcomes of Fig. 2c, 2e, 2f and 3a, and the claims of Fig. 2c, 2e and 2f are blocked
+    for it.
+- kind: methods_unavailable
+  statement: For the authors. The Methods sentence on the GLM of Fig. 4e and 4f lost its variable
+    names ("with (2 levels, high vs low, categorical) as fixed effect and nested into as random
+    intercept"). Which unit was the random intercept nested in patient (MS neuron or pair), were
+    all LTM trials of the old pictures used or only those answered old, and was a neuron both
+    MS and category paired with itself? Fig. 4f's outcome depends on these.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier tested the helpers on synthetic
+    inputs (paired and pooled t, one-way F, AUC, window edges, s1_label, the cluster test) and found
+    them correct. Its report had no attempt record and gave its own outcome for each claim; 25 of 29
+    agree with the record as it was. It also asked for outputs not tied to one claim, which were
+    added; per-session peri-onset rates of all units at true and shifted onsets, for the shared
+    clock of the 12 sessions without a WM advantage in the category test (193 units respond at true
+    WM onsets against 22 at shifted ones; nine of the 12 sessions show more responding units at the
+    true onsets, and the other three hold 10 of 883 units), and a table of convergence and missing
+    SE or p for every mixed-model fit (none failed to converge, none has a missing SE or p).
+  results:
+  - claim: sessions-and-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 46 sessions, 950 isolated units, 351 hippocampal and 532 amygdala units after the filter
+      (67 removed, 7.1%). Table S1 sums to 973.
+    response: No change needed.
+  - claim: table-s1-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 42 of 46 sessions match before the filter, 21 after. P1809jh, P61cs_2, P68cs and P82cs
+      differ, and together they account for the 23-unit gap (973 vs 950).
+    response: No change needed.
+  - claim: behaviour-overall-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: WM 93.33%, LTM 70.32%, d' 1.189, all within tolerance; both accuracies beat 50% at the
+      smallest p 10,000 permutations allow (9.999e-5).
+    response: No change needed.
+  - claim: fig1c-wm-accuracy-load
+    agrees: true
+    outcome: reproduced
+    reason: t(45) = 4.91 (paper 4.89), p below 0.0001.
+    response: No change needed.
+  - claim: fig1d-wm-rt-load
+    agrees: true
+    outcome: partially_reproduced
+    reason: With RTs over 5 s set to missing, t(45) = -4.28 (paper -4.29), but perm p = 0.0003, which
+      misses the < 0.0001 bar; with all RTs, t = 0.20. With 10,000 permutations, p < 0.0001 is
+      reachable only when no permutation exceeds the observed t; at |t| of about 4.3 that happens
+      about a third of the time, so the grade between reproduced and partial depends on the seed
+      (problem 3, affects a conclusion).
+    response: Added the permutation p estimated with 2,000,000 permutations (6.0e-05, 95% upper bound
+      7.0e-05) and the 10,000-permutation p over 100 seeds (below 0.0001 in 63). As the p the test
+      estimates is below 0.0001, the outcome is changed to reproduced, with the larger number of
+      permutations recorded as a deviation.
+  - claim: fig1e-ltm-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: t(44) = 8.51 pooled and 7.34 averaged, both p below 0.0001.
+    response: No change needed.
+  - claim: ltm-rt-confidence
+    agrees: true
+    outcome: reproduced
+    reason: With RTs over 5 s missing, high 1.838 s and low 2.618 / 2.659 s, all within tolerance;
+      t = -11.37 / -11.22, p below 0.0001.
+    response: No change needed.
+  - claim: fig1f-ltm-load
+    agrees: true
+    outcome: reproduced
+    reason: t(45) = 2.65, p = 0.0097.
+    response: No change needed.
+  - claim: fig1g-ltm-probe
+    agrees: true
+    outcome: reproduced
+    reason: t(45) = 6.80, p below 0.0001.
+    response: No change needed.
+  - claim: category-neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: 102 hippocampal (104 +- 10.4) and 222 amygdala (220 +- 22).
+    response: No change needed.
+  - claim: fig2b-hippocampus-persistent
+    agrees: true
+    outcome: partially_reproduced
+    reason: O-G, all four readings; both effects positive at p < 0.01, but every reading has a beta
+      out of tolerance (intercept 20.2 to 25.4 against 17.86 +- 1.79).
+    response: No change needed.
+  - claim: fig2c-hippocampus-correct-load
+    agrees: false
+    outcome: blocked
+    reason: Reading (a), main effects, is partial (B1 acc 18.48, p = 0.0499 and l1 18.64, both out of
+      tolerance; B2 acc p = 0.060). Reading (b), with the interaction, is not reproduced (l1 = -14.2,
+      p = 0.56). The claims file blocks a claim whose readings disagree. Problem 2 (affects a
+      conclusion, in the claims file) is that in acc * l1 with 0/1 reference coding the acc and l1
+      terms are simple effects at the reference level (for example load in incorrect trials, where
+      only 59 rows have load 1), not the main effects the paper reports, and this reading alone turns
+      the claim into blocked.
+    response: Outcome changed to blocked (methods_underspecified), as the claims file's shared method
+      says, and the assumption dropped. Problem 2 is added to questions/001187.yaml for a reader; the
+      claim is unchanged. A variant with -0.5/+0.5 coding was added; its load main effect is not
+      significant either (2.96, p = 0.81 with B1), and the methods_unavailable finding now asks the
+      authors which model and coding were used.
+  - claim: fig2e-amygdala-persistent
+    agrees: false
+    outcome: blocked
+    reason: O-G. One row per trial reproduces (B1 10.50 / 6.88, B2 10.06 / 6.55, all within
+      tolerance). The code's rows are partial (13.06 / 5.62 and 11.26 / 5.61).
+    response: Outcome changed to blocked (methods_underspecified), as the claims file blocks a claim
+      whose readings disagree; the assumption of one row per trial is dropped and both results are in
+      the notes.
+  - claim: fig2f-amygdala-load-not-accuracy
+    agrees: false
+    outcome: blocked
+    reason: Accuracy is not significant in every reading (p >= 0.15). The load effect is reproduced
+      under (a) B1 (11.55, p = 2e-5), has its beta out of tolerance under (a) B2 (9.51), and is not
+      significant under (b) (p >= 0.70). Problem 2 applies to reading (b) here too.
+    response: Outcome changed to blocked (methods_underspecified) and the assumption dropped. The
+      question on reading (b) covers this claim. With -0.5/+0.5 coding the load main effect is 8.67
+      (p = 0.24) with B1, so B1 and B2 of reading (a) would still disagree.
+  - claim: fig3a-area-interactions
+    agrees: true
+    outcome: partially_reproduced
+    reason: O-G; all three area interactions are significant with the paper's signs, and the main
+      effects are not (p >= 0.24). All three betas are out of tolerance (70.57, 19.12, -32.52). The O-C
+      variant with the all-sure session, the code's own procedure, gives 59.96, 17.84 and -29.16, all
+      within tolerance. Problem 5 (does not affect a conclusion) is that fig3_select drops the
+      all-sure session (P69CS), where claims file S defines confidence sessions by NaN confidence,
+      which would keep it; the paper's text supports dropping it, and the variants that keep it give
+      the same outcomes.
+    response: No change needed. Dropping the session follows the Results (one patient excluded from
+      all confidence analyses), and the variants with it are shown.
+  - claim: fig3b-hippocampus-predicts-ltm
+    agrees: true
+    outcome: reproduced
+    reason: O-G under (a) and (b); LTMacc 67.37, conf3 21.25, interaction -30.69, all p <= 0.0045 and
+      within tolerance.
+    response: No change needed.
+  - claim: fig3b-amygdala-no-prediction
+    agrees: true
+    outcome: reproduced
+    reason: No effect has p < 0.05 under any reading or outlier rule.
+    response: No change needed.
+  - claim: fig3c-hippocampus-high-confidence
+    agrees: true
+    outcome: not_reproduced
+    reason: The high-confidence difference is not significant (normalized t(68) = 1.17, p = 0.255;
+      Hz t(70) = 1.79, p = 0.078; with the all-sure session p = 0.33 / 0.054). Only the low-confidence
+      absence holds, and the criterion has no partial grade for that case. Problem 4 (affects a
+      conclusion) is that the hippocampus keeps 69 and 71 neurons where the paper keeps 83, and only
+      80 have both conditions before any removal, so the row set probably differs from the paper's,
+      and the Hz p of 0.078 is close enough to 0.05 that this could change the outcome.
+    response: Added a table of the neurons lost at each step and of the rows per neuron and condition
+      (98 with a remembered and 82 with a forgotten row, 80 with both, median 5 forgotten rows, 13
+      neurons with one), and a diagnostic with incorrect WM trials too (80 neurons, p = 0.46 and
+      0.12). The claims file fixes the rows, and neither they nor the diagnostic reach 83 neurons,
+      so the outcome is kept; the notes say the paper's rows likely differ.
+  - claim: fig3d-amygdala-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: All p >= 0.30.
+    response: No change needed.
+  - claim: fig3e-early-delay-cluster
+    agrees: true
+    outcome: partially_reproduced
+    reason: The only significant clusters with remembered above forgotten lie at 0.875 to 1.05 s (p
+      0.0001 to 0.0196). Nothing significant falls in 0 to 650 ms; the closest is 0 to 0.125 s at p =
+      0.061. This meets the criterion's partial grade, but it does not support "early". Problem 6
+      (does not affect a conclusion) is that 200 ms windows centred at 0 take in 100 ms of the last
+      encoding picture.
+    response: Added the time-resolved t curves of the four readings at every 100 ms, and the notes
+      now say that the partial grade is met but the data do not support an early effect, and that
+      the windows near 0 s include part of the last encoding picture. Outcome kept.
+  - claim: fig3f-amygdala-no-cluster
+    agrees: true
+    outcome: reproduced
+    reason: Smallest cluster p is 0.40.
+    response: No change needed.
+  - claim: fig3g-nonpreferred-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Smallest non-intercept p is 0.067 (O-C) and 0.089 (O-G).
+    response: No change needed.
+  - claim: fig3h-encoding-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Smallest non-intercept p is 0.074.
+    response: No change needed.
+  - claim: ms-neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: 53 memory-selective, 26 familiarity-selective (25 +- 2.5).
+    response: No change needed.
+  - claim: fig4b-ms-confidence-auc
+    agrees: true
+    outcome: reproduced
+    reason: (a) 49 neurons, t = 3.87, p = 0.0005; (b) 40 neurons, t = 3.55, p = 0.0009. The paper has
+      41 neurons.
+    response: No change needed.
+  - claim: fig4c-overlap-chance
+    agrees: true
+    outcome: reproduced
+    reason: Overlap 19 (20 +- 2), p = 0.179 (paper 0.11), null mean 15.6. The paper states no
+      numeric chance level.
+    response: No change needed.
+  - claim: fig4d-category-no-memory-signal
+    agrees: true
+    outcome: blocked
+    reason: The archive's file names and the notebook confirm the stimulus images are in the files,
+      so only the category labels of the 200 new pictures are missing. With categories inferred from
+      ID blocks, no p < 0.05 (GLM smallest 0.079 with O-M; t-tests p >= 0.22). Problem 1 (affects a
+      conclusion) is that labelling the new images (IDs 1001 to 1200) by viewing them would test the
+      claim on real labels; the ID-block inference agrees with the preferred category in 58% of
+      neurons, against 60.5% for true labels on old pictures, and under it every reading reproduces
+      the claim.
+    response: The 600 new images of the three task variants were viewed; each variant's IDs form
+      blocks of 40 per category in the order of the old pictures' leading digits, with no exception.
+      The notebook now shows contact sheets of every new image with old pictures of each category,
+      and compares two sessions per variant (identical new images). With these labels every reading
+      gives no p < 0.05, so the outcome is changed to reproduced; the labelling is recorded as a
+      deviation, and the metadata_insufficient finding is kept.
+  - claim: fig4e-fs-strong-maintenance
+    agrees: true
+    outcome: not_reproduced
+    reason: Strong is below weak in all 16 GLM readings and all 8 t-test readings, and none has p <
+      0.05. Pair counts are close to the paper (197 pairs, 84 familiarity-selective).
+    response: Added the per-pair distribution of strong minus weak (median -0.044 Hz, 37 positive and
+      47 negative) and a variant with the median split over both loads pooled (strong below weak in
+      all 24 readings, p < 0.05 in five). Outcome kept.
+  - claim: fig4f-ns-no-effect
+    agrees: false
+    outcome: blocked
+    reason: No GLM reading reaches p < 0.05. One of 8 t-test readings does (answered old, without
+      self-pairs, Hz, t(81) = 2.04, p = 0.0395), so the absence holds under some readings and not
+      others. Problem 7 (does not affect a conclusion) is that with 24 uncorrected tests a single p of
+      0.0395 is about what chance predicts, though the claims file's rule still decides the outcome.
+    response: Outcome changed to blocked (methods_underspecified), as the claims file blocks a claim
+      whose readings disagree, and the assumption dropped. The notes give the number of tests.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with its conclusions and summary, the helper module, the
+    claims file and the attempt record, with the paper. The verifier agreed with all 29 outcomes; no outcome
+    rests on an assumption. It checked the text against the outputs and listed statements the numbers
+    do not support (fig3e, fig3f, fig4d, the README behaviour row, and record notes citing earlier O-M
+    runs), all corrected here. Of its round-1 points, 1, 3, 5, 6, 7 and 8 and the five items not checked
+    were resolved; points 2 (claims file, fig2c and fig2f), 4 (fig3c) and the shared clock remain without
+    changing an outcome.
+  results:
+  - claim: sessions-and-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: table-s1-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: behaviour-overall-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README row for behaviour says five claims, but it covers six (behaviour-overall-accuracy,
+      fig1c, fig1e, ltm-rt-confidence, fig1f and fig1g), so the table accounts for 28 of the 29 claims.
+    response: The README row now says six claims.
+  - claim: fig1c-wm-accuracy-load
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README row for behaviour says five claims, but it covers six (behaviour-overall-accuracy,
+      fig1c, fig1e, ltm-rt-confidence, fig1f and fig1g), so the table accounts for 28 of the 29 claims.
+    response: The README row now says six claims.
+  - claim: fig1d-wm-rt-load
+    agrees: true
+    outcome: reproduced
+    reason: Cell 26 gives t(45) = -4.28. With 2,000,000 sign flips, 119 exceed the observed t, so p =
+      5.95e-05 with a 95% upper bound of 7.02e-05; over 100 seeds of 10,000 permutations, 63 give p below
+      0.0001. Using more permutations than the claims file's 10,000 is recorded as a deviation and is
+      reasonable, as 10,000 permutations cannot tell whether p is below 0.0001.
+    response: No change needed.
+  - claim: fig1e-ltm-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README row for behaviour says five claims, but it covers six (behaviour-overall-accuracy,
+      fig1c, fig1e, ltm-rt-confidence, fig1f and fig1g), so the table accounts for 28 of the 29 claims.
+    response: The README row now says six claims.
+  - claim: ltm-rt-confidence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README row for behaviour says five claims, but it covers six (behaviour-overall-accuracy,
+      fig1c, fig1e, ltm-rt-confidence, fig1f and fig1g), so the table accounts for 28 of the 29 claims.
+    response: The README row now says six claims.
+  - claim: fig1f-ltm-load
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README row for behaviour says five claims, but it covers six (behaviour-overall-accuracy,
+      fig1c, fig1e, ltm-rt-confidence, fig1f and fig1g), so the table accounts for 28 of the 29 claims.
+    response: The README row now says six claims.
+  - claim: fig1g-ltm-probe
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README row for behaviour says five claims, but it covers six (behaviour-overall-accuracy,
+      fig1c, fig1e, ltm-rt-confidence, fig1f and fig1g), so the table accounts for 28 of the 29 claims.
+    response: The README row now says six claims.
+  - claim: category-neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. A minor remaining point on the shared clock is that four of the nine sessions credited
+      with a true-onset advantage have it by a single unit (cell 45), and three sessions, holding 10 units,
+      are assumed to share the clock without evidence; this affects few units and does not change an outcome.
+    response: No change needed; cell 46 already states both.
+  - claim: fig2b-hippocampus-persistent
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The note citing an earlier O-M run (17.29 and 7.79) cannot be checked, because this
+      notebook does not print it. The verifier''s round-1 reason (both effects positive at p < 0.01) is
+      its own error: the code''s rows with B2 give p = 0.014 for the preferred-category effect (cell 53).
+      The outcome is unaffected.'
+    response: Removed the O-M betas from the notes, which now say O-M is no longer run. The round-1 reason
+      is left as the verifier gave it.
+  - claim: fig2c-hippocampus-correct-load
+    agrees: true
+    outcome: blocked
+    reason: Matches the claims file's rule that a claim whose readings disagree is blocked; the grades
+      were re-checked against the criteria in cell 56. Remaining point 2 (claims file) is that reading
+      (b) uses 0/1 coding, so its terms are simple effects at the reference level, not main effects; it
+      still decides that the claim is blocked, has been passed to a reader, and the claims file is unchanged.
+    response: No change needed; the question to a reader stays in questions/001187.yaml.
+  - claim: fig2e-amygdala-persistent
+    agrees: true
+    outcome: blocked
+    reason: Matches the claims file's rule that a claim whose readings disagree is blocked; the grades
+      were re-checked against the criteria in cell 59.
+    response: No change needed.
+  - claim: fig2f-amygdala-load-not-accuracy
+    agrees: true
+    outcome: blocked
+    reason: 'Matches the claims file''s rule that a claim whose readings disagree is blocked; the grades
+      were re-checked against the criteria in cell 62. Remaining point 2 (claims file) applies here as
+      for fig2c: reading (b) uses 0/1 coding, so its terms are simple effects at the reference level;
+      it has been passed to a reader.'
+    response: No change needed; the question to a reader stays in questions/001187.yaml.
+  - claim: fig3a-area-interactions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3b-hippocampus-predicts-ltm
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The note citing an earlier O-M run (19.18, 43.57, -21.80) cannot be checked, because
+      this notebook does not print it.
+    response: Removed those numbers from the notes, which now say the O-M run is not shown in the notebook.
+  - claim: fig3b-amygdala-no-prediction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3c-hippocampus-high-confidence
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Remaining point 4: the cause is now diagnosed. Only 80 hippocampal neurons have both conditions
+      before any removal, against 83 in the paper''s test, and adding incorrect WM trials does not raise
+      that. The outcome rests on rows that probably differ from the paper''s; with the all-sure session
+      kept, the spikes-per-second p is 0.054, so it remains fragile.'
+    response: No change needed; the notes already give the 80 neurons and the p of 0.054 with the all-sure
+      session.
+  - claim: fig3d-amygdala-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3e-early-delay-cluster
+    agrees: true
+    outcome: partially_reproduced
+    reason: The text says the largest values in 0 to 650 ms are at onset (3.09 and 3.36 at 0 s), but cell
+      87 prints a 0 to 650 ms maximum of 3.47 for spikes per second, so the largest Hz value is not at
+      0 s. It also says t peaks at 2.87 to 3.60 around 0.9 to 1.0 s under every reading, but those values
+      come from the 100 ms grid only; cell 84 prints max |t| of 4.05 and 4.41 for the 200 ms readings.
+    response: Cell 87 now prints where the 0 to 650 ms maximum and the largest |t| over the delay lie.
+      The notes and cell 88 now give 3.09 at 0 s (normalized) and 3.47 at 0.025 s (spikes per second),
+      and the largest |t| over the delay at 0.925 to 1.025 s (4.05 and 4.41 with 200 ms windows, 3.43
+      and 3.60 with 50 ms bins).
+  - claim: fig3f-amygdala-no-cluster
+    agrees: true
+    outcome: reproduced
+    reason: The text says the smallest cluster p is 0.43, but cell 89 prints 0.3986 for the normalized
+      rate with 50 ms bins, so the smallest is 0.40. The outcome is unaffected.
+    response: Corrected to 0.40 in the notes and cell 90.
+  - claim: fig3g-nonpreferred-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3h-encoding-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The note citing an earlier O-M run (56.58, p = 0.048; 15.63, p = 0.027) cannot be
+      checked, because this notebook does not print it.
+    response: Removed those numbers from the notes, which now say the O-M run is not shown in the notebook.
+  - claim: ms-neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig4b-ms-confidence-auc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig4c-overlap-chance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig4d-category-no-memory-signal
+    agrees: true
+    outcome: reproduced
+    reason: In each task variant IDs 1001 to 1040 are faces, 1041 to 1080 animals, 1081 to 1120 cars (tools
+      in variant 2), 1121 to 1160 food or fruit and 1161 to 1200 landscapes, with no image outside its
+      block (cell 108); the block grouping gives 58.0% against 16.4% for ID modulo 5 (cell 109), and every
+      reading gives p >= 0.063 (cell 111). The labelling could also have been stated as an assumption
+      for the sessions that were not viewed. The text says two sessions of each variant hold identical
+      new images, but in variant 3 the second session has only 83 images, and only 2 of 34, 2 of 7 and
+      2 of 5 sessions per variant were compared, so that the other sessions show the same images is inferred.
+    response: Added to cell 108 a comparison of the new images of every session with those of the viewed
+      session of its variant; all 8809 new images over the 46 sessions are identical to the viewed ones,
+      and every new picture shown has its image, so no session rests on an inference. The notes, cell
+      107 and cell 112 now say this and no longer say that the second session of variant 3 holds 200 images.
+  - claim: fig4e-fs-strong-maintenance
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig4f-ns-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Matches the claims file's rule that a claim whose readings disagree is blocked; the grades
+      were re-checked against the criteria in cell 119.
+    response: No change needed.

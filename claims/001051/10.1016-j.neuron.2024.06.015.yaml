@@ -99,6 +99,19 @@ dataset:
   id: "001051"
 paper: doi:10.1016/j.neuron.2024.06.015
 claims:
+- id: link-code-tables
+  kind: link
+  statement: The 87 sessions the paper's code lists as passing ephys QC are sessions of the dandiset,
+    and for them the code's units table agrees with the dandiset's units (unit ids, counts per session,
+    quality metrics and receptive-field p values).
+  source: STAR Methods, Key resources table and Data and code availability; DynamicGating_ephys_metrics.ipynb
+    and metadata_tables/units_table.csv at commit 3c09a0dc
+  quote: Analysis code used in this paper is available here
+  criterion: Added by the author (protocol, Author, step 1.4). Sessions are matched by the NWB identifier
+    (the ecephys session id) and units by unit id. Reproduced when all 87 sessions are found, session
+    type, mouse and genotype agree, every session has the same unit count, and matched units agree on
+    max_drift, firing_rate and quality (no more than 1% differing per session) and on RF significance
+    at 0.01 as recomputed here; partially reproduced when some sessions fail, naming them.
 - id: fig3b-surgical-outcomes
   statement: Of 106 mice entering SHIELD surgery, 79 passed all quality checks, 14 passed after a flag
     that resolved and 13 failed, a final passing rate of 87.7%, on par with 90% (122 of 135) for the
@@ -217,6 +230,8 @@ claims:
     6-probe sessions are those whose such units come from exactly six probes; units counted are
     non-noise (quality good); areas counted are distinct structure_acronym values among all such
     units. Mean and SD across sessions. Tolerances are the paper's stated SD.
+  depends_on:
+  - link-code-tables
 - id: figs4ab-insertions-per-mouse
   statement: Across recording days each mouse received about 20 probe insertions (SD 4.1) into about
     10 implant holes (10.4, SD 2.3).
@@ -235,6 +250,8 @@ claims:
     the code; (b) all sessions of each mouse, as the S4A legend says "over all recording days". Under
     (a) the mean is at most 467 / 25 = 18.7. Holes per mouse need the implant hole of each insertion;
     no code. Tolerances are the paper's stated SD.
+  depends_on:
+  - link-code-tables
 - id: scale-mice-sessions-insertions
   statement: Stable recordings were made from 25 mice in 87 experiments with 467 probe insertions.
   source: Discussion, paragraph 2
@@ -251,6 +268,8 @@ claims:
     tolerance: 46.7
   criterion: Counted over the 87 QC-passing sessions of code cell 26 (code cell 34). The dandiset's
     description lists 99 sessions; the 12 others are reported.
+  depends_on:
+  - link-code-tables
 - id: penetration-success
   statement: On average 5.46 of the 6 intended probes per session were successfully inserted.
   source: STAR Methods, Neuropixels recordings, Probe insertion, paragraph 2
@@ -262,6 +281,8 @@ claims:
   criterion: Insertions with recorded units divided by sessions. The code's counts give 467 over 87
     (5.37); which insertions or sessions give 5.46 is not stated. Readings (a) over the 87 QC-passing
     sessions; (b) over all sessions in the dandiset.
+  depends_on:
+  - link-code-tables
 - id: fig4b-trajectory-consistency
   statement: Insertions along the same trajectory (same hole and probe orientation) enter the brain at
     similar CCF locations, with a median absolute deviation of 150 micrometres medial-lateral and 200
@@ -322,6 +343,8 @@ claims:
   criterion: The max_drift metric of all non-noise units (quality good) of the 87 QC-passing sessions
     (143,828 units) against VBN non-noise units (262,177), as in code cells 41 and 46; median of each.
     Tolerances are the paper's SEM. VBN units come from DANDI:000713 (reference 29).
+  depends_on:
+  - link-code-tables
 - id: fig4d-qc-metrics-comparable
   statement: The distributions of unit quality metrics (presence ratio, amplitude cutoff, ISI
     violations, SNR, isolation distance, drift, amplitude) are comparable for SHIELD and the 5-mm
@@ -335,6 +358,8 @@ claims:
     U test per metric (its printed output gives p = 1.4e-156 for presence ratio and 6.0e-18 for
     amplitude cutoff), comparable when not significant at 0.05; (b) each SHIELD median within 10% of
     the 5-mm window median. Both readings are run and every median and p value shown.
+  depends_on:
+  - link-code-tables
 - id: qc-pass-fraction-similar
   statement: The fraction of units passing the standard quality filter is very similar for SHIELD
     (41.1%) and the 5-mm window (40.7%).
@@ -354,6 +379,8 @@ claims:
   data: with_inputs
   criterion: Passing means isi_violations < 0.5, amplitude_cutoff < 0.1 and presence_ratio > 0.95
     (Methods), as a fraction of non-noise units (code cell 42).
+  depends_on:
+  - link-code-tables
 - id: fig4e-unit-yield-stable
   statement: About 300 units are recorded per probe on each day, and unit yield does not differ
     across the four recording days with SHIELD (p = 0.48).
@@ -373,6 +400,8 @@ claims:
     87 QC-passing sessions, as in code cells 48 and 49. A claim of absence, judged on the paper's
     Kruskal-Wallis test across the four days at p < 0.05; reproduced when not significant and each
     day's median is within tolerance. The insertion counts in the figure are 129, 126, 121, 91.
+  depends_on:
+  - link-code-tables
 - id: fig4e-vbn-yield-drops
   statement: With the 5-mm window, unit yield decreased on the second recording day (p = 6e-22).
   source: Results, High-quality multi-Neuropixels recordings, paragraph 6; Figure 4E
@@ -400,6 +429,8 @@ claims:
   criterion: Per session the median firing rate of non-noise units; Kruskal-Wallis across session
     types EPHYS_1 to EPHYS_4 (code cells 54 and 55). A claim of absence on that test; reproduced when
     p >= 0.05. The code's output and the figure give p = 0.26, the text 0.21; both are reported.
+  depends_on:
+  - link-code-tables
 - id: fig4ef-rf-fraction-stable
   statement: A consistent fraction of VISp units has significant spatial receptive fields on each of
     the four recording days (p = 0.38).
@@ -416,6 +447,8 @@ claims:
     Figure 4E code uses p < 0.05 (cell 58); shown as a variant. A claim of absence; reproduced when
     p >= 0.05 under the Methods threshold. Figure 4E prints p = 0.39 for this panel, the text 0.38;
     both are reported.
+  depends_on:
+  - link-code-tables
 - id: fig4f-rf-match-retinotopy
   statement: VISp receptive fields recorded through adjacent holes on successive days lie where the
     ISI-based retinotopic map predicts.
@@ -452,6 +485,8 @@ claims:
     Open. Readings take the paper's test for stability across days (Kruskal-Wallis, Figure 4E) on
     per-unit (a) mean baseline-subtracted response 0 to 250 ms and (b) time of peak response 0 to
     250 ms; reproduced when neither differs across days at p < 0.05.
+  depends_on:
+  - link-code-tables
 - id: behavior-stable-across-days
   statement: Task performance is stable across the four recording days despite repeated insertions
     (median rewards 59.5, 63.5, 56.5, 60.5; p = 0.96).
@@ -479,6 +514,8 @@ claims:
     Kruskal-Wallis across days; a claim of absence, reproduced when p >= 0.05. No code. Which rewards
     count is open. Readings (a) all rewards delivered; (b) rewards earned by hits, auto-rewards left
     out. Sessions are the 87 QC-passing ones; all sessions as a variant.
+  depends_on:
+  - link-code-tables
 - id: figs4i-insertion-suppression
   statement: Activity is transiently suppressed after probe insertion and recovers with a time
     constant of 25 to 30 minutes.
@@ -497,6 +534,8 @@ claims:
     rate divided by its mean, averaged across sessions, fitted with a - b exp(-t / tau); (b) the
     same with rates divided by the mean of the last 10 minutes. The 5-mm comparison (103 experiments)
     needs VBN data and is a variant.
+  depends_on:
+  - link-code-tables
 - id: figs4de-retraction-reduces-drift
   statement: Retracting probes 100 micrometres after insertion reduces unit drift (unit means 24.48
     against 30.25 micrometres; session means 24.23 against 30.56).
@@ -627,6 +666,8 @@ claims:
     median VISp frequency lies in 2.7 to 5.5 Hz, the median MOp frequency in 4.5 to 7.7 Hz (the
     ranges widened by 10% of each bound), and MOp is higher by the Wilcoxon rank-sum test (the
     Methods' default unpaired test) at p < 0.05.
+  depends_on:
+  - link-code-tables
 - id: fig7b-low-arousal
   statement: VISp and MOp alpha events occur when the mouse is immobile and the pupil constricted,
     with pupil diameter about 25% smaller than at random session times.
@@ -650,6 +691,8 @@ claims:
     without naming the area; readings (e) VISp events; (f) MOp events; (g) both pooled. Reproduced,
     for each of VISp and MOp, when pupil is smaller and running lower at events at p < 0.05 and the
     change is within tolerance under a reading.
+  depends_on:
+  - link-code-tables
 - id: fig7b-visp-offset-locked
   statement: VISp alpha events are often triggered by the offset of visual stimuli, while the timing
     of MOp events is not related to visual stimuli.
@@ -662,6 +705,8 @@ claims:
     (b) Kolmogorov-Smirnov against uniform on [0, 0.5) s. Reproduced when, under a reading, VISp
     differs from uniform at p < 0.05 with the largest bin in the first 250 ms after offset, and MOp
     does not differ at p < 0.05.
+  depends_on:
+  - link-code-tables
 - id: figs6-replay
   statement: Activity during post-stimulus VISp alpha events is weakly but significantly correlated
     with activity during the preceding stimulus (r = 0.77, p = 1.8e-6), as if events replay recent
@@ -689,6 +734,8 @@ claims:
     S6F inset, since a Pearson r of 0.77 gives p = 1.8e-6 at about 28 points (7 sessions of four), while a
     per-unit correlation over hundreds of units would give a far smaller p. The text prints the p
     value with a garbled minus sign (1.8e?6).
+  depends_on:
+  - link-code-tables
 - id: fig7cd-visp-coupling
   statement: During VISp events, VISp is tightly coupled to LP and VISl (sharp CCG peaks near zero lag
     and a 3 to 7 Hz coherence peak), but not to PO or SSp.
@@ -703,6 +750,8 @@ claims:
     same test). CCG part, the mean of event CCGs pooled across sessions; near zero is not defined;
     open. Readings (a) peak within 20 ms of zero lag; (b) within 50 ms. Reproduced when the CCG
     peaks of LP and VISl lie near zero and are higher than those of PO and SSp.
+  depends_on:
+  - link-code-tables
 - id: fig7cd-mop-coupling
   statement: During MOp events, MOp is coupled to PO and SSp but not to LP or VISl.
   source: Results, SHIELD recordings reveal multi-regional subnetworks, paragraph 6; Figures 7C and 7D
@@ -711,6 +760,8 @@ claims:
   criterion: As fig7cd-visp-coupling with MOp as reference. Reproduced when MOp-PO and MOp-SSp are
     significant with positive band coherence and MOp-LP and MOp-VISl are not, and the CCG peaks of
     PO and SSp lie near zero and are higher than those of LP and VISl.
+  depends_on:
+  - link-code-tables
 - id: fig7e-lags-straddle-zero
   statement: In the 3 to 7 Hz band, time lags between VISp or MOp and their associated regions
     straddle zero; neither consistently leads or follows.
@@ -727,6 +778,8 @@ claims:
     output gives p from 2.4e-49 to 0.010 for all seven pairs. Judged on that test at 0.05;
     reproduced for a pair when not significant. The median lag and the fraction of positive lags are
     reported for each pair.
+  depends_on:
+  - link-code-tables
 - id: fig7f-visp-network
   statement: Beyond visual cortex and thalamus, VISp alpha events enhance coherence of VISp with ACA,
     RSP and CP.
@@ -744,6 +797,8 @@ claims:
     values with at least 20 units, so ACA and RSP appear as ACAd, ACAv, RSPd, RSPv and so on; readings
     (a) any subdivision significant; (b) all recorded subdivisions significant. Reproduced when ACA,
     RSP, CP, LGd, LP and VISl are each significant with positive band coherence.
+  depends_on:
+  - link-code-tables
 - id: fig7f-mop-network
   statement: MOp alpha events enhance coherence of MOp with SSp, PO, MRN and the deep layers of the
     superior colliculus (SCiw).
@@ -760,6 +815,8 @@ claims:
   criterion: The header's pair test with MOp as reference. Reproduced when SSp, PO, MRN and SCiw are
     each significant with positive band coherence (SSp under the same subdivision readings as
     fig7f-visp-network).
+  depends_on:
+  - link-code-tables
 - id: fig7-hippocampus-not-engaged
   statement: Neither VISp nor MOp alpha events engage the hippocampus.
   source: Results, SHIELD recordings reveal multi-regional subnetworks, paragraph 4; Figures 7A and 7F
@@ -768,6 +825,8 @@ claims:
     engagement, Figure 7F) for every hippocampal formation region recorded (CA1, CA2, CA3, DG, SUB,
     ProS and the like, by the CCF tree in the code's ccf_structure_tree_2017.csv). Reproduced when
     none is significant with positive band coherence for either reference area.
+  depends_on:
+  - link-code-tables
 - id: fig8bc-cp-rf-location
   statement: CP units with significant spatial receptive fields lie mostly in the medial dorsal
     striatum, midway along the anterior-posterior extent of CP.
@@ -781,6 +840,8 @@ claims:
     unpaired test); reproduced when CP-RF units are more medial and more dorsal at p < 0.05. The
     anterior-posterior part is reported as the CP-RF median against the CP extent sampled; the paper
     notes the lateral and posterior striatum were not sampled.
+  depends_on:
+  - link-code-tables
 - id: fig8d-cp-rf-larger-response
   statement: CP units with receptive fields respond more strongly to the task's full-field images than
     CP units without receptive fields.
@@ -811,6 +872,8 @@ claims:
     CP-RF against CP-noRF units, Benjamini-Hochberg (Figure 8D legend). Units passing QC (Methods);
     the code's presence_ratio > 0.9 filter is a variant. Reproduced when significant bins occur
     within 250 ms after onset with CP-RF higher in all of them.
+  depends_on:
+  - link-code-tables
 - id: fig8d-response-latencies
   statement: CP-RF responses lag VISp by about 20 ms, and CP-noRF responses lag CP-RF by about another
     20 ms.
@@ -820,6 +883,7 @@ claims:
     lagged behind CP-RF units by an additional 20 ms
   depends_on:
   - fig8d-cp-rf-larger-response
+  - link-code-tables
   expected:
   - quantity: CP-RF latency minus VISp latency
     value: 20
@@ -853,6 +917,8 @@ claims:
     peak-to-trough range of the event-triggered mean over 0 to 1 s is larger for CP-RF; (b) the same
     on rates divided by each group's mean over -0.5 to 0 s. Reproduced when significant bins exist at
     the troughs of the VISp rate and the range is larger for CP-RF under a reading.
+  depends_on:
+  - link-code-tables
 - id: fig8f-cp-rf-higher-coherence
   statement: During VISp alpha events, CP-RF units are more coherent with VISp in the 3 to 7 Hz band
     than CP-noRF units (p = 3.8e-14, 439 events).
@@ -872,6 +938,8 @@ claims:
     group's population rate (10 ms bins, 4 s) with the VISp population rate minus the random-time
     coherence (readings R1 and R2), mean over 3 to 7 Hz; paired Wilcoxon signed-rank of CP-RF against
     CP-noRF over events. Reproduced when CP-RF is higher at p < 0.05.
+  depends_on:
+  - link-code-tables
 checks:
 - date: 2026-10-22
   kind: agent

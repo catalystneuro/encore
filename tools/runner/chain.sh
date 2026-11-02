@@ -122,10 +122,10 @@ run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct
     last_run=$id; st=$(wait_run "$id"); log "$role $st (run $id)"
     [ "$st" = success ] && return 0
     runlog=$(gh run view "$id" --log-failed 2>/dev/null || gh run view "$id" --log 2>/dev/null)
-    if echo "$runlog" | grep -qE "FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE"; then
+    if echo "$runlog" | grep -qE "FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE"; then
       # Put the branch back where the run started, and run the role, and the rest, on the verified account.
       reset_branch "$start" || { last_why="could not reset attempt/$d after the flag"; log "STOPPED: $last_why"; return 1; }
-      why=$(echo "$runlog" | grep -oE "(FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
+      why=$(echo "$runlog" | grep -oE "(FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
       if [ "${RUNNER_FALLBACK:-verified}" = none ]; then
         # The verified account is not to be used (out of budget, say): leave the dataset for later.
         last_why="$why; no fallback to the verified account"
