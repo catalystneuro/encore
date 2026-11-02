@@ -20,10 +20,18 @@ Where each parameter comes from:
   check). Two distances are run: "near", 8 to 14 pixels (2 to 4 um) outside the membrane centre
   line, just outside the 6-pixel trace; and "far", 30 to 36 pixels (8 to 10 um) outside it, where
   the glow has mostly decayed (a "cell-free region", as the paper's Ca2+ method words it,
-  Methods 2.4). The claims file also asks for the unsubtracted reading ("none").
+  Methods 2.4). The claims file also asks for the unsubtracted reading ("none"). For the
+  verifier's round 1, a sweep of 6-pixel bands from 8 to 44 pixels out (SWEEP_BANDS) shows how
+  the results move with the distance, and a "local" variant subtracts at each pole its own ROI
+  (and, for whole profiles, the background at the same angle, averaged over +-10 degrees) in
+  place of the mean of the two pole ROIs.
 - Charging time constant: tau = 44.5 ns per um of radius, the linear fit through the origin of
   reference [20], Fig. 5C ("yielding the slope coefficient of 44.5 ns/um"), which the paper
   says it used (Methods 2.3).
+- Volts to V/cm (VOLT_TO_VCM): see the comment there. VOLT_TO_VCM_PROP is the alternative reading,
+  field proportional to the volts (the paper: current "scaling linearly with voltage", Methods
+  2.2), scaled so that 250, 300 and 350 V give the paper's 1000, 1200 and 1400 V/cm (4 V/cm per V),
+  the three steps where the in-order matching is already proportional.
 - Pixel size 16 um / 60 = 0.267 um: an assumption. The paper names the iXon Ultra 897 camera
   (512 x 512 pixels of 16 um, the frame size of the files) and a 60x objective; the files give no
   pixel size. The radius it yields is compared with the paper's 8 um average in the notebook.
@@ -62,6 +70,8 @@ TRACE_WIDTH = 6                   # pixels, Methods 2.3
 N_POINTS = 360                    # Methods 2.3
 POLE_HALF_WIDTH = 5               # degrees, Methods 2.3
 BG_OFFSETS = {"near": (8, 14), "far": (30, 36)}   # pixels outside the membrane line (see above)
+SWEEP_BANDS = [(8, 14), (14, 20), (20, 26), (26, 32), (32, 38), (38, 44)]   # sweep of the distance
+SWEEP = {f"d{a}-{b}": (a, b) for a, b in SWEEP_BANDS}
 BACKGROUNDS = ("far", "near", "none")
 BG_HALF_WIDTH = 10                # degrees, ref [20] "about 20 degrees wide"
 UM_PER_PIXEL = 16.0 / 60.0        # assumption, see above
@@ -73,6 +83,8 @@ T_IMAGE_NS = 900.0                # Methods 2.3, 1-us pulses
 # only and the paper V/cm only; the two series have nine steps each and are matched in order.
 VOLT_TO_VCM = {25: 43, 50: 150, 70: 230, 100: 360, 150: 570, 200: 780, 250: 1000,
                300: 1200, 350: 1400}
+VOLT_TO_VCM_PROP = {v: 4 * v for v in VOLT_TO_VCM}     # alternative reading, field proportional to volts
+CROP = 72                         # half-size of the baseline crop kept for the outline overlays
 
 
 def list_assets() -> list[dict]:
@@ -106,6 +118,25 @@ def open_asset(asset_id: str) -> h5py.File:
     return h5py.File(remfile.File(s3), "r")
 
 
+def nwb_tree(asset_id: str) -> list[str]:
+    """Every group and dataset of one file, with shapes, dtypes and attributes (array data not
+    read), to show which metadata the files hold."""
+    out = []
+    with open_asset(asset_id) as f:
+        def visit(name, obj):
+            kind = "dataset" if isinstance(obj, h5py.Dataset) else "group"
+            extra = f" shape={obj.shape} dtype={obj.dtype}" if kind == "dataset" else ""
+            if kind == "dataset" and obj.size <= 4 and obj.dtype.kind in "OSUif":
+                v = obj[()]
+                extra += f" value={v.decode() if isinstance(v, bytes) else v!r}"[:300]
+            attrs = {k: (v.decode() if isinstance(v, bytes) else v) for k, v in obj.attrs.items()
+                     if k not in ("namespace", "object_id")}
+            out.append(f"{kind:7s} /{name}{extra} {attrs if attrs else ''}"[:400])
+        f.visititems(lambda n, o: None if n.startswith("specifications") else visit(n, o))
+        out.insert(0, f"root attrs {dict((k, v) for k, v in f.attrs.items() if k != 'object_id')}")
+    return out
+
+
 def dark_frames(data: np.ndarray) -> np.ndarray:
     """Boolean mask of frames without a laser flash (see module docstring)."""
     means = data.reshape(len(data), -1).mean(1)
@@ -113,13 +144,14 @@ def dark_frames(data: np.ndarray) -> np.ndarray:
     return means < floor + 0.5 * (np.median(means) - floor)
 
 
-def find_cell(img: np.ndarray, search: int = 60) -> tuple[float, float, float]:
+def find_cell(img: np.ndarray, search: int = 60, centre=None, radii=None) -> tuple[float, float, float]:
     """Centre (row, col) and radius (pixels) of the cell nearest the image centre: the circle,
-    centred within +-search pixels of the image centre, whose ring is brightest relative to
-    the ring 4 pixels outside it (the membrane is the bright outline of a stained cell)."""
+    centred within +-search pixels of the image centre (or of a given centre), whose ring is
+    brightest relative to the ring 4 pixels outside it (the membrane is the bright outline of a
+    stained cell). radii limits the radii tried (default 20 to 55 pixels)."""
     sm = ndimage.gaussian_filter(img, 1.5)
     phi = np.linspace(0, 2 * np.pi, 90, endpoint=False)
-    radii = np.arange(20, 56)
+    radii = np.arange(20, 56) if radii is None else np.asarray(radii)
 
     sin, cos = np.sin(phi)[None], np.cos(phi)[None]
 
@@ -133,8 +165,9 @@ def find_cell(img: np.ndarray, search: int = 60) -> tuple[float, float, float]:
         k = int(v.argmax())
         return v[k], radii[k]
 
-    c0 = np.array(img.shape) / 2
-    grid = [(c0[0] + dy, c0[1] + dx) for dy in range(-search, search + 1, 4) for dx in range(-search, search + 1, 4)]
+    c0 = np.array(img.shape) / 2 if centre is None else np.asarray(centre, float)
+    step = 4 if search > 12 else 2
+    grid = [(c0[0] + dy, c0[1] + dx) for dy in range(-search, search + 1, step) for dx in range(-search, search + 1, step)]
     res = [(score(cy, cx), cy, cx) for cy, cx in grid]
     (v, rr), cy, cx = max(res, key=lambda t: t[0][0])
     fine = [(score(cy + dy, cx + dx), cy + dy, cx + dx) for dy in range(-3, 4) for dx in range(-3, 4)]
@@ -176,8 +209,12 @@ def radius_um(r: np.ndarray) -> dict:
     return dict(perimeter=per / (2 * np.pi) * UM_PER_PIXEL, area=np.sqrt(area / np.pi) * UM_PER_PIXEL)
 
 
-def extract_set(asset_id: str) -> dict:
+def extract_set(asset_id: str, hint: tuple[float, float, float] | None = None) -> dict:
     """Stream one set and reduce it to per-frame traces.
+
+    hint (centre row, centre col, radius in pixels) restricts the search for the cell to within 8
+    pixels of that centre and 4 pixels of that radius; it is used to re-trace a set whose outline
+    jumped to a structure inside the cell (see the notebook's loading cell).
 
     Returns per-frame trace intensities (100 x 360, the 6-pixel band averaged across its width,
     1-degree polar angles in image coordinates, 0 = image right, counter-clockwise), per-frame
@@ -191,23 +228,31 @@ def extract_set(asset_id: str) -> dict:
     data = data.astype(np.float32)
     dark = dark_frames(data)
     base = data[:N_BASE][~dark[:N_BASE]].mean(0)
-    cy, cx, r0 = find_cell(base)
+    if hint is None:
+        cy, cx, r0 = find_cell(base)
+    else:
+        cy, cx, r0 = find_cell(base, search=8, centre=hint[:2], radii=np.arange(int(hint[2]) - 4, int(hint[2]) + 5))
     cy, cx, r = membrane_line(base, cy, cx, r0)
     ang = np.deg2rad(np.arange(N_POINTS))
     offs = np.arange(TRACE_WIDTH) - (TRACE_WIDTH - 1) / 2
     ys = (cy - (r[:, None] + offs) * np.sin(ang)[:, None]).ravel()
     xs = (cx + (r[:, None] + offs) * np.cos(ang)[:, None]).ravel()
     trace = np.empty((len(data), N_POINTS), np.float32)
-    bgprof = {k: np.empty((len(data), N_POINTS), np.float32) for k in BG_OFFSETS}
+    bands = {**BG_OFFSETS, **SWEEP}
+    bgprof = {k: np.empty((len(data), N_POINTS), np.float32) for k in bands}
     for i, fr in enumerate(data):
         trace[i] = ndimage.map_coordinates(fr, [ys, xs], order=1).reshape(N_POINTS, TRACE_WIDTH).mean(1)
-        for k, (o1, o2) in BG_OFFSETS.items():
+        for k, (o1, o2) in bands.items():
             bo = np.arange(o1, o2)
             by = (cy - (r[:, None] + bo) * np.sin(ang)[:, None]).ravel()
             bx = (cx + (r[:, None] + bo) * np.cos(ang)[:, None]).ravel()
             bgprof[k][i] = ndimage.map_coordinates(fr, [by, bx], order=1).reshape(N_POINTS, len(bo)).mean(1)
-    radial = radial_profile(data[:N_BASE][~dark[:N_BASE]].mean(0), cy, cx, r)
+    base = data[:N_BASE][~dark[:N_BASE]].mean(0)
+    radial = radial_profile(base, cy, cx, r)
+    y0, x0 = int(round(cy)) - CROP, int(round(cx)) - CROP
+    crop = np.pad(base, CROP)[y0 + CROP:y0 + 3 * CROP, x0 + CROP:x0 + 3 * CROP]
     return dict(asset_id=asset_id, trace=trace, bgprof=bgprof, dark=dark, cy=cy, cx=cx, r=r, radial=radial,
+                crop=crop, crop_origin=(y0, x0),
                 frame_mean=data.reshape(len(data), -1).mean(1), floor=float(np.percentile(data[::10], 1)),
                 n_frames=len(data), shape=data.shape[1:], rate=rate, sha1=digest,
                 **{f"radius_{k}": v for k, v in radius_um(r).items()})
@@ -241,14 +286,22 @@ def radial_profile(img, cy, cx, r):
 
 
 def _bg(s: dict, axis: float | None, which: str) -> np.ndarray:
-    """Per-frame background: mean of the two ROIs outside the cell, +-10 degrees about each pole."""
+    """Background per frame and perimeter angle (frames x 360). For "near", "far" or a sweep band:
+    the mean of the two ROIs outside the cell, +-10 degrees about each pole, the same at every
+    angle. With the suffix "_local" (e.g. "far_local"): at each angle the band outside the cell
+    averaged over +-10 degrees about that angle, so each pole has its own background."""
     if which == "none":
-        return np.zeros(s["n_frames"])
+        return np.zeros((s["n_frames"], N_POINTS))
+    if which.endswith("_local"):
+        return ndimage.uniform_filter1d(s["bgprof"][which[:-6]].astype(float), 2 * BG_HALF_WIDTH + 1,
+                                        axis=1, mode="wrap")
     th = np.arange(N_POINTS)
     if axis is None:
-        return s["bgprof"][which].mean(1)
-    m = arc(th, axis, BG_HALF_WIDTH) | arc(th, axis + 180, BG_HALF_WIDTH)
-    return s["bgprof"][which][:, m].mean(1)
+        b = s["bgprof"][which].mean(1)
+    else:
+        m = arc(th, axis, BG_HALF_WIDTH) | arc(th, axis + 180, BG_HALF_WIDTH)
+        b = s["bgprof"][which][:, m].mean(1)
+    return np.repeat(b[:, None], N_POINTS, axis=1)
 
 
 def rotate(profile: np.ndarray, axis: float) -> np.ndarray:
@@ -274,7 +327,7 @@ def collapsed_df(s: dict, axis: float | None, background: str = "far", keep_dark
     if pulse_frames is not None:
         allp = np.arange(N_BASE, N_BASE + N_PULSE)[pulse_frames]
         p = np.intersect1d(p, allp)
-    tr = s["trace"].astype(float) - _bg(s, axis, background)[:, None]
+    tr = s["trace"].astype(float) - _bg(s, axis, background)
     F0 = tr[b].mean(0)
     F = tr[p].mean(0)
     df = 100 * (F - F0) / F0
@@ -293,7 +346,7 @@ def per_image_pole_df(s: dict, axis: float, background: str = "far", keep_dark: 
     degree arc at each pole in each image, F0 its mean over the baseline images. Returns two
     arrays of 100 values (NaN for dark frames unless kept) for the cathodic and anodic poles."""
     th = np.arange(N_POINTS)
-    tr = s["trace"].astype(float) - _bg(s, axis, background)[:, None]
+    tr = s["trace"].astype(float) - _bg(s, axis, background)
     out = []
     for c in (axis, axis + 180):
         F = tr[:, arc(th, c, POLE_HALF_WIDTH)].mean(1)
