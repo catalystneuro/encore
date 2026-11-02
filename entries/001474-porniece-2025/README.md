@@ -18,7 +18,7 @@ recordings of the same mice (Fig. 3).
 | Supp. Fig. 1c, d, licking declines in both diets | Blocked: methods underspecified |
 | Supp. Fig. 1e, HFD locomotion negligible and falling | Reproduced |
 | Fig. 2b, meal size 70.1 against 52.9 trials | Reproduced |
-| Fig. 2c, delta Z-score per recording | Reproduced |
+| Fig. 2c, delta Z-score per recording | Reproduced (assumption) |
 | Fig. 2d, delta Z-score per mouse | Reproduced |
 | Fig. 2e, NCD lick more; onsets of decline at about 50 and 20 trials | Partially reproduced |
 | Fig. 2f-j, initial lick rates by meal size | Reproduced |
@@ -54,8 +54,9 @@ are computed here from the deposited raw trace; the depositors' own Z-score is s
 and under it the Fig. 1k mixed model reproduces. The dataset lacks one of the seven cohort-2 HFD
 mice, holds four files twice, and in 32 files has a Z-score that does not match its own raw trace. In
 those 32 files and the 26 without a Z-score, the trial starts in the raw trace are taken from the
-other files; a check on the tone-evoked response supports them, and without these 58 recordings
-every outcome is the same except Fig. 2c, which would be partially reproduced.
+other files. A check on the tone-evoked response supports them as a group; it cannot place 9 of
+them, which show no tone response. Without these 58 recordings every outcome is the same except
+Fig. 2c, which would be partially reproduced, so its outcome is marked as assumed.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001474-porniece-2025-01.yaml`](../../attempts/001474-porniece-2025-01.yaml).
 
