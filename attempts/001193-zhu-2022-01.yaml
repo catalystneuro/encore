@@ -1,0 +1,815 @@
+schema_version: 2
+id: 001193-zhu-2022-01
+dataset:
+  archive: dandi
+  id: "001193"
+  version: 0.240921.1006
+  doi: 10.48324/dandi.001193/0.240921.1006
+paper: doi:10.1038/s41562-022-01334-6
+date: 2026-11-01
+entry: 001193-zhu-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41284865063
+outcomes:
+- claim: participants
+  outcome: partially_reproduced
+  notebook: reproduce_zhu_2022.ipynb
+  output: claim:participants
+  notes: The dataset holds 10 distinct subjects (TC5, TC6, TC7, TC9, TC12, TC16 to TC20), each
+    with 256 electrodes in two groups of 128, so the counts of participants (10) and electrodes per
+    participant (256) match. The sex field is U (unknown) in every file, so the numbers of male and
+    female participants (4 and 6 expected) are not determinable from the subjects; 4 and 6 appear
+    only in the free-text subject description "chinese, 4 males and 6 females", copied into every
+    file, which cannot be checked per subject. Ages are given only as the group range P19Y/P50Y,
+    which matches the paper's 19 to 50 years but not the per-participant ages of Supplementary
+    Table 1. No file says which task a participant did, so the 5 COM and 5 NL participants cannot
+    be counted; the two recording periods (TC5 to TC12 in 2019-03 to 2019-05, TC16 to TC20 in
+    2019-11) split the subjects 5 and 5, but nothing ties them to the task groups, and they are not
+    used as such. No `measured` is given, as four of the six expected values cannot be measured.
+    The criterion's partial outcome is "a subset of the participants with matching metadata"; here
+    all participants are present but most of their metadata is missing, which the criterion does not
+    describe literally, and partially_reproduced is taken as its nearest reading.
+- claim: task-structure
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold no trials table, intervals, events or photodiode signal, and no condition
+    labels, so neither the trials per condition nor the word timing can be read. The stimulus,
+    analysis and processing groups are empty in all 40 files. Each participant has four files named
+    block 1 to 4, which matches the four blocks of the Methods. The supplement's lists, read for
+    stimuli-word-frequency, hold 32 sentences each in CORR, SYN-P, SYN-C and SEM, with 6, 7, 6 and 6
+    words per sentence, which matches three of the expected values (32 sentences, 6 words, 7 words in
+    SYN-P; COM has no list there); the criterion still needs the trial counts and word timing per
+    participant, so the claim stays blocked.
+- claim: behaviour-response-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No button responses, response times or question onsets are in the dataset.
+- claim: fig1b-high-gamma-best-band
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the high-gamma activity (series description "High gamma data"),
+    no broadband signal and no other band, and no condition labels or resting-state periods to
+    classify.
+- claim: fig1c-responsive-in-ifg
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The rest against stimulus test needs the fixation and word periods, and the IFG count
+    needs anatomical labels; there are no event times, every electrode location is "unknown" and
+    there are no coordinates.
+- claim: fig1d-only-after-keyword
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs first-word and keyword onsets and condition labels, none of which is in the
+    dataset; also depends on fig2b-violation-electrodes, blocked.
+- claim: fig2b-violation-electrodes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs keyword onsets and condition labels (CORR, SYN-P, SYN-C, SEM) for the test of V,
+    the rest and stimulus periods for E, and pars opercularis and pars triangularis labels; the
+    dataset holds none of these.
+- claim: fig2b-single-type
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-violation-electrodes, blocked; the F values also need condition labels.
+- claim: suppfig6a-half-split
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs condition labels, keyword onsets and which sentence each trial showed, none of
+    which is in the dataset.
+- claim: suppfig6b-duration-metric
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs condition labels and keyword onsets, which are not in the dataset.
+- claim: fig2c-euclidean-similarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-violation-electrodes, blocked; the condition time courses need condition
+    labels and keyword onsets.
+- claim: suppfig7a-com-overlap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No COM labels, no record of which participants did COM, and no event times.
+- claim: suppfig7b-not-nonlinguistic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No NL-CORR or NL-VIO labels, no record of which participants did NL, and no event times;
+    also depends on fig2b-violation-electrodes, blocked.
+- claim: fig2de-no-spatial-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No MNI coordinates or electrode positions of any kind in the electrode table (columns
+    location, group, group_name, filtering; location "unknown"); also depends on
+    fig2b-violation-electrodes, blocked.
+- claim: suppfig8b-individual-no-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No native or MNI coordinates; depends on fig2b-violation-electrodes, blocked.
+- claim: fig2f-circuit-diameter
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-single-type, blocked for missing event times and condition labels.
+- claim: suppfig9-predict-from-corr
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The features come from CORR responses aligned to keyword onset, and the labels from
+    fig2b-single-type; neither condition labels nor onsets are in the dataset.
+- claim: fig3-latency-values
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Latencies need keyword-locked responses per condition; there are no keyword onsets or
+    condition labels, and no precentral, pars opercularis or pars triangularis labels for E+.
+- claim: fig3d-latency-differences
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3-latency-values, blocked.
+- claim: fig3-sync-latency-variability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3-latency-values, blocked.
+- claim: fig3e-latency-not-location
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No electrode coordinates or anatomical labels; depends on fig3-latency-values, blocked.
+- claim: suppfig10a-separable-400-700
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Classifying conditions after the keyword needs condition labels and keyword onsets, which
+    are not in the dataset.
+- claim: suppfig10b-duration-differs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-violation-electrodes, blocked.
+- claim: nl-low-frequency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 4 to 10 Hz amplitude, which the dataset (high gamma only) does not hold, and NL
+    labels and onsets, which it also lacks.
+- claim: stimuli-word-frequency
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_zhu_2022.ipynb
+  output: claim:stimuli-word-frequency
+  measured: [31.568, 29.955]
+  deviations:
+  - The site the Methods name (lingua.mtsu.edu/chinese-computing) has no word frequency list as such
+    (its Modern Chinese list counts single characters); its word-level counts are bigram counts of two
+    sub-corpora, news and general fiction. As the Methods say "All the keywords were of two
+    characters", the bigram counts are used, read one keyword at a time from the site's bigram search.
+  - Assumed reading of the corpus. The paper does not say which sub-corpus it used or what "per
+    million" divides by. The counts of the two sub-corpora are pooled and divided by their total
+    bigrams (12,470,872 and 15,807,413, Table 6 of Da 2004, the report the site cites). Basis - the
+    t statistic does not depend on the total divided by, so it identifies the sub-corpus whatever the
+    total; the pooled counts give t(62) = 0.113 against the paper's 0.11, where news alone gives
+    -0.356 and fiction alone 1.126. The paper's two means and two s.d. are all the same multiple
+    (1.0099, the four ratios within 1.0001 of each other) of the pooled values, as the same counts
+    over a slightly different total would be. Further, the paper names the site and not a
+    sub-corpus, the site's search returns both sub-corpora together, and a bigram's frequency is a
+    count of bigrams. The notebook shows all six combinations of sub-corpus (news, fiction, both) and
+    total (bigrams, characters); only this one also meets the criterion's tolerances.
+  - The site's counts have no version, DOI or commit; the notebook reads them as served on the day it
+    runs and prints them. The supplement is fetched from the publisher and checked by SHA-256 against
+    the copy the claims file was written from.
+  - Student's two-sample t-test, as the paper's t(62) with 32 and 32 keywords implies; a keyword
+    occurring twice in a list (电脑 in CORR, 干净 in SYN-C) is counted twice for the same reason, and
+    the one keyword absent from the news sub-corpus (甘香) is counted as 0 there. Each of these is
+    also shown as a variant.
+  notes: With the news and fiction sub-corpora pooled, per million bigrams, the CORR keywords (word 4
+    of the 32 CORR sentences) have a mean of 31.568 per million (s.d. 34.80) and the SYN-C keywords
+    29.955 (s.d. 72.86), within 31.88 +- 3.188 and 30.25 +- 3.025, and t(62) = 0.113, p = 0.910
+    (paper t(62) = 0.11, P = 0.91). The paper's two means and two s.d. are each 1.010 times these,
+    as if the same counts were divided by about 28.0 million where the sub-corpora hold 28.3 million
+    bigrams. The other five readings fail the tolerance on at least one mean (news per million
+    bigrams 25.76 and 34.89; fiction 36.15 and 26.06; pooled per million characters 27.54 and
+    26.14), and all six give p > 0.05 (0.264 to 0.910), so the frequencies are matched under every
+    reading. Counting each keyword once, dropping 甘香, or Welch's test leave the pooled result
+    within tolerance (p 0.910 to 0.964). The Methods say the SYN-P and SEM keywords are the CORR
+    ones, but in sentences 3 and 11 they differ (孩子 and 衣服 for 小孩 and 上衣); with them the pooled
+    CORR mean is 47.35 (p = 0.379), so the paper's values are those of the CORR list. The claim uses
+    no data of the dataset. Open for the paper's authors (finding methods_unavailable) - which
+    sub-corpus and which total the frequencies divide by; the Methods give only the site's address.
+    The criterion names "the Modern Chinese word frequency list", which the site does not have; this
+    is asked of a reader in questions/001193.yaml, and the claim is tested as the file has it, on the
+    site's bigram counts.
+inputs:
+- what: The sentence lists of the paper's Supplementary Information (pages 14 to 17, CORR, SYN-P,
+    SYN-C and SEM), fetched from the publisher by the notebook and checked by SHA-256 against the copy
+    the claims file was written from; used for the keywords of stimuli-word-frequency.
+  source: doi:10.1038/s41562-022-01334-6
+- what: Raw bigram counts of the news and general fiction sub-corpora from Jun Da's Chinese text
+    computing site, the corpus the Methods name, read per keyword from its bigram search
+    (https://lingua.mtsu.edu/chinese-computing/statistics/bigram/search.php) on the day the notebook
+    runs (2026-11-02 for this record, the counts unchanged from 2026-11-01), and the sub-corpus sizes of Table 6 of Da (2004), A
+    corpus-based study of character and bigram frequencies in Chinese e-texts, read from
+    https://lingua.mtsu.edu/academic/dajun-4thtech.pdf. The site has no version, DOI or commit.
+  source: https://lingua.mtsu.edu/chinese-computing/ (unversioned; page last updated 2010-09-16)
+findings:
+- kind: paper_inconsistency
+  statement: The Methods say the keywords of SYN-P and SEM are the same as those of CORR, but in the
+    supplement's lists sentences 3 and 11 of SYN-P and SEM have 孩子 and 衣服 where CORR has 小孩 and
+    上衣. The frequencies the Methods report (CORR mean 31.88 per million) match the CORR keywords;
+    with the SYN-P keywords the mean is 47.35 per million.
+- kind: data_missing
+  statement: No file holds trial, word or keyword event times, condition labels (CORR, SYN-P,
+    SYN-C, SEM, COM, NL-CORR, NL-VIO), button responses or the photodiode signal the Methods
+    describe. The stimulus, analysis and processing groups are empty and there is no trials table
+    or intervals, so no analysis of the paper can be repeated, although the description says the
+    dataset supports the paper's findings.
+- kind: data_missing
+  statement: The electrode table has no coordinates (MNI or native) and no anatomical labels; every
+    electrode's location is "unknown", and the two electrode groups (Grid_1 and Grid_2, location
+    "unknown") do not say which covers the IFG and which the MFG or STG. The paper's selection of
+    IFG electrodes and its spatial analyses need these.
+- kind: data_missing
+  statement: Only the high-gamma activity is deposited. The broadband signal, or any other band,
+    which the frequency analyses of Figure 1b and Supplementary Figures 3, 4 and 7c use, is not in
+    the dataset.
+- kind: metadata_insufficient
+  statement: Every subject has sex U and age P19Y/P50Y (the range of the whole group), with the
+    sentence "chinese, 4 males and 6 females" as the subject description in every file.
+    Supplementary Table 1 gives each participant's sex, age and grid coverage, but nothing maps the
+    subject ids TC5 to TC20 to its participants 1 to 10, and nothing says which participants did the
+    COM task and which the NL task.
+- kind: metadata_error
+  statement: The ECoG series is stated in volts, but every channel of every file has mean 0 (within
+    3e-6) and standard deviation 1 (within 1e-4); the values are z scores per channel and per block,
+    as the Methods describe for the HGA.
+- kind: metadata_error
+  statement: The series' rate is stated as 400 Hz. At 400 Hz every block lasts 70 to 95 s, less
+    than 3 s per trial for the at least 32 linguistic trials a block holds, while each trial lasts
+    at least 4.3 s before the question; at 100 Hz, the rate the Methods give for the HGA, blocks
+    last 282 to 381 s. The data are consistent with 100 Hz, not 400 Hz (400 Hz is the Methods' rate
+    before the HGA was taken), unless each file holds under half of its block. A weak spectral check
+    leans the same way (power at the 2 Hz word rate above its flanking band in 34 of 40 files under
+    the 100 Hz reading, 19 of 40 under the 400 Hz reading). Without event times this cannot be
+    shown directly.
+- kind: methods_unavailable
+  statement: The Methods give the keyword frequencies with the address of Jun Da's Chinese text
+    computing site only. The site has no word frequency list, and its bigram counts come from two
+    sub-corpora (news and general fiction). Which sub-corpus, or both, and which total (bigrams or
+    characters) did the frequencies per million use? The attempt assumes both sub-corpora pooled, per
+    million bigrams, the one reading whose t statistic (0.113) matches the paper's 0.11.
+- kind: metadata_insufficient
+  statement: The Methods exclude bad channels and bad time intervals, but all 256 channels are
+    present in every file and nothing marks which channels or intervals were excluded (filtering
+    is "none" for every electrode); as each file is z scored on its own, bad channels cannot be told
+    apart by scale.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module ifg_hga.py and the claims file, with the paper. The verifier queried the DANDI API at
+    0.240921.1006 and tested the helpers on synthetic inputs. Its problems 4 to 6 (ages checked only against
+    the group range, the z-scoring and the 100 Hz rate, the helpers on synthetic inputs) found no error;
+    in reply to problem 5 the notebook now says an analysis would take the files at 100 Hz and that no
+    claim here uses time.
+  results:
+  - claim: participants
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 15 finds 10 distinct subjects, and every file has 256 electrodes in two groups of 128;
+      both match the expected values exactly. Sex is U and age is the group range P19Y/P50Y in every file,
+      and no task labels exist, so the 4/6 sex split and the 5 COM / 5 NL split cannot be counted per
+      subject. The free-text "4 males and 6 females" is the depositor's statement, not a count.
+    response: No change to the outcome. In reply to problem 3, cell 15 now reports the numbers of male
+      and female participants as not determinable (sex U for 10 of 10 subjects) instead of 0 found, and
+      the conclusion and the record say so. In reply to the last point it could not check, the conclusion
+      and the notes say the 5/5 split by recording period is not evidence of the task groups and is not
+      used to count them.
+  - claim: task-structure
+    agrees: true
+    outcome: blocked
+    reason: No trials table and empty stimulus/intervals (cell 6). The archive agrees. From its own query
+      of the archive (40 assets, asset metadata with sex Unknown, age P19Y/P50Y, no relatedResource, and
+      a fixed 242,424 bytes beyond the data in the largest and smallest files), no part of any data_missing
+      claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: behaviour-response-time
+    agrees: true
+    outcome: blocked
+    reason: No responses or question onsets (cell 6). From its own query of the archive (40 assets, asset
+      metadata with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the
+      data in the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig1b-high-gamma-best-band
+    agrees: true
+    outcome: blocked
+    reason: Only one HGA series and no broadband signal (cells 3 and 6, dandiset description). From its
+      own query of the archive (40 assets, asset metadata with sex Unknown, age P19Y/P50Y, no relatedResource,
+      and a fixed 242,424 bytes beyond the data in the largest and smallest files), no part of any data_missing
+      claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig1c-responsive-in-ifg
+    agrees: true
+    outcome: blocked
+    reason: No events. location is unknown for every electrode, and there are no coordinates (cell 6).
+      From its own query of the archive (40 assets, asset metadata with sex Unknown, age P19Y/P50Y, no
+      relatedResource, and a fixed 242,424 bytes beyond the data in the largest and smallest files), no
+      part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig1d-only-after-keyword
+    agrees: true
+    outcome: blocked
+    reason: No events or condition labels. From its own query of the archive (40 assets, asset metadata
+      with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in
+      the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig2b-violation-electrodes
+    agrees: true
+    outcome: blocked
+    reason: No events, labels or IFG labels. From its own query of the archive (40 assets, asset metadata
+      with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in
+      the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig2b-single-type
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig2b-violation-electrodes. From its own query of the archive (40 assets, asset
+      metadata with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the
+      data in the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig6a-half-split
+    agrees: true
+    outcome: blocked
+    reason: No events or sentence identities. From its own query of the archive (40 assets, asset metadata
+      with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in
+      the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig6b-duration-metric
+    agrees: true
+    outcome: blocked
+    reason: No events or labels. From its own query of the archive (40 assets, asset metadata with sex
+      Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest
+      and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig2c-euclidean-similarity
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig2b-violation-electrodes. From its own query of the archive (40 assets, asset
+      metadata with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the
+      data in the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig7a-com-overlap
+    agrees: true
+    outcome: blocked
+    reason: No COM labels. From its own query of the archive (40 assets, asset metadata with sex Unknown,
+      age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest and
+      smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig7b-not-nonlinguistic
+    agrees: true
+    outcome: blocked
+    reason: No NL labels. From its own query of the archive (40 assets, asset metadata with sex Unknown,
+      age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest and
+      smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig2de-no-spatial-separation
+    agrees: true
+    outcome: blocked
+    reason: No MNI coordinates. From its own query of the archive (40 assets, asset metadata with sex
+      Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest
+      and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig8b-individual-no-separation
+    agrees: true
+    outcome: blocked
+    reason: No coordinates. From its own query of the archive (40 assets, asset metadata with sex Unknown,
+      age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest and
+      smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig2f-circuit-diameter
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig2b-single-type. From its own query of the archive (40 assets, asset metadata
+      with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in
+      the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig9-predict-from-corr
+    agrees: true
+    outcome: blocked
+    reason: No CORR labels or events. Never run, so the chance level could not be compared (the paper
+      gives 25%). From its own query of the archive (40 assets, asset metadata with sex Unknown, age P19Y/P50Y,
+      no relatedResource, and a fixed 242,424 bytes beyond the data in the largest and smallest files),
+      no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig3-latency-values
+    agrees: true
+    outcome: blocked
+    reason: No keyword onsets. From its own query of the archive (40 assets, asset metadata with sex Unknown,
+      age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest and
+      smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig3d-latency-differences
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig3-latency-values. From its own query of the archive (40 assets, asset metadata
+      with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in
+      the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig3-sync-latency-variability
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig3-latency-values. From its own query of the archive (40 assets, asset metadata
+      with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in
+      the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: fig3e-latency-not-location
+    agrees: true
+    outcome: blocked
+    reason: No coordinates, no onsets. From its own query of the archive (40 assets, asset metadata with
+      sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the
+      largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig10a-separable-400-700
+    agrees: true
+    outcome: blocked
+    reason: No labels or onsets. From its own query of the archive (40 assets, asset metadata with sex
+      Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the data in the largest
+      and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: suppfig10b-duration-differs
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig2b-violation-electrodes. From its own query of the archive (40 assets, asset
+      metadata with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the
+      data in the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: nl-low-frequency
+    agrees: true
+    outcome: blocked
+    reason: No 4 to 10 Hz signal and no NL labels. From its own query of the archive (40 assets, asset
+      metadata with sex Unknown, age P19Y/P50Y, no relatedResource, and a fixed 242,424 bytes beyond the
+      data in the largest and smallest files), no part of any data_missing claim can be tested.
+    response: No change to the outcome. In reply to problem 2 and the first point it could not check,
+      the data check now lists every object under the top level, acquisition and general of every file
+      (one listing shared by all 40 files, holding only the ECoG ElectricalSeries, devices, electrode
+      groups, electrode table and subject and session text), and in reply to the second it prints a table
+      of path, n_samples and asset size for all 40 files, in which every file holds exactly 242,424 bytes
+      beyond its uncompressed float32 ECoG data.
+  - claim: stimuli-word-frequency
+    agrees: false
+    outcome: blocked
+    reason: 'The claim is data: with_inputs and does not use the dataset. The notebook skips it as needing
+      "an unpinned web corpus", which is not a reason the criterion allows. Its inputs are available,
+      so it should have been tested: the keyword lists are in the paper''s supplement, and the corpus
+      the paper names, lingua.mtsu.edu/chinese-computing, answers HTTP 200. "Unpinned" could be recorded
+      as a caveat, but it is not a reason to block; the outcome is undecided only because of that.'
+    response: Tested, and the outcome changed from blocked (other) to reproduced, resting on an assumption.
+      The notebook fetches the supplement from the publisher (checked by SHA-256 against the paper's copy),
+      takes word 4 of the CORR and SYN-C lists, reads each keyword's raw bigram counts from the site's
+      bigram search, and divides by the sub-corpus sizes of Table 6 of Da (2004). The site has no word
+      list and does not say which sub-corpus or total the paper used, so all six combinations are shown;
+      only the two sub-corpora pooled, per million bigrams, meets the criterion (CORR 31.57 and SYN-C
+      29.95 per million, t(62) = 0.11, p = 0.910), and that reading is recorded as an assumption. The
+      site being unversioned is recorded as a deviation and under inputs, as the verifier suggested. Variants
+      (SYN-P or SEM keywords, each keyword once, the keyword absent from news dropped, Welch's test) are
+      printed, and the SYN-P and SEM keywords differing from CORR in two sentences is recorded as a paper_inconsistency
+      finding.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper modules ifg_hga.py and keyword_frequency.py,
+    the claims file and the attempt record, with the paper. The verifier agreed with all 25 outcomes and found every
+    round-1 point resolved. Of the sentences against the outputs, it found cell 10's standard deviation 1 to within
+    3e-5 unsupported (cell 9 prints 0.9999 to 0.99999, about 1e-4), cell 10's list of the files with a start transient
+    short of the 17 counted (TC17_block4 was missing), and the README's about a minute too short (cell 1 prints
+    76 s for reading alone). Cell 10 now says 1e-4 (0.9999 to 0.99999) and names the 17 files, all 16 of TC5, TC6,
+    TC7 and TC9 and TC17_block4, and the README says about two minutes (93 s in this run).
+  results:
+  - claim: participants
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 16 shows 10 subjects, each with 256 electrodes in two groups of 128. Sex is U for 10 of 10 subjects,
+      so the male and female counts cannot be determined, and no file has task labels, so the COM and NL counts
+      cannot be determined either. The criterion defines a partial outcome as a subset of the participants with
+      matching metadata; here all participants are present but most of the metadata is missing, so the criterion
+      does not literally describe this case, but partially_reproduced is still the natural reading. It does not
+      change the outcome.
+    response: Outcome kept. The notes now say that the criterion's partial outcome does not literally describe this
+      case and that partially_reproduced is taken as its nearest reading.
+  - claim: task-structure
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files. For task-structure, cell 19
+      now reads 32 sentences per list and 6/7/6/6 words (CORR/SYN-P/SYN-C/SEM) from the supplement, which matches
+      three expected values; the criterion's partial outcome still needs trial counts and timings per participant,
+      so blocked stands. The record's notes could mention this.
+    response: Outcome kept. The notes now give the supplement's 32 sentences per list and 6, 7, 6 and 6 words per
+      sentence, matching three expected values, and say the claim stays blocked as the criterion needs trial counts
+      and word timing per participant.
+  - claim: behaviour-response-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig1b-high-gamma-best-band
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig1c-responsive-in-ifg
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig1d-only-after-keyword
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig2b-violation-electrodes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig2b-single-type
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig6a-half-split
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig6b-duration-metric
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig2c-euclidean-similarity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig7a-com-overlap
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig7b-not-nonlinguistic
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig2de-no-spatial-separation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig8b-individual-no-separation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig2f-circuit-diameter
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig9-predict-from-corr
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig3-latency-values
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig3d-latency-differences
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig3-sync-latency-variability
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: fig3e-latency-not-location
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig10a-separable-400-700
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: suppfig10b-duration-differs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: nl-low-frequency
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 23 data_missing claims. Cell 6 prints one listing shared by all 40 files, with the ECoG
+      ElectricalSeries, devices, electrode groups, electrode table and subject/session text, and nothing else in
+      acquisition or general; stimulus, analysis and processing are empty, there is no trials table, and every location
+      is unknown. Cell 7 shows exactly 242,424 bytes beyond the data in all 40 files.
+    response: No change; the outcome is kept as verified.
+  - claim: stimuli-word-frequency
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, and the assumption is stated (deviations 1 and 2) and reasonable. It re-read four keywords'
+      counts from the site (电脑 857/361, 甘香 0/1, 重要 9778/1910, 意见 2801/1386), all matching cell 19, and from the
+      printed counts recomputed the pooled result, 31.568 (s.d. 34.80) against 29.955 (s.d. 72.86), t = 0.113. The
+      stated basis leans on only this one meeting the criterion, which picks the reading by its outcome, and leaves
+      out the strongest independent evidence. The t statistic does not depend on the divisor, so it identifies the
+      sub-corpus (pooled 0.113 against the paper's 0.11, news alone -0.356, fiction alone 1.126), and all four statistics
+      share one ratio (1.0099), as the same counts over a slightly different divisor would. The record should state
+      this; it would not change the outcome. Separately, the criterion names the Modern Chinese word frequency list,
+      but the paper gives only the URL and the site has no word list; the notebook handles this correctly by using
+      bigram counts.
+    response: Outcome kept. Cell 20 now prints the t statistic of each sub-corpus and the spread of the four ratios
+      (1.0001), and the assumption's basis in the deviation, the notes and the conclusion (cell 22) now leads with
+      the t match and the common ratio, the tolerances coming after. The criterion's word frequency list is asked
+      of a reader in questions/001193.yaml, and the claim is still tested as the claims file has it. A methods_unavailable
+      finding now asks the paper's authors which sub-corpus and total they used.
