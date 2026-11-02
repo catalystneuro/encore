@@ -2,8 +2,8 @@
 
 Tests the findings of [Dehaqani, Michelon, Patella, Petrucco, Piasini & Iurilli (2024)](https://doi.org/10.1016/j.celrep.2024.114013)
 on [DANDI:000931](https://dandiarchive.org/dandiset/000931/0.261011.1559). The dandiset holds one
-NWB file: the spike times of 1013 sorted units from one of the paper's 22 mice, from the
-concentration-series experiment. It has no breathing signal, inhalation times, odor trials,
+NWB file: the spike times of 1013 sorted units from one of the paper's 22 mice, which its keyword
+"Concentration Series", places in the concentration-series experiment. It has no breathing signal, inhalation times, odor trials,
 artificial airflow pulses, unit waveforms or brain areas, and every claim needs some of these.
 
 | Claim | Outcome |
