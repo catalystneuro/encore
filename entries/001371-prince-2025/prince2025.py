@@ -98,6 +98,10 @@ def load_session(asset_id: str, lfp: bool = False) -> dict:
     s["region"] = _str(u["region"][:]) if "region" in u else np.full(n_u, "unknown")
     s["cell_type"] = _str(u["cell_type"][:]) if "cell_type" in u else np.full(n_u, "unknown")
     s["quality"] = _str(u["quality"][:])
+    # what the units table could map a unit to a probe with: its columns and the phy channel
+    s["unit_cols"] = sorted(u.keys())
+    s["ch"] = u["ch"][:] if "ch" in u else np.full(n_u, np.nan)
+    s["electrode_locations"] = pd.Series(_str(f["general/extracellular_ephys/electrodes/location"][:])).value_counts().to_dict()
     b = f["processing/behavior"]
     s["t"] = b["position/position/timestamps"][:]
     s["xy"] = b["position/position/data"][:]
@@ -252,12 +256,21 @@ def decode(tc, counts, bin_size):
     return p
 
 
-def aligned_edges(t_align, window=WINDOW, bin_size=BIN, start=None):
-    """Time bin edges around an event: -window to +window in bins of bin_size
-    [claims S5: -2.5 to 2.5 s on a 0.2 s grid]; start=0 gives 0 to +window (trial start)."""
-    lo = -window if start is None else start
-    n = int(round((window - lo) / bin_size))
-    return t_align + lo + bin_size * np.arange(n + 1)
+def aligned_edges(t_align, window=WINDOW, bin_size=BIN, start=None, grid="code"):
+    """Time bin edges around an event [claims S5: -2.5 to 2.5 s on a 0.2 s grid]. The edges are
+    multiples of bin_size from the event, so that no bin straddles it, and the bin centres are
+    the code's sample times (code _align_by_times, np.linspace(-2.5, 2.5, 26): -2.5, -2.3, ...,
+    -0.1, 0.1, ..., 2.5): 26 bins from -2.6 to 2.6 s for 0.2 s bins, -1.5 to 1.5 s for the 25 ms
+    theta bins. start=0 gives 0 to +window (trial start). grid 'round1' (variant): the grid of
+    round 1, edges from -window to +window (25 bins of 0.2 s, one centred on the event)."""
+    if start is None and grid == "round1":
+        n = int(round(2 * window / bin_size))
+        return t_align - window + bin_size * np.arange(n + 1)
+    if start is None:
+        half = int(np.ceil(window / bin_size - 1e-9))
+        return t_align + bin_size * np.arange(-half, half + 1)
+    n = int(round((window - start) / bin_size))
+    return t_align + start + bin_size * np.arange(n + 1)
 
 
 def sample_at(t, x, times):
@@ -287,7 +300,7 @@ def split_trials(tr, encoder_types=(1,), seed=SPLIT_SEED):
 
 
 def session_decoding(s, region, tr, train, test, geo, units_idx=None, align_col="t_align",
-                     window=WINDOW, bin_size=BIN, start=None):
+                     window=WINDOW, bin_size=BIN, start=None, grid="code"):
     """Decode each test trial around its alignment time. Returns dict of arrays per trial:
     posterior (n_trials, n_time, n_bins), true linear position, velocities and view angle."""
     sel = np.where(unit_mask(s, region))[0] if units_idx is None else units_idx
@@ -298,7 +311,7 @@ def session_decoding(s, region, tr, train, test, geo, units_idx=None, align_col=
         ta = r[align_col]
         if not np.isfinite(ta):
             continue
-        e = aligned_edges(ta, window, bin_size, start)
+        e = aligned_edges(ta, window, bin_size, start, grid)
         c = bin_counts(units, e)
         out["trial"].append(i)
         out["post"].append(decode(tc, c, bin_size))
@@ -308,7 +321,7 @@ def session_decoding(s, region, tr, train, test, geo, units_idx=None, align_col=
         out["va"].append(sample_at(s["t"], s["view_angle"], ta - 1e-9))
     for k in ("post", "pos", "rot", "trans", "va"):
         out[k] = np.array(out[k])
-    out["times"] = (aligned_edges(0.0, window, bin_size, start)[:-1] + bin_size / 2)
+    out["times"] = np.round(aligned_edges(0.0, window, bin_size, start, grid)[:-1] + bin_size / 2, 6)
     return out
 
 
@@ -324,9 +337,26 @@ def arm_probs(post, geo, turn_type):
     return init, new
 
 
+WINDOW_RULE = "code"   # 'round1' (variant): centres in [lo, hi) on the round-1 grid
+
+
+def window_mask(times, lo, hi):
+    """Bins of a window [claims S7], by bin centre as the code (calc_trial_by_trial_quant_data):
+    windows after the event (lo >= 0) take centres in (lo, hi], as pd.cut; windows before it
+    take centres in [lo, hi), as its baseline (times >= -1.5 up to the first time >= 0). On the
+    0.2 s grid 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s (0 to 1.6 s), -1.5 to 0 s the 8
+    bins centred -1.5 to -0.1 s (-1.6 to 0 s); no bin straddles the cue."""
+    times = np.round(np.asarray(times, float), 6)
+    if WINDOW_RULE == "round1":
+        return (times >= lo) & (times < hi)
+    if lo >= 0:
+        return (times > lo) & (times <= hi)
+    return (times >= lo) & (times < hi)
+
+
 def window_mean(x, times, lo, hi):
-    """Mean over the bins whose centres fall in [lo, hi) [claims S7]."""
-    m = (times >= lo) & (times < hi)
+    """Mean over the bins of a window (window_mask) [claims S7]."""
+    m = window_mask(times, lo, hi)
     return np.nanmean(x[..., m], -1)
 
 
@@ -437,10 +467,18 @@ def view_angle_by_position(s, tr, n=50):
     return edges, out
 
 
-def spread_bins(post):
-    """Spread of each decoded posterior in feature bins, as the paper's code
-    (plot_region_error_distribution): threshold = peak - std of the posterior; spread = the
-    last bin at or after the peak minus the first bin at or before it that reach the threshold."""
+def spread_bins(post, rule="code"):
+    """Spread of each decoded posterior in feature bins; threshold = peak - std of the posterior
+    [claims sfig5f; paper Methods; code plot_region_error_distribution]. NaN bins (gaps between
+    track segments) count as below the threshold, as in the code's comparison.
+    rule 'code' (decides; the criterion cites the code's function for the measure): the code's
+    outermost bins at or above the threshold anywhere before and after the peak, whether or not
+    the run is broken (checked against the code at the pinned commit). rule 'methods'
+    (variant, the verifier's reading in round 1): the Methods' "how far in front and behind of
+    the peak value the decoding results dropped below this threshold", read as the first
+    crossing on each side: spread =
+    the last bin of the run of bins at or above the threshold that holds the peak minus its
+    first bin."""
     out = np.full(post.shape[:-1], np.nan)
     P = post.reshape(-1, post.shape[-1])
     o = out.reshape(-1)
@@ -450,25 +488,38 @@ def spread_bins(post):
         k = np.nanargmax(p)
         thr = p[k] - np.nanstd(p)
         ge = np.nan_to_num(p, nan=-1) >= thr
-        before = np.where(ge[:k + 1])[0]
-        after = np.where(ge[k:])[0]
-        o[i] = (k + after[-1]) - before[0]
+        if rule == "code":
+            before = np.where(ge[:k + 1])[0][0]
+            after = k + np.where(ge[k:])[0][-1]
+        else:
+            below_b = np.where(~ge[:k])[0]
+            below_a = np.where(~ge[k:])[0]
+            before = below_b[-1] + 1 if len(below_b) else 0
+            after = k + below_a[0] - 1 if len(below_a) else len(p) - 1
+        o[i] = after - before
     return out
 
 
 def zone_probs(post, geo, turn_type):
     """Integrated probability per zone and time bin: initial/new goal arms and their front
     (toward the choice point) and back halves, the retrospective zone, the whole central arm
-    and the central window around the update cue."""
+    and the central window around the update cue.
+    Halves as the code (quantify_aligned_data): of an arm's n bins, half 'front' ends
+    round(n / 2) bins before the arm's end and half 'rearhalf' starts n // 2 bins after its
+    start [claims sfig3ab]; the code's arm bins include the gap bins next to the arm, where the
+    posterior is NaN. Variant '_occ': the same split over the arm's bins with a posterior
+    (gap bins left out)."""
     init, new = arm_probs(post, geo, turn_type)
     out = dict(init=init, new=new)
     tt = np.asarray(turn_type)[:, None]
+    nb = len(geo["centers"])
+    valid = np.isfinite(post).reshape(-1, nb).any(0)
     for side in ("left", "right"):
-        idx = np.where(geo[side])[0]
-        h = len(idx) // 2
-        geo[side + "_front"] = np.isin(np.arange(len(geo["centers"])), idx[:h])
-        geo[side + "_back"] = np.isin(np.arange(len(geo["centers"])), idx[len(idx) - h:])
-    for half in ("front", "back"):
+        for suf, idx in (("", np.where(geo[side])[0]), ("_occ", np.where(geo[side] & valid)[0])):
+            n = len(idx)
+            geo[side + "_front" + suf] = np.isin(np.arange(nb), idx[:n - round(n / 2)])
+            geo[side + "_back" + suf] = np.isin(np.arange(nb), idx[n // 2:])
+    for half in ("front", "back", "front_occ", "back_occ"):
         L = np.nansum(post[..., geo["left_" + half]], -1)
         R = np.nansum(post[..., geo["right_" + half]], -1)
         out["init_" + half] = np.where(tt == 1, L, R)
@@ -490,7 +541,9 @@ def _trialinfo(tr, idx):
 
 
 def process_session(asset_id, subject, session, theta=True, seed=0):
-    """Everything the notebook needs from one session, reduced as it loads."""
+    """Everything the notebook needs from one session, reduced as it loads. seed: the generator
+    of the equal-cell subsampling [standard]; the notebook passes the session's index, so each
+    session has its own seed."""
     s = load_session(asset_id, lfp=theta)
     tr = final_trials(s)
     geo = track_bins(s)
@@ -505,7 +558,10 @@ def process_session(asset_id, subject, session, theta=True, seed=0):
                lin_range=(float(np.nanmin(s["lin"])), float(np.nanmax(s["lin"]))),
                spike_range=(min(float(x.min()) for x in s["spikes"] if len(x)),
                             max(float(x.max()) for x in s["spikes"] if len(x))),
-               t_range=(float(s["t"][0]), float(s["t"][-1])), geo=geo)
+               t_range=(float(s["t"][0]), float(s["t"][-1])), geo=geo,
+               unit_cols=s["unit_cols"], electrode_locations=s["electrode_locations"],
+               ch_range={r: (float(np.nanmin(s["ch"][s["region"] == r])), float(np.nanmax(s["ch"][s["region"] == r])))
+                         for r in ("CA1", "PFC", "unknown") if (s["region"] == r).any()})
     # checks of the trial table against the behaviour: x at choice made, y at the update cue,
     # and how view angle relates to sideways movement
     tr["x_at_choice"] = sample_at(s["t"], s["xy"][:, 0], tr.t_choice_made.to_numpy())
@@ -519,7 +575,7 @@ def process_session(asset_id, subject, session, theta=True, seed=0):
     res["va_traj_trials"] = tr.index.to_numpy()
     train, test = split_trials(tr)
     res["n_train"] = len(train)
-    dec = {}
+    dec, dec_old = {}, {}
     for reg in ("CA1", "PFC"):
         if res["n_units"][reg] == 0:
             continue
@@ -533,6 +589,10 @@ def process_session(asset_id, subject, session, theta=True, seed=0):
         dur = (tr.loc[v["trial"], "stop_time"] - tr.loc[v["trial"], "start_time"]).to_numpy()
         inside = v["times"][None, :] + BIN / 2 <= dur[:, None]      # bins inside the trial only
         ok = (pb >= 0) & (pb < N_BINS) & np.isfinite(v["pos"]) & inside
+        # locomotion in each bin (share of behaviour samples above the speed threshold), for the
+        # variant that scores moving bins only, as the encoder uses
+        mv = np.array([bin_mean(s["t"], s["moving"].astype(float),
+                                aligned_edges(tr.loc[i, "start_time"], 25, BIN, 0)) for i in v["trial"]])
         # clock contrast: the same posteriors against the position 2 s later or earlier
         e_sh = {}
         for sh in (-2.0, 2.0):
@@ -549,14 +609,19 @@ def process_session(asset_id, subject, session, theta=True, seed=0):
         st = session_decoding(s, reg, tr, train, test[test.update_type == 2], geo,
                               align_col="start_time", start=0)
         zs = zone_probs(st["post"], geo, tr.loc[st["trial"], "turn_type"].values)
+        # variant: the round-1 grid (one bin centred on the cue), for the claims on update-aligned windows
+        o1 = session_decoding(s, reg, tr, train, test, geo, grid="round1")
+        z1 = zone_probs(o1["post"], geo, tr.loc[o1["trial"], "turn_type"].values)
+        dec_old[reg] = dict(times=o1["times"], zones=z1, pos=o1["pos"], rot=o1["rot"], trans=o1["trans"], va=o1["va"])
         dec[reg] = dict(**_trialinfo(tr, o["trial"]), times=o["times"], zones=z, pos=o["pos"],
                         rot=o["rot"], trans=o["trans"], va=o["va"], peak=geo["centers"][
                             np.nanargmax(np.nan_to_num(o["post"], nan=-1), -1)],
                         tc_peak=o["tc"].argmax(1), tc_active=o["tc"].max(1) > 0, n_units=o["n_units"],
                         val_conf=conf, val_err_shift=e_sh, val_err=np.abs(geo["centers"][pk[ok]] - v["pos"][ok]),
-                        val_err_bins=np.abs(pk[ok] - pb[ok]), val_occ_bins=pb[ok],
+                        val_err_bins=np.abs(pk[ok] - pb[ok]), val_occ_bins=pb[ok], val_moving=mv[ok] > 0.5,
                         start=dict(**_trialinfo(tr, st["trial"]), times=st["times"], zones=zs))
     res["dec"] = dec
+    res["dec_old"] = dec_old
     # CA1 encoder from all trial types [claims sfig2f]: (a) all trials, decode all; (b) 80/20
     if res["n_units"]["CA1"]:
         alltr = tr[tr.update_type.isin([1, 2, 3])]
@@ -579,7 +644,8 @@ def process_session(asset_id, subject, session, theta=True, seed=0):
             o = session_decoding(s, reg, tr, train, test, geo, units_idx=idx)
             z = zone_probs(o["post"], geo, tr.loc[o["trial"], "turn_type"].values)
             eq[reg] = dict(**_trialinfo(tr, o["trial"]), times=o["times"], init=z["init"], new=z["new"],
-                           spread=spread_bins(o["post"]), pos=o["pos"], n_units=n)
+                           spread=spread_bins(o["post"], "code"), spread_first=spread_bins(o["post"], "methods"),
+                           pos=o["pos"], n_units=n)
         res["equal"] = eq
     # theta: CA1 decoding in 25 ms bins with the theta phase at each bin centre [claims fig3c]
     if theta and res["n_units"]["CA1"] and s.get("lfp") is not None:
