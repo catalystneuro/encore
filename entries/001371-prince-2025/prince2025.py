@@ -41,7 +41,7 @@ WINDOW = 2.5                      # [claims S5; code _align_by_times window 2.5]
 UPDATE_LOC_DEFAULT = 145.125      # [claims S5; code general/trials.py]
 RETRO_ZONE = (5, 50)              # [claims, sfig3c criterion; code prospective_reps]
 MIN_UNITS = 20                    # [claims S1; paper Methods]
-MIN_TRIALS = 50                   # [claims S1; paper Methods]
+MIN_TRIALS = 50                   # [claims S1; paper Methods] final-task trials of the session
 FINAL_MAZE = 4                    # [claims comment; NWB maze_id description 'ymaze_delay': 4]
 TRIAL_TYPES = {1: "delay only", 2: "switch", 3: "stay"}   # [NWB update_type description; claims]
 
@@ -614,15 +614,17 @@ def process_session(asset_id, subject, session, theta=True, seed=0):
 
 
 # --- assembling results across sessions -----------------------------------------------------
-def included(r, reg, rule="train"):
+def included(r, reg, rule="final"):
     """Session inclusion for decoding [claims S1]: at least 20 units in the region and at least
-    50 trials; rule 'train' counts the encoder training trials (the code), rule 'final' the
-    final-task trials (a reading of the Methods' "50 trials for the behavioral session")."""
+    50 trials. Rule 'final' (decides) counts the final-task trials of the session, warm-up trials
+    left out [claims S1, as amended by the reader's answer of 2026-11-02; paper Methods, Decoding
+    analyses, "less than 50 trials for the behavioral session"]; rule 'train' counts the encoder
+    training trials, the code's variant [claims S1; code _meets_exclusion_criteria]."""
     n_tr = r["n_train"] if rule == "train" else len(r["trials"])
     return r["n_units"].get(reg, 0) >= MIN_UNITS and n_tr >= MIN_TRIALS and reg in r.get("dec", {})
 
 
-def trial_table(R, reg, windows, rule="train", source="dec"):
+def trial_table(R, reg, windows, rule="final", source="dec"):
     """One row per decoded trial of included sessions, with the mean of each zone in each window
     (name -> (zone, lo, hi)), plus trial labels. source 'dec' (update aligned) or 'start'."""
     rows = []

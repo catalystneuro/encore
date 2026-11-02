@@ -121,11 +121,14 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:tuning-tiles-track
-  notes: 'Peaks of encoder tuning curves over all units with spikes in included sessions (CA1 2854, PFC
-    1790): every track bin is some unit''s peak in both regions, and the only bins that are no unit''s
+  notes: 'Peaks of encoder tuning curves over all units with spikes in included sessions (CA1 3404, PFC
+    2148): every track bin is some unit''s peak in both regions, and the only bins that are no unit''s
     peak are the four bins lying wholly in the gaps between track segments (34, 35, 42, 43). Peaks fall
-    about equally on the central arm and the goal arms (CA1 1422 and 1432, PFC 881 and 909). Reading (b)
-    holds with no empty track bin.'
+    about equally on the central arm and the goal arms (CA1 1730 and 1674, PFC 1075 and 1073). Reading
+    (b) holds with no empty track bin. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed
+    S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on
+    55 CA1 and 46 PFC sessions in place of 47 and 37. Under the code''s count (CA1 2854, PFC 1790 units)
+    the result is the same; the outcome is unchanged.'
   deviations:
   - Reading (a) asks that every one of the 50 bins be a peak. Four bins lie wholly in the artificial gaps
     between track segments (Methods, Behavioral analysis), where the animal never is, so no tuning curve
@@ -133,41 +136,53 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: decoding-validation
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:decoding-validation
   notes: 'Held-out delay only trials, 200 ms bins inside the trial: median error below the uniform null
-    in 44 of 47 CA1 and 37 of 37 PFC sessions (median 9 and 7 bins against 16); the session-averaged confusion
-    matrix peaks within 2 bins of the true bin in 36 of 46 track bins (CA1) and 41 of 46 (PFC). Errors
-    are lowest with position at the same time, not shifted by 2 s, in 45 of 47 and 36 of 37 sessions.'
+    in 52 of 55 CA1 and 46 of 46 PFC sessions (median 9 and 7 bins against 16); the session-averaged confusion
+    matrix peaks within 2 bins of the true bin in 37 of 46 track bins (CA1) and 35 of 46 (PFC). Errors
+    are lowest with position at the same time, not shifted by 2 s, in 52 of 55 and 43 of 46 sessions.
+    The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials
+    of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place
+    of 47 and 37. Under the code''s count both readings also hold (44 of 47 and 37 of 37 sessions; 36
+    and 41 of 46 bins); the outcome is unchanged.'
   deviations:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig2e-hpc-goal-increase
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig2e-hpc-goal-increase
   measured:
-  - 0.1334
-  - 0.1317
-  - 0.0922
+  - 0.1313
+  - 0.1314
+  - 0.0933
   - 0.103
-  notes: 'Correct trials, rule S1, reading (a): ANOVA F(3) = 29.0, p = 9.1e-19; switch minus delay only,
-    initial +0.041 (z = 7.69, Tukey p = 1.9e-12), new +0.029 (z = 5.37, p = 4.9e-7). Reading (b) and the
-    Methods'' rule give the same (p < 2e-7). Trial means 0.133 (switch initial), 0.132 (switch new), 0.092
-    (delay only initial), 0.103 (delay only new), all within tolerance. 1158 switch and 825 delay only
-    trials (paper 1295 and 926). The increase holds in 5 of 7 animals for the initial arm and 6 of 7 for
-    the new arm.'
+  notes: 'Correct trials, reading (a): ANOVA F(3) = 28.4, p = 2.4e-18; switch minus delay only, initial
+    +0.039 (z = 7.40, Tukey p = 2.7e-12), new +0.029 (z = 5.55, p = 1.8e-7). Reading (b) gives the same
+    (p = 8.4e-13 and 1.7e-7). Trial means 0.131 (switch initial), 0.131 (switch new), 0.093 (delay only
+    initial), 0.103 (delay only new), all within tolerance. 1241 switch and 871 delay only trials (paper
+    1295 and 926). The increase holds in 4 of 7 animals for the initial arm and 6 of 7 for the new arm.
+    The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials
+    of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place
+    of 47 and 37. The code''s count gives p < 5e-7 for every contrast; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -176,20 +191,26 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig2e-hpc-arms-equal
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig2e-hpc-arms-equal
   measured:
-  - 0.0016
-  - -0.0108
-  notes: 'Initial minus new over 0 to 1.5 s: LME by trial type p = 0.085 (Methods'' rule p = 0.17); per-session
-    Wilcoxon against zero p = 0.57 (switch, mean +0.002, 47 sessions) and p = 0.18 (delay only, mean -0.011).
-    No test gives p < 0.05.'
+  - -0.0001
+  - -0.0097
+  notes: 'Initial minus new over 0 to 1.5 s: LME by trial type p = 0.17; per-session Wilcoxon against
+    zero over 55 sessions p = 0.44 (switch, mean -0.0001) and p = 0.27 (delay only, mean -0.010). No test
+    gives p < 0.05. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the
+    final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46
+    PFC sessions in place of 47 and 37. The code''s count gives p = 0.085, 0.57 and 0.18; the outcome
+    is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -198,40 +219,52 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig2e-goal-bias
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig2e-goal-bias
   measured:
-  - 0.456
-  - 0.675
-  notes: '1158 correct switch trials. Reading (a), 0 to 1.5 s: 45.6% of bins beyond +/-0.93 and 67.5%
-    of trials with mean index in [-0.5, 0.5]. Reading (b), 0 to 2.5 s: 46.3% and 72.1%. Both within tolerance
-    under both readings.'
+  - 0.46
+  - 0.67
+  notes: '1241 correct switch trials. Reading (a), 0 to 1.5 s: 46.0% of bins beyond +/-0.93 and 67.0%
+    of trials with mean index in [-0.5, 0.5]. Reading (b), 0 to 2.5 s: 46.5% and 71.6%. Both within tolerance
+    under both readings. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count
+    the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and
+    46 PFC sessions in place of 47 and 37. The code''s count gives 45.6% and 67.5% (a); the outcome is
+    unchanged.'
   deviations:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig3c-goals-over-retrospective
   outcome: not_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig3c-goals-over-retrospective
   measured:
-  - 0.1245
-  - 0.1334
-  - 0.1317
-  notes: 'Correct switch trials, zone LME: initial minus retrospective +0.009 (Tukey p = 0.16), new minus
-    retrospective +0.007 (p = 0.29), ANOVA p = 0.15; with the Methods'' rule p = 0.37 and 0.36. Trial
-    means 0.125 (retrospective), 0.133 (initial), 0.132 (new) are each within tolerance of the paper''s
-    values; the differences between them are too small to reach significance here.'
+  - 0.125
+  - 0.1313
+  - 0.1314
+  notes: 'Correct switch trials, zone LME: initial minus retrospective +0.006 (Tukey p = 0.37), new minus
+    retrospective +0.006 (p = 0.36), ANOVA p = 0.29. Trial means 0.125 (retrospective), 0.131 (initial),
+    0.131 (new) are each within tolerance of the paper''s values; the differences between them are too
+    small to reach significance here. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed
+    S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on
+    55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s count gives p = 0.16 and 0.29; the outcome
+    is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -240,16 +273,21 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig3c-retrospective-unchanged
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig3c-retrospective-unchanged
-  notes: 'Zone by trial type LME: retrospective switch minus delay only +0.011, Tukey p = 0.32 (Methods''
-    rule p = 0.12).'
+  notes: 'Zone by trial type LME: retrospective switch minus delay only +0.013, Tukey p = 0.12. The reader''s
+    answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session
+    for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37.
+    The code''s count gives +0.011, p = 0.32; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -258,28 +296,34 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig3ab-original-vs-update-cue
   outcome: partially_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig3ab-original-vs-update-cue
   measured:
-  - 0.0342
-  - 0.0434
-  - 0.0387
-  - 0.0475
-  - 0.0996
-  - 0.0717
-  - 0.104
-  - 0.0645
+  - 0.0338
+  - 0.0436
+  - 0.0382
+  - 0.0478
+  - 0.1046
+  - 0.07
+  - 0.1065
+  - 0.0639
   notes: 'Correct switch trials, cue by arm half LME: back halves higher during the original cue (initial
-    +0.028, z = 7.48; new +0.040, z = 10.58; p below the precision of the studentized range). Front halves
-    higher after the update cue, but not significantly (initial -0.009, Tukey p = 0.21; new -0.009, p
-    = 0.26; Methods'' rule 0.12 and 0.14). The back half values are within tolerance; the four front half
-    values (0.034 to 0.048) are below the paper''s 0.05 to 0.07. 1158 trials per cue (paper 1264 and 1295).'
+    +0.035, z = 9.54; new +0.043, z = 11.78; p below the precision of the studentized range). Front halves
+    higher after the update cue, but not significantly (initial -0.010, Tukey p = 0.12; new -0.010, p
+    = 0.14). The back half values are within tolerance; the four front half values (0.034 to 0.048) are
+    below the paper''s 0.05 to 0.07. 1241 trials per cue (paper 1264 and 1295). The reader''s answer of
+    2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the
+    50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s
+    count gives front half p = 0.21 and 0.26; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -288,10 +332,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - The split of each goal arm into front and back halves is by its bins (7 per arm, 3 in each half, the
     middle bin in neither), as the criterion says; the original cue is aligned at trial start, 0 to 1.5
     s.
@@ -300,11 +347,14 @@ outcomes:
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig2f-all-trials-encoder
   notes: 'Reading (a), encoder from all trials and all trials decoded: both arms higher on switch trials
-    for correct trials (initial +0.013, Tukey p = 0.0016; new +0.025, p = 7e-12) and all outcomes (p =
-    2.8e-5 and 2.2e-6); 1158 switch and 3979 delay only correct trials, nearer the paper''s 1322 and 4538.
-    Reading (b), 80/20 split of all types: the new arm differs (p = 5.5e-5, all outcomes 4.7e-4) but the
-    initial arm does not (p = 0.87 and 0.67), with 255 switch trials. The criterion asks for every reading,
-    so the claim holds in part.'
+    for correct trials (initial +0.011, Tukey p = 0.0060; new +0.025, p = 2.8e-12) and all outcomes (p
+    = 2.7e-4 and 2.1e-6); 1241 switch and 4225 delay only correct trials, nearer the paper''s 1322 and
+    4538. Reading (b), 80/20 split of all types: the new arm differs (p = 1.9e-5, all outcomes 1.4e-4)
+    but the initial arm does not (p = 0.94 and 0.90), with 269 switch trials. The criterion asks for every
+    reading, so the claim holds in part. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed
+    S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on
+    55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s count gives the same pattern (reading
+    b, initial arm p = 0.87 and 0.67); the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -313,22 +363,27 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig5f-pfc-wider-spread
   outcome: partially_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig5f-pfc-wider-spread
   measured:
-  - 3.89
-  - 4.478
-  notes: '36 sessions with at least 20 units in each region, larger region subsampled to the smaller''s
-    count (seeded); 966 delay only trials per region (paper 829). Spread in feature bins (reading a):
-    CA1 3.89, PFC 4.48, LME p = 4.3e-9; both outside the tolerances of 2.4 and 3.13. In linearized units
-    (reading b) 29.2 and 33.6. PFC exceeds CA1 in 6 of 7 animals. The direction and significance hold,
-    the values do not.'
+  - 3.876
+  - 4.411
+  notes: '42 sessions with at least 20 units in each region and 50 final-task trials, larger region subsampled
+    to the smaller''s count (seeded); 1026 delay only trials per region (paper 829). Spread in feature
+    bins (reading a): CA1 3.88, PFC 4.41, LME p = 3.2e-8; both outside the tolerances of 2.4 and 3.13.
+    In linearized units (reading b) 29.1 and 33.1. PFC exceeds CA1 in 6 of 7 animals. The direction and
+    significance hold, the values do not. The reader''s answer of 2026-11-02 changed S1 to count the final-task
+    trials, so 42 sessions enter in place of 36; the code''s count gives 3.89 and 4.48, p = 4.3e-9, and
+    the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -337,10 +392,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - 'Spread follows the paper''s code (plot_region_error_distribution): first bin before and last bin
     after the peak at or above peak minus one standard deviation, on bins where the animal is at or past
     120.35 in the aligned window, averaged per trial.'
@@ -349,12 +407,14 @@ outcomes:
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig5g-ca1-more-goal-coding
   measured:
-  - 0.0523
-  - 0.1031
-  - 0.0485
+  - 0.0511
+  - 0.1033
+  - 0.0483
   notes: 'Equal cell numbers, correct delay only trials, -2 to 0 s before the pseudo update: CA1 minus
-    PFC, initial +0.058 (z = 13.4), new +0.055 (z = 12.5), Tukey p at the precision floor (1.8e-12). PFC
-    initial 0.052, CA1 new 0.103, PFC new 0.049, all within tolerance. 682 trials per region (paper 364).'
+    PFC, initial +0.060 (z = 14.1), new +0.055 (z = 12.9), Tukey p at the precision floor (1.8e-12). PFC
+    initial 0.051, CA1 new 0.103, PFC new 0.048, all within tolerance. 717 trials per region (paper 364).
+    The reader''s answer of 2026-11-02 changed S1 to count the final-task trials; the code''s count (682
+    trials) gives the same (z = 13.4 and 12.5), and the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -363,26 +423,33 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig2g-pfc-no-goal-increase
   outcome: not_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig2g-pfc-no-goal-increase
   measured:
-  - 0.0672
+  - 0.0665
   - 0.071
-  - 0.0653
-  - 0.0619
-  notes: 'Rule S1, reading (a): ANOVA p = 0.048; switch minus delay only, initial +0.005 (Tukey p = 0.73),
-    new +0.012 (p = 0.043); difference LME p = 0.15; per-session Wilcoxon of the difference, delay only
-    p = 0.51, switch p = 0.029 (37 sessions). Reading (b): ANOVA p = 0.098, new arm p = 0.083. Several
-    tests give p < 0.05, so the absence is not reproduced; the effect is small and the trial means (0.067,
-    0.071, 0.065, 0.062) are within tolerance. Under the Methods'' rule (46 sessions), reading (b) gives
-    no p below 0.05 (smallest 0.066) and reading (a) still does (new arm p = 0.035). Asked of a reader
-    (questions/001371.yaml).'
+  - 0.0641
+  - 0.0613
+  notes: 'Asked of a reader and answered (questions/001371.yaml): S1 now counts the final-task trials
+    of the session, giving 46 PFC sessions in place of 37. Reading (a), switch and delay only in the model:
+    ANOVA p = 0.038; switch minus delay only, initial +0.004 (Tukey p = 0.74), new +0.012 (p = 0.035).
+    Difference LME p = 0.13; per-session Wilcoxon of the difference over 46 sessions, switch p = 0.080
+    (before the answer 0.029), delay only p = 0.96. Reading (b), with stay: ANOVA p = 0.074, new arm p
+    = 0.066, so no test there gives p < 0.05. A claim of absence is judged on the paper''s test alone
+    (reader, step 3). That test is reading (a): its denominator df, F(3773.42), fits about 2 x 1907 rows
+    from 1109 switch and 798 delay only trials, where adding the stay trials would give about 4780. Under
+    it two tests give p < 0.05, so the absence is not reproduced, as before the answer. The effect is
+    small and the trial means (0.067, 0.071, 0.064, 0.061) are within tolerance. The code''s count gives
+    reading (a) ANOVA p = 0.048 and new arm p = 0.043.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -391,17 +458,23 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig5e-pfc-windows
   outcome: not_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig5e-pfc-windows
-  notes: 'New arm switch minus delay only: 0 to 0.5 s +0.010 (Tukey p = 0.22), 0 to 1 s +0.013 (p = 0.034),
-    0 to 1.5 s +0.012 (p = 0.043), 0.5 to 1 s +0.019 (p = 0.034); Methods'' rule 0.15, 0.019, 0.035, 0.024.
-    No initial arm contrast is below 0.05 (smallest p 0.73).'
+  notes: 'New arm switch minus delay only: 0 to 0.5 s +0.011 (Tukey p = 0.15), 0 to 1 s +0.014 (p = 0.019),
+    0 to 1.5 s +0.012 (p = 0.035), 0.5 to 1 s +0.018 (p = 0.024). No initial arm contrast is below 0.05
+    (smallest p 0.74). The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count
+    the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and
+    46 PFC sessions in place of 47 and 37. The code''s count gives 0.22, 0.034, 0.043 and 0.034; the outcome
+    is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -410,28 +483,34 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig3c-theta-phase-segregation
   outcome: not_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig3c-theta-phase-segregation
   measured:
-  - 0.1295
-  - 0.1276
-  - 0.13
-  - 0.1259
-  - 0.6624
-  - 0.6732
-  notes: 'Correct switch trials, 0 to 1.5 s, 1158 trials. The central zone exceeds both goal arms in both
-    half cycles under both readings: central window (b) 0.148 and 0.151 against initial 0.130 and 0.128
+  - 0.1291
+  - 0.127
+  - 0.1296
+  - 0.1256
+  - 0.6631
+  - 0.6722
+  notes: 'Correct switch trials, 0 to 1.5 s, 1241 trials. The central zone exceeds both goal arms in both
+    half cycles under both readings: central window (b) 0.148 and 0.151 against initial 0.129 and 0.127
     and new 0.130 and 0.126 (first and second half; all four contrasts with p at the precision floor);
     whole central arm (a) 0.66 and 0.67. So the goal arms do not exceed central in the first half. The
     modulation goes the stated way (central higher, goal arms lower in the second half). The goal arm
     values are within tolerance; the central values are not under either reading. The stored phase gives
-    the same result (central window 0.147 and 0.152 against goal arms 0.126 to 0.130).'
+    the same result (central window 0.148 and 0.151 against goal arms 0.126 to 0.129). The reader''s answer
+    of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for
+    the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The
+    code''s count gives the same pattern; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -440,10 +519,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - 'Theta phase is computed from the LFP of the file''s ripple channel: decimated to 200 Hz, band-passed
     4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks
     and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs
@@ -457,18 +539,21 @@ outcomes:
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig3b-theta-pre-post
   measured:
-  - 0.1138
-  - 0.1295
-  - 0.1141
-  - 0.13
-  - 0.6993
-  - 0.6624
-  notes: 'Correct switch trials. First half cycle, whole central arm: initial 0.114 to 0.130, new 0.114
-    to 0.130 (Tukey p 1.0e-11 and 4.7e-12), central 0.699 to 0.662 (p at the precision floor). The whole
-    cycle and the central window give the same directions with p < 1e-10; the central window goes from
-    0.178 to 0.149, and the stored phase gives the same (initial p = 1.0e-10, new p = 1.8e-11, central
+  - 0.114
+  - 0.1291
+  - 0.1145
+  - 0.1296
+  - 0.6985
+  - 0.6631
+  notes: 'Correct switch trials. First half cycle, whole central arm: initial 0.114 to 0.129, new 0.115
+    to 0.130 (Tukey p 5.8e-12 and 5.5e-12), central 0.699 to 0.663 (p at the precision floor). The whole
+    cycle and the central window give the same directions with p < 1e-11; the central window goes from
+    0.177 to 0.149, and the stored phase gives the same (initial p = 6.0e-11, new p = 1.8e-11, central
     p at the floor). The goal arm values are within tolerance; the central values are not (paper 0.15
-    to 0.12) under either central reading.'
+    to 0.12) under either central reading. The reader''s answer of 2026-11-02 (questions/001371.yaml)
+    changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was
+    re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s count gives the same directions
+    (p < 2e-11); the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -477,10 +562,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - 'Theta phase is computed from the LFP of the file''s ripple channel: decimated to 200 Hz, band-passed
     4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks
     and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs
@@ -493,10 +581,12 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig6-theta-switch-over-delay
-  notes: 'Correct trials (1158 switch, 504 stay, 825 delay only), type by half LME per arm: ANOVA F(5)
-    = 32.9 (initial) and 18.5 (new), p < 1e-17; switch minus delay only in the first and second halves,
-    initial +0.013 and +0.015, new +0.011 and +0.010, all Tukey p < 1e-8. The stored phase gives the same
-    (p < 1e-8).'
+  notes: 'Correct trials (1241 switch, 530 stay, 871 delay only), type by half LME per arm: ANOVA F(5)
+    = 31.0 (initial) and 20.1 (new), p < 1e-19; switch minus delay only in the first and second halves,
+    initial +0.012 and +0.014, new +0.011 and +0.010, all Tukey p < 1e-9. The stored phase gives the same
+    (p < 1e-9). The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task
+    trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions
+    in place of 47 and 37. The code''s count gives p < 1e-8; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -505,10 +595,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - 'Theta phase is computed from the LFP of the file''s ripple channel: decimated to 200 Hz, band-passed
     4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks
     and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs
@@ -521,9 +614,11 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig3d-new-arm-theta-modulated
-  notes: 'Correct switch trials, 0 to 1.5 s: new arm first half 0.1285, second half 0.1245, p = 0.0061;
-    initial arm 0.1290 and 0.1272, p = 0.22. With the stored phase, new arm p = 0.015 and initial arm
-    p = 0.37.'
+  notes: 'Correct switch trials, 0 to 1.5 s: new arm first half 0.1286, second half 0.1246, p = 0.0049;
+    initial arm 0.1287 and 0.1266, p = 0.15. With the stored phase, new arm p = 0.015 and initial arm
+    p = 0.25. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task
+    trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions
+    in place of 47 and 37. The code''s count gives p = 0.0061 and 0.22; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -532,10 +627,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - 'Theta phase is computed from the LFP of the file''s ripple channel: decimated to 200 Hz, band-passed
     4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks
     and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs
@@ -552,9 +650,9 @@ outcomes:
   notes: 'Not run. The choice estimate is a per-session LSTM (S10) trained on the unresampled behaviour
     (about 110 samples per second, trials padded to the longest, up to 3601 samples), with 6-fold cross-validation
     repeated 3 times, so 18 models of 20 epochs per session. The notebook builds the model as the paper''s
-    code does and times one fold on session S25-210906 (119 delay only trials): 1.5 s per epoch, 8.8 min
-    for the session, and 8.9 h for all 66 sessions scaled by their delay only trial counts, against a
-    60 min limit for the notebook and less than 3 hours left in the run.'
+    code does and times one fold on session S25-210906 (119 delay only trials): 3.3 s for the first epoch
+    and 2.1 s for the second, 12.3 min for the session, and 12.4 h for all 66 sessions scaled by their
+    delay only trial counts, against a 60 min limit for the notebook and about 4 hours left in the run.'
 - claim: fig4f-pfc-choice-flips
   outcome: blocked
   blocked_by: too_large
@@ -596,16 +694,18 @@ outcomes:
   notes: Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which
     is too large to run here (see that claim).
 - claim: fig5d-stay-hpc-like-delay
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig5d-stay-hpc-like-delay
   measured:
-  - 0.0984
-  - 0.122
-  notes: 'CA1, correct trials, three trial types by arm: stay minus delay only, initial +0.007 (Tukey
-    p = 0.90), new +0.020 (p = 0.032). The new arm contrast is below 0.05, so the absence is not reproduced.
-    With the Methods'' rule it gives p = 0.063 (asked of a reader, questions/001371.yaml). Stay means
-    0.098 and 0.122, within tolerance; 504 stay trials (paper 551).'
+  - 0.1004
+  - 0.1202
+  notes: 'Asked of a reader and answered (questions/001371.yaml): S1 now counts the final-task trials
+    of the session, giving 55 CA1 sessions in place of 47. CA1, correct trials, three trial types by arm:
+    stay minus delay only, initial +0.007 (Tukey p = 0.85), new +0.018 (p = 0.063). Neither contrast is
+    below 0.05, so the absence is reproduced; before the answer, under the code''s count, the new arm
+    gave +0.020, p = 0.032, and the claim was not reproduced. The new arm contrast is close to the threshold.
+    Stay means 0.100 and 0.120, within tolerance; 530 stay trials (paper 551).'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -614,16 +714,22 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig5d-stay-hpc-below-switch
   outcome: partially_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig5d-stay-hpc-below-switch
-  notes: 'Stay minus switch: initial -0.035 (Tukey p = 2.2e-7), new -0.010 (p = 0.63; Methods'' rule 0.38).
-    Only the initial arm is lower on stay trials.'
+  notes: 'Stay minus switch: initial -0.031 (Tukey p = 2.3e-6), new -0.012 (p = 0.38). Only the initial
+    arm is lower on stay trials. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1
+    to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55
+    CA1 and 46 PFC sessions in place of 47 and 37. The code''s count gives p = 2.2e-7 and 0.63; the outcome
+    is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -632,21 +738,27 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: sfig10-stay-transient-new-arm
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig10-stay-transient-new-arm
   measured:
-  - 0.1251
-  - 0.0975
-  - 0.0902
-  notes: '0 to 0.5 s: stay minus delay only, new arm +0.029 (Tukey p = 0.0077; Methods'' rule 0.037),
-    initial arm +0.002 (p = 1.0). Stay new 0.125 and stay initial 0.090 are within tolerance; delay only
-    new 0.0975 is just below the tolerance of 0.11 +/- 0.011.'
+  - 0.1235
+  - 0.1002
+  - 0.0925
+  notes: '0 to 0.5 s: stay minus delay only, new arm +0.024 (Tukey p = 0.037), initial arm +0.003 (p =
+    1.0). Stay new 0.124, delay only new 0.100 and stay initial 0.093 are all within tolerance (before
+    the answer the delay only new value, 0.0975, was just below its tolerance). The reader''s answer of
+    2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the
+    50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s
+    count gives new arm p = 0.0077; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -655,10 +767,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig5f-stay-pfc-new-choice
   outcome: blocked
   blocked_by: too_large
@@ -679,11 +794,14 @@ outcomes:
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig6b-hpc-new-lower-incorrect
   measured:
-  - 0.0597
-  - 0.004
-  notes: 'Switch trials (1158 correct, 366 incorrect), Methods GLM residuals over 0 to 1.5 s: ANOVA p
-    = 1.6e-5; correct minus incorrect, new arm +0.078 (z = 3.63, Tukey p = 0.0016). Trial means 0.060
-    (correct) and 0.004 (incorrect), within tolerance. The code''s per-session GLM gives p = 0.0011.'
+  - 0.063
+  - 0.0077
+  notes: 'Switch trials (1241 correct, 395 incorrect), Methods GLM residuals over 0 to 1.5 s: ANOVA p
+    = 6.5e-5; correct minus incorrect, new arm +0.077 (z = 3.72, Tukey p = 0.0011). Trial means 0.063
+    (correct) and 0.008 (incorrect), within tolerance. The code''s per-session GLM gives p = 0.0014. The
+    reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of
+    the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place
+    of 47 and 37. The code''s count gives p = 0.0016; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -692,10 +810,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear
     model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding
     (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the
@@ -704,8 +825,11 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig6b-hpc-initial-no-difference
-  notes: 'Methods GLM: correct minus incorrect, initial arm +0.051, Tukey p = 0.079. The code''s per-session
-    GLM gives p = 0.034.'
+  notes: 'Methods GLM: correct minus incorrect, initial arm +0.046, Tukey p = 0.12. The code''s per-session
+    GLM gives p = 0.061 (0.034 before the answer). The reader''s answer of 2026-11-02 (questions/001371.yaml)
+    changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was
+    re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s count gives p = 0.079; the
+    outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -714,10 +838,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear
     model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding
     (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the
@@ -726,9 +853,12 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig6-hpc-pre-cue-initial-higher-incorrect
-  notes: 'Methods GLM, -1.5 to 0 s: initial arm residual higher on incorrect trials (-0.086 correct minus
-    incorrect, z = -4.84, Tukey p = 7.8e-6); new arm no difference (p = 1.0). The code''s GLM gives the
-    same direction (p = 0.020).'
+  notes: 'Methods GLM, -1.5 to 0 s: initial arm residual higher on incorrect trials (-0.082 correct minus
+    incorrect, z = -4.75, Tukey p = 1.2e-5); new arm no difference (p = 1.0). The code''s GLM gives the
+    same direction (p = 0.018). The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1
+    to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55
+    CA1 and 46 PFC sessions in place of 47 and 37. The code''s count gives p = 7.8e-6; the outcome is
+    unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -737,10 +867,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear
     model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding
     (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the
@@ -764,10 +897,13 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:sfig12-delay-hpc-no-outcome-difference
-  notes: 'Held-out delay only trials (825 correct, 358 incorrect), Methods GLM, 0 to 1.5 s after the pseudo
-    update: initial arm correct minus incorrect -0.058 (Tukey p = 0.035), new arm -0.002 (p = 1.0), initial
-    minus new by outcome p = 0.038. Two of three tests give p < 0.05. The code''s per-session GLM gives
-    p = 0.22, 1.0 and 0.13.'
+  notes: 'Held-out delay only trials (871 correct, 393 incorrect), Methods GLM, 0 to 1.5 s after the pseudo
+    update: initial arm correct minus incorrect -0.064 (Tukey p = 0.012), new arm -0.014 (p = 0.91), initial
+    minus new by outcome p = 0.072. One of three tests gives p < 0.05. The code''s per-session GLM gives
+    p = 0.17, 1.0 and 0.11. The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count
+    the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and
+    46 PFC sessions in place of 47 and 37. The code''s count gives p = 0.035, 1.0 and 0.038; the outcome
+    is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -776,10 +912,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
   - The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear
     model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding
     (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the
@@ -799,11 +938,14 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig7c-hpc-commitment-new-arm
-  measured: 0.0661
-  notes: 'Correct switch trials (1158; paper 1235): Spearman rho = +0.066, p = 0.024 between view angle
+  measured: 0.0574
+  notes: 'Correct switch trials (1241; paper 1235): Spearman rho = +0.057, p = 0.043 between view angle
     toward the initial arm at the cue and the post minus pre change in new arm decoding. Sign and p hold;
-    rho is outside 0.1237 +/- 0.0124. Quartile means of the change 0.031, 0.037, 0.065 and 0.055 from
-    toward-new to toward-initial. Per animal rho is positive in 4 of 7.'
+    rho is outside 0.1237 +/- 0.0124. Quartile means of the change 0.029, 0.038, 0.067 and 0.048 from
+    toward-new to toward-initial. Per animal rho is positive in 4 of 7. The reader''s answer of 2026-11-02
+    (questions/001371.yaml) changed S1 to count the final-task trials of the session for the 50-trial
+    rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code''s count
+    gives rho = +0.066, p = 0.024; the outcome is unchanged.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -812,16 +954,22 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig7c-hpc-commitment-initial-arm
   outcome: not_reproduced
   notebook: reproduce_prince_2025.ipynb
   output: claim:fig7c-hpc-commitment-initial-arm
-  notes: Spearman rho = +0.058, p = 0.047 (n = 1158) for the initial arm; the paper reports rho = 0.044,
-    p = 0.12. The correlation is weak and just below 0.05, so the absence is not reproduced.
+  notes: Spearman rho = +0.058, p = 0.040 (n = 1241) for the initial arm; the paper reports rho = 0.044,
+    p = 0.12. The correlation is weak and below 0.05, so the absence is not reproduced. The reader's answer
+    of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for
+    the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The
+    code's count gives p = 0.047; the outcome is unchanged.
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -830,10 +978,13 @@ outcomes:
   - Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from
     within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80%
     of delay only trials (train_test_split, random_state 21).
-  - Sessions are included with at least 20 units in the region and at least 50 encoder training trials
-    (S1). The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against
-    1158 and 825 here), partly because the units of five sessions carry no region (finding). The Methods'
-    reading of the 50-trial rule (final-task trials) is shown for every test.
+  - Sessions are included with at least 20 units in the region and at least 50 final-task trials of the
+    session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses,
+    "less than 50 trials for the behavioral session"), giving 55 CA1 and 46 PFC sessions against the paper's
+    56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials
+    against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The
+    code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown
+    for every test.
 - claim: fig7e-pfc-commitment-initial
   outcome: blocked
   blocked_by: too_large
@@ -877,7 +1028,8 @@ findings:
   statement: The paper's code counts the encoder training trials (80% of delay only trials) for the 50-trial
     session rule, where the Methods count the trials of the session; on this dataset the Methods' count
     gives 55 CA1 and 46 PFC sessions, close to the 56 and 47 of Supplementary Table 2, and the code's
-    count 47 and 37.
+    count 47 and 37. A reader amended S1 to follow the Methods (answer of 2026-11-02), and the code's
+    count changes one outcome here (fig5d-stay-hpc-like-delay).
 - kind: code_mismatch
   statement: The paper's code reads the theta phase stored in the file (general/lfp.py), where the Methods
     describe a phase from peaks and troughs of the filtered LFP; the two agree closely at the decoding
