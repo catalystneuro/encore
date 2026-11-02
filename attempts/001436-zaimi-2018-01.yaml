@@ -1,0 +1,264 @@
+schema_version: 2
+id: 001436-zaimi-2018-01
+dataset:
+  archive: dandi
+  id: "001436"
+  version: 0.250512.1625
+  doi: 10.48324/dandi.001436/0.250512.1625
+paper: doi:10.1038/s41598-018-22181-4
+date: "2026-11-02"
+entry: 001436-zaimi-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41413634368
+inputs:
+- what: The paper's released TEM model default_TEM_model_v1 (checkpoint, saved graph and
+    config_network.json) and the inference and scoring code (segment.py, apply_model.py,
+    patch_management_tools.py, network_construction.py, testing/segmentation_scoring.py,
+    testing/launch_performance_metrics.py), read from GitHub at the commit the claims file pins.
+  source: https://github.com/neuropoly/axondeepseg at commit 7f6013221b2a862e107a7e23f3c8662eba3ba64b
+- what: Folder names of the NYU mouse component of the White Matter Microscopy Database
+    (NewYorkUniversitySchoolOfMedicine/histology/MiceMyelinQuantification, one folder per diet
+    group and time point, one sub-folder per mouse), used to label each dandiset mouse as control
+    or cuprizone; and up to four full-size micrographs per mouse folder, used only to check the
+    link. Files dated 2017-03-03 and 2017-03-06; their OSF ids are printed in the notebook.
+  source: OSF node adrcs, a component of the White Matter Microscopy Database (doi:10.17605/OSF.IO/YP4QG)
+- what: Macaque corpus callosum TEM images (data/sample1 to sample8, three NIfTI images each) and
+    their myelin and axon masks (segmentation/sample1 to sample8) of ref. 7 (Stikov et al. 2015),
+    for the two macaque claims (data elsewhere). Files dated 2017-03-06; their OSF ids are printed
+    in the notebook.
+  source: OSF node yp4qg (doi:10.17605/OSF.IO/YP4QG), folder MontrealNeurologicalInstitute/histology/Macaque
+outcomes:
+- claim: osf-group-labels-link
+  outcome: reproduced
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:osf-group-labels-link
+  notes: All 20 dandiset mice are matched by number to exactly one group folder of the OSF deposit,
+    and no group folder holds more than 3 dandiset mice (ctl_6wks holds 2, mice 7 and 9; mouse 17
+    of that group is not in the dandiset). Of 39 OSF micrographs compared (11 mice), 16 have a
+    counterpart in the dandiset (thumbnail r 0.593 to 0.903), all images of the same mouse, from 8
+    mice (10, 13, 14, 15, 25, 26, 27, 28); the other 23 correlate at most 0.487 with any dandiset
+    image. Mice 7, 9 and 11 were checked without a counterpart among their first four OSF
+    micrographs. Nine mice (12, 29 to 36) have no full-size micrograph on OSF and are linked by
+    number only. The link gives 8 control mice (7, 9, 25, 26, 27, 34, 35, 36) and 12 cuprizone mice.
+  deviations:
+  - The correlation threshold of 0.5 for a counterpart was set on development runs on mice 25 and
+    26, before the full run, and written into the criterion then (see the claims file).
+- claim: table3-tem-mice-accuracy
+  outcome: reproduced
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:table3-tem-mice-accuracy
+  measured: 0.9416
+  notes: Mean pixel-wise accuracy 0.9416 over all 158 images of the 20 mice (reading a) and 0.9349
+    over the 62 images of the 8 control mice (reading b), both inside 0.8506 to 1.0396; the 96
+    images of the 12 cuprizone mice give 0.9459. Per-mouse means range from 0.9202 to 0.9740 and
+    single images from 0.8954 to 0.9884. Every one of the 1140 sets of 3 mice gives 0.9226 to
+    0.9683 (the 56 sets of 3 control mice 0.9252 to 0.9441), so the outcome holds for whichever 3
+    mice the paper tested. Both readings include the mice the model was trained on, so the match is
+    weaker evidence than a test on held-out mice. Without the contrast inversion the accuracy is
+    0.5027 (a) and 0.3934 (b).
+  deviations:
+  - The paper's network runs in TensorFlow 1 (tf.contrib), which cannot be installed with Python
+    3.13. The network of network_construction.py is rebuilt with TensorFlow 2 operations from the
+    released checkpoint; on the four patches of the first image its output differs from the
+    model's own saved graph (model.ckpt.meta, run with training_phase False) by at most 9.1e-06,
+    and the classes agree on every pixel.
+  - Resampling and histogram equalisation use the settings of scikit-image 0.13 (rescale and
+    resize with order 1, mode constant, no anti-aliasing; an exact integer histogram), the release
+    current when the code was published (it required scikit-image >= 0.12.3), as the defaults of
+    the installed 0.26 differ.
+  - The pixel size is the dandiset's 0.00236 um (sidecar files), as the criterion says, not the
+    0.002 um of Table 1; at 0.002 um the images would be 457 pixels high after resampling, smaller
+    than the model's 512-pixel patch, so the code could not run them.
+  - The ground truth is the dandiset's 2025 masks, in which every fibre is separated from its
+    neighbours by a 2-pixel line (CHANGES, version 0.04), not the masks the paper scored against,
+    which are not in the dandiset. The axon class is the axon mask and the myelin class the myelin
+    mask.
+  - Neither test-set reading is the paper's set of 3 held-out mice, which is not recorded; the
+    range over every set of 3 mice is shown. Mouse 25 has 6 images, the others 8; no mouse has more
+    than 8, so the criterion's rule for more than 8 images does not apply.
+  - The control mice of reading (b) are labelled through the OSF deposit (osf-group-labels-link),
+    as the dandiset names no group.
+- claim: table3-tem-mice-dice-detection
+  outcome: reproduced
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:table3-tem-mice-dice-detection
+  measured:
+  - 0.9500
+  - 0.8489
+  - 0.9863
+  - 0.9707
+  notes: Reading (a), all 158 images; axon Dice 0.9500, myelin Dice 0.8489, sensitivity 0.9863,
+    precision 0.9707. Reading (b), the 62 control images; 0.9543, 0.8571, 0.9878, 0.9819. All four
+    are within tolerance under both readings, and over every set of 3 mice (axon Dice 0.9300 to
+    0.9651, myelin Dice 0.8175 to 0.8739, sensitivity 0.9722 to 0.9969, precision 0.9304 to
+    0.9949). Over all images, 7757 of 7868 ground-truth axons are detected, with 239 false
+    positives. Without the inversion axon Dice is 0.0029.
+  deviations:
+  - Segmentation, ground truth and test-set readings as in table3-tem-mice-accuracy.
+  - score_analysis of segmentation_scoring.py is reimplemented with the same rules (predicted
+    objects of area above 2 pixels, their integer centroids kept as a set, a ground-truth object
+    with at least one centroid is one true positive, centroids in no ground-truth object are false
+    positives, values rounded to 3 decimals per image as the code does).
+- claim: myelin-dice-below-axon-dice
+  outcome: reproduced
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:myelin-dice-below-axon-dice
+  notes: On the mouse images, myelin Dice is below axon Dice in the means of both readings (0.8489
+    against 0.9500; 0.8571 against 0.9543) and in every one of the 158 single images (difference
+    0.0655 to 0.1556), so the claim holds under readings (i) and (ii). On the 7 macaque images
+    tested for table3-tem-macaque-accuracy it holds too. The SEM rows cannot be tested. The
+    statement's explanation (two boundaries) is not tested.
+  deviations:
+  - Tested on the mouse images only, as the criterion says.
+- claim: sensitivity-above-93
+  outcome: reproduced
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:sensitivity-above-93
+  measured: 0.9863
+  notes: Mean sensitivity 0.9863 (reading a) and 0.9878 (reading b), above 0.93; the lowest
+    per-mouse mean is 0.9682 and the lowest over every set of 3 mice 0.9722. Two of 158 single
+    images are at or below 0.93 (lowest 0.898). The other test sets of the statement are not tested
+    here; on the macaque images (table3-tem-macaque-accuracy) sensitivity is 0.289 to 0.606.
+  deviations:
+  - Tested on the mouse images only, as the criterion says.
+- claim: table3-sem-rat-accuracy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only mouse TEM images. The paper's Data availability statement names
+    the White Matter Microscopy Database (OSF yp4qg); its rat spinal cord images with ground truth
+    (PolytechniqueMontreal/RatSpinalCordNov2015/with_groundtruth) are CARS images at 0.225 to 0.33
+    um, not the SEM test images of Table 1 (0.13 um, 150 x 97 um2, and 0.07 um, 108 x 77 um2), and
+    no other folder holds SEM images that match them. The rest of the data is on request only.
+- claim: table3-sem-human-accuracy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Not in the dandiset. The human spinal cord images of the White Matter Microscopy Database
+    (PolytechniqueMontreal/Human, Duval et al. 2018) are at 0.23 um, not the 0.13 um, 715 x 735 um2
+    test image of Table 1.
+- claim: table3-tem-macaque-accuracy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:table3-tem-macaque-accuracy
+  notes: Tested on the macaque images of ref. 7 in the White Matter Microscopy Database (data
+    elsewhere), 8 samples of three 2300 x 3040 images, with one myelin and one axon mask per
+    sample. The masks of 7 samples fit one of their images (grey-level contrast of myelin 57.9 to
+    108.0 against at most 15.2 shifted, and at most 5.7 for the other images); those of sample 4 fit
+    none. The paper tested one image and does not say which. On the 7 matched images the
+    pixel-wise accuracy is 0.5729 to 0.7634 (mean 0.6723); one reading (sample 3, 0.7634) is inside
+    0.7594 to 0.9282 and six are below it, so the readings disagree and no image has a better basis
+    than another. The other measures are below Table 3 on every image (axon Dice 0.6268 to 0.8070
+    against 0.9069, myelin Dice 0.5032 to 0.6481 against 0.7519, sensitivity 0.289 to 0.606 against
+    0.9429, precision 0.349 to 0.691 against 0.8129). Without the inversion the accuracy is 0.1810 to
+    0.3540. The ground-truth myelin covers 0.316 to 0.489 of these images and the predicted myelin
+    0.142 to 0.223, so either the paper scored different masks or images, or the model does much
+    worse here than Table 3 reports. Question for the paper's authors (recorded as a
+    methods_unavailable finding) asks which macaque image and which masks formed the test sample,
+    and at what pixel size it was segmented.
+  deviations:
+  - Data from the White Matter Microscopy Database, not the dandiset (data elsewhere).
+  - The pixel size is Table 1's 0.009 um; the NIfTI headers give a voxel size of 2.0, which is not a
+    pixel size. 2300 x 3040 pixels at 0.009 um is 20.7 x 27.4 um, the 27 x 21 um2 of Table 1.
+  - Each sample's masks are paired with the image they fit by grey-level contrast, as the deposit
+    does not say which image they belong to.
+  - Ground truth axon where avf.nii is above 0 (values 0 and 1/255), myelin where myelin.nii is 1.
+- claim: table3-other-samples-dice-detection
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The SEM rat and human test images are not in the dandiset nor in the White Matter
+    Microscopy Database (see table3-sem-rat-accuracy and table3-sem-human-accuracy), so 12 of the 16
+    values cannot be tested. The 4 macaque values were measured on the 7 matched macaque images of
+    the database (see table3-tem-macaque-accuracy), and every one is below its tolerance on every
+    image (axon Dice at most 0.8070 against a lower bound of 0.8162, myelin Dice at most 0.6481
+    against 0.6767, sensitivity at most 0.606 against 0.8486, precision at most 0.691 against
+    0.7316).
+- claim: macaque-myelin-underestimated
+  outcome: reproduced
+  notebook: reproduce_zaimi_2018.ipynb
+  output: claim:macaque-myelin-underestimated
+  notes: On all 7 matched macaque images (data elsewhere) the predicted myelin area is below the
+    ground truth's, so the criterion holds under every reading of which image was tested. The
+    underestimate is not slight; the predicted myelin fraction is 0.352 to 0.512 of the ground
+    truth's, against 0.788 to 1.266 (median 0.974) on the mouse images. With the other macaque
+    measures far below Table 3 (table3-tem-macaque-accuracy), these may not be the masks the paper
+    scored against.
+  deviations:
+  - Data, pixel size and the pairing of masks with images as in table3-tem-macaque-accuracy.
+- claim: full-slice-processing-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The full rat spinal cord SEM slice is not in the dandiset. The White Matter Microscopy
+    Database holds an SEM panorama of an adult rat cervical spinal cord
+    (PolytechniqueMontreal/RatSpinalCordNov2016, 0.095 um, 20006 x 18255 pixels), but the paper gives
+    no pixel size, date or deposit for its slice, so it cannot be shown to be the slice of Figures 6
+    and 7. The time also depends on the machine, a 2.9 GHz Mac laptop that cannot be matched here.
+- claim: fig7-corticospinal-tract
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The full slice is not in the dandiset, and the candidate panorama on OSF cannot be tied to
+    the paper (see full-slice-processing-time). The criterion also leaves open which 50 x 50 um2
+    cells form the tract, as the paper gives the tracts only as a schematic diagram, and the paper's
+    morphometrics come from AxonSeg, a separate MATLAB package.
+- claim: fig7-larger-axons-periphery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7-corticospinal-tract; the paper also gives no measure of distance to the periphery.
+- claim: fig7-tract-diameters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7-corticospinal-tract; the tract boundaries are open.
+- claim: fig7-gratio-range
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7-corticospinal-tract. The paper's white matter mask is not given either.
+findings:
+- kind: metadata_insufficient
+  statement: The dandiset does not say which mice are controls and which received cuprizone,
+    though its description says it holds both groups; participants.tsv gives only the species. The
+    groups, and the time points, are in the folder names of the NYU component of the White Matter
+    Microscopy Database (OSF node adrcs), by mouse number; by these, the dandiset holds 8 control
+    mice (7, 9, 25, 26, 27, 34, 35, 36) and 12 cuprizone mice.
+- kind: selection_undocumented
+  statement: Neither the dandiset nor the paper's code records which 3 of the 20 mice formed the
+    paper's test set (Table 1, 8 x 3 test and 8 x 17 training mice), so the mouse results of Table 3
+    cannot be repeated on the held-out mice alone. Every set of 3 mice gives values within the
+    claims' tolerances here.
+- kind: other
+  statement: The masks in the dandiset are the 2025 revision (CHANGES, version 0.04, "Modify the
+    masks of 155 images to separate all fibers with a 2px delineation"); the masks the paper scored
+    against in 2018 are not in the dandiset.
+- kind: paper_inconsistency
+  statement: The paper gives the mouse pixel size as 0.002 um and the field of view as 6 x 9 um2;
+    the sidecar files give 0.00236 um and the images are 2286 x 3762 pixels (5.39 x 8.88 um). The
+    dandiset's README explains both. At 0.002 um the images would be too small for the released
+    model's 512-pixel patches.
+- kind: metadata_error
+  statement: The archive's assets summary for version 0.250512.1625 gives 11 samples, where the
+    dandiset holds 158 images (samples.tsv has 158 rows); sample ids (sample-0001 to sample-0011)
+    are reused across mice, and the summary counts distinct ids.
+- kind: other
+  statement: 21 of the 158 axonmyelin masks are grey plus alpha pngs (alpha 255 everywhere), the
+    others grey; their grey channel agrees with the axon and myelin masks in every image.
+- kind: data_missing
+  statement: The dandiset holds only the mouse TEM images of the paper. The SEM rat and human test
+    images, the SEM training images, the macaque test image and the full rat spinal cord slice of
+    Figures 6 and 7 are not in it; of these, only macaque TEM images of ref. 7 were found public,
+    in the White Matter Microscopy Database.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which macaque image formed the test sample of Table 3
+    (the White Matter Microscopy Database holds 8 samples of 3 images, with masks for one image per
+    sample), which masks were its ground truth, and at what pixel size was it segmented? On the 7
+    image and mask pairs found, the accuracy is 0.573 to 0.763 against 0.8438 in Table 3.
+- kind: other
+  statement: In the White Matter Microscopy Database macaque folder (outside the dandiset), the
+    masks of sample 4 fit none of its three images, and the NIfTI headers give a voxel size of 2.0
+    with no pixel size.
