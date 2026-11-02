@@ -41,8 +41,12 @@
 # - Rate of a neuron is its spike count in W divided by 2.3 s; a population is given as mean and
 #   standard deviation over its neurons (legends of Figs. 2C and 5C, "mean, std dev"). Open is
 #   whether neurons silent in W are counted. Readings R1, all neurons of the population; R2, only
-#   neurons with at least one spike in W. The IT5A and IT5B rates of 0 spikes/s in the activated
-#   state suggest R1, but the text does not say.
+#   neurons with at least one spike in W; R3, only neurons with at least one spike in the 4.3 s
+#   simulation, those silent in W counted at 0. The legends fix the window of the spikes counted,
+#   not the neurons averaged over, and the paper's code holds no rate analysis, so R3 fits the text
+#   as well as R1 and R2 (added 2026-11-02 in answer to a question). NetPyNE 1.0.5 plotSpikeStats
+#   gives R2 by default and R1 with includeRate0, but the paper does not say it was used. The IT5A
+#   and IT5B rates of 0 spikes/s in the activated state fit R1 and R3, but the text does not say.
 # - The paper names no test for any firing-rate p-value. The same network (same seeds) is run in
 #   all four simulations of a set, so the neurons can be paired. Readings T1, Wilcoxon signed-rank
 #   on paired neurons; T2, paired t-test; T3, Mann-Whitney U on the two groups; T4, Welch's t-test.
@@ -171,7 +175,7 @@ claims:
     value: 18.2
     tolerance: 1.82
     unit: spikes/s
-  criterion: Files -01 and -03, rates in W, readings R1 and R2. Reproduced when, under one rate
+  criterion: Files -01 and -03, rates in W, readings R1, R2 and R3. Reproduced when, under one rate
     reading, all four values are within tolerance and the activated rates are higher with p <
     0.001 under every test reading T1 to T4.
 - id: fig2c-control-it23-rate-activated
@@ -202,7 +206,7 @@ claims:
     value: 8.9
     tolerance: 0.89
     unit: spikes/s
-  criterion: Files -01 and -03, population IT2, rates in W, readings R1 and R2. The legend gives
+  criterion: Files -01 and -03, population IT2, rates in W, readings R1, R2 and R3. The legend gives
     6.7 and the text 6.6 spikes/s for the activated mean; the tolerance of 6.7 covers both.
     Reproduced when, under one rate reading, all four values are within tolerance and the
     activated rates are higher with p < 0.001 under every test reading T1 to T4.
@@ -234,7 +238,7 @@ claims:
     value: 5.2
     tolerance: 0.52
     unit: spikes/s
-  criterion: Files -01 and -03, rates in W, readings R1 and R2. Reproduced when, under one rate
+  criterion: Files -01 and -03, rates in W, readings R1, R2 and R3. Reproduced when, under one rate
     reading, all four values are within tolerance and the activated rates are lower with p <
     0.001 under every test reading T1 to T4.
 - id: control-it5-silenced-activated
@@ -260,7 +264,7 @@ claims:
     value: 0
     tolerance: 0.05
     unit: spikes/s
-  criterion: Files -01 and -03, rates in W, reading R1 (under R2 an activated mean is undefined
+  criterion: Files -01 and -03, rates in W, readings R1 and R3 (under R2 an activated mean is undefined
     when no neuron fires; if some fire, R2 is reported as a variant). The tolerance of the zero
     rates is 0.05 spikes/s, the rounding of the paper's one decimal place, since 10% of zero is
     zero. Reproduced when all four values are within tolerance.
@@ -279,7 +283,7 @@ claims:
     value: 4.7
     tolerance: 0.47
     unit: spikes/s
-  criterion: Files -01 and -03, rates in W, readings R1 and R2. Reproduced when, under one
+  criterion: Files -01 and -03, rates in W, readings R1, R2 and R3. Reproduced when, under one
     reading, both values are within tolerance. The paper reports no test.
 - id: pt5b-highest-rate
   statement: PT5B neurons have the highest mean spike rate of any population in the control rest
@@ -291,7 +295,7 @@ claims:
     population" can be read as (a) all 15 M1 populations, interneurons included, or (b) the seven
     excitatory pyramidal cell types (Methods, Morphology and physiology of neuron classes,
     paragraph 1), the excitatory cell types of Figs. 2C and 5C. Reproduced when the PT5B mean is the highest
-    in all three simulations under one rate reading (R1 or R2) and both population readings;
+    in all three simulations under one rate reading (R1, R2 or R3) and both population readings;
     when the population readings disagree, the claim is blocked as methods_underspecified with
     both shown.
 - id: control-cv-isi
@@ -530,7 +534,7 @@ claims:
     value: 12.7
     tolerance: 1.27
     unit: spikes/s
-  criterion: Files -02 and -04, rates in W, readings R1 and R2. Reproduced when, under one rate
+  criterion: Files -02 and -04, rates in W, readings R1, R2 and R3. Reproduced when, under one rate
     reading, all four values are within tolerance and the activated rates are higher with p <
     0.001 under every test reading T1 to T4.
 - id: fig5c-pd-it23-rate-activated
@@ -561,7 +565,7 @@ claims:
     value: 7.1
     tolerance: 0.71
     unit: spikes/s
-  criterion: Files -02 and -04, population IT2, rates in W, readings R1 and R2. Reproduced when,
+  criterion: Files -02 and -04, population IT2, rates in W, readings R1, R2 and R3. Reproduced when,
     under one rate reading, all four values are within tolerance and the activated rates are
     higher with p < 0.001 under every test reading T1 to T4.
 - id: pd-it5-silenced-activated
@@ -603,7 +607,7 @@ claims:
     value: 6.0
     tolerance: 0.6
     unit: spikes/s
-  criterion: A claim of absence. Files -02 and -04, IT6 rates in W, readings R1 and R2. The paper
+  criterion: A claim of absence. Files -02 and -04, IT6 rates in W, readings R1, R2 and R3. The paper
     names neither the test nor the threshold for this comparison; its other rate comparisons use
     bounds down to p < 0.05, so the threshold is p < 0.05 and the test readings are T1 to T4.
     Reproduced when both means are within tolerance under one rate reading and no test reading
@@ -767,7 +771,7 @@ claims:
   depends_on:
   - fig2c-control-pt5b-rate-activated
   - fig5c-pd-pt5b-rate-activated
-  criterion: Files -01 and -02, rates in W, readings R1 and R2, with the expected values of the
+  criterion: Files -01 and -02, rates in W, readings R1, R2 and R3, with the expected values of the
     two claims it depends on. Reproduced when, under one rate reading, the four rest values are
     within tolerance, the parkinsonian mean is higher with p < 0.001 under every test reading T1
     to T4 (paired readings pair neurons by index, the network being the same), and the
@@ -793,7 +797,7 @@ claims:
     value: 14.1
     tolerance: 1.41
     unit: spikes/s
-  criterion: Files -01 and -02, rates in W, readings R1 and R2. Reproduced when, under one rate
+  criterion: Files -01 and -02, rates in W, readings R1, R2 and R3. Reproduced when, under one rate
     reading, both values are within tolerance and the parkinsonian rate is higher with p < 0.05
     under every test reading T1 to T4.
 - id: rest-it5a-rate-pd-vs-control
@@ -816,7 +820,7 @@ claims:
     value: 2.2
     tolerance: 0.22
     unit: spikes/s
-  criterion: Files -01 and -02, rates in W, readings R1 and R2. Reproduced when, under one rate
+  criterion: Files -01 and -02, rates in W, readings R1, R2 and R3. Reproduced when, under one rate
     reading, both values are within tolerance and the parkinsonian rate is lower with p < 0.01
     under every test reading T1 to T4.
 - id: activated-pt5b-rate-pd-vs-control
@@ -860,7 +864,7 @@ claims:
     value: 6.0
     tolerance: 0.6
     unit: spikes/s
-  criterion: Files -03 and -04, rates in W, readings R1 and R2. Reproduced when, under one rate
+  criterion: Files -03 and -04, rates in W, readings R1, R2 and R3. Reproduced when, under one rate
     reading, both values are within tolerance and the parkinsonian rate is higher with p < 0.001
     under every test reading T1 to T4.
 - id: rest-beta-power-order-of-magnitude
