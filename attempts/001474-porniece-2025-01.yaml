@@ -1,0 +1,539 @@
+schema_version: 2
+id: 001474-porniece-2025-01
+dataset:
+  archive: dandi
+  id: '001474'
+  version: 0.251031.1725
+  doi: 10.48324/dandi.001474/0.251031.1725
+paper: doi:10.1038/s41598-025-19800-2
+date: '2026-11-02'
+entry: 001474-porniece-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41489705957
+outcomes:
+- claim: fig1k-early-late-recordings
+  outcome: partially_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig1k-early-late-recordings
+  measured:
+  - 0.391
+  - 1.129
+  - 0.72
+  - 0.732
+  notes: No combination of window (0-10, 1-10, 1-9 s) and Z reading puts all four means within tolerance;
+    Z2 and Z2p put two in. Under Z2 at 0-10 s NCD early is 0.39 against 0.12 +- 0.11, NCD late 1.13 against
+    0.86 +- 0.09, HFD early 0.72 and HFD late 0.73 against 0.72 and 0.79. NCD late is above NCD early
+    and HFD early above NCD early under every combination. Z1 values are about a third of Z2 (NCD early
+    0.10 to 0.13, late 0.38 to 0.43). Under Z0 NCD early is -0.17 to -0.23. Cohort 1 holds 38 NCD and
+    32 HFD recordings with at least 30 triggered trials (6 and 5 mice), against 39 and 33 in the paper.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - The depositors' Z-score (Z0) is shown as a variant and does not decide the outcome.
+  - 12 trials of two MPK120 recordings in which the raw signal falls to near zero are left out of the
+    raw measures (a standard choice).
+- claim: fig1k-lme
+  outcome: not_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig1k-lme
+  notes: Under every Z1, Z2, Z1p and Z2p combination the diet by meal-phase interaction is negative with
+    p 8e-07 to 1.2e-05, but the HFD coefficient (HFD against NCD, early meal) is positive with p 0.09
+    to 0.35, so neither condition of the criterion holds. With the depositors' Z-score (Z0, a variant)
+    the HFD coefficient is 0.80 to 0.88 with p 1.3e-06 to 4.7e-06 and the interaction -0.58 to -0.64 with
+    p 4e-05 to 6e-05, as the paper reports. The outcome turns on how the Z-score is computed, which the
+    paper does not fix (see the methods_unavailable finding).
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - The depositors' Z-score (Z0) is shown as a variant and does not decide the outcome.
+  - The model is fit with statsmodels mixedlm, REML, two rows per recording, as the criterion says.
+- claim: fig1l-early-late-mice
+  outcome: partially_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig1l-early-late-mice
+  measured:
+  - 0.43
+  - 1.154
+  - 0.734
+  - 0.742
+  notes: Under every Z1, Z2, Z1p and Z2p combination all 6 NCD mice have late above early, the NCD paired
+    t-test has p 0.0013 to 0.035 and the HFD one p 0.11 to 0.96. No combination puts all four mouse means
+    within tolerance (at most three; NCD late is 1.04 to 1.25 under Z2 and Z2p against 0.91 +- 0.13, and
+    0.39 to 0.43 under Z1 and Z1p). Under Z0 five of six NCD mice increase.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - The depositors' Z-score (Z0) is shown as a variant and does not decide the outcome.
+- claim: supp1i-hfd-no-change-1-20s
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp1i-hfd-no-change-1-20s
+  notes: Two-way ANOVA with Tukey HSD on mouse values, 0-20 and 1-20 s windows. HFD early against HFD
+    late has Tukey p 0.88 to 0.997 under every Z reading. The NCD early-late comparison has p 0.07 to
+    0.64 under Z1, Z2, Z1p and Z2p, and 0.03 to 0.04 under Z0.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - Tukey HSD is run over the four diet and phase groups after the ANOVA (statsmodels pairwise_tukeyhsd),
+    a standard implementation of the legend's test.
+- claim: supp1h-dff-early-late
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp1h-dff-early-late
+  notes: Per-recording mean dF/F0 from the raw trace; in every window HFD early (0.025 to 0.027) exceeds
+    NCD early (0.010 to 0.013) and HFD late (0.026 to 0.027) is at least HFD early minus its s.e.m.
+- claim: fig1gh-hfd-less-ensure
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig1gh-hfd-less-ensure
+  notes: Recorded volume from the files' notes. Recordings with at least 30 triggered trials, HFD 1.62
+    against NCD 2.63 mL per session (p 5.7e-09) and 1.61 against 2.62 mL per mouse (p 0.0019); all sessions,
+    p 1.7e-10 and 0.0017. The triggered-trial reading gives the same result.
+  deviations:
+  - The notes give `ensure` without a unit; it is read as mL (0.3 to 4.0), consistent with up to 4.5 mL
+    at 50 uL per trial.
+- claim: fig1c-hfd-heavier
+  outcome: partially_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig1c-hfd-heavier
+  measured: 0.352
+  notes: Body weights on the cohort 1 recording days from the notes. HFD mice are 35.2% heavier by mouse
+    means (27.3 against 20.2 g) and 34.4% pooled, outside 30 +- 3% and inside 20 to 40%.
+  deviations:
+  - The notes give body weight without a unit; the values fit grams.
+- claim: supp1cd-licking-declines
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp1cd-licking-declines
+  notes: The criterion's readings disagree. With the pre-tone rate subtracted, late is below early with
+    p < 0.05 in both diets under both AUC windows and both tests (p 0.0001 to 0.031). With division by
+    the pre-tone rate, late is above early in both diets (p 0.31 to 0.78), as the pre-tone lick rate itself
+    falls late in the meal (0.04 to 0.34 licks/s late against 0.13 to 1.05 early). The criterion blocks
+    the claim when the readings disagree. The question of how the AUC was normalized is put to the paper's
+    authors (methods_unavailable finding). The unnormalized cue lick rate falls from early to late in
+    both diets (NCD 3.49 to 3.10, HFD 4.10 to 2.73 licks/s, mouse means).
+  deviations:
+  - Lick-rate curves in 1-s bins over triggered trials, early and late per recording, averaged per mouse
+    before normalization (a standard choice).
+- claim: supp1e-hfd-less-locomotion
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp1e-hfd-less-locomotion
+  notes: Mean speed over triggered trials, per mouse. Whole trial, NCD 3.97 early and 1.29 late, HFD 0.71
+    and 0.44 cm/s; 10 s before the tone, NCD 5.11 and 1.17, HFD 0.84 and 0.53. Both readings agree; the
+    signed means give the same result.
+  deviations:
+  - Speed is the absolute value of the running signal, which is signed (11.5% of cohort 1 samples are
+    negative); the signed mean is shown as a variant.
+- claim: fig2b-meal-size
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2b-meal-size
+  measured:
+  - 70.07
+  - 53.04
+  notes: Recordings with at least 30 triggered trials, NCD 70.1 +- 2.1 (57 recordings) and HFD 53.0 +-
+    2.0 (47), Student's t-test p 1.0e-07. With all 90-trial sessions or those with at least 15 triggered
+    trials HFD is 51.3, outside tolerance. Cohort 2 holds 57 NCD and 47 HFD 90-trial recordings with at
+    least 30 triggered trials, from 7 and 6 mice, against 59 and 54 from 7 and 7 in the paper.
+  deviations:
+  - Files with 89 trial columns (the last trial missing) are counted as 90-trial sessions.
+- claim: fig2c-delta-z-recordings
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2c-delta-z-recordings
+  measured:
+  - 0.606
+  - 0.197
+  notes: Under Z2 (1-9 s, D15) NCD 0.61 +- 0.07 and HFD 0.20 +- 0.06, both within tolerance, t-test p
+    5.4e-05; Z2p with D15 also puts both in. With the Methods' D5 the HFD value is -0.07 to -0.02, out
+    of tolerance, and under Z1 and Z1p both values are out (NCD 0.10 to 0.17). Every combination has NCD
+    above HFD with p < 0.001.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - The depositors' Z-score (Z0) is shown as a variant and does not decide the outcome.
+- claim: fig2d-delta-z-mice
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2d-delta-z-mice
+  measured:
+  - 0.608
+  - 0.197
+  notes: Under Z2 (1-10 s, D15) NCD 0.61 +- 0.11 and HFD 0.20 +- 0.10 (7 and 6 mice), both within tolerance,
+    p 0.020; it is the only Z1 to Z2p combination with both in. Every combination has NCD above HFD with
+    p 0.008 to 0.030. The dataset holds 6 of the paper's 7 HFD mice.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - The depositors' Z-score (Z0) is shown as a variant and does not decide the outcome.
+- claim: fig2e-lick-vigor
+  outcome: partially_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2e-lick-vigor
+  measured:
+  - 57
+  - 27
+  notes: NCD cue lick rate is above HFD at all 90 trial indices and in every 15-trial block. The onset
+    of decline is later in NCD than HFD but out of tolerance under both readings, (i) the maximum of the
+    15-trial moving mean at trials 22 and 13, (ii) the moving mean staying below the first-15 mean from
+    trials 57 and 27, against 50 +- 5 and 20 +- 2.
+  deviations:
+  - The 15-trial moving mean is centred (a standard choice the criterion does not fix).
+- claim: fig2fj-early-lick-by-meal-size
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2fj-early-lick-by-meal-size
+  measured:
+  - 3.91
+  - 5.38
+  - 1.89
+  - 5.76
+  notes: Reading (b), first 15 triggered trials, NCD groups 3.91 to 5.38 and HFD groups 1.89 to 5.76 licks/s,
+    all four bounds within tolerance; the smallest group is below the largest in both diets. Reading (a),
+    the first triggered trial, gives NCD 3.00 to 4.43 and HFD 1.33 to 3.00. The meal-size groups hold
+    NCD 0, 6, 9, 14, 28 and HFD 3, 12, 24, 6, 5 recordings, against 0, 6, 10, 13, 28 and 6, 13, 23, 7,
+    4 in the legend.
+- claim: fig2p-lick-rate-meal-size
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2p-lick-rate-meal-size
+  notes: Mid-meal cue lick rate against triggered trials, NCD r 0.44 (p 0.0006, 57 recordings) and HFD
+    r 0.52 (p 0.0001, 50); the early-meal reading gives r 0.48 and 0.61.
+- claim: fig2km-elevated-early-at-matched-licking
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2km-elevated-early-at-matched-licking
+  notes: Early-meal cue lick rates differ by 0.12 and 0.02 licks/s in the 45-59 and 60-74 groups (sums
+    of s.e.m. 0.86 and 0.63). Under Z2 and Z2p the HFD early response exceeds NCD by 0.43 to 0.77 in both
+    groups, more than the sums of s.e.m. Under Z1 and Z1p HFD is below NCD in the 60-74 group.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+- claim: fig2q-midmeal-response-meal-size
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2q-midmeal-response-meal-size
+  measured: -0.425
+  notes: HFD recordings with at least 15 triggered trials, r -0.425 (Z2, 1-9 s, p 0.0023) and -0.459 (Z2,
+    1-10 s, p 0.0009), within tolerance; Z2p gives -0.47 and -0.50. Under Z1 and Z1p r is -0.27 to -0.29
+    (p 0.046 to 0.065). NCD r -0.15 to -0.18 (p 0.18 to 0.26).
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+- claim: fig2r-weight-midmeal-response
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2r-weight-midmeal-response
+  notes: HFD recordings, body weight against mid-meal response, r 0.45 to 0.56 with p 5e-05 to 0.0014
+    under every Z1 to Z2p reading and both recording sets. NCD r -0.02 to -0.21 (p 0.12 to 0.88).
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+- claim: fig2s-weight-meal-length
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig2s-weight-meal-length
+  notes: HFD recordings with at least 15 triggered trials, r -0.38 (p 0.006); with at least 30, r -0.27
+    (p 0.066). NCD r 0.27 (p 0.047).
+- claim: supp2a-volume-trials
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2a-volume-trials
+  notes: Recorded volume against triggered trials, NCD r 0.68 (p 8e-09, 57 recordings), HFD r 0.79 (p
+    6e-12, 50).
+- claim: supp2h-delta-z-meal-size
+  outcome: not_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2h-delta-z-meal-size
+  measured:
+  - 0.214
+  - -0.081
+  notes: No combination puts both r within tolerance of -0.34 and 0.26. The NCD correlations are positive
+    (0.13 to 0.22, p 0.11 to 0.33) and the HFD ones negative (-0.003 to -0.33), the signs the sentence's
+    words give, but they are never both significant; HFD reaches p < 0.05 only under Z2p with D5 (p 0.027
+    and 0.035), where NCD has p 0.14 and 0.16.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - Recordings with at least 30 triggered trials (Methods default) and, as a reading, at least 15 (the
+    meal-size analyses of Fig. 2); both are shown.
+- claim: supp2fg-locomotion-not-meal-size
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2fg-locomotion-not-meal-size
+  notes: Pre-cue speed, HFD 2.13 against NCD 3.98 cm/s; correlation with meal size NCD r 0.26 (p 0.050)
+    and HFD r -0.19 (p 0.19) with at least 15 triggered trials, p 0.050 and 0.053 with at least 30. The
+    NCD p is at the threshold (0.0502). After reward (variant), HFD p 0.018 with at least 30.
+  deviations:
+  - Speed is the absolute value of the signed running signal; the signed mean is a variant.
+  - Pearson correlation, as the criterion says; the recording set is not given, both sets are shown and
+    agree.
+- claim: supp2j-variability-weight
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2j-variability-weight
+  notes: Rolling SD of dF/F0 from the start of the recording to the first Ensure delivery (306 to 846
+    s), HFD r 0.34 to 0.42 with p 0.003 to 0.018 under the 1, 10 and 60 s windows. NCD r 0.35 with the
+    1-s window (p 0.007), -0.03 and 0.04 with the others.
+  deviations:
+  - F0 is the mean of the pre-Ensure period, as the criterion says.
+- claim: supp2k-sex-early-response
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2k-sex-early-response
+  notes: Under every Z1, Z2, Z1p and Z2p combination females exceed males in both diets and the difference
+    is larger in HFD (Z2, 1-9 s, 0.19 in NCD and 0.46 in HFD). Under Z0 it is smaller in HFD. The dataset
+    has M-NCD 24/3, F-NCD 33/4, M-HFD 24/3 and F-HFD 23/3 recordings/mice, against 26/3, 33/4, 31/4 and
+    23/3; the missing mouse is a male HFD mouse.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - Sex is taken from the cohort 2 files; MPK173 and MPK182 have the other sex in their second-phase files.
+- claim: supp2lp-fasting-no-effect
+  outcome: not_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2lp-fasting-no-effect
+  notes: HFD sessions, the cue lick rate is higher after fasting (4.01 against 3.29 licks/s, t-test p
+    0.037, LME p 0.005) and the early-meal response lower (Z2 and Z2p, t-test p 0.007 to 0.024, LME p
+    0.004 to 0.010). Both test readings find an effect, the criterion's not-reproduced case. NCD sessions,
+    no test has p < 0.05; the delta Z-score does not differ in either diet. Recordings, NCD 27 fasted
+    and 30 nonfasted, HFD 21 and 26 (legend 28, 31, 23, 31).
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+- claim: supp2q-hfd-more-training
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp2q-hfd-more-training
+  notes: The dataset holds the recording sessions only; no file is a training session and no metadata
+    counts them.
+- claim: fig3h-early-response-diet-switch
+  outcome: partially_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig3h-early-response-diet-switch
+  notes: HFD->NCD early response after the switch is below before under every reading (Z2 1-9 s, 1.00
+    to 0.72) but not significantly (Tukey p 0.11 to 0.99); HFD->HFD after is not significantly below before
+    (p 0.58 to 0.99). Before the switch both HFD groups exceed NCD->NCD under Z2 and Z2p (p < 0.001).
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - The diet-switch groups are the same mice as cohorts 1 and 2, with their cohort recordings as the first
+    diet; they mix 60- and 90-trial sessions.
+  - Recordings with at least 30 triggered trials, first/second diet, NCD->NCD 44/43, HFD->NCD 49/41, HFD->HFD
+    30/23 (legend 44/43, 52/42, 35/23).
+- claim: fig3i-ncd-increase-only
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig3i-ncd-increase-only
+  notes: Under Z2 and Z2p, NCD->NCD late exceeds early after the switch in the LME (p 0.002 to 0.003)
+    and the paired t-test (p 0.004 to 0.006); HFD->NCD late exceeds early slightly with neither test significant
+    (LME p 0.40 to 0.60, paired p 0.14 to 0.35). Under Z1 and Z1p the paired test does not find the NCD->NCD
+    increase (p 0.32 to 0.39).
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+- claim: fig3j-delta-z-diet-switch
+  outcome: not_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig3j-delta-z-diet-switch
+  measured:
+  - 0.013
+  - -0.042
+  - -0.142
+  notes: No combination puts the three means within tolerance and HFD->HFD is never significantly below
+    NCD->NCD (Tukey p 0.10 to 0.57). Z2 1-9 s D15 gives 0.24, 0.06 and 0.05.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - Mice per group 6, 7 and 4, as the legend.
+- claim: fig3k-ensure-after-switch
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig3k-ensure-after-switch
+  notes: All recordings, recorded volume, HFD->NCD after 2.27 against HFD->HFD after 1.68 mL (Tukey p
+    0.007) and NCD->NCD after 2.37 (p 0.99). With recordings of at least 30 triggered trials the first
+    comparison is 2.35 against 1.90, p 0.12; triggered trials times 50 uL gives p < 1e-05 in both sets.
+- claim: fig3-hfd-hfd-short-meals
+  outcome: not_reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig3-hfd-hfd-short-meals
+  measured: 66
+  notes: Two of 30 second-phase HFD->HFD recordings exceed 60 triggered trials (66, MPK182; 64, MPK187),
+    also 2 of the 17 90-trial sessions. The partial condition allows one.
+- claim: fig3c-hfd-ncd-licking-recovers
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:fig3c-hfd-ncd-licking-recovers
+  notes: HFD->NCD, curve mean 4.96 after against 3.38 before over 90 trial indices; mean of recording
+    means 5.07 against 3.64 licks/s; all 7 mice higher after.
+  deviations:
+  - The first phase mixes 60-trial (cohort 1) and 90-trial sessions, so indices 61 to 90 come from cohort
+    2 mice only.
+- claim: supp3c-ncd-hfd6w-dynamics-retained
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp3c-ncd-hfd6w-dynamics-retained
+  notes: Z2 and Z2p, 1-9 s, NCD->HFD6w mice increase from early to late before (p 0.0002) and after the
+    switch (p 0.011), 6 mice. Under Z1 and Z1p the second-phase increase has p 0.06 to 0.09. Mean cue
+    lick rate 4.26 before and 4.43 licks/s after.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+- claim: supp3j-body-weight-switch
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp3j-body-weight-switch
+  notes: LME bw ~ phase + (1 | mouse), recordings with at least 30 triggered trials, NCD->HFD6w +6.5 g
+    (p 6e-34), HFD->NCD +0.5 g (p 0.15); all recordings +0.6 g (p 0.09).
+  deviations:
+  - Recordings with at least 30 triggered trials (legend counts) and all recordings are both shown.
+- claim: supp3m-weight-gain-response
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp3m-weight-gain-response
+  measured:
+  - 0.43
+  - 0.324
+  notes: Recordings with at least 30 triggered trials, the reading adopted, NCD->HFD6w r 0.28 to 0.65
+    and NCD->NCD r 0.29 to 0.34, positive with p < 0.05 in both groups under most combinations, but no
+    combination puts both within tolerance. With at least 15 triggered trials Z2p (1-10 s, C/A) puts both
+    in (0.57 and 0.42, p 0.0001 and 0.004), which would make the claim reproduced.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - Assumption. The Supp. Fig. 3l-q legends do not say which recordings enter; the Methods say "we considered
+    only those recordings where at least 30 trials were triggered, unless otherwise stated" (Analysis
+    of head-fixed feeding assays), so at least 30 is adopted; at least 15, which the mid-meal window needs
+    and Fig. 2q uses, is shown.
+  - A (weight before the second ad libitum phase) is the notes' `before ad lib bw`, an interpretation
+    of the field name.
+- claim: supp3l-weight-not-meal-length
+  outcome: reproduced
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp3l-weight-not-meal-length
+  notes: Second phase, recordings with at least 30 triggered trials, NCD->NCD r -0.05 (p 0.75) and NCD->HFD6w
+    r -0.14 (p 0.42); all recordings p 0.75 and 0.49.
+  deviations:
+  - The recording set is not given; at least 30 triggered trials (Methods default) decides and all recordings
+    is shown; they agree.
+- claim: supp3q-hfd-ncd-weight-loss-meal-length
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_porniece_2025.ipynb
+  output: claim:supp3q-hfd-ncd-weight-loss-meal-length
+  notes: HFD->NCD second phase, 41 recordings. Meal size against body weight relative to the second-phase
+    ad libitum weight as a ratio, r -0.35 (p 0.023); as a difference and relative to A, r -0.24 to -0.27
+    (p 0.09 to 0.14). Mid-meal response against weight change p 0.40 to 0.998; against meal size p 0.14
+    to 0.35 under Z2 and Z2p, and p 0.04 under Z1.
+  deviations:
+  - Z readings Z1 and Z2 (claims file) are computed from the deposited raw 465 nm trace, with trial onsets
+    found from the deposited Z-score; the Methods' "a single Z-score per animal" (Methods, Analysis of
+    head-fixed feeding assays) does not say which recordings are concatenated, so both readings are run,
+    the SD over all the mouse's recordings (Z1, Z2) and over its recordings of one diet phase (Z1p, Z2p).
+  - Assumption. The notes' `ad lib bw` in the second-phase files is read as the maximal ad libitum weight
+    (B of Supp. Fig. 3k) and `before ad lib bw` as A; the files do not define them. The outcome rests
+    on the ratio to `ad lib bw`.
+  - Reading (b) of the text, weight before HFD exposure, is not in the dataset.
+findings:
+- kind: other
+  statement: Four files are byte-identical copies of other files of the same subject, deposited under
+    ses-None names (MPK118 2024-02-13, MPK133 2024-02-07, MPK134 2024-02-12, MPK172 2024-07-25, by identifier).
+    Two other ses-None files (MPK122 2024-02-06, MPK143 2024-03-14) are unique sessions whose file names
+    lack the session date.
+- kind: data_missing
+  statement: Cohort 2 holds 6 HFD mice (50 90-trial recordings, 47 with at least 30 triggered trials)
+    where the paper has 7 (54); the missing mouse is a male, by the Supp. Fig. 2k counts. Cohort 1 has
+    38 and 32 qualifying recordings against 39 and 33, cohort 2 NCD 57 against 59, and the diet-switch
+    first phase 46, 49 and 30 against 47, 52 and 35 for NCD->HFD6w, HFD->NCD and HFD->HFD.
+- kind: data_missing
+  statement: The 405 nm control trace, the training sessions (Supp. Fig. 2q, r) and the home-cage food
+    intake (Fig. 1d) are not in the dataset.
+- kind: format_error
+  statement: In 32 files the deposited Z-score matrix does not match the raw 465 nm trace of the same
+    file at any offset (median correlation over trials below 0.5), while in the other 285 it does (median
+    0.95). In 27 files the Z-score (or another series) has more trial columns than the Ensure, lick and
+    running matrices (60 against 59, 90 against 89, and 90 against 60 and 46 in two files).
+- kind: metadata_error
+  statement: The starting_time rate of the series is 1 Hz in about half the files (188 of 349 for the
+    Ensure matrix) and 50 Hz in the others; the data are at 50 Hz.
+- kind: metadata_error
+  statement: The sex of MPK173 is M in its cohort files and F in its diet-switch files, and that of MPK182
+    F and M; the cohort-file labels reproduce the paper's female HFD count. The age is P12W/ in every
+    file, for recordings that span a year. One diet-switch file of MPK191 is dated 2024-01-02, before
+    the mouse's cohort recordings of October 2024.
+- kind: metadata_insufficient
+  statement: The notes give ensure, bw, ad lib bw and before ad lib bw without units or definitions; which
+    body weight ad lib bw and before ad lib bw are (A and B of Supp. Fig. 3k) has to be guessed. The running
+    signal is signed, with no description of the sign. The session descriptions name a norm_dff series
+    that no file holds. There is no trial table and no tone time stamp; trial onsets in the raw trace
+    have to be inferred.
+- kind: other
+  statement: In two MPK120 recordings (2024-01-25, 2024-01-29) the raw signal falls to near zero in 12
+    trials, which makes dF/F0 undefined there.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was the Z-score computed? Which recordings were concatenated
+    per animal (all, or one diet phase), was it applied to F or to dF/F0, and was each trial's pre-cue
+    baseline subtracted? Under the claims file's two readings (Z1, Z2) the NCD early-meal responses are
+    higher than reported and the Fig. 1k LME does not find HFD early above NCD early (p 0.09 to 0.35),
+    while the depositors' Z-score gives p < 0.001; the deposited Z-score is not a linear transform of
+    the deposited raw trace.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Supp. Fig. 1d, was the post-cue lick-rate AUC normalized
+    by subtracting or by dividing by the pre-tone lick rate, over which window, and with a paired or unpaired
+    test (the legend and the Methods disagree)? With subtraction licking declines in both diets (p < 0.05);
+    with division it does not.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which recordings enter Supp. Fig. 3l-q (at least 30 or
+    at least 15 triggered trials), and what are A and B of Supp. Fig. 3k in the files' notes? The weight-gain
+    correlations of Supp. Fig. 3m are within tolerance only with at least 15 triggered trials.
+- kind: paper_inconsistency
+  statement: Supp. Fig. 2h, the text calls the NCD correlation positive and the HFD one negative and prints
+    r = -0.34 and 0.26; the data give the signs of the words (NCD 0.13 to 0.22, HFD -0.003 to -0.33),
+    without significance in both.
