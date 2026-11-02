@@ -37,6 +37,7 @@ own, for a runner that only matches papers (MATCH_ONLY, run_queue.sh).
 from __future__ import annotations
 
 import json
+import re
 import os
 import subprocess
 import sys
@@ -200,11 +201,10 @@ def chains(runs: list[dict]) -> dict[str, list[list[tuple]]]:
     into chains: runs more than three hours apart belong to different chains. A run is (start, end, role,
     conclusion, status)."""
     import datetime
-    import re
     when = lambda s: datetime.datetime.fromisoformat(s.replace("Z", "+00:00"))
     by_dataset: dict[str, list] = {}
     for r in runs:
-        m = re.match(r"(?:Agent|Paper) run: (\S+) (\S+)(?: \(unverified\))?$", r.get("displayTitle", ""))
+        m = re.match(r"(?:Agent|Paper) run: (\S+) (\S+)(?: \([a-z]+\))?$", r.get("displayTitle", ""))
         if m:
             by_dataset.setdefault(m.group(1), []).append((when(r["createdAt"]), when(r["updatedAt"]), m.group(2),
                                                           r.get("conclusion"), r.get("status", "completed")))
@@ -285,8 +285,9 @@ def running(runs: list[dict], folders: set[str], lanes: dict[str, int], now=None
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
     """The id and status of the newest run of a role on a dandiset, or "" when there is none."""
-    names = {f"{kind}: {dandiset} {role}{account}" for kind in ("Agent run", "Paper run") for account in ("", " (unverified)")}
-    mine = [r for r in runs if r["displayTitle"] in names]
+    # A run on any account but the verified one carries the account's name: "(unverified)", "(api)".
+    name = re.compile(rf"(?:Agent|Paper) run: {re.escape(dandiset)} {re.escape(role)}(?: \([a-z]+\))?")
+    mine = [r for r in runs if name.fullmatch(r["displayTitle"])]
     return f'{mine[0]["databaseId"]} {mine[0]["status"]}' if mine else ""
 
 
