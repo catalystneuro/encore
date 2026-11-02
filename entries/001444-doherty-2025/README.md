@@ -13,12 +13,13 @@ activated). The paper reports set sM1_12-12-2023, and the claims are tested on i
 | More negative PT5B potential in the parkinsonian activated state; more 20 to 35 Hz power | Reproduced |
 | PT5B activated rate, parkinsonian against control (one test of four above p = 0.001) | Partially reproduced |
 | Order-of-magnitude increase of 15 Hz power at rest (the ratio is 65 to 129) | Partially reproduced |
-| IT4, IT5A, IT5B and IT6 rates (seven claims), under rate reading R3 (cells that fired at least once) | Reproduced, resting on R3 as an assumption |
-| IT2 rate increase with activation, control and parkinsonian (values match under R3, some tests above p = 0.001) | Partially reproduced |
+| IT4, IT5A, IT5B and IT6 rates (seven claims), under rate reading R3 (cells that fired at least once) | Reproduced, resting on R3 as an assumption (and, for parkinsonian IT6, on which cells the paired tests pair) |
+| IT2 rate increase with activation, control and parkinsonian (values match under R3, paired or rank tests above p = 0.001 under every pairing) | Not reproduced |
 | IT4 rest rate, parkinsonian against control (values match under R3, no test below p = 0.05) | Not reproduced |
 | Parkinsonian activated dominant frequency (27 Hz against 43) | Not reproduced |
-| Duty cycles, LFP burst rates, coincident spikes, unitary events (eleven claims) | Not reproduced |
+| Duty cycles, LFP burst rates, coincident spikes, unitary-event durations (ten claims) | Not reproduced |
 | Network size (the files store only cells that fired) | Not reproduced |
+| More synchrony at rest in the parkinsonian condition | Reproduced, resting on counting pairs of coincident cells as an assumption |
 | Highest PT5B rate (PV5A fires faster) | Blocked: methods underspecified |
 | Robustness over four sets; subthreshold oscillations (three claims) | Blocked: methods underspecified |
 | PT5B current-injection excitability | Blocked: data missing |

@@ -34,8 +34,10 @@ outcomes:
     10,073, because the units table stores only cells that fired. All 15 M1 populations are
     present and the input generators start at gid 10073, so the gid numbering is consistent with
     10,073 M1 cells (gids 0 to 10072); the smallest gid blocks seen in all 16 files and the 24 gids
-    never seen between them sum to 10,073. The model's size is not in doubt; the dataset does not
-    hold the silent cells the criterion counts.
+    never seen between them sum to 10,073. The units table has only the name, segment, block, spike
+    times and observation intervals of each unit and no row for a silent cell, so the silent cells
+    cannot be counted from the files. The model's size is not in doubt; the dataset does not hold
+    the silent cells the criterion counts, and the criterion's count fails.
   deviations:
   - The claims file's count assumes the files hold every cell, as the dandiset description says;
     they do not, so the gid range is shown as a variant.
@@ -97,8 +99,7 @@ outcomes:
   - R1 needs the population size, which the files do not state; PT5B is the gid block 5130 to 6564
     (1,435 cells), bounded exactly by the gids seen.
 - claim: fig2c-control-it23-rate-activated
-  outcome: partially_reproduced
-  assumed: true
+  outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig2c-control-it23-rate-activated
   measured:
@@ -106,21 +107,22 @@ outcomes:
   - 1.649
   - 6.662
   - 8.858
-  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT2 rates are 1.203
-    +/- 1.649 spikes/s at rest (137 cells) and 6.662 +/- 8.858 activated (68 cells), all four within
-    tolerance. The unpaired tests find the increase at p below 0.001 (Mann-Whitney 3.5e-05, Welch
-    3.6e-06), but the paired tests on the 25 cells kept in both files give 0.016 (Wilcoxon) and
-    0.011 (paired t), so the criterion's p < 0.001 under every test is not met and the increase is
-    weaker than the paper's bound under two of four tests. Under R1 (0.095 +/- 0.565 and 0.262 +/-
-    2.172) and R2 (1.555 +/- 1.723 and 8.883 +/- 9.220) the values are outside tolerance.
+  notes: Under R3 IT2 rates are 1.203 +/- 1.649 spikes/s at rest (137 cells) and 6.662 +/- 8.858
+    activated (68 cells), all four within tolerance. The unpaired tests find the increase at p below
+    0.001 (Mann-Whitney 3.5e-05, Welch 3.6e-06). The paired tests do not under either pairing - on
+    the 25 cells kept in both files 0.016 (Wilcoxon) and 0.011 (paired t), on the 180 cells kept in
+    either file, at 0 where absent, 0.69 and 0.0013. The criterion's p < 0.001 under every test is
+    not met, and under the union pairing the Wilcoxon test finds no increase. Under R1 (0.095 +/-
+    0.565 and 0.262 +/- 2.172) and R2 (1.555 +/- 1.723 and 8.883 +/- 9.220) the values are outside
+    tolerance. The outcome was partially reproduced before the first verification; it is now not
+    reproduced, since the criterion fails under every reading and pairing and one test finds no
+    increase at all.
   deviations:
   - R1 uses the IT2 gid block bounded from the data (1,729 or 1,730 cells); both bounds give the
     same values to three decimals.
-  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
-    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
-    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
-    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
-    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
+  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
+    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
+    absent; they give the same outcome here.
 - claim: fig2c-control-it6-rate-activated
   outcome: reproduced
   assumed: true
@@ -133,7 +135,8 @@ outcomes:
   - 5.19
   notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT6 rates are 5.82 +/-
     5.78 (914 cells) and 3.47 +/- 5.19 spikes/s (341 cells), all four within tolerance, and every
-    test finds the decrease at p below 1e-10 (largest 1.2e-11, Welch). Under R1 (4.28 +/- 5.58 and
+    test finds the decrease at p below 1e-10 (largest 1.2e-11, Welch), under both pairings of the
+    paired tests (cells kept in both files, or in either at 0; union 5.6e-87 and 2.8e-72). Under R1 (4.28 +/- 5.58 and
     0.95 +/- 3.13) and R2 (6.27 +/- 5.75 and 4.87 +/- 5.57) some values are outside tolerance,
     though every test finds the decrease at p below 0.001 under both.
   deviations:
@@ -142,6 +145,9 @@ outcomes:
     lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
     window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
     over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
+  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
+    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
+    absent; they give the same outcome here.
 - claim: control-it5-silenced-activated
   outcome: reproduced
   assumed: true
@@ -240,14 +246,18 @@ outcomes:
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig3a-control-rest-spectrogram
   measured: 1.30
-  notes: Neither reading has a local maximum of time-averaged power in 1 to 3 Hz (under S1 power
-    falls from 1 Hz), and the 15 to 25 Hz burst rate is 1.30 Hz (S1, 3 bursts) and 0.96 Hz (S2),
-    outside 1.53 to 1.87 Hz. The paper does not define a burst; the half-height reading is the
-    claims file's.
+  notes: Under S1 the time-averaged power has no local maximum in 1 to 3 Hz (it falls from 1 Hz),
+    and the 15 to 25 Hz burst rate is 1.30 Hz (S1, 3 bursts) and 0.87 Hz (S2), outside 1.53 to
+    1.87 Hz. S2 with its 250 ms window has no bin in 1 to 3 Hz; with 1 s and 2 s windows it has a
+    maximum (1 and 2 Hz). The criterion fails under every reading, since S1 fails both parts and
+    the burst rate fails under both. The paper does not define a burst; the half-height reading is
+    the claims file's, and whether it should be used is asked of a reader (questions/001444.yaml).
   deviations:
   - Only one LFP trace (E1) is in the files; E2 cannot be computed.
   - S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults
-    (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands.
+    (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz
+    test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz.
+    Burst rates are bursts per 2.3 s (W) under both readings.
 - claim: fig3b-control-activated-spectrogram
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -256,13 +266,19 @@ outcomes:
   - 1.30
   - 1.30
   - 66.9
-  notes: Two parts hold under both readings, no 1 to 3 Hz maximum and lower 15 to 20 Hz power than
-    at rest (ratio 0.42 under S1, 0.57 under S2). The 14 to 16 Hz burst rate is 1.30 and 2.89 Hz,
-    the 25 to 35 Hz burst rate 1.30 and 0.96 Hz (within only under S2), its median duration 66.9
-    and 100 ms against 50 +/- 5, and the 14 to 16 Hz bursts last 155 to 557 ms (S1) and 50 to 300
-    ms (S2), outside 90 to 550 ms. Measured values are under S1.
+  notes: Two parts hold under both readings with their burst windows, no 1 to 3 Hz maximum and lower
+    15 to 20 Hz power than at rest (ratio 0.42 under S1, 0.57 under S2); with a 1 s window S2 has a
+    maximum at 1 Hz, with a 2 s window none. The 14 to 16 Hz burst rate is 1.30 (S1) and 2.61 Hz
+    (S2), the 25 to 35 Hz burst rate 1.30 and 0.87 Hz, its median duration 66.9 and 100 ms against
+    50 +/- 5, and the 14 to 16 Hz bursts last 155 to 557 ms (S1) and 50 to 300 ms (S2), outside 90
+    to 550 ms. Measured values are under S1. The burst convention is asked of a reader, as for
+    fig3a.
   deviations:
-  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+  - S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults
+    (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz
+    test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz.
+    Burst rates are bursts per 2.3 s (W) under both readings.
 - claim: control-coincident-spikes
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -275,17 +291,35 @@ outcomes:
     spikes per ms together, so with the paper's definition over the whole population nearly every
     spike is coincident. Among the 20 cells with recorded potentials (a variant) the share is 24.8%
     to 72.8%. The paper's 1% to 3% must come from a smaller set of cells or another definition,
-    which it does not state (findings).
+    which it does not state (findings). Whether the claims file reads the paper's measure
+    correctly is asked of a reader (questions/001444.yaml); the outcome is as tested on the
+    claims file.
 - claim: fig4-control-unitary-events
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig4-control-unitary-events
-  notes: Under all eight combinations no 100 ms window is significant (0 of 3,901 slid windows, 0
-    of 40 non-overlapping), so the significant duration is 0 s at rest and activated, against 0.7
-    and 1.1 s, and no periodicity can be measured. Two or more PT5B cells fire in 96.5% to 100% of
-    1 ms bins, so the observed and expected coincidence counts are both about 100 per window. The
-    method of the claims file cannot find excess synchrony over the whole PT5B population; the
-    paper does not say which cells it analysed (findings).
+  notes: No combination of count, window placement, span and periodicity reading meets the
+    criterion. Counting coincident bins or their spikes, no window is significant (0 of 3,901 slid
+    and 0 of 40 non-overlapping windows), since two or more PT5B cells fire in every 1 ms bin of
+    0.3 to 4.3 s and the bin count is at its maximum of 100 in 92% to 100% of control windows.
+    Counting pairs of cells against independent cells, 0.8 to 1.65 s are significant at rest
+    (against 0.63 to 0.77 s) and 1.0 to 1.43 s activated (within 0.99 to 1.21 s for two of four
+    combinations), rest clusters last up to 551 ms (outside 90 to 302.5 ms), the activated state
+    does not have more significant periods, and periodicity (x) is 18.0 to 19.8 Hz at rest
+    (within). That count finds no significant window on independent cells and misses 20 added pair
+    coincidences, so it is conservative. Against the null that keeps each cell's active bins, 3.2
+    to 3.99 s are significant at rest and 3.7 to 3.99 s activated; that count marks 1 or 2 of 40
+    windows on independent cells, but its slid windows cover 0.64 to 0.75 s by chance. The outcome
+    is the one every reading gives. The paper does not say which cells it analysed or how it
+    counted; the question is for the authors (findings) and the claims file's reading is asked of
+    a reader (questions/001444.yaml).
+  deviations:
+  - The claims file does not say how a window's coincidences are counted. Four counts were run
+    (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al.
+    2002), the spikes in them, and pairs of cells firing in the same bin against independent cells
+    at the window's rates or against a null that keeps each cell's active bins in the window. The
+    last three take the normal tail with the exact mean and variance of their null, a stated
+    choice. Each count's chance level was measured on independent Poisson cells.
 - claim: fig5-pd-rest-beta
   outcome: reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -319,8 +353,7 @@ outcomes:
     11.75, all within tolerance under both; every test gives p below 1e-200. The answer of
     2026-11-02 added R3, which equals R1 here (every PT5B cell fired); the outcome is unchanged.
 - claim: fig5c-pd-it23-rate-activated
-  outcome: partially_reproduced
-  assumed: true
+  outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig5c-pd-it23-rate-activated
   measured:
@@ -328,19 +361,19 @@ outcomes:
   - 1.105
   - 4.295
   - 7.066
-  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 parkinsonian IT2 rates
-    are 0.783 +/- 1.105 (55 cells) and 4.295 +/- 7.066 spikes/s (66 cells), all four within
-    tolerance. The Welch test finds the increase at p = 1.7e-04, but the Mann-Whitney test gives
-    0.0018 and the paired tests on the 22 cells kept in both files 0.60 (Wilcoxon) and 0.21 (paired
-    t), so the increase is present in the means and weaker than the paper's p < 0.001 under three
-    of four tests. Under R1 (0.025 +/- 0.239 and 0.164 +/- 1.598) and R2 (1.163 +/- 1.173 and 6.163
-    +/- 7.769) the values are outside tolerance.
+  notes: Under R3 parkinsonian IT2 rates are 0.783 +/- 1.105 (55 cells) and 4.295 +/- 7.066
+    spikes/s (66 cells), all four within tolerance. The Welch test finds the increase at p =
+    1.7e-04, the Mann-Whitney test gives 0.0018, and the paired tests give 0.60 (Wilcoxon) and 0.21
+    (paired t) on the 22 cells kept in both files and 2.4e-04 and 2.2e-04 on the 99 cells kept in
+    either, at 0 where absent. Under neither pairing do all four tests reach p < 0.001, and with the
+    cells kept in both the paired tests find no increase. Under R1 (0.025 +/- 0.239 and 0.164 +/-
+    1.598) and R2 (1.163 +/- 1.173 and 6.163 +/- 7.769) the values are outside tolerance. The
+    outcome was partially reproduced before the first verification; it is now not reproduced, since
+    the criterion fails under every reading and pairing.
   deviations:
-  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
-    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
-    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
-    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
-    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
+  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
+    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
+    absent; they give the same outcome here.
 - claim: pd-it5-silenced-activated
   outcome: reproduced
   assumed: true
@@ -371,10 +404,13 @@ outcomes:
   measured:
   - 6.00
   - 5.99
-  notes: A claim of absence. The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3
-    the means are 6.00 (275 cells) and 5.99 spikes/s (359 cells), within tolerance, and no test
-    finds a difference at p < 0.05 (p 0.49 to 1.00 on 148 paired and all kept cells; difference
-    -0.012 spikes/s). Under R1 the means, 1.33 and 1.73, are outside tolerance and all four tests
+  notes: A claim of absence. The answer of 2026-11-02 (questions/001444.yaml) added R3 to the
+    criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the means
+    are 6.00 (275 cells) and 5.99 spikes/s (359 cells), within tolerance, and no test finds a
+    difference at p < 0.05 with the paired tests on the 148 cells kept in both files (p 0.49 to
+    1.00; difference -0.012 spikes/s). With the paired tests on the 486 cells kept in either file,
+    at 0 where absent, Wilcoxon gives 0.0025 and the paired t-test 0.0021, and the outcome would be
+    not reproduced. Under R1 the means, 1.33 and 1.73, are outside tolerance and all four tests
     find a difference (0.00017 to 0.019); under R2 no test does (p 0.62 to 0.93) but the means,
     6.79 and 6.64, are outside 5.4 to 6.6.
   deviations:
@@ -385,6 +421,11 @@ outcomes:
     lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
     window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
     over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
+  - Assumed - the paired tests under R3 pair the cells kept in both files. The claims file does
+    not say which cells are paired. Pairing the cells kept in both keeps each paired rate inside
+    the group whose mean the claim gives; pairing the cells kept in either adds, in each file,
+    cells outside its R3 group at 0 spikes/s. The two give different outcomes here and both are
+    shown.
 - claim: pd-cv-isi
   outcome: reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -435,19 +476,29 @@ outcomes:
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig6a-pd-rest-spectrogram
   measured: 1.74
-  notes: The 25 to 35 Hz burst rate is 1.74 Hz (S1) and 1.45 Hz (S2), against 4.5 to 5.5 Hz; burst
+  notes: The 25 to 35 Hz burst rate is 1.74 Hz (S1) and 1.30 Hz (S2), against 4.5 to 5.5 Hz; burst
     durations run 42 to 160 ms (S1) and 50 to 425 ms (S2), each outside 45 to 275 ms at one end.
-    The 14 to 16 Hz power is above its half-height 83% of the time under S1 and 36% under S2.
+    The 14 to 16 Hz power is above its half-height 83% of the time under S1 and 36% under S2. The
+    burst convention is asked of a reader, as for fig3a.
   deviations:
-  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+  - S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults
+    (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz
+    test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz.
+    Burst rates are bursts per 2.3 s (W) under both readings.
 - claim: fig6b-pd-activated-spectrogram
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig6b-pd-activated-spectrogram
-  notes: The 20 to 35 Hz burst rate is 2.61 Hz (S1) and 2.89 Hz (S2), outside 9 to 22 Hz; the median
-    burst duration, 65.1 and 75 ms, is within 22.5 to 110 ms.
+  notes: The 20 to 35 Hz burst rate is 2.61 Hz under both S1 and S2, outside 9 to 22 Hz; the median
+    burst duration, 65.1 and 75 ms, is within 22.5 to 110 ms. The burst convention is asked of a
+    reader, as for fig3a.
   deviations:
-  - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
+  - Only one LFP trace (E1) is in the files; E2 cannot be computed.
+  - S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults
+    (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz
+    test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz.
+    Burst rates are bursts per 2.3 s (W) under both readings.
 - claim: pd-coincident-spikes
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -457,14 +508,25 @@ outcomes:
   - 100.0
   notes: Under all six combinations 99.95% to 100% of parkinsonian PT5B spikes are coincident,
     against 2% and 3% (19.9 and 42.5 PT5B spikes per ms). Among the 20 recorded cells the share is
-    27.0% to 72.2%. See control-coincident-spikes.
+    27.0% to 72.2%. See control-coincident-spikes; the reading is asked of a reader.
 - claim: fig7-pd-unitary-events
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig7-pd-unitary-events
-  notes: As for the control files, no window is significant under any combination (0 s against 3.1
-    and 1.4 s), with two or more PT5B spikes in 95.2% to 100% of 1 ms bins. See
-    fig4-control-unitary-events.
+  notes: No combination meets the criterion. Counting bins or spikes, no window is significant (0 s
+    against 3.1 and 1.4 s), with two or more PT5B cells in 99.1% (rest) and 100% (activated) of
+    1 ms bins. Counting pairs against independent cells, 3.8 to 3.98 s are significant at rest
+    (against 2.79 to 3.41 s) in one or two clusters of 1,500 to 2,379 ms (outside 360 to 1,210
+    ms), and 0 to 0.43 s activated (against 1.26 to 1.54 s); periodicity (x) is 15.1 to 15.4 Hz at
+    rest (within). Against the null that keeps each cell's active bins, all 4.0 s at rest and 3.7
+    to 4.0 s activated are significant. See fig4-control-unitary-events.
+  deviations:
+  - The claims file does not say how a window's coincidences are counted. Four counts were run
+    (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al.
+    2002), the spikes in them, and pairs of cells firing in the same bin against independent cells
+    at the window's rates or against a null that keeps each cell's active bins in the window. The
+    last three take the normal tail with the exact mean and variance of their null, a stated
+    choice. Each count's chance level was measured on independent Poisson cells.
 - claim: rest-pt5b-rate-pd-vs-control
   outcome: reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -483,9 +545,13 @@ outcomes:
   notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings; the outcome is unchanged. Under R3 the means are 2.57 (11 cells) and 14.13
     spikes/s (2 cells), both within tolerance, but no test finds the increase at p < 0.05
     (Mann-Whitney 0.077, Welch 0.31, Wilcoxon 1.0 and paired t 0.68 on the 2 cells kept in both
-    files). Under R1 both means are 0.037 spikes/s, and under R2 3.14 (9 cells) and 14.13 (2 cells),
+    files, 0.098 and 1.0 on the 11 kept in either). Under R1 both means are 0.037 spikes/s, and under R2 3.14 (9 cells) and 14.13 (2 cells),
     the control value outside tolerance; no reading has every test below 0.05. The criterion fails
     under every reading, so the outcome does not rest on R3.
+  deviations:
+  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
+    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
+    absent; they give the same outcome here.
 - claim: rest-it5a-rate-pd-vs-control
   outcome: reproduced
   assumed: true
@@ -497,7 +563,8 @@ outcomes:
   notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the rest IT5A rates
     are 3.25 (239 cells) in the control and 2.16 spikes/s (140 cells) in the parkinsonian file,
     within tolerance, and every test finds the decrease at p below 0.01 (Wilcoxon 6.9e-19, paired
-    t 2.0e-22 on 124 cells, Mann-Whitney 0.0019, Welch 0.0027). Under R1 the rates are 1.21 and 0.47
+    t 2.0e-22 on 124 cells, Mann-Whitney 0.0019, Welch 0.0027); pairing the 255 cells kept in either file gives
+    5.7e-33 and 5.7e-30. Under R1 the rates are 1.21 and 0.47
     (every test below 0.01); under R2 3.57 and 2.57, the parkinsonian value outside 1.98 to 2.42,
     unpaired tests 0.017 and 0.012.
   deviations:
@@ -506,6 +573,9 @@ outcomes:
     lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
     window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
     over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
+  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
+    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
+    absent; they give the same outcome here.
 - claim: activated-pt5b-rate-pd-vs-control
   outcome: partially_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -528,7 +598,7 @@ outcomes:
   notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the activated IT6
     rates are 3.47 (341 cells) in the control and 5.99 spikes/s (359 cells) in the parkinsonian
     file, within tolerance, and every test finds the increase at p below 1e-07 (largest 3.4e-08,
-    Welch). Under R1 (0.95 and 1.73) and R2 (4.87 and 6.64) the values are outside tolerance,
+    Welch), under both pairings of the paired tests. Under R1 (0.95 and 1.73) and R2 (4.87 and 6.64) the values are outside tolerance,
     though the parkinsonian rate is higher under both.
   deviations:
   - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
@@ -536,6 +606,9 @@ outcomes:
     lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
     window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
     over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
+  - The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both
+    pairings were run, the cells kept in both files and the cells kept in either file at 0 where
+    absent; they give the same outcome here.
 - claim: rest-beta-power-order-of-magnitude
   outcome: partially_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -560,12 +633,31 @@ outcomes:
   deviations:
   - Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).
 - claim: rest-synchrony-increase
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:rest-synchrony-increase
-  notes: The significant synchrony at rest is 0 s in both files under every reading, so it is not
-    larger in the parkinsonian file. It follows from fig4-control-unitary-events and
-    fig7-pd-unitary-events, whose method finds no significant window on these data.
+  notes: Counting pairs of coincident PT5B cells, the parkinsonian rest file has more significant
+    synchrony than the control rest file under every window reading, 3.8 to 3.98 s against 0.8 to
+    1.65 s against independent cells, and 4.0 s against 3.2 to 3.99 s against the null that keeps
+    each cell's active bins (a small difference for slid windows, 4.0 against 3.98 and 3.99 s).
+    Counting coincident bins or their spikes, both files have 0 s, but those counts are at their
+    ceiling in every file (every 1 ms bin of the control rest file holds two or more PT5B cells)
+    and miss both synthetic synchrony cases, so they cannot test the claim. The outcome was not
+    reproduced before the first verification, on the bin count alone; it rests on the pair count
+    as an assumption. The durations themselves do not match fig4 and fig7 (both not reproduced).
+  deviations:
+  - The claims file does not say how a window's coincidences are counted. Four counts were run
+    (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al.
+    2002), the spikes in them, and pairs of cells firing in the same bin against independent cells
+    at the window's rates or against a null that keeps each cell's active bins in the window. The
+    last three take the normal tail with the exact mean and variance of their null, a stated
+    choice. Each count's chance level was measured on independent Poisson cells.
+  - Assumed - the pair count, the one count of the four that can exceed its expectation on
+    these data. The Methods ask for "synchronous spikes significantly above the expected number of
+    synchronous spikes for the neuron population size and firing rates", which a count capped at
+    the window length cannot show. Grun's coincidence count is defined for given neurons, and summing it
+    over all pairs of PT5B cells extends it to the population.
 findings:
 - kind: metadata_error
   statement: The dandiset description says each file holds spike trains of all 10,073 neurons. The
@@ -605,13 +697,17 @@ findings:
     1.6), and not when all cells or only cells active in the last 2.3 s are counted; nine IT
     outcomes here rest on that reading. Which test gave the rate p-values? Under that reading the
     Welch t-test meets every printed bound except for IT4 at rest (two parkinsonian cells, p =
-    0.31), while paired tests do not for IT2.
+    0.31), while paired tests do not for IT2. If paired tests were used, which cells were paired?
+    For parkinsonian IT6 the paired tests find no change on the cells active in both simulations
+    and a change (p = 0.002) on the cells active in either.
 - kind: methods_unavailable
   statement: Question for the authors. Which PT5B cells, and what definition, gave 1% to 3% of
     spikes coincident within 1 ms and the unitary-event durations of Figs. 4 and 7? Over all 1,435
     PT5B cells (17 to 42 spikes per ms) nearly every spike has another PT5B spike within 1 ms, two
     or more cells fire in 95% to 100% of 1 ms bins, and a joint-surprise test against rate-matched
-    Poisson cells finds no significant 100 ms window.
+    Poisson cells finds no significant 100 ms window. How were a window's coincidences counted
+    (coincident bins, spikes, or pairs of cells) and against which null? Over all PT5B cells the
+    significant duration runs from 0 s (bins, spikes) to 0.8 to 4.0 s (pairs) with the count.
 - kind: methods_unavailable
   statement: Question for the authors. How were LFP bursts (Figs. 3 and 6) defined, which
     spectrogram parameters and electrode were used, and was the PT5B spike count histogram smoothed
@@ -631,3 +727,272 @@ findings:
     the activated state (p < 0.001), while the Discussion says there was no significant change in
     PT5B population firing rate in the activated state. On the data, counting all PT5B cells, three
     tests give p below 1e-06 and the Mann-Whitney test 0.0052.
+verifications:
+- date: 2026-11-02
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the first run (the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file), with the paper under paper/. Report transcripts/001444/verifier-1-report.md.
+    The other points of the report, answered in the notebook - the starting times of the LFP and potential
+    series are 0 s at 40 kHz, "LFP 0" carries no electrode or depth and the files have no electrode table
+    (problem 6), the units table has no field listing silent cells (problems 9 and the stored-cells check),
+    and the potentials of the paper's set still do not match their spikes in W, as the findings say (problem
+    8).
+  results:
+  - claim: fig1-network-size
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under the criterion as written, the unit count is 4,480, 3,231, 2,919 and 2,917, not 10,073,
+      because the files store only cells that fired. The gids support 10,073 - the M1 gids lie in 0 to
+      10,072, inputs start at gid 10,073 and all 15 populations are present.
+    response: Kept as not reproduced, with the disagreement recorded. The criterion counts units, and
+      the count fails; the gid numbering supports the paper's model size but is a variant, not the criterion's
+      measure. A new data-check cell shows that the units table has only name, segment, block, spike times
+      and observation intervals, with no row or column for silent cells, so they cannot be counted from
+      the files.
+  - claim: model-pt5b-excitability-decrease
+    agrees: true
+    outcome: blocked
+    reason: The archive holds 17 assets, all network simulations (checked through the API). There are
+      no current-injection runs, and the protocol is also open.
+    response: No change of outcome.
+  - claim: robustness-four-sets
+    agrees: true
+    outcome: blocked
+    reason: The claims file has no measures or expected values for it. The per-set measures are in the
+      notebook.
+    response: No change of outcome.
+  - claim: fig2-control-rest-beta
+    agrees: true
+    outcome: reproduced
+    reason: The SCH peak is 19 Hz both above 0 Hz and above 5 Hz.
+    response: No change of outcome.
+  - claim: fig2-control-activated-gamma
+    agrees: true
+    outcome: reproduced
+    reason: The SCH peak is 44 Hz under both readings.
+    response: No change of outcome.
+  - claim: fig5-pd-rest-beta
+    agrees: true
+    outcome: reproduced
+    reason: The SCH peak is 15 Hz under both readings.
+    response: No change of outcome.
+  - claim: fig5-pd-activated-gamma
+    agrees: true
+    outcome: not_reproduced
+    reason: The SCH peak is 27 Hz under both readings, against 43 +/- 4.3. The other three sets give 28
+      to 31 Hz.
+    response: No change of outcome.
+  - claim: fig2c-control-pt5b-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: R1 and R3 give 11.69/9.40 and 26.76/18.17. All four tests give p < 1e-98.
+    response: No change of outcome. Both pairings of the paired tests are now shown; every PT5B cell is
+      in both files, so they coincide.
+  - claim: fig2c-control-it23-rate-activated
+    agrees: false
+    outcome: not_reproduced
+    reason: R3 values are all within tolerance (1.20/1.65, 6.66/8.86). The paired tests fail - T1 p =
+      0.016 and T2 p = 0.011, on only 25 cells kept in both files. This depends on the pairing choice
+      in problem 1.
+    response: Changed from partially reproduced to not reproduced. The paired tests were run on the union
+      of cells, at 0 where absent (problem 1), and give 0.69 (Wilcoxon) and 0.0013 (paired t), so the
+      criterion fails under both pairings and one test finds no increase. The assumption mark was removed,
+      since the outcome no longer rests on R3.
+  - claim: fig2c-control-it6-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: R3 values 5.82/5.78 and 3.47/5.19; every test gives p < 1e-11.
+    response: No change of outcome. The union pairing gives 5.6e-87 and 2.8e-72 and is shown.
+  - claim: control-it5-silenced-activated
+    agrees: true
+    outcome: reproduced
+    reason: R3 gives 3.26, 3.08, 0, 0.
+    response: No change of outcome.
+  - claim: control-it4-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: R3 gives 2.57 and 4.74.
+    response: No change of outcome.
+  - claim: pt5b-highest-rate
+    agrees: true
+    outcome: blocked
+    reason: Over all 15 populations PV5A is highest in every file. Over the excitatory types PT5B is highest
+      in every file. The readings disagree, so the criterion's block rule applies.
+    response: No change of outcome.
+  - claim: control-cv-isi
+    agrees: true
+    outcome: reproduced
+    reason: Window W with at least 1 ISI gives 0.59/0.365/47.8% and 0.61/0.30/25.7%.
+    response: No change of outcome.
+  - claim: pd-cv-isi
+    agrees: true
+    outcome: reproduced
+    reason: Window W with at least 1 ISI gives 0.339/0.267/80.6% and 0.184/0.191/93.8%.
+    response: No change of outcome.
+  - claim: control-subthreshold-oscillations
+    agrees: true
+    outcome: blocked
+    reason: The membrane potentials exist (20 traces per file in the paper's set), but there is no detection
+      rule. 57.4% of 20 cells is not a whole number.
+    response: No change of outcome.
+  - claim: pd-no-subthreshold-oscillations
+    agrees: true
+    outcome: blocked
+    reason: Depends on the claim above.
+    response: No change of outcome.
+  - claim: pd-activated-vm-more-negative
+    agrees: true
+    outcome: reproduced
+    reason: All 20 of 20 cells are lower in the parkinsonian file - mean -5.6 mV, median -7.1 mV. The
+      other three sets agree.
+    response: No change of outcome. A data-check cell now prints the starting time of every potential
+      series (0 s at 40 kHz).
+  - claim: control-duty-cycle
+    agrees: true
+    outcome: not_reproduced
+    reason: No combination of readings puts both values in tolerance.
+    response: No change of outcome. Whether the claims file's convention on the unsmoothed SCH should
+      be used is asked of a reader (problem 7).
+  - claim: pd-duty-cycle
+    agrees: true
+    outcome: not_reproduced
+    reason: Same as above.
+    response: No change of outcome; asked of a reader with control-duty-cycle.
+  - claim: fig3a-control-rest-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: S1 shows no local maximum in 1 to 3 Hz and a burst rate of 1.30 Hz against 1.7.
+    response: No change of outcome. The S2 2 Hz test was also run with 1 s and 2 s windows (problem 4);
+      both have a maximum in 1 to 3 Hz, but S1 fails both parts and the burst rate fails under both readings,
+      so the outcome is the same under every reading. S2 burst rates are now per 2.3 s (problem 5); the
+      S2 rate is 0.87 Hz. The burst convention is asked of a reader (problem 7).
+  - claim: fig3b-control-activated-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: Under S1 the 15 Hz burst rate is 1.30, the 25 to 35 Hz rate 1.30, the median 25 to 35 Hz duration
+      66.9 ms, and the 15 Hz durations are out of range.
+    response: No change of outcome. With the S2 rates per 2.3 s the 25 to 35 Hz S2 rate is 0.87 Hz and
+      fails too; with a 1 s window S2 has a 1 Hz maximum. Asked of a reader with fig3a.
+  - claim: fig6a-pd-rest-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: The 25 to 35 Hz burst rate is 1.74 Hz (S1) and 1.45 Hz (S2), against 5.0.
+    response: No change of outcome. The S2 rate per 2.3 s is 1.30 Hz. Asked of a reader with fig3a.
+  - claim: fig6b-pd-activated-spectrogram
+    agrees: true
+    outcome: not_reproduced
+    reason: The burst rate is 2.6 Hz (S1) and 2.9 Hz (S2), against 9 to 22 Hz.
+    response: No change of outcome. The S2 rate per 2.3 s is 2.61 Hz. Asked of a reader with fig3a.
+  - claim: control-coincident-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Under every reading in the claims file, 99.99 to 100% of spikes are coincident, against 1%
+      and 3%. The reading looks like a misreading of the paper (problem 3).
+    response: No change of outcome. The claims file's reading is asked of a reader in questions/001444.yaml,
+      and the notes say so.
+  - claim: pd-coincident-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Same - about 100%, against 2% and 3%.
+    response: No change of outcome; asked of a reader with control-coincident-spikes.
+  - claim: fig4-control-unitary-events
+    agrees: false
+    outcome: blocked
+    reason: The helper's coincidence count saturates - every 1 ms bin holds at least 2 spikes, and the
+      median observed count equals the expected count, 100 of 100. The test cannot find significance,
+      and only one count reading was run (problem 2).
+    response: Kept as not reproduced, with the disagreement recorded. Three more counts were run (problem
+      2) - the spikes in coincident bins, and pairs of coincident cells against independent cells at the
+      window's rates and against a null that keeps each cell's active bins - with each count's chance
+      level on independent Poisson cells, the verifier's synthetic cases, and the share of windows at
+      the maximum bin count. No combination meets the criterion under any count (rest 0 s, 0.8 to 1.65
+      s or 3.2 to 3.99 s against 0.63 to 0.77 s), so the outcome is the one every reading gives. The claims
+      file's reading is asked of a reader.
+  - claim: fig7-pd-unitary-events
+    agrees: false
+    outcome: blocked
+    reason: Same as fig4.
+    response: Kept as not reproduced, with the disagreement recorded. Under the pair counts the rest duration
+      is 3.8 to 4.0 s against 2.79 to 3.41 s and the activated 0 to 0.43 s or 3.7 to 4.0 s against 1.26
+      to 1.54 s; no combination of any count meets the criterion.
+  - claim: rest-synchrony-increase
+    agrees: false
+    outcome: blocked
+    reason: It rests on the saturated unitary-event output - 0 s against 0 s.
+    response: Changed from not reproduced to reproduced, resting on the pair count as an assumption. The
+      bin and spike counts are at their ceiling and miss synthetic synchrony, so they cannot test the
+      claim; the pair count is the one that can exceed its expectation, and under both of its nulls and
+      every window reading the parkinsonian rest file has more significant synchrony (3.8 to 3.98 s against
+      0.8 to 1.65 s, and 4.0 s against 3.2 to 3.99 s).
+  - claim: fig5c-pd-pt5b-rate-activated
+    agrees: true
+    outcome: reproduced
+    reason: All readings are within tolerance; every test gives p < 1e-200.
+    response: No change of outcome.
+  - claim: fig5c-pd-it23-rate-activated
+    agrees: false
+    outcome: not_reproduced
+    reason: R3 values are within tolerance, but even the unpaired T3 fails (p = 0.0018), and T1 gives
+      p = 0.60. This holds whatever pairing is used.
+    response: Changed from partially reproduced to not reproduced. With the union pairing the paired tests
+      give 2.4e-04 and 2.2e-04 but Mann-Whitney stays at 0.0018, so no pairing meets the criterion, and
+      with the cells kept in both the paired tests find no increase. The assumption mark was removed.
+  - claim: pd-it5-silenced-activated
+    agrees: true
+    outcome: reproduced
+    reason: R3 gives 2.17, 1.25, 0, 0.
+    response: No change of outcome.
+  - claim: pd-it6-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: R3 means are 6.00 and 5.99, and no test gives p < 0.05 under R3. R1 tests do find a difference
+      (p 0.0002 to 0.019). The outcome depends on problem 1.
+    response: No change of outcome. The union pairing was run and finds a difference (Wilcoxon 0.0025,
+      paired t 0.0021), so the outcome now rests also on pairing the cells kept in both files, adopted
+      because it keeps each paired rate inside the group whose mean the claim gives. This is stated as
+      an assumption, with both results shown. On problem 10, the tests under the reading whose means match
+      (R3) decide, as the criterion's 'under one rate reading' reads.
+  - claim: rest-pt5b-rate-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: Values within tolerance, every test gives p < 1e-10, and the parkinsonian standard deviation
+      is lower.
+    response: No change of outcome.
+  - claim: rest-it4-rate-pd-vs-control
+    agrees: true
+    outcome: not_reproduced
+    reason: R3 means 2.57 and 14.13 match the paper, but the parkinsonian value rests on n = 2 cells.
+      T3 gives p = 0.077 and T4 p = 0.31.
+    response: No change of outcome. The union pairing (11 cells) gives 0.098 and 1.0.
+  - claim: rest-it5a-rate-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: R3 means 3.25 and 2.16. Every test gives p at most 0.0027.
+    response: No change of outcome. The union pairing gives 5.7e-33 and 5.7e-30.
+  - claim: activated-pt5b-rate-pd-vs-control
+    agrees: false
+    outcome: not_reproduced
+    reason: Values within tolerance under R1/R3, but Mann-Whitney gives p = 0.0052, which is not below
+      0.001. Under R2 no test reaches p < 0.05, which is what the Discussion says.
+    response: Kept as partially reproduced, with the disagreement recorded. Every test finds the increase
+      (p 1.6e-08 to 0.0052) and the standard deviation is lower, so the effect is present and weaker than
+      the paper's bound under one test of four, which is what partially reproduced means; unlike the IT2
+      claims, no test or pairing finds no change under R1 or R3.
+  - claim: activated-it6-rate-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: R3 means 3.47 and 5.99. Every test gives p < 1e-7.
+    response: No change of outcome. The union pairing gives 1.4e-11 and 1.0e-08.
+  - claim: rest-beta-power-order-of-magnitude
+    agrees: true
+    outcome: partially_reproduced
+    reason: The increase is there, but the ratio is 111 to 129 under S1 and 65 under S2, above the claims
+      file's 3.16 to 31.6 range under every reading. The criterion does not say what outcome a ratio above
+      31.6 gets. The other sets give 7 to 65.
+    response: No change of outcome.
+  - claim: activated-20-35hz-power-pd-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: Parkinsonian power is higher under every reading - S1 4.6x, S2 4.7x, SCH 11.8x.
+    response: No change of outcome.

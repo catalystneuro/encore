@@ -31,7 +31,8 @@ Where the parameters come from:
   steps, 7 cycles; the signal has its mean removed and is linearly detrended). Reading S1.
 - `stft_spec`: reading S2. NetPyNE's fft option with its defaults (nperseg 256 at 40 kHz) has a
   frequency step of 156 Hz and cannot resolve any band of the claims, so S2 uses a 250 ms Hann
-  window with 90% overlap (4 Hz steps), a standard choice stated in the notebook.
+  window with 90% overlap (4 Hz steps), a standard choice stated in the notebook. A 250 ms window
+  has no bin between 1 and 3 Hz, so the 2 Hz test of S2 is also run with 1 s and 2 s windows.
 - `band_bursts`: the claims file's burst reading, epochs where band power is above halfway
   between its minimum and maximum in W (the half-height convention of Methods, Duty cycle).
 - `duty_cycles`: Results, Control simulations, paragraph 4, and Methods, Duty cycle, with the
@@ -40,8 +41,9 @@ Where the parameters come from:
   readings (a) another PT5B spike within 1 ms either side and (b) the same 1 ms bin.
 - `unitary_events`: Methods, Identifying synchronous spiking, and the Fig. 4 and 7 legends
   (joint-surprise test, p < 0.05, "100 ms firing rate window"), readings of the claims file. The
-  expected number of coincidences in a window assumes independent Poisson cells at the rates
-  of that window (Grun et al. 2002); coincidence bins are 1 ms (Results).
+  expected number of coincidences in a window assumes independent cells at the rates of that
+  window (Grun et al. 2002); coincidence bins are 1 ms (Results). How a window's coincidences
+  are counted is open (bins, spikes or pairs of cells; see the function), and each is run.
 """
 
 from __future__ import annotations
@@ -317,12 +319,14 @@ def above_runs(x: np.ndarray, thr: float) -> list[tuple[int, int]]:
     return list(zip(np.flatnonzero(d == 1), np.flatnonzero(d == -1)))
 
 
-def band_bursts(t: np.ndarray, power: np.ndarray, dt: float) -> dict:
-    """Bursts as epochs above halfway between min and max of band power over the window."""
+def band_bursts(t: np.ndarray, power: np.ndarray, dt: float, span: float | None = None) -> dict:
+    """Bursts as epochs above halfway between min and max of band power over the window. The
+    rate is bursts per `span` s, the length of the analysed signal (2.3 s for W); without it,
+    the span of the samples, which for a short-time spectrogram is shorter than the signal."""
     thr = (power.min() + power.max()) / 2
     runs = above_runs(power, thr)
     dur = np.array([(b - a) * dt for a, b in runs])
-    span = len(power) * dt
+    span = len(power) * dt if span is None else span
     return {"n": len(runs), "rate": len(runs) / span, "durations": dur,
             "median_ms": float(np.median(dur) * 1e3) if len(dur) else np.nan,
             "frac_above": float(np.mean(power > thr))}
@@ -401,12 +405,42 @@ def coincident_fraction(d: dict, pop: str, window, reading: str) -> tuple[float,
     return float(coinc.mean() * 100), n
 
 
+def _kmoments(p: np.ndarray) -> tuple:
+    """Raw moments 1 to 4 of the number of cells firing in a bin, a sum of independent Bernoulli
+    variables with probabilities `p` (from the cumulants of the Bernoulli terms)."""
+    q = 1 - p
+    k1, k2 = p.sum(), (p * q).sum()
+    k3, k4 = (p * q * (1 - 2 * p)).sum(), (p * q * (1 - 6 * p * q)).sum()
+    return (k1, k2 + k1 ** 2, k3 + 3 * k2 * k1 + k1 ** 3,
+            k4 + 4 * k3 * k1 + 3 * k2 ** 2 + 6 * k2 * k1 ** 2 + k1 ** 4)
+
+
 def unitary_events(d: dict, pop: str, span, step_s: float, win_s=0.1, bin_s=0.001,
-                   alpha=0.05) -> dict:
-    """Population coincidences (bins of `bin_s` holding 2 or more spikes of distinct cells) in
-    windows of `win_s` moved by `step_s`; expected count from independent Poisson cells at each
-    cell's rate in the window; joint-surprise p = P(N >= observed | expected). Returns the
-    significant windows' union (total duration and clusters)."""
+                   alpha=0.05, count="bins") -> dict:
+    """Population coincidences in bins of `bin_s` where 2 or more distinct cells fire, in windows
+    of `win_s` moved by `step_s`; expected count from independent Poisson cells at each cell's
+    rate in the window. Returns the significant windows' union (total duration and clusters).
+
+    `count` is how a window's coincidences are counted, readings of the claims file's "2 or more
+    PT5B spikes within 1 ms" (the paper counts "synchronous spikes significantly above the
+    expected number ... for the neuron population size and firing rates", Methods, Identifying
+    synchronous spiking):
+    - "bins", the number of coincident bins (at most the window's 100 bins); joint-surprise
+      p = P(N >= observed) with N Poisson (Grun et al. 2002).
+    - "spikes", the spikes in coincident bins; p is the normal tail with the exact mean and
+      variance of independent Bernoulli cells at the window's rates (a stated choice: the count
+      is a sum of very unequal per-bin values, not Poisson).
+    - "pairs (rate null)", the pairs of cells firing in the same bin, k(k-1)/2 for a bin with k
+      cells, which is the coincidence count of Grun et al. summed over all pairs of cells; null
+      and p as for "spikes". This null ignores that the rates are estimated from the same
+      window, which makes it conservative (the notebook shows its chance level).
+    - "pairs (count null)", the same count; its null keeps
+      each cell's number of active bins in the window and places them at random (rate-matched
+      within the window). Under it the overlap of two cells is hypergeometric, with mean
+      n_i n_j / w and variance n_i n_j (w - n_i)(w - n_j) / (w^2 (w - 1)), and the overlaps of
+      different pairs are uncorrelated, so the mean and variance of the sum are exact; p is the
+      normal tail (a stated choice).
+    """
     edges = np.arange(span[0], span[1] + bin_s / 2, bin_s)
     nb = len(edges) - 1
     cells = [t[(t >= span[0]) & (t < span[1])] for g, t in d["trains"].items() if d["pop"][g] == pop]
@@ -418,6 +452,7 @@ def unitary_events(d: dict, pop: str, span, step_s: float, win_s=0.1, bin_s=0.00
         occ += c > 0
         per_cell_counts.append(c)
     coinc = occ >= 2
+    value = {"bins": coinc.astype(float), "spikes": occ * coinc}.get(count, occ * (occ - 1) / 2)
     C = np.array(per_cell_counts)  # cells x bins
     w = int(round(win_s / bin_s))
     s = int(round(step_s / bin_s))
@@ -425,7 +460,8 @@ def unitary_events(d: dict, pop: str, span, step_s: float, win_s=0.1, bin_s=0.00
     starts = np.arange(0, nb - w + 1, s)
     pvals, obs_all, exp_all = [], [], []
     cs = np.cumsum(np.c_[np.zeros((C.shape[0], 1)), C], axis=1)
-    cco = np.r_[0, np.cumsum(coinc)]
+    ca = np.cumsum(np.c_[np.zeros((C.shape[0], 1)), C > 0], axis=1)
+    cco = np.r_[0, np.cumsum(value)]
     for a in starts:
         lam = (cs[:, a + w] - cs[:, a]) / w          # spikes per bin, per cell
         p1 = np.clip(lam, 0, 1)
@@ -434,9 +470,25 @@ def unitary_events(d: dict, pop: str, span, step_s: float, win_s=0.1, bin_s=0.00
         p0 = np.exp(log0)
         p1sum = p0 * np.sum(p1[p1 < 1] / (1 - p1[p1 < 1]))
         pc = max(0.0, 1 - p0 - p1sum)
-        expct = pc * w
         obs = cco[a + w] - cco[a]
-        p = stats.poisson.sf(obs - 1, expct) if expct > 0 else (0.0 if obs > 0 else 1.0)
+        if count == "bins":
+            expct = pc * w
+            p = stats.poisson.sf(obs - 1, expct) if expct > 0 else (0.0 if obs > 0 else 1.0)
+        elif count in ("spikes", "pairs (rate null)"):
+            m1, m2, m3, m4 = _kmoments(p1[p1 < 1])
+            if count == "spikes":   # k * [k >= 2] = k - [k == 1]
+                ef, ef2 = m1 - p1sum, m2 - p1sum
+            else:                   # k (k - 1) / 2
+                ef, ef2 = (m2 - m1) / 2, (m4 - 2 * m3 + m2) / 4
+            expct = ef * w
+            sd = np.sqrt(max(w * (ef2 - ef ** 2), 0.0))
+            p = stats.norm.sf((obs - expct) / sd) if sd > 0 else (0.0 if obs > expct else 1.0)
+        else:
+            n = ca[:, a + w] - ca[:, a]                  # active bins per cell in the window
+            expct = (n.sum() ** 2 - np.sum(n ** 2)) / (2 * w)
+            q = n * (w - n)
+            sd = np.sqrt(max((q.sum() ** 2 - np.sum(q ** 2)) / (2 * w ** 2 * (w - 1)), 0.0))
+            p = stats.norm.sf((obs - expct) / sd) if sd > 0 else (0.0 if obs > expct else 1.0)
         pvals.append(p)
         obs_all.append(obs)
         exp_all.append(expct)
@@ -447,7 +499,9 @@ def unitary_events(d: dict, pop: str, span, step_s: float, win_s=0.1, bin_s=0.00
     return {"total_s": float(sig.sum() * bin_s), "clusters_ms": dur * 1e3, "runs": runs,
             "n_windows": len(starts), "n_sig_windows": int(np.sum(np.array(pvals) < alpha)),
             "obs": np.array(obs_all), "exp": np.array(exp_all), "sig": sig, "edges": edges,
-            "coinc_share_bins": float(coinc.mean())}
+            "coinc_share_bins": float(coinc.mean()), "max_bins": w,
+            "share_windows_full": float(np.mean(cco[starts + w] - cco[starts] >= w))
+            if count == "bins" else np.nan}
 
 
 def periodicity(spikes: np.ndarray, runs, span, bin_s=SCH_BIN, reading="x", fmin=5.0) -> list:
