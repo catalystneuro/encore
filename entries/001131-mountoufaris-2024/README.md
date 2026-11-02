@@ -18,7 +18,7 @@ and 6 Oxtr/Avpr1a co-edited male residents during interactions with a male intru
 | rSLDS fit quality, time constants, line attractor score, flow fields, ACHW of first-dimension units (six claims) | Not reproduced |
 | Post-intruder persistence of the first dimension | Blocked: metadata insufficient |
 | Female-intruder, behaviour-cohort, photometry and slice claims (20 claims) | Blocked: data missing |
-| Co-expression in an outside RNA-seq atlas | Blocked: the atlas's archive was not found in time, and the paper gives no accession. Found since (Mendeley Data, doi:10.17632/ypx3sw2f7c.1) and tested; proposed partially reproduced (assumption: cell set and threshold), for the verifier's third round |
+| Co-expression in an outside RNA-seq atlas (Kim et al. 2019, Mendeley Data, doi:10.17632/ypx3sw2f7c.1) | Partially reproduced (assumption: cell set and threshold): Oxtr inside tolerance, Avpr1a among Oxtr cells below it |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
