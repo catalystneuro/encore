@@ -308,7 +308,11 @@ outcomes:
     with the round-1 grid, which had one bin centred on the cue and counted after it, the same test gave
     +0.013, p = 0.12 (variant in the notebook). The code''s count of trials gives +0.013, p = 0.14. The
     outcome therefore rests on the time grid and on the inclusion rule; the grid that decides is the code''s,
-    and the rule the Methods'' (S1).'
+    and the rule the Methods'' (S1). It also rests on the degrees of freedom of the Tukey test, which use
+    the large-sample value in place of Kenward-Roger (R is not available here): on 49 degrees of freedom
+    (sessions less levels, a deliberately small value printed as a variant) the same contrast gives p
+    = 0.050. Window means weight each 0.2 s bin equally, as the code does; whether S7 should say so is
+    asked in questions/001371.yaml.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -354,7 +358,9 @@ outcomes:
     also gives three of four (front initial p = 0.10, new p = 0.0019) and all eight values within tolerance
     (0.052, 0.062, 0.055, 0.070, 0.103, 0.070, 0.106, 0.065). The code''s count of trials gives front
     half p = 0.24 and 0.091. 1241 trials per cue (paper 1264 and 1295). In round 1 the split dropped the
-    middle bin and gave front half p = 0.12 and 0.14.'
+    middle bin and gave front half p = 0.12 and 0.14. The new arm front contrast also rests on the degrees
+    of freedom: on 47 (sessions less levels, a deliberately small value in place of Kenward-Roger, printed
+    as a variant) it gives p = 0.063, and under the variant split 0.0056.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -655,7 +661,8 @@ outcomes:
     initial +0.012 and +0.014, new +0.011 and +0.010, all Tukey p < 1e-9. The stored phase gives the same
     (p < 1e-9). The reader''s answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task
     trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions
-    in place of 47 and 37. The code''s count gives p < 1e-8; the outcome is unchanged.'
+    in place of 47 and 37. The code''s count gives p < 1e-8; the outcome is unchanged. On the small degrees
+    of freedom of the variant (41 or 49) every contrast gives p < 1e-5.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -720,9 +727,9 @@ outcomes:
     (about 110 samples per second, trials padded to the longest, up to 3601 samples), with 6-fold cross-validation
     repeated 3 times, so 18 models of 20 epochs per session. The notebook builds the model as the paper''s
     code does and times one fold on session S25-210906 (119 delay only trials): 2.8 s for the first epoch
-    and 1.7 s for the second, 10.4 min for the session, and 10.4 h for all 66 sessions scaled by their delay
-    only trial counts in one process; with one session per core on the machine''s 4 cores, at best 2.6
-    h. Both are over the notebook''s 60 min limit, so, as the protocol says for an estimate over that
+    and 1.6 s for the second, 9.8 min for the session, and 9.9 h for all 66 sessions scaled by their delay
+    only trial counts in one process; with one session per core on the machine''s 4 cores, at best 2.5
+    h. Epoch times vary from run to run, so these figures change when the notebook is re-run. Both are over the notebook''s 60 min limit, so, as the protocol says for an estimate over that
     limit (Author, Develop on a subset), the claim is blocked as too_large and not run. No session was
     fitted; a subset of sessions would not test the claim, whose expected values are means over the 66
     sessions. The data it needs (velocities, position and view angle of every session) are in the dataset.'
@@ -1004,7 +1011,9 @@ outcomes:
     gives p < 0.05, so the absence is not reproduced. The round-1 grid gave p = 0.012 for the initial
     arm. The code''s per-session GLM, a variant, gives no p below 0.05 (0.33, 0.93, 0.41), and neither
     does the code''s count of trials (0.096, 0.95, 0.12), so the outcome rests on the inclusion rule as
-    well as the GLM; the Methods'' GLM and the Methods'' rule decide.'
+    well as the GLM; the Methods'' GLM and the Methods'' rule decide. It also rests on the degrees of freedom:
+    on 51 (sessions less levels, a deliberately small value in place of Kenward-Roger, printed as a variant)
+    the initial arm contrast gives p = 0.053.'
   deviations:
   - The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for
     animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p
@@ -1044,7 +1053,9 @@ outcomes:
     2482 after balancing) and times the SVM: about 0.13 s per fit, so the paper''s procedure, a leave-one-out
     randomized search and leave-one-out accuracy (27302 fits per run), takes about 1.0 h for the real
     labels alone and about 41 days with the 1000 shuffles of the permutation test, against the 60 min
-    limit. The CA1 half is therefore too large as well.'
+    limit. Fit times vary from run to run: the real labels alone are near the limit and the notebook
+    prints them as within it, so only the permutation test the criterion asks for is too large in the
+    CA1 half. The claim stays blocked because of the PFC half.'
 - claim: fig7c-hpc-commitment-new-arm
   outcome: partially_reproduced
   notebook: reproduce_prince_2025.ipynb
@@ -1172,9 +1183,10 @@ findings:
   statement: 'Question for the paper''s authors: which 0.2 s bins enter the windows after the update cue
     (0 to 0.5, 0 to 1 and 0 to 1.5 s)? The code samples the decoding at -2.5, -2.3, ..., -0.1, 0.1, ...,
     2.5 s and cuts windows with pd.cut, which this attempt follows; a grid with a bin centred on the cue,
-    counted after it, shifts the windows by 0.1 s. On this dataset the shift changes four outcomes (sfig3c-retrospective-unchanged
+    counted after it, shifts the windows by 0.1 s. On this dataset the shift changes three outcomes (sfig3c-retrospective-unchanged
     p = 0.036 against 0.12; fig5d-stay-hpc-below-switch new arm p = 0.0094 against 0.38; fig7c-hpc-commitment-initial-arm
-    p = 0.29 against 0.040; fig2g-pfc-no-goal-increase reading b new arm p = 0.030 against 0.066).'
+    p = 0.29 against 0.040). It also changes one test of fig2g-pfc-no-goal-increase (reading b new arm
+    p = 0.030 against 0.066), whose outcome it leaves unchanged, since reading a fails on both grids.'
 verifications:
 - date: '2026-11-02'
   kind: agent
@@ -1390,8 +1402,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig4f-pfc-choice-flips
     agrees: true
@@ -1402,8 +1415,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig4f-pfc-difference
     agrees: true
@@ -1414,8 +1428,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig4d-pfc-precedes-movement
     agrees: true
@@ -1426,8 +1441,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: sfig7d-pfc-before-motor-single-trials
     agrees: true
@@ -1438,8 +1454,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: sfig7e-pfc-pre-update
     agrees: true
@@ -1450,8 +1467,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig4h-hpc-choice-switches
     agrees: true
@@ -1462,8 +1480,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig4h-hpc-choices-equal
     agrees: true
@@ -1474,8 +1493,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig4g-hpc-slower-than-pfc
     agrees: true
@@ -1486,8 +1506,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig5d-stay-hpc-like-delay
     agrees: true
@@ -1526,8 +1547,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig5f-stay-pfc-initial-choice
     agrees: true
@@ -1538,8 +1560,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig5f-stay-pfc-difference
     agrees: true
@@ -1550,8 +1573,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig6b-hpc-new-lower-incorrect
     agrees: true
@@ -1583,8 +1607,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig6d-pfc-initial-no-difference
     agrees: true
@@ -1595,8 +1620,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig6d-pfc-within-trial
     agrees: true
@@ -1607,8 +1633,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: sfig12-delay-hpc-no-outcome-difference
     agrees: true
@@ -1627,8 +1654,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig6e-predict-outcome
     agrees: true
@@ -1665,8 +1693,9 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
   - claim: fig7e-pfc-commitment-new
     agrees: true
@@ -1677,6 +1706,505 @@ verifications:
       on a subset of sessions; at least partial testing looks feasible.'
     response: 'Kept blocked as too_large: the protocol''s rule for a timed estimate over the notebook
       limit (Author, Develop on a subset) names too_large and says not to run it, so the disagreement
-      on the reason is recorded. The notebook now also prints the core count: 10.4 h in one process, at
-      best 2.6 h on the machine''s 4 cores, over the 60 min limit either way. A subset of sessions was
+      on the reason is recorded. The notebook now also prints the core count: about 10 h in one process,
+      at best about 2.5 h on the machine''s 4 cores (epoch times vary from run to run), over the 60 min
+      limit either way. A subset of sessions was
       not run, since the expected values are means over the 66 sessions.'
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the author-revise-1 run with its conclusions and summary,
+    the helper module, the attempt record and the claims file, with the paper under paper/.'
+  results:
+  - claim: recordings
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs. Cell 10 says
+      the shortfall in each region is those unlabelled units, but only the total is shown to match (633
+      = 347 + 286); how the 633 units split between the regions is not known.
+    response: No change of outcome. Cell 10 now says the totals are consistent with the shortfall being
+      the unlabelled units and that how the 633 units divide between the regions is not known.
+  - claim: trial-mix
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: task-timing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig1b-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig1b-window-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig1d-heading-switch
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig5a-stay-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: tuning-tiles-track
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: decoding-validation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig2e-hpc-goal-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig2e-hpc-arms-equal
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: sfig2e-goal-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: sfig3c-goals-over-retrospective
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: sfig3c-retrospective-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome under the claim''s criterion and the printed outputs. Fragile: p
+      = 0.036; it is 0.14 under the code''s trial count and 0.12 on the round-1 grid, and the paper''s
+      own p is 0.0513. S7 of the claims file says the code averages 0.5 s bins of the 0.2 s grid inside
+      the window; window_mean takes a plain mean of the 8 bins, while 0.5 s sub-bins would weight them
+      3/2/3, so this weighting could move outcomes that rest on p values between 0.036 and 0.044. Point
+      7 (Wald test and Tukey degrees of freedom instead of Kenward-Roger) is not addressed, because R
+      is not available; the effect is probably small, but it now sits under the borderline outcomes.'
+    response: 'No change for the window: the helper already does what the code does. calc_trial_by_trial_quant_data
+      labels each 0.2 s sample with its 0.5 s bin (times_binned, pd.cut on linspace(-2.5, 2.5, 11)), and
+      plot_goal_coding_stats keeps the samples whose label is in the window and takes the mean over those
+      samples (.groupby(trial columns).mean()), so each 0.2 s bin has equal weight and the 0.5 s bins
+      only select samples. The window_mean docstring now cites this. Kenward-Roger needs R, which is not
+      available here, so it was not run. Every contrast now also prints its Tukey p on as many degrees
+      of freedom as there are sessions less the levels, a deliberately small value, as a variant: this
+      contrast gives p = 0.050 on 49 degrees of freedom. The notes say the outcome rests on the degrees
+      of freedom as well. The small value is a stress test, not an estimate of the Kenward-Roger degrees
+      of freedom, so the outcome is kept and no change is proposed.'
+  - claim: sfig3ab-original-vs-update-cue
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs. The new-arm front
+      half rests on a p value between 0.036 and 0.044. S7 of the claims file says the code averages 0.5
+      s bins of the 0.2 s grid inside the window; window_mean takes a plain mean of the 8 bins, while
+      0.5 s sub-bins would weight them 3/2/3, so this weighting could move outcomes that rest on p values
+      between 0.036 and 0.044. Point 7 (Wald test and Tukey degrees of freedom instead of Kenward-Roger)
+      is not addressed, because R is not available; the effect is probably small, but it now sits under
+      the borderline outcomes.
+    response: 'No change for the window: the helper already does what the code does. calc_trial_by_trial_quant_data
+      labels each 0.2 s sample with its 0.5 s bin (times_binned, pd.cut on linspace(-2.5, 2.5, 11)), and
+      plot_goal_coding_stats keeps the samples whose label is in the window and takes the mean over those
+      samples (.groupby(trial columns).mean()), so each 0.2 s bin has equal weight and the 0.5 s bins
+      only select samples. The window_mean docstring now cites this. Kenward-Roger needs R, which is not
+      available here, so it was not run. Every contrast now also prints its Tukey p on as many degrees
+      of freedom as there are sessions less the levels, a deliberately small value, as a variant: the
+      new arm front contrast gives p = 0.063 on 47 degrees of freedom (0.0056 under the variant split),
+      so that contrast and with it three of four would become two of four. The notes say the outcome rests
+      on the degrees of freedom as well. The small value is a stress test, not an estimate of the Kenward-Roger
+      degrees of freedom, so the outcome is kept and no change is proposed.'
+  - claim: sfig2f-all-trials-encoder
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: sfig5f-pfc-wider-spread
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: sfig5g-ca1-more-goal-coding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig2g-pfc-no-goal-increase
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome under the claim''s criterion and the printed outputs. The round-1
+      grid changes three outcomes, not four: on the round-1 grid fig2g reading (a) still fails (p = 0.038
+      and 0.035, cell 100), so its outcome is not reproduced under both grids; the Summary (cell 121)
+      and the methods_unavailable finding say four.'
+    response: No change of outcome. The Summary and the methods_unavailable finding now say the shift
+      changes three outcomes, and that it changes one test of this claim (reading b) without changing
+      its outcome. On the small degrees of freedom of the new variant the S1 tests of this claim stay
+      below 0.05 (reading a new arm p = 0.024, reading b 0.046).
+  - claim: sfig5e-pfc-windows
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig3c-theta-phase-segregation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig3b-theta-pre-post
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: sfig6-theta-switch-over-delay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs. Cell 111 says
+      all contrasts give p < 1e-9 with either phase and with the code's count of trials; under the code's
+      count the new arm's second half gives p = 9.25e-9. The attempt record's < 1e-8 is correct.
+    response: No change of outcome. Cell 111 now says p < 1e-8 and gives the largest value (9.25e-9);
+      it and the notes add that on the small degrees of freedom of the new variant every contrast gives
+      p < 1e-5.
+  - claim: fig3d-new-arm-theta-modulated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig4a-lstm-choice-estimate
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig4f-pfc-choice-flips
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig4f-pfc-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig4d-pfc-precedes-movement
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: sfig7d-pfc-before-motor-single-trials
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: sfig7e-pfc-pre-update
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig4h-hpc-choice-switches
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig4h-hpc-choices-equal
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig4g-hpc-slower-than-pfc
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig5d-stay-hpc-like-delay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig5d-stay-hpc-below-switch
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome under the claim''s criterion and the printed outputs. Fragile: new
+      arm p = 0.0094, and 0.38 on the round-1 grid.'
+    response: No change. The notes already say the outcome rests on the time grid, and the code's grid
+      decides.
+  - claim: sfig10-stay-transient-new-arm
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig5f-stay-pfc-new-choice
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig5f-stay-pfc-initial-choice
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig5f-stay-pfc-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig6b-hpc-new-lower-incorrect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig6b-hpc-initial-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig6-hpc-pre-cue-initial-higher-incorrect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig6d-pfc-new-lower-incorrect
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig6d-pfc-initial-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig6d-pfc-within-trial
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: sfig12-delay-hpc-no-outcome-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome under the claim''s criterion and the printed outputs. Fragile: p
+      = 0.043, and 0.096 under the code''s count. S7 of the claims file says the code averages 0.5 s bins
+      of the 0.2 s grid inside the window; window_mean takes a plain mean of the 8 bins, while 0.5 s sub-bins
+      would weight them 3/2/3, so this weighting could move outcomes that rest on p values between 0.036
+      and 0.044. Point 7 (Wald test and Tukey degrees of freedom instead of Kenward-Roger) is not addressed,
+      because R is not available; the effect is probably small, but it now sits under the borderline outcomes.'
+    response: 'No change for the window: the helper already does what the code does. calc_trial_by_trial_quant_data
+      labels each 0.2 s sample with its 0.5 s bin (times_binned, pd.cut on linspace(-2.5, 2.5, 11)), and
+      plot_goal_coding_stats keeps the samples whose label is in the window and takes the mean over those
+      samples (.groupby(trial columns).mean()), so each 0.2 s bin has equal weight and the 0.5 s bins
+      only select samples. The window_mean docstring now cites this. Kenward-Roger needs R, which is not
+      available here, so it was not run. Every contrast now also prints its Tukey p on as many degrees
+      of freedom as there are sessions less the levels, a deliberately small value, as a variant: the
+      initial arm contrast gives p = 0.053 on 51 degrees of freedom. The notes say the outcome rests on
+      the degrees of freedom as well. The small value is a stress test, not an estimate of the Kenward-Roger
+      degrees of freedom, so the outcome is kept and no change is proposed.'
+  - claim: sfig12-delay-pfc-outcome-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig6e-predict-outcome
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. The fig6e SVM timing is stale: cell 119 prints about 0.09 s per fit, 0.7
+      h for the real labels alone and 28 days with 1000 shuffles, where cell 120 and the notes say about
+      0.13 s, about 1.0 h and about 41 days. At 0.7 h the real-label run of the CA1 half fits within the
+      limit; only the 1000-shuffle permutation test is over it. The block still stands, because the PFC
+      half needs the LSTM and the criterion judges both regions together.'
+    response: 'Kept blocked as too_large. Fit times vary between runs (this run printed about 0.13 s per
+      fit, 1.0 h and 41 days). Cell 119 now prints on which side of the limit the real labels and the
+      permutation test fall (this run: within, and over); cell 120 and the notes now say the real-label
+      run is near the limit and could fit, that only the 1000-shuffle test is too large in the CA1 half,
+      and that the claim stays blocked because of the PFC half.'
+  - claim: fig7c-hpc-commitment-new-arm
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome under the claim's criterion and the printed outputs.
+    response: No change.
+  - claim: fig7c-hpc-commitment-initial-arm
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome under the claim''s criterion and the printed outputs. Fragile: p
+      = 0.29, and 0.040 on the round-1 grid.'
+    response: No change. The notes already say the outcome rests on the time grid, and the code's grid
+      decides.
+  - claim: fig7e-pfc-commitment-initial
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'
+  - claim: fig7e-pfc-commitment-new
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked is right. I still think too_large is the wrong label for a limit on compute time;
+      the author kept it under a protocol rule that I cannot check from here. The LSTM timing is stale:
+      cell 116 prints 8.3 h for all 66 sessions and at best 2.1 h on 4 cores, where cell 117, the fig4a
+      notes and every verification response say 10.4 h and 2.6 h; the conclusion still holds, because
+      both are over the 60-minute limit.'
+    response: 'Kept blocked as too_large: docs/protocol.md (Author, step 3, Develop on a subset) says
+      an estimate over the notebook limit is recorded as too_large and not run, so the disagreement on
+      the label stays recorded. Epoch times vary between runs (this run printed 9.9 h and at best 2.5
+      h). Cell 116 now prints whether the best case is over the limit, cell 117 no longer quotes hours,
+      and the fig4a notes and the round-1 responses now give the figures of this run or say about 10 h
+      and about 2.5 h, and say they vary.'

@@ -355,7 +355,12 @@ def window_mask(times, lo, hi):
 
 
 def window_mean(x, times, lo, hi):
-    """Mean over the bins of a window (window_mask) [claims S7]."""
+    """Mean over the bins of a window (window_mask) [claims S7], with equal weight on each 0.2 s
+    bin. This is what the code does: calc_trial_by_trial_quant_data labels each 0.2 s sample
+    with its 0.5 s bin (times_binned, pd.cut on linspace(-2.5, 2.5, 11)), and
+    plot_goal_coding_stats keeps the samples whose label is inside the window and takes
+    .groupby(trial columns).mean() over those samples. The 0.5 s bins select samples; their
+    means are not averaged, so the three 0.5 s bins (3, 2 and 3 samples) carry no weights."""
     m = window_mask(times, lo, hi)
     return np.nanmean(x[..., m], -1)
 
@@ -366,7 +371,9 @@ def lme(df, value, predictor, animal="animal", session="session"):
     fit by REML with statsmodels MixedLM. Returns the fit, the Wald F test of the predictor
     (Kenward-Roger degrees of freedom are not available in statsmodels; the test uses large-
     sample degrees of freedom), and all pairwise contrasts of the predictor's levels with
-    Tukey-adjusted p values (studentized range with k levels), as emmeans pairs()."""
+    Tukey-adjusted p values (studentized range with k levels), as emmeans pairs(). Each
+    contrast also carries p_tukey_lowdf, the same test on (sessions - levels) degrees of
+    freedom, a deliberately small value, as a variant."""
     import statsmodels.formula.api as smf
     from scipy import stats
     d = df[[value, predictor, animal, session]].dropna().copy()
@@ -393,12 +400,19 @@ def lme(df, value, predictor, animal="animal", session="session"):
     F = W / (k - 1)
     pF = float(stats.chi2.sf(W, k - 1))
     rows = []
+    df_lo = max(d["_sess"].nunique() - k, 1)
     for a, b in itertools.combinations(range(k), 2):
         est = beta[a] - beta[b]
         se = np.sqrt(cov[a, a] + cov[b, b] - 2 * cov[a, b])
         z = est / se
         p_t = float(stats.studentized_range.sf(abs(z) * np.sqrt(2), k, 1e4)) if k > 2 else float(2 * stats.norm.sf(abs(z)))
-        rows.append(dict(a=levels[a], b=levels[b], estimate=est, z=z, p_tukey=min(p_t, 1.0)))
+        # variant: the same test on (sessions - levels) degrees of freedom, far fewer than the
+        # large-sample value, to show how far small-sample degrees of freedom could move a p
+        # value [verifier round 2, point 7; Kenward-Roger needs R, which is not available here]
+        p_lo = (float(stats.studentized_range.sf(abs(z) * np.sqrt(2), k, df_lo)) if k > 2
+                else float(2 * stats.t.sf(abs(z), df_lo)))
+        rows.append(dict(a=levels[a], b=levels[b], estimate=est, z=z, p_tukey=min(p_t, 1.0),
+                         p_tukey_lowdf=min(p_lo, 1.0), df_lo=df_lo))
     emm = pd.Series(beta, index=levels)
     n = d.groupby("_pred", observed=True).size()
     return dict(fit=fit, F=F, df1=k - 1, p_anova=pF, contrasts=pd.DataFrame(rows), emm=emm, n=n)

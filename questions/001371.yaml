@@ -62,3 +62,19 @@ questions:
     reproduced only because its expected values are not what the paper's own trials show. If the percentages
     are the programmed probabilities, the claim cannot be tested from realized trials and is better blocked
     or restated; if they are realized fractions, it is a paper inconsistency, already recorded as a finding.
+- claim: sfig3c-retrospective-unchanged
+  asked: 2026-11-02
+  question: Shared method S7 says "The code averages 0.5 s bins of the 0.2 s grid inside the window".
+    In the code (calc_trial_by_trial_quant_data, plot_goal_coding_stats) the 0.5 s bins only label
+    the 0.2 s samples, and the window value is the plain mean of the samples whose label falls in the
+    window, with equal weight on each 0.2 s sample. Should S7 say that, so that it is not read as a mean
+    of 0.5 s bin means? The verifier of round 2 read S7 the second way. The question applies to every
+    claim that uses S7 windows.
+  passage: The post-update window is 0 to 1.5 s after the update cue (Methods); code plot_goal_coding_stats,
+    query times_binned > 0 and < 1.5 then groupby(trial columns).mean(), with times_binned from pd.cut
+    on linspace(-2.5, 2.5, 11) in calc_trial_by_trial_quant_data.
+  why: On the 0.2 s grid the three 0.5 s bins of 0 to 1.5 s hold 3, 2 and 3 samples, so a mean of 0.5
+    s bin means weights the samples unequally. This attempt follows the code's equal weights. Several
+    outcomes rest on p values between 0.036 and 0.044 (sfig3c-retrospective-unchanged, sfig12-delay-hpc-no-outcome-difference,
+    the new arm front half of sfig3ab-original-vs-update-cue), so a later attempt that reads S7 the
+    other way could reach other outcomes.
