@@ -298,6 +298,9 @@ claims:
     p: 0.05
     p_relation: ">"
     n: 7 young and 7 old ants, 48%
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: A claim of absence, judged on the paper's test. Per ant and pheromone, the AUC of
     each focal glomerulus (shared methods, both fold-change readings), the mean over the
     glomeruli identified in that ant (Figure S2A legend; some ants lack one), Welch's t test of
@@ -318,6 +321,9 @@ claims:
     test: Welch's t tests
     p: 0.05
     p_relation: ">"
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: Per ant, the AUC of G1 to G4 for each pheromone at 48% (shared methods, both
     fold-change readings); Welch's t test of young against old for each of the eight pairs.
     Reproduced when G2 with 4-methyl-3-heptanone gives p < 0.05 with young higher and the other
@@ -335,6 +341,9 @@ claims:
     p: 0.05
     p_relation: "<"
     n: PGb 7 young and 7 old ants, PGa 7 young and 6 old
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: Per ant, the AUC of PGb and PGa for each pheromone at 48% (shared methods, both
     fold-change readings); Welch's t test of young against old. Which pairs Figure 3D marks
     significant cannot be read from the text; readings (a) PGb for both pheromones and PGa for
@@ -353,6 +362,7 @@ claims:
   data: with_inputs
   depends_on:
   - fig3d-pg-stronger-old
+  - data-s2-glomerulus-link
   criterion: A claim of absence, judged on the paper's test. The 90-day values are the earlier
     study's data, DANDI 000467 (Hart et al. 2023, Cell 186, 3079), named in the key resources
     table; this paper does not say which of those ants, odors and concentrations enter Figure 3C
@@ -478,6 +488,9 @@ claims:
   - about: old, G4, propionic acid
     test: one-sided one-sample Welch's t test against zero
     p: 0.023
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: Per ant, the AUC of each focal glomerulus for each general odorant at 48% (shared
     methods, both fold-change readings); for each age, glomerulus and odorant (60 cells), a
     one-sided one-sample t test that the mean AUC exceeds zero (Figure S4A legend), at p < 0.05
@@ -522,6 +535,9 @@ claims:
   - about: isopropanol, G4
     test: Welch's t test
     p: 0.0084
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: Per ant, the AUC of each focal glomerulus for 3-hexanone and isopropanol at 48%
     (shared methods, both fold-change readings); Welch's t test of young against old. Reproduced
     when the ten pairs above give p < 0.05 with young higher and 3-hexanone in PGb and
@@ -545,6 +561,9 @@ claims:
     test: Welch's t test
     p: 0.05
     p_relation: ">"
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: Per ant, the AUC for propionic acid at 48% in G2, G3 and G4 (shared methods, both
     fold-change readings); Welch's t test of young against old. Reproduced when the young mean AUC
     is below zero in G2 and G3, both tests give p < 0.05 with the old mean nearer zero, and G4
@@ -565,6 +584,9 @@ claims:
     test: Welch's t test
     p: 0.0098
     n: 7 young and 7 old ants
+  data: with_inputs
+  depends_on:
+  - data-s2-glomerulus-link
   criterion: Per ant, the PGb fold-change trace for 3-hexanone at 48% (shared methods, both
     fold-change readings), the mean of its three trials (Figure S4C legend), summed over frames 9
     to 14 and over frames 35 to 40 (the legend's "AUC", whose plotted scale is that of a sum).
@@ -578,12 +600,31 @@ claims:
   quote: Whereas alarm pheromone responses increased with age specifically in PG b and PG a ,
     general odorant responses showed overall similar patterns across all six glomeruli, either with
     no responses or decreasing responses with age
+  data: with_inputs
   depends_on:
   - fig3d-pg-stronger-old
   - fig4-general-odorants-decline
   criterion: Reproduced when fig3d-pg-stronger-old is reproduced, PGb or PGa has at least one
     general odorant with a significant decline in fig4-general-odorants-decline, and none of the
     30 glomerulus and general odorant Welch's t tests at 48% gives p < 0.05 with old higher.
+- id: data-s2-glomerulus-link
+  kind: link
+  statement: The per-glomerulus fold-change traces of Data S2 come from the dandiset's ants and
+    trials, and each focal glomerulus can be found in the dandiset's imaging where the per-trial
+    responses follow Data S2's, so that the focal glomerulus claims can be measured on the
+    dandiset.
+  source: Data S2 (NIHMS1997610-supplement-MMC3.xlsx, PMC11265976.1); STAR Methods, Image
+    processing, paragraph on focal glomeruli
+  data: with_inputs
+  criterion: Added by the author (protocol, Author, step 1.4). Ants are matched by number and
+    imaging date (Data S2 a4-1-18-2023 or a4-1-18-23 is dandiset ant4-m1-d18-y2023), trials by odor
+    and the order of the trial numbers, and the ages must agree. Each glomerulus of each ant is
+    placed where the dandiset's per-trial peak fold change (frames 9-14) best correlates with Data
+    S2's over the trials Data S2 holds for it (pattern only, not amplitude). An ant, glomerulus and
+    Data S2 set (the Figure 3C and 3D traces, named with a two-digit year, and the rest) agrees
+    when the per-trial AUC from the dandiset (reading a, ROI radius 8 pixels) correlates with Data
+    S2's at r >= 0.7. The link holds (reproduced) when the ants all match and at least 80% of the
+    triples agree; partially reproduced from 50%; not reproduced below.
 checks:
 - date: 2026-10-23
   kind: agent

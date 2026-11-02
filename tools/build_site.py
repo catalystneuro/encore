@@ -468,9 +468,10 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
                    if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
 
 
-def outside_note(attempts, root: str = "") -> str:
-    """Lines with the outcomes of the claims that use outside data or other archives, when there are any."""
-    out = ""
+def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
+    """Lines with the outcomes of the claims that use outside data or other archives, when there are any.
+    Collapsed (the overview), they sit in a details block that names each group and its count."""
+    out, labels = "", []
     for group, one, many, label in (
             ("with_inputs", "1 claim that also uses data from outside the dataset",
              "claims that also use data from outside the dataset", "claims using outside data"),
@@ -483,9 +484,14 @@ def outside_note(attempts, root: str = "") -> str:
         if not m:
             continue
         text = one if m == 1 else f"{m} {many}"
-        out += (f'<p class="sub small" style="margin-top:8px">Counted separately: {text}.</p>'
+        labels.append(f"{label} ({m:,})")
+        lead = text[0].upper() + text[1:] if collapsed else f"Counted separately: {text}"
+        out += (f'<p class="sub small" style="margin-top:8px">{lead}.</p>'
                 f'<div class="summary">{bar(counts, f"Outcomes of {m} {label}", "bar mini")}'
                 f'{legend(counts, compact=True)}</div>')
+    if collapsed and out:
+        names = labels[0] if len(labels) == 1 else ", ".join(labels[:-1]) + " and " + labels[-1]
+        out = f'<details class="separate"><summary class="sub small">Counted separately: {names}</summary>{out}</details>'
     return out
 
 
@@ -558,7 +564,10 @@ def pipeline_rows(data: dict) -> list[dict]:
         rerun = bool(deprecated_on) and not reread
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
-            else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
+            else ("waiting", f"{len(missing)} not in store") if papers
+            # The manifest is written by hand from the private store (tools/papers_manifest.py), so a target
+            # added since its last run names papers the manifest has not checked yet.
+            else ("waiting", "not checked") if t.get("papers") else ("waiting", "no paper named"),
             "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
             if check != "absent" else ("todo", ""),
             "check": ("todo", "") if rerun else ("done", "ready") if check is True
@@ -934,28 +943,37 @@ PROGRESS_METRICS = {
 
 
 def progress_data(data: dict) -> dict:
-    """Daily counts for the overview's dashboard, for all datasets and for CatalystNeuro conversions.
+    """Daily counts for the overview's dashboard.
 
     Each series is a list over the days of what was new that day: dandisets and papers on the date of their first attempt, attempts
     on their own date, and the claims (those resting on the dandiset) and findings of each dandiset's
     current attempts on the date of those attempts.
     """
-    ours = {t["key"] for t in data["targets"] if t["catalystneuro"]}
     current = [a for atts in current_attempts(data).values() for a in atts]
     if not data["attempts"]:
         return {"days": [], "series": {}}
+    # Attempts are also counted by the protocol version they followed, oldest version first.
+    def protocol(a):
+        return (a.get("agent") or {}).get("protocol") or "not recorded"
+
+    def version_order(v):
+        m = re.fullmatch(r"([a-z]+)-(\d+)", v)
+        return (0, m[1], int(m[2])) if m else (1, v, 0)
+    protocols = sorted({protocol(a) for a in data["attempts"]}, key=version_order)
     start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
     series = {}
-    for subset, keep in (("all", lambda d: True), ("catalystneuro", lambda d: d in ours)):
-        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES}} for day in days}
+    for subset, keep in (("all", lambda d: True),):
+        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES},
+                     **{f"protocol:{v}": 0 for v in protocols}} for day in days}
         first_dandiset: dict = {}
         first_paper: dict = {}
         for a in data["attempts"]:
             if not keep(a["key"]):
                 continue
             new[a["date"]]["attempts"] += 1
+            new[a["date"]][f"protocol:{protocol(a)}"] += 1
             first_dandiset[a["key"]] = min(first_dandiset.get(a["key"], a["date"]), a["date"])
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
         for day in first_dandiset.values():
@@ -972,11 +990,12 @@ def progress_data(data: dict) -> dict:
             new[a["date"]]["findings"] += len(a["findings"])
         series[subset] = {k: [new[day][k] for day in days] for k in new[days[0]]}
     return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
-            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()}}
+            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()},
+            "protocols": protocols}
 
 
 def progress_panel(data: dict) -> str:
-    """The dashboard at the top of the overview: totals, a filter, and two charts of the effort over time.
+    """The dashboard at the top of the overview: totals and two charts of the effort over time.
 
     The page draws the charts from the JSON it carries (assets/progress.js); without scripts, the table
     below them gives the same numbers.
@@ -995,10 +1014,6 @@ def progress_panel(data: dict) -> str:
     head = "".join(f"<th>{e(label)}</th>" for label in PROGRESS_METRICS.values())
     return f'''<section class="progress" aria-label="Progress over time">
   <div class="progress-bar">
-    <div class="segmented" role="group" aria-label="Which datasets">
-      <button type="button" data-subset="all" aria-pressed="true">All datasets</button>
-      <button type="button" data-subset="catalystneuro" aria-pressed="false">Converted by CatalystNeuro</button>
-    </div>
     <span class="muted small">Totals so far; the small line is the last 7 days.</span>
   </div>
   <div class="tiles metrics">{tiles}</div>
@@ -1100,7 +1115,7 @@ def page_overview(data: dict) -> str:
   {dashboard}
   <div class="panel">
     <h2>Outcomes of the {n_claims:,} claims that rest on the dataset alone</h2>
-    {outcomes}{outside_note(attempts)}
+    {outcomes}{outside_note(attempts, collapsed=True)}
     {caution_block()}
   </div>
   <div class="grid2" style="margin-top:16px">{panels}</div>
