@@ -554,3 +554,52 @@ def ensure_ssm() -> str:
                         "--no-build-isolation", "--no-deps",
                         f"ssm @ git+https://github.com/lindermanlab/ssm@{SSM_COMMIT}"], check=True)
     return SSM_COMMIT
+
+
+# --- outside input: the VMH single-cell atlas of Kim et al. 2019 (Figure 1E) ----------------------
+
+ATLAS_DOI = "10.17632/ypx3sw2f7c.1"   # Mendeley Data, Kim et al. 2019, doi:10.1016/j.cell.2019.09.020
+ATLAS_FILES = {
+    "SMART-seq_VMH_cpm.rda.zip": (
+        "https://data.mendeley.com/public-files/datasets/ypx3sw2f7c/files/333b9b17-0d21-4c44-a267-b73198db656a/file_downloaded",
+        "82c23b5b6a3823e692e28f15fee70ba1de33cfba19ce7d762151a25aba8996cb"),
+    "SMART-seq_VMH_metadata.csv": (
+        "https://data.mendeley.com/public-files/datasets/ypx3sw2f7c/files/c6138323-c7bc-4a85-86e9-add61912eb06/file_downloaded",
+        "62445a6b399de48948e396c30d625cc1fe52b491c7559a3a9f013521a29d3a9e"),
+}
+
+
+def load_atlas(genes=("Esr1", "Oxtr", "Avpr1a", "Avpr1b", "Avpr2")):
+    """CPM of `genes` in each SMART-seq cell of the atlas, and the cells' metadata.
+
+    Figure 1B plots "counts per million reads", which the SMART-seq part of the atlas gives (the
+    10x part gives raw counts per sample, without cluster labels). Both files are checked against
+    the archive's SHA-256 and read in memory. Returns (DataFrame of CPM, cells x genes; metadata
+    indexed by cell)."""
+    import hashlib
+    import io
+    import tempfile
+    import zipfile
+
+    import pandas as pd
+    import rdata
+    import scipy.sparse as sp
+
+    raw = {}
+    for name, (url, sha) in ATLAS_FILES.items():
+        r = requests.get(url, timeout=600)
+        r.raise_for_status()
+        if hashlib.sha256(r.content).hexdigest() != sha:
+            raise ValueError(f"{name}: SHA-256 does not match the archive's")
+        raw[name] = r.content
+    meta = pd.read_csv(io.BytesIO(raw["SMART-seq_VMH_metadata.csv"])).set_index("sample_name")
+    with zipfile.ZipFile(io.BytesIO(raw["SMART-seq_VMH_cpm.rda.zip"])) as z, tempfile.TemporaryDirectory() as d:
+        path = z.extract("cpm.rda", d)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")          # dgCMatrix is returned as its slots
+            c = rdata.conversion.convert(rdata.parser.parse_file(path))["cpm"]
+    names, cells = c.Dimnames
+    X = sp.csc_matrix((c.x, c.i, c.p), shape=tuple(int(v) for v in c.Dim))
+    rows = [int(np.nonzero(names == g)[0][0]) for g in genes]
+    cpm = pd.DataFrame(np.asarray(X[rows].todense()).T, index=cells, columns=list(genes))
+    return cpm, meta.loc[cells]

@@ -23,15 +23,47 @@ inputs:
 - what: The rSLDS fitting package ssm (software, not data), used by the rSLDS notebooks with the settings of its
     notebooks/4-Recurrent-SLDS.ipynb named in the claims file.
   source: https://github.com/lindermanlab/ssm at commit eb6c8aa33e5311d3564075807dec340759dd8081
+- what: The VMH single-cell RNA-seq atlas of Kim et al. 2019 (doi:10.1016/j.cell.2019.09.020), its SMART-seq counts
+    per million (SMART-seq_VMH_cpm.rda.zip) and cell metadata (SMART-seq_VMH_metadata.csv), checked against the
+    archive's SHA-256, used for the proposed test of fig1e-oxtr-avpr1a-coexpression.
+  source: doi:10.17632/ypx3sw2f7c.1 (Mendeley Data, version 1)
 outcomes:
 - claim: fig1e-oxtr-avpr1a-coexpression
   outcome: blocked
   blocked_by: other
-  notes: Uses the outside single-cell RNA-seq atlas of Kim et al. 2019 (doi:10.1016/j.cell.2019.09.020), which the
-    claims file marks with_inputs. Neither the paper nor the claims file gives the atlas's archive accession. Searches
-    of GEO in the first run and again in the revision (by title words, VMHvl, and candidate accessions) did not
-    find it, and the analysis was not attempted within either run's time. The paper also gives no expression threshold
-    ("as described previously"). Not tested for time and for want of the accession; not shown to lack data.
+  notes: 'Verified outcome, kept until round 3. The first run and the first revision did not find the atlas''s archive,
+    which neither the paper nor the claims file gives, and did not attempt the analysis. The second revision found
+    it through the data links of the Kim et al. 2019 article in Europe PMC: Mendeley Data, doi:10.17632/ypx3sw2f7c.1.
+    Its SMART-seq part gives counts per million (CPM), as Figure 1B plots, for 4,574 cells with cluster labels,
+    of which 850 are in the eight clusters named for Esr1 (the Results'' "most clusters (5/8)"). Under the adopted
+    reading (all cells of those clusters, a gene expressed at CPM above 0) 73.9% express Oxtr, inside 78 +/- 7.8%,
+    and 49.4% of these also express Avpr1a, below 61 +/- 6.1%. Male cells only (713) at CPM above 0 give 70.4% and
+    56.2%, both inside, near the lower edges; with a threshold of 1 CPM the male Oxtr fraction falls to 67.6%, and
+    with 5 or 10 CPM every reading puts both values outside. Over all cells of the clusters the Avpr1a fraction
+    is 43.6 to 49.4% under every threshold (43.0 to 48.6% for those with Esr1 detected). A change to partially reproduced
+    is proposed. The paper gives no threshold and no subset of cells ("analyzed as described previously", STAR Methods,
+    Transcriptomic analysis); that is asked of the authors (findings).'
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:fig1e-oxtr-avpr1a-coexpression
+  deviations:
+  - The atlas is read from Mendeley Data (doi:10.17632/ypx3sw2f7c.1), the deposit of Kim et al. 2019 found through
+    the article's data links; neither the paper nor the claims file names it. Its SMART-seq part is used, as Figure
+    1B plots counts per million; the 10x part gives raw counts per sample without cluster labels.
+  - The Esr1+ VMHvl cells are the cells of the atlas's eight clusters named for Esr1 (Esr1_1 to Esr1_6, Tsix_Esr1_1,
+    Tsix_Esr1_2), matching the Results' "most clusters (5/8)".
+  - Assumption. All cells of those clusters, of both sexes, with a gene expressed at CPM above 0. The paper says
+    "~78% of Esr1+ cells in VMHvl expressed Oxtr mRNA" (Results, Most Esr1+ neurons co-express Oxytocin and Vasopressin
+    receptors, paragraph 1), naming no sex and no threshold, and the STAR Methods (Transcriptomic analysis) refer
+    to the atlas paper; above 0 is the most inclusive threshold and gives the highest fractions. Male cells only
+    and thresholds of 1, 5 and 10 CPM are shown; they give different outcomes.
+  proposed:
+    outcome: partially_reproduced
+    reason: 'The atlas was found after round 2 (Mendeley Data, doi:10.17632/ypx3sw2f7c.1) and the claim tested in
+      the main notebook (section fig1e). Under the adopted assumption, all cells of the eight Esr1 clusters with
+      expression at CPM above 0, the Oxtr fraction is 73.9% (inside 78 +/- 7.8%) and the Avpr1a fraction among them
+      49.4% (below 61 +/- 6.1%), so the claim holds in part. The outcome rests on that assumption: male cells only
+      at CPM above 0 put both inside (70.4% and 56.2%), and thresholds of 5 CPM or more put both outside under every
+      cell set.'
 - claim: fig1f-peptides-activate-slices
   outcome: blocked
   blocked_by: data_missing
@@ -67,16 +99,21 @@ outcomes:
   assumed: true
   notebook: reproduce_mountoufaris_2024.ipynb
   output: claim:figs4a-unilateral-no-behavior-deficit
-  notes: No measure with a defined summary differs between groups at p < 0.05 (Mann-Whitney per mouse); the smallest
+  notes: 'No measure with a defined summary differs between groups at p < 0.05 (Mann-Whitney per mouse); the smallest
     p over the six is 0.114 (sniff time as a percentage of the interaction). Total sniff time 89.1 s control, 93.1
-    s experimental (p = 0.61); sniff bout duration 10.2 and 2.5 s (p = 0.17, the control mean raised by mouse 511's
+    s experimental (p = 0.61); sniff bout duration 10.2 and 2.5 s (p = 0.17, the control mean raised by mouse 511''s
     two long bouts); total attack time 54.1 and 91.5 s (p = 0.25); attack bout duration 3.3 and 2.4 s (p = 0.25);
     latency 261 and 91 s (p = 0.25); interval between attacks 30.9 and 11.7 s (p = 0.39). Attack probability, four
     readings. (a) attack-triggered probability of attacking over 0 to 10 s, mean 0.45 and 0.36 (p = 0.25), the adopted
     reading; (b) its decay to 1/e, 4.7 and 3.0 s (p = 0.25); (c) share of the interaction attacking, 4.3 and 10.7%
     (p = 0.14); (d) attack bouts per minute, 0.80 and 2.79 (p = 0.036, the smallest p 3 and 5 mice allow), the experimental
     mice attacking more often. Under reading (d) the criterion would fail, on a difference towards more aggression,
-    not a deficit.
+    not a deficit. The claims file may misread the paper, and a reader is asked (questions/001131.yaml): in Figure
+    S4A, panels (iii), % time attacking, and (vi), interval between attacks, carry a star, with the experimental
+    mice more aggressive, so the paper''s "no deficits" means no reduction and the criterion "none differs at p
+    < 0.05" is stricter than the paper. Tested as the paper''s reading (a variant), no measure shows a deficit on
+    a one-sided test (smallest one-sided p = 0.086, sniff bout duration), under every reading of attack probability.
+    The two starred measures do not differ here (p = 0.14 and 0.39) with 3 and 5 mice.'
   deviations:
   - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Mice 510 and 500 have no
     attack annotation, so attack measures use 3 control and 5 experimental mice.
@@ -138,11 +175,15 @@ outcomes:
   assumed: true
   notebook: reproduce_mountoufaris_2024.ipynb
   output: claim:figs4e-active-units-unchanged
-  notes: With the baseline of all frames before the first annotated behaviour, neither reading of "nested" finds
+  notes: 'With the baseline of all frames before the first annotated behaviour, neither reading of "nested" finds
     a difference (pooled p = 0.09 at 1 min and 0.76 at 2 min; per-mouse means p = 0.56 and 0.90; 3.90 against 3.42
     sigma on per-mouse means at 1 min); the gap10 variant agrees (0.06, 0.27, 0.29, 0.56). With the 7-s baseline
     the per-mouse test finds none (p = 0.19) but the pooled test finds control higher at p < 0.001 (12.8 against
-    8.5 sigma at 1 min), so under the pooled reading the outcome depends on the baseline.
+    8.5 sigma at 1 min), so under the pooled reading the outcome depends on the baseline. Without mice 497, 510
+    and 500, whose clock alignment could not be established, the result is not robust: with the all baseline the
+    pooled test finds control higher at 1 min (3.67 against 3.03 sigma, p = 0.012; 110 control and 17 experimental
+    units) but not at 2 min (p = 0.63), and per mouse (3 and 3 mice) p = 0.2 and 1.0. The outcome is the one on
+    all mice in the dandiset.'
   deviations:
   - The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as the frames
     before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction as starting
@@ -153,9 +194,10 @@ outcomes:
   - Assumption. The baseline is all frames before the first annotated behaviour, not the last 7 s of them. The Methods'
     baseline is a 5-min period alone in the home cage (Behavior annotations), of which those frames are the nearest
     stand-in; the last 7 s is only the Methods' minimum ("during 7sec or more", Micro-endoscopic data extraction)
-    and gives a narrow baseline that inflates sigma (nearly twice as many control and 2.5 times as many experimental
-    units pass 2 sigma). With this baseline both readings of "nested" agree. The first run instead assumed "nested"
-    to be a test across mice; the same all baseline with pooled units also reproduces fig4ef-male-activity-slightly-lower.
+    and gives a narrow baseline that inflates sigma (1.8 times as many control units, 157 against 279 at 1 min,
+    and 2.5 times as many experimental units, 76 against 190, pass 2 sigma). With this baseline both readings of
+    "nested" agree. The first run instead assumed "nested" to be a test across mice; the same all baseline with
+    pooled units also reproduces fig4ef-male-activity-slightly-lower.
 - claim: fig4g-male-selective-reduced
   outcome: blocked
   blocked_by: data_missing
@@ -164,7 +206,9 @@ outcomes:
     be computed. The male part, shown and not deciding the outcome. The fraction of male-activated units (at least
     2 sigma over the male window) is lower in experimental mice under every baseline and window (across mice p from
     0.016 to 0.41); the control fraction is outside 38.3 +/- 3.83% under every reading (23.3 to 47.5% pooled, 23.4
-    to 46.7% as a mean over mice), and the experimental fraction is inside 34.6 +/- 3.46% only with the 7-s baseline.
+    to 46.7% as a mean over mice), and the experimental fraction is inside 34.6 +/- 3.46% only with the 7-s baseline,
+    and there only as the mean over mice at 1 min (37.4%) and in both summaries at 2 min (37.1% pooled, 36.4% over
+    mice); pooled at 1 min it is 40.1%, outside.
   notebook: reproduce_mountoufaris_2024.ipynb
   output: claim:fig4g-male-selective-reduced
 - claim: fig4g-female-selective-and-mixed-increased
@@ -231,7 +275,10 @@ outcomes:
     are inside tolerance; experimental sniff-selective, both active fractions and the mixed reduction are not, under
     any reading (per-mouse means give 1.7, 9.5, 2.1, 6.2, 27.7, 12.5 and 27.5%). The directions hold under every
     reading. Across mice (3 and 4) the differences give p = 0.057 with the all baseline. With the 7-s baseline more
-    units pass 2 sigma (active 54.7% and 42.6%). The female-directed fractions are not in the dandiset.'
+    units pass 2 sigma (active 54.7% and 42.6%). Without mouse 497, whose clock alignment could not be established
+    (510 and 500 have no attack annotation and are not in this measure), every direction holds and 3 values are
+    inside tolerance with the all and gap10 baselines (2 with the 7-s baseline). The female-directed fractions are
+    not in the dandiset.'
   deviations:
   - The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as the frames
     before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction as starting
@@ -259,15 +306,20 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_mountoufaris_2024.ipynb
   output: claim:figs5e-behavior-decoding-intact
-  notes: With the paper's frame-wise stratified five-fold split, every control mouse decodes attack against sniffing
+  notes: 'With the paper''s frame-wise stratified five-fold split, every control mouse decodes attack against sniffing
     better than every experimental mouse (C = 1, 0.994 against 0.934; C = 0.1 and 10 alike), and the Mann-Whitney
     test across mice finds the difference at p = 0.036, the smallest p that 3 and 5 mice allow. With 31 units drawn
     per mouse in each repeat the difference is larger (0.12 to 0.13) and still at p = 0.036 for every C, so unit
     counts do not explain it. The measure is weak. The frame-wise split leaves frames of the same bout in training
     and test sets, so decoders trained on shuffled bout labels score 0.981 to 0.988 (control) and 0.904 to 0.925
-    (experimental) over C, far above the paper's 50% chance, and real and shuffled accuracy do not differ in either
+    (experimental) over C, far above the paper''s 50% chance, and real and shuffled accuracy do not differ in either
     group at any C or unit count (p from 0.10 to 1.0). With whole bouts held out (a variant), accuracy is 0.79 and
-    0.53 against shuffled 0.53 and 0.50, and the groups differ at p = 0.036.
+    0.53 against shuffled 0.53 and 0.50, and the groups differ at p = 0.036. The shuffled decoders also separate
+    the groups (p = 0.036 with 31 units at every C; 0.036, 0.071 and 0.25 with all units), so the group difference
+    exists without behaviour labels: the outcome follows the criterion, but the measure does not show that decoding
+    of behaviour is impaired. Without mouse 497, whose clock alignment could not be established, every comparison
+    gives p = 0.057 or more, the smallest p 3 and 4 mice allow, while every control mouse still decodes better than
+    every experimental mouse.'
   deviations:
   - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Mice 510 and 500 have no
     attack annotation; 3 control and 5 experimental mice are used.
@@ -288,7 +340,9 @@ outcomes:
     3 and 5. Checks for seed 0 (rslds_checks.ipynb). Sigma-normalized fits explain 69.0% (control) and 63.6% (experimental),
     and their forward R2 differs between groups (p = 0.016). On held-out frames the reconstruction explains 47.9%
     and 41.0%, and forward predictions of the activity do not differ over 1 s (p = 0.26) but do over 5 s (0.371
-    against 0.198, p = 0.010). The 85% may be a measure other than the emissions R2; that is asked of a reader (questions/001131.yaml).
+    against 0.198, p = 0.010). So the claim's "similar performance" part also fails on the held-out score at 5 s
+    and on the sigma-normalized fits (p = 0.016 at both horizons); it holds on the in-sample score and the held-out
+    score at 1 s. The 85% may be a measure other than the emissions R2; that is asked of a reader (questions/001131.yaml).
     The fits of mice 510 and 500 do not recover the authors' latent factor 1 (|Spearman r| at most 0.47 for dimension
     1, 0.70 for any dimension). Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb,
     with the same cells and tags; rslds_checks.ipynb holds the seed-0 sigma-normalized fits and a held-out score.
@@ -434,6 +488,12 @@ outcomes:
     check shows the window-mean estimators shorten a known ACHW of 10 to 30 s to 4 to 11 s over 1 to 2 min, which
     compresses group differences; the no-mean estimator comes within 30% of the truth at 2 min but leaves 46 to
     81 units undefined. Over the whole recording (a variant, not the claim's window) the reduction is 43 to 47%.
+    The outcome is not robust to the estimator. The undefined units of the no-mean estimator are the slowest and
+    more of them are control units (50 against 31 at 1 min, 34 against 12 at 2 min), so leaving them out understates
+    the reduction. Set to the window's length, a lower bound, they give a reduction of the mean of 27.6 and 34.5%
+    pooled (24.8 and 31.7% over mice), still outside tolerance; the median, which this censoring does not bias,
+    falls by 49.6 and 53.3%, inside it, but the claim's measure is the mean. Without mice 497, 510 and 500, whose
+    clock alignment could not be established, the reduction over 1 to 2 min is 5 to 18%.
   deviations:
   - The interaction is taken to start at the first annotated behaviour (an assumption; the intruder's entry is not
     marked).
@@ -503,9 +563,9 @@ findings:
     from 0), unlike the other nine, so it was z-scored over a longer recording and then cut.
 - kind: other
   statement: 'The rSLDS weights deposited for mice 510 and 500 ("latent factor 1") are not recovered by fits with
-    the settings of the claims file: their |Spearman r| with the weights of any fitted dimension is at most 0.47
-    over four seeds. The fits'' time constants are hundreds of seconds and their variance explained 59%, against
-    85% in the paper.'
+    the settings of the claims file: over four seeds their |Spearman r| with the weights of the first fitted dimension
+    is at most 0.47, and with those of any fitted dimension at most 0.70. The fits'' time constants are hundreds
+    of seconds and their variance explained 59%, against 85% in the paper.'
 - kind: methods_unavailable
   statement: 'Questions for the authors. (1) Where does the pre-intruder baseline lie in each file, and when did
     each intruder enter and leave? (2) What are the "nested" Mann-Whitney and KS tests: GraphPad nested tests across
@@ -515,7 +575,8 @@ findings:
     (two equal time constants) treated in the line attractor score? (4) How is ACHW computed (which estimator of
     the autocorrelation, whether the window''s mean is removed, over which window)? (5) How is the attack probability
     of Figure S4A(vii) computed and summarized per mouse? (6) Mouse 511 has two sniffing bouts of 22 and 40 s; is
-    that annotation complete?'
+    that annotation complete? (7) For Figure 1E, which cells of the Kim et al. 2019 atlas were counted (both sexes,
+    or male cells only) and above what expression threshold? The proposed outcome of fig1e depends on both.'
 - kind: paper_inconsistency
   statement: The Results give n=4 control mice for Figure 4E-F, while the Figure 4 and S4 legends and the STAR Methods
     give 5. The dandiset holds 4 control mice.
@@ -742,8 +803,7 @@ verifications:
     agrees: true
     outcome: not_reproduced
     reason: First-dimension experimental ACHW is 17.4 to 24.7 s (expected 9.86 +/- 1 s), in every seed and units
-      reading. With a complex eigenvalue pair, columns 1 and 2 of W are identical, so argmax never assigns units
-      to dimension 2, which is why the largest reading gives NaN for seed 0 (problem 7).
+      reading.
     response: No change of outcome. Dimension 2 of a complex pair now takes the imaginary part of the eigenvector,
       so every combination is defined; the three ACHW estimators are shown. Experimental ACHW is 19.0 to 34.3 s
       after the refit.
@@ -785,4 +845,252 @@ verifications:
     outcome: blocked
     reason: I checked the archive API. Version 0.260601.1203 has 10 resident-intruder NWB files. Their metadata
       lists only BehavioralEpochs and ProcessingModule. There are no slice, photometry or behaviour-cohort files.
+    response: No change.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the first revision, with conclusions and summaries, the helper module,
+    the attempt record, the README and the claims file, with the paper. The verifier checked every number in the
+    conclusions, summaries, README and notes against the printed outputs.
+  results:
+  - claim: fig1e-oxtr-avpr1a-coexpression
+    agrees: true
+    outcome: blocked
+    reason: 'Agree. The claims file marks the atlas with_inputs but gives no accession, and the record says plainly
+      that the analysis was not attempted. Remaining: fig1e is still not attempted. The README''s "Blocked: not
+      attempted for time" leaves out that the record also gives the missing accession as a reason.'
+    response: The atlas was found, through the data links of the Kim et al. 2019 article in Europe PMC (Mendeley
+      Data, doi:10.17632/ypx3sw2f7c.1), and tested in a new section of the main notebook on its SMART-seq counts
+      per million, under two cell sets and four thresholds. The verified outcome stays blocked; a change to partially
+      reproduced is proposed (Oxtr 73.9%, inside tolerance; Avpr1a among them 49.4%, below 61 +/- 6.1%; assumed
+      reading all cells of the eight Esr1 clusters at CPM above 0, while male cells only put both inside). The atlas
+      is listed under inputs, the question of cell set and threshold is added to the questions for the authors,
+      and the README row now gives both reasons and the proposal.
+  - claim: fig1f-peptides-activate-slices
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig2e-editing-reduces-slice-responses
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig2g-bilateral-editing-reduces-aggression
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig2-bilateral-editing-spares-sniff-and-mating
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig3c-cre-editing-reduces-aggression
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig3fh-photometry-reduced
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs3ef-photometry-female-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs4a-unilateral-no-behavior-deficit
+    agrees: true
+    outcome: reproduced
+    reason: 'I now agree. Attack probability is now run under four declared readings; the adopted reading (a) fits
+      how panel S4A(vii) is plotted against t (s) and the S2C/S3C "tau attack probability", and the record states
+      it. The absence rests on 3 vs 5 mice. Possible claims-file misreading: the extracted text of the Figure S4A
+      image has two "*" marks among the "ns" labels. If two S4A panels are significant, most likely towards more
+      aggression, the paper''s "no deficits" means no reduction, not no difference, and the criterion "none differs
+      at p < 0.05" would be stricter than the paper. No PDF renderer was available, so I could not tell which panels
+      carry the marks.'
+    response: 'No change of outcome. The supplement page was rendered: the stars are on panels (iii), % time attacking,
+      and (vi), interval between attacks, both with experimental mice more aggressive. Added as a question for a
+      reader in questions/001131.yaml; the claim is unchanged. The paper''s reading is shown as a variant: a one-sided
+      test of a deficit finds none in any measure (smallest p = 0.086) under every reading of attack probability.
+      The conclusion and notes say so.'
+  - claim: methods-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree.
+    response: No change.
+  - claim: fig4ef-male-activity-slightly-lower
+    agrees: true
+    outcome: reproduced
+    reason: 'The pooled reading of "nested" and the assumed baseline are both stated. The new sensitivity check
+      is honest: without mice 497, 510 and 500, the 7-s baseline fails (Mann-Whitney p = 0.051 and 0.060).'
+    response: No change.
+  - claim: fig4ef-female-activity-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs4e-active-units-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'I now agree. The baseline of all frames before the first behaviour is the claims file''s reading (a),
+      justified as the nearest stand-in for the 5-min home-cage baseline, and now the same baseline as fig4ef and
+      fig5bd. Under it neither reading of "nested" finds a difference; the 7-s pooled difference is disclosed. Cell
+      28''s "more than nearly twice as many control units ... pass 2 sigma" is self-contradictory (157 to 279 units,
+      x1.78, at 1 min). Remaining (10): the clock-alignment check was run only for fig4ef, though mice 497 and 500
+      also enter figs4e.'
+    response: 'No change of outcome. The sentence now gives 1.8 times (157 against 279) and 2.5 times (76 against
+      190), in the conclusion and the deviation. Added the run without mice 497, 510 and 500: per mouse no difference,
+      but pooled at 1 min with the all baseline control is higher (p = 0.012, 110 against 17 units), not at 2 min
+      (p = 0.63). The conclusion and notes say the result is not robust to leaving these mice out; the outcome is
+      the one on all mice.'
+  - claim: fig4g-male-selective-reduced
+    agrees: true
+    outcome: blocked
+    reason: 'Agree with the 20 data_missing blocks. Cell 45 and the record''s notes, "the experimental fraction
+      is inside 34.6 +/- 3.46% only with the 7s baseline", are too broad: at 1 min the pooled 7-s value is 40.1%,
+      outside tolerance; it is inside only for the 1-min mean over mice and both 2-min values. This does not affect
+      the outcome.'
+    response: The sentence in the notebook and the notes now names the three values inside (37.4, 37.1 and 36.4%)
+      and the one outside (40.1%). Outcome unchanged.
+  - claim: fig4g-female-selective-and-mixed-increased
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig4d-sex-decoding-intact
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig4c-pls-sex-separation
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig5ac-behavior-activity-male-lower
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs5c-peth-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree; this is now fixed as I asked. Main notebook summary: "tests across mice use 3 to 5 mice per
+      group", but fig7c and the figs5c sniffing test use 4 control and 6 experimental mice.'
+    response: No change of outcome. The summary now says 3 to 6 mice per group (4 and 6 where every mouse enters,
+      3 and 5 for attack measures).
+  - claim: fig5bd-behavior-selective-units-reduced
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agree: the baseline assumption is stated, the directions hold and 3 of 7 values are inside tolerance.
+      Remaining (10): the clock-alignment check was run only for fig4ef, though mouse 497 also enters fig5bd.'
+    response: 'No change of outcome. Added the run without mouse 497 (510 and 500 have no attack annotation): every
+      direction holds and 3 values are inside tolerance with the all and gap10 baselines, 2 with the 7-s one.'
+  - claim: fig5e-cp-tuning-shift
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs5e-behavior-decoding-intact
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The subsampled shuffled decoders also separate the groups (p = 0.036 at every C, cell 33), so
+      the group difference exists without behaviour labels. Not reproduced follows the criterion, but it does not
+      show that behaviour decoding is impaired, and the conclusion does not say this. The clock-alignment check
+      was not run here.
+    response: 'No change of outcome. The conclusion and notes now say that the shuffled decoders separate the groups
+      and that the measure does not show impaired decoding of behaviour. Added the run without mouse 497: every
+      p is 0.057 or more, the smallest 3 and 4 mice allow, and every control mouse still decodes better.'
+  - claim: fig6-rslds-fit-quality
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree. Remaining (11): the 85% may not be the emissions R2, now put to a reader; under the majority
+      reading seed 0 has attack mostly in one state in 7 of 8 mice, so the outcome would still differ across seeds.
+      Remaining (8): the held-out score shows the groups differ at the 5-s horizon (p = 0.010) and the sigma-normalized
+      fits differ at both horizons (p = 0.016), so the "similar performance" part also fails under those readings;
+      that is not in the outcome''s notes as a criterion failure. The record''s finding "at most 0.47" for any fitted
+      dimension is wrong: any dimension reaches 0.701 and 0.547; 0.47 is the maximum for dimension 1 only.'
+    response: No change of outcome. The notes and the summary of rslds_checks.ipynb now say the "similar performance"
+      part fails on the held-out score at 5 s and on the sigma-normalized fits. The finding now gives 0.47 for the
+      first dimension and 0.70 for any dimension.
+  - claim: fig6a-control-tau1-greater
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree.
+    response: No change.
+  - claim: fig6c-experimental-tau-indistinguishable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree.
+    response: No change.
+  - claim: fig6f-line-attractor-score
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree.
+    response: No change.
+  - claim: figs6f-mating-attractor-intact
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig6g-flow-field-line-vs-point
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The fig6g round-1 reason appends problem 9; that one is fair.
+    response: No change.
+  - claim: fig6e-integration-dimension-persistence
+    agrees: true
+    outcome: blocked
+    reason: Agree with the metadata_insufficient block.
+    response: No change.
+  - claim: fig7b-achw-first-dimension
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. Its criterion says blocked as methods_underspecified if combinations disagree on significance;
+      pooled and per-mouse tests disagree, but that is a split between nested readings, not between the criterion's
+      combinations, and no combination reaches the expected values, so not reproduced stands. The round-1 reason
+      carries problem 7, which round 1 marked as not affecting a conclusion and tied to cell 13, not to the fig7b
+      outcome.
+    response: No change of outcome. Problem 7 is removed from the round-1 reason, which now holds only what the
+      round-1 report gave for fig7b.
+  - claim: fig7c-achw-all-units
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree. The least biased estimator (no mean removed) leaves 46 to 81 units undefined, dropping more
+      control than experimental units. These are the slowest units, so the 25 to 31% reduction may understate the
+      true one; the whole-file variant gives 43 to 47%. Not reproduced still stands on the stated window, but it
+      is not robust to this choice. The clock-alignment check was not run here. Main notebook summary: "tests across
+      mice use 3 to 5 mice per group", but fig7c and the figs5c sniffing test use 4 control and 6 experimental mice.'
+    response: 'No change of outcome. Added the undefined units per group (50 against 31, 34 against 12) and two
+      ways of keeping them: set to the window''s length, the reduction of the mean is 27.6 and 34.5% (outside tolerance);
+      the median falls by 49.6 and 53.3% (inside), but the claim''s measure is the mean. Added the run without mice
+      497, 510 and 500 (reduction 5 to 18%). The conclusion and notes say the outcome is not robust to the estimator.
+      The summary now says 3 to 6 mice per group (4 and 6 where every mouse enters, 3 and 5 for attack measures).'
+  - claim: figs7b-achw-female-slight
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs7cd-slice-rslds
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs7k-persistent-and-transient-slice-responses
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: fig3d-cre-editing-spares-mounting
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
+    response: No change.
+  - claim: figs7l-blockers-slight-effect
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 20 data_missing blocks.
     response: No change.
