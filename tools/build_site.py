@@ -468,9 +468,11 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
                    if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
 
 
-def outside_note(attempts, root: str = "") -> str:
-    """Lines with the outcomes of the claims that use outside data or other archives, when there are any."""
-    out = ""
+def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
+    """Lines with the outcomes of the claims that use outside data or other archives, when there are any.
+
+    With collapsed, the lines sit inside a closed details block whose summary gives the totals."""
+    out, totals = "", []
     for group, one, many, label in (
             ("with_inputs", "1 claim that also uses data from outside the dataset",
              "claims that also use data from outside the dataset", "claims using outside data"),
@@ -483,9 +485,13 @@ def outside_note(attempts, root: str = "") -> str:
         if not m:
             continue
         text = one if m == 1 else f"{m} {many}"
+        totals.append(f"{m:,} {label}")
         out += (f'<p class="sub small" style="margin-top:8px">Counted separately: {text}.</p>'
                 f'<div class="summary">{bar(counts, f"Outcomes of {m} {label}", "bar mini")}'
                 f'{legend(counts, compact=True)}</div>')
+    if collapsed and out:
+        out = (f'<details class="outside-note"><summary>Counted separately: {", ".join(totals)}</summary>'
+               f'{out}</details>')
     return out
 
 
@@ -1095,7 +1101,7 @@ def page_overview(data: dict) -> str:
   {dashboard}
   <div class="panel">
     <h2>Outcomes of the {n_claims:,} claims that rest on the dataset alone</h2>
-    {outcomes}{outside_note(attempts)}
+    {outcomes}{outside_note(attempts, collapsed=True)}
     {caution_block()}
   </div>
   <div class="grid2" style="margin-top:16px">{panels}</div>
