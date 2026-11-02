@@ -31,8 +31,8 @@ mice. The attempt record, with the reasons and the differences from the paper's 
 [`attempts/001350-iram-2024-01.yaml`](../../attempts/001350-iram-2024-01.yaml).
 
 - `reproduce_iram_2024.ipynb`: the TEM claims, from the dandiset's masks. About two minutes.
-- `geo_sequencing_claims.ipynb`: the ChIP-seq and RNA-seq claims, from GEO's processed files. Five
-  to twenty minutes, most of it waiting on NCBI's server, which refuses some requests.
+- `geo_sequencing_claims.ipynb`: the ChIP-seq and RNA-seq claims, from GEO's processed files. Fifteen
+  to twenty-five minutes, most of it the DESeq2 fits; NCBI's server refuses some requests, which are retried.
 - `srf_tem.py`: loading the images and masks, and the axon measures.
-- `srf_geo.py`: loading the GEO files and the paper's Datasets S1 to S3 (for comparison only), DESeq2 through pydeseq2, rn6 sequence by range requests,
+- `srf_geo.py`: loading the GEO files and the paper's Datasets S1 to S3 (for comparison only), DESeq2 through pydeseq2 (with tximport's length offsets put into its fits), rn6 sequence by range requests,
   and CArG motif matching.

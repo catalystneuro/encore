@@ -76,9 +76,11 @@ outcomes:
     0.78 to 1.13 against 1.42 +/- 0.142. The cKO to Flox ratio is 0.81 to 1.08 over the readings (inside 0.79 +/-
     0.079 only with edge axons left out and all four cKO mice); Student p 0.64 to 0.80. The masked area is 531 um2
     for sub-372 and sub-374 and 15 um2 for sub-373C, below the paper''s 1000 um2. Every mouse with whole labelled
-    images has 0.82 to 1.09 myelinated axons per um2, about half the paper''s values in both genotypes. All axons
-    per um2 in the masks are 3.6 (sub-370) and 4.8 to 6.9 (cKO), where Fig. 2C and 2D together imply 4.9 and 6.5,
-    so the low myelinated density goes with a lower fraction myelinated (26% against 37% in the Flox mouse). Mask
+    images has 0.82 to 1.09 myelinated axons per um2, 0.53 of the paper''s value in the Flox mouse and 0.58 to 0.69
+    of it in the cKO mice (up to 0.77 with edge axons kept). All axons per um2 in the masks are 3.62 (sub-370) and
+    4.8 to 6.9 (cKO), where Fig. 2C and 2D together imply 4.86 and 6.45. In the Flox mouse both factors are low,
+    all axons per um2 at 0.74 of the paper''s and the fraction myelinated at 0.71 of it (26% against 37%), which
+    together give the 0.53. Mask
     outlines on two 24 um2 crops, one per genotype, show no obvious unlabelled axons. The image scale (no scale
     bar), the unit of Fig. 2D and the regions the paper scored remain open.'
   deviations:
@@ -86,8 +88,8 @@ outcomes:
     corrected by hand, made after the paper) stand in for that scoring (reading O1 of the claims file).
   - The masks cover 8 full images and 2 small regions, from one SRF-Flox mouse (sub-370) and four SRF-cKO mice (sub-372,
     sub-373C, sub-374, sub-375), where the paper used 5 mice per genotype; sub-373C has 15 um2.
-  - The unit of Figure 2D is not stated; the masks give about half the density the claims file reads from the figure
-    in axons per um2 (a question for the authors is recorded as a finding).
+  - The unit of Figure 2D is not stated; the masks give 0.53 (Flox) and 0.58 to 0.69 (cKO) of the density the claims
+    file reads from the figure in axons per um2 (a question for the authors is recorded as a finding).
 - claim: fig2e-cc-g-ratio
   outcome: blocked
   blocked_by: data_missing
@@ -217,11 +219,10 @@ outcomes:
   outcome: partially_reproduced
   notebook: geo_sequencing_claims.ipynb
   output: claim:fig3a-chip-peaks
-  measured:
-  - 848
-  - 312
+  measured: 848
   notes: GEO's SRF consensus peak file (GSE241559) holds 848 peaks, the paper's number; this is a count of the deposited
-    file, not a re-analysis of the reads. The high-confidence count depends on the reading of 'consistently across
+    file, not a re-analysis of the reads. No reading of the high-confidence set is adopted, so measured holds only
+    the 848. The high-confidence count depends on the reading of 'consistently across
     replicates within the same group and not in the IgG control'. With IgG peaks left out, peaks in all replicates
     of a group (OPC 4 of 4 or OLG 3 of 3) number 204 or 206, in a majority (3 of 4, 2 of 3) 312 or 316, inside 329
     +/- 32.9, and in at least two 404 or 409. A majority without the IgG filter gives 329, but the paper excludes
@@ -282,39 +283,44 @@ outcomes:
   notebook: geo_sequencing_claims.ipynb
   output: claim:fig4ab-rnaseq-degs
   measured:
-  - 160
-  - 264
-  notes: DESeq2 (pydeseq2, default settings) on the RSEM gene results of GSE241560, KO against Flox per stage. With
-    length-scaled counts (tximport's lengthScaledTPM, reading b) 160 genes have padj < 0.05 in OPCs (85 up, 75 down)
-    and 264 in oligodendrocytes (99 up, 165 down), inside 157 +/- 15.7 and 264 +/- 26.4. Rounded expected counts
-    (reading a) give 117 and 294; one model of all 15 samples (reading c) gives 130 and 423; both outside the tolerance.
-    The paper's own DESeq2 tables (Datasets S2 and S3) hold 154 and 261 genes with padj < 0.05, and their baseMean
-    is on the expected-count scale (median ratio of reading a to the paper 0.99 in both stages; reading b 0.73 and
-    0.85), as tximport's average-length offsets give, so the paper most likely used offsets, which pydeseq2 cannot
-    take and are not run. Reading (b) is the closest of the three to the paper's tables in fold changes (Spearman
-    0.88 and 0.94, against 0.82 and 0.85 for a) and in oligodendrocytes in the genes called (Jaccard 0.76 against
-    0.50); in OPCs reading (a) shares slightly more (0.56 against 0.46). The counts match under the stand-in for
-    the length correction, not under the paper's exact procedure.
+  - 156
+  - 263
+  notes: DESeq2 (pydeseq2, default settings) on the RSEM gene results of GSE241560, KO against Flox per stage. The
+    paper's normalized counts (Datasets S2 and S3, one stage each) are the expected counts divided by DESeq2's normalization
+    factors from tximport's average-length offsets, computed per stage; with those factors the normalized counts here
+    equal the paper's in every sample (spread of the log ratio over genes 0.0 to four decimals, median ratio 1.0001
+    and 1.0023), where size factors alone leave a spread of 0.09 to 0.21. So the paper used offsets (reading d).
+    With the offsets and the DESeq2 vignette's pre-filter (at least 10 counts over a stage's samples), 156 genes
+    have padj < 0.05 in OPCs (82 up, 74 down) and 263 in oligodendrocytes (92 up, 171 down), inside 157 +/- 15.7
+    and 264 +/- 26.4. They share 145 and 238 genes with the paper's tables, which hold 154 and 261 (Jaccard 0.88
+    and 0.83); p-values rank alike (Spearman 0.9996 and 0.998) and baseMean ratios are 1.000. Without a filter
+    the offsets give 133 (outside the tolerance) and 266. Other readings, in this run, give 160 and 264 (b, length-scaled
+    counts), 118 and 293 (a, rounded expected counts) and 130 and 418 (c, one model of all 15 samples). The round-2
+    run gave 117 and 294 for (a) and 130 and 423 for (c) with the same code and packages; a fit repeated on one machine
+    is identical, and 15 to 44 genes per reading have padj between 0.045 and 0.055, so the difference most likely
+    comes from the processor.
   deviations:
-  - 'The Methods say DESeq2 performed ''normalization for transcript length and sequencing depth'' with standard
-    settings, without saying how lengths entered. Assumed: length-scaled counts (reading b) stand in for tximport''s
-    offsets, which pydeseq2 cannot take; the paper''s tables suggest offsets. The outcome rests on this choice,
-    as readings (a) and (c) fall outside the tolerance.'
-  - pydeseq2, the Python port of DESeq2, is used, as R is not available here.
+  - pydeseq2, the Python port of DESeq2, is used, as R is not available here. pydeseq2 takes only per-sample size
+    factors; srf_geo.deseq_offsets puts DESeq2's gene-by-sample normalization factors where DESeq2 uses them (normalized
+    counts, per-gene fits, Wald test). Given pydeseq2's own size factors it reproduces plain pydeseq2 exactly (printed).
+  - 'The paper''s tables list 13481 and 14851 genes, against 21688 and 27261 with any count here, so genes were filtered
+    before testing by a rule the paper does not state. Assumed: the DESeq2 vignette''s pre-filter (sum of counts at
+    least 10). The outcome rests on it: without a filter the OPC count, 133, is outside the tolerance.'
 - claim: fig4cd-rnaseq-srf-actb-down
   outcome: reproduced
   assumed: true
   notebook: geo_sequencing_claims.ipynb
   output: claim:fig4cd-rnaseq-srf-actb-down
-  notes: 'Under readings (a) and (b) Srf and Actb are lower in KO with padj < 0.05 in OPCs and oligodendrocytes
-    (reading b, log2FC Srf -4.82 and -1.48, Actb -0.41 and -1.43). Under the joint model (c), Actb in OPCs has padj
-    0.51. Actb and Actg1 are the actin genes with a CArG peak (FIMO or one mismatch); at p < 0.05 Actb is lower
-    in both stages and Actg1 in oligodendrocytes (log2FC -0.43, p 0.024), and neither is higher. The paper''s own
-    tables agree with the per-stage readings: Actb log2FC -0.34, padj 0.044 in OPCs and -1.33, padj 0.00001 in oligodendrocytes;
-    Srf -5.09 and -1.36.'
+  notes: 'Under the per-stage readings (a), (b) and (d), Srf and Actb are lower in KO with padj < 0.05 in OPCs and
+    oligodendrocytes (reading d, the paper''s offsets, log2FC Srf -5.24 and -1.47, Actb -0.40, padj 0.040, and -1.44,
+    padj 0.00001). Under the joint model (c), Actb in OPCs has padj 0.51. Actb and Actg1 are the actin genes with
+    a CArG peak (FIMO or one mismatch); at p < 0.05 Actb is lower in both stages and Actg1 in oligodendrocytes (reading
+    d, log2FC -0.43, p 0.028), and neither is higher. The paper''s own tables agree with the per-stage readings:
+    Actb log2FC -0.34, padj 0.044 in OPCs and -1.33, padj 0.00001 in oligodendrocytes; Srf -5.09 and -1.36. Datasets
+    S2 and S3 each hold the samples of one stage, and their normalized counts match per-stage factors.'
   deviations:
   - Down-regulated is read as log2FC < 0 with padj < 0.05, the paper's threshold for differential expression; the
-    claims file gives no criterion. The adopted counts are those of fig4ab-rnaseq-degs (reading b); reading (c)
+    claims file gives no criterion. The adopted values are those of fig4ab-rnaseq-degs (reading d); reading (c)
     does not find Actb in OPCs.
 - claim: fig4eg-rnascope-in-vivo-down
   outcome: blocked
@@ -338,15 +344,15 @@ outcomes:
   notebook: geo_sequencing_claims.ipynb
   output: claim:figs4ef-assembly-not-disassembly-genes
   notes: Tested on the claims file as amended after a reader's answer (questions/001350.yaml). Of the 12 disassembly
-    genes of Fig. S4E other than Cfl1, none has padj < 0.05 in oligodendrocytes, and none of the 12 or 13 tested
-    in OPCs does, under every reading. Cfl1 is lower in KO oligodendrocytes (log2FC -0.78, p 0.0003, padj 0.024
-    in reading a; padj 0.029 in b and 0.0016 in c), against p 0.007 printed on Fig. S4F and padj 0.038 in the paper's
-    table, and unchanged in OPCs (log2FC -0.05, padj 0.91). Actb is lower in KO in both stages under readings (a)
-    and (b); under the joint model (c) it is not in OPCs (padj 0.51). The paper names no set of actin assembly genes.
-    Of 26 standard ones (Arp2/3 subunits, WASP and WAVE, formins, profilins, Ena/VASP, Actb and Actg1), Actb is
-    the only one with padj < 0.05, and Actb and Actg1 the only ones with an SRF peak; in oligodendrocytes one of
-    the assembly genes changes and one of the 13 disassembly genes does. The disassembly part and actin itself hold;
-    that SRF mainly regulates assembly genes holds only through actin. Changed from reproduced after verification
+    genes of Fig. S4E other than Cfl1, none has padj < 0.05 in oligodendrocytes, and none of the 11 or 12 tested
+    in OPCs does, under every reading. Cfl1 is lower in KO oligodendrocytes (reading d, log2FC -0.78, p 0.0004, padj
+    0.032; padj 0.024 in a, 0.029 in b and 0.0017 in c), against p 0.007 printed on Fig. S4F and padj 0.038 in the
+    paper's table, and unchanged in OPCs (log2FC -0.04, padj 0.89). Actb is lower in KO in both stages under readings
+    (a), (b) and (d); under the joint model (c) it is not in OPCs (padj 0.51). The paper names no set of actin assembly
+    genes. Of 26 standard ones (Arp2/3 subunits, WASP and WAVE, formins, profilins, Ena/VASP, Actb and Actg1), Actb
+    is the only one with padj < 0.05, and Actb and Actg1 the only ones with an SRF peak; in oligodendrocytes one
+    of the assembly genes changes and one of the 13 disassembly genes does. The disassembly part and actin itself
+    hold; that SRF mainly regulates assembly genes holds only through actin. Changed from reproduced after verification
     round 1, when the assembly genes were tested.
   deviations:
   - 'The claims file gives no criterion. The disassembly genes are those of Fig. S4E, and a gene is changed when
@@ -354,8 +360,9 @@ outcomes:
     genes ( P .adj < 0.05)"; Figure 4A legend). "Largely unchanged" is read as at most one of the 12 other genes
     changed in a stage; none is. Assumed: the paper lists no assembly gene set, so the standard nucleation and elongation
     factors (srf_geo.ASSEMBLY_GENES) are used, with actin.'
-  - 'Assumed: the per-stage DESeq2 model adopted in fig4ab-rnaseq-degs. The joint model of all 15 samples (reading
-    c) does not find Actb lower in OPCs, so the "actin itself included" part rests on this choice in OPCs.'
+  - 'Assumed: the per-stage DESeq2 model adopted in fig4ab-rnaseq-degs (reading d). The joint model of all 15 samples
+    (reading c) does not find Actb lower in OPCs, so the "actin itself included" part rests on this choice in OPCs;
+    the paper''s Datasets S2 and S3 hold one stage each.'
 - claim: fig5e-less-f-actin
   outcome: blocked
   blocked_by: data_missing
@@ -430,9 +437,10 @@ findings:
     (each without an IgG peak); a majority without the IgG filter gives 329. Dataset S1 lists 800 peaks by group,
     not the 329.'
 - kind: methods_unavailable
-  statement: 'Question for the authors: how did transcript length enter the DESeq2 analysis of the bulk RNA-seq?
-    Length-scaled counts give 160 and 264 differentially expressed genes, as the paper reports; rounded RSEM expected
-    counts give 117 and 294. The paper''s tables are on the expected-count scale, as tximport''s offsets would give.'
+  statement: 'Question for the authors: which genes were kept before the DESeq2 tests of the bulk RNA-seq? The paper''s
+    normalized counts show tximport''s length offsets, and its tables list 13481 and 14851 genes where 21688 and 27261
+    have counts. With the offsets, the DESeq2 vignette''s pre-filter gives 156 and 263 differentially expressed genes
+    and no filter 133 and 266.'
 - kind: methods_unavailable
   statement: 'Question for the authors: which motif and threshold defined the CArG-containing target genes of Figure
     3D, and which peaks (per cell type consensus or high-confidence)? FIMO with the JASPAR SRF matrix on each cell
@@ -667,3 +675,193 @@ verifications:
     response: 'Added a listing of the snRNA-seq records in GEO (GSE243678): count matrices for one pooled sample
       per genotype, raw, filtered and after SoupX, with no cluster labels or cell annotations, so the paper''s clusters
       0 and 2 cannot be recovered without re-running the pipeline. No change.'
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks with the conclusions and summaries, the helper modules, the claims
+    file and the attempt record, with the paper. Report in transcripts/001350/verifier-2-report.md.
+  results:
+  - claim: fig2c-cc-percent-myelinated
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Masks exist for 1 of 5 Flox mice (cell 5). The reason given for not using the
+      segmentation model is acceptable.
+    response: No change.
+  - claim: fig2d-cc-myelinated-density
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing; masks exist for 1 of 5 Flox mice. The conclusion overstates how close the totals
+      are; cell 24 gives 3.62 against 4.86 axons per um2 for the Flox mouse, 26% low, which accounts for about half
+      the density gap (0.74 x 0.71 = 0.53), and the record's notes leave this out. 'About half the paper's values
+      in both genotypes' holds for Flox (0.53) but the cKO mice give 0.58 to 0.69, and up to 0.77 under O4b.
+    response: The conclusion, the summary and the record now give the Flox mouse's density as 0.53 of the paper's and
+      the cKO mice's as 0.58 to 0.69 (up to 0.77 with edge axons kept), and say that both all axons per um2 (0.74 of
+      the paper's) and the fraction myelinated (0.71) are low in the Flox mouse and together give the 0.53. The image
+      scale and the unit of Fig. 2D stay unchecked; the dataset has no scale bar to check them against.
+  - claim: fig2e-cc-g-ratio
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Masks exist for 1 of 5 Flox mice (cell 5).
+    response: No change.
+  - claim: figs3c-cc-myelin-thickness-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Masks exist for 1 of 5 Flox mice (cell 5).
+    response: No change.
+  - claim: figs3d-cc-larger-myelinated-diameter
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Masks exist for 1 of 5 Flox mice (cell 5).
+    response: No change.
+  - claim: figs2b-on-p18-half-myelinated
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: figs2e-on-adult-hypomyelination
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: figs2cf-on-myelin-thickness-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: figs2ij-on-g-ratio-not-significant
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: figs2kl-on-larger-myelinated-caliber
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig2gk-ol-lineage-density-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: figs3fg-mbp-intensity-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig1d-srf-expressed-opc-ol
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig1ef-srf-protein-nuclear
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: figs1-srf-loss-in-cko
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig4eg-rnascope-in-vivo-down
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig5e-less-f-actin
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig5d-late-actin-similar
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: culture-mbp-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change.
+  - claim: fig3a-chip-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: '`measured: [848, 312]` records the majority reading, which the notes say is ''not adopted''; list every
+      reading or only 848. The value 312 contradicts ''none is adopted''.'
+    response: measured now holds only the 848, and the notes say why.
+  - claim: fig3bc-chip-tss-carg
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (JASPAR MA0083.3 or the strict CC(A/T)6GG box in place of the MEME-ChIP motif) is stated
+      and reasonable. Enrichment survives GC stratification (MH OR 2.14 and 2.75, geo cell 13). MEME-ChIP remains
+      a stated deviation.
+    response: No change. MEME-ChIP's motif discovery cannot be run in the locked environment.
+  - claim: fig3d-shared-carg-targets
+    agrees: true
+    outcome: partially_reproduced
+    reason: The per-cell-type consensus and FIMO default are stated and reasonable. Dataset S1 groups agree (42 of
+      85, geo cell 16).
+    response: No change.
+  - claim: no-myelin-genes-direct-targets
+    agrees: true
+    outcome: reproduced
+    reason: The gene list is stated and reasonable.
+    response: No change.
+  - claim: fig4ab-rnaseq-degs
+    agrees: true
+    outcome: reproduced
+    reason: Yes, narrowly. The comparison with the paper's own tables (geo cell 23) shows the paper did not use reading
+      (b); its baseMean ratio to the paper is 0.73 and 0.85, against 0.99 for (a), and in OPCs (b) recovers only
+      98 of the paper's 154 genes (Jaccard 0.456). So the 160 matches the count by a method the paper did not use;
+      (a), closest to the paper's scale, gives 117 and 294, both outside tolerance. 'The paper most likely used offsets'
+      is not shown, as the baseMean scale equally fits no length correction (a), and pydeseq2 against R could explain
+      the gap between (a) and the paper. tximport offsets are still not run. Readings (a) and (c) moved between rounds
+      (118/293 to 117/294, 130/418 to 130/423) and whether pydeseq2 results vary from run to run is not explained.
+    response: 'Added reading (d), tximport''s average-length offsets as DESeq2 uses them, by putting DESeq2''s normalization
+      factors into pydeseq2''s fits (srf_geo.deseq_offsets); given pydeseq2''s own size factors it reproduces reading
+      (a) exactly. The paper''s normalized counts (Datasets S2 and S3) equal the counts divided by these factors in
+      every sample (spread of the log ratio 0.0, against 0.09 to 0.21 for size factors alone), which shows the paper
+      used offsets and tells them apart from reading (a). With the offsets and the DESeq2 vignette''s pre-filter, 156
+      and 263 genes, sharing 145 and 238 with the paper''s tables (Jaccard 0.88 and 0.83); without a filter 133 and
+      266. The paper''s tables list fewer genes than have counts, so it filtered by a rule it does not state; the
+      pre-filter is now the stated assumption, and the outcome rests on it. Reading (d) replaces (b) as the adopted
+      reading; measured is now 156 and 263; the outcome is unchanged. A fit repeated on one machine is identical (printed),
+      and this run gives 118/293 and 130/418 again with the same code and packages, so the round-2 values most likely
+      came from a different processor; the number of genes with padj between 0.045 and 0.055 is printed (15 to 44).
+      The comparison table now says genes are matched by name, which is why (b) counts 159 there and 160 by Ensembl
+      id.'
+  - claim: fig4cd-rnaseq-srf-actb-down
+    agrees: true
+    outcome: reproduced
+    reason: Rests on the per-stage model, which is stated. Under (c), Actb in OPCs has padj 0.51. The notes mix readings,
+      the Srf and Actb log2FC are from (b), but Actg1 p 0.024 is from (a), where (b) gives 0.028. 'Dataset S2 holds
+      the OPC samples alone' has no printed output showing the sample columns of Dataset S2.
+    response: The conclusion and the notes now give every value from reading (d), the paper's offsets (Actg1 in oligodendrocytes
+      p 0.028). The sample columns of the paper's normalized counts are printed (Dataset S2 the 7 OPC samples, S3
+      the 8 oligodendrocyte samples), and their match to per-stage normalization factors is shown.
+  - claim: figs4ef-assembly-not-disassembly-genes
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assembly set (26 genes) and the per-stage model are stated and reasonable. 1 of 25 assembly genes changes
+      and 1 of 13 disassembly genes changes (geo cell 29).
+    response: Values now from reading (d); the conclusion is unchanged.
+  - claim: figs5ab-gsea-bulk
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable. The GEO listing (geo cell 32) confirms there are no cluster labels.
+    response: No change.
+  - claim: fig6b-snrnaseq-degs
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable. The GEO listing (geo cell 32) confirms there are no cluster labels.
+    response: No change.
+  - claim: fig6cd-ol-genes-depleted
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable. The GEO listing (geo cell 32) confirms there are no cluster labels.
+    response: No change.
+  - claim: fig6eg-disease-genes-up
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable. The GEO listing (geo cell 32) confirms there are no cluster labels.
+    response: No change.

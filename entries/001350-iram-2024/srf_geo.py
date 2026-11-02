@@ -22,9 +22,10 @@ Where the parameters come from:
 - DESeq2 "with standard settings" on the raw gene counts (SI Methods): pydeseq2 with its
   defaults (Wald test, Cook's distance filtering, independent filtering at alpha 0.05, BH
   adjustment), the Python port, as R is not available here. RSEM expected counts are rounded to
-  integers, as DESeq2 requires; the length offsets that a tximport import would add are not
-  applied (a deviation). Differentially expressed means padj < 0.05 (Results, "157
-  differentially expressed genes ( P .adj < 0.05)").
+  integers, as DESeq2 requires. tximport's average-length offsets, which the paper's normalized
+  counts (Datasets S2 and S3) show it used, are applied by `deseq_offsets`, which puts DESeq2's
+  normalization factors into pydeseq2's fits. Differentially expressed means padj < 0.05
+  (Results, "157 differentially expressed genes ( P .adj < 0.05)").
 - `MOTIF_HALF_WIDTH` = 250: the paper's motif search window, "-250 to +250 nt regions around
   detected peaks" (SI Methods), taken around the peak centre.
 - CArG box, three readings: FIMO (the paper's tool, SI Methods: "FIMO (14) was used to get
@@ -199,6 +200,107 @@ def deseq(counts: pd.DataFrame, samples: pd.DataFrame, design: str = "~genotype"
     dds.deseq2()
     st = DeseqStats(dds, contrast=list(contrast), alpha=ALPHA, quiet=True,
                     inference=DefaultInference(n_cpus=1))
+    st.summary()
+    res = st.results_df.copy()
+    res["gene"] = mouse_gene_names().reindex(res.index).fillna(pd.Series(res.index, index=res.index))
+    return res
+
+
+def length_norm_factors(counts: pd.DataFrame, length: pd.DataFrame) -> pd.DataFrame:
+    """DESeq2's normalization factors for a tximport import (estimateSizeFactors with an
+    avgTxLength assay, then estimateNormFactors): the lengths divided by their geometric mean over
+    samples, times median-of-ratios size factors of the counts divided by those lengths, scaled to
+    a geometric mean of 1 per gene. Zero lengths of genes with no counts are set to 1, as
+    DESeqDataSetFromTximport does. Genes by sample, on the rounded counts."""
+    counts = counts.round()
+    length = length.where(length > 0, 1.0)
+    nm = length / np.exp(np.log(length).mean(1)).to_numpy()[:, None]
+    x = counts / nm
+    with np.errstate(divide="ignore"):
+        logx = np.log(x)
+    loggeo = logx.mean(1)
+    use = np.isfinite(loggeo)
+    sf = np.array([np.exp(np.median((logx[c] - loggeo)[use & (x[c] > 0)])) for c in x.columns])
+    nf = nm * sf[None, :]
+    return nf / np.exp(np.log(nf).mean(1)).to_numpy()[:, None]
+
+
+def size_factor_matrix(counts: pd.DataFrame) -> pd.DataFrame:
+    """pydeseq2's own size factors of the rounded counts, repeated for every gene: given to
+    deseq_offsets, they must reproduce deseq exactly (a check of the substitution)."""
+    from pydeseq2.preprocessing import deseq2_norm
+    mat = counts.round().astype(int)
+    mat = mat[mat.sum(1) > 0]
+    sf = np.asarray(deseq2_norm(mat.T.to_numpy())[1])
+    return pd.DataFrame(np.tile(sf, (len(counts), 1)), index=counts.index, columns=counts.columns)
+
+
+def deseq_offsets(counts: pd.DataFrame, factors: pd.DataFrame, samples: pd.DataFrame,
+                  design: str = "~genotype", contrast=("genotype", "KO", "Flox")) -> pd.DataFrame:
+    """pydeseq2 with gene-by-sample normalization factors (genes by sample, as from
+    length_norm_factors) in place of its per-sample size factors, as DESeq2 uses them after a
+    tximport import. pydeseq2 takes only size factors, so the factors are put where DESeq2 uses
+    them: the normalized counts (base means, dispersion trend, Cook's distances), the per-gene GLM
+    fits (initial means and log fold changes) and the means of the Wald test. Its steps are
+    otherwise pydeseq2's defaults, in the order of DeseqDataSet.deseq2."""
+    from pydeseq2.dds import DeseqDataSet
+    from pydeseq2.ds import DeseqStats
+    from pydeseq2.default_inference import DefaultInference
+    from pydeseq2 import utils
+
+    meta = samples.set_index("name").loc[counts.columns]
+    mat = counts.round().astype(int).T
+    keep = mat.sum(0) > 0
+    mat = mat.loc[:, keep]
+    nf = factors.T.loc[:, keep].to_numpy()
+
+    class OffsetInference(DefaultInference):
+        # Every per-gene fit in pydeseq2 receives the full count matrix of the non-zero genes;
+        # here all genes are non-zero, so column i of the factors belongs to column i of the counts.
+        def lin_reg_mu(self, counts, size_factors, design_matrix, min_mu):
+            return np.column_stack([utils.fit_lin_mu(counts=counts[:, i], size_factors=nf[:, i],
+                                                     design_matrix=design_matrix, min_mu=min_mu)
+                                    for i in range(counts.shape[1])])
+
+        def irls(self, counts, size_factors, design_matrix, disp, min_mu, beta_tol, **kw):
+            out = [utils.irls_solver(counts=counts[:, i], size_factors=nf[:, i], design_matrix=design_matrix,
+                                     disp=disp[i], min_mu=min_mu, beta_tol=beta_tol, **kw)
+                   for i in range(counts.shape[1])]
+            lfc, mu, hat, conv = (np.array(m) for m in zip(*out))
+            return lfc, mu.T, hat.T, conv
+
+    inference = OffsetInference(n_cpus=1)
+    dds = DeseqDataSet(counts=mat, metadata=meta, design=design, quiet=True, inference=inference)
+    dds.fit_size_factors()
+    dds.layers["normed_counts"] = dds.X / nf
+    dds.var["_normed_means"] = dds.layers["normed_counts"].mean(0)
+    # DESeq2's moments estimate with normalization factors uses the mean over samples of the
+    # inverse of each sample's mean factor; pydeseq2 takes it from obs["size_factors"].
+    dds.obs["size_factors"] = nf.mean(1)
+    dds.fit_genewise_dispersions()
+    dds.fit_dispersion_trend()
+    dds.fit_dispersion_prior()
+    dds.fit_MAP_dispersions()
+    dds.fit_LFC()
+    dds.calculate_cooks()
+    if dds.refit_cooks:
+        dds.refit()
+    dds.cooks_outlier()
+
+    class OffsetStats(DeseqStats):
+        def run_wald_test(self):
+            ridge = (np.diag(1 / self.prior_LFC_var ** 2) if self.prior_LFC_var is not None
+                     else np.diag(np.repeat(1e-6, self.design_matrix.shape[1])))
+            mu = np.exp(self.design_matrix.values @ self.LFC.values.T) * nf
+            pvals, stat, se = self.inference.wald_test(
+                design_matrix=self.design_matrix.values, disp=self.dds.var["dispersions"].values,
+                lfc=self.LFC.values, mu=mu, ridge_factor=ridge, contrast=self.contrast_vector,
+                lfc_null=np.log(2) * self.lfc_null, alt_hypothesis=self.alt_hypothesis)
+            self.p_values = pd.Series(pvals, index=self.dds.var_names)
+            self.statistics = pd.Series(stat, index=self.dds.var_names)
+            self.SE = pd.Series(se, index=self.dds.var_names)
+
+    st = OffsetStats(dds, contrast=list(contrast), alpha=ALPHA, quiet=True, inference=inference)
     st.summary()
     res = st.results_df.copy()
     res["gene"] = mouse_gene_names().reindex(res.index).fillna(pd.Series(res.index, index=res.index))
