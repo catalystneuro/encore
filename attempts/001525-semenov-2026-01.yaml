@@ -1,0 +1,274 @@
+schema_version: 2
+id: 001525-semenov-2026-01
+dataset:
+  archive: dandi
+  id: "001525"
+  version: 0.261006.1856
+  doi: 10.48324/dandi.001525/0.261006.1856
+paper: doi:10.1016/j.bioelechem.2026.109283
+date: 2026-11-02
+entry: 001525-semenov-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41536680309
+inputs: []
+outcomes:
+- claim: fig7a-test-pulse-cosine-up-to-1000
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig7a-test-pulse-cosine-up-to-1000
+  notes: Under the main reading (six 5-us cells, annulus background, dark frames dropped), the mean
+    polarization of the two poles does not differ from the 150/150 benchmark after 360 to 1000 V/cm
+    conditioning (paired p 0.27 to 0.39) and is below it after 1200 V/cm (p = 0.039) and 1400 V/cm
+    (p = 0.012); the claim holds under reading (b) with the paired test and the mean-of-poles
+    reading. Cosine amplitudes are 10.9% dF (benchmark), 9.4% (1000 V/cm) and 4.8% (1400 V/cm), R^2
+    0.61, 0.53 and -0.63 (R^2 of A cos(theta - phi) without an offset term). Reading (a), the s.e.
+    band, fails at every pole because the profiles carry a uniform negative offset (-4.6% dF at the
+    benchmark); the fit misses the cathodic pole by 4.7% dF against an s.e. of 2.8%. Over 18
+    variants the claim holds in 9. The cosine part under reading (b) holds in all 18; the 1200 V/cm
+    hindrance fails in the four background-free variants with the control taken as the mean or the
+    first single-pulse file, and in five of the six five-cell subsets. The 1400 V/cm reduction is present in every variant.
+  deviations:
+  - The perimeter trace is found automatically (peak of membrane intensity along rays from the
+    cell centre, 6 pixels wide), where the paper draws it by hand in MetaMorph (Methods 2.3).
+  - The analysed cell is the largest object in each subject's field (an assumption; the paper says
+    one cell per experiment, Fig. 2 legend, and does not say how it was chosen).
+  - The field direction in image coordinates is not given by the dataset; it is the A-weighted
+    circular mean of cosine-fit phases over all 5-us files (-76.4 degrees, per-file sd 6.6). 0
+    degrees is the depolarized pole, as Fig. 7A plots it.
+  - Conditioning strengths are mapped by rank from the files' generator volts (100 to 350 V) to the
+    Fig. 7A labels 360 to 1400 V/cm, and the single 50 V pulse is taken as the 150/150 benchmark;
+    an assumption, as the files give no field strengths and no 150/150 pair.
+  - Six 5-us cells are in the dataset where the paper reports n = 5; all six are used, and each
+    five-cell subset is shown.
+  - Background and dark frames are open in the paper. Main reading adopted as an assumption,
+    background removed (median of an annulus 1.6 to 2.2 radii) and frames without a laser flash
+    dropped; the paper's own scale (Fig. 7A about 13% dF at 150/150; 9.1% dF per 100 mV in Results
+    3.3, about 16% dF at 150 V/cm) is met only with a background removed (10.9 to 11.2% against
+    5.0%), and the files' camera floor is about 209 counts under a membrane trace of 459 to 694.
+    All four combinations are shown.
+  - The criterion's pole dF is tested under the pole readings of fig7b-test-pulse-unchanged-to-760
+    (cathodic, anodic, mean of both), and its test under the paired and unpaired readings named
+    there; reading (a) compares the fit at each pole with the s.e. of the pole mean over cells, for
+    the legend's gray outline.
+- claim: fig7b-test-pulse-unchanged-to-760
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig7b-test-pulse-unchanged-to-760
+  measured: 80.0
+  notes: The criterion makes the claim methods_underspecified when the paired and unpaired tests
+    disagree, and they do. Under the main reading the unpaired t-test finds no difference from
+    control at 360 to 1000 V/cm at either pole (smallest p 0.17); the paired t-test finds the
+    cathodic test response higher after 360 V/cm (133% of control, +2.07% dF, s.e. 0.41, p =
+    0.0038). Over 18 variants the paired test finds a difference in 16 and the unpaired test in
+    none; the one-sample variant finds none in 17. At 1000 V/cm the test response is 80.0% of control
+    at the cathodic pole, 85.6% at the anodic and 84.0% for their mean (all within 80 +- 8; in 17 of
+    18 variants at least one pole reading is), with paired p 0.68 and 0.40. The paper reports its
+    360 V/cm cathodic point (about 120%) as p > 0.1, which fits the unpaired test; a reader is asked
+    whether the criterion should take that reading (questions/001525.yaml). Under the unpaired
+    reading the claim would be reproduced. For the paper's authors, which t-test Fig. 7B used
+    (paired over cells, or unpaired against the control group).
+  deviations:
+  - Same trace, cell, field direction, strength mapping, benchmark, cell count and main reading as
+    fig7a-test-pulse-cosine-up-to-1000.
+- claim: fig7b-test-pulse-reduced-1200-1400
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig7b-test-pulse-reduced-1200-1400
+  measured:
+  - 22.1
+  - -32.9
+  notes: Measured values are the cathodic pole, the first pole reading the criterion lists. Under the
+    main reading the anodic pole falls to 73.3% of control after 1200 V/cm and 50.1% after 1400 V/cm,
+    both within tolerance, but the 1200 V/cm reduction is not significant (paired p = 0.21, unpaired
+    0.15) and the 1400 V/cm one reaches p = 0.031 and 0.016, not p < 0.01. The cathodic pole falls to
+    22.1% and -32.9% (paired p 0.045 and 0.018), the mean of both poles to 59.3% and 27.4% (paired p
+    0.039 and 0.012, unpaired 0.067 and 0.0061). No pole and test combination meets the criterion in
+    any of 18 variants; in 3 variants one combination reaches both significance levels with values
+    outside tolerance, which the criterion calls partial. The reductions are present at both poles
+    (1400 V/cm difference from control -8.2% dF at each, paired d -1.42 and -1.22); what fails is
+    their significance at n = 6 and the cathodic values, which fall well below the paper's.
+  deviations:
+  - Same trace, cell, field direction, strength mapping, benchmark, cell count and main reading as
+    fig7a-test-pulse-cosine-up-to-1000.
+- claim: fig5b-conductivity-calibration
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig5b-conductivity-calibration
+  measured:
+  - 1.33
+  - 11.87
+  notes: Eq. (2) with the Methods' parameters gives f = 1.498 for the intact membrane, an IMP
+    reduction (1 - f/1.5) of 11.87% for a 100-fold rise in membrane conductivity, within 12 +- 1.2,
+    and 1.33% for a 10-fold rise, outside 2 +- 0.5 (1.20% relative to the intact f). With R from 6 to
+    10 um the 10-fold value stays between 1.00% and 1.65%. The equation as printed in the PDF (page
+    3) has the form the claims file read from the text. The "~2%" may have been read from the Fig.
+    5B graph.
+- claim: fig7b-conditioning-pulse-below-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The top panel of Fig. 7B comes from the single-pulse escalation of Fig. 4B (Results 3.7,
+    "Data for the top panel of Fig. 7B were extracted from dF measurements in Fig. 4B"). The dataset
+    holds one image per pulse pair, at 900 ns into the test pulse, and single pulses only at 50 V
+    (150 V/cm); no image of a conditioning pulse at 360 to 1400 V/cm is in it. The files' general
+    description mentions single pulses from 0.15 to 1.57 kV/cm, which are not in this dandiset.
+- claim: fig7c-conductivity-drops-10-fold
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-conditioning-pulse-below-linear, whose conditioning-pulse images are not in
+    the dataset. The test-pulse half (lm,eff from the test dF) could be computed from the dataset but
+    the fold drop needs both.
+- claim: fig7c-full-reseal-mild-residual-strong
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7c-conductivity-drops-10-fold. Its test-pulse parts (no difference from control
+    at 570 and 760 V/cm, test dF below control at 1000 to 1400 V/cm, no pole difference at the test
+    pulse) rest on data that are in the dataset, but its pole difference during the pulse needs the
+    conditioning-pulse images that are not.
+- claim: fig1-poles-leaky-equator-intact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Judged on the single-pulse Di-8-ANEPPS escalation of Fig. 4B-C (43 to 1400 V/cm), not in the
+    dataset, which holds only the two-pulse experiment of Fig. 7.
+- claim: fig2a-fluovolt-saturation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No FluoVolt recording is in the dataset; every file is Di-8-ANEPPS. Dandiset 001526, which
+    names the same paper and is a separate target of the registry, was not used.
+- claim: fig2a-fluovolt-stable-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No FluoVolt recording is in the dataset (see fig2a-fluovolt-saturation).
+- claim: fig2b-di8-climbs-then-declines-in-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-pulse Di-8-ANEPPS escalation (43 to 1400 V/cm, n = 5) is not in the dataset.
+- claim: fig2cd-stable-at-150-230
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The alternating 150 and 230 V/cm sets of Fig. 2C-D are not in this dataset. Dandiset 001526,
+    titled as the post-electroporation suitability experiment of the same paper, may hold them; it is
+    a separate target and was not used here.
+- claim: fig2c-within-set-decline-1000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 2C experiment is not in this dataset (see fig2cd-stable-at-150-230).
+- claim: fig2d-lasting-drop-after-1000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 2C-D experiment is not in this dataset (see fig2cd-stable-at-150-230).
+- claim: fig3-dye-calibration-slopes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs single-pulse recordings with both dyes at 43 to 360 V/cm; none are in the dataset (no
+    FluoVolt file, and Di-8-ANEPPS single pulses only at 50 V). The outside tau fit was not needed.
+- claim: fig3-fluovolt-nonlinear-di8-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3-dye-calibration-slopes; the recordings are not in the dataset.
+- claim: fig4a-fluovolt-limit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No FluoVolt recording is in the dataset.
+- claim: fig4b-di8-threshold-570
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-pulse Di-8-ANEPPS escalation of Fig. 4B is not in the dataset.
+- claim: fig4b-first-10-pulses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 4B experiment is not in the dataset.
+- claim: fig4b-cathodic-pole-more-damaged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 4B experiment is not in the dataset.
+- claim: fig4c-equator-follows-cosine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 4B-C experiment is not in the dataset.
+- claim: fig4d-short-pulses-same-limit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No 0.3-us pulse recording is in the dataset; every file states 1-us pulses.
+- claim: fig5a-gd-extends-anodic-charging
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No recording with Gd3+ is in the dataset, and the control group of Fig. 5A (single pulses
+    150 to 1400 V/cm) is not either.
+- claim: fig5a-gd-cathodic-no-higher-but-no-decline
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig5a-gd-extends-anodic-charging.
+- claim: fig5c-gd-reduces-conductivity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Fig. 5A recordings, which are not in the dataset.
+- claim: fig6a-ca-single-pulse
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No Fluo-4 calcium imaging is in the dataset.
+- claim: fig6b-ca-train-thresholds
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No Fluo-4 calcium imaging is in the dataset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the two-pulse Di-8-ANEPPS experiment of Fig. 7A and the bottom
+    panel of Fig. 7B. The FluoVolt, single-pulse escalation, 0.3-us, Gd3+ and Fluo-4 calcium
+    experiments behind Figs. 1 to 6 and the top panel of Fig. 7B are not in it; 23 of the paper's 27
+    claims cannot be tested here.
+- kind: metadata_insufficient
+  statement: Pulses are given in generator volts (50 to 350 V), not in the field strengths (V/cm) the
+    paper reports and computes with Sim4Life, and no mapping is given. The mapping to the Fig. 7A
+    labels (150, 360, 570, 760, 1000, 1200, 1400 V/cm) can only be inferred by rank.
+- kind: metadata_error
+  statement: Every file gives the distance between electrodes as 1.00 mm; the paper (Methods 2.2)
+    gives a spacing of 1.6 mm.
+- kind: metadata_error
+  statement: The general description shared by every file lists field strengths of 0.15, 0.52, 0.9,
+    1.27 and 1.57 kV/cm, single pulses at each, and inter-pulse intervals of 1, 5, 25 and 125 us.
+    The files hold single pulses only at 50 V, six conditioning amplitudes (100 to 350 V) and
+    intervals of 1 and 5 us only.
+- kind: other
+  statement: The paper's benchmark for Fig. 7 is a 150 V/cm test pulse after an identical 150 V/cm
+    conditioning pulse (Results 3.7); the files hold no 50 V plus 50 V pair, only a single 50 V pulse,
+    which is the only candidate for the benchmark. Three cells (c4, c5, c6) have two single-pulse files.
+- kind: selection_undocumented
+  statement: Six cells (c5 to c10) have the paper's 5-us interval where Fig. 7 reports n = 5, and
+    nothing says which five were used. Four more cells (c1 to c4) have a 1-us interval, which the
+    paper does not report.
+- kind: metadata_error
+  statement: The image series description says exposures began 1 us after the start of recording;
+    the images show the pulse from image 40 (6.7 s at 6 Hz), after 40 baseline images, as Methods 2.3
+    describe (best split at image 39 to 41 in 54 of 73 files).
+- kind: other
+  statement: 70 of 73 files have a dark first image (field mean about 209 counts against 276), and 22
+    more dark images fall elsewhere in the sets; these are images with no laser flash. Nothing in the files marks them.
+    Keeping or dropping them shifts the test-pulse dF by about 1.3 percentage points, and the
+    no-flash level (about 209 counts) shows a camera floor under every image that a dF without
+    background subtraction includes.
+- kind: metadata_insufficient
+  statement: The files give no pixel size, no direction of the electric field in image coordinates,
+    and no position of the analysed cell, while each field holds several cells. The field direction
+    can be recovered from the polarization (per-file phases within 6.6 degrees sd).
+- kind: methods_unavailable
+  statement: For the paper's authors, which t-test Fig. 7B used for the test-pulse comparison with
+    the undamaged membrane, paired over cells or unpaired against the control group. On this dataset
+    the paired test finds the 360 V/cm cathodic point higher (p = 0.0038) and the unpaired test does
+    not (p = 0.61), which decides fig7b-test-pulse-unchanged-to-760.
+- kind: methods_unavailable
+  statement: For the paper's authors, whether a background was subtracted from the potentiometric
+    images and whether images without a laser flash were kept when the 40 baseline and 60 pulse
+    images were collapsed. Background removal doubles the dF scale here (5.0% to 10.9% at 150/150),
+    and only the background-subtracted scale matches the paper's.
