@@ -91,77 +91,111 @@ outcomes:
   notes: Under R1, 11.69 +/- 9.40 spikes/s at rest and 26.76 +/- 18.17 activated, all within
     tolerance; T1 to T4 give p from 2.7e-116 down to 5.4e-147 (Mann-Whitney 2.2e-99). Under R2 the
     activated values (30.60 +/- 16.13) are outside tolerance. All 1,435 PT5B cells are in every
-    file.
+    file. The answer of 2026-11-02 added R3 to the readings; it equals R1 here, every PT5B cell
+    having fired, so the outcome is unchanged.
   deviations:
   - R1 needs the population size, which the files do not state; PT5B is the gid block 5130 to 6564
     (1,435 cells), bounded exactly by the gids seen.
 - claim: fig2c-control-it23-rate-activated
-  outcome: not_reproduced
+  outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig2c-control-it23-rate-activated
   measured:
-  - 0.095
-  - 0.565
-  - 0.262
-  - 2.172
-  notes: Under R1 IT2 rates are 0.095 +/- 0.565 and 0.262 +/- 2.172 spikes/s, under R2 1.555 +/-
-    1.723 and 8.883 +/- 9.220; neither reading has all four values within tolerance, and neither
-    has all four tests below 0.001 (R1 Wilcoxon 0.69). The R3 variant (cells the file holds, those
-    that fired at least once in the simulation) gives 1.203 +/- 1.649 and 6.662 +/- 8.858, all
-    within tolerance; there the unpaired tests give 3.5e-05 and 3.6e-06 and the paired ones 0.016
-    and 0.011 (25 cells in both files). Whether R3 should be a reading is asked of a reader
-    (questions/001444.yaml).
+  - 1.203
+  - 1.649
+  - 6.662
+  - 8.858
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT2 rates are 1.203
+    +/- 1.649 spikes/s at rest (137 cells) and 6.662 +/- 8.858 activated (68 cells), all four within
+    tolerance. The unpaired tests find the increase at p below 0.001 (Mann-Whitney 3.5e-05, Welch
+    3.6e-06), but the paired tests on the 25 cells kept in both files give 0.016 (Wilcoxon) and
+    0.011 (paired t), so the criterion's p < 0.001 under every test is not met and the increase is
+    weaker than the paper's bound under two of four tests. Under R1 (0.095 +/- 0.565 and 0.262 +/-
+    2.172) and R2 (1.555 +/- 1.723 and 8.883 +/- 9.220) the values are outside tolerance.
   deviations:
   - R1 uses the IT2 gid block bounded from the data (1,729 or 1,730 cells); both bounds give the
     same values to three decimals.
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: fig2c-control-it6-rate-activated
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig2c-control-it6-rate-activated
   measured:
-  - 4.28
-  - 5.58
-  - 0.95
-  - 3.13
-  notes: Under R1 IT6 rates are 4.28 +/- 5.58 and 0.95 +/- 3.13, under R2 6.27 +/- 5.75 and 4.87 +/-
-    5.57, so no reading has the four values within tolerance, though every test finds the decrease
-    at p below 0.001 under both. The R3 variant gives 5.82 +/- 5.78 and 3.47 +/- 5.19, all four
-    within tolerance, every test below 1e-10. Asked of a reader (questions/001444.yaml).
+  - 5.82
+  - 5.78
+  - 3.47
+  - 5.19
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT6 rates are 5.82 +/-
+    5.78 (914 cells) and 3.47 +/- 5.19 spikes/s (341 cells), all four within tolerance, and every
+    test finds the decrease at p below 1e-10 (largest 1.2e-11, Welch). Under R1 (4.28 +/- 5.58 and
+    0.95 +/- 3.13) and R2 (6.27 +/- 5.75 and 4.87 +/- 5.57) some values are outside tolerance,
+    though every test finds the decrease at p below 0.001 under both.
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: control-it5-silenced-activated
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:control-it5-silenced-activated
   measured:
-  - 1.21
-  - 1.75
+  - 3.25
+  - 3.08
   - 0
   - 0
-  notes: No IT5A or IT5B spike falls in W in the activated file (the one IT5A and two IT5B units in
-    it fired before 0.05 s), so the activated zeros hold. The rest rates are 1.21 and 1.75 spikes/s
-    under R1 and 3.57 and 3.58 under R2, against 3.3 and 3.1. The R3 variant gives 3.25 and 3.08,
-    within tolerance. Asked of a reader.
+  notes: The answer of 2026-11-02 (questions/001444.yaml) made the criterion's readings R1 and R3,
+    and this changed the outcome from not reproduced. Under R3 the rest rates are 3.25 (IT5A, 239
+    cells) and 3.08 spikes/s (IT5B, 816 cells), within tolerance, and the activated rates are 0
+    (the one IT5A and two IT5B units of the activated file fired before 0.05 s, none in W). Under
+    R1 the zeros hold but the rest rates are 1.21 and 1.75; under R2 they are 3.57 and 3.58 and the
+    activated means are undefined.
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: control-it4-rate-activated
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:control-it4-rate-activated
   measured:
-  - 0.037
-  - 0.586
-  notes: IT4 rates are 0.037 and 0.586 spikes/s under R1 and 3.14 (9 cells) and 8.18 (55 cells)
-    under R2. The R3 variant gives 2.57 (11 cells) and 4.74 (95 cells), within tolerance. Asked of
-    a reader.
+  - 2.57
+  - 4.74
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT4 rates are 2.57
+    (11 cells) at rest and 4.74 spikes/s (95 cells) activated, within tolerance; the paper reports
+    no test. R1 gives 0.037 and 0.586, R2 3.14 (9 cells) and 8.18 (55 cells).
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: pt5b-highest-rate
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_doherty_2025.ipynb
   output: claim:pt5b-highest-rate
   notes: The criterion blocks the claim when its two population readings disagree, and they do.
-    Among the seven excitatory types PT5B has the highest mean in control rest, parkinsonian rest
-    and parkinsonian activated under R1, R2 and R3. Among all 15 populations PV5A is higher in all
-    three under every reading (R1 22.51, 22.79 and 42.10 spikes/s against PT5B 11.69, 14.24 and
-    29.68), and PV5B also under R1 (16.66, 17.37 and 36.16). The Results' context (rates of
-    excitatory cell types in Figs. 2C and 5C) supports the excitatory reading, but the paper does
-    not say which populations "any" covers; the question is for the authors (findings).
+    The answer of 2026-11-02 added R3 to the rate readings; it does not change the outcome, since
+    the population readings disagree under R3 too. Among the seven excitatory types PT5B has the
+    highest mean in control rest, parkinsonian rest and parkinsonian activated under R1, R2 and
+    R3. Among all 15 populations PV5A is higher in all three under every reading (R1 22.51, 22.79
+    and 42.10 spikes/s; R3 28.83, 32.08 and 58.53; against PT5B 11.69, 14.24 and 29.68 under both),
+    and PV5B also under R1 (16.66, 17.37 and 36.16) and R3 (19.13, 26.03 and 41.71). The Results'
+    context (rates of excitatory cell types in Figs. 2C and 5C) supports the excitatory reading,
+    but the paper does not say which populations "any" covers; the question is for the authors
+    (findings).
 - claim: control-cv-isi
   outcome: reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -282,48 +316,75 @@ outcomes:
   - 29.68
   - 12.67
   notes: Under R1 14.24 +/- 7.13 and 29.68 +/- 12.67 spikes/s, under R2 14.70 +/- 6.76 and 30.57 +/-
-    11.75, all within tolerance under both; every test gives p below 1e-200.
+    11.75, all within tolerance under both; every test gives p below 1e-200. The answer of
+    2026-11-02 added R3, which equals R1 here (every PT5B cell fired); the outcome is unchanged.
 - claim: fig5c-pd-it23-rate-activated
-  outcome: not_reproduced
+  outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:fig5c-pd-it23-rate-activated
   measured:
-  - 0.025
-  - 0.239
-  - 0.164
-  - 1.598
-  notes: Under R1 0.025 +/- 0.239 and 0.164 +/- 1.598, under R2 1.163 +/- 1.173 and 6.163 +/- 7.769;
-    neither has all four within tolerance, and under R2 the paired tests give 0.26 and 0.18 (12
-    cells). The R3 variant gives 0.783 +/- 1.105 and 4.295 +/- 7.066, all within tolerance, but
-    only the Welch test is below 0.001 there (1.7e-04; Mann-Whitney 0.0018, paired 0.60 and 0.21 on
-    22 cells). Asked of a reader.
+  - 0.783
+  - 1.105
+  - 4.295
+  - 7.066
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 parkinsonian IT2 rates
+    are 0.783 +/- 1.105 (55 cells) and 4.295 +/- 7.066 spikes/s (66 cells), all four within
+    tolerance. The Welch test finds the increase at p = 1.7e-04, but the Mann-Whitney test gives
+    0.0018 and the paired tests on the 22 cells kept in both files 0.60 (Wilcoxon) and 0.21 (paired
+    t), so the increase is present in the means and weaker than the paper's p < 0.001 under three
+    of four tests. Under R1 (0.025 +/- 0.239 and 0.164 +/- 1.598) and R2 (1.163 +/- 1.173 and 6.163
+    +/- 7.769) the values are outside tolerance.
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: pd-it5-silenced-activated
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:pd-it5-silenced-activated
   measured:
-  - 0.47
-  - 0.47
+  - 2.17
+  - 1.25
   - 0
   - 0
-  notes: No IT5A or IT5B spike falls in W in the parkinsonian activated file, so the zeros hold; the
-    rest rates are 0.47 and 0.47 under R1 and 2.57 and 2.19 under R2, against 2.2 and 1.2. The R3
-    variant gives 2.17 and 1.25, within tolerance. Asked of a reader.
+  notes: The answer of 2026-11-02 (questions/001444.yaml) made the readings of
+    control-it5-silenced-activated, which this claim takes, R1 and R3, and this changed the outcome
+    from not reproduced. Under R3 the rest rates are 2.17 (IT5A, 140 cells) and 1.25 spikes/s (IT5B,
+    541 cells), within tolerance, and the activated rates are 0 (one IT5A and eleven IT5B units,
+    all firing before 0.05 s). Under R1 the rest rates are 0.47 and 0.47; under R2 2.57 and 2.19,
+    with the activated means undefined.
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: pd-it6-rate-unchanged
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:pd-it6-rate-unchanged
   measured:
-  - 1.33
-  - 1.73
-  notes: A claim of absence. Under R1 the means, 1.33 and 1.73 spikes/s, are outside tolerance and
-    all four tests find a difference at p < 0.05 (0.00017 to 0.019; activated higher by 0.40
-    spikes/s). Under R2 no test finds a difference (p 0.62 to 0.93, difference -0.155) but the
-    means, 6.79 and 6.64, are outside 5.4 to 6.6. The R3 variant gives 6.00 and 5.99 with no test
-    below 0.05 (smallest 0.49), which would meet the criterion. Asked of a reader.
+  - 6.00
+  - 5.99
+  notes: A claim of absence. The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3
+    the means are 6.00 (275 cells) and 5.99 spikes/s (359 cells), within tolerance, and no test
+    finds a difference at p < 0.05 (p 0.49 to 1.00 on 148 paired and all kept cells; difference
+    -0.012 spikes/s). Under R1 the means, 1.33 and 1.73, are outside tolerance and all four tests
+    find a difference (0.00017 to 0.019); under R2 no test does (p 0.62 to 0.93) but the means,
+    6.79 and 6.64, are outside 5.4 to 6.6.
   deviations:
   - The paper names no test or threshold for this absence; the claims file's p < 0.05 under T1 to
     T4 is used.
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: pd-cv-isi
   outcome: reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -410,7 +471,8 @@ outcomes:
   output: claim:rest-pt5b-rate-pd-vs-control
   notes: Under R1 11.69 +/- 9.40 (control) and 14.24 +/- 7.13 spikes/s (parkinsonian), all within
     tolerance, every test p below 1e-15 (paired by gid, 1,435 cells), and the standard deviation is
-    lower in the parkinsonian file. R2 also meets the criterion.
+    lower in the parkinsonian file. R2 also meets the criterion. The answer of 2026-11-02 added R3,
+    which equals R1 for PT5B; the outcome is unchanged.
 - claim: rest-it4-rate-pd-vs-control
   outcome: not_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -418,20 +480,32 @@ outcomes:
   measured:
   - 0.037
   - 0.037
-  notes: Under R1 both means are 0.037 spikes/s; under R2 3.14 (9 cells) and 14.13 (2 cells), the
-    control value outside tolerance; no reading has every test below 0.05. The R3 variant gives
-    2.57 and 14.13, within tolerance, but the parkinsonian value rests on 2 cells and no test
-    reaches 0.05 (smallest 0.077), so it would still fail.
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings; the outcome is unchanged. Under R3 the means are 2.57 (11 cells) and 14.13
+    spikes/s (2 cells), both within tolerance, but no test finds the increase at p < 0.05
+    (Mann-Whitney 0.077, Welch 0.31, Wilcoxon 1.0 and paired t 0.68 on the 2 cells kept in both
+    files). Under R1 both means are 0.037 spikes/s, and under R2 3.14 (9 cells) and 14.13 (2 cells),
+    the control value outside tolerance; no reading has every test below 0.05. The criterion fails
+    under every reading, so the outcome does not rest on R3.
 - claim: rest-it5a-rate-pd-vs-control
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:rest-it5a-rate-pd-vs-control
   measured:
-  - 1.21
-  - 0.47
-  notes: Under R1 1.21 and 0.47 spikes/s (every test below 0.01); under R2 3.57 and 2.57, the
-    parkinsonian value outside 1.98 to 2.42, unpaired tests 0.017 and 0.012. The R3 variant gives
-    3.25 and 2.16, within tolerance, with every test below 0.01 (largest 0.0027). Asked of a reader.
+  - 3.25
+  - 2.16
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the rest IT5A rates
+    are 3.25 (239 cells) in the control and 2.16 spikes/s (140 cells) in the parkinsonian file,
+    within tolerance, and every test finds the decrease at p below 0.01 (Wilcoxon 6.9e-19, paired
+    t 2.0e-22 on 124 cells, Mann-Whitney 0.0019, Welch 0.0027). Under R1 the rates are 1.21 and 0.47
+    (every test below 0.01); under R2 3.57 and 2.57, the parkinsonian value outside 1.98 to 2.42,
+    unpaired tests 0.017 and 0.012.
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: activated-pt5b-rate-pd-vs-control
   outcome: partially_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -440,18 +514,28 @@ outcomes:
     within tolerance, standard deviation lower; Wilcoxon, paired t and Welch give p 3.2e-07, 1.6e-08
     and 6.5e-07, but Mann-Whitney gives 0.0052, above the 0.001 the criterion asks under every
     test. The increase is present, with one of four tests weaker than the paper's bound. Under R2
-    the means are 30.60 and 30.57 and no test is below 0.05. The Discussion's statement of no
-    significant change in the activated state holds under R2 and not under R1.
+    the means are 30.60 and 30.57 and no test is below 0.05. The answer of 2026-11-02 added R3,
+    which equals R1 for PT5B; the outcome is unchanged. The Discussion's statement of no
+    significant change in the activated state holds under R2 and not under R1 or R3.
 - claim: activated-it6-rate-pd-vs-control
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_doherty_2025.ipynb
   output: claim:activated-it6-rate-pd-vs-control
   measured:
-  - 0.95
-  - 1.73
-  notes: Under R1 0.95 and 1.73 spikes/s, under R2 4.87 and 6.64, outside tolerance under both,
-    though the parkinsonian rate is higher (R1 tests p below 3e-05). The R3 variant gives 3.47 and
-    5.99, within tolerance, with every test below 1e-07. Asked of a reader.
+  - 3.47
+  - 5.99
+  notes: The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the activated IT6
+    rates are 3.47 (341 cells) in the control and 5.99 spikes/s (359 cells) in the parkinsonian
+    file, within tolerance, and every test finds the increase at p below 1e-07 (largest 3.4e-08,
+    Welch). Under R1 (0.95 and 1.73) and R2 (4.87 and 6.64) the values are outside tolerance,
+    though the parkinsonian rate is higher under both.
+  deviations:
+  - The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s
+    simulation with those silent in W counted at 0 (the cells the files hold). The claims file
+    lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the
+    window ("calculated from the last 2.3 s of 4.3 s simulation") but not the neurons averaged
+    over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.
 - claim: rest-beta-power-order-of-magnitude
   outcome: partially_reproduced
   notebook: reproduce_doherty_2025.ipynb
@@ -518,9 +602,10 @@ findings:
   statement: Question for the authors. Over which cells is a population's mean rate taken? The
     paper's IT rates match exactly when the cells are those that fired at least once in the 4.3 s
     simulation, with rates over the last 2.3 s (IT2 1.203 +/- 1.649 at control rest against 1.2 +/-
-    1.6), and not when all cells or only cells active in the last 2.3 s are counted. Which test
-    gave the rate p-values? Under that reading the Welch t-test meets every printed bound except
-    for IT4 at rest (two parkinsonian cells, p = 0.31), while paired tests do not for IT2.
+    1.6), and not when all cells or only cells active in the last 2.3 s are counted; nine IT
+    outcomes here rest on that reading. Which test gave the rate p-values? Under that reading the
+    Welch t-test meets every printed bound except for IT4 at rest (two parkinsonian cells, p =
+    0.31), while paired tests do not for IT2.
 - kind: methods_unavailable
   statement: Question for the authors. Which PT5B cells, and what definition, gave 1% to 3% of
     spikes coincident within 1 ms and the unitary-event durations of Figs. 4 and 7? Over all 1,435

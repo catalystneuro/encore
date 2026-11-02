@@ -20,9 +20,11 @@ Where the parameters come from:
   from the data: gids are numbered in contiguous blocks per population (NetPyNE), and
   `population_blocks` bounds each block by the gids seen in all 16 files. Where a few gids
   between two blocks were never seen, the lower and upper sizes are both kept.
-- Rate readings R1 (all cells of a population) and R2 (cells with a spike in W), and test
-  readings T1 to T4: the claims file's definitions. R3 (the cells the file holds, those that
-  fired at least once in the simulation) is a variant found in the data, shown beside them.
+- Rate readings R1 (all cells of a population), R2 (cells with a spike in W) and R3 (cells
+  with a spike in the 4.3 s simulation, those silent in W at 0), and test readings T1 to T4:
+  the claims file's definitions. R3 was added to the claims file in answer to a question
+  (questions/001444.yaml); the files hold exactly the cells that fired, so R3 is the cells the
+  file holds.
 - `welch_peak`: Welch's method with 1 s segments, the claims file's standard choice.
 - `morlet_spec`: a copy of netpyne/support/morlet.py of NetPyNE 1.0.5 (the version the Methods
   name), with the defaults of netpyne.analysis.lfp.prepareSpectrogram (1 to 100 Hz in 1 Hz
@@ -204,9 +206,8 @@ def rates(d: dict, pop: str, blocks: dict, window=WINDOW, size="max") -> dict:
     """Per-cell rates (spikes/s) in `window`.
 
     R1: every gid of the block, silent cells at 0 (block of the largest size if `size`="max",
-    smallest if "min"). R2: only cells with at least one spike in the window. R3 (a variant
-    found in the data, not a reading of the claims file): the cells the file holds, which are
-    the cells that fired at least once in the 4.3 s simulation.
+    smallest if "min"). R2: only cells with at least one spike in the window. R3: only cells
+    with at least one spike in the 4.3 s simulation, which are the cells the file holds.
     """
     b = blocks[pop]
     lo, hi = (b[0], b[3]) if size == "max" else (b[1], b[2])

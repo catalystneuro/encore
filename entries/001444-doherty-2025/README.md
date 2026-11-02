@@ -13,7 +13,9 @@ activated). The paper reports set sM1_12-12-2023, and the claims are tested on i
 | More negative PT5B potential in the parkinsonian activated state; more 20 to 35 Hz power | Reproduced |
 | PT5B activated rate, parkinsonian against control (one test of four above p = 0.001) | Partially reproduced |
 | Order-of-magnitude increase of 15 Hz power at rest (the ratio is 65 to 129) | Partially reproduced |
-| IT2, IT4, IT5A, IT5B and IT6 rates (ten claims) | Not reproduced under the claims file's readings; the values match under a variant reading, asked of a reader |
+| IT4, IT5A, IT5B and IT6 rates (seven claims), under rate reading R3 (cells that fired at least once) | Reproduced, resting on R3 as an assumption |
+| IT2 rate increase with activation, control and parkinsonian (values match under R3, some tests above p = 0.001) | Partially reproduced |
+| IT4 rest rate, parkinsonian against control (values match under R3, no test below p = 0.05) | Not reproduced |
 | Parkinsonian activated dominant frequency (27 Hz against 43) | Not reproduced |
 | Duty cycles, LFP burst rates, coincident spikes, unitary events (eleven claims) | Not reproduced |
 | Network size (the files store only cells that fired) | Not reproduced |
@@ -25,7 +27,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The units tables hold only cells that fired; the paper's IT rates match exactly when the mean is
-taken over those cells, a reading the claims file does not list. The paper's set holds 20 PT5B
+taken over those cells (reading R3, which a reader added to the claims file in answer to a
+question; the paper does not say which cells it averaged over). The paper's set holds 20 PT5B
 potentials per file (not 400), and in the analysis window they do not match the stored spikes of
 the same cells. The attempt record, with the reasons and the differences from the paper's method,
 is [`attempts/001444-doherty-2025-01.yaml`](../../attempts/001444-doherty-2025-01.yaml).
