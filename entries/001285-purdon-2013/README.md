@@ -7,7 +7,7 @@ induction of and emergence from propofol in 10 volunteers.
 | Claim | Outcome |
 |---|---|
 | All 22 claims (behaviour, Figure 1; EEG, Figures 2 to 5, S2 and S3) | Blocked: data missing |
-| Of these, 15 EEG claims that need channel identities | Second reason: metadata insufficient |
+| Of these, the 16 EEG claims, which need channel identities | Second reason: metadata insufficient |
 
 The dandiset holds the 64-channel EEG of one of the ten subjects. It holds no behavioural responses,
 from which the paper defines loss and recovery of consciousness and aligns every EEG analysis, no
@@ -16,7 +16,7 @@ holds and checks its values against the description. The attempt record, with th
 findings about the dataset, is
 [`attempts/001285-purdon-2013-01.yaml`](../../attempts/001285-purdon-2013-01.yaml).
 
-- `reproduce_purdon_2013.ipynb`: the data check. It takes about two minutes, most of it streaming the
+- `reproduce_purdon_2013.ipynb`: the data check. It takes one to two minutes, most of it streaming the
   file.
 - `propofol_eeg.py`: streaming the file and the per-channel summaries, spectra and band-power time
   course used in the check.
