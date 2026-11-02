@@ -121,7 +121,15 @@ outcomes:
     does not; 275 units have one CLICK recording each, and 271 give a recomputed 2-bin latency (272 with
     a 5 ms click delay), against 261. The files hold no stored latency, so it cannot be told which 10
     units had none in the paper, or whether some had a second CLICK recording in the MATLAB files that
-    the code would leave out. 1 CLICK unit has 75 spikes or fewer.
+    the code would leave out. 1 CLICK unit has 75 spikes or fewer. The mismatch does not rest on
+    the assumed click delay; reading 2 (275) uses no latency, and reading 1 gives 270 to 272 units
+    for delays from 5 to 8.25 ms. The delay checks are consistent with 7.75 ms. The population PSTH
+    of the CLICK trials is flat up to 8.25 ms and rises from 8.25 ms in the 20 ms trials and from
+    8.75 ms in the 10 ms trials, whose units have lower BFs (median 2060 against 5570 Hz). Latencies
+    of the 10 ms trials lie on the same latency-BF line as those of the 20 ms trials (median residual
+    -0.032 against -0.027 ms) and span 0.71 to 1.84 ms. click_polarity is 'COND' in every CLICK
+    trial. No 500-trial recording shows signs of two joined recordings (halves differ in latency
+    by a median 0.026 ms, odd against even trials 0.020 ms).
   deviations:
   - The stored CF and click latency are not in the files; reading 1 uses the values recomputed with the
     paper's functions.
@@ -143,7 +151,12 @@ outcomes:
     more than 10. Of 13,904 short ISIs, 10,192 are 0.3 to 0.6 ms and 1171 below 0.1 ms. With a 0.3 ms
     limit 140 units fail under (a), with 0.1 ms 5 do. Spike times are sorted within trials and no spike
     train is duplicated. The paper's check was visual (checkAN.m plots the count); it does not say how
-    many short ISIs 'multiple' allows.
+    many short ISIs 'multiple' allows. Many short ISIs are double detections of one spike. In the
+    voltage trace, all ISIs below 0.1 ms (from 9 units), 91% of those from 0.1 to 0.3 ms and 39% of those
+    from 0.3 to 0.6 ms lie on one waveform (the trace does not fall below half the smaller peak between
+    the two spike times), against none of 300 pairs from 0.8 to 1.5 ms. The outcome stands, since the
+    paper's check counts ISIs from the same spike times; counting only pairs that are not one waveform,
+    176 units still fail under (a) and 179 under (b).
   deviations:
   - A recording is taken as a recording type of the unit; each type occurs once per unit in the files.
 - claim: no-prepotentials
@@ -178,7 +191,8 @@ outcomes:
   output: claim:fig6a-young-two-sensitive-regions
   notes: Under reading (b) the highest young-adult mean threshold between the two sensitive regions is
     27.6 dB SPL in the bin plotted at 3.48 kHz, with 25.4 and 24.4 dB in the neighbouring bins; the sensitive
-    regions have their lowest means at 1.73 kHz (20.9 dB) and 8.34 kHz (21.2 dB). Under reading (a) the
+    regions have their lowest means at 1.73 kHz (20.9 dB) and 8.34 kHz (21.2 dB), which are also the two
+    lowest bin means of all bins. Under reading (a) the
     highest mean of all bins is 36.7 dB at 0.72 kHz, from 3 units. The criterion is met under one reading,
     as it requires. The bins plotted at 2.06 to 4.14 kHz hold 30 to 34 units, fewer than at 4.93 to 11.83
     kHz (43 to 83) and about as many as at 1.02 to 1.73 kHz (33 to 36).
@@ -192,7 +206,10 @@ outcomes:
   notes: The bin from 2423 to 2936 Hz holds 34 young-adult units. It is not the fewest of the non-empty
     span (the 356 Hz bin holds 1, and the bins below 766 Hz hold 1 to 11), nor fewer than both neighbours
     (34 and 35). Among the bins from 1363 to 4309 Hz it ties for the fewest (34) with the 1363 and 2000
-    Hz bins.
+    Hz bins. With the CF of young units without a BF recording added, the bin still holds 34. In the
+    same bins the named bin is the fewest and a local minimum only among middle-aged units (0, neighbours
+    6 and 5); among old units (23, neighbours 10 and 22) and all ages (57, neighbours 50 and 62) it is
+    neither. The paper's text names young adults.
 - claim: fig6c-sr-distributions
   outcome: reproduced
   notebook: reproduce_heeringa_2024.ipynb
@@ -202,7 +219,7 @@ outcomes:
   - 57.5
   notes: Measured values are bin centres. Low-BF young-adult units (314) have their two largest modes
     of spontaneous rate in the bins 0 to 5 (27 units) and 55 to 60 spikes/s (21), separated by a bin of
-    5. High-BF units (437) have their largest local maximum at 0 to 5 spikes/s (66), below 18. 26.1% of
+    5. A mode is a local maximum as the criterion defines it; the last bin is not one. High-BF units (437) have their largest local maximum at 0 to 5 spikes/s (66), below 18. 26.1% of
     high-BF and 18.5% of low-BF units are below 18 spikes/s.
 - claim: fig6d-max-phase-locking-bf
   outcome: reproduced
@@ -212,13 +229,16 @@ outcomes:
   notes: The highest BF of a young-adult unit with significant phase locking (p < 0.001) is 4598 Hz; the
     next are 4121 to 4377 Hz. No young PH unit with a higher BF (27 units, 4718 to 12,359 Hz) reaches
     p < 0.001. The value depends on the threshold, 6539 Hz with p < 0.01 and 4377 Hz with p < 0.0001;
-    the Methods fix 0.001.
+    the Methods fix 0.001. One PH level (a middle-aged unit) has exactly 50 spikes, the only case where
+    the Methods' and the code's rules for a NaN p-value differ; no unit's maximum significant vector
+    strength changes between them.
   deviations:
   - Vector strength and its p-value are not in the NWB files. They are recomputed per level of the PH
     recording with PHextract_func.m and TytoView_calcVS.m (Methods, 'The analysis procedures were carried
     out by the function PHextract_func.m'), spikes between tone onset and offset, p = exp(-N vs^2), NaN
-    when N is 50 or fewer (the code's ntot > 50; the Methods say N < 50). The silent trials' value, which
-    the code also stores, is left out.
+    when N < 50 as the Methods say ('When N < 50, the p-value is NaN'); the code's rule (ntot > 50, NaN
+    when N is 50 or fewer) is shown as a variant. The silent trials' value, which the code also stores,
+    is left out.
 - claim: fig6d-highest-vs-low-bf-low-sr
   outcome: reproduced
   notebook: reproduce_heeringa_2024.ipynb
@@ -231,15 +251,17 @@ outcomes:
   - Vector strength and its p-value are not in the NWB files. They are recomputed per level of the PH
     recording with PHextract_func.m and TytoView_calcVS.m (Methods, 'The analysis procedures were carried
     out by the function PHextract_func.m'), spikes between tone onset and offset, p = exp(-N vs^2), NaN
-    when N is 50 or fewer (the code's ntot > 50; the Methods say N < 50). The silent trials' value, which
-    the code also stores, is left out.
+    when N < 50 as the Methods say ('When N < 50, the p-value is NaN'); the code's rule (ntot > 50, NaN
+    when N is 50 or fewer) is shown as a variant. The silent trials' value, which the code also stores,
+    is left out.
 - claim: fig7a-cf-matches-bf
   outcome: reproduced
   notebook: reproduce_heeringa_2024.ipynb
   output: claim:fig7a-cf-matches-bf
   notes: Over 114 units with a recomputed CF and a stored BF, Pearson r(log CF, log BF) = 0.973 (p = 2.1e-73),
     Spearman 0.964; median CF/BF 1.003 (log2 0.0041, 95% bootstrap interval -0.0111 to 0.0398); 58 units
-    above and 56 below; 13 differ by more than half an octave.
+    above and 56 below; 13 differ by more than half an octave. Taking the levels from the calibrated level
+    column instead of the nominal attenuator level in the tag gives the same CF for all 119 units.
   deviations:
   - The stored CF is not in the NWB files. CF is recomputed from the CF recording's spike times with CFextract_func.m,
     getSpikeCounts.m and getQ10dB.m (named in the Methods, 'The analysis procedures were carried out by
@@ -254,7 +276,9 @@ outcomes:
   notes: Over 268 units, Pearson r(latency, log BF) = -0.882 (p = 5.9e-89), Spearman -0.864; negative
     in each age group (-0.78 to -0.92). Latencies span 0.42 to 2.78 ms, inside Fig. 7b's 0 to 3.5 ms axis.
     With a 5 ms click delay, r = -0.662 and Spearman -0.820 over 269 units, so the outcome is the same
-    under both delays.
+    under both delays. The data are consistent with 7.75 ms (recording-type-counts). The population PSTH
+    of the CLICK trials rises from 8.25 ms, and the 10 ms and 20 ms trials give latencies on the same
+    latency-BF line.
   deviations:
   - The stored 2-bin latency is not in the files; it is recomputed with Clickextract_func.m and getFSL2bins.m
     (named in the Methods).
@@ -305,17 +329,22 @@ findings:
 - kind: metadata_insufficient
   statement: The CLICK trials carry no delay (NaN in the trial table), so the click's onset within the
     trial, needed for click latencies, is not in the files. The SR, NOISE, SPS and CVC trials also have
-    no delay.
+    no delay. The click_polarity column holds 'COND' in every CLICK trial.
 - kind: methods_unavailable
   statement: Question for the paper's author. What was the click delay (curvesettings.delay) of the CLICK
     recordings, and was it the same in all of them? This attempt assumed 7.75 ms, the delay of every tone
     recording, which gives latencies of 0.42 to 2.78 ms; the correlation with best frequency is negative
-    under 7.75 or 5 ms.
+    under 7.75 or 5 ms. The data are consistent with 7.75 ms in both the 10 ms and the 20 ms CLICK trials
+    (the population PSTH rises from 8.25 ms, and both trial lengths give latencies on one latency-BF line),
+    but do not fix it.
 - kind: other
   statement: 370 of 1160 units have two or more within-trial inter-spike intervals below 0.6 ms in one
     recording (391 pooled over recordings, 148 in the BF recording alone), although the paper says units
-    with multiple such intervals were excluded. Most short intervals are 0.3 to 0.6 ms; 1171 of 13,904
-    are below 0.1 ms, which suggests double detection of one spike.
+    with multiple such intervals were excluded. Most short intervals are 0.3 to 0.6 ms. About half of
+    the 13,904 short intervals lie on one spike waveform in the voltage trace (all 1171 below 0.1 ms, 91%
+    of those from 0.1 to 0.3 ms, 39% of those from 0.3 to 0.6 ms), so the spike times hold double
+    detections of single spikes. Counting only intervals between separate waveforms, 176 units still
+    have two or more in one recording.
 - kind: other
   statement: 275 units have a CLICK recording, one each, and 271 give a 2-bin latency with the paper's
     function, where the Fig. 7 legend counts 261 units with a CLICK recording. Without the stored latencies
@@ -328,3 +357,185 @@ findings:
   statement: The dataset holds only the 104 animals with recorded units. The animals operated on without
     a successful recording, which the paper's success rates (43% of old and 88% of young-adult gerbils)
     count, are not listed in the files or the metadata.
+verifications:
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier tested the helper functions on synthetic
+    data (vs_calc, short_isis, age_group, weight_g, abr_decoded, cf_from_cf_recording, click_latency_2bins)
+    and found that they behaved as specified. It gave its own outcome for each of the 23 claims; all agree
+    with the record. It found no place where the claims file misreads the paper. It asked for outputs on
+    the click onset, the analysis table's columns, the CF level source, the very short ISIs and the fig6b
+    bin counts by population. All are now printed in the notebook.
+  results:
+  - claim: table1-animals-units
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: 60 (32) / 13 (7) / 31 (11) animals, 759 / 87 / 314 units, totals 104 and 1160. All
+      eleven counts match exactly.'
+    response: No change needed.
+  - claim: table1-age-abr-weight
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 15: all 9 means are within tolerance (5.55 / 22.49 / 38.33 months; 18.10 / 34.17 / 49.03
+      dB; 74.61 / 83.35 / 86.41 g). The SDs and ranges also match Table 1. Reading the ABR threshold as
+      a character''s code point is an assumption; the exact match of all three means, SDs and ranges to
+      Table 1 supports it strongly (B5).'
+    response: No change needed; the outcome is already marked as assumed, with the deviation stating the
+      reading.
+  - claim: table1-bf-range
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17: 428–15825, 350–15091 and 620–15762 Hz, an exact match for all three groups. Taking
+      CF levels from the tag is the author''s choice; unlikely to matter (B2).'
+    response: The CF is now also computed with the levels from the calibrated level column; it is the same
+      for all 119 units, so the ranges do not change.
+  - claim: fig3-abr-age
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: the mean rises 18.1 < 34.2 < 49.0, and the old group has the largest SD (18.0). Old
+      range is 20–85 dB SPL.'
+    response: No change needed.
+  - claim: females-fewer-in-old
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: 11/31 (0.355) is below one half and below young adults (0.533).'
+    response: No change needed.
+  - claim: oxygen-78
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: 78 yes, 26 no.'
+    response: No change needed.
+  - claim: complex-stimuli-experiments
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: 21 / 5 / 17 experiments.'
+    response: No change needed.
+  - claim: recording-type-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 27: 5 of 6 counts match under both readings. CLICK is 271 (reading 1; 272 with the 5
+      ms delay) or 275 (reading 2), against 261. The CLICK count rests on latencies recomputed with an
+      assumed click delay of 7.75 ms that the notebook never checks against the data; some CLICK trials
+      last only 10 ms; click_polarity is read but never used; it is not checked whether the 500-trial
+      recordings are two recordings merged in the conversion, which check_dataset_units.m would drop.
+      So partially_reproduced may reflect the conversion or the recomputation, not the data (B1).'
+    response: Added a cell that checks the delay and the merging. The population PSTH of the CLICK trials
+      is flat up to 8.25 ms and rises from 8.25 ms (20 ms trials) and 8.75 ms (10 ms trials, lower BFs);
+      latencies of both trial lengths lie on one latency-BF line (median residual -0.032 and -0.027 ms),
+      and the 10 ms latencies span 0.71 to 1.84 ms. click_polarity is 'COND' in all CLICK trials. Halves
+      of the 500-trial recordings agree in latency as closely as odd and even trials (median 0.026 and
+      0.020 ms). The count does not rest on the delay; reading 2 uses no latency, and reading 1 gives 270
+      to 272 for delays from 5 to 8.25 ms. The outcome is kept; the notes say so.
+  - claim: fig7-sampling-by-age
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 29: no middle-aged unit has SR, SPS or CVC, and SPS is young-only (22).'
+    response: No change needed.
+  - claim: isi-exclusion
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 31: units fail under every reading: (a) 370, (b) 391, (c) 148 of 1160. 1171 of the short
+      ISIs are below 0.1 ms (about 2–5 samples) and may be double detections of one spike; the notebook
+      does not inspect them. Even with a 0.3 ms limit 140 units fail, and with 0.1 ms 5 still fail, so
+      not_reproduced holds (B4).'
+    response: Added the ISI histogram in 0.02 ms bins and a check on the voltage traces of every short-ISI
+      pair. All ISIs below 0.1 ms, 91% from 0.1 to 0.3 ms and 39% from 0.3 to 0.6 ms lie on one waveform,
+      against none of 300 pairs from 0.8 to 1.5 ms. Counting only separate waveforms, 176 units still fail
+      under (a). Outcome kept; notes and the finding updated.
+  - claim: no-prepotentials
+    agrees: true
+    outcome: blocked
+    reason: The check was visual and has no rule (claims file). The archive holds the voltage traces; the
+      block comes from the missing rule, not from missing data.
+    response: No change needed.
+  - claim: rlf-monotonic
+    agrees: true
+    outcome: blocked
+    reason: 'The check was visual and has no rule. Cell 34 gives the description only: 249 of 952 recordings
+      have a drop larger than the SD.'
+    response: No change needed.
+  - claim: fig5b-example
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: BF 7620 Hz, threshold 19.0 dB SPL. The BF recording is at 30 dB with 5 repetitions;
+      the RLF has 10 repetitions with levels 10–79 dB (40 dB included).'
+    response: No change needed.
+  - claim: fig6a-young-two-sensitive-regions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 38, reading (b): the highest mean between the sensitive regions is 27.6 dB in the bin
+      plotted at 3.48 kHz, with neighbours at 25.4 and 24.4 dB. Reading (a) fails (36.7 dB at 0.72 kHz,
+      n=3), but the criterion needs only one reading. Reading (b) defines the two regions as the minima
+      below and above 3.48 kHz, which assumes the answer; the two lowest bin means overall are the same
+      bins, so the result stands (B3).'
+    response: The notebook now prints the two lowest bin means of all bins and confirms they are the regions
+      used; the conclusion says so.
+  - claim: fig6b-young-bf-gap
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 40: the 2423–2936 Hz bin has 34 units, tied with 1363 and 2000 Hz, with neighbours 34
+      and 35. Neither reading (a) nor reading (b) holds. The fig6b bin counts per age group, and with BF
+      from CF added, would show whether the paper''s histogram used another population.'
+    response: Added the bin counts for middle-aged, old and all units, and for young units with the CF
+      added. With the CF the bin still holds 34. The bin is the fewest and a local minimum only among
+      middle-aged units (0); the paper's text names young adults, so the outcome is kept.
+  - claim: fig6c-sr-distributions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 42: the low-BF modes are 0–5 (27) and 55–60 (21), separated by a bin of 5. The high-BF
+      largest local maximum is 0–5 (66), below 18 spikes/s. local_maxima also lets the last bin count as
+      a maximum, which the criterion does not provide; no effect on the reported modes (B6).'
+    response: local_maxima no longer counts the last bin as a mode; the modes and the result are unchanged.
+  - claim: fig6d-max-phase-locking-bf
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 44: the highest young BF with p<0.001 is 4598 Hz, against 4.6 kHz. In vs_calc, p is NaN
+      when N ≤ 50, following the code, while the Methods say N < 50; only the N=50 edge case differs (B7).'
+    response: The main reading now follows the Methods (p NaN when N < 50), as the protocol puts the Methods
+      before the code, with the code's rule as a variant. One PH level has N = 50 (a middle-aged unit);
+      no unit's maximum significant vector strength changes, and the result is the same.
+  - claim: fig6d-highest-vs-low-bf-low-sr
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: readings (a) and (b) both hold for young adults and for all ages. The top unit has
+      BF 428 Hz and SR 1.25; the low-BF/low-SR median is the highest.'
+    response: No change needed; the numbers are the same under the Methods' N rule.
+  - claim: fig7a-cf-matches-bf
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 48 (n=114): Pearson r=0.973, p=2e-73. Median CF/BF is 1.003 (95% CI of log2: −0.011 to
+      0.040). Taking levels from the nominal ABI in the tag instead of the calibrated level column is the
+      author''s choice and the other reading is not shown; the CF is only the automatic first pass. Unlikely
+      to matter (B2).'
+    response: Added the variant with levels from the calibrated level column; it gives the same CF for all
+      119 units (r 0.973, median ratio 1.0028). The manual corrections remain unavailable, as the deviation
+      says.
+  - claim: fig7b-click-latency-bf
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 50: Pearson −0.882 and Spearman −0.864 (n=268), both p≪0.05. Both stay negative with the
+      5 ms delay (−0.662, −0.820). The fig7b result does not depend on the delay.'
+    response: The click-delay check added under recording-type-counts is cited in the notes.
+  - claim: fig7ab-representative-sampling
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 52: no reading holds for both CF and CLICK. The CF subset fails both the KS test (p=0.018
+      and 0.003) and the median rule (ratio 0.75). CLICK passes KS but its median ratio is 1.13. The KS
+      test and the 10% median rule are the claims file''s own tests, not the paper''s; this is not a misreading
+      of the paper (B8).'
+    response: No change needed.
+  - claim: old-success-rate
+    agrees: true
+    outcome: blocked
+    reason: 'The denominators are animals operated on without success. I checked the archive: 1160 NWB files
+      only, from 104 subjects that all have units, and the description mentions no unsuccessful experiments.
+      Only the numerators are in the data.'
+    response: No change needed.
+  - claim: psth-primary-like
+    agrees: true
+    outcome: blocked
+    reason: The check was visual and has no rule. The spike times needed are in the files, but no criterion
+      can be fixed from the paper.
+    response: No change needed.

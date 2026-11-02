@@ -37,8 +37,10 @@ threshold is stored as a character whose code point is the threshold. The attemp
 the reasons and the differences from the paper's method, is
 [`attempts/001262-heeringa-2024-01.yaml`](../../attempts/001262-heeringa-2024-01.yaml).
 
-- `reproduce_heeringa_2024.ipynb`: the analysis. It takes about four minutes, most of it reading
-  the 1160 files' metadata and spike times (the voltage traces are not read).
+- `reproduce_heeringa_2024.ipynb`: the analysis. It takes about six minutes, most of it reading
+  the 1160 files' metadata and spike times; the voltage traces are read only for the trials that
+  hold very short inter-spike intervals.
 - `gerbil_an.py`: loading the files in parallel, parsing the animal metadata, and the measures of
-  the paper's code (vector strength, CF, 2-bin click latency, inter-spike intervals). Other
+  the paper's code (vector strength, CF, 2-bin click latency, inter-spike intervals), with a check
+  of whether two spike times lie on one waveform. Other
   notebooks on this dandiset can import it.

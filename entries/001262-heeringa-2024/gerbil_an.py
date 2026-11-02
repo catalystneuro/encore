@@ -23,9 +23,10 @@ Where the parameters come from:
 - `vector_strength_by_level` follows PHextract_func.m and TytoView_calcVS.m (Zenodo record
   above), which the Methods name ("The analysis procedures were carried out by the function
   PHextract_func.m"): spikes between stimulus onset and offset (strict inequalities), pooled
-  over the repetitions of a level; vs = |mean(exp(i 2 pi f t))|; p = exp(-N vs^2); p is NaN
-  when N <= 50 (the code's `ntot > 50`; the Methods say "When N < 50, the p-value is NaN").
-  Significant when p < 0.001 (Methods). The silent trials are left out (the code also computes
+  over the repetitions of a level; vs = |mean(exp(i 2 pi f t))|; p = exp(-N vs^2). The
+  Methods say "When N < 50, the p-value is NaN", so p is NaN when N < 50 (`min_n=50`); the
+  code's `ntot > 50` (p NaN when N <= 50, `min_n=51`) is a variant, since the Methods come
+  before the code where they disagree. Significant when p < 0.001 (Methods). The silent trials are left out (the code also computes
   a value for them; it is not a tone level).
 - `cf_from_cf_recording` follows CFextract_func.m, getSpikeCounts.m and getQ10dB.m, which the
   Methods name: rates in the stimulus window per trial, mean over repetitions per frequency and
@@ -42,7 +43,14 @@ Where the parameters come from:
   latency is the centre of the first of two consecutive bins after the click that exceed it,
   minus the click delay. The click delay is not in the files (the trial table gives NaN), so it
   is a parameter: `CLICK_DELAY_S` is an assumption, the 7.75 ms delay that every tone recording
-  in the dataset uses, and the notebook shows another value.
+  in the dataset uses, and the notebook shows another value. The notebook checks it against
+  the population PSTH of the CLICK trials, split by trial length (10 and 20 ms).
+- `pair_dip_ratios` (a check, not from the paper): for a pair of successive spikes, the lowest
+  value of the voltage trace between the two spike times divided by the smaller of the two
+  peaks (largest value within 2 samples of each spike time), after subtracting the trace's
+  median and orienting the trace so that the first spike's largest deflection is positive.
+  A ratio above 0.5 means the trace does not fall back between the two spike times,
+  so the two times lie on one waveform. The 0.5 and the 2 samples are standard choices.
 - Inter-spike intervals: within a trial, between successive spike times, as checkAN.m computes
   them (`diff(spT)` per trial); the 0.6 ms limit is the Technical Validation's.
 """
@@ -68,7 +76,7 @@ MIDDLE_MAX_DAYS = 3 * 365
 DAYS_PER_MONTH = 365 / 12
 LOW_SR_CUTOFF = 18.0          # spikes/s, Fig. 6d legend
 VS_P_SIGNIFICANT = 0.001      # Methods
-VS_MIN_SPIKES = 50            # TytoView_calcVS.m: p only when N > 50
+VS_MIN_SPIKES = 50            # Methods: p is NaN when N < 50 (TytoView_calcVS.m: N <= 50)
 CF_SD_FACTOR = 1.2            # Methods and CFextract_func.m
 CF_MIN_RATE = 15.0            # CFextract_func.m (m > 15)
 CLICK_MIN_SPIKES = 75         # Clickextract_func.m
@@ -123,11 +131,13 @@ def read_unit(asset):
         d["session_start"] = _s(f["session_start_time"][0])
         d["stimulus_description"] = _s(f["stimulus/presentation/stimulus"].attrs.get("description"))
         at = f["analysis/analysis_table"]
+        d["analysis_columns"] = tuple(sorted(at.keys()))
         d["analysis"] = pd.DataFrame({
             "experiment": [_s(v) for v in at["experiment"][:]],
             "bf": at["results_bf"][:], "sr": at["results_sr"][:],
             "threshold": at["results_threshold"][:]})
         st = f["general/intracellular_ephys/intracellular_recordings/stimuli"]
+        d["stimulus_columns"] = tuple(sorted(st.keys()))
         lv, lvi = st["level_dBSPL"][:], st["level_dBSPL_index"][:]
         lv_start = np.r_[0, lvi[:-1]]
         first_level = np.array([lv[a] if b > a else np.nan for a, b in zip(lv_start, lvi)])
@@ -236,18 +246,18 @@ def trials_of(unit, experiment):
     return t.iloc[idx], [unit["spikes"][i] for i in idx]
 
 
-def vs_calc(spike_times_s, freq):
-    """TytoView_calcVS.m: vector strength and p (NaN when N <= 50)."""
+def vs_calc(spike_times_s, freq, min_n=VS_MIN_SPIKES):
+    """TytoView_calcVS.m: vector strength and p (NaN when N < min_n)."""
     n = len(spike_times_s)
     if n == 0:
         return np.nan, np.nan, 0
     ph = 2 * np.pi * freq * spike_times_s
     vs = float(np.hypot(np.cos(ph).mean(), np.sin(ph).mean()))
-    p = float(np.exp(-n * vs * vs)) if n > VS_MIN_SPIKES else np.nan
+    p = float(np.exp(-n * vs * vs)) if n >= min_n else np.nan
     return vs, p, n
 
 
-def vector_strength_by_level(unit):
+def vector_strength_by_level(unit, min_n=VS_MIN_SPIKES):
     """PHextract_func.m: vector strength and p per tone level of the PH recording."""
     t, sp = trials_of(unit, "PH")
     if len(t) == 0:
@@ -260,15 +270,15 @@ def vector_strength_by_level(unit):
         start, dur = t.delay.values[sel[0]], t.duration.values[sel[0]]
         s = np.concatenate([sp[i] for i in sel]) if len(sel) else np.array([])
         s = s[(s > start) & (s < start + dur)]
-        vs, p, n = vs_calc(s, freqs[0])
+        vs, p, n = vs_calc(s, freqs[0], min_n)
         rows.append({"level": lvl, "frequency": freqs[0], "n_freqs": len(freqs), "vs": vs, "p": p,
                      "n_spikes": n})
     return pd.DataFrame(rows)
 
 
-def max_significant_vs(unit):
+def max_significant_vs(unit, min_n=VS_MIN_SPIKES):
     """check_dataset_units.m: largest vs over levels with p not NaN and < 0.001."""
-    v = vector_strength_by_level(unit)
+    v = vector_strength_by_level(unit, min_n)
     if v is None:
         return np.nan
     ok = v.p.notna() & (v.p < VS_P_SIGNIFICANT)
@@ -372,3 +382,50 @@ def rlf_rates(unit):
     t = t.copy()
     t["rate"] = _rates(t, sp)
     return t[t.frequency != SPONT].groupby("level").rate.agg(["mean", "std", "size"])
+
+
+def short_isi_pairs(unit, lo, hi):
+    """Pairs of successive spikes in a trial with lo <= ISI < hi: (trial index, t1, t2)."""
+    out = []
+    for i, s in enumerate(unit["spikes"]):
+        d = np.diff(s)
+        for j in np.flatnonzero((d >= lo) & (d < hi)):
+            out.append((i, s[j], s[j + 1]))
+    return out
+
+
+def pair_dip_ratios(job):
+    """Read the voltage traces of the trials in `job` and return each pair's dip ratio.
+
+    `job` is (blob, [(tag, t1, t2), ...]); see the module docstring.
+    """
+    blob, pairs = job
+    out = []
+    for attempt in range(4):
+        try:
+            with h5py.File(remfile.File(blob_url(blob)), "r") as f:
+                acq, cache = f["acquisition"], {}
+                for tag, t1, t2 in pairs:
+                    if tag not in cache:
+                        ser = acq[tag]
+                        x = ser["data"][:]
+                        cache[tag] = (x - np.median(x), float(ser["starting_time"].attrs["rate"]))
+                    x, fs = cache[tag]
+                    a, b = int(round(t1 * fs)), int(round(t2 * fs))
+                    w = x[max(a - 2, 0):a + 3]
+                    y = x if w[np.argmax(np.abs(w))] >= 0 else -x      # spike polarity
+                    peak = min(y[max(a - 2, 0):a + 3].max(), y[max(b - 2, 0):b + 3].max())
+                    out.append(float(y[a:b + 1].min() / peak) if peak > 0 else np.nan)
+            return out
+        except OSError:
+            out = []
+            time.sleep(3 * (attempt + 1))
+    raise OSError(f"could not read {blob}")
+
+
+def dip_ratios(units, pairs_by_unit, workers=24):
+    """pair_dip_ratios over many units in a process pool; pairs_by_unit maps unit index to pairs."""
+    jobs = [(units[i]["blob"], [(units[i]["trials"].tag.iloc[tr], t1, t2) for tr, t1, t2 in prs])
+            for i, prs in pairs_by_unit.items()]
+    with ProcessPoolExecutor(workers) as ex:
+        return np.array([r for res in ex.map(pair_dip_ratios, jobs) for r in res])
