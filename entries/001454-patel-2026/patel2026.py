@@ -22,14 +22,16 @@ are named M1 to M8):
 - Steps of 500 ms from -120 to +500 pA in 20-pA increments (Methods, Ex vivo whole-cell
   patch-clamp electrophysiology); the step onset and offset are read from the stimulus trace.
   Excitability uses the 26 steps 0 to +500 pA (M6). Spikes are upward crossings of 0 mV or of
-  -20 mV within the step (M6 readings). Input resistance is from the -120 pA step, steady state
+  -20 mV within the step (M6 readings), with a 1 mV re-arm and a 1 ms dead time against
+  noise at the threshold (standard choices; see `count_spikes`). Input resistance is from the -120 pA step, steady state
   over the last 100 ms or 50 ms of the step (claim supt1 readings), against the mean over the
   50 ms before the step (a standard choice). Firing threshold is the smallest step eliciting a
   spike (Methods).
 - Lick bouts (M1): two or more consecutive licks with inter-lick intervals of 1 s or less,
   onset at the first lick. For calcium analyses only bouts whose onset is 3 s or more after the
   last lick of the preceding bout (M2); as the 3-s baseline must be free of drinking, the
-  preceding bout is that of either bottle (a standard choice: the baseline then holds no lick).
+  preceding bout is that of either bottle (a standard choice: the baseline then holds no bout;
+  single licks outside bouts are not counted, so a baseline can hold an isolated lick).
 - Z-score (M3): baseline the 3 s before onset (30 frames), z = (F - mean) / s.d. of the
   baseline; the trace F is the CNMF-E trace in the file. A neuron's response is its mean z from
   onset to 3 s. Bouts are matched across the conditions compared, per neuron, by cutting every
@@ -133,6 +135,10 @@ def load_cell(asset_id: str) -> dict:
         cell_id=_text(el[ename]["cell_id"]),
         location=_text(el[ename]["location"]),
         series_description=f["acquisition"][acq].attrs.get("description"),
+        acquisition=sorted(f["acquisition"]), stimulus=sorted(f["stimulus/presentation"]),
+        series_shape=tuple(v.shape),
+        histology_shapes=[tuple(x.shape) for x in f["acquisition"]["histology_images"].values()]
+        if "histology_images" in f["acquisition"] else [],
         n_sweeps=ns, step_on=int(on), step_off=int(off),
         step_pA=step, V=V.astype(np.float32),
     )
@@ -140,23 +146,41 @@ def load_cell(asset_id: str) -> dict:
     return out
 
 
-REARM_MV = 5.0  # hysteresis: a new crossing counts only after V fell 5 mV below the threshold
+REARM_MV = 1.0       # a new crossing counts after V fell 1 mV below the threshold (noise guard)
+DEAD_TIME_MS = 1.0   # a crossing within 1 ms of the last counted one is noise, not a new spike
+SPIKE_RULES = {"": None, "r0": 0.0, "r5": 5.0}  # re-arm of each variant column (see cell_table)
 
 
-def count_spikes(V: np.ndarray, on: int, off: int, threshold_mv: float) -> np.ndarray:
-    """Upward crossings of `threshold_mv` within the step, per sweep. A crossing counts only
-    after the voltage has fallen `REARM_MV` below the threshold since the last one (a standard
-    choice, so that noise on a plateau near the threshold, as in depolarisation block, is not
-    counted as many spikes)."""
+def count_spikes(V: np.ndarray, on: int, off: int, threshold_mv: float,
+                 rearm_mv: float | None = None, dead_ms: float | None = None) -> np.ndarray:
+    """Upward crossings of `threshold_mv` within the step, per sweep (M6: "upward crossings of
+    0 mV" or "of -20 mV"). Two guards against counting noise on a single crossing:
+    `dead_ms`, crossings within that time of the last counted one are not counted (default
+    `DEAD_TIME_MS` = 1 ms, about one spike's width: the recorded traces hold crossings 0.2 to
+    0.3 ms apart that are noise at the threshold); `rearm_mv`, a crossing counts only after the
+    voltage fell that far below the threshold since the last counted one (default `REARM_MV` =
+    1 mV, about 8 times the median sample-to-sample noise s.d. of the recordings, 0.12 mV,
+    printed in the notebook). Both are standard choices against noise on a plateau near the
+    threshold (depolarisation block), where every crossing counted literally gives up to 98
+    "spikes" per step. Variants shown in the notebook: no re-arm (dead time only, the literal
+    reading), and the 5 mV re-arm of the first version of this attempt, which misses spikes
+    whose troughs stay within 5 mV of the threshold."""
+    rearm = REARM_MV if rearm_mv is None else rearm_mv
+    dead = int(round((DEAD_TIME_MS if dead_ms is None else dead_ms) * FS_EPHYS / 1000))
     out = np.zeros(len(V), int)
     for s, seg in enumerate(V[:, on:off]):
         hi = seg >= threshold_mv
         rising = np.nonzero(hi & ~np.r_[False, hi[:-1]])[0]
         if len(rising) == 0:
             continue
-        clo = np.cumsum(seg < threshold_mv - REARM_MV)
-        # a rising edge counts when the voltage fell below the re-arm level since the last one
-        out[s] = 1 + int((clo[rising[1:]] - clo[rising[:-1]] > 0).sum())
+        lo = seg < threshold_mv - rearm if rearm > 0 else ~hi
+        clo = np.cumsum(lo)
+        n, last = 1, rising[0]
+        for r in rising[1:]:
+            if r - last >= dead and clo[r] - clo[last] > 0:
+                n += 1
+                last = r
+        out[s] = n
     return out
 
 
@@ -172,10 +196,10 @@ def recorded(cell: dict) -> bool:
     return bool(np.nanmax(np.abs(cell["step_pA"])) > 100 and np.ptp(cell["V"]) > 20)
 
 
-def excitability(cell: dict, threshold_mv: float) -> np.ndarray | None:
+def excitability(cell: dict, threshold_mv: float, rearm_mv: float | None = None) -> np.ndarray | None:
     """Spike counts at 0, 20, ..., 500 pA (M6), or None when the cell lacks those steps."""
     nominal = nominal_steps(cell)
-    counts = count_spikes(cell["V"], cell["step_on"], cell["step_off"], threshold_mv)
+    counts = count_spikes(cell["V"], cell["step_on"], cell["step_off"], threshold_mv, rearm_mv=rearm_mv)
     out = []
     for c in EXCITABILITY_CURRENTS:
         idx = np.nonzero(nominal == c)[0]
@@ -339,28 +363,42 @@ def session_bouts(s: dict, gap: float = BOUT_GAP_S, gap_from: str = "last_lick")
 
 
 SD_FLOOR = 0.05  # a bout's z is undefined when its baseline s.d. is under 5% of the session s.d.
+Z_MODE = "baseline"  # "baseline" (M3) or "session" (variant: divide by the session s.d.)
 
 
 def event_z(F: np.ndarray, onsets_s: np.ndarray, pre_s: float = BASELINE_S, post_s: float = 5.0,
-            rate: float = FS_IMAGING, t0: float = 0.0, sd_floor: float = SD_FLOOR) -> np.ndarray:
+            rate: float = FS_IMAGING, t0: float = 0.0, sd_floor: float = SD_FLOOR,
+            sd_mode: str | None = None) -> np.ndarray:
     """z-scored traces around each onset (M3): events x neurons x frames, from -pre_s to
     +post_s; z against the mean and s.d. of the pre_s baseline. Events whose window leaves the
     recording are dropped. Where a neuron's baseline s.d. is under `sd_floor` times its s.d.
-    over the session (flat baselines, as in the nonnegative traces of cohort 9, where the
-    trace sits at 0 between transients), the z of that bout is set to NaN: the Methods'
-    z-score is undefined or unbounded there. This is a choice of this attempt (the paper
-    does not say how such baselines were treated); the notebook reports how many bout-neuron
-    pairs it removes."""
+    over the session (flat baselines), the z of that bout is set to NaN: the Methods' z-score
+    is undefined or unbounded there. This is a choice of this attempt (the paper does not say
+    how such baselines were treated); the notebook reports how many bout-neuron pairs it
+    removes. On nonnegative traces that are smooth between transients, as in cohort 9, the
+    rule keeps mostly baselines
+    that hold the decay of a transient, which biases z downward; the notebook therefore
+    leaves cohort 9 out of the baseline z (an assumption, see the notebook). `sd_mode`
+    "session" (default `Z_MODE`) is the variant that divides by the neuron's s.d. over the
+    session instead, defined for every trace but on another scale than the Methods' z. The
+    onsets are in seconds on the trace clock, whose start `t0` is 0 in every file (printed in
+    the notebook)."""
+    mode = Z_MODE if sd_mode is None else sd_mode
     pre, post = int(round(pre_s * rate)), int(round(post_s * rate))
-    floor = sd_floor * F.std(axis=0)
+    ssd = F.std(axis=0)
+    floor = sd_floor * ssd
     fr = np.round((np.asarray(onsets_s) - t0) * rate).astype(int)
     fr = fr[(fr - pre >= 0) & (fr + post <= F.shape[0])]
     out = np.empty((len(fr), F.shape[1], pre + post), np.float32)
     for j, c in enumerate(fr):
         seg = F[c - pre: c + post]
         base = seg[:pre]
-        sd = base.std(axis=0)
-        sd[(sd == 0) | (sd < floor)] = np.nan
+        if mode == "session":
+            sd = ssd.copy()
+            sd[sd == 0] = np.nan
+        else:
+            sd = base.std(axis=0)
+            sd[(sd == 0) | (sd < floor)] = np.nan
         out[j] = ((seg - base.mean(axis=0)) / sd).T
     return out
 
@@ -469,7 +507,8 @@ def decode(animals: list[dict], rng: np.random.Generator, k: int = 5, T: int = 1
 
 def cell_table(cells: list[dict]) -> pd.DataFrame:
     """One row per neuron with the measures of every reading: spike counts at 0 to 500 pA
-    (`e0` for the 0 mV threshold, `e-20` for -20 mV), rheobase, input resistance (`rin100`,
+    (`e0` for the 0 mV threshold, `e-20` for -20 mV; suffix `r0` for the variant without a
+    re-arm, `r5` for a 5 mV re-arm), rheobase, input resistance (`rin100`,
     `rin50`), resting potential before the first sweep."""
     rows = []
     for c in cells:
@@ -480,6 +519,9 @@ def cell_table(cells: list[dict]) -> pd.DataFrame:
                  cohort=c["subject"][-10:-6], recorded=ok)
         for thr in SPIKE_THRESHOLDS_MV:
             r[f"e{int(thr)}"] = excitability(c, thr) if ok else None
+            for tag, ra in SPIKE_RULES.items():
+                if tag:
+                    r[f"e{int(thr)}{tag}"] = excitability(c, thr, rearm_mv=ra) if ok else None
             r[f"rheo{int(thr)}"] = rheobase(c, thr) if ok else np.nan
         for w in RIN_WINDOWS_MS:
             r[f"rin{int(w)}"] = input_resistance(c, w) if ok else np.nan
@@ -488,8 +530,9 @@ def cell_table(cells: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def curves(d: pd.DataFrame, thr: int) -> np.ndarray:
-    """Neurons x 26 spike counts for the cells of `d` that have all 26 steps."""
+def curves(d: pd.DataFrame, thr) -> np.ndarray:
+    """Neurons x 26 spike counts for the cells of `d` that have all 26 steps. `thr` is 0 or
+    -20, or "0r0", "-20r5" and so on for the spike-rule variants."""
     v = [x for x in d[f"e{thr}"] if x is not None]
     return np.stack(v) if v else np.zeros((0, len(EXCITABILITY_CURRENTS)))
 
@@ -512,6 +555,25 @@ def posthoc_two(A: np.ndarray, B: np.ndarray) -> pd.DataFrame:
     return pd.DataFrame({"current_pA": EXCITABILITY_CURRENTS, "mean_a": A.mean(0),
                          "mean_b": B.mean(0), "diff": B.mean(0) - A.mean(0),
                          "p_sidak_step": sidak(pa, k), "p_sidak_pooled": sidak(pb, k)})
+
+
+def tukey_pooled(Ys: list[np.ndarray]) -> np.ndarray:
+    """Tukey comparisons of each group against the first at every step, with the error pooled
+    over all steps and groups (the pooled-error reading of the post hoc, as in `posthoc_two`;
+    the per-step reading is scipy's `tukey_hsd` at each step). Returns p (steps x groups); the
+    column of the first group is 1."""
+    from scipy import stats
+    g = len(Ys)
+    k = Ys[0].shape[1]
+    res = np.concatenate([Y - Y.mean(0) for Y in Ys])
+    df = res.size - g * k
+    mse = (res ** 2).sum() / df
+    p = np.ones((k, g))
+    for r in range(1, g):
+        se = np.sqrt(mse / 2 * (1 / len(Ys[0]) + 1 / len(Ys[r])))
+        q = np.abs(Ys[r].mean(0) - Ys[0].mean(0)) / se
+        p[:, r] = stats.studentized_range.sf(q, g, df)
+    return p
 
 
 # --------------------------------------------------------------------------------------------
