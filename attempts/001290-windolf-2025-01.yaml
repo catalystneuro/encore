@@ -1,0 +1,391 @@
+schema_version: 2
+id: 001290-windolf-2025-01
+dataset:
+  archive: dandi
+  id: 001290
+  version: 0.260827.1449
+  doi: 10.48324/dandi.001290/0.260827.1449
+paper: doi:10.1038/s41592-025-02614-5
+date: '2026-11-02'
+entry: 001290-windolf-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41384385429
+inputs:
+- what: DREDge's AP registration (dredge_ap.register and motion_util), used as the method, and the detection
+    and localization settings of its notebook/ap_registration.ipynb (reading (ii) of the claims file's
+    pipeline step 1).
+  source: https://github.com/evarol/dredge at commit ed236113a0b6c29b376065440174da6341a1d875
+outcomes:
+- claim: edf3a-ap-dredge-slow-trend
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_windolf_2025.ipynb
+  output: claim:edf3a-ap-dredge-slow-trend
+  measured:
+  - 0.3023
+  - 0.3319
+  - 0.3338
+  notes: 363,735 spikes were detected over 599.5 s (606.7 per s). The mean template correlation is 0.3023
+    unregistered, 0.3319 after nonrigid registration (reading a) and 0.3338 after rigid registration (reading
+    b), higher in 70.8% and 67.5% of the 1 s bins. The measured values are given in that order. The rigid
+    estimate ranges from -84.1 to 131.5 um (s.d. 40.8), the nonrigid from -104.2 to 122.9 um (s.d. 33.7).
+    Between 1 s bins it changes by a median 7.6 um (rigid) and 3.3 um (nonrigid), 99th percentiles 51.0
+    and 41.0 um. Its 60 s means run from -33.7 to 38.2 um while its s.d. within each 60 s is 21.1 to 45.4
+    um, so most of what it follows is motion on the scale of seconds, over a slow trend of about 70 um.
+    The criterion's measure holds under both registration readings. Whether the 1 s estimate follows true
+    tissue motion or partly noise cannot be told from these outputs.
+  deviations:
+  - Spikes were detected and localized under reading (ii) of pipeline step 1 only (SpikeInterface bandpass
+    300 to 6,000 Hz, global median reference, locally exclusive detection at 6 times the noise, monopolar
+    triangulation within 75 um, as in notebook/ap_registration.ipynb of github.com/evarol/dredge at commit
+    ed236113). The criterion asks for readings (i) and (ii). Reading (i), IBL preprocessing then DARTsort,
+    was tried outside the notebook (DARTsort at commit 459cf656 on 4 CPU cores) and did not finish its
+    subtraction step on a 31 s segment in 13.5 minutes, so the 600 s recording would take over 4 hours;
+    it is not_runnable here. The outcome assumes that reading (ii) stands for step 1. It is the detection
+    of the code the paper links for DREDge, and the Methods say detection and localization were chosen
+    to suit each data source (Methods, Preprocessing of AP band data, paragraph 1) without naming the
+    choice for this recording.
+  - The claims file reads dredge_ap.register's smoothing default (None) as no smoothing and names it a
+    variant. In motion_util.spike_raster at commit ed236113 None is replaced by the bin size, 1 um and
+    1 s, so the default equals the Methods' smoothing; the notebook shows the displacement is identical
+    (largest difference 0.0 um).
+- claim: edf3b-hdbscan-clusters
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_windolf_2025.ipynb
+  output: claim:edf3b-hdbscan-clusters
+  notes: All 16 combinations (registration a or b, top 10% or 25% amplitudes, features x, y and amplitude
+    or y and amplitude, min_cluster_size 25 or 100) return 6 to 41 clusters other than noise; 2.4% to
+    25.0% of the selected spikes are labelled noise. The clusters are broad. With the top 10% cut and
+    min_cluster_size 100 the within-cluster s.d. of registered depth is 21.6 to 134.8 um, and a cluster
+    of about 16,000 spikes appears in every combination, so they are groups of units, not single units.
+    The legend's colored clusters look like single units; the criterion asks only for two or more clusters.
+  deviations:
+  - Spikes were detected and localized under reading (ii) of pipeline step 1 only (SpikeInterface bandpass
+    300 to 6,000 Hz, global median reference, locally exclusive detection at 6 times the noise, monopolar
+    triangulation within 75 um, as in notebook/ap_registration.ipynb of github.com/evarol/dredge at commit
+    ed236113). The criterion asks for readings (i) and (ii). Reading (i), IBL preprocessing then DARTsort,
+    was tried outside the notebook (DARTsort at commit 459cf656 on 4 CPU cores) and did not finish its
+    subtraction step on a 31 s segment in 13.5 minutes, so the 600 s recording would take over 4 hours;
+    it is not_runnable here. The outcome assumes that reading (ii) stands for step 1. It is the detection
+    of the code the paper links for DREDge, and the Methods say detection and localization were chosen
+    to suit each data source (Methods, Preprocessing of AP band data, paragraph 1) without naming the
+    choice for this recording.
+  - Features were z-scored and HDBSCAN is scikit-learn's (version in the lock file); the claims file names
+    z-scoring as its standard choice. The paper gives neither.
+- claim: edf3c-spline-subsecond
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_windolf_2025.ipynb
+  output: claim:edf3c-spline-subsecond
+  notes: In all 32 combinations (the 16 above, each with a least-squares and a penalized cubic spline,
+    knots every 0.4 s) the pooled within-cluster s.d. after spline correction is below the 5th percentile
+    of 100 scrambled controls (for example 44.30 against 64.66 um, median 65.73, with nonrigid registration,
+    top 10%, three features, min_cluster_size 100, penalized). The comparison is partly circular, since
+    the spline is fit to the spikes it is evaluated on. The penalized spline's trace runs from -208.0
+    to 350.7 um over the combinations, s.d. 31.0 to 45.3 um, with 29.4% to 50.4% of its power above 0.5
+    Hz; the GCV penalty is 0.01 to 1 (16 values from 1e-3 to 1e5 tried). The least-squares spline reaches
+    thousands of um (down to -14518.3) in stretches without clustered spikes (27 of the 0.4 s bins have
+    none in one combination) but not at the spikes it is fit to.
+  deviations:
+  - Spikes were detected and localized under reading (ii) of pipeline step 1 only (SpikeInterface bandpass
+    300 to 6,000 Hz, global median reference, locally exclusive detection at 6 times the noise, monopolar
+    triangulation within 75 um, as in notebook/ap_registration.ipynb of github.com/evarol/dredge at commit
+    ed236113). The criterion asks for readings (i) and (ii). Reading (i), IBL preprocessing then DARTsort,
+    was tried outside the notebook (DARTsort at commit 459cf656 on 4 CPU cores) and did not finish its
+    subtraction step on a 31 s segment in 13.5 minutes, so the 600 s recording would take over 4 hours;
+    it is not_runnable here. The outcome assumes that reading (ii) stands for step 1. It is the detection
+    of the code the paper links for DREDge, and the Methods say detection and localization were chosen
+    to suit each data source (Methods, Preprocessing of AP band data, paragraph 1) without naming the
+    choice for this recording.
+  - Outliers (more than 5 s.d. from the cluster mean) were removed on depth, the coordinate the spline
+    models; the Methods do not say on which coordinates.
+  - The least-squares spline is solved as a minimum-norm least-squares problem (rcond 1e-8), so knot intervals
+    with no clustered spikes take values from the neighbouring data in place of arbitrary ones; a numerical
+    choice.
+  - The penalized spline is a P-spline (cubic B-splines on the same knots, second-difference penalty)
+    with the penalty chosen by generalized cross-validation over 17 values from 1e-3 to 1e5, the claims
+    file's reading made concrete.
+- claim: edf3de-spline-improves-registration
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_windolf_2025.ipynb
+  output: claim:edf3de-spline-improves-registration
+  notes: Panel e, the pooled within-cluster s.d., is lower after spline correction in all 32 combinations
+    (for example 56.37 to 44.30 um). Panel d, the mean template correlation of all detected spikes on
+    1 s bins, is higher with the spline in 22 of 32 (0.3319 to 0.3918 in the same example). The 10 where
+    it is not all cluster on registered depth and amplitude without lateral position (top 25% under both
+    registrations, and top 10% with min_cluster_size 25 under nonrigid registration), with changes down
+    to -0.0124. With lateral position, depth and amplitude it is higher in all 16, by 0.0362 to 0.0890.
+    By the criterion, one measure improving in every combination and the other not is partially reproduced.
+    If the legend's "registered positions" means both lateral and depth coordinates, the readings without
+    lateral position drop out and both measures improve in every remaining combination; this is asked
+    of the paper's authors (findings). The 0.1 s bin variant, outside the outcome, improves in 25 of 32.
+    Panel e's measure is close to circular, as the spline is fit to minimize it.
+  deviations:
+  - Spikes were detected and localized under reading (ii) of pipeline step 1 only (SpikeInterface bandpass
+    300 to 6,000 Hz, global median reference, locally exclusive detection at 6 times the noise, monopolar
+    triangulation within 75 um, as in notebook/ap_registration.ipynb of github.com/evarol/dredge at commit
+    ed236113). The criterion asks for readings (i) and (ii). Reading (i), IBL preprocessing then DARTsort,
+    was tried outside the notebook (DARTsort at commit 459cf656 on 4 CPU cores) and did not finish its
+    subtraction step on a 31 s segment in 13.5 minutes, so the 600 s recording would take over 4 hours;
+    it is not_runnable here. The outcome assumes that reading (ii) stands for step 1. It is the detection
+    of the code the paper links for DREDge, and the Methods say detection and localization were chosen
+    to suit each data source (Methods, Preprocessing of AP band data, paragraph 1) without naming the
+    choice for this recording.
+  - The paper names no measure for panels d and e; the measures are the claims file's (template correlation
+    for d, pooled within-cluster s.d. for e).
+- claim: fig2b-ap-misses-fast-motion
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (The human recording of
+    ref. 13 (Paulk et al. 2022, Nat. Neurosci.), deposited at Dryad doi:10.5061/dryad.d2547d840 and DANDI:000397.
+    The paper calls it a human recording; the Methods tie the same spline method to the macaque recording
+    of Extended Data Fig. 3, which is the one in this dandiset). Testing it means streaming and reprocessing
+    those recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after
+    the dandiset's own claims. Nothing was computed for it.
+- claim: fig2b-spline-lfp-overlap
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (The human recording of
+    ref. 13, Dryad doi:10.5061/dryad.d2547d840 and DANDI:000397). Testing it means streaming and reprocessing
+    those recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after
+    the dandiset's own claims. Nothing was computed for it.
+- claim: fig2-lfp-vs-manual
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recordings of ref.
+    13, Dryad doi:10.5061/dryad.d2547d840 and DANDI:000397, with manual traces from that study). Testing
+    it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs), which
+    did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig2e-isi-violations
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recordings of refs.
+    13 and 14 (Dryad doi:10.5061/dryad.d2547d840, DANDI:000397, Dryad doi:10.7272/Q6ST7N3B)). Testing
+    it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs), which
+    did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig2-sorted-units
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (One of the N > 20 human
+    cortical recordings of Fig. 2d to h; the paper does not say which recording or which deposit holds
+    it (human data from MGH, ref. 13, at Dryad doi:10.5061/dryad.d2547d840 and DANDI:000397; from UCSF,
+    ref. 14, at Dryad doi:10.7272/Q6ST7N3B)). Testing it means streaming and reprocessing those recordings
+    (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's
+    own claims. Nothing was computed for it.
+- claim: fig3b-evoked-potentials
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recording of an
+    awake DBS participant at MGH; the paper does not say whether it is among the deposited human data).
+    Testing it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs),
+    which did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig3e-trial-variance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Same human recording
+    as fig3b-evoked-potentials). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: fig3f-baseline-variance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recordings of refs.
+    13 and 14). Testing it means streaming and reprocessing those recordings (spike detection, LFP or
+    Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing was
+    computed for it.
+- claim: edf8-burst-suppression
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recordings of ref.
+    13). Testing it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort
+    runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed
+    for it.
+- claim: fig4-nhp-insertion
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (DANDI:001282 (NP1-NHP
+    insertion datasets)). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: fig5b-ibl
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (IBL reproducible electrophysiology
+    data, AWS Open Data registry ibl-reproducible-ephys, tag 2022_Q2_IBL_et_al_RepeatedSite). Testing
+    it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs), which
+    did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig5c-np-ultra-metric
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (DANDI:000957 (NP Ultra
+    imposed motion datasets)). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: fig5d-np-ultra-jumps
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (DANDI:000957). Testing
+    it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs), which
+    did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: supp13-simulated-short-probe
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (MEArec simulations generated
+    with github.com/cwindolf/mearec_drift_simulations). Testing it means streaming and reprocessing those
+    recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the
+    dandiset's own claims. Nothing was computed for it.
+- claim: supp14-probe-density
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (MEArec simulation (Methods,
+    Simulated multi-electrode array data)). Testing it means streaming and reprocessing those recordings
+    (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's
+    own claims. Nothing was computed for it.
+- claim: fig6-chronic-first-sessions
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Chronic NP2.4 recordings
+    of ref. 6 (AL032, AL036) and chronic NP1 recordings of ref. 56 (MM007, MM008); the Data availability
+    gives no deposit for them). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: fig6e-chronic-jumps
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Same chronic recordings
+    as fig6-chronic-first-sessions). Testing it means streaming and reprocessing those recordings (spike
+    detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims.
+    Nothing was computed for it.
+- claim: edf1-lfp-runtime
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Not attempted. The runtime is hardware-dependent (the paper used an Intel Xeon Gold 6126 and
+    an NVIDIA V100) and this run had 4 CPU cores and no GPU. The data are Seven human tip-layout recordings
+    of ref. 13; hardware-dependent (Intel Xeon Gold 6126, NVIDIA V100).
+- claim: fig2c-lfp-tracking-clusters
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human NP1-S recording
+    of ref. 14 (UCSF), Dryad doi:10.7272/Q6ST7N3B). Testing it means streaming and reprocessing those
+    recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the
+    dandiset's own claims. Nothing was computed for it.
+- claim: edf4a-nonrigid-human
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recordings of ref.
+    14 (Dryad doi:10.7272/Q6ST7N3B) and the three human recordings of Extended Data Fig. 4c, whose deposit
+    the paper does not name). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: supp2-rat-spike-tracking
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Neuroseeker rat recordings
+    on G-node (gin.g-node.org/UlbertLab/High_Resolution_Cortical_Spikes)). Testing it means streaming
+    and reprocessing those recordings (spike detection, LFP or Kilosort runs), which did not fit in this
+    5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig2fg-unit-spatial-spread
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Same recording as fig2-sorted-units;
+    the paper does not say which deposit holds it). Testing it means streaming and reprocessing those
+    recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the
+    dandiset's own claims. Nothing was computed for it.
+- claim: edf6-128-channel
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recordings with
+    a 128-channel probe; the paper does not say whether they are among the deposited human data). Testing
+    it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs), which
+    did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig3gh-iids
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Human recording of participant
+    Pt03; the paper does not say which deposit holds it (human data at Dryad doi:10.5061/dryad.d2547d840,
+    DANDI:000397 and Dryad doi:10.7272/Q6ST7N3B)). Testing it means streaming and reprocessing those recordings
+    (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's
+    own claims. Nothing was computed for it.
+- claim: fig4f-insertion-anatomy
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (DANDI:001282 (NP1-NHP
+    insertion datasets)). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: fig5a-imposed-zigzag
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Figshare doi:10.6084/m9.figshare.14024495.v1
+    (dataset 1 of ref. 6)). Testing it means streaming and reprocessing those recordings (spike detection,
+    LFP or Kilosort runs), which did not fit in this 5 hour run after the dandiset's own claims. Nothing
+    was computed for it.
+- claim: edf4d-nonrigid-ibl
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (IBL data, AWS Open Data
+    registry ibl-reproducible-ephys; the paper does not name the nine recordings). Testing it means streaming
+    and reprocessing those recordings (spike detection, LFP or Kilosort runs), which did not fit in this
+    5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: supp10-11-simulated-drift
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (MEArec simulations generated
+    with github.com/cwindolf/mearec_drift_simulations). Testing it means streaming and reprocessing those
+    recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after the
+    dandiset's own claims. Nothing was computed for it.
+- claim: supp12-subsetted-channels
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Figshare doi:10.6084/m9.figshare.14024495.v1).
+    Testing it means streaming and reprocessing those recordings (spike detection, LFP or Kilosort runs),
+    which did not fit in this 5 hour run after the dandiset's own claims. Nothing was computed for it.
+- claim: fig6cd-chronic-clusters
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not attempted in this run. The claim's data are not in dandiset 001290 (Chronic NP2.4 recording
+    AL032 of ref. 6; the Data availability gives no deposit for it). Testing it means streaming and reprocessing
+    those recordings (spike detection, LFP or Kilosort runs), which did not fit in this 5 hour run after
+    the dandiset's own claims. Nothing was computed for it.
+findings:
+- kind: methods_unavailable
+  statement: For the macaque recording of Extended Data Fig. 3 the paper does not say how spikes were
+    detected and localized (the Methods say these steps were chosen to suit each data source), what amplitude
+    cut defines high-amplitude spikes, which coordinates and what min_cluster_size entered HDBSCAN, how
+    features were scaled, or whether the spline was penalized, and no code for the spline method is linked.
+    Questions for the authors. Which detection and localization were used for this recording, and do the
+    "registered positions" given to HDBSCAN include the lateral coordinate? With lateral position, depth
+    and amplitude the spline improves the template correlation in all 16 combinations tried here; with
+    depth and amplitude only, in 6 of 16.
+- kind: paper_inconsistency
+  statement: The Results and the Fig. 2b legend place the spline-based fast-motion method in a human recording,
+    while the Methods (Tracking fast motion from spikes) and the Data availability place Extended Data
+    Fig. 3 in the macaque recording of this dandiset.
+- kind: metadata_error
+  statement: The dandiset description says the recording is studied in "Supp. Fig. 3" of the paper; the
+    published paper shows it in Extended Data Fig. 3 (the description uses the preprint's numbering).
+- kind: metadata_insufficient
+  statement: The probe is described as "A Neuropixel probe of unknown subtype" and every electrode's location
+    is "unknown", while the session description says primary visual cortex. The channel layout (4 columns
+    at x 0, 16, 32 and 48 um, 20 um rows) and the gain (2.34375 uV per bit) are those of Neuropixels 1.0.
+- kind: metadata_insufficient
+  statement: The file has no stimulus, trial or unit tables. The session description names static gratings
+    at 8 orientations, where the paper's Methods say most stimuli in these experiments were binary or
+    ternary noise at 40 Hz; nothing in the file says which was shown or when.
+- kind: identifier_missing
+  statement: The asset is named sub-L11104_ses-None_ecephys.nwb; the session has no identifier.
+- kind: other
+  statement: Only raw AP and LF voltages are deposited. No spike times, localizations or motion estimates
+    behind Extended Data Fig. 3 are included, so checking the figure means re-running detection on the
+    7.4 GB file (about 16 minutes on 4 CPU cores here, and over 4 hours for DARTsort on CPU).
