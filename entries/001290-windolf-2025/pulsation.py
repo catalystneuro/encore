@@ -20,7 +20,9 @@ whose opening comment calls these steps "the pipeline"):
   get_noise_levels does the same on random chunks, so this is a standard choice that changes
   no result. Spikes are kept as detect_peaks returns them.
 - Reading (i) of pipeline step 1 (IBL preprocessing, then DARTsort detection, denoising and
-  localization) is not run: see the notebook's header.
+  localization) is not run: see the main notebook's header. Its IBL preprocessing (Methods,
+  "Preprocessing of AP band data", paragraph 1) is run before the detection and localization
+  of reading (ii) as a variant (`preprocess_ibl`, `ibl_bad_channels`; the second notebook).
 - Registration, pipeline step 2: dredge_ap.register at commit ed236113 with bin 1 um by 1 s,
   amplitudes log(1 + x) transformed, summed and log(1 + x) transformed again (amp_scale_fn and
   post_transform np.log1p), Gaussian smoothing at 1 um and 1 s (Methods, "Preprocessing of AP
@@ -35,7 +37,9 @@ whose opening comment calls these steps "the pipeline"):
   amplitude in 1 um by 1 s bins of the corrected depths, bins outside the probe after correction
   masked, the masked mean over time as template, the masked Pearson correlation of each time
   bin with it, averaged over time bins. Bins with no spike inside the probe are zero, not
-  masked: the Methods mask only bins outside the probe.
+  masked: the Methods mask only bins outside the probe. The Methods build the metric on "the
+  two-dimensional spike raster described above", which is smoothed at 1 um and 1 s, and do not
+  say whether the smoothing is kept, so the smoothed raster is run as a second reading.
 - Fast motion, pipeline step 3 (Methods, "Tracking fast motion from spikes using clustering and
   splines"): HDBSCAN on registered location and amplitude features of high-amplitude spikes;
   centroid subtraction per cluster; removal of points more than five standard deviations from
@@ -47,7 +51,8 @@ whose opening comment calls these steps "the pipeline"):
   cross-validation over a grid of 17 values from 1e-3 to 1e5 (a standard choice). The outlier
   rule is applied to depth, the coordinate the spline models (a standard choice).
 - The scrambled control of claim edf3c-spline-subsecond (0.4 s bins, 100 permutations, 5%
-  level) is the claims file's.
+  level) is the claims file's. The held-out versions (`split_clusters`, `split_spikes`,
+  `heldout_test`) were asked for by the verifier and are not in the claims file or the paper.
 """
 
 from __future__ import annotations
@@ -102,6 +107,8 @@ def _numpy_recording(traces_uv, fs, locations, shift=None):
 
     rec = sc.NumpyRecording(traces_uv, fs)
     rec.set_dummy_probe_from_locations(locations)
+    rec.set_channel_gains(1.0)   # traces are already in uV
+    rec.set_channel_offsets(0.0)
     if shift is not None:
         rec.set_property("inter_sample_shift", shift)
     return rec
@@ -112,6 +119,34 @@ def preprocess_ii(rec):
     import spikeinterface.preprocessing as sp
 
     return sp.common_reference(sp.bandpass_filter(rec, freq_min=300.0, freq_max=6000.0))
+
+
+def preprocess_ibl(rec, ibl=None):
+    """The IBL preprocessing of reading (i), without DARTsort (Methods, "Preprocessing of AP band
+    data", paragraph 1: filtering, ADC offset (phase shift) correction, dead and noisy channel
+    detection and spatial high-pass filtering, "reproduced using modular components available
+    in the SpikeInterface framework"). Bandpass 300 to 6,000 Hz (step 1 of the claims file),
+    phase_shift, interpolation of the dead and noisy channels and removal of the channels
+    outside the brain found by `ibl_bad_channels`, then highpass_spatial_filter (SpikeInterface
+    defaults, with the RMS taken from the same blocks as the noise levels). Without `ibl`, only
+    the first two steps (the input of the bad channel detection)."""
+    import spikeinterface.preprocessing as sp
+
+    rec = sp.phase_shift(sp.bandpass_filter(rec, freq_min=300.0, freq_max=6000.0))
+    if ibl is None:
+        return rec
+    ids = rec.channel_ids
+    bad = ids[np.isin(ibl["labels"], ["dead", "noise"])]
+    if len(bad):
+        rec = sp.interpolate_bad_channels(rec, bad)
+    out = ids[ibl["labels"] == "out"]
+    if len(out):
+        rec = rec.remove_channels(out)
+    return sp.highpass_spatial_filter(rec, rms_values=ibl["rms"][~np.isin(ids, out)])
+
+
+def _preprocess(rec, pipeline, ibl):
+    return preprocess_ii(rec) if pipeline == "ii" else preprocess_ibl(rec, ibl)
 
 
 def _read_block(dset, k, n_blocks, gain):
@@ -139,7 +174,35 @@ def _mad_sd(x):
     return np.median(np.abs(x - np.median(x, axis=0)), axis=0) / 0.6744897501960817
 
 
-def noise_levels(url, n_blocks_used=N_NOISE_BLOCKS):
+def ibl_bad_channels(url, n_blocks_used=N_NOISE_BLOCKS):
+    """IBL dead, noisy and outside-brain channels (SpikeInterface detect_bad_channels, method
+    coherence+psd, its defaults), run on `n_blocks_used` blocks spread over the recording; a
+    channel takes the label it gets in most blocks. Returns dict(labels, counts, rms), with the
+    per-channel RMS of the phase-shifted signal (median over the blocks) for the spatial filter."""
+    import spikeinterface.preprocessing as sp
+
+    labs, rms = [], []
+    with open_file(url) as f:
+        d = f[AP_PATH]["data"]
+        gain = d.attrs["conversion"] * 1e6
+        fs = float(f[AP_PATH]["starting_time"].attrs["rate"])
+        locs, shift = probe_geometry(f)
+        n_blocks = int(np.ceil(d.shape[0] / BLOCK))
+        for k in np.linspace(1, n_blocks - 2, n_blocks_used).astype(int):
+            rec = preprocess_ibl(_numpy_recording(_read_block(d, k, n_blocks, gain), fs, locs, shift))
+            _, lab = sp.detect_bad_channels(rec, num_random_chunks=20, seed=0,
+                                            job_kwargs=dict(progress_bar=False))
+            labs.append(lab)
+            tr = _traces(rec)[MARGIN:-MARGIN]
+            rms.append(np.sqrt(np.mean(tr.astype(np.float64) ** 2, axis=0)))
+    labs = np.array(labs)
+    names = np.array(["good", "dead", "noise", "out"])
+    counts = np.array([(labs == n).sum(0) for n in names])
+    return dict(labels=names[counts.argmax(0)], counts=counts,
+                rms=np.median(np.array(rms), axis=0).astype(np.float32))
+
+
+def noise_levels(url, n_blocks_used=N_NOISE_BLOCKS, pipeline="ii", ibl=None):
     """Per-channel noise (sd from the MAD) of the preprocessed signal, median over blocks."""
     with open_file(url) as f:
         d = f[AP_PATH]["data"]
@@ -152,18 +215,19 @@ def noise_levels(url, n_blocks_used=N_NOISE_BLOCKS):
         for k in ks:
             cur = _read_block(d, k, n_blocks, gain)
             rec = _numpy_recording(cur, fs, locs, shift)
-            rec = preprocess_ii(rec)
+            rec = _preprocess(rec, pipeline, ibl)
             tr = _traces(rec)[MARGIN:-MARGIN]
             out.append(_mad_sd(tr))
     return np.median(np.array(out), axis=0)
 
 
-def _detect_block(padded, left, n_core, fs, locs, shift, noise, block_index):
+def _detect_block(padded, left, n_core, fs, locs, shift, noise, block_index, pipeline="ii",
+                  ibl=None):
     from spikeinterface.sortingcomponents.peak_detection import detect_peaks
     from spikeinterface.sortingcomponents.peak_localization import localize_peaks
 
     rec = _numpy_recording(padded, fs, locs, shift)
-    rec = preprocess_ii(rec)
+    rec = _preprocess(rec, pipeline, ibl)
     job = dict(n_jobs=1, progress_bar=False, chunk_duration="10s")
     peaks = detect_peaks(rec, method="locally_exclusive", method_kwargs=dict(
         detect_threshold=DETECT_THRESHOLD, peak_sign="both", noise_levels=noise,
@@ -175,12 +239,12 @@ def _detect_block(padded, left, n_core, fs, locs, shift, noise, block_index):
     locs_out = localize_peaks(rec, peaks, method="monopolar_triangulation",
                               method_kwargs=dict(radius_um=LOCAL_RADIUS_UM), job_kwargs=job)
     t = (peaks["sample_index"] - left + block_index * BLOCK) / fs
-    return np.c_[t, np.abs(peaks["amplitude"]), locs_out["x"], locs_out["y"], locs_out["z"],
-                 peaks["channel_index"]]
+    chan = np.asarray(rec.channel_ids)[peaks["channel_index"]].astype(int)
+    return np.c_[t, np.abs(peaks["amplitude"]), locs_out["x"], locs_out["y"], locs_out["z"], chan]
 
 
 def _worker(args):
-    url, ks, noise = args
+    url, ks, noise, pipeline, ibl = args
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     with open_file(url) as f:
         d = f[AP_PATH]["data"]
@@ -194,16 +258,19 @@ def _worker(args):
         for i, k in enumerate(ks):
             nxt = _read_block(d, k + 1, n_blocks, gain) if k + 1 < n_blocks else None
             padded, left = _padded(prev, cur, nxt)
-            out.append(_detect_block(padded, left, len(cur), fs, locs, shift, noise, k))
+            out.append(_detect_block(padded, left, len(cur), fs, locs, shift, noise, k, pipeline, ibl))
             prev, cur = cur, nxt
     return np.concatenate(out, axis=0)
 
 
-def detect_spikes(url, blocks=None, noise=None, n_workers=4):
+def detect_spikes(url, blocks=None, noise=None, n_workers=4, pipeline="ii", ibl=None):
     """Detect and localize spikes block by block, streaming the AP series.
 
-    Returns a dict of arrays: t (s), amp (uV, absolute peak amplitude), x, y (depth), z (um),
-    channel. `blocks` limits the run to a subset of block indices (for development).
+    `pipeline` is "ii" (reading (ii)) or "ibl" (the IBL preprocessing of reading (i) before the
+    same detection and localization; `ibl` from `ibl_bad_channels`). Returns a dict of arrays:
+    t (s), amp (uV, absolute peak amplitude), x, y (depth), z (um), channel (index into the
+    file's 384 AP channels). `blocks` limits the run to a subset of block indices (for
+    development).
     """
     with open_file(url) as f:
         n_blocks = int(np.ceil(f[AP_PATH]["data"].shape[0] / BLOCK))
@@ -211,11 +278,11 @@ def detect_spikes(url, blocks=None, noise=None, n_workers=4):
         blocks = np.arange(n_blocks)
     blocks = np.asarray(blocks)
     if noise is None:
-        noise = noise_levels(url)
+        noise = noise_levels(url, pipeline=pipeline, ibl=ibl)
     # contiguous runs of blocks per worker, so each block is read once
     runs = [r for r in np.array_split(blocks, n_workers * 3) if len(r)]
     with ProcessPoolExecutor(n_workers) as ex:
-        parts = list(ex.map(_worker, [(url, r, noise) for r in runs]))
+        parts = list(ex.map(_worker, [(url, r, noise, pipeline, ibl) for r in runs]))
     a = np.concatenate(parts, axis=0)
     a = a[np.argsort(a[:, 0], kind="stable")]
     return dict(t=a[:, 0], amp=a[:, 1], x=a[:, 2], y=a[:, 3], z=a[:, 4],
@@ -245,12 +312,16 @@ def displacement_at_spikes(me, sp):
 # --- template correlation -----------------------------------------------------
 
 def template_correlation(t, depth, amp, probe_lo_t, probe_hi_t, bin_s=1.0, bin_um=1.0,
-                         t_max=None):
+                         t_max=None, smooth=False):
     """Mean template correlation (Methods, "Spike registration quality metrics").
 
     `depth` are the (corrected) spike depths; `probe_lo_t` and `probe_hi_t` are functions of
     time bin centres giving the extent of the probe in the same corrected coordinates, outside
-    which bins are masked. Returns (mean correlation, per-bin correlations).
+    which bins are masked. With `smooth`, the raster of mean amplitudes is smoothed with a
+    Gaussian of 1 um and 1 s before masking: the Methods build the metric on "the
+    two-dimensional spike raster described above", which is smoothed at that scale, and say
+    only that mean amplitudes replace the log transforms, so both readings are run.
+    Returns (mean correlation, per-bin correlations).
     """
     t_max = t.max() if t_max is None else t_max
     tedges = np.arange(0.0, t_max + bin_s, bin_s)
@@ -261,6 +332,9 @@ def template_correlation(t, depth, amp, probe_lo_t, probe_hi_t, bin_s=1.0, bin_u
     s, _, _ = np.histogram2d(depth, t, bins=(dedges, tedges), weights=amp)
     n, _, _ = np.histogram2d(depth, t, bins=(dedges, tedges))
     raster = np.divide(s, n, out=np.zeros_like(s), where=n > 0)
+    if smooth:
+        from scipy.ndimage import gaussian_filter
+        raster = gaussian_filter(raster, (1.0 / bin_um, 1.0 / bin_s))
     mask = (dc[:, None] >= lo[None, :]) & (dc[:, None] <= hi[None, :])
     cnt = mask.sum(1)
     template = np.divide((raster * mask).sum(1), cnt, out=np.zeros(len(dc)), where=cnt > 0)
@@ -341,8 +415,9 @@ def fit_spline(t, y, t0, t1, penalized=False, lambdas=None):
     BtB = (B.T @ B).toarray()
     Bty = B.T @ y
     if not penalized:
-        # minimum-norm least squares: coefficients of knot intervals with no data (gaps in the
-        # clustered spikes) are left near zero in place of arbitrary values (a numerical choice)
+        # minimum-norm least squares (a numerical choice). Knot intervals with no clustered
+        # spikes are not fixed by the data, and the trace can take large values there (thousands
+        # of um in the notebook); it is evaluated only at spike times.
         coef, _, rank, _ = np.linalg.lstsq(BtB, Bty, rcond=1e-8)
         info = dict(lam=0.0, edf=float(rank))
     else:
@@ -391,3 +466,73 @@ def scrambled_traces(spline, t, t0, t1, n_perm, rng, bin_s=1.0 / SPLINE_KNOTS_PE
     for _ in range(n_perm):
         perm = rng.permutation(nbin)
         yield spline(edges[perm[b]] + offset)
+
+
+# --- fast motion: the combinations and the tests --------------------------------
+
+def fast_motion_combos(sp, yreg, t_end, fracs=(0.10, 0.25), feats=("x,y,amp", "y,amp"),
+                       mcss=(25, 100), pens=(False, True)):
+    """Pipeline step 3 under every combination of its open readings and of the registration
+    readings in `yreg` (name -> registered depth of every spike). Returns a list of dicts."""
+    combos = []
+    for regname, yr in yreg.items():
+        for frac in fracs:
+            sel = select_high_amplitude(sp["amp"], frac)
+            for fe in feats:
+                F = (np.c_[sp["x"][sel], yr[sel], sp["amp"][sel]] if fe == "x,y,amp"
+                     else np.c_[yr[sel], sp["amp"][sel]])
+                for mcs in mcss:
+                    labels = cluster_spikes(F, mcs)
+                    keep, cen, lab = center_clusters(yr[sel], labels)
+                    tt = sp["t"][sel][keep]
+                    sizes = np.bincount(labels[labels >= 0])
+                    for pen in pens:
+                        spline, info = fit_spline(tt, cen, 0.0, t_end, penalized=pen)
+                        combos.append(dict(reg=regname, frac=frac, feats=fe, mcs=mcs, pen=pen,
+                                           sel=sel, n_sel=int(sel.sum()), labels=labels,
+                                           sizes=sizes, keep=keep, cen=cen, lab=lab, tt=tt,
+                                           spline=spline, info=info))
+    return combos
+
+
+def scrambled_test(spline, tt, cen, lab, t_end, n_perm, rng):
+    """The claims file's control for edf3c: pooled within-cluster s.d. of the centred depths
+    with no correction, after the spline, and after each of `n_perm` scrambled traces."""
+    s_none = pooled_within_sd(cen, lab)
+    s_spl = pooled_within_sd(cen - spline(tt), lab)
+    scr = np.array([pooled_within_sd(cen - tr, lab)
+                    for tr in scrambled_traces(spline, tt, 0.0, t_end, n_perm, rng)])
+    return s_none, s_spl, scr
+
+
+def split_clusters(lab, rng):
+    """Assign whole clusters at random to two halves of about equal size (0 and 1)."""
+    u = rng.permutation(np.unique(lab))
+    half = {c: i % 2 for i, c in enumerate(u)}
+    return np.array([half[c] for c in lab])
+
+
+def split_spikes(lab, rng):
+    """Assign the spikes of each cluster at random to two halves of equal size (0 and 1)."""
+    half = np.zeros(len(lab), dtype=int)
+    for c in np.unique(lab):
+        idx = rng.permutation(np.where(lab == c)[0])
+        half[idx[1::2]] = 1
+    return half
+
+
+def heldout_test(tt, cen, lab, t_end, penalized, half, n_perm, rng):
+    """The spline fit on one half of the clustered spikes and evaluated on the other, both ways
+    (`half` from split_clusters or split_spikes): the held-out version of the edf3c control
+    the verifier asked for (not in the claims file).
+    Returns one dict per direction with the held-out s.d. uncorrected, spline-corrected and the
+    5th percentile and median of the scrambled values."""
+    out = []
+    for h in (0, 1):
+        fit, ev = half == h, half != h
+        spline, info = fit_spline(tt[fit], cen[fit], 0.0, t_end, penalized=penalized)
+        s_none, s_spl, scr = scrambled_test(spline, tt[ev], cen[ev], lab[ev], t_end, n_perm, rng)
+        out.append(dict(fit_half=h, n_fit=int(fit.sum()), n_eval=int(ev.sum()), sd_none=s_none,
+                        sd_spline=s_spl, scr_p5=float(np.percentile(scr, 5)),
+                        scr_med=float(np.median(scr)), lam=info["lam"], edf=info["edf"]))
+    return out

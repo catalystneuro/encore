@@ -1,0 +1,38 @@
+dandiset: "001290"
+paper: doi:10.1038/s41592-025-02614-5
+questions:
+- claim: edf3a-ap-dredge-slow-trend
+  asked: 2026-11-02
+  question: The opening comment of the claims file says dredge_ap.register applies no Gaussian
+    smoothing to the raster by default (gaussian_smoothing_sigma_um and _s are None), so that the
+    Methods' smoothing at 1 um and 1 s differs from the code and the code's default is run as a
+    variant. At commit ed236113, motion_util.spike_raster replaces None with the bin size, so the
+    default smoothing is 1 um and 1 s, the same as the Methods. Should the comment and the variant
+    be dropped?
+  passage: Features in each bin are reduced into an S x T matrix (the spike raster) by summing log(1
+    + x)-transformed amplitudes in each bin and transforming again with log(1 + x), followed by
+    spatiotemporal smoothing (Gaussian ...) (Methods, Preprocessing of AP band data); in the code,
+    motion_util.spike_raster at commit ed236113 sets each smoothing sigma that is None to the bin
+    size.
+  why: It cannot change an outcome here. The notebook shows the code default and the explicit 1 um,
+    1 s smoothing give the same displacement (largest difference 0.0 um) and the same template
+    correlation (0.3319). The verifier of round 1 reported it; the claim is tested as the file has
+    it.
+- claim: edf3c-spline-subsecond
+  asked: 2026-11-02
+  question: The criterion's control compares the spline-corrected s.d. with the same spline trace
+    with its 0.4 s bins permuted, with the spline fit to the spikes it is evaluated on. A spline fit
+    in-sample always beats a permutation of itself, so this control passes on data without motion.
+    The legend says the spline "captures the sub-second displacement". Should the criterion test
+    the spline on spikes held out of the fit (for example half of each cluster's spikes), so that
+    it can fail?
+  passage: Left, centered positions of the clustered spikes (blue) with the spline fit, that captures
+    the sub-second displacement, overlaid in red. (Extended Data Fig. 3c legend); "we fit a smoothing
+    spline to all of these centered positions at once to model the sub-second drift" (Methods,
+    Tracking fast motion from spikes using clustering and splines).
+  why: The control as written passes in 32 of 32 combinations on the data and also in 32 of 32 on a
+    surrogate with the spike times shuffled (no motion), so its pass does not test the claim. A
+    held-out version was run as a variant outside the outcome. It also passes for the penalized
+    spline (lower held-out s.d. in 32 of 32 cases, 0 of 32 on the surrogate), but the least-squares
+    reading raises the held-out s.d. in 5 of 32 cases, so under a held-out criterion the outcome
+    would depend on the spline reading.

@@ -20,11 +20,17 @@ reasoning and the differences from the paper's method.
 The paper does not say how spikes were detected and localized for this recording. The claims file
 names two readings; only the one from the DREDge repository's demo notebook (SpikeInterface
 detection and monopolar triangulation) could be run, as DARTsort was far too slow on a CPU, so every
-outcome rests on that reading. The attempt record, with the reasons and the differences from the
-paper's method, is [`attempts/001290-windolf-2025-01.yaml`](../../attempts/001290-windolf-2025-01.yaml).
+outcome rests on that reading. The IBL preprocessing of the other reading, run before the same
+detection, gives the same outcomes. The claims file's control for the spline (Extended Data Fig. 3c)
+passes even on data without motion; the notebook adds a held-out check, on which the penalized
+spline still lowers the spread of spikes it was not fit to. The attempt record, with the reasons and
+the differences from the paper's method, is
+[`attempts/001290-windolf-2025-01.yaml`](../../attempts/001290-windolf-2025-01.yaml).
 
-- `reproduce_windolf_2025.ipynb`: the analysis. It takes about 28 minutes, half of it streaming
+- `reproduce_windolf_2025.ipynb`: the analysis. It takes about 25 minutes, a third of it streaming
   the 7.4 GB file and detecting and localizing spikes.
-- `pulsation.py`: streaming the AP band in chunk-aligned blocks, spike detection and localization,
-  DREDge registration, the template correlation metric, HDBSCAN clustering and the fast-motion
-  spline. Other notebooks on this dandiset can import it.
+- `ibl_preprocessing_variant.ipynb`: the same tests with the IBL preprocessing (bad channel
+  detection, phase shift, interpolation, spatial high-pass) before detection. About 30 minutes.
+- `pulsation.py`: streaming the AP band in chunk-aligned blocks, both preprocessings, spike
+  detection and localization, DREDge registration, the template correlation metric, HDBSCAN
+  clustering, the fast-motion spline and its tests. Other notebooks on this dandiset can import it.
