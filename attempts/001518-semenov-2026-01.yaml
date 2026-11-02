@@ -1,0 +1,344 @@
+schema_version: 2
+id: 001518-semenov-2026-01
+dataset:
+  archive: dandi
+  id: "001518"
+  version: 0.261006.1957
+  doi: 10.48324/dandi.001518/0.261006.1957
+paper: doi:10.1016/j.bioelechem.2026.109283
+date: 2026-11-02
+entry: 001518-semenov-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41524425766
+inputs:
+- what: The charging time constant of Eq. (1), tau = 44.5 ns/um times the cell radius, the fit
+    through the origin of tau against radius in the Results of reference [20] of the paper
+    (Semenov et al. 2025, Bioelectrochemistry 168, 109143), which the paper's Methods 2.3 say
+    this study used. Read from the open-access full text (PMC12553484).
+  source: doi:10.1016/j.bioelechem.2025.109143
+outcomes:
+- claim: fig3-dye-sensitivity
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig3-dye-sensitivity
+  measured:
+  - 23.98
+  - 10.52
+  - 0.908
+  - 0.824
+  notes: Under the adopted reading (bottom mapping, background subtracted, equal-area radius, all
+    40 responding cells, the 18 sets from 43 to 344 V/cm) FluoVolt gives 23.98% dF per 100 mV
+    (26 +- 2.6) with r 0.908 (Pearson) and 0.902 (uncentred), and Di-8-ANEPPS 10.52% (9.1 +- 0.91,
+    just above the bound of 10.01) with r 0.824 and 0.804 (0.78 +- 0.078). With the cell nearest
+    the image centre Di-8-ANEPPS gives 9.04 and FluoVolt 22.46 (below 23.4). None of the 32
+    readings has both slopes within tolerance, so three of the four expected values hold under
+    the adopted reading and each slope holds under some reading. Without background subtraction
+    the slopes are 11.67 and 5.28; under the top mapping 6.10 and 2.37. By experiment the slopes
+    are 21.2 to 25.9 (FluoVolt) and 10.0 to 11.3 (Di-8-ANEPPS). The mapping was checked against the
+    same low-field response, so the agreement supports the mapping and the paper's calibration
+    together and does not test either alone.
+  deviations:
+  - The pulse is given in volts; the factor to V/cm is assumed to be 43 V/cm at 25 V (1.72 V/cm
+    per V), from the paper's lowest level and the dataset's lowest voltage. The low-field response
+    of each dye under the paper's calibration implies a median of 1.5 to 1.6 V/cm per V; the
+    alternative, 1400 V/cm at 250 V, would make both dyes 3 to 4 times less sensitive. The top
+    mapping is run as a variant.
+  - Each field of view holds 3 to 6 cells; the paper used one cell per experiment and does not say
+    which. All responding cells (adopted) and the cell nearest the image centre are both run.
+  - The membrane trace is found automatically (peak of the baseline image along rays from the
+    cell centre, 6 samples 1 pixel apart), not drawn by hand; 360 points at equal angles stand
+    for the resampling along the perimeter (Methods 2.3).
+  - Pixel size 0.267 um (16-um camera pixels over the 60x objective of Methods 2.3) is assumed;
+    the files give none. The mean radius is 6.7 um, against the about 8 um the paper uses in Eq. (2).
+  - Frame 0 and other dark frames (laser misfires) are left out, so most baselines have 39 images.
+  - Background subtraction (median of cell-free pixels of the same image) is adopted; the paper
+    states it only for Ca2+ imaging (Methods 2.4). Both readings are shown.
+- claim: fig3-fluovolt-nonlinear
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig3-fluovolt-nonlinear
+  notes: Under the bottom mapping the FluoVolt smooth departs from the fitted line at every |IMPC|
+    from 220 mV to the end of the data (440 mV) under all four smooths (at +400 mV it is 21 to 47%
+    of the line, at -400 mV 45 to 68%), as the paper says. Di-8-ANEPPS departs too, at 58 to 64 grid
+    points under every smooth (57 to 84% of the line at +400 mV, 48 to 79% at -400 mV), so it does
+    not stay linear over the +-430 mV the data cover. Under the top mapping FluoVolt does not depart
+    under any LOWESS span and Di-8-ANEPPS departs, so the claim fails under both mappings. The
+    data reach +-430 mV, not the paper's +-500 mV.
+  deviations:
+  - Points, line and readings as in fig3-dye-sensitivity (adopted reading); LOWESS with delta of 1%
+    of the IMPC range, a standard speed-up.
+- claim: fig2a-fluovolt-saturation
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2a-fluovolt-saturation
+  measured:
+  - 25.5
+  - -35.8
+  notes: The per-image cathodic dF at 360 V/cm is 25.5 +- 2.7% under the bottom mapping (experiment
+    means; 26.3 for the cell nearest the centre, 27.7 over all cells) and 20.1 to 24.1% under the
+    top mapping, against 66 +- 6.6. No experiment exceeds 41.8% at any level; the largest cathodic
+    mean of any set is 36.1% (120 V). The anodic value at 570 V/cm, present only under the top
+    mapping, is -33.7 to -38.6% against -83 +- 8.3 (the measured value is the top mapping's
+    experiment mean); the most negative anodic mean of any set is -49.5%. The cathodic response
+    does fall at the highest fields (top mapping, 35.9% at 570 V/cm to 21.2% at 1400 V/cm) while
+    the anodic one keeps growing. The magnitudes fail under every mapping, cell and background
+    reading.
+  deviations:
+  - The mean of per-image dF over the pulse images equals the collapsed-image dF, as both use the
+    same F0; the Fig. 2 and Fig. 4 measures coincide.
+  - FluoVolt n is 5 experiments here, against 4 in the paper.
+  - Mapping, cell, trace, pixel and background choices as in fig3-dye-sensitivity.
+- claim: fig2a-fluovolt-stable
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2a-fluovolt-stable
+  notes: In the baseline images (bottom mapping, experiment means, the four sets at the paper's
+    levels) the cathodic pole at 150 V/cm changes by -2.65% from the first 10 to the last 10 images
+    (2-tailed paired t-test p = 0.010, n = 5), and with the first and last image 1 of 8 baseline
+    tests is also significant. The other baseline changes lie between -2.2% and +0.02%. With the
+    cell nearest the centre and 10-image windows none of 8 differ; over all 19 sets 4 to 9 of 38
+    tests differ by reading, near what 38 tests at p < 0.05 give by chance. The pulse sets at 1000
+    to 1400 V/cm exist only under the top mapping, where none of the 6 tests differs (changes -0.8
+    to -2.0%, p 0.09 to 0.54). The criterion counts any significant baseline change, so the claim
+    is not reproduced, with a small (about 2%) bleaching drift as the effect.
+  deviations:
+  - The sets are those nearest the paper's levels; all 19 sets are shown as a variant.
+- claim: fig4a-fluovolt-limits
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4a-fluovolt-limits
+  measured:
+  - 35.3
+  - -49.5
+  notes: The largest mean cathodic dF over levels is 35.3% (bottom, 230 V/cm; 31.7 and 35.8 under
+    the other cell readings) against 71 +- 10, and the most negative anodic value is -49.5% (360
+    V/cm) against -83.5 +- 5; under the top mapping 34.4 to 35.9% and -49.5 to -51.1%. At 43 and 150
+    V/cm measured cathodic IMP is below IMPC (bottom, experiment means, ratios 0.34 and 0.80; paired
+    p < 0.001 and 0.021), so the match there also fails. Measured IMP is below IMPC at each level from
+    230 V/cm (ratios 0.27 to 0.67), as the paper says.
+  deviations:
+  - Under the bottom mapping the levels above 360 V/cm are not in the dataset; the maxima fail
+    under the top mapping as well, which has all levels but 43 V/cm.
+- claim: fig4a-fluovolt-cathodic-decline
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4a-fluovolt-cathodic-decline
+  measured:
+  - 25.5
+  - 25.5
+  notes: The cathodic dF at 360 V/cm is 25.5% (bottom; 20.1 to 27.7% over mappings and cell
+    readings) against 71 +- 10. Under the top mapping the values at 1000, 1200 and 1400 V/cm are
+    28.9, 25.5 and 21.2% (experiment means), below the 40.5 to 55% range; the second measured value
+    is their mean. Under the bottom mapping there are no sets above 430 V/cm.
+  deviations:
+  - The 1000 to 1400 V/cm values exist only under the top mapping (variant); the 360 V/cm value
+    fails under both mappings. Other choices as in fig3-dye-sensitivity.
+- claim: fig5b-conductivity-calibration
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig5b-conductivity-calibration
+  measured:
+  - 1.33
+  - 11.87
+  notes: Eq. (2) with the constants of Methods 2.3 gives f = 1.498 for the intact membrane. A 10-fold
+    rise reduces IMP by 1.33% under reading (a) and 1.20% under (b), against 2 +- 0.2; a 15.2-fold
+    rise is needed for 2%. A 100-fold rise gives 11.87% and 11.75%, within 12 +- 1.2. The
+    qualitative point holds, with 3.9% at 30-fold.
+- claim: fig1-pole-dimming
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig1-pole-dimming
+  notes: The block rests on the adopted mapping (43 V/cm at 25 V, an assumption, see
+    fig3-dye-sensitivity), under which the sets reach 430 V/cm; the claim needs 570 to 1400 V/cm.
+    Under the top mapping (variant) the mean cathodic dF at 780 V/cm (18.1%) is above that at 570
+    V/cm (13.0%), so condition (1) fails under every reading; at 1400 V/cm the peak of the
+    cathode-facing hemisphere lies 12 to 46 degrees from the pole (condition 2 holds). The readings
+    differ in whether the claim can be tested at all; the question of the factor from volts to V/cm
+    is for the paper's authors (findings).
+- claim: fig2b-di8-climbs-to-570
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2b-di8-climbs-to-570
+  notes: Under the adopted mapping there is no 570 V/cm set; the four levels present (43 to 360 V/cm)
+    rise at every step at both poles with experiment means (cathodic -1.6, 11.4, 18.1, 22.5%; anodic
+    -6.2, -15.6, -20.0, -27.8%). Under the top mapping (no 43 V/cm set) both poles rise at every step
+    from 150 to 570 V/cm with experiment means and all cells, but not with the cell nearest the
+    centre.
+- claim: fig2b-di8-decline-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2b-di8-decline-within-set
+  notes: No sets at 780 V/cm or above under the adopted mapping. Under the top mapping the cathodic
+    |dF| at the end of the pulse images is below the start in every set from 780 V/cm under every
+    reading (experiment means, 10-image windows, 19.8 to 17.1, 22.2 to 19.7, 24.4 to 20.8 and 27.0 to
+    22.4%; p 0.034, 0.069, 0.037, 0.142); the anodic pole does not decline in most sets, so reading
+    (c) holds and (d) does not.
+- claim: fig4b-di8-limits
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4b-di8-limits
+  notes: No 570 V/cm set under the adopted mapping, where the largest pole values are 22.5% and
+    -27.8% (360 V/cm). Under the top mapping the pole dF is largest at 1400 V/cm (24.3% and -29.2%),
+    not at 570 V/cm (13.0% and -16.7%), against 57 +- 14 and -55 +- 4; measured IMP is below IMPC at
+    every level (ratios 0.21 to 0.39 from 360 V/cm). Under no reading does any Di-8-ANEPPS set reach
+    the paper's maxima.
+- claim: fig4b-first-10-pulses
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4b-first-10-pulses
+  notes: Depends on fig4b-di8-limits. Over the first 10 pulse images the largest mean cathodic dF is
+    24.4% (bottom, 360 V/cm) and 27.0% (top, 1400 V/cm), against 66 +- 15; it is above the 60-image
+    maximum under every reading.
+- claim: fig4b-cathodic-asymmetry
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4b-cathodic-asymmetry
+  notes: No sets above 430 V/cm under the adopted mapping. Under the top mapping both poles keep
+    growing from 780 to 1400 V/cm (cathodic 18.1, 20.4, 22.5, 24.3%; anodic -21.2, -25.7, -27.8,
+    -29.2%), the cathodic value at 1400 V/cm differs from zero (p < 0.001), and the anodic -29.2% is
+    within -30 +- 3.
+- claim: fig4c-equator-follows-cosine
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4c-equator-follows-cosine
+  notes: No sets at 570 to 1000 V/cm under the adopted mapping. Under the top mapping measured IMP
+    beside the equator is below IMPC in most arcs (ratios -0.15 to 0.82); 9 to 11 of 12 arc tests
+    differ with 15-degree arcs and all 12 with 30-degree arcs.
+- claim: fig7b-charging-during-pulse
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig7b-charging-during-pulse
+  notes: Uses the Fig. 4B data at 560 V/cm and above, absent under the adopted mapping. Under the top
+    mapping, normalized to the 25 V set (where bleaching makes the cathodic dF negative in some
+    cells), the anodic linear-over-measured ratio with experiment means is 1.46 at 560 V/cm and 1.62
+    at 760 V/cm (1.5 +- 0.15 and 2 +- 0.2) and 1.72 to 2.08 at 1000 to 1400 V/cm; the cathodic ratios
+    are below 1.
+- claim: fig2cd-stable-before-electroporation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The alternating 150 and 230 V/cm protocol (n = 8) is not in the dandiset; every subject
+    holds one escalation with each voltage once.
+- claim: fig2c-1000-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Part of the alternating protocol of Fig. 2C, which is not in the dandiset.
+- claim: fig2d-lasting-reduction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Part of the alternating protocol of Fig. 2C and D, which is not in the dandiset.
+- claim: fig4d-short-pulses-same-limit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every file states a 1-us pulse; the 0.3-us experiments (n = 10) are not in the dandiset.
+- claim: fig5a-gd-extends-anodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file mentions Gd3+; the Gd3+ (n = 7) and parallel control (n = 5) experiments are not in
+    the dandiset.
+- claim: fig5a-gd-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Gd3+ experiments are not in the dandiset.
+- claim: fig5a-gd-cathodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Gd3+ experiments are not in the dandiset.
+- claim: fig5a-gd-differences
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Gd3+ experiments are not in the dandiset.
+- claim: fig5c-gd-reduces-conductivity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Uses the Gd3+ and control datapoints of Fig. 5A, which are not in the dandiset.
+- claim: fig6a-ca-single-pulse
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fluo-4 Ca2+ imaging is not in the dandiset; every file is a 100-image strobe set with a
+    potentiometric dye.
+- claim: fig6b-ca-train-responders
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Ca2+ imaging of 224 cells is not in the dandiset.
+- claim: fig6b-ca-650
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Ca2+ imaging is not in the dandiset.
+- claim: fig7ab-test-pulse-recovery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two-pulse protocol (conditioning pulse, then a 150 V/cm test pulse) is not in the
+    dandiset; every file describes a single pulse.
+- claim: fig7c-fast-conductivity-drop
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the test-pulse data of Fig. 7A, which are not in the dandiset.
+- claim: fig7c-full-reseal-mild
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the test-pulse data of Fig. 7A, which are not in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds ten escalations of 1-us pulses, 19 sets each from 25 to 250 V, five
+    with FluoVolt and five with Di-8-ANEPPS, all from 2025-01-24. It holds none of the alternating
+    sets (Fig. 2C, D), 0.3-us pulses (Fig. 4D), Gd3+ experiments (Fig. 5), Ca2+ imaging (Fig. 6) or
+    two-pulse experiments (Fig. 7). Its voltages span a factor of 10, so it cannot hold the paper's
+    43 to 1400 V/cm escalation (a factor of 33, in 9 sets); under the mapping the data support it
+    covers about 43 to 430 V/cm. The paper's FluoVolt series has n = 4; the dandiset has 5.
+- kind: metadata_insufficient
+  statement: The files give the pulse amplitude in volts, and the paper reports field strengths in
+    V/cm from Sim4Life modelling; neither the files, the paper nor its reference [20] give the factor
+    between them, so the sets cannot be matched to the paper's field strengths without assuming
+    one.
+- kind: metadata_error
+  statement: Every file states an electrode distance of 1.00 mm, while the paper's Methods 2.2 state
+    1.6 mm. The nominal field (voltage over distance) would be 10 V/cm per volt for 1.00 mm and 6.25
+    for 1.6 mm, while the dyes' low-field response under the paper's calibration implies about 1.5
+    V/cm per volt, so the stated distance, the stated voltage, or both do not describe the field.
+- kind: identifier_missing
+  statement: Each field of view holds 3 to 6 cells, while the paper analysed one cell per experiment.
+    Nothing in the files identifies the cell analysed, or gives cell outlines.
+- kind: metadata_insufficient
+  statement: The files give no pixel size, no field direction and no description of which images
+    carry the pulse. The field direction (cathode-facing side towards the bottom of the image, 94
+    to 106 degrees) and the pulse onset at image 41 are clear from the data.
+- kind: other
+  statement: Frame 0 is dark (laser not fired) in 175 of 190 sets, and 51 other frames in 45 sets
+    are dark; the files do not mention it. With these frames left out, most baselines have 39 lit
+    images, not 40.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) What field strength in V/cm does each pulse
+    amplitude in the files correspond to, and are these the escalations of Fig. 2A, 2B and 3 or other
+    experiments? The attempt assumed 43 V/cm at 25 V. (2) Which cell in each field of view was
+    analysed? The attempt ran experiment means, the cell nearest the image centre and all cells.
+    (3) Was background subtracted from the laser images, as for Ca2+ (Methods 2.4)? The attempt
+    subtracted the cell-free median; without it dF halves. (4) What is the pixel size? The attempt
+    assumed 0.267 um.
+- kind: paper_inconsistency
+  statement: Eq. (2) with the constants the Methods give (lambda_i 0.4 S/m, lambda_o 1.64 S/m, R 8
+    um, d 5 nm, lambda_m 3e-7 S/m) gives a 1.3% IMP reduction for a 10-fold rise in membrane
+    conductivity, while Results 3.5 says about 2%; the 100-fold value (11.9%) agrees with the
+    stated 12%.
