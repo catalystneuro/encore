@@ -577,6 +577,8 @@ claims:
   source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 7; Figure 4a-b
   quote: 'Cluster #1 had a large and fast response to the auditory cue and mostly consisted of neurons in A1, whereas Cluster #29 responded strongly and rapidly to whisker deflection and mostly consisted of neurons in wS1 and wS2. A few clusters showed strong context-dependent firing selectivity comparing Go-tone and Nogo-tone trials, most notably Clusters #11 and #25, which showed prominent delay period firing only in Go-tone trials and mainly consisted of neurons in wM2 and ALM ( Fig. 4b ). Interestingly, another cluster, Cluster #4, showed a prominent decrease in firing rate during the delay period selectively for Go-tone trials and neurons in this cluster were widely distributed across the five recorded cortical areas'
   data: with_inputs
+  depends_on:
+  - cluster-label-link
   criterion: Cluster membership from the paper's labels (Zenodo doi:10.5281/zenodo.17973874,
     processed_data/Data_Clustering.mat), linked to the dataset's units by the code's global unit
     index; the author adds the link claim. PSTHs as fig3b-delay-and-response-psth. Reproduced
@@ -779,6 +781,7 @@ claims:
   data: with_inputs
   depends_on:
   - fig4b-named-clusters
+  - cluster-label-link
   criterion: Cluster labels as fig4b-named-clusters. As code, Decoding_delay.m,
     Decoding_clusters_random_dropout.m and Ghaderi2025_Figure5_c_Dropcluster11.m. Decoding as
     fig5b-context-decoding-delay but with all neurons of each area-session (at least 5; 14 A1, 24
@@ -1178,6 +1181,20 @@ claims:
     wS2 and wS1 each give Kruskal-Wallis p < 0.05 with at least one lick group above its no-lick
     group, and under both readings ALM has the largest effect; the full ranking is reported. If
     the readings disagree on which area is largest, blocked as methods_underspecified.
+- id: cluster-label-link
+  kind: link
+  statement: The paper's cluster labels (processed_data/Data_Clustering.mat on Zenodo) can be matched to
+    the dataset's units, so that claims about named clusters can be tested on the dataset.
+  source: Data availability and Code availability; Zenodo doi:10.5281/zenodo.17973874,
+    processed_data/Data_Clustering.mat and processed_data_code/psth_10ms.m
+  data: with_inputs
+  criterion: Added by the author (protocol, Author step 4). Records are matched by the code's global
+    unit index (Id_Ordered), rebuilt as psth_10ms.m builds it (NWB files in name order, within a file
+    one probe per distinct unit location in sorted order, units in file order, numbered over all
+    units). Reproduced when every labelled neuron maps to a distinct unit of the dataset whose probe
+    area, CCF label and layer are those the label file gives, and that unit is one of the units the
+    claims analyse (probe area and CCF label in Area_list.mat); partially reproduced when at least
+    90% do; not reproduced otherwise.
 checks:
 - date: 2026-10-21
   kind: agent

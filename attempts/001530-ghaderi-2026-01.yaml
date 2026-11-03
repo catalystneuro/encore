@@ -1,0 +1,504 @@
+schema_version: 2
+id: 001530-ghaderi-2026-01
+dataset:
+  archive: dandi
+  id: "001530"
+  version: 0.260605.0601
+  doi: 10.48324/dandi.001530/0.260605.0601
+paper: doi:10.1038/s41467-026-73622-y
+date: 2026-11-02
+entry: 001530-ghaderi-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41547573446
+inputs:
+- what: The CCF labels that make up each of the five areas (data_helpers/Area_list.mat), used to
+    assign units to areas in every claim on units, as the paper's code does.
+  source: Zenodo doi:10.5281/zenodo.17973874 (2026_Ghaderi_NCOMMS_Zenodo_data_code.zip), read by range
+    requests
+- what: The paper's cluster label of each neuron, with the code's global unit index, area, CCF label and
+    layer (processed_data/Data_Clustering.mat), used by cluster-label-link, fig4b-named-clusters and
+    fig5c-cluster-removal.
+  source: Zenodo doi:10.5281/zenodo.17973874 (2026_Ghaderi_NCOMMS_Zenodo_data_code.zip), read by range
+    requests
+- what: Method details read from the paper's code (processed_data_code, Main_figures_codes,
+    Supplementary_figures_codes and functions), cited by file name in the notebooks and the helper.
+  source: Zenodo doi:10.5281/zenodo.17973874; the same files are on GitHub at
+    LSENS-BMI-EPFL/Ghaderi_et_al_NCOMMS_2026, commit 20cf10c7b95069c12f762b7dd89817beedcc382f
+outcomes:
+- claim: fig1c-lick-probabilities
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig1c-lick-probabilities
+  measured:
+  - 78.18
+  - 9.90
+  - 13.08
+  - 1.05
+  - 14.64
+  notes: Mean +/- SEM over 35 sessions (34 for No-tone Whisker, which one session lacks) of P(lick) on
+    completed trials; Go-tone Whisker 78.18 +/- 2.08, Go-tone No-Whisker 9.90 +/- 1.49, Nogo-tone
+    Whisker 13.08 +/- 1.79, Nogo-tone No-Whisker 1.05 +/- 0.26, No-tone Whisker 14.64 +/- 1.72 percent.
+    All five within tolerance.
+  deviations:
+  - Eleven trials of sub-PG028_ses-20210318T163504 have trial_type 0 and enter no trial type.
+- claim: fig1f-movement-latencies
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig1f-movement-latencies
+  measured:
+  - 48.2
+  - 81.5
+  - 140.0
+  - 330.1
+  notes: The lick latency is 330.1 +/- 20.2 ms over 35 sessions, the paper's value. The movement
+    latencies are shorter than reported under both readings of the criterion; reading (a) gives whisker
+    48.2, jaw 81.5 and tongue 140.0 ms (34, 34 and 27 sessions with a latency), reading (b) 65.2, 83.3
+    and 153.6 ms; only the reading (b) whisker value is within tolerance. The order whisker, jaw,
+    tongue, spout contact holds under both, so the criterion's partial case applies. The tongue trace
+    keeps rising after 1.2 s, so a maximum over 1.0 to 1.2 s cannot give the reported 231 ms; with the
+    maximum over 1.0 to 2.0 s (a variant outside the criterion) reading (a) gives 54.4, 115.3 and
+    192.4 ms. A question on the window is in questions/001530.yaml. The code's mean absolute deviation
+    for the quiet rule is shown as a variant.
+  deviations:
+  - The latency is the right edge of the first 10 ms bin after 1.0 s that reaches 20% of the maximum,
+    minus 1.0 s (code, PSTHBehavior.m labels bins by their right edge); the paper does not say how the
+    bin is read.
+  - Tongue NaN values are set to 0 before averaging, as Ghaderi2025_Figure1_f_Movements_Hit.m does.
+  - sub-PG064_ses-20220210T183214 has no quiet Hit trial and gives no movement latency.
+- claim: quiet-trials-half
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:quiet-trials-half
+  measured: 55.06
+  notes: With the Methods' rule (median absolute deviation) 55.06% of 17,840 completed trials are not
+    quiet (median over sessions 53.33%, range 42.2 to 75.9%); over all 18,976 trials 56.72%. Both
+    readings are just outside 45 to 55% and inside the 30 to 70% band for a partial result. With the
+    code's mean absolute deviation 40.22% of completed trials are rejected. Leaving out the 328
+    completed trials without video gives 54.22%.
+  deviations:
+  - Trials without video in their window (243 in sub-PG061_ses-20220212T233813, 29 in
+    sub-PG038_ses-20210316T152753) fail the rule, as a NaN fails the code's comparison.
+- claim: fig2-auditory-window
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig2-auditory-window
+  measured:
+  - 38.9
+  - 33.0
+  - 26.0
+  - 19.5
+  notes: Reductions in points (reading a) A1 38.9 (SEM 4.1, 17 sessions, 9 mice), wM2 33.0 (5.7),
+    wS2 26.0 (3.8), wS1 19.5 (6.1), all within tolerance; as a percent of no-light P(lick) (reading b)
+    53.3, 40.4, 36.1 and 25.7, out of tolerance, so the paper reports points. FDR-corrected bootstrap p
+    with 10,000 iterations A1 0.0004, wM2 0.0004, wS2 0.0004, wS1 0.0021, ALM 0.161 (7.8 points), fpS1
+    0.979 (0.1 points); with 1,000 iterations the same areas are significant (0.004 to 0.012). The
+    paper's plus-or-minus values match the SEM, not the SD of the Fig. 2d legend (A1 SD 16.9).
+  deviations:
+  - The minimum session count drawn in the bootstrap (9) is computed over areas and windows, as the
+    code does.
+- claim: fig2-delay-window
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig2-delay-window
+  measured:
+  - 44.5
+  - 32.1
+  - 16.0
+  notes: wM2 44.5 (SEM 7.2), ALM 32.1 (5.5) and wS1 16.0 (3.0) points, within tolerance, FDR p 0.0004
+    with 10,000 iterations (0.004 with 1,000); A1 7.8 (p 0.113), wS2 8.2 (p 0.076) and fpS1 4.3
+    (p 0.292) are not significant.
+- claim: fig2-whisker-window
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig2-whisker-window
+  measured:
+  - 52.3
+  - 48.2
+  - 37.6
+  - 35.5
+  - 12.8
+  notes: ALM 52.3, wM2 48.2, wS1 37.6, wS2 35.5 and A1 12.8 points (SEM 3.5 to 3.8), within
+    tolerance; FDR p 0.0003 for the first four and 0.0115 for A1 with 10,000 iterations, the paper's
+    0.0003 and 0.01; fpS1 8.7 points, p 0.118. With 1,000 iterations the pattern is the same.
+- claim: fig2-wm2-vs-alm-auditory
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig2-wm2-vs-alm-auditory
+  measured:
+  - 33.0
+  - 7.8
+  notes: wM2 33.0 +/- 5.7 (14 sessions) against ALM 7.8 +/- 5.4 (9 sessions). Unpaired bootstrap,
+    10,000 iterations, reading (a) 9 sessions per area p 0.0024, reading (b) all sessions p 0.0008,
+    0.0018 after FDR over the 15 area pairs; 1,000 iterations 0.006, 0.002 and 0.005. Both readings
+    give p < 0.05 with wM2 larger. The paper's p 0.009 is not reproduced exactly; the comparison is not
+    in the paper's code.
+- claim: fig2-other-trial-types
+  outcome: not_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig2-other-trial-types
+  notes: Both readings fail. By the bootstrap test (1,000 iterations, FDR within window and trial
+    type) 18 of the 72 changes are significant, where reading (a) allows 7; two changes exceed 13
+    points (reading b), Go-tone No-Whisker trials in the Auditory window for A1 (-19.0) and wS2
+    (-15.7). Most significant changes are reductions in licking on Go-tone No-Whisker trials in the
+    Auditory window and on No-tone and Nogo-tone Whisker trials in the Whisker window (4.4 to 12.6
+    points). The effects are smaller than on Go-tone Whisker trials; the paper's "little impact" is
+    judged here by the reader's two thresholds, which the paper does not give.
+  deviations:
+  - Both thresholds for "little impact" are the claims file's, not the paper's (the claims file's check
+    marks them as open).
+- claim: units-recorded
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:units-recorded
+  measured:
+  - 10294
+  - 780
+  - 1938
+  - 2064
+  - 2749
+  - 2763
+  notes: With the probe area and the CCF filter of Area_list.mat the counts are exactly the paper's
+    (A1 780, wS1 1938, wS2 2064, wM2 2749, ALM 2763, 10,294 in all). Without the CCF filter 12,066
+    units sit on the five areas' probes, so the counts match only with the filter. Probe sessions and
+    mice per area are the paper's (14 and 6, 24 and 12, 24 and 11, 18 and 8, 16 and 6); for wS2 only
+    19 sessions in 9 mice keep units after the filter. The files hold no inclusion column; every unit
+    in them is taken as one the paper kept.
+  deviations:
+  - The area of a unit uses Area_list.mat from the Zenodo record, which the dandiset does not hold.
+- claim: fig3a-activity-maps
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig3a-activity-maps
+  notes: Area means over probes (quiet Hit trials), reading (a) Auditory A1 5.55 Hz (others at most
+    1.54); Delay wM2 0.70 and ALM 0.35 (A1 0.20); Whisker wS1 6.80 and wS2 5.61; Lick ALM 1.80 and wM2
+    1.79 (wS2 1.28). Reading (b) and the code's -1 to 0 s baseline give the same ranking, so all four
+    windows hold under both readings.
+  deviations:
+  - Windows are the code's bin selections (Ghaderi2025_Figure3_a_brainmap_activity.m, bins labelled
+    0.01-0.03, 0.8-1.0, 1.01-1.03 and 1.3-1.5 s); the code uses the -1 to 0 s baseline for every
+    window, shown as a variant.
+  - Only units that pass the CCF filter are averaged, as the code does; the criterion says all cortical
+    neurons on the probe.
+- claim: fig3b-delay-and-response-psth
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig3b-delay-and-response-psth
+  notes: (i) holds in wM2 (Wilcoxon over 2,749 neurons, pooled p 0.004, by type p 0.0015) and ALM
+    (2,763 neurons, p 0.009 and 0.008). (ii) over 1.3 to 1.5 s holds in wS1, wM2 and ALM against all
+    four other correct types, and in wS2 against types 2, 3 and 4 but not against No-tone Whisker CR
+    (difference 0.80 Hz, p 0.11), so (ii) fails for one area, the criterion's partial case. Over 1.0 to
+    1.5 s every comparison holds. With the code's whisker-only quiet rule (i) fails for ALM by type
+    (p 0.055) and (ii) fails for the same wS2 comparison.
+  deviations:
+  - Pooled Go-tone and Nogo-tone conditions pool the trials of the two types.
+- claim: fig3c-delay-modulation-wm2-alm
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig3c-delay-modulation-wm2-alm
+  measured:
+  - 13.79
+  - 11.69
+  - 11.13
+  - 13.86
+  notes: Under the Methods' quiet rule (seed 5 given as measured; seeds 5 to 7) up-modulated wM2 13.6
+    to 13.8% against ALM 11.6 to 11.8% (chi-squared p 0.020 to 0.037) and down-modulated 10.9 to 11.1%
+    against 13.6 to 14.0% (p 0.0006 to 0.0046); both directions and both tests hold, but all four
+    fractions are below tolerance. With the code's mean absolute deviation the fractions are the
+    paper's (up 16.0 to 16.3% against 14.3%, down 14.0 to 14.3% against 17.0%), with up-modulation p
+    0.047 to 0.077 by seed (paper 0.0499) and down-modulation p 0.002 to 0.005.
+  deviations:
+  - Windows are the code's bins 181:200 and 81:100 (Modulation.m), 0.8 to 1.0 s against -0.2 to 0 s.
+  - Units are CCF-filtered (header convention); Modulation.m itself applies no CCF filter.
+- claim: fig3d-wm2-infragranular-delay
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig3d-wm2-infragranular-delay
+  measured:
+  - 0.955
+  - -0.055
+  notes: wM2 infragranular 0.955 +/- 0.119 Hz (2,046 neurons) against supragranular -0.055 +/- 0.093 Hz
+    (703), t-test p 1.56e-06; the supragranular value is within tolerance, the infragranular below it
+    (1.1 to 1.3). No layer pair differs in A1, wS2 or ALM (smallest p 0.21). The criterion's partial
+    case (wM2 holds, one other pair significant) does not fit this result; it is recorded as partial
+    because the effect and the absence elsewhere hold and one value is low. With the code's mean
+    absolute deviation the wM2 values are 1.128 and -0.003 Hz (p 2.04e-07), within tolerance.
+- claim: cluster-label-link
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:cluster-label-link
+  notes: All 10,294 labelled neurons map by the rebuilt global index (13,793 units in the dataset) to
+    distinct dataset units with the same probe area, CCF label and layer, and each is one of the
+    10,294 units analysed here.
+- claim: fig4-29-clusters
+  outcome: not_reproduced
+  notebook: decoding_clusters_whisker.ipynb
+  output: claim:fig4-29-clusters
+  measured: 44
+  notes: Following the Methods (10 ms PSTHs of the five correct types, 10,292 neurons with a nonzero
+    range, 17 PCs, Gaussian similarity with sigma 0.0455 for a mean similarity of 0.5, eigenvectors 2
+    to 17, diagonal GMM) the BIC is lowest at k = 44 (k = 39 equal to the nearest unit), outside the
+    20 to 38 band. The code's variant (100 ms bins, whisker-only quiet rule, exp(-d/0.07975), mean
+    similarity 0.500) gives k = 36. The BIC over k = 26 to 44 varies by less than 900 units and is not
+    smooth, and only 5 initialisations per k were run, so the minimum is not stable.
+  deviations:
+  - 5 GMM initialisations per k in place of the code's 1,000 (time); random state 0.
+  - The shuffle rule for the number of PCs (1,000 shuffled PCAs) is not run; 17 PCs as the Methods.
+  - Sessions with fewer than 3 quiet trials of a correct type would be skipped (code); none were.
+- claim: fig4b-named-clusters
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig4b-named-clusters
+  notes: The readings of "mostly" give different outcomes. Cluster 1 (187 neurons) has a fast
+    auditory response (13.0 to 17.3 Hz over 0 to 30 ms) and its largest share in A1 (30.5%; wS2
+    21.4%, wS1 20.3%) but not more than half, so reading (b) gives reproduced and reading (a)
+    partially reproduced. The other parts hold under both readings; cluster 29 is 45.2% wS1 and 41.5%
+    wS2 with a 21.7 to 21.9 Hz whisker response; clusters 11 and 25 are 90.4% and 83.1% wM2 and ALM
+    and fire more in Hit than Nogo CR trials over the late delay (11.54 against -0.79 Hz, 3.56 against
+    -0.29 Hz); cluster 4 fires less in Hit (-1.60 against 0.05 Hz) and has 7.1 to 31.9% of its neurons
+    in each area. The question of what "mostly" means is for the paper's authors (findings).
+  deviations:
+  - The response of clusters 1 and 29 is shown for each correct trial type that has the stimulus; the
+    criterion does not say which trials.
+- claim: fig5a-single-neuron-context
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig5a-single-neuron-context
+  measured:
+  - 17.86
+  - 8.65
+  - 11.50
+  - -3.16
+  - 14.48
+  - 8.05
+  - 12.92
+  - -3.40
+  notes: Under the Methods' quiet rule the wM2 up-modulated fraction is the largest of the five areas
+    (17.86%) and wM2 (29.4%) and ALM (27.4%) have more modulated neurons than A1, wS1 and wS2 (at most
+    15.5%); the four firing changes are within tolerance but the four fractions are below it (4 of 8
+    values). With the code's mean absolute deviation all eight are within tolerance (wM2 20.04%, 8.14
+    Hz, 14.11%, -2.77 Hz; ALM 16.72%, 7.53 Hz, 16.14%, -2.97 Hz).
+- claim: fig5b-context-decoding-delay
+  outcome: partially_reproduced
+  notebook: decoding_delay.ipynb
+  output: claim:fig5b-context-decoding-delay
+  measured:
+  - 52.6
+  - 51.9
+  - 51.4
+  - 62.0
+  - 58.9
+  notes: Both SVM readings give the same outcome. Code's nu-SVC (reading b, listed as measured) A1 52.6,
+    wS1 51.9, wS2 51.4, wM2 62.0, ALM 58.9% (2 of 5 within tolerance); Methods' grid search (reading a)
+    53.1, 52.3, 52.0, 63.1 and 58.5% (3 of 5). Every area is above baseline (Wilcoxon p 0.0078 or less
+    with the code's decoder, 0.027 or less with the grid search; baseline 49.98 to 50.09%) and wM2 and
+    ALM exceed A1, wS1 and wS2 under both readings. Sessions with at least 50 neurons are the paper's
+    (8, 17, 19, 18, 16).
+  deviations:
+  - 5 random subsets of 50 neurons per session (code's decoder) and 1 subset on every 5th baseline bin
+    (grid search), in place of 100 subsets; the run times printed put 100 subsets at about 37 min for
+    the code's decoder and 30 h for the grid search.
+  - The grid for the Methods' search (C from 10^-3 to 10^3 in decades) is the claims file's; the SVM
+    caps libsvm iterations at 10^5.
+  - sklearn's libsvm (NuSVC, SVC) stands in for the MATLAB libsvm interface; undersampling and folds
+    draw their own random numbers.
+- claim: fig5b-decoding-time-course
+  outcome: reproduced
+  notebook: decoding_delay.ipynb
+  output: claim:fig5b-decoding-time-course
+  notes: With 50 neurons and the code's decoder (1) baseline accuracy is 49.98 to 50.09% in every area;
+    (2) the cue accuracy is highest in A1 under both cue windows (70.3% over 0 to 30 ms, 65.6% over 0
+    to 200 ms; at most 57.4 and 57.9% elsewhere); (3) delay accuracy falls below the cue accuracy in
+    A1, wS1 and wS2 and rises above it in wM2 and ALM under both windows; (4) wM2 and ALM exceed A1,
+    wS1 and wS2 at every count from 5 to 50 neurons (at 5 by 0.47 to 0.51 points), and with the
+    Methods' grid search at 5, 25 and 50 neurons.
+  deviations:
+  - 3 subsets per session for 5 to 45 neurons (paper 100); the grid search is run at 5, 25 and 50
+    neurons only, and parts (1) to (3) with the code's decoder only.
+- claim: fig5c-cluster-removal
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: decoding_clusters_whisker.ipynb
+  output: claim:fig5c-cluster-removal
+  notes: The two SVM readings give different outcomes, which the criterion blocks. Code's nu-SVC,
+    cluster 11 lowers delay decoding in wM2 by 4.61 +/- 0.89 and ALM by 4.45 +/- 1.20 points (FDR p
+    0.0009 and 0.0002) and not significantly in A1, wS1, wS2; cluster 25 by 1.30 +/- 0.53 and 1.70 +/-
+    0.57 (FDR p 0.048 both); all four within tolerance; one other pair is significant (cluster 24 in
+    A1, 0.48 points, p 0.029), so partially reproduced. Methods' grid search, cluster 11 lowers wM2 by
+    4.17 and ALM by 4.73 points (significant) but also wS1 by 0.20 (FDR p 0.030), and cluster 25's
+    1.31 and 1.92 points are not significant (FDR p 0.085), so not reproduced. It also depends on
+    fig4b-named-clusters, blocked for the same reason; the cluster labels themselves link fully.
+  deviations:
+  - The decrease is with minus without the cluster (the criterion's without minus with, sign turned).
+    The two decodings share their random state.
+  - The grid search was run for clusters 11 and 25 only (all 29 would take about 54 min).
+- claim: fig5d-null-space-decoding
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The method needs orthogonal null and potent subspaces from the MATLAB toolbox subspaceID
+    (Hasnain et al.) with manopt (Movement_subspace_Define.m, pg_decompose.m), which cannot be
+    installed in the entry's Python environment. A Python reimplementation of the manifold
+    optimisation was not attempted within this run's time. The dandiset holds what the analysis needs
+    (all completed trials, spike times and the whisker trace for movement bins).
+- claim: fig6a-pca-delay-states
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig6a-pca-delay-states
+  measured:
+  - 10.08
+  - 9.77
+  - 10.77
+  - 14.97
+  - 12.61
+  - 5.52
+  - 5.47
+  - 5.74
+  - 7.36
+  - 6.79
+  notes: The geometry holds; end-of-delay distances from baseline in wM2 Hit 7.14 and Go-tone No-Whisker
+    5.87 against Nogo CR 0.96 and Miss 1.90; in ALM 6.64 and 5.65 against 0.45 and 1.95; in A1, wS1 and
+    wS2 the Hit trajectory is at 0.05 to 0.16 of its maximum distance at 1.0 s. Seven of ten explained
+    variances are within tolerance (PC1 wS1 9.77 and wM2 14.97, PC2 ALM 6.79 below). With the code's
+    mean absolute deviation all ten are within tolerance (PC1 11.1, 10.6, 11.5, 16.6, 14.3; PC2 6.0,
+    6.1, 6.2, 8.2, 7.8). The legend's reading (PCs on Hit and Nogo CR) gives PC1 16.7 to 27.2%.
+  deviations:
+  - The distance measures and the half-maximum rule are the claims file's (marked open in its check).
+  - Neurons with no trials of a condition (NaN) or no range are dropped (133 wM2, 101 ALM, 3 wS2), as
+    the code's normalisation does.
+- claim: fig6b-context-coding-direction
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig6b-context-coding-direction
+  notes: 20% training trials and the Methods' quiet rule (seed 9). wM2 Hit projections exceed Nogo CR,
+    Go-tone No-Whisker CR and Miss (p times 3 below 0.0001, 0.0010, below 0.0001; 18, 18, 17 sessions);
+    ALM likewise (0.0001, 0.0039, 0.0002; 16, 16, 15). All six hold with 30% training (code), the
+    code's MAD and another seed.
+  deviations:
+  - The Gram-Schmidt step is omitted; the context direction comes first, so it is unchanged.
+- claim: fig6c-temporal-correlation
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig6c-temporal-correlation
+  notes: Baseline-subtracted delay correlation, Hit against Nogo CR, Go-tone No-Whisker CR and Miss, p
+    times 3; wM2 below 0.0001, 0.0039 and below 0.0001; ALM 0.0002, 0.0003 and
+    0.0004; Hit higher in all six. A1, wS1 and wS2 show no significant comparison; the brief cue-evoked
+    increase is shown, not judged. Dropping the fourth A1 Hit session as the code does changes no A1
+    result.
+- claim: fig7b-early-whisker-response
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig7b-early-whisker-response
+  notes: FDR within each area; wS1 has significant negative Hit minus CR bins at 1.015 and 1.020 s and
+    wS2 at 1.010 to 1.025 s; all five areas have significant positive bins from 1.030 s on (ALM from
+    1.030, wM2 1.035, wS1 and wS2 1.040, A1 1.065 s). The code's FDR over all areas and bins gives the
+    same for wS1, wS2, wM2 and ALM.
+- claim: fig7c-no-whisker-cd-change
+  outcome: reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig7c-no-whisker-cd-change
+  notes: Claim of absence, judged by the code's Kruskal-Wallis test; no area differs (p 0.31 to 0.97;
+    variants smallest p 0.19). Hit minus Nogo CR projections -0.022 to 0.061. The paired Wilcoxon
+    test, not the paper's, gives wS2 p 0.096 in the main run and below 0.05 in wS2 and A1 in some
+    variants.
+  deviations:
+  - The 5 ms counts are kept from 0.95 s only, so the whisker direction's -1 to 0 s baseline and the
+    context direction's 0.8 to 1.0 s window come from the 10 ms counts halved (window [0.79, 1.0) in
+    place of [0.795, 1.0)).
+  - 30% training trials, as Coding_direction_5ms.m.
+- claim: fig7d-context-decoding-after-whisker
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: decoding_clusters_whisker.ipynb
+  output: claim:fig7d-context-decoding-after-whisker
+  notes: The two SVM readings give different outcomes. Code's nu-SVC (1 run, 10 baseline bins) gives
+    persistent decoding from 1.025 s in wM2 and 1.035 s in ALM and only from 1.085, 1.045 and 1.060 s
+    in A1, wS1 and wS2, so the criterion holds. The Methods' grid search (1 run, 2 baseline bins)
+    gives wM2 from 1.040 s and ALM from 1.035 s, so wM2 does not precede ALM and the claim is not
+    reproduced. Neither reading shows the single significant bins at 15 ms in A1 and wS2 (wS2 has an
+    isolated bin at 1.020 s with the grid search).
+  deviations:
+  - 1 run in place of the code's 5; the grid search uses 2 of the 10 baseline bins.
+- claim: fig8a-wm2-lick-divergence
+  outcome: partially_reproduced
+  notebook: reproduce_ghaderi_2026.ipynb
+  output: claim:fig8a-wm2-lick-divergence
+  notes: In wM2 the six groups differ (Kruskal-Wallis p 0.0048) and Go-tone lick trials are above
+    Go-tone no-lick trials (LSD p 0.0041), but Nogo-tone lick (false alarm) trials are not above
+    Nogo-tone no-lick trials (p 0.28; variants 0.08 to 0.36), so wM2 holds for one context, the
+    criterion's partial case. A1, wS1 and wS2 show no significant lick against no-lick comparison (p
+    0.40 or more). ALM Kruskal-Wallis p below 0.0001, Go-tone p 0.0008, Nogo-tone p 0.028.
+  deviations:
+  - As fig7c, the context direction at 5 ms is built from the 10 ms counts.
+- claim: fig8b-lick-coding-direction
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within this run's time. The lick coding direction needs the spontaneous lick times
+    and lick mask of data_helpers/Lick_times.mat on the Zenodo record (1,522,185,380 bytes inside a
+    compressed zip, so it must be read whole); the dandiset holds the piezo lick trace and the jaw
+    trace but no detected lick times outside trials. At the rate measured while preparing (127 MB in
+    about 90 s) the fetch takes about 18 min; the analysis was not written.
+- claim: figs18-later-lick-coding
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig8b-lick-coding-direction, not tested within this run's time for the same reason.
+findings:
+- kind: code_mismatch
+  statement: The Methods define quiet trials with the median absolute deviation; the code (nwb_findQuietTrial.m)
+    calls MATLAB mad() with its default, the mean absolute deviation, which keeps more trials (60%
+    against 45% of completed trials). With the code's rule the single-neuron fractions of Fig. 3c and
+    5a, the layer values of Fig. 3d and the explained variances of Fig. 6a come out at the paper's
+    values; with the Methods' rule they are lower. The paper's numbers appear to come from the code's
+    rule.
+- kind: metadata_insufficient
+  statement: The dandiset gives each unit a probe location and an Allen CCF label but not which CCF
+    labels make up the paper's five areas. Only with data_helpers/Area_list.mat from the Zenodo record
+    do the unit counts match the paper (10,294); without it 12,066 units sit on the five areas' probes.
+- kind: metadata_error
+  statement: In 12 optogenetic sessions (11 of mouse PG061 and one of PG021) the subject genotype is
+    C57BL/6JRj, which carries no ChR2, although the paper inactivates VGAT-ChR2 mice and light trials
+    in these sessions reduce licking as in the others; the other sessions of PG021 give
+    VGAT_ChR2-eYFP.
+- kind: metadata_error
+  statement: The units' spike_width is described as "Trough to peak in ms" but holds seconds (0.0001 to
+    0.0012); times 1000 the RS and FS flags fit the Methods' thresholds (RS 0.467 to 1.200 ms, FS 0.100
+    to 0.333 ms).
+- kind: metadata_error
+  statement: Several trial-table descriptions do not fit their columns, for example opto_area ("laser
+    light duration", holds an area name), opto_stim_start_time ("Pulse duration in s"),
+    opto_stim_stop_time ("Individual pulse timestamps") and context ("Boolean for sound", holds
+    go_tone, nogo_tone or no_tone).
+- kind: other
+  statement: Eleven trials of sub-PG028_ses-20210318T163504 have trial_type 0, outside the five types,
+    and sub-PG076_ses-20220502T140636 has no No-tone trials. In sub-PG061_ses-20220212T233813 243
+    trials and in sub-PG038_ses-20210316T152753 29 trials have no video frames, so they cannot be
+    classed as quiet. sub-PG038_ses-20210317T180556 has no unit that passes the CCF filter.
+- kind: paper_inconsistency
+  statement: The Fig. 2 legend gives mean +/- SD and 1,000 bootstrap iterations; the reported spreads
+    match the SEM over sessions (A1 Auditory 4.1 against SD 16.9) and the reported p-values (0.0003,
+    0.0004) are reached with the code's 10,000 iterations, not with 1,000 (smallest 0.002 before FDR).
+- kind: paper_inconsistency
+  statement: The Results and Fig. 1c give 35 recording sessions, which the dandiset holds; the Methods
+    say 34. The Methods give 8 mice for ALM inactivation; the dandiset has ALM sessions from 7 mice.
+- kind: methods_unavailable
+  statement: Question for the authors on Fig. 4b. Does "mostly consisted of neurons in A1" for cluster 1
+    mean more than half of its neurons or the largest share of any area? With the paper's labels
+    cluster 1 is 30.5% A1, 21.4% wS2 and 20.3% wS1, so the claim holds under the second reading only.
+- kind: methods_unavailable
+  statement: Question for the authors on the population decoders (Fig. 5b to 5d, 7d). The Methods say SVM
+    parameters were chosen by grid search with nested cross-validation but give no grid; the code
+    trains libsvm nu-SVC with default parameters and no search. Which was used, and over which grid?
+    With a C grid of 10^-3 to 10^3 the cluster-removal and post-whisker results differ from the code's
+    decoder (Fig. 5c cluster 25 not significant; Fig. 7d wM2 onset after ALM).
+- kind: other
+  statement: The spontaneous lick times and lick mask used for the lick coding direction (Fig. 8b,
+    Supplementary Fig. 18) are only in the Zenodo record (Lick_times.mat); the dandiset holds the raw
+    piezo lick trace.
