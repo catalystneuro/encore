@@ -6,14 +6,14 @@ alternating current stimulation of rat sensorimotor cortex, against
 
 The 1-minute files hold only the stimulation command, one series per trial, and no recording, so
 the paper's parameter exploration cannot be tested. The 20-minute files hold a 16-channel stream
-at 12207 Hz that carries the LFP and spikes, but no sorted units; sorting the 13 rats is
-estimated at about two hours, beyond the notebook limit. The sham recording is not in the
+at 12207 Hz that carries the LFP and spikes, but no sorted units; loading and sorting the 13 rats
+takes about 98 minutes at the speed measured on one full rat, beyond the notebook limit. The sham recording is not in the
 dandiset.
 
 | Claim | Outcome |
 |---|---|
 | Median electric field of the 20-minute experiments, 1.65 mV/mm | Reproduced (resting on an assumed channel layout) |
-| Electric fields of the 1-minute experiments, and the three finite element model claims | Blocked: data missing |
+| Electric fields of the 1-minute experiments, and the three finite element model claims (the model is not public) | Blocked: data missing |
 | Neurons, firing rates and entrainment in the 1-minute experiments, and their LFP (26 claims) | Blocked: data missing |
 | Neurons, firing rates and entrainment in the 20-minute experiments (4 claims) | Blocked: too large |
 | LFP power and phase-amplitude coupling near affected neurons after 20-minute stimulation (8 claims) | Blocked: too large |

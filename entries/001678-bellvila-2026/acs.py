@@ -23,7 +23,11 @@ Where each parameter of the electric field estimate comes from:
 - zero-phase Butterworth band of +/- 1 Hz (order 2, second-order sections): the criterion's
   standard choice for a filter the paper does not name.
 - the 4 x 4 order of channels "aw_ 1" to "aw_ 16": an assumption (row by row, four channels per
-  row); the files and the paper give no map. The notebook tests it against other orders.
+  row); the files and the paper give no map. Methods 2.3 name the maker of the 4 x 4
+  array (Microprobes); Microprobes arrays are built to order, and neither its
+  catalogue nor TDT's ZIF-Clip and channel-mapping manuals (which map only TDT's own 2 x 8 arrays)
+  give the wire-to-channel map of such an array (searched 2026-11-03). The notebook tests the
+  assumed order against other orders.
 - stimulation onset and offset: found from the 40 Hz artifact, 1-s resolution (the files have no
   epochs). One second is dropped at each end, a standard choice that cannot change a field that is
   averaged over about 1200 s.
@@ -287,12 +291,24 @@ def cycle_peaks(asset: dict, f0: float = STIM_HZ_20MIN, block_s: float = 60.0) -
     idx = (np.arange(ncyc + 1) * per).astype(int)
     pk = np.maximum.reduceat(np.abs(yb), idx[:-1], axis=0)[:ncyc]
     raw_rms = y.std(axis=0)
+    per_min = int(round(60 * f0))
+    minutes = ncyc // per_min
+    peak_per_minute = pk[: minutes * per_min].reshape(minutes, per_min, -1).mean(axis=1)
+
+    def profile(t_s: float, half: int = 15) -> np.ndarray:
+        # largest 40 Hz line ratio over channels, each second from t_s - half to t_s + half
+        z = d[max(int((t_s - half) * fs), 0):int((t_s + half) * fs), :].astype(np.float64)
+        one = int(fs)
+        return np.array([max(_line_ratio(z[k * one:(k + 1) * one, c], fs, f0) for c in range(z.shape[1]))
+                         for k in range(len(z) // one)])
+
     return {
         "path": asset["path"], "subject": asset["path"].split("/")[0], "fs": fs, "n_samples": d.shape[0],
         "onset_s": onset, "offset_s": offset, "series_s": d.shape[0] / fs, "n_cycles": ncyc,
         "peak_mean": pk.mean(axis=0), "peak_cv": pk.std(axis=0) / pk.mean(axis=0),
         "peak_first_half": pk[: ncyc // 2].mean(axis=0), "peak_second_half": pk[ncyc // 2:].mean(axis=0),
-        "decimated_rms": raw_rms,
+        "decimated_rms": raw_rms, "peak_per_minute": peak_per_minute,
+        "onset_profile": profile(onset), "offset_profile": profile(offset),
     }
 
 
@@ -327,42 +343,116 @@ def fields(g_volts: np.ndarray) -> dict:
     cx = (ex[:-1, :] + ex[1:, :]) / 2  # 3 x 3
     cy = (ey[:, :-1] + ey[:, 1:]) / 2  # 3 x 3
     cells = np.hypot(cx, cy).ravel()
+    # per electrode, all 16: the difference to the right (x) and lower (y) neighbour, or to the
+    # left and upper one at the last column and row, so that every one of the 24 pairs is used
+    nx = np.concatenate([ex, ex[:, -1:]], axis=1)
+    ny = np.concatenate([ey, ey[-1:, :]], axis=0)
+    nodes_all = np.hypot(nx, ny).ravel()
     maximal = float(np.hypot(np.abs(ex).max(), np.abs(ey).max()))
-    return {"ex": ex, "ey": ey, "cells": cells, "maximal": maximal,
+    return {"ex": ex, "ey": ey, "cells": cells, "maximal": maximal, "nodes_all": nodes_all,
             "pairs_x": np.abs(ex).ravel(), "pairs_y": np.abs(ey).ravel()}
 
 
-def sorting_timing(asset: dict, minutes: float, start_s: float = 300.0, n_jobs: int = 4, seed: int = 1678) -> dict:
-    """Time SpyKING CIRCUS 2 (spikeinterface) on `minutes` of the first series of a 20-min file,
-    streamed from the archive (the sorter's working files go to a temporary directory).
+# ---------------------------------------------------------------------------------------------
+# Spike sorting of the 20-minute experiments.
+#
+# Where each parameter comes from:
+# - multi-unit band 500 to 3000 Hz: Methods 2.3 and 2.5. Zero-phase Butterworth, order 3: a
+#   standard choice for a filter the paper does not name.
+# - artifact removal during stimulation with a causal uniform comb filter over the 10 preceding
+#   stimulation periods: Methods 2.5 ("a weighted causal uniform comb filter (ARtACS software)")
+#   and the paper's MUAartrem.m (artacs.dft.causal, 10 periods), as the claims file's opening
+#   comment gives it. Here the comb subtracts the mean of the samples one to ten periods earlier,
+#   which removes the stimulation frequency and all its harmonics.
+# - windows: 20 min of baseline before onset, the 20 min of stimulation, and up to 10 min after
+#   offset (Methods 2.4 and 2.6; claim criteria). The sort covers these 50 minutes.
+# - SpyKING CIRCUS 2 with whitening, detection threshold 6 (Methods 2.6); see sort_mua for the
+#   reasons and the other settings.
+# Only one rat is sorted here, to time the sorting (see the notebook).
+# ---------------------------------------------------------------------------------------------
 
-    Settings: the multi-unit band of Methods 2.3 (500 to 3000 Hz), the detection threshold of 6 of
-    Methods 2.6, the sorter's whitening (Methods 2.6, "spatial whitening"); motion correction is
-    off, a standard choice for an array fixed in the cortex for one session; other settings are the
-    sorter's defaults, as the claims file's standard choice. SpyKING CIRCUS 1, which the paper
-    used, needs MPI and is not installable here; version 2 is its successor in spikeinterface. The
-    positions are the assumed 4 x 4 layout at 0.5 mm; with 0.5 mm between contacts each spike is
-    seen on one contact, so the layout does not change the sorting."""
+MUA_BAND = (500.0, 3000.0)
+COMB_PERIODS = 10
+BASELINE_S = 20 * 60.0
+POST_S = 10 * 60.0
+
+
+def comb_remove(x: np.ndarray, fs: float, f0: float, a: int, b: int, periods: int = COMB_PERIODS,
+                block: int = 1_000_000) -> None:
+    """In place: from sample a to b subtract the mean of the samples 1 to `periods` stimulation
+    periods earlier (linear interpolation for the fractional period), block by block from the end
+    so that each block reads samples not yet changed. Samples before a that the first periods
+    reach are taken as they are."""
+    per = fs / f0
+    reach = int(np.ceil(periods * per)) + 2
+    for s0 in range(a + ((b - a - 1) // block) * block, a - 1, -block):
+        s1 = min(s0 + block, b)
+        base = max(s0 - reach, 0)
+        src = x[base:s1].astype(np.float64)
+        n = np.arange(s0, s1)
+        tmpl = np.zeros((s1 - s0, x.shape[1]))
+        for k in range(1, periods + 1):
+            t = n - k * per
+            i = np.floor(t).astype(int)
+            w = (t - i)[:, None]
+            tmpl += (1 - w) * src[i - base] + w * src[i + 1 - base]
+        x[s0:s1] = (src[s0 - base:] - tmpl / periods).astype(x.dtype)
+
+
+def load_mua(asset: dict, onset_s: float, offset_s: float, block_s: float = 60.0) -> dict:
+    """The multi-unit band of the 50-minute window (20 min before onset to 10 min after offset, cut
+    at the end of the first series), as float32 in volts, with the artifact removed during
+    stimulation. Also returns the window's limits in samples, relative to its start."""
+    f = open_asset(asset["asset_id"])
+    d = f["acquisition/ElectricalSeries0/data"]
+    fs = float(f["acquisition/ElectricalSeries0/starting_time"].attrs["rate"])
+    w0 = max(int((onset_s - BASELINE_S) * fs), 0)
+    w1 = min(int((offset_s + POST_S) * fs), d.shape[0])
+    sos = signal.butter(3, MUA_BAND, btype="band", fs=fs, output="sos")
+    pad = int(0.5 * fs)
+    out = np.empty((w1 - w0, d.shape[1]), dtype=np.float32)
+    step = int(block_s * fs)
+    for s0 in range(w0, w1, step):
+        s1 = min(s0 + step, w1)
+        lo, hi = max(s0 - pad, 0), min(s1 + pad, d.shape[0])
+        y = signal.sosfiltfilt(sos, d[lo:hi, :].astype(np.float64), axis=0)
+        out[s0 - w0:s1 - w0] = y[s0 - lo:s0 - lo + (s1 - s0)]
+    on, off = int(onset_s * fs) - w0, int(offset_s * fs) - w0
+    comb_remove(out, fs, STIM_HZ_20MIN, on, off)
+    return {"x": out, "fs": fs, "start": w0, "onset": on, "offset": off, "end": w1 - w0}
+
+
+def sort_mua(x: np.ndarray, fs: float, n_jobs: int = 4, seed: int = 1678) -> dict:
+    """SpyKING CIRCUS 2 (spikeinterface) on a preprocessed multi-unit array (samples x 16), written
+    to a temporary file for the sorter (deleted after). Returns the spike samples of each unit, its
+    channel (the most negative mean waveform) and the time the sorter took.
+
+    Settings: the band is applied beforehand (load_mua), so the sorter's own preprocessing is off
+    but its whitening is kept (Methods 2.6, "spatial whitening"); detection threshold 6 (Methods
+    2.6); motion correction off, a standard choice for an array fixed in the cortex for one
+    session; other settings are the sorter's defaults, the claims file's standard choice.
+    SpyKING CIRCUS 1, which the paper used, needs an MPI library that is not available here;
+    version 2 is its successor in spikeinterface. The positions are the assumed 4 x 4 layout at
+    0.5 mm; with 0.5 mm between contacts each spike is seen on one contact, so the layout does not
+    change the sorting."""
     import os
     import shutil
     import tempfile
     import time as _time
 
     import spikeinterface.extractors as se
-    import spikeinterface.preprocessing as spre
     import spikeinterface.sorters as ss
     from probeinterface import Probe
 
-    url = requests.get(f"{API}/assets/{asset['asset_id']}/download/", allow_redirects=False, timeout=60).headers["Location"]
-    rec = se.read_nwb_recording(file_path=url, stream_mode="remfile", electrical_series_path="acquisition/ElectricalSeries0")
-    fs = rec.get_sampling_frequency()
-    rec = rec.frame_slice(int(start_s * fs), int((start_s + 60 * minutes) * fs))
+    tmp = tempfile.mkdtemp()
+    raw = os.path.join(tmp, "mua.raw")
+    x.tofile(raw)
+    rec = se.read_binary(raw, sampling_frequency=fs, dtype="float32", num_channels=x.shape[1])
     pos = np.array([[(k % 4) * 500.0, (k // 4) * 500.0] for k in range(16)])
     probe = Probe(ndim=2)
     probe.set_contacts(positions=pos, shapes="circle", shape_params={"radius": 30})
     probe.set_device_channel_indices(np.arange(16))
-    rec = spre.bandpass_filter(rec.set_probe(probe), freq_min=500, freq_max=3000)
-    tmp = tempfile.mkdtemp()
+    rec = rec.set_probe(probe)
     t0 = _time.time()
     try:
         sorting = ss.run_sorter(
@@ -371,8 +461,24 @@ def sorting_timing(asset: dict, minutes: float, start_s: float = 300.0, n_jobs: 
             detection={"method": "matched_filtering", "method_kwargs": {"peak_sign": "neg", "detect_threshold": 6}},
             job_kwargs={"n_jobs": n_jobs}, seed=seed)
         seconds = _time.time() - t0
-        counts = sorting.count_num_spikes_per_unit()
+        trains = {u: sorting.get_unit_spike_train(u) for u in sorting.unit_ids}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-    return {"subject": asset["path"].split("/")[0], "minutes": minutes, "seconds": seconds, "units": len(counts),
-            "spikes_per_unit": sorted(int(v) for v in counts.values())}
+    # channel of each unit: the most negative mean waveform over its spikes (up to 500)
+    rng = np.random.default_rng(seed)
+    chan = {}
+    for u, st in trains.items():
+        st = st[(st > 30) & (st < len(x) - 30)]
+        pick = st if len(st) <= 500 else rng.choice(st, 500, replace=False)
+        wf = np.mean([x[s - 10:s + 10] for s in pick], axis=0) if len(pick) else np.zeros((20, x.shape[1]))
+        chan[u] = int(np.argmin(wf.min(axis=0)))
+    return {"trains": trains, "channel": chan, "seconds": seconds}
+
+
+def locked_ptp(z: np.ndarray, fs: float, f0: float = STIM_HZ_20MIN, bins: int = 100) -> np.ndarray:
+    """Peak-to-peak (in the units of z) of the mean of z over stimulation cycles, per channel: the
+    part of the signal locked to the f0 cycle, which is the artifact during stimulation and near
+    zero without it."""
+    ph = ((np.arange(len(z)) * f0 / fs) % 1 * bins).astype(int)
+    tmpl = np.array([z[ph == k].mean(axis=0) for k in range(bins)])
+    return tmpl.max(axis=0) - tmpl.min(axis=0)
