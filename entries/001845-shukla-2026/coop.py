@@ -12,8 +12,12 @@ Where each parameter comes from:
   one; performance = 200 x matches / transitions of both rats (Methods, Eq. 1, as the claims
   file reads it).
 - Cross-correlation: 40 px radius, 1 Hz, arrivals, normalisation by the norms, lags -20 to +20 s
-  (Methods, "Cross-correlation analysis of well arrivals"; claims file fig4eg). 40 px is
-  6.4 cm at the camera's 0.0016 m per pixel (the files' camera device).
+  (Methods, "Cross-correlation analysis of well arrivals"; claims file fig4eg). 40 px is taken in
+  each video's own pixels: the scale is measured per file by regressing the processed head position
+  (cm) on the raw DeepLabCut head position (pixels), because the files' camera device gives
+  0.0016 m per pixel for every file while the processed positions of some rats use 0.0025.
+  Where a file holds no raw pose, the subject's median scale is used, and where a subject has none,
+  the device's 0.0016 m per pixel (an assumption).
 - Leader: the rat whose poke at its matched well began first (Methods, "Assignment of leader and
   follower identities").
 - State-space model: Smith et al. (2004), Eqs. 4 to 8 of the Methods; b0 = 0 (claims file).
@@ -78,6 +82,24 @@ def _s(x):
     return x.decode() if isinstance(x, bytes) else str(x)
 
 
+def cm_per_px(beh, n=6000):
+    """cm per raw video pixel: slope of the processed head position (cm) on the raw DeepLabCut head
+    position (pixels), y coordinate, over the first `n` frames with confidence above 0.95. NaN when
+    the file holds no raw pose."""
+    pe = [k for k in beh if k.startswith("PoseEstimation")]
+    if not pe:
+        return np.nan
+    g = beh[pe[0]]["PoseEstimationSeriesHead"]
+    raw, rt, conf = g["data"][:n], g["timestamps"][:n], g["confidence"][:n]
+    pr, pt = beh["processed_position/head/data"][:n], beh["processed_position/head/timestamps"][:n]
+    idx = np.clip(np.searchsorted(rt, pt), 0, len(rt) - 1)
+    ok = np.isfinite(pr).all(1) & (conf[idx] > 0.95) & (np.abs(rt[idx] - pt) < 1e-3) & np.isfinite(raw[idx]).all(1)
+    if ok.sum() < 100:
+        return np.nan
+    A = np.c_[raw[idx][ok, 1], np.ones(ok.sum())]
+    return float(np.linalg.lstsq(A, pr[ok, 1], rcond=None)[0][0])
+
+
 def read_file(asset_id, positions=("head", "neck", "body")):
     """Stream one NWB file and return what the analyses use, reduced as it loads."""
     f = h5py.File(remfile.File(s3_url(asset_id)), "r")
@@ -88,6 +110,9 @@ def read_file(asset_id, positions=("head", "neck", "body")):
     for p in positions:
         pos[p] = beh["processed_position"][p]["data"][:].astype(np.float32)
     pos_t = beh["processed_position/head/timestamps"][:]
+    tt = f[f"processing/tasks/{task}"]
+    task_fields = {k: _s(tt[k][0]) for k in ("task_name", "task_environment", "led_configuration", "led_list")
+                   if k in tt}
     rw = beh["reward_well_visits"]
     visits = {k: rw[k][:] for k in ("well_id", "start_time", "stop_time")}
     out = dict(
@@ -99,6 +124,7 @@ def read_file(asset_id, positions=("head", "neck", "body")):
         epoch=(float(f["intervals/epochs/start_time"][0]), float(f["intervals/epochs/stop_time"][0])),
         events=ev, pos=pos, pos_t=pos_t, table_visits=visits,
         camera_m_per_px=float(f["general/devices/camera_device 0"].attrs.get("meters_per_pixel", np.nan)),
+        cm_per_px=cm_per_px(beh) if positions else np.nan, task_fields=task_fields,
     )
     f.close()
     return out
@@ -378,6 +404,10 @@ def analysed_rows(rows, extra=0):
 
 def build(rows, files):
     """One record per pair session, with both rats' pokes, visits and positions."""
+    scale = {}
+    for f in files:
+        scale.setdefault(f["subject"], []).append(f.get("cm_per_px", np.nan))
+    scale = {k: float(np.nanmedian(v)) if np.isfinite(v).any() else CM_PER_PX for k, v in scale.items()}
     by = {}
     for r, f in zip(rows, files):
         a, b = partner_of(f["description"])
@@ -405,7 +435,8 @@ def build(rows, files):
             rats[side] = dict(subject=f["subject"], genotype="WT" if f["genotype"] == "WT" else "Fmr1",
                               poke_t=t[ok], poke_w=w[ok], vw=vw, vs=vs, ve=ve, raw_vw=raw[0],
                               raw_poke_t=t, raw_poke_w=w, n_dropped=int((~ok).sum()),
-                              pos=f["pos"], pos_t=f["pos_t"], table=f["table_visits"])
+                              pos=f["pos"], pos_t=f["pos_t"], table=f["table_visits"],
+                              cm_per_px=f["cm_per_px"] if np.isfinite(f["cm_per_px"]) else scale[f["subject"]])
         rec["rats"] = rats
         out.append(rec)
     return out
@@ -445,6 +476,33 @@ def reconstructed_matches(r1, r2, hold=MATCH_HOLD_S, shift=0.0, t0=0.0, period=N
     keep = np.r_[True, w[1:] != w[:-1]]
     # consecutive duplicates collapse; a run at one well counts once
     return int(keep.sum())
+
+
+def follower_trials(a, b, shift=0.0, t0=0.0, period=None):
+    """Follower trials (Methods, Partner behavior history analysis: "one rat (the leader) enters an
+    arm first; the other rat (the follower) then decides whether to choose the matching arm").
+    `a`, `b`: (subject, visit wells, visit starts) of the two rats. A trial opens at the next
+    arrival at a new well by either rat (that rat leads) and closes at the other rat's next arrival
+    (its choice); the follower cooperates when its new well corresponds to the leader's current well.
+    Rat b's visits can be circularly shifted (the null). Returns (follower, leader, time, coop,
+    impossible, leader-to-follower latency); impossible marks trials whose leader went to the well
+    corresponding to the follower's own, where the follower cannot choose it."""
+    sa, wa, s_a = a
+    sb, wb, s_b = b
+    if shift:
+        s_b = (s_b - t0 + shift) % period + t0
+        o = np.argsort(s_b, kind="stable")
+        wb, s_b = wb[o], s_b[o]
+    ev = sorted([(t, 0, sa, w) for t, w in zip(s_a, wa)] + [(t, 1, sb, w) for t, w in zip(s_b, wb)])
+    cur, leader, out = {}, None, []
+    for t, _, subj, w in ev:
+        if leader is None:
+            leader, tl = subj, t
+        elif subj != leader:
+            out.append((subj, leader, t, int(w == cur[leader]), int(cur.get(subj) == cur[leader]), t - tl))
+            leader = None
+        cur[subj] = w
+    return out
 
 
 # ---------------------------------------------------------------- statistics
