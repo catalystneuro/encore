@@ -45,12 +45,14 @@ Where the parameters come from:
 - Statistics (Methods F, M3 of the claims file): two-way ANOVA with Bonferroni post hoc tests;
   `twoway` runs the ordinary reading (OLS, post hoc t-tests on the pooled residual error, as
   Prism does) and the repeated-measures reading (a linear mixed model with a random intercept per
-  rat, Prism's mixed-effects analysis, with Wald tests of contrasts).
+  rat, Prism's mixed-effects analysis, with t and F tests of contrasts on Satterthwaite df; an
+  earlier version used normal and chi-squared references, which understate p with 6 to 16 rats).
 """
 
 from __future__ import annotations
 
 import json
+import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 
@@ -153,10 +155,14 @@ def read_rows(meta: dict, start: int, stop: int, threads: int = 16, piece: int =
     edges = list(range(a, b, piece)) + [b]
 
     def get(i):
-        for _ in range(5):
-            r = _session.get(meta["url"], headers={"Range": f"bytes={edges[i]}-{edges[i + 1] - 1}"}, timeout=120)
-            if r.status_code == 206 and len(r.content) == edges[i + 1] - edges[i]:
-                return r.content
+        for attempt in range(8):
+            try:
+                r = _session.get(meta["url"], headers={"Range": f"bytes={edges[i]}-{edges[i + 1] - 1}"}, timeout=120)
+                if r.status_code == 206 and len(r.content) == edges[i + 1] - edges[i]:
+                    return r.content
+            except requests.RequestException:          # a dropped connection is retried
+                pass
+            time.sleep(min(30, 2 ** attempt))
         raise OSError(f"range read failed for {meta['asset_id']}")
 
     with ThreadPoolExecutor(threads) as ex:
@@ -186,13 +192,17 @@ def assign_blocks(labelled: list[dict]) -> pd.DataFrame:
     return df
 
 
-def seizures(meta: dict, hemi: str) -> pd.DataFrame:
-    """Seizures of one hemisphere, in seconds from the block start."""
+def seizures(meta: dict, hemi: str, edge: float = 1.5 / RATE) -> pd.DataFrame:
+    """Seizures of one hemisphere, in seconds from the block start. `truncated` marks a seizure that
+    starts within `edge` seconds of the block start or ends within `edge` of its end (Methods C leaves
+    out seizures that "started before or continued after the recording"). The seizures cut at the
+    start begin at exactly one sample, so the default is 1.5 samples; `edge=2.0` is a variant for the few last seizures that end 1 to
+    1.4 s before the block end."""
     iv = meta["intervals"]
     s = iv[iv.tag == hemi][["start", "stop"]].sort_values("start") * MINUTES
     s["duration"] = s.stop - s.start
     T = meta["n_samples"] / RATE
-    s["truncated"] = (s.start <= 1.5 / RATE) | (s.stop >= T - 1.5 / RATE)
+    s["truncated"] = (s.start <= edge) | (s.stop >= T - edge)
     return s.reset_index(drop=True)
 
 
@@ -209,9 +219,9 @@ def merged_periods(meta: dict) -> np.ndarray:
     return np.array(out).reshape(-1, 2)
 
 
-def block_metrics(meta: dict, hemi: str) -> dict:
+def block_metrics(meta: dict, hemi: str, edge: float = 1.5 / RATE) -> dict:
     """Seizure Count, Percent Time in Seizure, Seizure Duration and Inter-Seizure Interval (M2)."""
-    s = seizures(meta, hemi)
+    s = seizures(meta, hemi, edge)
     T = meta["n_samples"] / RATE
     full = s[~s.truncated]
     gaps = (s.start.to_numpy()[1:] - s.stop.to_numpy()[:-1]) if len(s) > 1 else np.array([])
@@ -230,14 +240,55 @@ def _contrast_rows(di, cells: pd.DataFrame) -> np.ndarray:
     return np.asarray(build_design_matrices([di], cells)[0])
 
 
+class _Satterthwaite:
+    """Satterthwaite degrees of freedom for contrasts of a random-intercept mixed model (the method of
+    SAS PROC MIXED and of lmerTest; Prism's repeated-measures and mixed-effects analyses report t and F
+    on finite df, not z). Variance parameters theta = (residual, subject intercept); their asymptotic
+    covariance is the inverse of the REML information, 0.5 tr(P S_i P S_j)."""
+
+    def __init__(self, X: np.ndarray, groups: np.ndarray, s2e: float, s2s: float):
+        Z = (groups[:, None] == np.unique(groups)[None, :]).astype(float)
+        self.S = [np.eye(len(X)), Z @ Z.T]
+        Si = np.linalg.inv(s2e * self.S[0] + s2s * self.S[1])
+        self.V = np.linalg.inv(X.T @ Si @ X)
+        P = Si - Si @ X @ self.V @ X.T @ Si
+        PS = [P @ s for s in self.S]
+        info = 0.5 * np.array([[np.trace(PS[i] @ PS[j]) for j in range(2)] for i in range(2)])
+        self.A = np.linalg.pinv(info)
+        Q = X.T @ Si
+        self.dV = [-self.V @ Q @ s @ Q.T @ self.V for s in self.S]
+        self.df_max = len(X) - np.linalg.matrix_rank(X)
+
+    def df(self, c: np.ndarray) -> float:
+        var = float(c @ self.V @ c)
+        g = np.array([float(c @ dv @ c) for dv in self.dV])
+        den = float(g @ self.A @ g)
+        return float(np.clip(2 * var ** 2 / den, 1.0, self.df_max)) if den > 0 else float(self.df_max)
+
+    def ftest(self, L: np.ndarray, beta: np.ndarray) -> tuple[float, float]:
+        """F statistic and denominator df of H0: L beta = 0 (lmerTest's eigen-decomposition method)."""
+        VL = L @ self.V @ L.T
+        Lb = L @ beta
+        k = len(L)
+        F = float(Lb @ np.linalg.pinv(VL) @ Lb) / k
+        w, U = np.linalg.eigh(VL)
+        nus = [self.df(U[:, m] @ L) for m in range(k)]
+        E = sum(nu / (nu - 2) for nu in nus if nu > 2)
+        ddf = 2 * E / (E - k) if E > k else min(nus)
+        return F, float(ddf)
+
+
 def twoway(df: pd.DataFrame, value: str, a: str, b: str, subject: str, comparisons: list, rm: bool = False,
            families: dict | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Two-way ANOVA of `value` on factors a and b, with Bonferroni post hoc comparisons.
 
     comparisons: list of (name, {a: x, b: y}, {a: x2, b: y2}, family). Within each family the p values
     are multiplied by the family's size (capped at 1). rm=False: ordinary ANOVA (OLS, type II), post hoc
-    t on the pooled residual error and its df. rm=True: mixed model with a random intercept per subject;
-    main effects and interaction by Wald tests, post hoc by Wald z of the contrast.
+    t on the pooled residual error and its df. rm=True: mixed model with a random intercept per subject
+    (REML); main effects and interaction by F tests and post hoc by t tests of the contrasts, each on
+    Satterthwaite degrees of freedom (`_Satterthwaite`). On balanced data these are the df of the
+    classical split-plot ANOVA: (rats - groups)(blocks - 1) within rats, and for groups compared at one
+    block the Satterthwaite pooling of the rat and residual mean squares, as Prism does.
     """
     import statsmodels.formula.api as smf
     from scipy import stats
@@ -256,8 +307,10 @@ def twoway(df: pd.DataFrame, value: str, a: str, b: str, subject: str, compariso
             warnings.simplefilter("ignore")              # boundary fits (zero rat variance) are expected
             res = smf.mixedlm(formula, d, groups=d[subject]).fit(reml=True)
         names = list(res.fe_params.index)
+        sat = _Satterthwaite(np.asarray(res.model.exog), d[subject].to_numpy(),
+                             float(res.scale), float(np.asarray(res.cov_re)[0, 0]))
         beta = res.fe_params.to_numpy()
-        V = res.cov_params().loc[names, names].to_numpy()
+        V = sat.V
         rows = []
         for term in (f"C({a}, Sum)", f"C({b}, Sum)", f"C({a}, Sum):C({b}, Sum)"):
             if ":" in term:
@@ -266,11 +319,10 @@ def twoway(df: pd.DataFrame, value: str, a: str, b: str, subject: str, compariso
                 idx = [i for i, n in enumerate(names) if n.startswith(term + "[") and ":" not in n]
             if not idx:
                 continue
-            bb, VV = beta[idx], V[np.ix_(idx, idx)]
-            chi = float(bb @ np.linalg.pinv(VV) @ bb)
-            rows.append({"term": term, "F": chi / len(idx), "p": stats.chi2.sf(chi, len(idx))})
+            L = np.eye(len(beta))[idx]
+            Fv, ddf = sat.ftest(L, beta)
+            rows.append({"term": term, "F": Fv, "df_den": ddf, "p": stats.f.sf(Fv, len(idx), ddf)})
         table = pd.DataFrame(rows).set_index("term")
-        dof = None
     out = []
     for name, c1, c2, fam in comparisons:
         x1 = _contrast_rows(di, pd.DataFrame([c1]))[0][: len(beta)]
@@ -278,10 +330,12 @@ def twoway(df: pd.DataFrame, value: str, a: str, b: str, subject: str, compariso
         c = x1 - x2
         est, se = float(c @ beta), float(np.sqrt(c @ V @ c))
         stat = est / se if se > 0 else np.nan
-        p = 2 * (stats.t.sf(abs(stat), dof) if dof is not None else stats.norm.sf(abs(stat)))
+        df_c = sat.df(c) if rm else dof
+        p = 2 * stats.t.sf(abs(stat), df_c)
         n1 = int(((d[a] == c1[a]) & (d[b] == c1[b])).sum())
         n2 = int(((d[a] == c2[a]) & (d[b] == c2[b])).sum())
-        out.append({"comparison": name, "family": fam, "diff": est, "stat": stat, "p_raw": p, "n1": n1, "n2": n2})
+        out.append({"comparison": name, "family": fam, "diff": est, "stat": stat, "df": df_c, "p_raw": p,
+                    "n1": n1, "n2": n2})
     post = pd.DataFrame(out)
     if len(post):
         size = post.groupby("family").comparison.transform("size")
@@ -488,10 +542,13 @@ def evoked(epochs: np.ndarray, pre: float = EP_PRE) -> np.ndarray:
 def timepoint_tests(a: np.ndarray, b: np.ndarray) -> pd.DataFrame:
     """tFUS against sham at each time point, a and b of shape (rats, time), the same rats in both.
 
-    Ordinary reading: a two-way ANOVA group by time point; the post hoc t at each time point uses the
-    pooled residual mean square of the full model and its df. Repeated reading: both groups come from
-    the same rats, so each comparison is a paired t on that time point's differences (the per-comparison
-    error a repeated-measures analysis uses without assuming sphericity). Bonferroni over the time points."""
+    Both readings are the group by time point two-way ANOVA of Methods F, with Bonferroni-corrected post
+    hoc t tests of tFUS against sham at each time point. Ordinary reading: the post hoc t uses the pooled
+    residual mean square of the full model and its df. Repeated reading: the same rats give both groups,
+    so the model adds a random intercept per rat (Prism's repeated-measures analysis with pooled error,
+    as in `twoway`); with balanced data the rat effect leaves the contrasts' estimate unchanged and
+    removes the rat variance from the error, df 2nT - 2T - (n - 1). (An earlier version used a paired t
+    per time point, which the claims-file check had replaced with this ANOVA.)"""
     from scipy import stats
     n, T = a.shape
     resid = np.concatenate([a - a.mean(0), b - b.mean(0)])
@@ -500,7 +557,12 @@ def timepoint_tests(a: np.ndarray, b: np.ndarray) -> pd.DataFrame:
     diff = a.mean(0) - b.mean(0)
     t_ord = diff / np.sqrt(mse * 2 / n)
     p_ord = 2 * stats.t.sf(np.abs(t_ord), df_res)
-    t_rm, p_rm = stats.ttest_rel(a, b, axis=0)
+    rat = np.concatenate([a, b], axis=1).mean(1)                  # each rat's mean over both groups
+    resid_rm = resid - np.concatenate([rat - rat.mean()] * 2)[:, None]
+    df_rm = df_res - (n - 1)
+    mse_rm = (resid_rm ** 2).sum() / df_rm
+    t_rm = diff / np.sqrt(mse_rm * 2 / n)
+    p_rm = 2 * stats.t.sf(np.abs(t_rm), df_rm)
     return pd.DataFrame({"diff": diff, "p_ordinary": np.minimum(1, p_ord * T), "p_repeated": np.minimum(1, p_rm * T)})
 
 
@@ -508,6 +570,14 @@ def wild_pli(meta: dict, n_trials: int = N_TRIALS, onsets: np.ndarray | None = N
     """PLI of the three windows of Fig. 5 (pre -20-0 ms, tFUS 0-20 ms, post 20-200 ms) per band, for every
     pair of one ipsilateral and one contralateral EEG channel, from the first n_trials onsets of the file's
     interval table: per trial and averaged (reading a) and over the concatenated trial samples (reading b).
+
+    The PLI of a short window is biased upwards, more the fewer samples it has (on independent noise the
+    61-sample windows give about 0.6 to 0.95 per trial, the 549-sample post window 0.2 to 0.8), so a
+    change between windows of different length is mostly that bias. `post` is therefore the mean of the
+    PLI of the nine 20 ms sub-windows of 20 to 200 ms, each as long as the pre and tFUS windows;
+    `post_full` is the whole 20 to 200 ms window, kept for comparison. Each window also gets a noise
+    floor (`*_shuffled`): the same PLI with the contralateral channels taken from the next trial, which
+    keeps every channel's own phase and its locking to the pulse and breaks the same-trial pairing.
     The whole recording is re-referenced (CAR), notched at 60 Hz, band filtered and Hilbert transformed
     before the epochs are cut, so the short windows carry no filter edges."""
     x = read_rows(meta, 0, meta["n_samples"])
@@ -521,15 +591,84 @@ def wild_pli(meta: dict, n_trials: int = N_TRIALS, onsets: np.ndarray | None = N
     w20 = int(round(0.020 * RATE))
     idx = np.array([int(round(t * RATE)) for t in onsets])
     idx = idx[(idx - n0 >= 0) & (idx + n1 <= len(x))]
-    windows = {"pre": (-n0, 0), "tfus": (0, w20), "post": (w20, n1)}
+    windows = {"pre": [(-n0, 0)], "tfus": [(0, w20)], "post_full": [(w20, n1)],
+               "post": [(w20 + k * w20, w20 + (k + 1) * w20) for k in range((n1 - w20) // w20)]}
     out = {"n_trials": len(idx)}
+
+    def one(seg_i, seg_c):
+        s = np.sign(np.sin(seg_i[:, :, :, None] - seg_c[:, :, None, :]))
+        return np.abs(s.mean(axis=1)).mean(axis=0), np.abs(s.mean(axis=(0, 1)))
+
     for band in BANDS:
         ph = np.angle(signal.hilbert(signal.sosfiltfilt(band_sos(band, RATE), x, axis=0), axis=0))
         res = {}
-        for name, (a, b) in windows.items():
-            seg = np.stack([ph[i + a:i + b] for i in idx])            # trials, samples, channels
-            d = np.sin(seg[:, :, ii][:, :, :, None] - seg[:, :, cc][:, :, None, :])
-            s = np.sign(d)
-            res[name] = {"per_trial": np.abs(s.mean(axis=1)).mean(axis=0), "concat": np.abs(s.mean(axis=(0, 1)))}
+        for name, spans in windows.items():
+            acc = {"per_trial": [], "concat": [], "per_trial_shuffled": [], "concat_shuffled": []}
+            for a, b in spans:
+                seg = np.stack([ph[i + a:i + b] for i in idx])        # trials, samples, channels
+                pt, ct = one(seg[:, :, ii], seg[:, :, cc])
+                ps, cs = one(seg[:, :, ii], np.roll(seg[:, :, cc], 1, axis=0))
+                for k, v in zip(acc, (pt, ct, ps, cs)):
+                    acc[k].append(v)
+            res[name] = {k: np.mean(v, axis=0) for k, v in acc.items()}
         out[band] = res
     return out
+
+
+# ---------------------------------------------------------------- pre-4-AP state (Figs. S5 and S7)
+
+PRE_SKIP, PRE_GUARD = 0.25, 0.02      # s after each pulse onset left out, and before the next onset
+
+
+def pre_state(meta: dict) -> dict:
+    """Band power of channels 8 and 25 and the PLI of every ipsilateral-contralateral pair in a PLV EEG
+    recording, the last recording before the first 4-AP injection (it ends 64 to 176 min before the
+    baseline block, so before the monitoring block that the first injection opens, Fig. 1E). The
+    recording carries a 20 ms pulse every 2 s (every 1 s in one file); the pre-4-AP state is read from
+    the gaps between pulses, from PRE_SKIP after one onset to PRE_GUARD before the next (an assumption:
+    the paper's own pre-4-AP baseline is not in the dandiset), and, as a variant, from the whole
+    recording.
+
+    Same preprocessing as `process_block`: common average reference, 60 Hz notch; PSD of the gaps by a
+    Hann periodogram of each gap (all cut to the shortest gap) averaged, PSD of the whole recording by
+    Welch with 2 s windows; PLI on the signal decimated by 3, notched and filtered 3-300 Hz, band
+    filtered and Hilbert transformed over the whole recording, then over the concatenated gap samples
+    (`concat`) and per gap averaged (`per_gap`)."""
+    n = meta["n_samples"]
+    x = read_rows(meta, 0, n)
+    x = x - x.mean(axis=1, keepdims=True)
+    on = np.sort(meta["intervals"].start.to_numpy())
+    spacing = float(np.median(np.diff(on)))
+    nxt = np.append(on[1:], on[-1] + spacing)
+    gaps = [(int((a + PRE_SKIP) * RATE), int((b - PRE_GUARD) * RATE)) for a, b in zip(on, nxt)]
+    gaps = [(i, j) for i, j in gaps if 0 <= i < j <= n]
+    L = min(j - i for i, j in gaps)
+    car2 = _notch(x[:, [IPSI_CH - 1, CONTRA_CH - 1]], RATE)
+    f, pg = signal.periodogram(np.stack([car2[i:i + L] for i, _ in gaps]), RATE, window="hann", axis=1)
+    out = {"asset_id": meta["asset_id"], "subject": meta["subject"], "n_gaps": len(gaps), "gap_s": L / RATE,
+           "spacing_s": spacing, "psd_gaps": (f, pg.mean(axis=0)), "psd_whole": welch_segments(car2, RATE)}
+    fs_d = RATE / DECIMATE
+    xd = signal.resample_poly(x, 1, DECIMATE, axis=0)
+    del x
+    bn, an = signal.iirnotch(60.0, 30.0, fs_d)
+    xd = signal.sosfiltfilt(signal.butter(4, [3, 300], btype="bandpass", fs=fs_d, output="sos"),
+                            signal.filtfilt(bn, an, xd, axis=0), axis=0)
+    ii = [c - 1 for c in S1_IPSI + NONS1_IPSI]
+    cc = [c - 1 for c in S1_CONTRA + NONS1_CONTRA]
+    gd = [(int(i / DECIMATE), int(j / DECIMATE)) for i, j in gaps]
+    res = {}
+    for band in BANDS:
+        ph = np.angle(signal.hilbert(signal.sosfiltfilt(band_sos(band, fs_d), xd, axis=0), axis=0))
+        cat = np.concatenate([ph[i:j] for i, j in gd])
+        res[band] = {"concat": pli(cat[:, ii], cat[:, cc]),
+                     "per_gap": np.mean([pli(ph[i:j][:, ii], ph[i:j][:, cc]) for i, j in gd], axis=0),
+                     "whole": pli(ph[:, ii], ph[:, cc]), "seconds": len(cat) / fs_d}
+    out["pli"] = res
+    return out
+
+
+def pre_states(metas: list[dict], workers: int = 4) -> dict:
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing as mp
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
+        return {r["subject"]: r for r in ex.map(pre_state, metas)}
