@@ -44,7 +44,9 @@ Where each parameter comes from:
   of peak intensity in the baseline image, median-filtered over 15 degrees. The paper drew the
   trace by hand in MetaMorph; this is a standard automatic choice. Angles are polar angles from
   the cell centre (the paper resamples by perimeter length; for these near-circular cells the
-  two agree closely).
+  two agree closely). After verification round 2, a variant outline (membrane_line_outer) takes the
+  outermost strong peak on each ray and keeps only the first six angular harmonics, for the
+  Di-8-ANEPPS cells whose outline the overlays showed to cut inside the membrane.
 - Field direction: not stored. The cathode-facing pole is where dF is positive (Methods 2.3:
   emission increased in the cathode-facing hemisphere). Its direction is estimated once per
   recording day from the first angular harmonic of dF at low fields, pooled over cells, and the
@@ -200,6 +202,40 @@ def membrane_line(img: np.ndarray, cy: float, cx: float, r0: float):
     return cy, cx, r
 
 
+def membrane_line_outer(img: np.ndarray, cy: float, cx: float, r0: float, frac: float = 0.8, nharm: int = 6):
+    """Variant outline (verification round 2): on each ray, the outermost local peak of intensity
+    within +-5 pixels of the circle that reaches frac of the ray's range above its minimum (in
+    place of the highest peak, which a bright body just inside the membrane can capture),
+    median-filtered over 15 degrees and low-passed to the first nharm angular harmonics (waves
+    shorter than 60 degrees removed); the centre is then moved to the outline's centroid."""
+    sm = ndimage.gaussian_filter(img, 1)
+    ang = np.deg2rad(np.arange(N_POINTS))
+    for _ in range(2):
+        rr = np.linspace(r0 - 5, r0 + 5, 41)
+        ys = cy - np.outer(np.sin(ang), rr)
+        xs = cx + np.outer(np.cos(ang), rr)
+        prof = ndimage.map_coordinates(sm, [ys, xs], order=1)
+        lo, hi = prof.min(1, keepdims=True), prof.max(1, keepdims=True)
+        pk = np.zeros_like(prof, bool)
+        pk[:, 1:-1] = (prof[:, 1:-1] >= prof[:, :-2]) & (prof[:, 1:-1] >= prof[:, 2:])
+        pk[:, -1] = prof[:, -1] >= prof[:, -2]
+        strong = pk & (prof >= lo + frac * (hi - lo))
+        idx = np.where(strong.any(1), strong.shape[1] - 1 - np.argmax(strong[:, ::-1], 1), prof.argmax(1))
+        r = ndimage.median_filter(rr[idx], size=15, mode="wrap")
+        f = np.fft.rfft(r)
+        f[nharm + 1:] = 0
+        r = np.fft.irfft(f, N_POINTS)
+        y = cy - r * np.sin(ang)
+        x = cx + r * np.cos(ang)
+        cy, cx = y.mean(), x.mean()
+        r0 = float(np.hypot(y - cy, x - cx).mean())
+    r = np.hypot(y - cy, x - cx)
+    a = np.rad2deg(np.arctan2(-(y - cy), x - cx)) % 360
+    o = np.argsort(a)
+    r = np.interp(np.arange(N_POINTS), a[o], r[o], period=360)
+    return cy, cx, r
+
+
 def radius_um(r: np.ndarray) -> dict:
     """Cell radius from the membrane line: (a) perimeter / 2 pi, (b) radius of equal area."""
     ang = np.deg2rad(np.arange(N_POINTS))
@@ -209,12 +245,13 @@ def radius_um(r: np.ndarray) -> dict:
     return dict(perimeter=per / (2 * np.pi) * UM_PER_PIXEL, area=np.sqrt(area / np.pi) * UM_PER_PIXEL)
 
 
-def extract_set(asset_id: str, hint: tuple[float, float, float] | None = None) -> dict:
+def extract_set(asset_id: str, hint: tuple[float, float, float] | None = None, outline: str = "peak") -> dict:
     """Stream one set and reduce it to per-frame traces.
 
     hint (centre row, centre col, radius in pixels) restricts the search for the cell to within 8
     pixels of that centre and 4 pixels of that radius; it is used to re-trace a set whose outline
-    jumped to a structure inside the cell (see the notebook's loading cell).
+    jumped to a structure inside the cell (see the notebook's loading cell). outline "outer" uses
+    membrane_line_outer (a variant) in place of membrane_line.
 
     Returns per-frame trace intensities (100 x 360, the 6-pixel band averaged across its width,
     1-degree polar angles in image coordinates, 0 = image right, counter-clockwise), per-frame
@@ -232,7 +269,7 @@ def extract_set(asset_id: str, hint: tuple[float, float, float] | None = None) -
         cy, cx, r0 = find_cell(base)
     else:
         cy, cx, r0 = find_cell(base, search=8, centre=hint[:2], radii=np.arange(int(hint[2]) - 4, int(hint[2]) + 5))
-    cy, cx, r = membrane_line(base, cy, cx, r0)
+    cy, cx, r = (membrane_line_outer if outline == "outer" else membrane_line)(base, cy, cx, r0)
     ang = np.deg2rad(np.arange(N_POINTS))
     offs = np.arange(TRACE_WIDTH) - (TRACE_WIDTH - 1) / 2
     ys = (cy - (r[:, None] + offs) * np.sin(ang)[:, None]).ravel()
