@@ -24,18 +24,20 @@ name. For Fig. 7c the 10x data come from GEO GSE319557.
 | L5 ET have the deepest sag | Blocked: methods underspecified |
 | VENs fire less and more irregularly than PCs | Not reproduced |
 | L5 ET against L5 IT: deeper sag, lower input resistance, higher rate | Partially reproduced |
-| VENs have the lowest phase peak index; their phase plots are saddle-shaped | Partially reproduced (change to blocked proposed) |
+| VENs have the lowest phase peak index; their phase plots are saddle-shaped | Blocked: methods underspecified |
 | VEN-L differ more from L5/6 CT than VEN-S do | Reproduced |
 | Morphology differs on more features than physiology | Reproduced |
 | Recordings without RNA (Fig. 4a-c, Extended Data Fig. 9c,d, Supplementary Table 8) | Blocked: data missing |
-| Peak index against AIS distance (Fig. 4i) | Not reproduced (change to blocked proposed) |
+| Peak index against AIS distance (Fig. 4i) | Blocked: methods underspecified |
 | Tau distance against transcriptomic distance (Fig. 7) | Not reproduced |
 | Nine claims on data in other archives | Blocked: other |
 
-After the second verification, a change of the three phase peak index claims to blocked (methods
-underspecified) is proposed and awaits a third round: the automatic index, which stands in for the
-peaks the paper placed by hand, reads the AIS value next to the SD peak at the noise level of these
-recordings, so it does not measure the saddle shape.
+After the third verification round the three phase peak index claims are blocked (methods
+underspecified): the automatic index, which stands in for the peaks the paper placed by hand, reads
+the AIS value next to the SD peak for a slow-rising AP at the noise level of these recordings, so it
+does not measure the saddle shape, and the outcome changes with a detail the paper does not give.
+The claims file fixes this automatic reading, so the block goes beyond the criterion's letter, and a
+reader should confirm it.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

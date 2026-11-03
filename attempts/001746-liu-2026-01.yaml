@@ -319,11 +319,13 @@ outcomes:
     and the FDR is computed over all 39. The 20 features the Methods name are the variant family. Over
     the 20 Methods features the result is the same, so the outcome does not rest on this choice.
 - claim: fig3e-phase-peak-index
-  outcome: partially_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig3e-phase-peak-index
-  notes: Under the criterion's automatic reading, on the first AP of the maximal-rate sweep the VEN median
+  notes: Blocked, as the automatic index that stands in for the hand-placed peaks does not measure the
+    saddle shape on these recordings and its outcome turns on a detail the paper does not give (the prominence
+    guard), as below. Under the criterion's automatic reading, which would give partially reproduced, on the first AP of the maximal-rate sweep the VEN median
     index is the lowest (0.037; next L2/3 IT HPCAL1 0.083), Kruskal-Wallis p = 0.0016, and Dunn's test
     separates VENs from L5 ET (Bonferroni p = 0.003, Sidak 0.003) and from no other group (L6 PC 0.062,
     IT RORB 0.29). On the median over the sweep's APs, the VEN median is again the lowest (0.081; next
@@ -351,7 +353,14 @@ outcomes:
     index agrees with them only loosely (Spearman 0.39 first AP, 0.20 median). The index depends on the
     sampling rate (40 Axon files brought to 25 kHz, median 0.088 to 0.168), 17 of the 29 VENs are Axon
     files, and within one device VENs are not significantly lower than the other groups pooled (Axon p
-    = 0.08, HEKA p = 0.10). A change to blocked is proposed (proposed).
+    = 0.08, HEKA p = 0.10). A fast-rising AP without an AIS phase keeps a high index at 0.02 and 0.03
+    mV of noise (0.666 and 0.698) and falls to 0.006 only from 0.05 mV, so the fall holds for the slow
+    AP; among shoulder-branch cells the index does not correlate with the noise (Spearman 0.07), and
+    the HEKA noise of 0.30 mV is above the 0.1 mV the synthetic test reaches. The p = 0.54 on two resolved
+    maxima comes from groups of 1 to 10 cells and has little power (VEN median there 0.006, the lowest).
+    The criterion fixes an automatic reading and reports a disagreement with the hand-read values as
+    a deviation; blocking goes beyond its letter, on the grounds that the fixed reading does not measure
+    what it stands for, and the verifier asks a reader to confirm this.
   deviations:
   - The paper read the AIS and SD peaks by hand (calPhaseHeightIdx.m asks for two clicks on the overlaid
     phase plots), so the criterion's automatic reading is used, and its outcome differs from the one the
@@ -375,36 +384,18 @@ outcomes:
     of the phase index.
   - The Dunn correction in the code's own statistics sheet of PeakIdx_Fig5e.xlsx is Bonferroni; both of
     the criterion's corrections are run.
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The automatic index that stands in for the hand-placed peaks does not measure the saddle shape
-      on these recordings. Its shoulder branch, which reads 195 of the 237 first APs, places the AIS value
-      next to the dV/dt maximum at the noise level of the files (synthetic APs without an AIS phase score
-      a median 0.003 to 0.011 at 0.02 to 0.05 mV of noise, where the files have 0.023 mV at 50 kHz and
-      0.30 mV at 25 kHz), so an AP gets the most saddle-like index whether or not it has a saddle. On
-      the first APs with two resolved maxima, where the branch does not enter, the groups do not differ
-      (p = 0.54), and the outcome also changes with the prominence guard (at 0.02 it would not be partially
-      reproduced). The paper placed the peaks by hand and gives no rule for an automatic reading, so no
-      choice has a defensible basis. Analysis in the notebook, cells tagged claim:fig3e-phase-peak-index.
 - claim: fig3d-saddle-phase-plane
-  outcome: partially_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig3d-saddle-phase-plane
-  notes: The criterion makes this claim take the outcome of fig3e-phase-peak-index, which is partially
-    reproduced. As a description that does not decide, the median fraction of APs of the maximal-rate
+  notes: The criterion makes this claim take the outcome of fig3e-phase-peak-index, which is blocked
+    (methods_underspecified). As a description that does not decide, the median fraction of APs of the maximal-rate
     sweep whose rising phase has two maxima of dV/dt is 0.80 in VENs against 0.60 in the PC groups pooled
-    (p = 0.34). The change proposed for fig3e-phase-peak-index applies to this claim too.
+    (p = 0.34).
   deviations:
   - The outcome is that of fig3e-phase-peak-index and rests on the same assumption on the automatic reading
     of the phase peak index (see that claim).
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The criterion makes this claim take the outcome of fig3e-phase-peak-index, for which a change
-      to blocked (methods_underspecified) is proposed, as its automatic index does not measure the saddle
-      shape at the noise level of these recordings.
 - claim: fig4ac-ven-broader-smaller-ap
   outcome: blocked
   blocked_by: data_missing
@@ -422,11 +413,13 @@ outcomes:
     p = 0.009) and smaller (86.2 against 90.2 mV, p = 0.071), neither with p below 0.001; at the penultimate
     AP of the maximal-rate sweep 5.10 against 4.72 ms (p = 0.060) and 54.2 against 57.3 mV (p = 0.34).
 - claim: fig4i-peak-index-ais-distance-real
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig4i-peak-index-ais-distance-real
-  notes: 'The 62 AIS distances of the paper''s code (NeuronPeakIdx_summary.mat) carry no cell IDs, and
+  notes: 'Blocked, as the claim uses the automatic phase peak index of fig3e-phase-peak-index, which
+    is blocked, and the reading decides the outcome; on the automatic index it would be not reproduced.
+    The 62 AIS distances of the paper''s code (NeuronPeakIdx_summary.mat) carry no cell IDs, and
     none of their peak indices or nonzero distances is in a per-cell table, so the criterion''s reading
     is used: the Patch-seq cells with a reconstructed axon origin, those with an AIS distance (axonDist)
     in morphFeatMatrix.xlsx, 153 cells (106 at 0 um, range to 418 um) where the legend gives 62. With
@@ -437,21 +430,14 @@ outcomes:
     same cells (127 in PeakIdx_Fig5e.xlsx) give a negative slope, -0.0027 per um, p = 0.018 over 7 bins
     (on cells p = 6e-5), so the difference from the paper rests on the automatic peak reading, as for
     fig3e-phase-peak-index. That reading does not measure the saddle shape at the noise of these recordings
-    (fig3e-phase-peak-index), and a change to blocked is proposed (proposed).'
+    (fig3e-phase-peak-index). None of the 62 values in the mat file is in the per-cell tables, so the
+    hand-read result does not decide either.'
   deviations:
   - The 62 neurons are not identified; the cells with an AIS distance in the code's morphology table (153)
     are used, as the criterion says. The AIS distance is the code's table value, not measured from the
     NeuroMorpho.org reconstructions.
   - The phase peak index is the automatic reading of fig3e-phase-peak-index, with its deviations, and
     the outcome rests on the same assumption on that reading.
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The claim uses the automatic phase peak index of fig3e-phase-peak-index (depends_on), for which
-      a change to blocked (methods_underspecified) is proposed, as its shoulder branch places the AIS value
-      next to the SD peak at the noise level of these recordings and so does not measure the saddle shape.
-      A claim that depends on a blocked claim is blocked for the same reason. The hand-read indices give
-      a negative slope (p = 0.018), which the notes report and which does not decide.
 - claim: ext9cd-ven-subtypes-ap
   outcome: blocked
   blocked_by: data_missing
@@ -1180,3 +1166,50 @@ verifications:
     outcome: blocked
     reason: Blocked (other), data elsewhere.
     response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The three changes of outcome proposed after round 2 (fig3e-phase-peak-index, fig3d-saddle-phase-plane
+    and fig4i-peak-index-ais-distance-real, each to blocked, methods_underspecified) and the analysis behind
+    them in the re-executed notebook, with the helper module and the claims file. Report in transcripts/001746/verifier-3-report.md.
+  results:
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: blocked
+    reason: 'The numbers come from the data. The shoulder branch has no prominence guard and reads 195
+      of the 237 first APs. A slow-rising AP with no AIS phase scores 0.81 without noise but a median
+      of 0.003, 0.005 and 0.011 at 0.02, 0.03 and 0.05 mV of noise; the noise in the files is 0.023 mV
+      at 50 kHz and 0.30 mV at 25 kHz. On the 28 first APs with two resolved maxima the Kruskal-Wallis
+      p is 0.54. The outcome depends on an open choice: the guard at 0.02 gives not_reproduced, 0.05 and
+      0.10 give partially_reproduced. The criterion blocks when its named readings disagree, and the same
+      reasoning covers an unnamed detail the outcome turns on, so blocked fits the criterion''s intent.
+      Caveats. As written the criterion fixes an automatic reading and reports a disagreement with the
+      hand-read values as a deviation, so blocking goes beyond its letter; a reader should confirm this.
+      The proposed reason overgeneralises (the fast AP with no AIS phase scores 0.666 and 0.698 at 0.02
+      and 0.03 mV, and 0.006 only from 0.05 mV). Among shoulder-branch cells the index does not correlate
+      with noise (Spearman 0.07), and the HEKA noise is above the 0.1 mV the synthetic test reaches. p
+      = 0.54 comes from groups of 1 to 10 cells and has little power; VEN still has the lowest median
+      there (0.006).'
+    response: Outcome set to blocked (methods_underspecified) and the proposal removed, with the mark assumed,
+      which a blocked outcome does not carry. The notes, the notebook's
+      result and summary and the README now state the caveats, the fast AP's indices, the lack of a correlation
+      with noise, the HEKA noise above the tested range, the low power of p = 0.54, and that blocking goes
+      beyond the criterion's letter and is for a reader to confirm.
+  - claim: fig3d-saddle-phase-plane
+    agrees: true
+    outcome: blocked
+    reason: The criterion says this claim takes the outcome of fig3e-phase-peak-index, which is blocked.
+      The dip fraction (VEN 0.80 against 0.60 pooled, p = 0.34) is a description that does not decide,
+      and it is correctly not used.
+    response: Outcome set to blocked (methods_underspecified) and the proposal removed.
+  - claim: fig4i-peak-index-ais-distance-real
+    agrees: true
+    outcome: blocked
+    reason: On the automatic index the not_reproduced result is a flat slope (+4.8e-05 per um, p = 0.92,
+      153 cells, 12 bins), resting on the same shoulder branch. The hand-read indices on 127 of these cells
+      give a negative slope (-0.0027 per um, p = 0.018, 7 bins). So the outcome is decided by the reading,
+      not by the data, and inheriting the block from fig3e is consistent. The 153 cells are not the paper's
+      62, and none of the 62 values in the mat file are found in the per-cell tables, so the hand-read
+      result does not decide either.
+    response: Outcome set to blocked (methods_underspecified) and the proposal removed. The notes say that
+      the hand-read result does not decide either, as none of the 62 values is in the per-cell tables.
