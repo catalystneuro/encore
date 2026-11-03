@@ -74,12 +74,19 @@ outcomes:
   - 36
   notes: The deposit holds all 1,358 sorted units from 36 mice. 1,188 are not low-firing (the same 170
     low-firing units as the deposit's low_firing column), and 1,160 of these have ISI false alarms at
-    most 2%, within 114.1 of 1,141; all 36 mice keep at least one unit. The SNR criterion would remove
-    at most 19 more if the paper's count is exact; it cannot be applied here.
+    most 2%, within 114.1 of 1,141; all 36 mice keep at least one unit. With an SNR computed from the
+    raw voltage (an approximation), SNR >= 5 leaves 1,034 units from 36 mice, also within tolerance (1,144
+    at SNR >= 3, 1,108 at 4, 895 at 6), and 1,030 when the units flagged by the Methods' duplicate rule
+    (9 pairs with r > 0.1 in 1-ms bins) are dropped too. The 18 units the BH-FDR reading calls responsive
+    and the deposit does not have median SNR 4.22 (12 below 5) against 7.91 for the responsive units the
+    deposit labels, consistent with the deposit's labels applying an SNR criterion.
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
 - claim: fig2-wall-responsive-counts
   outcome: reproduced
   notebook: reproduce_xiao_2026.ipynb
@@ -97,11 +104,17 @@ outcomes:
     to questions/001687.yaml: the claims file now makes the BH-FDR responsiveness test (q < 0.05 across
     the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and the uncorrected test
     the variant; this changed the outcome from not reproduced, judged on the uncorrected test, to reproduced.
-    The numbers are those of the earlier run.'
+    Pass-set variants (after verification round 1): with the deposit''s one distance per 2-mm bin in the
+    two 1-mm-step sessions (the distance nearest the bin centre, which reproduces the deposit''s stored
+    curves exactly) the counts are 783, 544, 337 and 98; with the 20 and 50 post-gap trials of 20230711_sp_session_1
+    and 20230608_sp_session_1 dropped they are 781, 539, 337 and 95; all within tolerance.'
   deviations: &id001
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -112,7 +125,7 @@ outcomes:
     else the normal approximation with continuity correction), a standard choice matching the paper's
     software.
 - claim: fig2-distance-tuned-counts
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_xiao_2026.ipynb
   output: claim:fig2-distance-tuned-counts
   measured:
@@ -120,15 +133,15 @@ outcomes:
   - 478
   - 214
   - 92
-  notes: 'Under the BH-FDR reading 600 responsive units are tuned, 478 activated and tuned and 214 suppressed
+  notes: Under the BH-FDR reading 600 responsive units are tuned, 478 activated and tuned and 214 suppressed
     and tuned, within tolerance of 656, 472 and 213, while 92 are both activated and suppressed, outside
-    29 +/- 2.9. The criterion asks for all four counts and gives no partial rule; three of four hold,
-    so it is recorded as partially reproduced. The 600 tuned and 182 untuned units are consistent with
-    the Figure 2F counts (768 - 177 = 591 tuned), not with the text''s 656. The uncorrected variant gives
-    658 tuned (within tolerance) and 568, 375 and 285 (outside). Answer to questions/001687.yaml: the
-    claims file now makes the BH-FDR responsiveness test (q < 0.05 across the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m)
-    the main reading and the uncorrected test the variant; this changed the outcome from not reproduced
-    (one of four counts within tolerance) to partially reproduced.'
+    29 +/- 2.9. The criterion asks for all four counts and has no partial rule, so the claim is not reproduced
+    (changed from partially reproduced after verification round 1, as the verifier said). The pass-set
+    variants give 94 and 91 both. The 600 tuned and 92 both are close to what Figure 2F implies (472 +
+    119 = 591 tuned; 213 - 119 = 94 both), not to the text's 656 and 29; whether the expected values should
+    allow for Figure 2F is asked in questions/001687.yaml. The uncorrected variant gives 658 tuned (within
+    tolerance) and 568, 375 and 285 (outside). Earlier, under the uncorrected test then the main reading,
+    one of four counts was within tolerance.
   deviations: *id001
 - claim: fig2f-tuning-categories
   outcome: reproduced
@@ -146,7 +159,9 @@ outcomes:
     177. The uncorrected variant gives 303, 168, 97, 90 and 403, all outside tolerance. Answer to questions/001687.yaml:
     the claims file now makes the BH-FDR responsiveness test (q < 0.05 across the nine distances, from
     Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and the uncorrected test the variant; this changed
-    the outcome from not reproduced to reproduced.'
+    the outcome from not reproduced to reproduced. Pass-set variants: 274, 120, 86, 120, 183 (1-mm-step
+    sessions at the nearest-centre distance) and 270, 119, 87, 123, 182 (post-gap trials dropped), all
+    within tolerance.'
   deviations: *id001
 - claim: figs4a-baseline-activated-lower
   outcome: reproduced
@@ -193,7 +208,12 @@ outcomes:
     from its 5.46 sp/s for the same population (figs4a-baseline-activated-lower), which the data match.
     Answer to questions/001687.yaml: the claims file now makes the BH-FDR responsiveness test (q < 0.05
     across the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and the uncorrected
-    test the variant; the outcome, partially reproduced, did not change.'
+    test the variant; the outcome, partially reproduced, did not change. Other baselines of the activated
+    population tried after verification round 1, none a reading of the criterion: mean of per-distance
+    means 5.40, the deposit''s fr_base_mean 5.40, the preferred distance with equalized passes 5.36, median
+    over passes 4.89, the 541 activated units tuned or not 5.54, the 0 to 3 s window after onset over
+    all passes 5.54 sp/s, all outside tolerance; only the 0 to 3 s window at the preferred distance (wall
+    moving, before contact) gives 5.87 sp/s, within tolerance.'
   deviations: *id001
 - claim: figs4c-untuned-no-change
   outcome: reproduced
@@ -219,23 +239,26 @@ outcomes:
     uncorrected test the variant; the outcome, reproduced, did not change.'
   deviations: *id001
 - claim: figs4ef-crossvalidated-stability
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_xiao_2026.ipynb
   output: claim:figs4ef-crossvalidated-stability
   notes: 'BH-FDR reading, median over 100 splits: activated units keep their preferred distance in 0.724
     of cases against 0.507 for suppressed units (fraction reading), and suppressed units with a first-half
     trough at 7 mm keep it in 0.897 of cases against 0.293 for troughs at 9 mm or more; but the Spearman
-    correlation across halves is lower for activated units (0.815 against 0.831; ranges over splits 0.768
-    to 0.855 and 0.771 to 0.890), so the correlation reading fails. The criterion asks for both readings
-    and gives no partial rule; the fraction reading and the trough comparison hold, so it is recorded
-    as partially reproduced. Under the uncorrected variant both readings hold (0.678 against 0.457, Spearman
-    0.827 against 0.779). Answer to questions/001687.yaml: the claims file now makes the BH-FDR responsiveness
-    test (q < 0.05 across the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and
-    the uncorrected test the variant; this changed the outcome from reproduced to partially reproduced.'
+    correlation across halves is lower for activated units (0.815 against 0.831), so the correlation reading
+    fails. The criterion asks for both readings and has no partial rule, so the claim is not reproduced
+    (changed from partially reproduced after verification round 1, as the verifier said). The failure
+    is narrow: the Spearman ranges over the 100 splits overlap (activated 0.768 to 0.855, suppressed 0.771
+    to 0.890). Under the uncorrected variant both readings hold (0.678 against 0.457, Spearman 0.827 against
+    0.779). Answer to questions/001687.yaml: the claims file now makes the BH-FDR responsiveness test
+    the main reading; under the uncorrected test, then the main reading, the claim was reproduced.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -259,11 +282,17 @@ outcomes:
     300 and 300 um, fractions 0.955 against 0.872 and 0.577 against 0.26. Both readings agree under both
     classifications. Answer to questions/001687.yaml: the claims file now makes the BH-FDR responsiveness
     test (q < 0.05 across the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and
-    the uncorrected test the variant; the outcome, reproduced, did not change.'
+    the uncorrected test the variant; the outcome, reproduced, did not change. The orientation of rel_y
+    is shown in the notebook: the electrodes table''s probe_site column gives site 1 as the tip, and site
+    1 has rel_y 0 um (775 um at site 32 on Poly2, 550 um on Poly3), Spearman correlation of probe_site
+    and rel_y 1.000 and 0.996.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -274,11 +303,12 @@ outcomes:
     else the normal approximation with continuity correction), a standard choice matching the paper's
     software.
   - The processed files hold no waveforms or peak channels. The mean waveform is computed from the raw
-    voltage over the spikes in 16 storage chunks (5.2 s each) spread evenly over each session's wall passes,
-    after a 300-6000 Hz band-pass (a standard spike band), not over all spikes (Methods, Unit Depth Along
-    Silicon Probe, take the mean waveform without saying over which spikes). Depth is the electrodes table's
-    rel_y of the peak channel (site 1, the tip, at 0 um; 775 um at the top). Poly2 is taken from the raw
-    files' electrode group.
+    voltage over the spikes in 16 storage chunks (5.2 s each) spread evenly over each session's deposited
+    passes (in cutting sessions, those before the cut), after a 300-6000 Hz band-pass (a standard spike
+    band), not over all spikes (Methods, Unit Depth Along Silicon Probe, take the mean waveform without
+    saying over which spikes). Depth is the electrodes table's rel_y of the peak channel; the table's
+    probe_site column gives site 1 as the tip, and site 1 has rel_y 0 in both probe types (shown in the
+    notebook). Poly2 is taken from the raw files' electrode group.
 - claim: figs4l-temporal-windows-map
   outcome: partially_reproduced
   notebook: reproduce_xiao_2026.ipynb
@@ -296,9 +326,12 @@ outcomes:
     the main reading and the uncorrected test the variant; the outcome, partially reproduced, did not
     change, but under the main reading two of the three counts now match.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -322,9 +355,12 @@ outcomes:
     Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and the uncorrected test the variant; the outcome,
     reproduced, did not change.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -367,9 +403,12 @@ outcomes:
     now those of the first reading the criterion lists, (i) with 10-fold, which matches under the main
     classification.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -413,9 +452,12 @@ outcomes:
     the main classification part (a) fails at 9 mm and four of five values match, where under the uncorrected
     test (a) held and two values did not match.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -453,9 +495,12 @@ outcomes:
     (q < 0.05 across the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and the
     uncorrected test the variant; this changed the outcome from partially reproduced to reproduced.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -493,9 +538,12 @@ outcomes:
     Fig2DEF_Pop_Heatmap_Hist_Pie.m) the main reading and the uncorrected test the variant; this changed
     the outcome from partially reproduced to reproduced.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -509,7 +557,7 @@ outcomes:
     passes (Methods: ''two trials per condition were held out ... repeated exhaustively across held-out
     pairs'').'
 - claim: figs5de-svm-robust
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_xiao_2026.ipynb
   output: claim:figs5de-svm-robust
   measured:
@@ -522,15 +570,16 @@ outcomes:
     BH-FDR classification, 10-fold: map 70.83, combined 61.87, proximity 52.93, suppressed-only 33.85%;
     combined is above 54.43 +/- 5.44 and the other three are within tolerance (15 splits 71.11, 61.25,
     51.46, 34.04%, the same pattern). Uncorrected variant, 10-fold: 63.73, 57.22, 49.00, 29.74%, map and
-    suppressed-only below tolerance. The criterion gives no partial rule; the ranking holds and one value
-    does not, so it is recorded as partially reproduced. Answer to questions/001687.yaml: the claims file
-    now makes the BH-FDR responsiveness test (q < 0.05 across the nine distances, from Fig2DEF_Pop_Heatmap_Hist_Pie.m)
-    the main reading and the uncorrected test the variant; the outcome, partially reproduced, did not
-    change. The SVM was run here for the first time under the BH-FDR classification with 10-fold cross-validation.'
+    suppressed-only below tolerance. The criterion asks for the four values within tolerance and has no
+    partial rule, so the claim is not reproduced (changed from partially reproduced after verification
+    round 1, as the verifier said), although the ranking the statement describes holds.'
   deviations:
-  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
-    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
-    0.8 ms) and are not low-firing.
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied to the analysed population,
+    as the processed files hold no waveforms; units are the 1,160 that pass the ISI criterion (at most
+    2% of intervals under 0.8 ms) and are not low-firing. An SNR computed from the raw voltage (peak-to-trough
+    amplitude of the mean waveform on the peak channel over the SD of single spikes about it, over 16
+    chunks per session; an assumption, as the paper does not say how amplitude and noise are measured)
+    is shown as a variant of the unit count only.
   - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
     'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
     (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
@@ -570,7 +619,15 @@ outcomes:
     units under the BH-FDR reading, 6.20 to 4.67 sp/s, p = 5.99e-10; 362 under the uncorrected variant,
     p = 9.78e-14); this set may include the units the paper dropped, so it does not decide the claim.
     The answer to questions/001687.yaml (BH-FDR responsiveness as the main reading) changes only which
-    units are wall-responsive here; the claim stays blocked.'
+    units are wall-responsive here; the claim stays blocked. After verification round 1, subsets standing
+    in for the paper''s selection were tried. Dropping the six sessions whose notes say not stable or
+    very unstable (310 units, 19 mice) leaves the drop (6.23 to 4.71 sp/s, p = 3.65e-09). A waveform-stability
+    proxy from the raw voltage (correlation of pre- and post-cut mean waveforms and their amplitude ratio)
+    gives a result that depends on the threshold: r >= 0.9 and ratio 0.8 to 1.25, 198 units from 22 mice,
+    7.28 against 6.84 sp/s, p = 0.0141; r >= 0.95 and ratio 0.9 to 1.11, 106 units from 21 mice, 8.42
+    against 8.14 sp/s, p = 0.29; stable sessions and r >= 0.9, 160 units from 17 mice, 7.09 against 6.75
+    sp/s, p = 0.251. 83 of 384 units have too few post-cut spikes for a waveform. As the outcome turns
+    on a selection the paper does not define, the claim stays blocked.'
 - claim: fig4b-cut-wall-firing-reduced
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -587,7 +644,12 @@ outcomes:
     from 10.32 to 6.43 sp/s (p = 1.77e-16), 50 units below 1 sp/s after the cut; uncorrected variant 198
     units, 9.78 to 6.17 sp/s (p = 5.86e-18). The code''s reading (median over distances) needs post-cut
     distances. The answer to questions/001687.yaml (BH-FDR responsiveness as the main reading) changes
-    only the unit set reported here; the claim stays blocked.'
+    only the unit set reported here; the claim stays blocked. After verification round 1, subsets standing
+    in for the paper''s selection were tried; the decrease holds on each (BH-FDR: 143 units without the
+    six sessions noted unstable, 10.07 to 5.86 sp/s, p = 6.22e-16; 98 units with waveform r >= 0.9 and
+    amplitude ratio 0.8 to 1.25, 12.97 to 9.58 sp/s, p = 6.67e-09; 58 units with r >= 0.95, 14.91 to 11.23
+    sp/s, p = 1.38e-06), but none has the paper''s 86 units and which stands for the paper''s is not known,
+    so the claim stays blocked.'
 - claim: fig4b-cut-per-unit-changes
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -603,7 +665,10 @@ outcomes:
     140 change with uncorrected p < 0.05 (114 down, 17 up), 139 with BH-FDR and 118 with Bonferroni 0.05/(2n)
     (105 down, 9 up), against 66, 52 and 14 of 86 in the paper; on the 198 units of the uncorrected variant
     160, 159 and 134 change. The answer to questions/001687.yaml (BH-FDR responsiveness as the main reading)
-    changes only the unit set reported here; the claim stays blocked.'
+    changes only the unit set reported here; the claim stays blocked. After verification round 1: on the
+    98 units with waveform r >= 0.9 and amplitude ratio 0.8 to 1.25 (BH-FDR), Bonferroni gives 59 changed,
+    55 down and 4 up; on the 143 units without the sessions noted unstable, 100 changed, 91 down and 6
+    up. The counts scale with the subset, which is not the paper''s, so the claim stays blocked.'
 - claim: fig4c-map-units-after-cut
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -614,7 +679,11 @@ outcomes:
     files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
     with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
     stability from the raw voltage of 25 sessions was not attempted. These claims also need the wall distance
-    of each post-cut pass, which the dataset does not record.'
+    of each post-cut pass, which the dataset does not record. The raw files'' wall_pass_epochs hold only
+    start_time and stop_time, the digital input line carries only the camera and pass TTLs, and the order
+    of distances is a fresh random permutation in every block of 10 passes (67 distinct first blocks in
+    67 sessions; no session repeats its first block), so the post-cut distances cannot be inferred from
+    the pre-cut sequence either (shown in the notebook after verification round 1).'
 - claim: fig4jk-proximity-units-after-cut
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -625,7 +694,11 @@ outcomes:
     files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
     with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
     stability from the raw voltage of 25 sessions was not attempted. These claims also need the wall distance
-    of each post-cut pass, which the dataset does not record.'
+    of each post-cut pass, which the dataset does not record. The raw files'' wall_pass_epochs hold only
+    start_time and stop_time, the digital input line carries only the camera and pass TTLs, and the order
+    of distances is a fresh random permutation in every block of 10 passes (67 distinct first blocks in
+    67 sessions; no session repeats its first block), so the post-cut distances cannot be inferred from
+    the pre-cut sequence either (shown in the notebook after verification round 1).'
 - claim: figs5fg-cut-decoding
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -637,7 +710,11 @@ outcomes:
     with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
     stability from the raw voltage of 25 sessions was not attempted. These claims also need the wall distance
     of each post-cut pass, which the dataset does not record. Depends on fig4c-map-units-after-cut and
-    fig4jk-proximity-units-after-cut.'
+    fig4jk-proximity-units-after-cut. The raw files'' wall_pass_epochs hold only start_time and stop_time,
+    the digital input line carries only the camera and pass TTLs, and the order of distances is a fresh
+    random permutation in every block of 10 passes (67 distinct first blocks in 67 sessions; no session
+    repeats its first block), so the post-cut distances cannot be inferred from the pre-cut sequence either
+    (shown in the notebook after verification round 1).'
 - claim: figs6-opto-local-inhibition-gain
   outcome: blocked
   blocked_by: data_missing
@@ -716,16 +793,21 @@ outcomes:
   - 1225
   - 593
   - 631
-  notes: 'simulate_prv.py at commit b1a9f3c with its defaults and --telc (seed 42): 1,225 model neurons;
-    control 399 proximity, 194 map, 128 suppressed, 504 untuned, 593 distance-tuned; with long-range inhibition
-    halved 526 proximity, 105 map, 84 suppressed, 510 untuned, 631 tuned. Both tuned counts are within
-    tolerance of 590 and 636; the map share of tuned neurons falls from 32.7% to 16.6% and the proximity
-    share rises from 67.3% to 83.4%.'
+  notes: 'simulate_prv.py at commit b1a9f3c with its defaults and --telc (seed 42): 1,225 model neurons.
+    main() classifies the curves twice in each condition; on the nine-bin grid the criterion names (the
+    counts passed to plot) control gives 399 proximity, 194 map, 128 suppressed, 504 untuned, 593 distance-tuned,
+    and halved long-range inhibition 526 proximity, 105 map, 84 suppressed, 510 untuned, 631 tuned; both
+    tuned counts are within tolerance of 590 and 636, and the map share of tuned neurons falls from 32.7%
+    to 16.6% (proximity share 67.3% to 83.4%). On the 99-point fine grid used for the heatmaps the counts
+    are 362 + 228 = 590 and 476 + 160 = 636, the paper''s numbers exactly, with the map share falling
+    from 38.6% to 25.2%; the paper''s counts come from the fine grid. Both grids meet the criterion.'
   deviations:
   - The categories are the code's analysis.py (proximity when left-peaked, map when it has a peak of prominence
     0.1 and is not left-peaked, suppressed when the maximum is at most 0.1), which the criterion says
-    is run as only it gives the figure's numbers; the counts the code prints are reported. Plotting is
-    replaced by a capture of the curves and counts the code would plot.
+    is run as only it gives the figure's numbers. The measured values are those of the nine-bin classification
+    the criterion names; the code's fine-grid counts, which equal the paper's, are reported in the notes.
+    Plotting is replaced by a capture of the curves and counts the code would plot, and each classification
+    main() runs is logged.
 - claim: fig6ghi-tuning-shape-telc
   outcome: blocked
   blocked_by: data_missing
@@ -745,17 +827,21 @@ findings:
   statement: In the 25 whisker-cutting sessions the processed files hold only the full-array passes, and
     trial_condition is empty in every file. The post-cut passes are listed only in the raw files' wall_pass_epochs,
     with no wall distance; the trial log holds the pre-cut sequence only, and the raw wall-actuator line,
-    described as the only raw record of wall distance, takes the same two levels at every distance.
+    described as the only raw record of wall distance, takes the same two levels at every distance. The
+    pass epochs have only start and stop times, and the order of distances is a fresh random permutation
+    in each block of passes, so the post-cut distances cannot be inferred.
 - kind: selection_undocumented
   statement: 'The paper''s whisker-cutting population (195 units with stable waveforms from 18 mice) cannot
     be identified: the deposit has 25 cutting sessions from 25 mice with 445 units, no waveform-stability
     flag and no list of the sessions used.'
 - kind: metadata_insufficient
-  statement: The processed files carry no isolation metrics (SNR, ISI false-alarm rate), no 'acceptable'
-    flag and no waveforms or peak channels, so the paper's unit criteria (1,141 of 1,358) and unit depths
-    can be recomputed only in part, or from the raw voltage. The deposit's wall_responsive labels already
-    exclude units that fail isolation (no labelled-responsive unit has ISI false alarms above 2%), without
-    saying so.
+  statement: 'The processed files carry no isolation metrics (SNR, ISI false-alarm rate), no ''acceptable''
+    flag and no waveforms or peak channels, so the paper''s unit criteria (1,141 of 1,358) and unit depths
+    can be recomputed only in part, or from the raw voltage. The deposit''s wall_responsive labels already
+    exclude units that fail isolation without saying so: no labelled-responsive unit has ISI false alarms
+    above 2%, and the 18 units that pass ISI and firing and test responsive but are labelled unresponsive
+    have median SNR 4.22 (12 below 5, computed here from the raw voltage) against 7.91 for the labelled-responsive
+    units.'
 - kind: metadata_error
   statement: 'In 20230711_sp_session_1 and 20230608_sp_session_1 the full-array trials table (200 passes
     each) runs past the longest gap between raw passes, in which the session notes place the cutting (49:18-57:15
@@ -770,9 +856,10 @@ findings:
     units responsive.
 - kind: other
   statement: In the two 1-mm-step sessions (20221212_sp_session_2, 20221213_sp_session_2; 38 units) the
-    deposit's stored tuning curves use one of the two distances in each 2-mm bin, while the Methods bin
-    all distance measurements into 2-mm bins. For the other 65 sessions the stored curves equal the rates
-    computed from the spike times, except for one unit in each of 10 sessions.
+    deposit's stored tuning curves use, in each 2-mm bin, only the distance nearest the bin centre (reproduced
+    exactly here), while the Methods bin all distance measurements into 2-mm bins. For the other 65 sessions
+    the stored curves equal the rates computed from the spike times, except for one unit in each of 10
+    sessions.
 - kind: code_mismatch
   statement: In Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m at commit b1a9f3c, the branch that builds
     the combined 'map + proximity' subsamples draws 36 map and 82 proximity units but does not update
@@ -784,3 +871,297 @@ findings:
     Figure 2F's 177 untuned units of 768 imply 591. With the BH-FDR test the data give 600 tuned and 182
     untuned units, consistent with Figure 2F, and 92 units both activated and suppressed among tuned units,
     against 29 in the text.
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the author-answers run with the conclusion cells and the
+    summary removed, the helper module and the claims file, with the paper. The verifier queried the archive
+    metadata and tested the helper functions on synthetic inputs (bh, the K-S tail mapping, signrank,
+    dist_bin, classify, and the decoders on null data); all passed (point B11). Report in transcripts/001687/verifier-1-report.md.
+    It disagreed with three outcomes, all partially reproduced in the record where the criterion has no
+    partial rule.
+  results:
+  - claim: figs1f-angle-awake-vs-anesthetized
+    agrees: true
+    outcome: blocked
+    reason: The archive holds 36 C57 mice and only silicon-probe sessions. No session is anesthetized
+      and there is no tracked whisker data, only raw video (cell 62; API asset list).
+    response: No change.
+  - claim: figs1j-curvature-awake-vs-anesthetized
+    agrees: true
+    outcome: blocked
+    reason: 'Same as figs1f: no anesthetized session and no tracked whisker data.'
+    response: No change.
+  - claim: figs1d-bending-larger-closer
+    agrees: true
+    outcome: blocked
+    reason: Needs anesthetized kinematics; there are none.
+    response: No change.
+  - claim: figs2-tungsten-responsiveness
+    agrees: true
+    outcome: blocked
+    reason: 'No tungsten recordings: there are 191 assets (67 processed, 67 raw, 57 mp4) and every session
+      is a silicon-probe session.'
+    response: No change.
+  - claim: figs2-tungsten-tuning
+    agrees: true
+    outcome: blocked
+    reason: Same as figs2-tungsten-responsiveness.
+    response: No change.
+  - claim: si-unit-yield
+    agrees: true
+    outcome: reproduced
+    reason: '1,160 units (within 1141 +/- 114) from 36 mice, exact (cell 12). SNR is not applied. The
+      paper''s Fig. S1B gives 1,301 of 1,358 units passing SNR and false alarms, so SNR can remove at
+      most about 22 more units, and the count stays within tolerance. Problem B3: SNR is called not computable
+      although the notebook builds mean waveforms from the raw voltage, and the Methods'' duplicate-unit
+      exclusion (r > 0.1 in 1-ms bins) is neither applied nor mentioned (does not affect a conclusion).'
+    response: Added an SNR from the raw-voltage mean waveforms (prv.unit_waveforms, prv.waveform_measures;
+      definition stated as an assumption) and the Methods' duplicate rule (prv.duplicate_pairs). SNR >=
+      5 leaves 1,034 units from 36 mice, within tolerance, and 1,030 with the 9 duplicate pairs dropped;
+      the counts at SNR 3, 4 and 6 are shown. The analysed population stays the 1,160 units, said in the
+      deviation. Outcome kept.
+  - claim: fig2-wall-responsive-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'BH-FDR gives 782, 541, 337 and 96, all within tolerance (cell 14). The uncorrected variant
+      fails badly (1,061 responsive). Problem B1: the claims file''s checks log says the uncorrected test
+      was made the main reading, while the opening comment and every criterion say BH-FDR is main; the
+      file should settle this explicitly. Problems B4 and B6: the 1-mm-step sessions were not run under
+      the deposit''s one distance per bin, and the post-cut deposit trials of two sessions are kept in
+      the classification.'
+    response: 'B1: the checks log entry of 2026-10-21 was superseded by the reader''s answer of 2026-11-03
+      recorded in questions/001687.yaml, which made the BH-FDR test the main reading and rewrote the opening
+      comment and criteria; the claims file is the reader''s to edit, so no new question was added. B4
+      and B6: added both pass-set variants (the deposit''s nearest-centre distance in the 1-mm-step sessions,
+      which reproduces its stored curves exactly; the post-gap trials dropped); the counts change by at
+      most 3 units and stay within tolerance. Outcome kept.'
+  - claim: fig2-distance-tuned-counts
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Tuned 600, activated 478 and suppressed 214 are within tolerance, but both is 92 against
+      29 +/- 2.9 (cell 16), and the criterion has no partial clause. The value 92 matches the 94 implied
+      by the paper''s own Fig. 2F counts (213 - 119). Problem B2: the expected values 656 and 29 contradict
+      Fig. 2F, whose counts imply 591 tuned units and 94 both.'
+    response: 'Outcome changed from partially reproduced to not reproduced: the criterion asks for all
+      four counts and gives no partial rule, while other criteria in the file do give one. Added the question
+      about the Figure 2F values to questions/001687.yaml and said so in the notes; the claim is tested
+      as the file has it. The pass-set variants give 94 and 91 both.'
+  - claim: fig2f-tuning-categories
+    agrees: true
+    outcome: reproduced
+    reason: Proximity 271, map 120, ambiguous 87, suppressed-only 122 and untuned 182 are all within tolerance
+      under reading (a). The ratio is 2.26 (cell 18).
+    response: Added the pass-set variants (all five counts stay within tolerance). Outcome kept.
+  - claim: figs4a-baseline-activated-lower
+    agrees: true
+    outcome: reproduced
+    reason: 5.40 against 6.97 sp/s, both within tolerance; K-S p = 2.9e-7 (cell 20).
+    response: No change.
+  - claim: figs4a-baseline-suppressed-similar
+    agrees: true
+    outcome: reproduced
+    reason: K-S p = 0.643, at or above 0.05; difference +0.29 sp/s (cell 22).
+    response: No change.
+  - claim: figs4b-activated-increase-suppressed-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both one-tailed tests hold (p <= 1e-8). The activated-population baseline is 5.36 under reading
+      (a) and 5.40 under (b), against 6.36 +/- 0.704, so it is out of tolerance under both readings (cell
+      24). Could not check (C5) which baseline gives the paper's 6.36 sp/s; no other candidate was tried.
+    response: Added seven other baselines of the activated population; only the 0 to 3 s window at the
+      preferred distance (wall moving, before contact; 5.87 sp/s) is within tolerance, and it is not a
+      reading the criterion names. Outcome kept.
+  - claim: figs4c-untuned-no-change
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.484; wall rate 6.36 against 6.32 +/- 0.953 (cell 26).
+    response: No change.
+  - claim: fig2de-preferred-distances-span
+    agrees: true
+    outcome: reproduced
+    reason: 7 mm is the most frequent preferred distance in both populations (57% and 37%), and all 8
+      farther bins are occupied (cell 28).
+    response: No change.
+  - claim: figs4ef-crossvalidated-stability
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Reading (a) holds (same preferred distance in 0.724 of activated against 0.507 of suppressed
+      units), as does trough-keeping (0.897 at 7 mm against 0.293 farther). Reading (b) fails: the activated
+      Spearman correlation is 0.815 against 0.831 for suppressed (cell 30). The criterion requires both
+      readings. Problem B9: the medians'' ranges over the 100 splits overlap, so the failure of reading
+      (b) is fragile, but the criterion is applied as written.'
+    response: Outcome changed from partially reproduced to not reproduced, as the criterion has no partial
+      rule. The conclusion and notes now say the failure is narrow, with the ranges over splits.
+  - claim: figs4j-ventral-location
+    agrees: true
+    outcome: reproduced
+    reason: 'Both readings hold (median depths 350/275/250 um against 525 um unresponsive; the 0-400 um
+      half has higher fractions) (cell 34). This rests on the unverified orientation of rel_y (B5: a reversed
+      axis would invert figs4j).'
+    response: 'Printed the electrodes table''s probe_site (described as 1-based, site 1 = tip) against
+      rel_y: site 1 has rel_y 0 um in both probe types and the two columns rank together (Spearman 1.000
+      and 0.996), so depth is measured from the tip. Outcome kept.'
+  - claim: figs4l-temporal-windows-map
+    agrees: true
+    outcome: partially_reproduced
+    reason: Sustained 133 and onset 90 are within tolerance under reading (a). Offset is 68 under (a)
+      and 42 under (b), against 34 +/- 3.4. The order sustained > onset > offset holds (cell 32).
+    response: No change.
+  - claim: fig3a-decoding-above-controls
+    agrees: true
+    outcome: reproduced
+    reason: All 8 group-against-control pairs are higher with p = 1.83e-4 under both cross-validations
+      (cell 38).
+    response: No change.
+  - claim: fig3-overall-decoding-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: '10-fold, 3-11 s: 70.4, 60.9, 48.4, 33.7, 16.4 and 11.0%, all within tolerance and in the
+      paper''s order (cell 40). Shuffled 11.0% matches the paper''s chance level of 11.1% (100/9).'
+    response: No change.
+  - claim: fig3c-decoding-by-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Part (a) fails only at 9 mm (proximity 79.4 < map 81.5). Part (b) holds at 7/7 distances with
+      q < 0.05. Proximity at 15 mm is 32.0, against 36.29 +/- 3.63 (cell 42).
+    response: No change.
+  - claim: fig3c-decoding-error
+    agrees: true
+    outcome: reproduced
+    reason: Submillimetre and only-map conditions hold; all four values are within tolerance under both
+      cross-validations (cell 44).
+    response: No change.
+  - claim: figs5c-single-neuron-decoders
+    agrees: true
+    outcome: reproduced
+    reason: Directions and q < 0.05 hold at 7, 11, 13, 15 and 17 mm. Every group is below its population
+      value, and all four values are within tolerance (cell 46).
+    response: No change.
+  - claim: figs5de-svm-robust
+    agrees: false
+    outcome: not_reproduced
+    reason: 'All qualitative conditions hold (map highest; proximity and combined above map at 7 mm; map
+      highest at 13-23 mm in 6/6). The combined group is 61.9 against 54.43 +/- 5.44 under both cross-validations
+      (cell 48), and the criterion has no partial clause. Problem B8: the SVM is run on every third time
+      bin, stated as a deviation, and the same thinning leaves MCC unchanged (70.44 against 70.26).'
+    response: Outcome changed from partially reproduced to not reproduced, as the criterion has no partial
+      rule; the notes say the ranking holds.
+  - claim: fig4-cut-baseline-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Nothing identifies the paper''s 195 stable-waveform units from 18 of the 25 cutting mice.
+      On all 384 units the baseline falls 6.41 to 4.74 sp/s (p = 1e-14; cell 54), which would contradict
+      the claim. Problem B10 (affects a conclusion): blocking is defensible, but parts were testable and
+      not tried; dropping the 6 mice whose notes say not stable or very unstable leaves about 19 mice,
+      and a pre/post waveform-stability proxy could be computed from the raw voltage. The large drop on
+      all units may come from drift that the paper''s selection removes.'
+    response: 'Ran both: without the six sessions noted unstable (310 units, 19 mice) the baseline still
+      falls (p = 3.65e-09); with a waveform-similarity proxy from the raw voltage the result turns on
+      the threshold (198 units from 22 mice, p = 0.0141; 106 units, p = 0.29; 160 units from 17 mice in
+      the stable sessions, 7.09 against 6.75 sp/s, p = 0.251). Kept blocked, as the outcome depends on
+      a selection the paper does not define; all subsets are in the notebook and the notes.'
+  - claim: fig4b-cut-wall-firing-reduced
+    agrees: true
+    outcome: blocked
+    reason: Same population problem. On 175 units the decrease holds (10.32 to 6.43 sp/s, both values
+      within tolerance), but n is 175 against 86 (cell 56).
+    response: 'Added the same subsets: the decrease holds on each (p at most 1.38e-06), with 58 to 143
+      units, none the paper''s 86. Kept blocked.'
+  - claim: fig4b-cut-per-unit-changes
+    agrees: true
+    outcome: blocked
+    reason: Same population problem; the counts (139/113/17) cannot be compared on twice the population.
+    response: 'Added the counts on the same subsets (98 units at waveform r >= 0.9: Bonferroni 59 changed,
+      55 down, 4 up). Kept blocked.'
+  - claim: fig4c-map-units-after-cut
+    agrees: true
+    outcome: blocked
+    reason: 'Post-cut passes carry no wall distance; the zaber line is two-level (cell 62). Unchecked
+      (C2): other columns of wall_pass_epochs, the description of DigitalInputEvents in a raw cutting
+      file, and whether the pre-cut distance sequence repeats as a fixed order.'
+    response: 'Printed the columns and descriptions of wall_pass_epochs (start_time and stop_time only)
+      and DigitalInputEvents (camera and pass TTLs) in two cutting files, and checked the order of distances:
+      a fresh random permutation in each block of 10 passes, 67 distinct first blocks in 67 sessions,
+      none repeating. Kept blocked. The brainstem.org lab notebook was not consulted: the protocol takes
+      outside data only when the claims file says the paper relies on it.'
+  - claim: fig4jk-proximity-units-after-cut
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4c-map-units-after-cut.
+    response: Same additions as fig4c-map-units-after-cut. Kept blocked.
+  - claim: figs5fg-cut-decoding
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4c-map-units-after-cut.
+    response: Same additions as fig4c-map-units-after-cut. Kept blocked.
+  - claim: figs6-opto-local-inhibition-gain
+    agrees: true
+    outcome: blocked
+    reason: 'No vGat-Cre/GtACR mice: all 36 subjects are C57 (API metadata and cell 62).'
+    response: No change.
+  - claim: figs6i-telc-kinematics-unchanged
+    agrees: true
+    outcome: blocked
+    reason: No SpVi-TeLC mice.
+    response: No change.
+  - claim: telc-unit-yield
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: fig5d-telc-preferred-closer
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: fig5e-telc-category-shift
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: fig5e-telc-untuned-ambiguous-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: figs6j-telc-untuned-higher-firing
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: figs6k-telc-tuned-baseline-similar
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: figs6k-telc-tuned-wall-higher
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: figs6l-telc-increase-at-close-distances
+    agrees: true
+    outcome: blocked
+    reason: Same (no SpVi-TeLC mice).
+    response: No change.
+  - claim: fig6ghi-tuning-shape-telc
+    agrees: true
+    outcome: blocked
+    reason: The judged part is experimental and needs TeLC units. The model part is reported, not judged,
+      and was not reported.
+    response: No change; the model's curves are not reported for this claim, as the criterion does not
+      judge them.
+  - claim: fig6-model-telc-loses-map
+    agrees: true
+    outcome: reproduced
+    reason: '1,225 neurons. Tuned 593 to 631, both within tolerance. Map share of tuned neurons 32.7 to
+      16.6%, proximity share rises (cell 60). Problem B7: the model printed four count lines; the paper''s
+      590 and 636 equal lines 2 and 4 exactly (362 + 228; 476 + 160), but the capture took lines 1 and
+      3 (593, 631), and the notebook does not say which line is the Methods'' nine-bin classification.
+      Both pairs pass, and in both the map share falls.'
+    response: 'Each classification main() runs is now logged and labelled: lines 1 and 3 are the nine-bin
+      classification the criterion names (passed to plot), lines 2 and 4 the 99-point fine grid used for
+      the heatmaps, which gives the paper''s 590 and 636. Measured values stay the nine-bin ones; the
+      notes give both. Outcome kept.'

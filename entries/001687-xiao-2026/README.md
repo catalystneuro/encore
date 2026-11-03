@@ -8,7 +8,8 @@ and the differences from the paper's method.
 
 - `reproduce_xiao_2026.ipynb`: the notebook, one section per tested claim.
 - `prv.py`: streaming loader, per-pass rates, the paper's unit classification, the MCC, SVM and
-  single-neuron decoders, unit depth from the raw voltage, the whisker-cutting pass split, and a
-  runner for the paper's circuit model at commit b1a9f3c.
+  single-neuron decoders, mean waveforms from the raw voltage (unit depth, an approximate SNR and a
+  waveform-stability proxy for the whisker-cutting sessions), the Methods' duplicate-unit rule, the
+  whisker-cutting pass split, and a runner for the paper's circuit model at commit b1a9f3c.
 
 The record of outcomes is `attempts/001687-xiao-2026-01.yaml`.

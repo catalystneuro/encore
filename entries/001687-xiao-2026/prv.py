@@ -476,9 +476,22 @@ def load_model_code():
 
 
 def run_model(mods, outdir, **kw):
-    """Run simulate_prv.main with plotting replaced by a capture of the counts."""
+    """Run simulate_prv.main with plotting replaced by a capture of the counts.
+
+    Also records every call of analysis() in order, with the number of distance
+    points of the curves it classified: main() classifies the control curves on
+    the nine-bin grid and then on the 99-point grid, then the same for the
+    reduced-inhibition curves; only the nine-bin counts are passed to plot()."""
     sim = mods["simulate_prv"]
-    captured = {}
+    captured = {"analysis_calls": []}
+    orig = sim.analysis
+
+    def analysis_logged(curves, **k):
+        sel, counts = orig(curves, **k)
+        captured["analysis_calls"].append(dict(points=int(np.asarray(curves).shape[1]),
+                                               counts=[int(c) for c in counts]))
+        return sel, counts
+    sim.analysis = analysis_logged
 
     def capture(selected, counts, fine, out, suffix="", **k):
         captured[suffix or "control"] = dict(counts=[int(c) for c in counts], n_selected=len(selected),
@@ -496,48 +509,119 @@ def decode_job(args):
 
 # ---------- unit depth along the probe (claim figs4j-ventral-location) ----------
 
-def unit_peak_depths(asset, spikes, t_lo, t_hi, n_chunks=16, min_spikes=20):
-    """Peak channel and its shank coordinate for each unit, from the raw voltage.
+def unit_waveforms(asset, spikes, windows, n_chunks=16):
+    """Mean and variance of each unit's waveform from the raw voltage, per time window.
 
-    Methods (Unit Depth Along Silicon Probe): the peak channel is the channel of
-    the unit's mean waveform with the largest peak-to-trough amplitude; depth is
-    that site's coordinate from the probe tip (the electrodes table's rel_y,
-    0 to 775 um, site 1 = tip). Deviation (to fit the time limit): the mean
-    waveform is taken over the spikes in n_chunks storage chunks (5.2 s each)
-    spread evenly over [t_lo, t_hi], after a 300-6000 Hz band-pass (a standard
-    spike band), not over all spikes. Units with fewer than min_spikes spikes
-    in these chunks get no depth."""
+    windows: list of (t_lo, t_hi). For each window the spikes in n_chunks storage
+    chunks (5.2 s each) spread evenly over it are taken, after a 300-6000 Hz
+    band-pass (a standard spike band), 60 samples (2 ms) around each spike on
+    every channel. A deviation to fit the time limit: not over all spikes.
+    Returns the electrode group, the electrodes' rel_y and probe_site, and per
+    window a list of dicts (n_spikes, mean (60, channels), var (60, channels))."""
     from scipy import signal
     f = h5py.File(remfile.File(asset_url(asset["asset_id"])), "r")
     es = f["acquisition/ElectricalSeriesRaw"]
     d = es["data"]
     fs = 30000.0
     t_start = float(es["starting_time"][()])
-    rel_y = f["general/extracellular_ephys/electrodes/rel_y"][:][es["electrodes"][:]]
-    group = _s(f["general/extracellular_ephys/electrodes/group_name"][0])
+    el = f["general/extracellular_ephys/electrodes"]
+    rows = es["electrodes"][:]
+    rel_y = el["rel_y"][:][rows]
+    site = el["probe_site"][:][rows]
+    group = _s(el["group_name"][0])
     c = d.chunks[0]
-    k0, k1 = int((t_lo - t_start) * fs) // c, int((t_hi - t_start) * fs) // c
-    ks = np.unique(np.linspace(k0, max(k0, k1 - 1), n_chunks).astype(int))
     b, a = signal.butter(3, [300, 6000], btype="band", fs=fs)
-    sums = [np.zeros((60, d.shape[1])) for _ in spikes]
-    nsp = np.zeros(len(spikes), int)
-    for k in ks:
-        X = signal.filtfilt(b, a, d[k * c:(k + 1) * c, :].astype(np.float32), axis=0)
-        t0 = t_start + k * c / fs
-        for i, sp in enumerate(spikes):
-            st = sp[(sp > t0 + 0.005) & (sp < t0 + c / fs - 0.005)]
-            idx = np.round((st - t0) * fs).astype(int)
-            if idx.size:
-                sums[i] += X[idx[:, None] + np.arange(-30, 30)[None, :]].sum(0)
-            nsp[i] += idx.size
+    out = []
+    for t_lo, t_hi in windows:
+        k0, k1 = int((t_lo - t_start) * fs) // c, int((t_hi - t_start) * fs) // c
+        ks = np.unique(np.linspace(k0, max(k0, k1 - 1), n_chunks).astype(int))
+        sums = [np.zeros((60, d.shape[1])) for _ in spikes]
+        sq = [np.zeros((60, d.shape[1])) for _ in spikes]
+        nsp = np.zeros(len(spikes), int)
+        for k in ks:
+            X = signal.filtfilt(b, a, d[k * c:(k + 1) * c, :].astype(np.float32), axis=0)
+            t0 = t_start + k * c / fs
+            for i, sp in enumerate(spikes):
+                st = sp[(sp > t0 + 0.005) & (sp < t0 + c / fs - 0.005)]
+                idx = np.round((st - t0) * fs).astype(int)
+                if idx.size:
+                    W = X[idx[:, None] + np.arange(-30, 30)[None, :]]
+                    sums[i] += W.sum(0)
+                    sq[i] += (W.astype(np.float64) ** 2).sum(0)
+                nsp[i] += idx.size
+        res = []
+        for i in range(len(spikes)):
+            n = max(nsp[i], 1)
+            m = sums[i] / n
+            res.append(dict(n_spikes=int(nsp[i]), mean=m, var=np.maximum(sq[i] / n - m ** 2, 0)))
+        out.append(res)
     f.close()
+    return group, rel_y, site, out
+
+
+def waveform_measures(w, rel_y, min_spikes=20):
+    """Peak channel, depth and SNR of one unit's waveform (a dict from unit_waveforms).
+
+    Methods (Unit Depth Along Silicon Probe): the peak channel is the channel of
+    the mean waveform with the largest peak-to-trough amplitude; depth is that
+    site's coordinate from the probe tip (rel_y; the electrodes table's
+    probe_site column says site 1 is the tip, and the notebook shows that site 1
+    has rel_y 0). Methods (Isolation of Single Unit Activity): SNR is 'the mean
+    waveform amplitude divided by the standard deviation (SD) of waveform
+    noise'. Taken here as the peak-to-trough amplitude on the peak channel over
+    the SD of the single spikes about the mean waveform on that channel (the
+    root of the variance averaged over the 60 samples), an assumption: the
+    paper does not say how amplitude and noise are measured. Units with fewer
+    than min_spikes spikes in the chunks get no measures."""
+    if w["n_spikes"] < min_spikes:
+        return dict(n_spikes=w["n_spikes"], peak_ch=-1, depth_um=np.nan, amp=np.nan, snr=np.nan)
+    amp = w["mean"].max(0) - w["mean"].min(0)
+    ch = int(amp.argmax())
+    noise = float(np.sqrt(w["var"][:, ch].mean()))
+    return dict(n_spikes=w["n_spikes"], peak_ch=ch, depth_um=float(rel_y[ch]), amp=float(amp[ch]),
+                snr=float(amp[ch] / noise) if noise > 0 else np.nan)
+
+
+def waveform_similarity(w1, w2, min_spikes=20):
+    """Pearson correlation of two mean waveforms over all channels, and the ratio
+    of their peak-to-trough amplitudes on the first one's peak channel. Used as a
+    proxy for the paper's 'stable waveform properties both before and after
+    cutting' (Methods), which the paper does not define: an assumption."""
+    if min(w1["n_spikes"], w2["n_spikes"]) < min_spikes:
+        return np.nan, np.nan
+    a, b = w1["mean"], w2["mean"]
+    amp1 = a.max(0) - a.min(0)
+    ch = int(amp1.argmax())
+    r = float(np.corrcoef(a.ravel(), b.ravel())[0, 1])
+    return r, float((b[:, ch].max() - b[:, ch].min()) / amp1[ch])
+
+
+# ---------- duplicate units ----------
+
+def duplicate_pairs(spikes, t_end, thr=0.1, width=0.001):
+    """Pairs of units of one session whose spike counts in 1-ms bins correlate above thr.
+
+    Methods (Isolation of Single Unit Activity): 'Duplicate units, identified as
+    those with high Pearson's correlation coefficients (> 0.1) in spike counts
+    binned at 1 ms resolution, were excluded'. Bins span 0 to t_end. Returns
+    (i, j, r) for each pair above thr."""
+    nb = int(np.ceil(t_end / width))
+    cnt = []
+    for sp in spikes:
+        k, c = np.unique((np.asarray(sp) / width).astype(np.int64), return_counts=True)
+        cnt.append((k, c.astype(float)))
+    stats_ = []
+    for k, c in cnt:
+        s1, s2 = c.sum(), (c ** 2).sum()
+        stats_.append((s1 / nb, np.sqrt(max(s2 / nb - (s1 / nb) ** 2, 1e-30))))
     out = []
     for i in range(len(spikes)):
-        if nsp[i] < min_spikes:
-            out.append(dict(n_spikes=int(nsp[i]), peak_ch=-1, depth_um=np.nan))
-            continue
-        W = sums[i] / nsp[i]
-        amp = W.max(0) - W.min(0)
-        ch = int(amp.argmax())
-        out.append(dict(n_spikes=int(nsp[i]), peak_ch=ch, depth_um=float(rel_y[ch]), amp=float(amp[ch])))
-    return group, out
+        for j in range(i + 1, len(spikes)):
+            ki, ci = cnt[i]
+            kj, cj = cnt[j]
+            _, ia, ja = np.intersect1d(ki, kj, return_indices=True)
+            exy = (ci[ia] * cj[ja]).sum() / nb
+            r = (exy - stats_[i][0] * stats_[j][0]) / (stats_[i][1] * stats_[j][1])
+            if r > thr:
+                out.append((i, j, float(r)))
+    return out
