@@ -33,7 +33,7 @@ analysed one per experiment, so experiment means, the cell nearest the centre an
 each run. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001518-semenov-2026-01.yaml`](../../attempts/001518-semenov-2026-01.yaml).
 
-- `reproduce_semenov_2026.ipynb`: the analysis. It takes about 17 minutes, most of it streaming
+- `reproduce_semenov_2026.ipynb`: the analysis. It takes about 11 minutes, most of it streaming
   the files.
 - `pef.py`: loading the files, finding the cells and their membrane traces, pole and profile
   measures, Eq. (1) with the time constant of reference [20], and Eq. (2). Other notebooks on this
