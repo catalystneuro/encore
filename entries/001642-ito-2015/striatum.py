@@ -19,7 +19,12 @@ written to disk. Where each parameter comes from:
   shuffle threshold is the second largest of 100 region averages with random binary events
   (Methods, "Mutual information"). The random events are permutations of the real labels: a
   standard choice that keeps the proportion of the two events (the paper does not say how the
-  random events were drawn).
+  random events were drawn). The claims file's readings of the estimate are (a) plug-in and
+  (b) plug-in minus the mean of the shuffles; the Panzeri and Treves (1996) correction (``pt``)
+  is shown as a variant, not a reading, as the claims file does not list it.
+- Permutations within blocks (``groups`` in ``mi_with_shuffles``) are a variant of the
+  threshold shown beside the paper's, to see whether slow drift and block structure make the
+  real labels pass the threshold of labels permuted over the whole session.
 """
 import concurrent.futures as cf
 import json
@@ -77,6 +82,12 @@ def load_session(path, asset_id, keep_spikes=True):
             units = pd.DataFrame({c: [] for c in ["Unit_Name", "Area", "Electrode_ID", "Neuron_ID", "PANs"]})
             idx = np.zeros(0, dtype=int)
             st = np.zeros(0)
+        # what the file holds, for the data check (no waveforms, amplitudes or depths)
+        layout = {"units": sorted(h["units"].keys()) if "units" in h else [],
+                  "electrodes": sorted(h["general/extracellular_ephys/electrodes"].keys()),
+                  "acquisition": sorted(h["acquisition"].keys()) if "acquisition" in h else [],
+                  "processing": sorted(f"{m}/{k}" for m in h.get("processing", {}) for k in h["processing"][m]),
+                  "analysis": sorted(h["analysis"].keys()) if "analysis" in h else []}
         subject = h["general/subject/subject_id"][()].decode()
         session = h["general/session_id"][()].decode()
     spikes = []
@@ -109,7 +120,7 @@ def load_session(path, asset_id, keep_spikes=True):
         df["subject"] = subject
         df["session"] = session
     bd["block"] = np.arange(1, len(bd) + 1)
-    return dict(path=path, subject=subject, session=session, trials=tr, blocks=bd, units=units)
+    return dict(path=path, subject=subject, session=session, trials=tr, blocks=bd, units=units, layout=layout)
 
 
 def load_all(workers=8, keep_spikes=True):
@@ -210,14 +221,29 @@ def mi_bits(levels, labels, pt=False):
     return out[0] if single else out
 
 
-def mi_with_shuffles(counts, labels, rng, n_shuffle=100, winlen=0.1):
+def permute_within(labels, groups, rng):
+    """The labels permuted within each group (block), so each block keeps its own proportion."""
+    out = labels.copy()
+    for g in np.unique(groups):
+        i = np.where(groups == g)[0]
+        out[i] = labels[rng.permutation(i)]
+    return out
+
+
+def mi_with_shuffles(counts, labels, rng, n_shuffle=100, winlen=0.1, groups=None):
     """MI (bits/s) of the real labels and of ``n_shuffle`` permutations, per window.
 
-    Returns a dict with ``plugin`` and ``pt`` (Panzeri-Treves corrected), each a pair
-    (real W, shuffles S x W as float32)."""
+    With ``groups`` (one block label per trial) the labels are permuted within blocks (a
+    variant of the paper's threshold); otherwise over all trials. Returns a dict with
+    ``plugin`` and ``pt`` (Panzeri-Treves corrected), each a pair (real W, shuffles S x W as
+    float32)."""
     lev = quartile_levels(counts)
     labels = np.asarray(labels).astype(int)
-    perms = np.column_stack([rng.permutation(labels) for _ in range(n_shuffle)])
+    if groups is None:
+        perms = np.column_stack([rng.permutation(labels) for _ in range(n_shuffle)])
+    else:
+        groups = np.asarray(groups)
+        perms = np.column_stack([permute_within(labels, groups, rng) for _ in range(n_shuffle)])
     out = {}
     for name, pt in (("plugin", False), ("pt", True)):
         out[name] = (mi_bits(lev, labels, pt) / winlen, (mi_bits(lev, perms, pt) / winlen).astype(np.float32))
