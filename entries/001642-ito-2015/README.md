@@ -11,7 +11,7 @@ and the spike times of DLS, DMS and VS units of seven rats in a fixed- and free-
 | Decision trees: choice tone sensitive to experience, fixed tones biased | Reproduced |
 | FQ learning with time-varying parameters predicts choices best | Not reproduced (on assumed model forms) |
 | Actor-critic near chance (0.508) | Reproduced |
-| Counts of stable neurons and PANs | Not reproduced |
+| Counts of stable neurons and PANs | Not reproduced (change to blocked, data missing, proposed) |
 | More than 60% of VS PANs activated in Phase 1 | Reproduced |
 | DMS activated in Phase 5; VS above DLS in Phase 7 | Blocked: methods underspecified |
 | VS longest activation, DLS shortest | Blocked: methods underspecified |
@@ -31,6 +31,12 @@ and the spike times of DLS, DMS and VS units of seven rats in a fixed- and free-
 | DLS and DMS action information stronger in fixed than free blocks | Not reproduced |
 | VS: no fixed against free difference | Blocked: methods underspecified |
 | DLS action information stronger in stay than switch trials | Blocked: methods underspecified |
+
+The verifier of round 2 showed, and the notebook now prints, that no count computable from the
+dandiset limits the paper's counts, since the waveform and histology exclusions cannot be applied.
+The change of the neuron counts to blocked (data missing) is proposed for a third round, and with
+it, by the protocol's rule for dependent claims, the change to blocked of the neural claims that
+depend on them and are not already blocked.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
