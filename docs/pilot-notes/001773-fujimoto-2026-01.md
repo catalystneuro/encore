@@ -1,0 +1,126 @@
+# 001773, Fujimoto et al. 2026
+
+Twenty-seven claims reproduced (11 on an assumption), none partially, one not
+reproduced and four blocked, two as methods underspecified and two for missing
+data. All 32 claims are on the dandiset. The first verification round agreed
+with all 32 outcomes as they stood and so did the second, and nothing was
+proposed after the second, so there was no third round. It pins version
+0.260416.1939, the version the paper cites; the latest version, 0.260615.1838,
+has identical asset ids. The paper, Fujimoto, Fujimoto, Elorette et al., "Deep
+brain stimulation induces white matter remodeling and functional changes to
+brain-wide networks" in Nature Neuroscience, implants an SCC-DBS lead in
+monkeys N and T, stimulated for 6 weeks, and in monkey D, never stimulated, with
+nonsurgical controls B, W and H, and reports home-cage behaviour (Extended Data
+Fig. 1), FA of the white matter tracts (Fig. 2, Extended Data Fig. 2),
+CC1-positive oligodendrocytes and EM g-ratios (Fig. 3, Extended Data Figs. 5
+and 6), the whole-brain connectome (Fig. 4), seed connectivity of area 25 by
+ROI and network (Fig. 5, Extended Data Figs. 7 and 9) and the same measures in
+monkey D (Fig. 6, Extended Data Fig. 10). The claims were written from the
+version of record in Europe PMC (PMC13337501) and the Supplementary
+Information, without a PDF of the main article or the Source Data; the paper's
+MATLAB code is deposited in the dandiset, so the readers did not read it. The
+check made twelve changes and left four points open. With the scripts' models
+almost every F value, partial eta squared and voxel or field count matches the
+paper to the printed digits: `ed1-behavior-increase` (movement F(1,236) =
+34.61, foraging 17.35), `fig2a-cb-fa-increase` (F(1,3187) = 4.64, P = 0.031),
+`fig2b-mcc-cb-fa-increase`, `fig3c-cc1-dapi-ratio` (F(1,108) = 9.00),
+`ed5-cc1-count-dapi-unchanged`, `ed6-dacc-ufm-no-oligodendrocyte-change`,
+`fig3f-g-ratio-decrease` (F(1,696) = 58.98), the connectome claims of Fig. 4a
+and 4b (69 and 44 ROIs, the reported counts), `fig6a-monkey-d-cb-fa-decrease`,
+`fig6b-monkey-d-dacc-cb-decrease`, `fig6c-monkey-d-cc1-no-change` (paired
+t(27) = -0.9888, P = 0.332, the reported values) and
+`ed10c-monkey-d-subcortical-decrease` are reproduced. The 11 seed-connectivity
+outcomes, the Fig. 5a, 5b and 5c claims, both Extended Data Fig. 9 claims,
+`ed7-decreases-both-monkeys` and `ed10d-monkey-d-roi-changes`, are reproduced on
+the assumption that the deposited seed maps, one per session, are the maps the
+paper analysed, which the matching interaction F values (186.48, 51.09, 7.36,
+4.58) support. `ed1-monkey-d-no-change` is not reproduced: by the criterion's
+one-way ANOVA monkey D's foraging falls from 0.183 to 0.050 (F(1,118) = 5.32,
+P = 0.023), while the deposited FigE1 script runs no test for monkey D, so the
+test is the claims file's reading of the Methods. `fig4c-network-sorted-reduction`
+is blocked as methods underspecified because no ROI is assigned to a network,
+and `fig6e-monkey-d-no-network-reduction` because its readings disagree: with
+the script's LIM no sham-side DMN, LIM or CEN decrease is significant, but over
+both sides the control-side CEN decreases (P = 0.0089). `fig5a-nonsurgical-no-reduction`
+and `fig6d-monkey-d-scc-local-increase` are blocked for missing data. The
+author's first run gave the same outcomes, with `fig4b-roi-changes-counts`
+reproduced on the assumption that the Fig. 4 script's test and threshold are
+the paper's. The author asked a reader whether the criterion should use them and
+whether "of the 122 ROIs" was right; the reader answered yes to both and
+amended the claim to the script's rank-sum against zeros at P < 0.05/123 and
+123 ROIs, and the author-answers run kept the outcome, no longer on an
+assumption. Round 1 agreed with all 32 and found that the "LIM without area 25"
+reading is ruled out by the legend's voxel counts, that SciPy's studentized
+range loses accuracy in the far tail, that the file name "concatenated" was
+read as concatenated runs without a check, and that the outputs did not show
+whether the FigE1 script tests monkey D, whether the Fig. 4 script or workbook
+assigns networks, or how the Fig. 6c rows pair; in reply these outputs were
+printed, the inference was removed, a `methods_unavailable` finding was added
+and a question on the LIM reading was filed in `questions/001773.yaml`, after
+the reader's run. Round 2 agreed with all 32, asked that the seed-map outcomes
+be marked as resting on an assumption, and found sentences the outputs did not
+support (the stated Tukey-Kramer accuracy of "1.1 to 3 times", "the paper
+therefore ran no test for monkey D" and "next to the lead" in the fig6d notes);
+in reply `assumed` was set on all 11, a table of 15 reported against computed
+P values was added and the text was corrected, and printing the whole FigE1
+script brought a new `code_mismatch` finding. The author's run took about 25
+minutes (16:09 to 16:33 UTC); one notebook run broke on a string escape in the
+author's generator and was fixed, and the notebook ran in 32 s at first, 24 s
+after the author-answers run, 41 s after round 1 and about 32 s at the end.
+Untracked dotfiles and a `scripts` entry, sandbox device placeholders created
+before the run, were left alone.
+
+The Data availability statement says the functional MRI data are deposited in
+the dandiset, but it holds no NWB and no images, only 34 Excel sheets of
+derived values and 18 MATLAB scripts: seed connectivity of the voxels of 17
+target ROIs for monkeys N, T and D and three group-average connectomes. There
+are no fMRI or DWI images, no whole-brain seed maps, no seed connectivity for
+the nonsurgical controls B, W and H and no per-monkey connectomes, so the
+voxelwise cluster maps of Fig. 5a, Fig. 6d and Extended Data Figs. 7, 8 and 10d
+cannot be tested, and the lead location is not given. The connectomes in
+"Source Data FC matrix.xlsx" (123 x 123) carry no ROI names; the Fig. 4 script
+reads them from atlas key and reorder files (CHARM_key_4.txt, SARM_key_4.txt,
+reorder_rois.txt) that are not deposited, so the network sorting of Fig. 4c
+cannot be repeated. The seed connectivity tables hold one value per voxel and
+session, and the paper does not say whether a session's map was computed on
+concatenated runs or averaged over per-run maps. The legend in
+dbs_behavior_data_a.xlsx codes foraging as yes 2 and no 1, but every foraging
+value is 0 or 1, and read as 1 yes the values give the paper's statistics; the
+same legend gives group codes 1 and 0, while monkey D's rows carry group 2. In
+CC1_MCC_CB_data_a.xlsx two fields of monkey T's control side (section T423,
+fields 3 and 4) carry CC1/DAPI ratios that do not match their counts (44.9 and
+35.4 % against 35.4 and 44.2 %), and two MCC-CB fields have more CC1-positive
+than DAPI-positive cells; with the ratio from the counts the side effect
+changes from F = 9.00 to 9.03. In dbs_EMgratio_MCC_CB_data_a.xlsx the column
+headed "diameter of axon(pixel)" holds half the mean of the long and short
+diameters, a radius. The dandiset's metadata names the paper only in its title,
+with no related resource, species, approach, measurement technique or variables
+measured, and the sheets have no data dictionary beyond the legends inside
+some of them; two scripts are deposited twice under two names with identical
+text. Of the code, the Fig. 4 script counts an ROI as changed at P <
+0.05/nrois (nrois = 123), while the Methods and the Fig. 4b legend give "P <
+0.01 with Bonferroni correction"; the script's threshold reproduces the 69 and
+44 ROIs of Supplementary Tables 1 and 2, whose largest listed P is 3.9e-4, above
+0.01/122. The FigE1 script computes the foraging standard errors from the
+movement column (lines 91 to 96), so the foraging error bars of Extended Data
+Fig. 1 are those of movement. Of the paper itself, the Fig. 6a legend gives the
+PrePost x side x tract interaction as F(1,1238) = 6.02, P = 0.0025, which the
+data give with 2 numerator df, as three tracts imply. A question is put to the
+paper's authors: whether "the widespread reductions ... were not observed" in
+monkey D covers the control hemisphere, where their own Fig. 6e legend lists a
+significant CEN difference.
+
+The author's points on the protocol: the DANDI reading rules assume NWB read
+with remfile and h5py, so each xlsx asset was fetched into memory through the
+API's download endpoint; the clock and stream-alignment check has nothing to act
+on in derived tables, so the side labels were checked against the hemispheres
+instead; the paper's code sits inside the dataset, which readers may not open,
+so details the code settles fell to the author, and the rule "Methods first,
+code as variant" conflicts with the paper's own tables following the code, so
+the code's procedure for fig4b was adopted as an assumption and a reader asked;
+a criterion asked for a seed-map reading the deposit cannot support, which was
+recorded as a deviation; the protocol says the several-readings rule does not
+apply to absence claims while the fig6e criterion says to block when its
+readings disagree, and the criterion was followed; and SciPy's studentized
+range tail stops at about 1e-11, where MATLAB prints 0, which was stated as it
+cannot change an outcome at P < 0.05.

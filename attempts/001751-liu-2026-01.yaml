@@ -1,0 +1,1075 @@
+schema_version: 2
+id: 001751-liu-2026-01
+dataset:
+  archive: dandi
+  id: '001751'
+  version: 0.260825.0222
+  doi: 10.48324/dandi.001751/0.260825.0222
+paper: doi:10.1038/s41556-026-02009-4
+date: '2026-11-03'
+entry: 001751-liu-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41646433532
+inputs:
+- what: Cell types (PC, VEN, GABA), tested ordered pairs and annotated connections (ConnType, connQuality, projection)
+    per NWB file and channel, from metadata_multiPatch.xlsx (sheet metadata_multiPatch).
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, ephysio/data_ephy/rawdata_ephysio/metadata_multiPatch.xlsx
+- what: eEPSP amplitudes of paired VENs and PCs at three stimulation levels, for fig4j-eepsp-amplitude.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, ephysio/data_ephy/sumData_StimWM.xlsx
+- what: AIS distance and length of PCs and VENs, for fig3c-ais-distance-length.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, morpho/dataMorph/AIScmp_PCvsVEN_Fig5c.xlsx
+- what: Per-cell sEPSC and sIPSC frequencies and amplitudes, for fig5b-psc-frequency and fig5c-psc-amplitude.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, ephysio/data_ephy/sPSCs_Fig7ab.xlsx
+- what: Per-cell mEPSC and mIPSC frequencies and amplitudes, for fig5b-psc-frequency and fig5c-psc-amplitude.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, ephysio/data_ephy/miniEPSCs_Fig7ab.xlsx
+- what: Cell type of each outside-out patch file of DANDI:001750, and the code's max_Na_current, for fig4d-sodium-current.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, ephysio/data_ephy/rawdata_ephysio/metadata_outSideOutSodiumCurrentRec.csv
+- what: AP phase-plane peak index per cell and transcriptomic type, for fig3e-phase-peak-index.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, ephysio/data_ephy/PeakIdx_Fig5e.xlsx
+- what: Processed metabolite intensities per sample, compared with the MetaboLights deposit, for fig8a-metabolite-gradient
+    and fig8de-glycolytic-bias.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, VEN_Metabolism/Metabolic_data.xlsx
+- what: Patch-seq mapping results to the excitatory and the joint neuron clusters, for patchseq-mapping, ven-map-et-ct
+    and fig6f-g-ven-subtype-mapping.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, patchSeqMappingTo10X/data/mappingRes/results_Ext_240415.csv
+    and mappingResults_neurons.csv
+- what: Names of the excitatory leiden clusters (16 L5 ET, 8 L5/6 CT and the others), cell 56 of the notebook.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d, patchSeqMappingTo10X/mapping2Ins10XClusters.ipynb
+- what: Outside-out Na+ current recordings, 35 files, for fig4d-sodium-current.
+  source: DANDI:001750 version 0.260825.0222, doi:10.48324/dandi.001750/0.260825.0222
+- what: Metabolite assignment file of MetaboLights MTBLS13927 (processed intensities of 558 identified metabolites
+    in 19 samples), for fig8a-metabolite-gradient and fig8de-glycolytic-bias.
+  source: MetaboLights MTBLS13927, revision MTBLS13927_01 (2026-02-28), https://ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS13927/METADATA_REVISIONS/MTBLS13927_01/m_MTBLS13927_LC-MS_alternating_hilic_metabolite_profiling_v2_maf.tsv,
+    sha256 4f68b5878bcd8a57cab8fb0fd8bcaf91a9653eda6b66e3cbc843bafc1b629d47
+outcomes:
+- claim: code-table-link
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:code-table-link
+  notes: The table names 288 files, all in the dandiset. Ten presynaptic blocks name no file; 8 are matched one
+    to one to a file of their slice by the firing channel, and 2 (190315s2 channel 7, 20241014HS2 channel 8, 13
+    rows, no annotated connection) have no file in the dandiset. The table's presynaptic channel is the channel
+    that fires on the first pulse in 286 of the 288 files it names (99.3%; 281, 97.6%, when a pre-pulse mean below
+    -30 mV is also required); the 8 linked files match by construction, which gives 294 of 296 (289 with the -30
+    mV rule). In the other 2 it does not overshoot 0 mV (median peaks -21.5 and -8.0 mV). The postsynaptic
+    channel holds a cell in 1,372 of 1,403 pairs (97.8%; 1,391 at -20 mV, 1,304 at -50 mV); 6 pairs of slice 190314s1
+    name channels 6 and 7, which read 0 mV. The dandiset holds 5 files the table does not list (slice 20240912HS2).
+    Read block by block, the table lists no ordered pair twice, gives 5 cells two types, labels 2 connections with
+    a projection that names another postsynaptic channel (in both, that channel shows the larger deflection, ratio
+    47.16 against 2.83 and 17.35 against 8.49, on the first sample of the window), and its Nr_Conn disagrees with
+    its annotations in 4 of 53 slices. Annotated connections have a median peak to baseline s.d. ratio of 8.7 in
+    the averaged trace against 2.8 for other pairs, and 11.92 at the pulse against 3.52 in a window 35 ms earlier;
+    333 of 1,377 pairs not annotated exceed a ratio of 5. Eight Inh connections come from a PC, 6 of 12 Inh have
+    a positive peak, and the Inh postsynaptic cells sit at -67.6 to -78.4 mV (median -69.9), not the -60 mV the
+    Methods give for uIPSPs.
+  deviations:
+  - The criterion was written by the author after the file survey and before any claim's analysis; the presynaptic
+    rule (0 mV within 8 ms in half the sweeps, empty channels within 1 mV of 0 mV excluded) and the -30 mV cell
+    rule are the author's standard choices, and the table's channel numbers are taken as the files' channel numbers.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5d-connectivity-totals
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5d-connectivity-totals
+  measured:
+  - 1403
+  - 298
+  - 26
+  notes: Pairs tested 1,403 table rows linked to a file, each a different ordered pair (1,416 with the 13 rows that
+    have no file), within 1,292 +/- 129. Neurons 298 in the table (204 PC, 55 VEN, 39 GABA), outside 377 +/- 38;
+    channels holding a cell in the files are 410 at -30 mV (397 to 411 from -50 to -20 mV), inside, so the two neuron
+    counts disagree. Connections 26 annotated (23 without OK quality), outside 31 +/- 3.1. Only reading (b) of the
+    criterion could run, and its connection count is outside tolerance with and without OK quality, whichever neuron
+    count is used. The table covers 55 slices of 6 subjects. A question on the pair and neuron counts of Supplementary
+    Table 5 is asked of a reader (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - Neurons are counted two ways, the table's cells and the channels of the files whose pre-pulse mean is below
+    -30 mV (each slice and channel once); the second uses a threshold chosen here and the outcome does not depend
+    on it, as the connection count fails under every reading.
+  - All sweeps of a file are averaged; the paper averages more than 20 sweeps (Fig. 5f legend), and 119 of 301 files
+    hold more than 20 (median 20, range 1 to 30).
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5-pc-to-pc
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-pc-to-pc
+  measured:
+  - 18
+  - 743
+  - 2.42
+  notes: 18 annotated PC-to-PC connections (11 Ext, 7 Inh) in 743 ordered pairs (749 with the rows that have no
+    file), 2.42%; without OK quality 17 (2.29%); excitatory only 11 (1.48%); with the postsynaptic channel holding
+    a cell, 18 of 735 (2.45%). Paper 24 of 503 (4.77%). All three values are outside tolerance under every reading.
+    By subject 2/95, 3/126, 0/46, 8/280, 5/196 and 0/0. A question on the pair and neuron counts of Supplementary
+    Table 5 is asked of a reader (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5-ven-outputs-absent
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-ven-outputs-absent
+  measured:
+  - 0
+  - 59
+  - 1
+  - 146
+  - 0
+  - 54
+  notes: VEN-to-VEN 0 of 59 and VEN-to-IN 0 of 54 have no connection, as the paper reports; VEN-to-PC has 1 of 146,
+    the table's connection in slice 190315s2 from the VEN on channel 4 to the PC on channel 6 (Ext, Excellent),
+    whose averaged trace rises by 1.01 mV at 12.9 ms after the VEN's spike, 95.8 times the baseline s.d., so reading
+    (b) counts it. Pair counts 59 (110 +/- 11) and 146 (200 +/- 20) are outside tolerance, 54 (55 +/- 5.5) inside.
+    The absence holds for two of the three partner classes, so the outcome is partially_reproduced (round 1 of verification;
+    it was not_reproduced). A question on the pair and neuron counts of Supplementary Table 5 is asked of a reader
+    (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5-pc-to-ven
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-pc-to-ven
+  measured:
+  - 1
+  - 139
+  notes: 1 PC-to-VEN connection (slice 190315s5, channel 2 to 7, Ext, Excellent, peak 1.55 mV), as in the paper,
+    in 139 pairs (145 with the rows that have no file), outside 200 +/- 20 (0.72% against 0.5%). The rarity holds;
+    the denominator does not. A question on the pair and neuron counts of Supplementary Table 5 is asked of a reader
+    (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5-pc-in
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-pc-in
+  measured:
+  - 2
+  - 83
+  - 4
+  - 86
+  notes: PC-to-IN 2 connections in 83 pairs (84 with the rows that have no file) and IN-to-PC 4 in 86 pairs; the
+    connection counts match the paper (2 and 4) and the pair counts are outside 65 +/- 6.5. Without OK quality the
+    counts are 1 and 3. All six PC-IN connections are in subject Mfa240911 (5) and Mfa241014 (1). Of the four IN-to-PC
+    connections, all labelled Inh, two have a positive peak with a ratio below 2.3 (20240911HS3 1 to 7, 20240911HS4
+    6 to 4). A question on the pair and neuron counts of Supplementary Table 5 is asked of a reader (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5-in-to-ven-absent
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-in-to-ven-absent
+  measured:
+  - 0
+  - 54
+  notes: No IN-to-VEN connection in 54 pairs (55 +/- 5.5); 47 pairs with the postsynaptic channel holding a cell.
+    The pairs come from subjects Mfa240911 (4), Mfa241014 (17), Mfa241105 (5) and Mfa241218 (28). A question on
+    the pair and neuron counts of Supplementary Table 5 is asked of a reader (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5i-ven-sparse-local-connectivity
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5i-ven-sparse-local-connectivity
+  measured:
+  - 2.42
+  - 2.41
+  - 0.72
+  - 4.65
+  notes: Every rate with a VEN at either end is below the PC rate of the same partner class (VEN-to-VEN 0, VEN-to-PC
+    0.68, PC-to-VEN 0.72 against PC-to-PC 2.42%; VEN-to-IN 0 against PC-to-IN 2.41%; IN-to-VEN 0 against IN-to-PC
+    4.65%), but none of the four Fig. 5i rates is within tolerance (2.42, 2.41, 0.72 and 4.65% against 4.77, 3.08,
+    0.5 and 6.15%). The Fisher exact tests of the variant give p from 0.159 to 0.636, so with these counts no VEN
+    rate is shown to be lower. A question on the pair and neuron counts of Supplementary Table 5 is asked of a reader
+    (questions/001751.yaml).
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The table gives the file name once per presynaptic block and 10 blocks name none; 8 are matched one to one to
+    a file of their slice by the firing channel, and the 2 with no file in the dandiset (190315s2 channel 7, 20241014HS2
+    channel 8, 13 rows, no annotated connection) are left out of the counts and shown as a variant.
+- claim: fig5fg-example-slice
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5fg-example-slice
+  notes: The table annotates cell 2 to cell 6 (channel 2 to 8 of slice 190315s4) as Ext, Excellent, and none of
+    the five pairs from cell 4 (channel 6); its types for the six cells equal those of Fig5e_plotConnexampleFPs.m.
+    In the averaged traces cell 6's response to cell 2 is +0.162 mV at 8.24 ms, 25.1 times the baseline s.d., the
+    largest of cell 2's targets. From cell 4, cell 5 shows +0.511 mV on the first sample of the window (1.00 ms,
+    ratio 30.6), the time of the presynaptic spike, as a pulse-locked artefact would; cell 2's responses in cells
+    1 and 3 also peak on that sample (ratios 4.0 and 10.0); the other four responses to cell 4 have ratios of 1.9
+    to 2.4. The traces describe and do not decide.
+  deviations:
+  - Cell types and connections are the annotations of the paper's code table metadata_multiPatch.xlsx (AIC_proj
+    at commit 44cd8a6), as the criterion's reading (b); the dataset carries no labels, so reading (a) could not
+    run.
+  - The code plots test round 2 of each .dat file; the NWB files hold one set of sweeps per file (22 and 9 sweeps
+    here, the second below the legend's more than 20) with no round, so all sweeps are averaged. Traces are kept
+    at 25 kHz; the code's resampling to 1 kHz changes only the plotted sampling.
+- claim: fig5-pair-distances
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-pair-distances
+  notes: 'No soma positions in the files: the data check lists every group and field of all 301 files outside the
+    sweeps and the stimulus series (analysis, intervals and processing are empty groups; general holds description,
+    lab, subject and device fields) and the values of the electrode fields (location Soma, slice Coronal slice,
+    description Patch pipette channel N, in every electrode), and the code''s table has no position column. The
+    paper says source data are provided with the paper; the Zenodo processed data (doi:10.5281/zenodo.18814764,
+    11 GB of RAR archives) were not opened.'
+- claim: fig5-pc-rate-comparable-primate
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5-pc-rate-comparable-primate
+  notes: Blocked by its criterion (the paper prints neither the reference rate nor what comparable allows). The
+    PC-to-PC rate here is 18 of 743, 2.42%.
+- claim: fig4j-eepsp-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig4j-eepsp-amplitude
+  assumed: true
+  notes: From sumData_StimWM.xlsx (block copied data), 23 VEN-PC pairs at three stimulation levels (0.5, 1 and 2,
+    stated mA). Median VEN amplitude exceeds PC at every level (0.0028 against 0.0010, 0.0086 against 0.0054, 0.0174
+    against 0.0068, unit not stated); VEN above PC in 54 of 69 pair-levels and 20 of 23 pairs. Cell type effect
+    p = 0.0056 in the ordinary two-way ANOVA (F = 7.93) and p = 0.0065 in the repeated-measures ANOVA with the pair
+    as subject (F = 9.04, df 1 and 22); paper P = 0.0034. Stimulation level p = 0.00018 and p < 0.00001. The first
+    sheet holds the block copied data (stim current, EPSP_amp_PC, EPSP_amp_VEN) and two re-organized blocks labelled
+    by VEN subtype; the copied data block is used.
+  deviations:
+  - The table holds 23 pairs, the paper states 26.
+  - Pairs are read as the blocks of three rows separated by blank rows; the table does not name them.
+  - The Methods' selection of monosynaptic eEPSPs cannot be applied to amplitudes alone; the table's values are
+    assumed to be the selected ones, as the paper's code tables them for Fig. 4j.
+- claim: fig3c-ais-distance-length
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig3c-ais-distance-length
+  notes: AIScmp_PCvsVEN_Fig5c.xlsx holds 120 VEN and 500 PC values of AIS distance and length (paper 108 and 430)
+    and no slice or animal per cell, so neither reading of the criterion's two-way ANOVA can run. As a variant that
+    does not decide, the two-sided rank-sum test gives VEN AIS distance median 15.85 against 3.95 um (p = 3.1e-42)
+    and length 24.33 against 29.13 um (p = 2.3e-16), in the paper's direction.
+- claim: fig4j-eepsp-latency
+  outcome: blocked
+  blocked_by: other
+  notes: The data the claim names, sumData_StimWM.xlsx, hold amplitudes only, no latencies, and the paper does not
+    say which dandiset holds the raw recordings. Not tested. The claim's data are elsewhere, so the block is other,
+    not data_missing (protocol, author, step 1.4).
+- claim: fig5b-psc-frequency
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5b-psc-frequency
+  notes: Per-cell values from the code's sPSCs_Fig7ab.xlsx (summary) and miniEPSCs_Fig7ab.xlsx (mEPSC_sum, mIPSC_sum);
+    cell counts equal the legend's (sEPSC 11 PC and 8 VEN, sIPSC 8 and 7, mEPSC 8 and 8, mIPSC 21 and 15). Median
+    frequency PC against VEN 3.25 and 1.21 Hz (p = 0.0068), 3.25 and 1.77 (p = 0.0093), 1.80 and 1.39 (p = 0.0281),
+    3.00 and 1.83 (p = 0.0102), two-sided rank-sum.
+  deviations:
+  - Tested on the per-cell frequencies the paper's code tabulated, not on events detected again from the DANDI:001752
+    recordings, which were not opened.
+- claim: fig5c-psc-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5c-psc-amplitude
+  notes: Same cells as fig5b-psc-frequency. Median amplitude PC against VEN, sEPSC 0.136 and 0.116 (p = 0.1087),
+    sIPSC 0.359 and 0.376 (p = 0.6943), mEPSC 0.073 and 0.066 (p = 0.5737), mIPSC 19.7 and 15.3 pA (p = 0.1399);
+    none below 0.05. Effect sizes are the medians above; the sEPSC, sIPSC and mEPSC amplitudes are in the table's
+    unscaled unit (the mEPSC sheet notes a factor of 100 to pA). Two p values, sEPSC 0.11 and mIPSC 0.14, are not
+    far from 0.05; reading (b) could not be run.
+  deviations:
+  - Tested on the code's per-cell mean amplitudes (reading (a) of the criterion); reading (b), the median of each
+    cell's events, needs the events, which the tables do not hold and which were not detected again from DANDI:001752.
+- claim: fig4d-sodium-current
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig4d-sodium-current
+  assumed: true
+  notes: '35 files of DANDI:001750 (0.260825.0222, 100 kHz, step at 20 ms), types from the code''s metadata_outSideOutSodiumCurrentRec.csv
+    matched by file name (14 VEN, 21 PC). Largest inward current of the step-averaged traces, low-passed at 1 kHz,
+    baseline over the 2 ms before the step, steps up to 0 mV, 0.2 to 3 ms after the step: VEN median -17.3 against
+    PC -31.5 pA, rank-sum p = 0.0010; it agrees with the code''s max_Na_current (r = 0.99, median difference 1.28
+    pA), whose own p is 0.0010 (VEN -14.9, PC -29.3 pA); with steps up to +85 mV, r is 0.77 to 0.94. VENs are lower under all 40 readings run. Low-passed at
+    500 Hz to 2 kHz, p is 0.0006 to 0.0040 under every window (to 3, 5 or 10 ms) and step range (to 0 or +85 mV).
+    Unfiltered, p is 0.0067 to 0.0956 depending on the window, r with the code 0.40 to 0.90, and 6 of 35 peaks fall
+    later than 3 ms (up to 9.99 ms), where the low-passed peaks fall at 0.59 to 1.42 ms. Question for the paper''s
+    authors in findings.'
+  deviations:
+  - Assumed. The Methods give the steps (-80 to 0 mV, 25 ms, leak subtracted online, 100 kHz) but neither a filter
+    nor the window in which the peak is taken; unfiltered, the outcome changes between windows ending at 3 ms and
+    at 5 or 10 ms. A 1 kHz low-pass (2nd-order Butterworth, forward and backward, the form of PatchAnaLab's filters;
+    the paper's code applies filter_1000Lowpass to first-AP traces in extFig9ad_plotVENsubtypeAP_Cmp.m, line 35,
+    and Fig4d_plotNaCurrent.m calls no filter, both printed in the notebook) is adopted because the peaks
+    it gives reproduce the code's per-patch max_Na_current (r = 0.99); with it the window does not change the result.
+  - Steps up to 0 mV and the baseline over the 2 ms before the step follow Fig4d_plotNaCurrent.m (nTraces = 17,
+    test pulses from -80 to 0 mV; base over the first 2 ms of a snippet starting 2 ms before the step).
+  - Reading (b), current per patch area from capacitance, cannot run; the files hold no capacitance. The Methods
+    take every patch to be about 5 um2, so (b) divides every patch by the same area and gives the same test as (a).
+- claim: fig3e-phase-peak-index
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig3e-phase-peak-index
+  notes: From the code's PeakIdx_Fig5e.xlsx; VEN median 0.116 (n = 32) is the lowest of six types (L2/3 IT 0.218
+    n = 33, IT RORB 0.271 n = 24, L5 IT 0.247 n = 124, L5 ET 0.264 n = 20, L6 PC 0.286 n = 16). Kruskal-Wallis H
+    = 41.80, p = 6.5e-08. Dunn's test with Bonferroni over 15 pairs, VEN against each PC type, p from 3.2e-08 to
+    0.001. The legend's counts (as Fig. 2d-f) are smaller, VEN 22, L2/3 IT 30, IT RORB 17, L5 IT 119, L5 ET 16,
+    L6 PC 13, so the table holds more cells than the paper analysed.
+  deviations:
+  - Tested on the per-cell peak indices the paper's code tabulated, not computed again from the DANDI:001746 recordings.
+  - Bonferroni correction for Dunn's test, from the statistics sheet of the same table (the legend names Dunn's
+    test without a correction).
+- claim: fig8a-metabolite-gradient
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig8a-metabolite-gradient
+  measured:
+  - 179
+  - 85
+  notes: From the MetaboLights deposit MTBLS13927, revision MTBLS13927_01 (metabolite assignment file), 558 identified
+    metabolites (paper 581), 6 AIC, 6 PrC and 7 V1 samples as in the legend. Its intensities equal those of the
+    code's Metabolic_data.xlsx (sheet Identified, same 558 metabolites in the same order), with the labels of two
+    V1 samples, V1_4_Q and V1_4_S, swapped, which does not change a region test. Metabolites with Games-Howell p
+    < 0.05, AIC-V1 and AIC-PrC, raw intensities 179 and 85, raw with Welch ANOVA p < 0.05 required 175 and 84, log2
+    191 to 195 and 95 to 98. More differ between AIC and V1 than between AIC and PrC under every reading, the gradient
+    of the claim, but the AIC-V1 count is below 228 +/- 23 under every reading, and AIC-PrC is within 108 +/- 11
+    only for log intensities without the ANOVA gate.
+  deviations:
+  - Whether intensities were log-transformed and whether a pair counts only when the Welch ANOVA is significant
+    are not stated; the four combinations are shown.
+  - The deposit holds 558 identified metabolites, not the 581 the paper states; the other 23 are in neither the
+    deposit nor the code's table.
+- claim: fig8de-glycolytic-bias
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig8de-glycolytic-bias
+  notes: AIC against V1, citric acid median ratio 1.42 (Games-Howell p = 0.00046 raw, 0.00028 log), L-glutamic acid
+    1.35 (p = 0.0001), 2-ketobutyric acid 0.59 (p = 0.18 raw, 0.087 log). Citrate and glutamate are higher at p
+    < 0.05; 2-ketobutyrate is lower without reaching p < 0.05. A second glutamate entry, Glutamic acid glutamate
+    (rpneg), is 1.23 with p = 0.15.
+  deviations:
+  - Tested on the MetaboLights deposit (revision MTBLS13927_01), equal to the code's table. Glutamate is taken as
+    L-Glutamic acid; the other entry is shown.
+- claim: ven-map-et-ct
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:ven-map-et-ct
+  measured:
+  - 14
+  - 15
+  notes: From the code's results_Ext_240415.csv, the 29 VENs map to leiden 16 (L5 ET, 14, against 14 +/- 1.4) and
+    leiden 8 (L5/6 CT, 15, against 15 +/- 1.5), named by cell 56 of the code's mapping2Ins10XClusters.ipynb, printed
+    in the notebook.
+  deviations:
+  - Tested on the mapping results the paper's code saved, not by mapping the GEO reads again.
+- claim: fig6f-g-ven-subtype-mapping
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig6f-g-ven-subtype-mapping
+  measured:
+  - 14
+  - 15
+  notes: All 14 VEN_Long map to L5 ET and all 15 VEN_Short (one spelled VEN_short) to L5/6 CT, the direction the
+    paper states, but the counts are 14 and 15, outside 10 +/- 1 and 11 +/- 1.1. The subcluster COL24A1 POC5 was
+    not tested (the subcluster mapping is not saved).
+  deviations:
+  - Tested on the mapping results the paper's code saved.
+- claim: patchseq-mapping
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:patchseq-mapping
+  notes: 'The excitatory half and the inhibitory neuron count can be tested from the saved results: 273 excitatory
+    neurons (273 +/- 27) map to 17 of the 20 excitatory clusters (18 +/- 1.8), and 33 of the 35 other neurons of
+    mappingResults_neurons.csv have inhibitory names (34 +/- 3.4; the other two are one VEN and one PC_L5). The
+    inhibitory mapping (17 of 33 types) is not saved; the all-neuron table''s cluster ids are those of the joint
+    neuron clustering and name no inhibitory type. Every value that can be tested is within tolerance and the fourth
+    cannot be tested, so the claim is kept blocked; the verifier of round 1 would give partially_reproduced.'
+- claim: scrna-classes
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the data are sequencing reads in GEO GSE319557, which need
+    alignment and clustering.
+- claim: scrna-78-types
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the data are sequencing reads in GEO GSE319557.
+- claim: fig3ab-ven-axon-from-basal-dendrite
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the reconstructions are on NeuroMorpho.org.
+- claim: fig4ac-ap-width-amplitude
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the recordings are in DANDI:001746 (14.7 GB).
+- claim: fig4i-peak-index-ais-distance
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; it needs the paper's NEURON models and simulations.
+- claim: fig4g-model-ais-distance-ap-shape
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; it needs the paper's NEURON models and simulations.
+- claim: model-ven-fires-more
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; it needs the paper's NEURON models and simulations.
+- claim: fig6-ven-subtype-morphology
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the reconstructions are on NeuroMorpho.org.
+- claim: fig6h-subtype-markers
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the data are sequencing reads in GEO.
+- claim: ven-subtypes-similar-physiology
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; the recordings are in DANDI:001746.
+- claim: fig7c-tau-rna-distance
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, which tested the claims on dandiset 001751 and the claims whose data could be
+    read from the code's tables or a small dandiset; it needs the GEO reads and DANDI:001746.
+- claim: ven-firing-rate-variability
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Blocked by its criterion as methods_underspecified; the measure of spike-timing variability and the paper's
+    values are in Supplementary Tables 1 and 2, not in the text the claims file was read from. The recordings are
+    in DANDI:001746; not attempted in this run.
+findings:
+- kind: metadata_insufficient
+  statement: The files carry no cell type, no connection label and no soma position for any cell, and the stimulated
+    cell of a file is not named correctly (below), so none of the Fig. 5 counts can be made from the dandiset alone.
+    Types and connections exist only in the paper's code table metadata_multiPatch.xlsx, which links to the files
+    by name.
+- kind: metadata_error
+  statement: Every response series states a rate of 1 Hz; the data are sampled at 25 kHz (the stimulus series' rate,
+    the code's 25 kHz, and the 50-sample pulse that is the Methods' 2 ms pulse). The stimulus series gives its rate
+    of 25,000 with the unit millisecond.
+- kind: metadata_error
+  statement: The stimulus amplitude is stored as 2 (2.5 or 3 in 14 files) with the unit amperes; the Methods inject
+    2 nA.
+- kind: metadata_error
+  statement: The stimulus series of every file names electrode Elec_8 as the stimulated one, while the cell that
+    fires on the pulse is on channel 8 in only 35 of 301 files; in 286 of the 288 files the code's table names, the firing channel
+    is the table's presynaptic channel.
+- kind: metadata_error
+  statement: All 301 files have the session start time 2018-01-01T01:00+08:00, while the slices are named for dates
+    in 2019 and 2024, and every subject has the same age, P4Y/P6Y, and sex M.
+- kind: code_mismatch
+  statement: The code's table metadata_multiPatch.xlsx disagrees with the paper's counts. It lists 298 cells, 1,416
+    ordered pairs (1,403 in files of the dandiset) and 26 connections, where the paper reports 377 neurons, 1,292
+    pairs and 31 connections; PC-to-PC 18 of 743 against 24 of 503, one VEN-to-PC connection (190315s2, channel
+    4 to 6, Excellent, with a 1 mV response in the data) where the paper reports none, and pair counts per class
+    that differ from the paper's by more than 10% in 6 of 8 classes (all but VEN-to-IN and IN-to-VEN).
+- kind: code_mismatch
+  statement: The code's table is inconsistent with itself and with the files. Ten of its presynaptic blocks name
+    no NWB file (8 match a file of the dandiset by the firing channel; 190315s2 channel 7 and 20241014HS2 channel
+    8, 13 rows, match none), it gives 5 cells two types, labels 2 connections with a projection that names another
+    postsynaptic channel (20240912HS5 4 to 1 labelled 4 to 3, 20241105HS16 6 to 3 labelled 8 to 5), and its Nr_Conn
+    disagrees with its annotations in 4 of 53 slices. Six of its pairs name channels that read 0 mV in their file
+    (slice 190314s1, channels 6 and 7). Eight of its Inh connections come from a PC, and 6 of its 12 Inh connections
+    have a positive averaged response.
+- kind: other
+  statement: 5 files of the dandiset, all of slice 20240912HS2 (23 to 28 sweeps), are not in the code's table, so
+    it is not known whether the paper counted them.
+- kind: other
+  statement: The Methods average responses over more than 20 sweeps; 119 of 301 files hold more than 20 sweeps (median
+    20, range 1 to 30).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The paper and its code give no rule for calling a connection (amplitude,
+    latency, noise or test), so the counts rest on the annotations of metadata_multiPatch.xlsx. Was the connection
+    call made by eye on averaged traces, and with which criteria for Excellent, Good and OK quality? Do the 31 connections
+    of the paper include the table's OK connections, and which of the table's pairs and cells make up the 1,292
+    pairs and 377 neurons?
+- kind: code_mismatch
+  statement: sumData_StimWM.xlsx holds 23 VEN-PC pairs for Fig. 4j where the paper states 26, and AIScmp_PCvsVEN_Fig5c.xlsx
+    holds 120 VENs and 500 PCs for Fig. 3c where the paper states 108 and 430; the AIS table has no slice or animal
+    per cell, needed for the two-way ANOVA of the legend.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors. For the somatic Na+ currents of Fig. 4d, how was max_Na_current
+    measured: which filter, and in which window after the step? Unfiltered peaks separate VENs from PCs when taken
+    up to 3 ms after the step (p = 0.0074) and not up to 5 or 10 ms (p = 0.077 and 0.067); after a 1 kHz low-pass
+    the peaks match the code''s values (r = 0.99) and p = 0.0010 in every window. The attempt adopted the 1 kHz
+    low-pass.'
+- kind: code_mismatch
+  statement: The code's processed tables for claims on other data differ in size from the paper. The Patch-seq mapping
+    results hold 14 VEN-L and 15 VEN-S where the paper reports 10 and 11 mapped to L5 ET and L5/6 CT, and map the
+    273 excitatory neurons to 17 clusters where the paper states 18; the inhibitory Patch-seq mapping is not saved.
+    PeakIdx_Fig5e.xlsx holds more cells per type than the Fig. 3e legend (VEN 32 against 22).
+- kind: other
+  statement: The paper quantifies 581 metabolites (Fig. 8a), while the MetaboLights deposit MTBLS13927 (revision
+    MTBLS13927_01) holds 558 identified metabolites, the same as the code's Metabolic_data.xlsx; with them the AIC-V1
+    differential count is 175 to 195 under four readings, against the paper's 228.
+- kind: other
+  statement: 'The MetaboLights deposit MTBLS13927 and the code''s Metabolic_data.xlsx disagree on which of two V1
+    samples is which: the intensities of V1-4-Q in the deposit are those of V1_4_S in the code''s table, and the
+    reverse. The deposit names the first AIC sample A1C-1-Q and stores the run mode (rppos, rpneg, hilicneg) in
+    its charge column.'
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper. The verifier read the code table from GitHub, queried the archive's asset
+    metadata and tested helper functions on synthetic inputs. It gave its own outcome for each claim; 31 of 35 agree
+    with the record as it was.
+  results:
+  - claim: code-table-link
+    agrees: true
+    outcome: reproduced
+    reason: 'All 288 files the table lists are in the dandiset. The table''s presynaptic channel is the one that
+      fires in 281/288 files (97.6%), and its postsynaptic channel holds a cell in 1385/1416 pairs (97.8%). Both
+      are above the 90% threshold. Problem 1: the fill-down puts 39 rows under the wrong file; ten presynaptic blocks
+      have a blank filename, so their rows get the previous block''s file, the 6 duplicate pairs and 2 of the 7
+      cells given two types are artefacts, and 8 of the 13 files the table does not list are these blank blocks.
+      Problem 5: presynaptic_channel requires a pre-pulse mean below -30 mV, which the criterion does not ask for.
+      Problem 7: annotation oddities the notebook does not flag (8 Inh connections from PCs, Inh pairs with positive
+      peaks, Inh postsynaptic cells near -70 mV, row 368''s projection label).'
+    response: 'The table is now filled within each presynaptic block only, and the 10 blocks without a file name
+      are matched to a file of their slice by the firing channel (8 match one to one; 2 blocks, 13 rows, no connection,
+      have no file and are left out, shown as a variant). The firing channel now follows the criterion (0 mV crossing;
+      only empty channels within 1 mV of 0 mV are excluded), with the -30 mV rule as a variant. New numbers: 296
+      of 296 files in the dandiset, presynaptic channel 294 of 296 (99.3%; 289, 97.6%, with the -30 mV rule), postsynaptic
+      1,372 of 1,403 (97.8%), 0 duplicate pairs, 5 cells with two types, 5 unlisted files. Added the annotation
+      checks (Inh from a PC, sign against peak, pre-pulse mean by ConnType, peaks on the first sample of the window)
+      and the responses on the channels the two mismatched projection labels name. Outcome unchanged.'
+  - claim: fig5d-connectivity-totals
+    agrees: true
+    outcome: not_reproduced
+    reason: 'There are 26 annotated connections (23 without OK), against 31 +/- 3.1. Pair count 1416/1410 is within
+      1292 +/- 129. Neuron count passes from the files (410) but fails from the table (295; 298 once the table is
+      read correctly). Reading (a) does not exist, since the dataset has no labels. Problem 12: the notebook does
+      not say the two neuron counts disagree.'
+    response: 'Re-run on the corrected table: 1,403 linked pairs (1,416 with the rows without a file), 298 cells
+      in the table, 410 channels with a cell in the files, 26 connections. The conclusion now states that the two
+      neuron counts disagree and that the outcome does not depend on which is used. The full group tree and electrode
+      values of the files are printed, which backs reading (a) not existing. No change of outcome.'
+  - claim: fig5-pc-to-pc
+    agrees: true
+    outcome: not_reproduced
+    reason: 18 of 743 (749 once the table is read correctly), 2.42%, against 24/503, 4.77%. All three values are
+      outside tolerance under every reading.
+    response: 'Re-run on the corrected table: 18 of 743 linked pairs, 749 with the rows that have no file. No change
+      of outcome.'
+  - claim: fig5-ven-outputs-absent
+    agrees: false
+    outcome: partially_reproduced
+    reason: VEN-to-IN 0/54 holds and VEN-to-VEN has 0 connections. But VEN-to-VEN pairs are 59 (expected 110 +/-
+      11), VEN-to-PC pairs are 146 (expected 200 +/- 20), and there is one annotated VEN-to-PC connection where
+      the criterion needs 0. That pair (190315s2, 4 to 6, Excellent) shows a clear 1.01 mV averaged response, peak/s.d.
+      95.8.
+    response: 'Outcome changed from not_reproduced to partially_reproduced, as the verifier gives: the absence holds
+      for VEN-to-VEN and VEN-to-IN and fails for VEN-to-PC, so the claim holds in part. Numbers unchanged by the
+      table correction.'
+  - claim: fig5-pc-to-ven
+    agrees: true
+    outcome: partially_reproduced
+    reason: 1 connection holds; 145 pairs is outside 200 +/- 20.
+    response: 'Re-run on the corrected table: 1 connection in 139 linked pairs (145 with the rows that have no file).
+      No change of outcome.'
+  - claim: fig5-pc-in
+    agrees: true
+    outcome: partially_reproduced
+    reason: Connection counts 2 and 4 hold (with OK counted, as the criterion says). Pairs are 84 and 86, outside
+      65 +/- 6.5.
+    response: 'Re-run on the corrected table: 83 and 86 linked pairs (84 and 86 with the rows that have no file).
+      No change of outcome.'
+  - claim: fig5-in-to-ven-absent
+    agrees: true
+    outcome: reproduced
+    reason: 0 of 54, against 0 of 55 +/- 5.5.
+    response: Unchanged by the table correction. No change of outcome.
+  - claim: fig5i-ven-sparse-local-connectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: All four Fig. 5i rates are outside tolerance (2.42, 2.38, 0.69, 4.65% against 4.77, 3.08, 0.5, 6.15).
+      Every VEN rate is below its paired PC rate. The Fisher variants are all p >= 0.16.
+    response: 'Re-run on the corrected table: 2.42, 2.41, 0.72 and 4.65%; Fisher p 0.159 to 0.636. No change of
+      outcome.'
+  - claim: fig5fg-example-slice
+    agrees: true
+    outcome: reproduced
+    reason: 'Pair 2 to 6 (channel 2 to 8) is annotated Ext, and no pair from cell 4 (channel 6) is annotated. Problem
+      6: response_stats picks up pulse-locked artefacts; several peaks sit exactly at the 1.00 ms window edge, and
+      cell 4 to 5 (peak/s.d. 30.6) could be misread as a response. Problem 11: the cell 4 presynaptic file has 9
+      sweeps, below the legend''s more than 20.'
+    response: response_stats now flags a peak on the first sample of the window (at_edge), the notebook prints it
+      for each response of the slice and counts it over all pairs (3 of 26 annotated, 319 of 1,377 others), and
+      the conclusion says the cell 4 to 5 deflection and two of cell 2's are on that sample, as an artefact would
+      be. The 9 sweeps against the legend's more than 20 are printed and recorded as a deviation. No change of outcome.
+  - claim: fig5-pair-distances
+    agrees: true
+    outcome: blocked
+    reason: 'The archive holds only the 301 NWB files, and their asset metadata have no positions (checked through
+      the API). The code table has no position column. Problem 3: cell 28 prints none hold positions as a fixed
+      string; read_file reads only general/intracellular_ephys, stimulus and acquisition, never lists other groups
+      or prints the electrode location and description values.'
+    response: read_file now lists every group and dataset of each file outside the sweeps and the stimulus series
+      and keeps the scalar fields of general; a sanity cell prints the tree over all 301 files (analysis, intervals,
+      processing, scratch and the optogenetics and optophysiology groups, none holding data), the general fields,
+      and the values of every electrode field (location Soma, slice Coronal slice, description Patch pipette channel
+      N). The claim's cell now searches these names for a position instead of printing a fixed string. No change
+      of outcome.
+  - claim: fig5-pc-rate-comparable-primate
+    agrees: true
+    outcome: blocked
+    reason: Blocked by the criterion itself; the rate is printed (2.42%).
+    response: No change of outcome.
+  - claim: fig5b-psc-frequency
+    agrees: true
+    outcome: reproduced
+    reason: The VEN median is lower for all four event types, p = 0.0068, 0.0093, 0.028 and 0.010. Group sizes match
+      the legend, and the column layout of the code's sheets was checked.
+    response: No change of outcome.
+  - claim: fig5c-psc-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.11, 0.69, 0.57 and 0.14, all >= 0.05, on the code's per-cell values. The mean and median readings
+      could not be run (problem 9). Two p values (0.11 and 0.14) are not far from 0.05.
+    response: 'Not changed: reading (b) needs the events of DANDI:001752, which the code''s tables do not hold and
+      which were not detected again. The notes now say that two p values are near 0.05. No change of outcome.'
+  - claim: fig4d-sodium-current
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'VEN is lower in every variant, but p < 0.05 in only 4 of 8 window/step variants the author chose (p
+      = 0.008 to 0.096). Reading (b) cannot run. The code''s own max_Na_current gives p = 0.001. Problem 2: the
+      peak windows are the author''s own and the result splits on them; the notebook''s peak correlates with the
+      code''s max_Na_current at only r = 0.40 to 0.90 and the VEN medians differ (-23.7 to -30.6 pA against -14.9
+      pA), so the measure is not validated against the paper''s. Reading (b) per area is a constant rescaling of
+      (a) if every patch is about 5 um2.'
+    response: 'The measure is now validated against the code''s per-patch values: 40 readings are run (no filter
+      or a 500 Hz, 1 kHz or 2 kHz low-pass; two baselines; four windows; two step ranges), each with its r and median
+      difference from max_Na_current, plus a per-patch table of peak values and times and a scatter plot against
+      the code. After a 1 kHz low-pass with the code''s 2 ms baseline the peaks match the code''s values (r = 0.99,
+      median difference 1.28 pA) and p = 0.0010 in every window; any low-pass from 500 Hz to 2 kHz gives p = 0.0006
+      to 0.0040 under every window and step range. Only the unfiltered peaks split on the window, and 6 of them
+      fall later than 3 ms. The 1 kHz reading is adopted as an assumption (assumed: true) and the outcome kept as
+      reproduced; the verifier''s partially_reproduced rests on the unfiltered readings, which the code''s values
+      do not support. Reading (b) is now described as a constant rescaling that gives the same test.'
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: reproduced
+    reason: VEN median 0.116 is the lowest. Kruskal-Wallis p = 6.5e-8, and Dunn/Bonferroni p <= 0.001 against each
+      PC type. Could not check the layout of PeakIdx and the paper's group sizes for Fig. 3e.
+    response: The first rows of PeakIdx_Fig5e.xlsx and the legend's group sizes (as Fig. 2d-f) are printed; the
+      table holds more cells per type than the legend (VEN 32 against 22), now in the notes and the findings. No
+      change of outcome.
+  - claim: fig4j-eepsp-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: VEN is higher. Cell-type p = 0.0056 (ordinary ANOVA) and 0.0065 (repeated measures), but on 23 pairs,
+      not 26 (problem 10, whether the monosynaptic selection was applied cannot be checked). Could not check the
+      layout of sumData_StimWM.
+    response: The columns and first rows of sumData_StimWM.xlsx are printed. The 23 pairs and the selection stay
+      recorded as deviations. No change of outcome.
+  - claim: fig4j-eepsp-latency
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (data_missing): the code table holds no latencies, and the paper names no dandiset for the
+      raw recordings.'
+    response: 'Kept as blocked with blocked_by other: the claim''s data are elsewhere, and the protocol does not
+      allow data_missing for such a claim (author, step 1.4). Said in the notes.'
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: Blocked (metadata_insufficient). The table has no slice or animal column, so the two-way ANOVA cannot
+      run. The n also differ (120/500 against the paper's 108/430).
+    response: No change of outcome.
+  - claim: fig8a-metabolite-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: 'AIC vs V1 gives 175 to 195 under all four variants, against 228 +/- 23. AIC vs PrC is within tolerance
+      only for log/ungated (98). Problem 4: the test uses the code''s table of 558 metabolites, not the MetaboLights
+      deposit of 581; the 23 missing metabolites could bring AIC vs V1 (195) within tolerance, so not_reproduced
+      rests on an incomplete input.'
+    response: 'The test now runs on the MetaboLights deposit itself (MAF of revision MTBLS13927_01, pinned by sha256),
+      which holds the same 558 metabolites as the code''s table, with equal intensities (two V1 sample labels swapped);
+      the 23 metabolites are in neither, so the counts (175 to 195 and 84 to 98) are those of the deposited data,
+      and that is recorded as a finding. Outcome kept as partially_reproduced, with the disagreement recorded: the
+      gradient the claim states (more differences against V1 than against PrC) holds under every reading, and AIC-PrC
+      is within tolerance under one, while AIC-V1 is below its tolerance under all.'
+  - claim: fig8de-glycolytic-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Citrate (p = 0.0005) and L-glutamic acid (p = 0.0001) are higher in AIC. 2-Ketobutyrate is lower but
+      not significant (p = 0.18 raw, 0.087 log).
+    response: Now tested on the MetaboLights deposit, with the same values. No change of outcome.
+  - claim: patchseq-mapping
+    agrees: false
+    outcome: partially_reproduced
+    reason: '273 excitatory neurons and 17 types (within 18 +/- 1.8). The 33 or 35 non-excitatory neurons fall within
+      34 +/- 3.4. The inhibitory-type count (17 of 33) is untestable from the saved tables. Problem 8: the 35 (paper
+      34 inhibitory) includes 1 VEN and 1 PC_L5; the inhibitory-named neurons number 33.'
+    response: 'The notebook now counts the inhibitory-named neurons (33) apart from the VEN and the PC_L5, and compares
+      each value with its tolerance. Outcome kept as blocked (metadata_insufficient), with the disagreement recorded:
+      every value that can be tested is within tolerance, so no part is shown to fail or to be weaker, and the fourth
+      value cannot be tested.'
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: reproduced
+    reason: 14 L5 ET and 15 L5/6 CT of 29 VENs. Could not check the cluster names (leiden 16 = L5 ET, 8 = L5/6 CT)
+      without a print of the code notebook cell they come from.
+    response: The notebook now prints cell 56 of the code's mapping2Ins10XClusters.ipynb, which names leiden 16
+      L5 ET+ and leiden 8 L5/6 CT+, and compares the counts with their tolerances. No change of outcome.
+  - claim: fig6f-g-ven-subtype-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: VEN-L maps entirely to L5 ET and VEN-S to L5/6 CT. But the counts are 14 and 15 against 10 +/- 1 and
+      11 +/- 1.1. The COL24A1 POC5 subcluster part is untested, and the notebook never compares the counts (problem
+      8).
+    response: The notebook now prints the counts against their tolerances. No change of outcome.
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: scrna-78-types
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig3ab-ven-axon-from-basal-dendrite
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig4i-peak-index-ais-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig4g-model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: model-ven-fires-more
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig6-ven-subtype-morphology
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig6h-subtype-markers
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: ven-subtypes-similar-physiology
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): data elsewhere; not attempted in this run.'
+    response: No change of outcome.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: blocked
+    reason: Blocked by its criterion, which needs Supplementary Tables 1 and 2.
+    response: No change of outcome.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusion cells and summary, the helper
+    module, the claims file and the attempt record, with the paper. The verifier agrees with 34 of 35 outcomes; it lists
+    six statements the printed outputs do not support (cells 0, 13, 51, 53 and 57, a deviation, a finding and the README's
+    run time), all corrected or given an output in this revision.
+  results:
+  - claim: code-table-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 13 and the notes say every file the table names is in the dandiset (296 of 296), but the table
+      names 288 files; the other 8 were assigned by link_blank_blocks, which picks them by the firing channel. For the same
+      reason the 294 of 296 (99.3%) presynaptic match includes 8 files that match by construction; the independent figure
+      is 286 of 288. The outcome does not change.
+    response: 'Cell 11 now prints the counts over the 288 files the table names itself: 288 in the dandiset, presynaptic
+      channel the firing one in 286 of 288 (281 with the -30 mV rule). Cell 13 and the notes now give these, and say that
+      the 8 linked files match by construction. The metadata_error finding on Elec_8, which still gave the round-1 count
+      of 281 of 288, now gives 286 of 288 named files (294 of 296 with the linked ones). No change of outcome.'
+  - claim: fig5d-connectivity-totals
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-pc-to-pc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-ven-outputs-absent
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the change to partially_reproduced, as the verifier gave in round 1. Supplementary Table 5 is still
+      unread, by the verifier and by the author; its per-class pair and neuron counts bear on every Fig. 5 pair count that
+      fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-pc-to-ven
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-pc-in
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-in-to-ven-absent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5i-ven-sparse-local-connectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5fg-example-slice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5-pair-distances
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5-pc-rate-comparable-primate
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4j-eepsp-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption that the values in sumData_StimWM.xlsx are the selected monosynaptic eEPSPs is stated
+      and reasonable, given as a deviation with 23 pairs against the paper's 26.
+    response: No change of outcome.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4j-eepsp-latency
+    agrees: true
+    outcome: blocked
+    reason: Accepts blocked (other) in place of data_missing, for the protocol reason the record gives.
+    response: No change of outcome.
+  - claim: fig5b-psc-frequency
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5c-psc-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4d-sodium-current
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, now reproduced: the peak measure is checked against the code''s values (cell 52); with a 1 kHz low-pass
+      and the code''s 2 ms baseline, r = 0.99, the median difference is 1.28 pA and p = 0.0010 in every window, and any
+      low-pass from 500 Hz to 2 kHz gives p = 0.0006 to 0.0040. The 1 kHz assumption is stated and reasonable. Cell 53''s
+      ''r = 0.99, median difference 1.28 pA, every window'' holds only for steps up to 0 mV; with steps up to +85 mV r is
+      0.77 to 0.94. The deviation''s statement that the paper''s code uses filter_1000Lowpass in extFig9ad_plotVENsubtypeAP_Cmp.m
+      is not shown by any output.'
+    response: 'Cell 53 and the notes now say the agreement holds for steps up to 0 mV and give r for steps up to +85 mV,
+      which cell 52 now prints (1 kHz, 0.77 to 0.94). Cell 52 now prints the lines of Fig4d_plotNaCurrent.m and extFig9ad_plotVENsubtypeAP_Cmp.m
+      that call a filter: Fig4d_plotNaCurrent.m calls none, and extFig9ad_plotVENsubtypeAP_Cmp.m applies filter_1000Lowpass
+      to the first-AP traces (line 35); the deviation now says this. No change of outcome.'
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig8a-metabolite-gradient
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The test now runs on the MetaboLights deposit, which holds the same 558 metabolites (cell 58), so the
+      paper's 581 is a difference in the data, not an input gap; the gradient holds (175 to 195 against 84 to 98), AIC-V1
+      fails its tolerance under every reading and AIC-PrC passes under one. Cell 57's 'the only revision' is not shown by
+      any output.
+    response: Cell 58 now prints the revisions listed under the deposit's METADATA_REVISIONS (MTBLS13927_01 only, modified
+      2026-02-28). No change of outcome.
+  - claim: fig8de-glycolytic-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig6f-g-ven-subtype-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: patchseq-mapping
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Still leans to partially_reproduced: three of the four values are within tolerance and the fourth cannot be
+      tested (cell 62). The claims file gives no criterion for this claim, the record states the disagreement, and no number
+      depends on it.'
+    response: 'Kept as blocked (metadata_insufficient), with the disagreement recorded: no tested part fails or is weaker,
+      and the inhibitory-type count, a quarter of the claim, cannot be tested from the saved tables. Not proposed as a change.'
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: scrna-78-types
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig3ab-ven-axon-from-basal-dendrite
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4i-peak-index-ais-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4g-model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: model-ven-fires-more
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig6-ven-subtype-morphology
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig6h-subtype-markers
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: ven-subtypes-similar-physiology
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
