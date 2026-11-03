@@ -137,8 +137,8 @@ outcomes:
   - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
     at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
   - The Kolmogorov-Smirnov normality test is taken as Prism's, with the Lilliefors (Dallal-Wilkinson)
-    correction (statsmodels lilliefors); the choice of test changes no result, as every feature has p
-    >= 0.139 by both Welch and Mann-Whitney.
+    correction (statsmodels lilliefors); the choice of test changes no result, as no feature has p
+    < 0.05 under either test (the smallest is the Mann-Whitney p of 0.109 for spike peak).
 - claim: figs1g-l-gc-only-position
   outcome: blocked
   blocked_by: data_missing
@@ -243,7 +243,7 @@ outcomes:
     out and all 48 cells kept, both conditions still hold under both readings and for seeds 1 to 10 (WT
     GCs 4, 6, 3 and 4, 5, 4 of 13). Without mouse VV253, 6 of 9 WT GCs fall in one cluster under both
     readings with seed 0 and both conditions hold for none of seeds 1 to 10, so the WT GC spread rests
-    on that mouse's 4 GCs.
+    on that mouse's 4 GCs, and without it the outcome would be not reproduced.
   deviations:
   - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
     says which cells differ.
@@ -598,21 +598,31 @@ outcomes:
     Brain Atlas holds one E18.5 ISH series per gene, all sagittal (Penk 100055886, Scg2 100083699, Nrg1
     100057764, Cit 100077439). The criterion is a reading of the images by eye. Penk labels a band of
     cells along the dorsal (outer) edge of the dentate crescent in all three sections shown (45, 52, 59),
-    and Nrg1 a dense band along the same edge (26, 33, 47). Scg2 (29, 43) and Cit (27, 41, 48) show only
-    a faint signal along that edge with few distinct labelled cells; the atlas's expression mask covers
-    0.0008 and 0.0007 of the full-resolution dentate crop, against 0.0123 for Penk and 0.0072 for Nrg1.
-    Scg2 labels other regions strongly (whole-brain expression density 0.043). Two of the four genes
-    clearly show what the claim describes and two only faintly, so the outcome is partial. The outcome
-    rests on locating the dentate gyrus by eye, as the atlas does not annotate it at E18.5, and on a
-    judgement by eye. Which images Fig S9C shows is asked of the paper's authors (methods_unavailable
-    finding).
+    and Nrg1 a dense band along the same edge (26, 33, 47). The atlas alignment puts the Scg2 crops off
+    the crescent, so its two sections (29, 43) are also shown recentred by eye on their own crescent.
+    There section 43 shows a band of labelled cells along the dorsal edge and section 29 a faint band
+    with a few labelled cells; the expression mask covers 0.0032 and 0.0010 of the recentred crops
+    (0.0008 in the off-centre section 29 crop), against 0.0123 for Penk and 0.0072 for Nrg1. Scg2 labels
+    other regions strongly (whole-brain expression density 0.043). Cit (27, 41, 48) shows sparse, faint
+    labelled cells along that edge (mask 0.0007). The outcome rests on locating the dentate gyrus by eye,
+    as the atlas does not annotate it at E18.5, and on a judgement by eye. Which images Fig S9C shows
+    is asked of the paper's authors (methods_unavailable finding).
+  proposed:
+    outcome: reproduced
+    reason: The criterion has one condition, that the images of each of the four genes show labelled cells
+      at the dorsal border of the developing GCL, and no partial rule, the rule applied to figs2f. Penk
+      and Nrg1 show such cells clearly, and Scg2 (clearest in recentred section 43) and Cit show them
+      faintly, so all four meet the condition. The analysis is in the notebook's figs9c section, with the
+      recentred Scg2 crops added in this revision.
   deviations:
   - The Allen data are identified by their section data set ids and read through the Allen API; they
     have no DOI or versioned release to pin.
   - Assumed. The dentate gyrus is located by eye on Penk section 52 (image 101094568, pixel 3200, 2080),
     mapped to the E18.5 reference with the atlas's image_to_reference service and from there to each
     series with reference_to_image; the E18.5 annotation draws only the medial pallium, so no annotated
-    location exists. The overviews in the notebook show where each crop lies.
+    location exists. The overviews in the notebook show where each crop lies. For Scg2 the alignment
+    lands off the crescent, so its sections 29 and 43 are also cropped at a centre placed by eye on
+    their own crescent (pixels 3450, 1900 and 3330, 1730).
   - Three sections per gene are shown, those nearest the dentate point and 150 um to either side, at
     2 um per pixel, and the middle one at full resolution with the atlas's expression mask (display
     choices).
@@ -1130,3 +1140,404 @@ verifications:
       Nrg1 label cells along the dorsal edge of the dentate crescent clearly, Scg2 and Cit only faintly, so
       the outcome is partially reproduced, marked as assumed, and a methods_unavailable finding asks which
       images Fig S9C shows.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary, the helper
+    modules nrg1_ephys.py and allen_ish.py, the claims file, the README and this attempt record, with the paper
+    under paper/.
+  results:
+  - claim: fig1f-sgc-soma-superficial
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig1g-sgc-wider-splay
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig1h-gc-more-branch-points
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig1i-gc-longer-dendrites
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig1j-sgc-hyperpolarized-rmp
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with these outcomes. Not reproduced.
+    response: No change.
+  - claim: fig1k-sgc-narrower-spike
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with these outcomes. Not reproduced.
+    response: No change.
+  - claim: fig1l-sgc-faster-downstroke
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with these outcomes. Not reproduced.
+    response: No change.
+  - claim: fig1m-phase-plots
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with these outcomes. Not reproduced.
+    response: No change.
+  - claim: figs1a-f-properties-covary-with-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs1-remaining-properties-no-difference
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. The deviation "every feature has p >= 0.139 by both Welch and Mann-Whitney" is
+      not supported. Cell 28 gives spike_peak a Mann-Whitney p of 0.1089. The notes' own wording, "no feature has
+      p < 0.05 under either test", is correct. The outcome does not change.
+    response: No change of outcome. The deviation now says no feature has p < 0.05 under either test, the smallest
+      being the Mann-Whitney p of 0.109 for spike peak.
+  - claim: figs1g-l-gc-only-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig2a-v321l-more-multiple-dendrite-gcs
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig2c-v321l-sgc-position-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig2d-v321l-splay-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig2ef-v321l-dendritic-complexity-preserved
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig2g-morphology-lda-separates-cell-type
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs2b-morphology-kmeans-by-cell-type
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig2i-v321l-rmp-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced.
+    response: No change.
+  - claim: fig2j-v321l-spike-width-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced.
+    response: No change.
+  - claim: fig2k-v321l-downstroke-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced.
+    response: No change.
+  - claim: fig2m-ephys-lda-wt-gc-apart
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified). The Summary's "keeping them with the AHP width left out, or leaving
+      out mouse VV253, changes no outcome" is contradicted by cell 42. With 17 features and all cells, both fig2m
+      readings agree that WT SGC is the group apart, so the readings would agree and the outcome would be not reproduced.
+      The record's own fig2m notes say "that variant would be not reproduced".
+    response: 'No change of outcome. The Summary sentence is corrected: it now says that with the AHP width left
+      out and all cells kept both readings put WT SGC apart, so fig2m would be not reproduced, and that neither
+      variant changes figs2e, figs2g or figs2f.'
+  - claim: figs2d-ephys-kmeans-v321l-like-wt-sgc
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. figs2d holds on the main analysis, but it rests on mouse VV253. Without VV253, the figs2d
+      WT GC condition fails under both readings and for all ten extra seeds, so figs2d would be not reproduced (cell
+      45). The notes say so, but the Summary's "changes no outcome" hides it.
+    response: 'No change of outcome. The Summary sentence is corrected: it now says that without VV253 figs2d would
+      be not reproduced and its outcome rests on that mouse''s 4 GCs. The notes and the README row say the same.'
+  - claim: v321l-multiple-regression-wt-only
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs2e-pca-separation-lost
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with these outcomes. Not reproduced.
+    response: No change.
+  - claim: figs2f-centroid-separation-reduced
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced (now changed to not reproduced, as I asked in round 1).
+    response: No change.
+  - claim: figs2g-lda-classifier-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced. The sentence "Neither variant comes nearer" in cell 52 is not supported. The same cell's
+      output shows that without VV253, V321L reaches 54.2% with kappa 0.14, within tolerance of 52% and 0.08 (cell
+      51). The sentence holds for WT accuracy only.
+    response: No change of outcome. Cell 52 now says neither variant brings WT accuracy nearer the paper's, and
+      that the V321L part matches without VV253 while the WT part, which the outcome turns on, does not.
+  - claim: fig3b-penk-position-altered
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig3d-more-penk-gcs
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs3b-prox1-count-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs3c-cluster18-penk-enriched
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs3d-sorcs3-marks-cluster18
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs5a-penk-sorcs3-subsets
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig4a-more-penk-sorcs3-cells-fish
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig4a-prime-penk-sorcs3-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig4b-penk-enriched-genes
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig4b2-marker-penk-cells-increased
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig4d-penk-marker-overlap
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs6-increase-in-nrg1-expressing
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig5b-pseudotime-sorcs3-top
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: trajectory-geometry-directionality
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig5d-atac-cluster-composition
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig5f-sgc-genes-broadly-accessible
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs8b-penk-accessibility-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: tables4-suz12-enrichment
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig6a-penk-increases-with-age
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig6b-sgc-count-increases-with-age
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs9a-age-dynamics-lost-v321l
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs9b-marker-fraction-stable
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs9d-penk-not-immature
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: figs10d-go-resting-membrane-potential
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: fig7a-type3-nrg1-declines
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing); I agree with the 23 data_missing claims. Cell 0 (minor) says "none of the Golgi,
+      RNAScope or snMultiome data, so 23 claims on those are blocked as data missing"; the 23 are the position,
+      morphology, Golgi and RNAScope claims.
+    response: No change of outcome. Cell 0 now says the 23 claims on soma position, morphology, Golgi and RNAScope
+      are blocked as data missing, and the 19 snMultiome claims separately.
+  - claim: fig7bc-bace1-low-in-sgcs
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs5bc-penk-sorcs3-neg-outside-cluster18
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs7-downsampled-pseudotime-robust
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs8a-atac-pseudotime-cluster9
+    agrees: true
+    outcome: blocked
+    reason: Blocked; I agree with the 19 GEO claims as not_runnable. I cannot see docs/protocol.md here. I accept
+      the author's citation that not_runnable is a protocol reason (Author, step 1.5).
+    response: No change.
+  - claim: figs9c-embryonic-sgc-genes
+    agrees: false
+    outcome: reproduced
+    reason: Penk and Nrg1 clearly label cells along the dorsal edge of the dentate crescent, and Scg2 and Cit show
+      a faint signal there. The criterion has only one condition and no partial rule; for figs2f the author ruled
+      that such a criterion cannot give a partial outcome, and figs9c should follow the same rule. The author's
+      own words, "few distinct labelled cells", describe labelled cells being present, which reads as reproduced
+      with the faintness stated, or as not reproduced if the author judges those cells absent. For Scg2 the alignment
+      lands off-centre (both ML offsets map to section 29, where the crescent fills only the right part of the frame),
+      so the Scg2 mask fraction of 0.0008 partly measures tissue outside the dentate gyrus and should not be set
+      beside Penk's 0.0123 as like for like. The README row does not say that the outcome is assumed.
+    response: Outcome kept at partially reproduced, as no outcome may change in round 2, and a change to reproduced
+      is proposed under proposed, for the reason the verifier gives. A new cell recentres both Scg2 sections (29
+      and 43) by eye on their own crescent and shows them with the expression mask. Section 43 shows a band of labelled
+      cells along the dorsal edge, section 29 a faint one; the mask fractions are 0.0032 and 0.0010, and the conclusion,
+      notes and deviations now use these. The README and the notebook's claim table say the outcome is assumed and
+      that a change is proposed.
