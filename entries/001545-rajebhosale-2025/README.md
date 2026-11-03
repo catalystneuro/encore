@@ -21,7 +21,7 @@ Golgi and RNAScope data and the snMultiome data are not in it.
 | V321L centroids close together on the WT SGC side (Fig S2F) | Not reproduced |
 | Soma position, morphology, Golgi and RNAScope (23 claims) | Blocked: data missing |
 | snMultiome data in GEO (19 claims) | Blocked: not runnable |
-| SGC-enriched genes at the dorsal border of the E18.5 dentate gyrus, Allen ISH images (Fig S9C) | Partially reproduced (read by eye, assumed); a change to reproduced is proposed |
+| SGC-enriched genes at the dorsal border of the E18.5 dentate gyrus, Allen ISH images (Fig S9C) | Reproduced (read by eye, assumed) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
