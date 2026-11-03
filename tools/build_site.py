@@ -495,6 +495,18 @@ def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
     return out
 
 
+def reproduced_share(counts: dict | None) -> float | None:
+    """The share of the claims tested that reproduced, a partial reproduction counting as half; None when no claim
+    was tested. It ranks the overview's most reproduced attempts and the datasets list's "Most reproduced" sort."""
+    n = sum(counts.values()) if counts else 0
+    return (counts["reproduced"] + counts["partially_reproduced"] / 2) / n if n else None
+
+
+# The overview's most reproduced attempts: verified ones only, so that an unchecked attempt cannot top the list, and
+# with enough claims that one claim reproduced is not a perfect score.
+TOP_MIN_CLAIMS = 5
+
+
 def weakest_tier(attempts: list[dict]) -> str:
     """A dandiset is only as verified as its least verified attempt."""
     return min((a["tier"] for a in attempts), key=TIER_ORDER.index)
@@ -614,6 +626,8 @@ def rows(data: dict) -> dict[str, list]:
             "elsewhere": sum(sum(outcome_counts(atts, g).values()) for g in ("with_inputs", "elsewhere")) if atts else None,
             "claims": len(outcomes) if atts else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
+            "reproduced": (round(share, 4) if (share := reproduced_share(outcome_counts(
+                [a for a in atts if not a.get("deprecated")]))) is not None else None) if atts else None,
             "has": sorted({o["outcome"] for o in outcomes}),
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["key"])),
@@ -937,14 +951,25 @@ def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = 
     return f'<div class="panel"><h2>{link}{e(title)}</h2><div class="rows">{body}</div></div>'
 
 
-def attempt_row(a: dict, root: str) -> str:
+def attempt_row(a: dict, root: str, share: bool = False) -> str:
+    """One attempt in a list; with `share`, the share of its claims reproduced in place of its date."""
     counts = outcome_counts(a)
     page = f'{root}{page_of(a["key"])}'
+    side = (f'<span class="small"><b>{reproduced_share(counts):.0%}</b> reproduced</span>' if share
+            else f'<span class="small muted">{e(a["date"])}</span>')
     return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["label"])}</a></div>'
             f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
             f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
             f'<div class="right">{deprecated_badge() if a.get("deprecated") else tier_badge(a["tier"])}'
-            f'<span class="small muted">{e(a["date"])}</span></div></div>')
+            f'{side}</div></div>')
+
+
+def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
+    """The verified attempts with the largest share of claims reproduced, then the most claims reproduced."""
+    ranked = [a for a in attempts if not a.get("deprecated") and a["tier"] != "runs"
+              and sum(outcome_counts(a).values()) >= TOP_MIN_CLAIMS]
+    return sorted(ranked, key=lambda a: (-reproduced_share(outcome_counts(a)), -outcome_counts(a)["reproduced"],
+                                         a["key"]))[:n]
 
 
 PROGRESS_METRICS = {
@@ -1113,6 +1138,8 @@ def page_overview(data: dict) -> str:
 
     recent = sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True)[:6]
     recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
+    top_html = ("".join(attempt_row(a, "", share=True) for a in most_reproduced(attempts))
+                or '<p class="empty">No verified attempt yet.</p>')
 
     dashboard = progress_panel(data)
     redirect = json.dumps({a["id"]: a["key"] for a in data["attempts"]})
@@ -1133,14 +1160,23 @@ def page_overview(data: dict) -> str:
     {caution_block()}
   </div>
   <div class="grid2" style="margin-top:16px">{panels}</div>
-  <div class="panel" style="padding:0">
-    <h2 style="padding:18px 20px 0"><a class="more" href="datasets/?status=attempted">See all</a>Latest attempts</h2>
-    <div class="results" style="border:0;border-radius:0 0 10px 10px">{recent_html}</div>
+  <div class="panel attempts" style="padding:0">
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-panel="most-reproduced" aria-selected="true">Most
+      reproduced</button><button type="button" role="tab" data-panel="latest" aria-selected="false">Latest</button></div>
+    <section class="tabpanel" id="most-reproduced"><h2>Most reproduced</h2>
+      <p class="sub small"><a class="more" href="datasets/?status=attempted&amp;sort=-reproduced">See all</a>Verified
+      attempts with at least {TOP_MIN_CLAIMS} claims on the dataset, by the share of claims reproduced; a partial
+      reproduction counts as half.</p>
+      <div class="results">{top_html}</div></section>
+    <section class="tabpanel" id="latest"><h2>Latest attempts</h2>
+      <p class="sub small"><a class="more" href="datasets/?status=attempted">See all</a>The most recent attempts,
+      verified or not.</p>
+      <div class="results">{recent_html}</div></section>
   </div>
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
@@ -1417,7 +1453,7 @@ LISTS = {
         "facets": [("status", "Status"), ("archive", "Archive"), ("has", "Has a claim that is"),
                    ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-date", "Most recently attempted"), ("id", "Identifier"),
+        "sorts": [("-date", "Most recently attempted"), ("-reproduced", "Most reproduced"), ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
                   ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("name", "Title"), ("paper_title", "Paper title")],
         "csv": None,
