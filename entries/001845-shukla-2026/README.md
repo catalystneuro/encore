@@ -18,8 +18,8 @@ the virtual-agent task are not in it, and no session is labelled as sensory depr
 | Entropy lower in WT rats (Fig. 3D) | Partially reproduced |
 | Exploration efficiency higher in WT rats (Fig. 3E) | Not reproduced |
 | Choice similarity within pairs higher in WT at 50% (Fig. S2) | Not reproduced |
-| Arrival lag shorter in WT pairs (Fig. 4B) | Blocked: methods underspecified (not reproduced proposed) |
-| Departure lag shorter in WT pairs (Fig. 4C) | Blocked: methods underspecified (not reproduced proposed) |
+| Arrival lag shorter in WT pairs (Fig. 4B) | Not reproduced |
+| Departure lag shorter in WT pairs (Fig. 4C) | Not reproduced |
 | Dwell time, Fmr1 longer but not significant (Fig. 4D) | Reproduced |
 | Cross-correlation of arrivals higher in WT pairs (Fig. 4E to 4G) | Not reproduced |
 | Peak-lag distributions differ at 50% (Fig. 4H) | Not reproduced |
@@ -47,10 +47,10 @@ printed df suggest, and not with pairs or rats as subjects; the claims file bloc
 5% of pokes are near-simultaneous pokes at two wells, removed here as sensor crosstalk. In 6 of 10 pairs
 the head positions agree poorly with the pokes, which bears on the position-based measures. Follower
 trials built from the sequence of arrivals show a partner-history effect even when one rat is shifted
-in time, so the Figure 8 claims are blocked. The arrival and departure lags of Figure 4B and 4C are
-blocked only when four sessions with head-position lags over 100 s are removed, a threshold chosen after
-seeing one of them; with every session both readings fail, and a change to not reproduced is proposed
-for a third verification round. The attempt
+in time, so the Figure 8 claims are blocked. The arrival and departure lags of Figure 4B and 4C fail
+under both readings with every session; they were blocked until the third verification round, when the
+verifier agreed that the removal of four sessions with head-position lags over 100 s, a threshold chosen
+after seeing one of them, should not decide the outcome. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/001845-shukla-2026-01.yaml`](../../attempts/001845-shukla-2026-01.yaml).
 
