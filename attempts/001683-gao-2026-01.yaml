@@ -29,8 +29,8 @@ outcomes:
     Bonferroni post hoc comparisons significant; per rat p = 0.00145 ordinary (no post hoc comparison
     significant) and p = 0.00037 repeated (contralateral baseline against post 3, p = 0.026). The hemisphere
     effect is not significant (p = 0.16 to 0.63). Mean durations fall from 49.6 to 53.0 s at baseline
-    to 34.8 to 35.7 s at post 3. Counting the seizures that end within 2 s of a block end as cut off gives
-    block p = 0.0017 and 0.00043 per rat. The readings agree, so the outcome rests on none of them.
+    to 34.8 to 35.7 s at post 3. Counting the seizures within 2 s of either end of a block as cut off (14
+    left out, against 6) gives block p = 0.0017 and 0.00043 per rat. The readings agree, so the outcome rests on none of them.
   deviations:
   - The seizure labels are the dandiset's own; their times are in minutes and are multiplied by 60 (checked
     against the EEG in eeg_blocks.ipynb).
@@ -134,9 +134,10 @@ outcomes:
   deviations:
   - Assumed that the paper's two-way ANOVA is the repeated-measures reading of M3, since the readings
     disagree on this claim of absence. Methods F says only "two-way ANOVA ... in GraphPad Prism"; the
-    blocks are repeated on the same rats, and the paper's significant within-group changes of Fig. 3 (count
-    and percent time against baseline, interval at contralateral post 1, Results B) are found only under
-    the repeated-measures reading. Under the ordinary reading the claim would be reproduced.
+    blocks are repeated on the same rats, and most of the paper's significant within-group changes of
+    Fig. 3 (Results B; the count at post 1 and post 2, percent time at the stimulation block, the interval
+    at contralateral post 1) are found only under the repeated-measures reading, while percent time at
+    post 1 and post 2 is significant under both. Under the ordinary reading the claim would be reproduced.
   - Assumed that each set of post hoc comparisons is its own Bonferroni family (reading i of M3), as Prism
     corrects each set of multiple comparisons it is asked for on its own; the paper names no family. Reading
     (ii) is shown. Under reading (ii) the claim would be reproduced.
@@ -162,7 +163,7 @@ outcomes:
   notes: Gap reading of the interval and reading (b) of M4, all six increases within tolerance. The two
     rats left out are BH634 and BH638 (no seizures at post 2). Under the repeated-measures reading contralateral
     post 1 is the only significant comparison with baseline under both family readings (p = 0.0086 within
-    family, 0.014 over all ten; ipsilateral post 1 0.056 and 0.093, the others 0.70 or more). The ordinary
+    family, 0.014 over all ten; ipsilateral post 1 0.056 and 0.093, the others 0.69 or more). The ordinary
     reading finds none (contralateral post 1 p = 0.18). Onset-to-onset intervals give increases of 12.6
     to 30.6%, outside tolerance.
   deviations:
@@ -185,7 +186,7 @@ outcomes:
   notes: Means decline in both groups (tFUS 59.8 to 48.7 s ipsilateral, 61.0 to 49.9 s contralateral;
     sham 53.0 to 37.8 and 56.8 to 40.6 s), but tFUS baseline against post 2 is not significant (Bonferroni
     p = 0.42 and 0.33 repeated, 0.62 and 0.59 ordinary), nor is any other within-group comparison (smallest
-    p = 0.16). Counting the seizures that end within 2 s of a block end as cut off gives the same (0.42
+    p = 0.16). Counting the seizures within 2 s of either end of a block as cut off gives the same (0.42
     and 0.33).
   deviations:
   - Per-rat mean durations, leaving out the 6 seizures that start at a block's first sample; the two tFUS
@@ -237,6 +238,7 @@ outcomes:
   - As for fig4-no-theta-alpha-gamma-power-change (no ICA, channels 8 and 25 from Fig. S1).
 - claim: fig4ef-ai-increase
   outcome: partially_reproduced
+  assumed: true
   notebook: eeg_blocks.ipynb
   output: claim:fig4ef-ai-increase
   notes: With AI on the band power (Eq. 1), mean baseline AI is negative in both groups (whole block,
@@ -246,12 +248,15 @@ outcomes:
     2 p = 0.012; division theta post 2 p = 0.0020, alpha post 2 p = 0.0005); read as the normalized value
     rising, only subtraction gives it. Sham against tFUS is not significant in any band, block or combination
     of readings. Over the seizure periods nothing is significant. With AI on band ratios the baseline
-    AI is -0.09 to +0.04 and neither part holds.
+    AI is -0.09 to +0.04 and neither part holds, so the outcome would be not reproduced. Which quantity
+    Eq. 1 is applied to is asked of the authors (findings); Methods E names "absolute power" by division
+    and then the AI "for each of the aforementioned", which can be read either way.
   deviations:
-  - AI is computed on the band power (sum of PSD in the band) of channels 8 and 25, as Methods E says
-    ("the relative difference in PSD between the ipsilateral and contralateral S1") and the Fig. 4 legend
-    ("calculated using PSD values"); AI on the band over 3-300 Hz ratios is shown as a second reading.
-    The seizure segment is the union of both hemispheres' labels.
+  - Assumed that AI is computed on the band power (sum of PSD in the band) of channels 8 and 25, as Methods
+    E says ("the relative difference in PSD between the ipsilateral and contralateral S1") and the Fig.
+    4 legend ("calculated using PSD values"), as for figs5-seizures-lower-ai; AI on the band over 3-300
+    Hz ratios is shown as a second reading, under which the outcome would be not reproduced. The seizure
+    segment is the union of both hemispheres' labels.
   - '"Increase" is shown in two readings, the normalized value rising and the AI rising; they differ under
     division when the baseline AI is negative. The outcome is the same under both.'
   - As for fig4-no-theta-alpha-gamma-power-change (no ICA).
@@ -360,6 +365,7 @@ outcomes:
     PLI is given with a noise floor, the contralateral channels taken from the next trial.
 - claim: fig5ghi-low-band-pli-s1-only
   outcome: not_reproduced
+  assumed: true
   notebook: wild_type.ipynb
   output: claim:fig5ghi-low-band-pli-s1-only
   notes: In no band and under no combination of readings does the S1 PLI fall while the non-S1 PLI does
@@ -367,12 +373,15 @@ outcomes:
     PLI is not below pre in theta, alpha or beta under any reading (differences +0.0002 to +0.070). After
     it, over concatenated 20 ms sub-windows, both regions fall slightly in alpha (S1 -0.010, non-S1 -0.014)
     and beta (-0.016, -0.026). The per-trial PLI is at its trial-shuffled floor (theta S1 0.976 pre, floor
-    0.976), and the concatenated PLI (0.10 to 0.20) is about 0.02 above its floor.
+    0.976), and the concatenated PLI (0.10 to 0.20) is about 0.02 above its floor. The outcome rests on
+    the PLV recordings standing for the target-confirmation EEG; with the claims file's data, which the
+    dandiset lacks, the claim would be blocked (data_missing) like fig5cdj-wild-type-gamma-pli-decrease.
+    Which recordings the PLI was computed on is asked of the authors (findings).
   deviations:
-  - The epochs are the first 200 pulses of the dandiset's PLV EEG files (20 ms pulses, labelled EEG data
-    for PLV analysis), for 20 of the 23 rats; the claims file reads them as the 200 bursts of the target
-    confirmation, whose EEG is not in the dandiset. The Methods' "tFUS (20 ms of stimulation" fits these
-    files.
+  - Assumed that the epochs are the first 200 pulses of the dandiset's PLV EEG files (20 ms pulses, labelled
+    EEG data for PLV analysis), for 20 of the 23 rats; the claims file reads them as the 200 bursts of
+    the target confirmation, whose EEG is not in the dandiset. The Methods' "tFUS (20 ms of stimulation"
+    fits these files, and they are the only wild-type EEG with pulses that the dandiset holds.
   - S1 channels from the PLV files' notes (see fig6-epileptic-pli-s1-decrease). The ratio reading divides
     the region's mean PLI by its mean pre PLI, a standard choice.
   - Equal-length windows (nine 20 ms sub-windows of 20 to 200 ms) and trial-shuffled noise floors, as
@@ -413,8 +422,8 @@ findings:
     (not BH638, BH642, BH644), while Fig. 5 gives N = 23.
 - kind: methods_unavailable
   statement: Question for the authors. Was the two-way ANOVA of Figs. 2 to 4 and 6 ordinary or repeated
-    measures (or Prism's mixed-effects model), and which comparisons formed each Bonferroni family? The
-    paper's within-group significance in Fig. 3 appears here only under a repeated-measures reading; this
+    measures (or Prism's mixed-effects model), and which comparisons formed each Bonferroni family? Most
+    of the paper's within-group significance in Fig. 3 appears here only under a repeated-measures reading; this
     attempt assumed repeated measures, and each set of comparisons as its own family, for the claims where
     the readings disagree.
 - kind: methods_unavailable
@@ -425,8 +434,15 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. Over which segment were band power, AI and seizure PLI computed
     (whole block or seizure periods, and for two hemispheres whose labels differ, which periods), what
-    total was the band power divided by, and was AI normalized to the group's baseline by division or
-    by subtraction? With a negative baseline AI the two normalizations give opposite directions.
+    total was the band power divided by, was Eq. 1 applied to the band power or to the band ratio, and
+    was AI normalized to the group's baseline by division or by subtraction? With a negative baseline
+    AI the two normalizations give opposite directions; on band ratios fig4ef-ai-increase and figs5-seizures-lower-ai
+    would not be reproduced, on band power (assumed here) they are partly and fully reproduced.
+- kind: methods_unavailable
+  statement: Question for the authors. Was the wild-type PLI of Fig. 5 computed on EEG recorded during
+    the 67 ms bursts of the target confirmation, or on the separate recordings with 20 ms pulses that
+    the dandiset labels EEG data for PLV analysis? This attempt assumed the latter for fig5ghi-low-band-pli-s1-only,
+    since only those are in the dandiset.
 - kind: paper_inconsistency
   statement: Methods E gives the wild-type tFUS window as "20 ms of stimulation" of "200 EPs from the
     target confirmation procedure", but the target-confirmation bursts last 67 ms (supplement). The dandiset
@@ -444,8 +460,8 @@ findings:
     5.2 uV from 0 to 200 ms against 6.8 uV later in the cycle), although 1.4-1.5 kHz power, the pulse
     repetition frequency, marks the bursts at the interval starts in 13 of 23 CENTER recordings.
 - kind: metadata_insufficient
-  statement: The PLV EEG recordings of the 16 epileptic rats are the last recordings before the first
-    4-AP injection (they end 64 to 176 min before the baseline block), but nothing in the files says so,
+  statement: The PLV EEG recordings of the epileptic rats, which 13 of the 16 have, are the last recordings
+    before the first 4-AP injection (they end 64 to 176 min before the baseline block), but nothing in the files says so,
     and the timeline of Fig. 1E does not list them.
 verifications:
 - date: '2026-11-03'
@@ -629,3 +645,163 @@ verifications:
     response: 'Changed to partially reproduced, resting on an assumption: with the pre-4-AP PLI from the
       gaps between pulses of the PLV recordings (13 rats), the S1 change exceeds the non-S1 change significantly
       in theta (and gamma under one reading), not in all four bands.'
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the first revision with their conclusion cells and
+    summaries, the README, the helper module, the claims file and this record, with the paper. The verifier
+    could not run the module (no numpy in its environment) and checked the code and the outputs. It agreed
+    with all 22 outcomes. It found the assumed flag missing on fig4ef-ai-increase and fig5ghi-low-band-pli-s1-only,
+    and no place where the claims file misreads the paper. Of its round-1 points, all nine are resolved,
+    point 3 (EP alignment) mostly. What it lists as remaining is the protocol's absence rule, which it
+    cannot check and on which fig3b-sham-percent-time-no-change, fig4-no-theta-alpha-gamma-power-change
+    and figs4-sham-power-no-change rest through the repeated-measures reading, the two missing flags, and
+    family (i), on which fig2f-sham-percent-time-post3 and fig3b-sham-percent-time-no-change turn. The
+    revision also corrected the sentences it found unsupported outside the claims (the scale of the raw
+    EEG in eeg_blocks, the run times in the README, the count of epileptic rats with a PLV recording in
+    the last finding).
+  results:
+  - claim: fig2c-sham-duration-stable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, no assumption needed; the printed p values support it. The sentence counting "the six
+      that end 1 to 1.4 s before a block end as cut off" is wrong, as the variant counts seizures within
+      2 s of either end of the block as cut off and leaves out 14 seizures, against 6 by default; the results
+      do not change.
+    response: Corrected the sentence in the summary, the Result cell and the record notes (within 2 s of
+      either end of a block, 14 left out against 6). No change of outcome.
+  - claim: fig2d-seizures-under-two-minutes
+    agrees: true
+    outcome: reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: fig2e-sham-count-stable
+    agrees: true
+    outcome: reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: fig2f-sham-percent-time-post3
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the three assumptions (BH635 in time order, the repeated-measures reading, family (i))
+      are stated and reasonable. It is fragile, p_family 0.040 and p_all 0.051, and with BH635 by its labels
+      p is 0.13 or 0.94; the outcome would flip under family (ii).
+    response: No change; the dependence on each assumption is stated in the notebook and the record, and
+      the family question is asked of the authors (findings).
+  - claim: fig3a-count-reduction
+    agrees: true
+    outcome: reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: fig3a-count-sham-vs-tfus
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, no assumption needed; round-1 point 1 (z reference) is resolved, and the repeated p is
+      now at least the ordinary p for the between-group contrasts.
+    response: No change needed.
+  - claim: fig3b-percent-time-reduction
+    agrees: true
+    outcome: reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: fig3b-sham-percent-time-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; the two assumptions (repeated measures and family (i)) are stated and reasonable, with
+      contralateral post 2 at p_family 0.034 and p_all 0.057. The record lists two assumptions, but cell
+      37 and the README say "on an assumption". The sentence that the paper's significant within-group changes
+      of Fig. 3 "appear only under the repeated-measures reading" overstates it, as cell 33 shows ordinary
+      percent time at post 1 and post 2 significant (p_family 0.0077 to 0.0122). It cannot check the protocol's
+      absence rule, and the outcome would flip under family (ii).
+    response: Cell 37 and the README now say "on assumptions". The sentence is corrected in the summary,
+      this claim's deviation, the README and the ANOVA finding (most of the within-group changes; percent
+      time at post 1 and post 2 is significant under both readings). No change of outcome.
+  - claim: fig3b-percent-time-sham-vs-tfus
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: fig3c-interval-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the gap reading is stated and reasonable and matches the paper's six percentages to within
+      0.4 point. Cell 44 says "the others ... 0.70 or more", but one value is 0.6976.
+    response: Corrected to 0.69 or more in cell 44 and the record notes. No change of outcome.
+  - claim: fig3c-interval-sham-vs-tfus
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, no assumption needed; round-1 point 1 is resolved.
+    response: No change needed.
+  - claim: fig3d-duration-decline
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, no assumption needed. The record note on the block-end variant repeats the wrong count
+      of cut-off seizures; the results do not change.
+    response: Corrected the description of the variant in the Result cell and the record notes. No change
+      of outcome.
+  - claim: fig4-no-theta-alpha-gamma-power-change
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; it rests on the repeated-measures reading, which is stated and reasonable. It cannot check
+      the protocol's absence rule, under which the outcome is not reproduced only because the repeated
+      reading is adopted where the two ANOVA readings disagree.
+    response: No change; the dependence is stated, and the ANOVA question is asked of the authors (findings).
+  - claim: fig4c-beta-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: figs4-sham-power-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; it rests on the repeated-measures reading, and would be blocked under the ordinary reading,
+      which the record says. The absence rule is as for fig4-no-theta-alpha-gamma-power-change.
+    response: No change needed.
+  - claim: fig4ef-ai-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, but an assumed flag is missing. The outcome rests on the same band-power AI choice that
+      is flagged as an assumption for figs5-seizures-lower-ai; on band ratios neither part of the claim holds,
+      so the outcome would be not reproduced (cell 21).
+    response: Added assumed true, restated the band-power choice as an assumption in the deviation, the
+      notes, the Result cell and the summaries, and added the question to the AI finding for the authors.
+      No change of outcome.
+  - claim: figs5-seizures-lower-ai
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the two assumptions (the pre-4-AP state from the gaps between pulses, and AI on band power)
+      are stated and reasonable. The second decides the outcome; on band ratios the claim fails in every
+      combination. The paper's text is ambiguous here.
+    response: No change needed; the question is in the AI finding.
+  - claim: fig5b-tfus-evoked-potentials
+    agrees: true
+    outcome: blocked
+    reason: Agree. Round-1 point 3 (EP alignment) is mostly resolved; in 10 rats no burst marker appears
+      at any lag, so alignment there is unverified, though nothing suggests misalignment. fig5b stays blocked
+      either way.
+    response: No change needed.
+  - claim: fig5cdj-wild-type-gamma-pli-decrease
+    agrees: true
+    outcome: blocked
+    reason: Agree; round-1 point 2 (PLI window-length bias) is fixed.
+    response: No change needed.
+  - claim: fig5ghi-low-band-pli-s1-only
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, but an assumed flag is missing. The outcome rests on replacing the target-confirmation
+      EEG, which the claims-file criterion specifies, with the PLV recordings; under the claims file's own
+      data definition this would be blocked (data_missing), like fig5cdj-wild-type-gamma-pli-decrease.
+      The record discloses it only as a deviation.
+    response: Added assumed true, restated the substitution as an assumption in the deviation, the notes,
+      the Result cell and the summaries, and added a methods_unavailable finding asking the authors which
+      recordings the wild-type PLI used. No change of outcome.
+  - claim: fig6-epileptic-pli-s1-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, no assumption needed.
+    response: No change needed.
+  - claim: figs7-seizure-pli-s1-vs-non-s1
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; the assumption, the pre-4-AP state from the gaps between pulses, is stated and reasonable.
+    response: No change needed.
