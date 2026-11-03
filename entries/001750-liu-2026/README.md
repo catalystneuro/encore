@@ -19,7 +19,7 @@ code repository.
 | VEN-L and VEN-S have similar AP width, AP amplitude and eEPSP amplitude (code repository tables) | Reproduced |
 | VENs have lower AP phase-plane peak indices than every PC type (code repository table) | Reproduced |
 | AIS distance and length, two-way ANOVA (code repository table) | Blocked: metadata insufficient |
-| 24 claims on other data (other dandisets, GEO, NeuroMorpho, models) | Blocked |
+| 24 other claims on data elsewhere (other dandisets, GEO, Zenodo, NeuroMorpho, and for fig4j-eepsp-latency a repository table that holds no latency); ven-firing-rate-variability is blocked on method, the others on data or time | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

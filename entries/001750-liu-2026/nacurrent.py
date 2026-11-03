@@ -21,9 +21,10 @@ Where the parameters come from:
   reading of the paper: no filter is named in the Methods or the code. It is a variant, chosen after
   the readings were run, to see what measure the code table's values could come from; it decides
   nothing.
-- `bessel_hz` in max_inward (a zero-phase 4-pole Bessel low-pass, scipy sosfiltfilt) is also not a
-  reading of the paper, which names no filter. Bessel low-pass filters are what HEKA amplifiers
-  apply (2.9 and 10 kHz are common settings); the cut-offs 2.9, 5 and 10 kHz were fixed before
+- `bessel_hz` in max_inward (a 4-pole Bessel low-pass, -3 dB at the cut-off, run once forward
+  with scipy sosfilt, as an amplifier's analogue filter acts) is also not a reading of the paper,
+  which names no filter. Bessel low-pass filters are what HEKA amplifiers apply (2.9 and 10 kHz
+  are common settings); the cut-offs 2.9, 5 and 10 kHz were fixed before
   their results were seen, so unlike `smooth` they were not fitted to the code table. A standard
   choice for a variant that decides nothing.
 - `win_ms` in max_inward overrides the reading's window with 0 to win_ms after onset. It is a
@@ -198,9 +199,12 @@ def step_levels(command):
 
 
 def lowpass(mean, rate, bessel_hz):
-    """Zero-phase 4-pole Bessel low-pass of traces [sweep, sample] (non-deciding variant)."""
+    """4-pole Bessel low-pass of traces [sweep, sample], -3 dB at bessel_hz, run once forward as
+    an amplifier's filter is (non-deciding variant). A forward-backward run (sosfiltfilt) would
+    double the order and put the cut-off near -6 dB. The filter settles long before the step
+    onset at 20 ms."""
     sos = signal.bessel(4, bessel_hz, fs=rate, output="sos", norm="mag")
-    return signal.sosfiltfilt(sos, mean, axis=1)
+    return signal.sosfilt(sos, mean, axis=1)
 
 
 def max_inward(mean, levels, onset, rate, reading, smooth=1, bessel_hz=None, win_ms=None):
