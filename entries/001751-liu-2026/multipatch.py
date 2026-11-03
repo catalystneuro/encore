@@ -13,16 +13,23 @@ Where the parameters come from:
   for the stimulus; the stimulus pulse of 50 samples is 2 ms at 25 kHz, the 2 ms of the
   Methods ("2 nA for 2 ms at 0.01-0.1 Hz"), so 25 kHz is used for both.
 - The presynaptic channel of a file is the one whose sweeps cross `SPIKE_MV` within
-  `SPIKE_WINDOW_MS` of the first pulse. The files name Elec_8 as the stimulated electrode in
-  every file, which the traces contradict (see the notebook), so the cell that fires is used.
-  `SPIKE_MV` = 0 mV is a standard overshoot criterion for an action potential.
+  `SPIKE_WINDOW_MS` of the first pulse in at least half the sweeps (the code-table-link
+  criterion). The files name Elec_8 as the stimulated electrode in every file, which the traces
+  contradict (see the notebook), so the cell that fires is used. `SPIKE_MV` = 0 mV is a
+  standard overshoot criterion for an action potential. An empty channel reads 0 mV and its
+  noise crosses 0 mV, so channels whose pre-pulse mean is within `EMPTY_MV` (1 mV) of 0 are
+  not candidates; the stricter rule that also asks for a pre-pulse mean below `CELL_MAX_MV`
+  is shown as a variant (`cell_max_mv`).
 - A channel holds a cell when its pre-stimulus mean is below `CELL_MAX_MV` (-30 mV); an empty
   channel reads 0 mV. A standard choice: the Methods hold cells at -60 or -70 mV.
 - Cell types, the presynaptic and postsynaptic channels tested, and the annotated connections
   (ConnType, connQuality) come from the paper's code, metadata_multiPatch.xlsx in
   https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
   (claims file, fig5d-connectivity-totals criterion, reading b). Its rows are matched to the
-  dandiset through the NWB file name it lists.
+  dandiset through the NWB file name it lists. The table gives the file name once per
+  presynaptic block (one block per presynaptic channel); ten blocks have no file name, and
+  `link_blank_blocks` matches each to the file of its slice whose firing channel is the
+  block's presynaptic channel.
 - The averaged response is processed as in the paper's Fig5fg_plotConn.m (claims file,
   fig5fg-example-slice): averaged over sweeps and low-passed with a 2nd-order Butterworth at
   300 Hz applied forward and backward (PatchAnaLab filter_300Lowpass). It is kept at 25 kHz;
@@ -31,7 +38,8 @@ Where the parameters come from:
   pre-pulse baseline in `RESP_WINDOW_MS` after the first pulse and the s.d. of the trace in
   `BASE_WINDOW_MS` before it. The paper gives no detection rule (claims file); these windows
   are a description chosen here (a 1 to 15 ms window holds the latency of a monosynaptic
-  uPSP), and they decide no outcome.
+  uPSP), and they decide no outcome. A peak on the first sample of the window
+  (`at_edge`) is usually the tail of a pulse-locked artefact, not a uPSP.
 """
 
 from __future__ import annotations
@@ -59,6 +67,7 @@ PULSE_SAMPLE = 5000        # first pulse onset in every file (checked in the not
 SPIKE_MV = 0.0
 SPIKE_WINDOW_MS = (0.0, 8.0)
 CELL_MAX_MV = -30.0
+EMPTY_MV = 1.0
 BASE_WINDOW_MS = (-50.0, -1.0)
 RESP_WINDOW_MS = (1.0, 15.0)
 KEEP_MS = (-60.0, 200.0)   # part of each averaged trace that is kept around the first pulse
@@ -111,6 +120,13 @@ def read_file(url: str) -> dict:
     for e, g in f["general/intracellular_ephys"].items():
         elec[e] = {k: _s(g[k]) for k in g if isinstance(g[k], h5py.Dataset)}
     out["electrodes"] = elec
+    # every group and dataset of the file outside the sweeps and the stimulus series
+    tree = []
+    f.visititems(lambda k, v: tree.append((k, "group" if isinstance(v, h5py.Group) else str(v.shape)))
+                 if not (k.startswith("acquisition/") or k.startswith("stimulus/presentation/")) else None)
+    out["tree"] = tree
+    out["general_text"] = {k: str(_s(f[k])) for k, kind in tree
+                           if kind == "()" and k.startswith("general/") and "intracellular_ephys" not in k}
     stims = []
     for name, g in f["stimulus/presentation"].items():
         d = g["data"][:]
@@ -158,10 +174,12 @@ def read_all(urls: list[str], workers: int = 8) -> list[dict]:
         return list(ex.map(read_file, urls))
 
 
-def presynaptic_channel(rec: dict) -> int | None:
-    """The channel that fires on the first pulse in most sweeps (None if none does)."""
+def presynaptic_channel(rec: dict, cell_max_mv: float | None = None) -> int | None:
+    """The channel that fires on the first pulse in most sweeps, if in at least half (else None).
+    Empty channels (pre-pulse mean within EMPTY_MV of 0 mV) are not candidates; with
+    `cell_max_mv`, only channels whose pre-pulse mean is below it are."""
     cands = [(c["frac_spiking"], ch) for ch, c in rec["channels"].items()
-             if c["base_mv"] < CELL_MAX_MV]
+             if abs(c["base_mv"]) >= EMPTY_MV and (cell_max_mv is None or c["base_mv"] < cell_max_mv)]
     best = max(cands, default=(0, None))
     return best[1] if best[0] >= 0.5 else None
 
@@ -175,7 +193,7 @@ def response_stats(avg: np.ndarray) -> dict:
     resp = x[z + _ms(RESP_WINDOW_MS[0]): z + _ms(RESP_WINDOW_MS[1])] - base.mean()
     i = int(np.argmax(np.abs(resp)))
     return dict(peak_mv=float(resp[i]), latency_ms=RESP_WINDOW_MS[0] + i * 1000.0 / RATE_HZ,
-                base_sd_mv=float(base.std()), snr=float(abs(resp[i]) / base.std()))
+                base_sd_mv=float(base.std()), snr=float(abs(resp[i]) / base.std()), at_edge=i == 0)
 
 
 def code_table() -> pd.DataFrame:
@@ -185,14 +203,41 @@ def code_table() -> pd.DataFrame:
     t = pd.read_excel(io.BytesIO(raw), sheet_name="metadata_multiPatch")
     t = t.rename(columns={"Session_ID/SliceID": "slice", "filename_original(.dat)": "dat",
                           "posySynChannel": "postSynChannel"})
-    for c in ["Subject_id", "slice", "dat", "filename", "preSynChannel"]:
+    t["block"] = t["preSynChannel"].notna().cumsum()
+    for c in ["Subject_id", "slice", "preSynChannel"]:
         t[c] = t[c].ffill()
+    # file names are filled within a presynaptic block only; a block without one stays blank
+    for c in ["dat", "filename"]:
+        t[c] = t.groupby("block")[c].transform("first")
     t["slice_nconn"] = t["Nr_Conn"]
     t = t.dropna(subset=["postSynChannel"]).copy()
     for c in ["preSynChannel", "postSynChannel"]:
         t[c] = t[c].astype(int)
     t["connected"] = t["ConnType"].notna()
     return t.reset_index(drop=True)
+
+
+def link_blank_blocks(t: pd.DataFrame, files: pd.DataFrame) -> pd.DataFrame:
+    """Give each block without a file name the file of its slice whose firing channel
+    (`files.pre_fires`) is the block's presynaptic channel and which no other block lists.
+    The slice is that of the block before it in the table, unless the block opens a slice
+    whose name, without "ven", is a session of the dandiset. Returns one row per blank block."""
+    t["session"] = t.filename.map(files.set_index("file").session)
+    sessions = set(files.session)
+    rows = []
+    for b, g in t[t.filename.isna()].groupby("block"):
+        name = str(g.slice.iloc[0]).replace("ven", "")
+        prev = t[(t.block < b) & t.session.notna()].session
+        s = name if name in sessions else (prev.iloc[-1] if len(prev) else None)
+        pre = int(g.preSynChannel.iloc[0])
+        cand = files[(files.session == s) & (files.pre_fires == pre) & ~files.file.isin(t.filename)]
+        f = cand.file.iloc[0] if len(cand) == 1 else None
+        if f is not None:
+            t.loc[g.index, "filename"] = f
+            t.loc[g.index, "session"] = s
+        rows.append(dict(block=b, table_slice=g.slice.iloc[0], session=s, preSynChannel=pre, rows=len(g),
+                         candidates=len(cand), file=f))
+    return pd.DataFrame(rows)
 
 
 TYPE_NAME = {"PC": "PC", "VEN": "VEN", "GABA": "IN"}

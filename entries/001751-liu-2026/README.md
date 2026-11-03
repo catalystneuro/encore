@@ -11,7 +11,7 @@ and up to seven simultaneously recorded neighbours.
 | The paper's code table links to the dandiset's files and channels | Reproduced |
 | 1,292 pairs among 377 neurons, 31 connections | Not reproduced |
 | PC-to-PC, 24 of 503 | Not reproduced |
-| VENs make no connection with VENs, PCs or interneurons | Not reproduced |
+| VENs make no connection with VENs, PCs or interneurons | Partially reproduced |
 | PC-to-VEN, 1 of 200 | Partially reproduced |
 | PC-to-IN 2 of 65, IN-to-PC 4 of 65 | Partially reproduced |
 | IN-to-VEN, 0 of 55 | Reproduced |
@@ -26,8 +26,8 @@ and up to seven simultaneously recorded neighbours.
 | PSC amplitudes do not differ (Fig. 5c, the code's per-cell values) | Reproduced |
 | Somatic Na+ currents lower in VENs (Fig. 4d, DANDI:001750) | Reproduced, resting on an assumption |
 | VENs have the lowest phase-plane peak index (Fig. 3e, the code's table) | Reproduced |
-| Metabolite counts AIC against V1 and PrC (Fig. 8a, the code's table) | Partially reproduced |
-| Citrate, 2-ketobutyrate and glutamate in AIC against V1 (Fig. 8d,e) | Partially reproduced |
+| Metabolite counts AIC against V1 and PrC (Fig. 8a, MetaboLights MTBLS13927) | Partially reproduced |
+| Citrate, 2-ketobutyrate and glutamate in AIC against V1 (Fig. 8d,e, MetaboLights MTBLS13927) | Partially reproduced |
 | 29 VENs map to L5 ET (14) and L5/6 CT (15) | Reproduced |
 | VEN-L to L5 ET and VEN-S to L5/6 CT (Fig. 6f,g) | Partially reproduced |
 | Patch-seq neurons mapped to transcriptomic types | Blocked: metadata insufficient |
@@ -39,16 +39,18 @@ reasoning and the differences from the paper's method.
 The files carry no cell types, connection labels or soma positions. Types and annotated
 connections come from the paper's code, `metadata_multiPatch.xlsx` in
 [RFLiu2021/AIC_proj](https://github.com/RFLiu2021/AIC_proj) at commit 44cd8a6, matched through
-the file names it lists. That table counts 295 cells, 1,416 pairs and 26 connections, where the
-paper reports 377, 1,292 and 31. The attempt record, with the reasons and the differences from
+the file names it lists (ten of its presynaptic blocks name no file; eight are matched by the
+cell that fires). That table counts 298 cells, 1,416 pairs (1,403 in files of the dandiset) and
+26 connections, where the paper reports 377, 1,292 and 31. The attempt record, with the reasons and the differences from
 the paper's method, is
 [`attempts/001751-liu-2026-01.yaml`](../../attempts/001751-liu-2026-01.yaml).
 
 The claims on data in other archives are tested on the paper's code tables where these hold
-per-cell values, and on DANDI:001750 for the Na+ currents; they are counted apart from the
+per-cell values, on DANDI:001750 for the Na+ currents and on MetaboLights MTBLS13927 for the
+metabolites; they are counted apart from the
 dandiset's.
 
-- `reproduce_liu_2026.ipynb`: the analysis. It takes about three minutes, most of it streaming
+- `reproduce_liu_2026.ipynb`: the analysis. It takes about five minutes, most of it streaming
   the 7 GB of files into memory.
 - `multipatch.py`: loading the files, finding the stimulated cell, averaging and filtering the
   responses as the paper's code does, and reading the code's table. Other notebooks on this
