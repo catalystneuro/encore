@@ -29,14 +29,22 @@ Where each parameter comes from:
   that ridge. Points are spaced by 1 degree of polar angle, not by equal arc
   length; for the near-circular cells here the two differ little (a standard
   choice, stated as a deviation).
+  One cell (`OUTERMOST_EDGE`) is traced with the outermost edge, as the
+  overlay of its default trace on its baseline image showed it on internal
+  staining.
 - Field direction: the angle of the cathodic pole is the phase of a cosine
   fitted to the polarization profile, pooled over the cells of a session
   (the electrodes do not move within a session; an assumption).
 - Background: the paper subtracts none for the potentiometric dyes (section
   2.3) but subtracts a cell-free region for Fluo-4 (section 2.4); the claims
-  file names both readings. `bg_annulus` is the per-image median of a
-  cell-free annulus 2 to 3 radii from the cell centre, with other cells masked
-  out (a standard choice of region).
+  file names both readings. `corrected` offers four: the cell's own cell-free
+  background recording (2025-05-01 only; the files call it a recording "in
+  the background region without cells"), the per-image median of a cell-free
+  annulus 2 to 3 radii from the cell centre with other cells masked out (a
+  standard choice of region), the darkest 0.1% of pixels (an upper bound on
+  the camera offset, which neither the paper nor the files give), and none.
+  The notebook adopts the background recording where there is one, as the
+  experimenters recorded it for this purpose (an assumption).
 """
 
 from __future__ import annotations
@@ -199,7 +207,14 @@ def _ray(center, r, ang):
     return center[0] - np.outer(np.sin(ang), r), center[1] + np.outer(np.cos(ang), r)
 
 
-def membrane(img: np.ndarray, center, r0: float):
+# Cells whose default trace was found, on the overlay of the sham baseline image,
+# to lie on internal staining inside the cell and not on its plasma membrane.
+# For these the outer edge is the outermost strong fall of intensity along each
+# ray (at least half as steep as the steepest), not the steepest fall.
+OUTERMOST_EDGE = {"CHO_20250501_c4"}
+
+
+def membrane(img: np.ndarray, center, r0: float, outermost: bool = False):
     """Centre and ridge radius (one per degree) of the membrane staining around a cell."""
     s = ndimage.gaussian_filter(img, 1.0)
     c = np.array(center, float)
@@ -215,7 +230,7 @@ def membrane(img: np.ndarray, center, r0: float):
         grad = np.gradient(ndimage.uniform_filter1d(prof, 9, axis=1), axis=1)
         rm = np.empty(N_POINTS)
         for k in range(N_POINTS):
-            e = int(np.argmin(grad[k]))
+            e = int(np.nonzero(grad[k] <= 0.5 * grad[k].min())[0].max()) if outermost else int(np.argmin(grad[k]))
             win = (r >= r[e] - 6) & (r <= r[e])
             rm[k] = r[win][np.argmax(prof[k, win])]
         rm = ndimage.median_filter(rm, size=21, mode="wrap")
@@ -278,25 +293,31 @@ def shift_between(ref: np.ndarray, img: np.ndarray, center, half: int = 80, max_
     return dy - max_shift, dx - max_shift
 
 
-def process(asset_id: str, ref: dict | None = None) -> dict:
+def process(asset_id: str, ref: dict | None = None, outermost: bool = False) -> dict:
     """Read one file and reduce it to the perimeter trace of the analysed cell, per image.
 
     Without `ref`, the cell nearest the image centre is found and its membrane
-    traced. With `ref` (the result for the cell's first recording), the same
+    traced (`outermost`: see OUTERMOST_EDGE). With `ref` (the result for the cell's first recording), the same
     trace is used, moved by the drift of the image measured by cross-correlation
     of the baseline images.
 
     Returns the trace (100, 360), the per-image background of the cell-free
     annulus (100,), the cell centre, radius and ridge radii, the shift from the
-    reference, the whole-frame mean per image, and the baseline image.
+    reference, the whole-frame mean per image, the baseline image and its 0.1st
+    percentile (the darkest pixels, an upper bound on the camera offset). For
+    the reference recording also the number of cells found in the field and
+    the distance of the analysed cell from the image centre.
     """
     st = read_stack(asset_id)
     base = st[:N_BASE].mean(0)
     lab, _ = cell_masks(base)
     if ref is None:
         c0, r0, lab, idx = central_cell(base)
-        c, rm = membrane(base, c0, r0)
+        c, rm = membrane(base, c0, r0, outermost)
         shift = (0, 0)
+        mid = ((base.shape[0] - 1) / 2, (base.shape[1] - 1) / 2)
+        sizes = ndimage.sum(np.ones_like(lab), lab, range(1, lab.max() + 1))
+        sel = dict(n_cells=int((sizes >= 800).sum()), dist_center=float(np.hypot(c[0] - mid[0], c[1] - mid[1])))
     else:
         shift = shift_between(ref["base"], base, ref["center"])
         c = np.asarray(ref["center"]) + np.asarray(shift, float)
@@ -305,9 +326,12 @@ def process(asset_id: str, ref: dict | None = None) -> dict:
     tr = sample_trace(st, coords)
     ann = annulus_mask(base.shape, c, float(np.median(rm)), lab)
     bg = np.median(st[:, ann], axis=1) if ann.sum() > 50 else np.full(st.shape[0], np.nan)
-    return dict(asset_id=asset_id, trace=tr, bg=bg.astype(np.float32), center=c, radius=float(np.median(rm)),
+    out = dict(asset_id=asset_id, trace=tr, bg=bg.astype(np.float32), center=c, radius=float(np.median(rm)),
                 rm=rm, shift=shift, frame_mean=st.reshape(st.shape[0], -1).mean(1), n_annulus=int(ann.sum()),
-                base=base)
+                base=base, floor=float(np.percentile(base, 0.1)))
+    if ref is None:
+        out.update(sel)
+    return out
 
 
 def process_background(asset_id: str, coords) -> np.ndarray:
@@ -384,14 +408,17 @@ def extract(df: pd.DataFrame, max_workers: int = 12) -> dict:
     cells = df[df.kind != "background"]
     first = cells.groupby("cell").head(1)
     with ThreadPoolExecutor(max_workers) as ex:
-        res = dict(zip(first.asset_id, ex.map(process, first.asset_id)))
+        res = dict(zip(first.asset_id, ex.map(lambda r: process(r.asset_id, outermost=r.cell in OUTERMOST_EDGE),
+                                              first.itertuples())))
     ref = {r.cell: res[r.asset_id] for r in first.itertuples()}
+    ref_ids = set(first.asset_id)
     rest = cells[~cells.asset_id.isin(first.asset_id)]
     with ThreadPoolExecutor(max_workers) as ex:
         res.update(zip(rest.asset_id, ex.map(lambda r: process(r.asset_id, ref[r.cell]),
                                              rest.itertuples())))
-    for v in res.values():
-        v["base"] = None  # keep memory small; geometry is kept
+    for a, v in res.items():
+        if a not in ref_ids:
+            v["base"] = None  # keep memory small; the sham baseline image is kept for the overlays
     bk = df[df.kind == "background"]
     coords = {r.cell: trace_coords(res[r.asset_id]["center"], res[r.asset_id]["rm"]) for r in first.itertuples()}
     with ThreadPoolExecutor(max_workers) as ex:
@@ -428,7 +455,9 @@ def corrected(trace, bg_mode: str, r: dict, bk_mean=None):
 
     'none': raw intensities (section 2.3 describes no subtraction);
     'annulus': the per-image median of the cell-free annulus (as section 2.4 does for Fluo-4);
-    'bckg_file': the mean of the cell-free background recording of the same cell, point by point.
+    'bckg_file': the mean of the cell-free background recording of the same cell, point by point;
+    'floor': the 0.1st percentile of the file's baseline image, a constant (the darkest pixels,
+    an upper bound on the camera offset, which neither the paper nor the files give).
     """
     if bg_mode == "none":
         return trace
@@ -436,6 +465,8 @@ def corrected(trace, bg_mode: str, r: dict, bk_mean=None):
         return trace - r["bg"][:, None]
     if bg_mode == "bckg_file":
         return trace - bk_mean[None, :]
+    if bg_mode == "floor":
+        return trace - r["floor"]
     raise ValueError(bg_mode)
 
 
@@ -444,11 +475,12 @@ def per_image_table(df: pd.DataFrame, res: dict, phi: float, bg_mode: str,
     """Pole dF per image (100 per set) for every recording in `df`: long table.
 
     F0 is the mean of baseline images f0_from to 39 (section 2.3 uses all 40;
-    f0_from=1 drops the first image, which is darker in most files).
+    f0_from=1 drops the first image, which is darker in most files). `phi` is
+    the session's cathodic pole angle, or a {cell: angle} dict for per-cell poles.
     """
-    cath, anod = pole_index(phi)
     rows = []
     for r in df.itertuples():
+        cath, anod = pole_index(phi[r.cell] if isinstance(phi, dict) else phi)
         R = res[r.asset_id]
         bkm = None if bk is None else bk.get(r.cell)
         t = corrected(R["trace"], bg_mode, R, bkm)
