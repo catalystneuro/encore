@@ -550,7 +550,7 @@ outcomes:
     than an hour of fitting at about 20 ms per fit, beyond the time left in this run and, with the rest
     of the analysis, the notebook''s limit. Nothing in the files prevents it: activity, position, speed
     and the zones are there. The block stays too_large: the protocol records a claim as too_large when
-    the estimate is over the notebook''s limit, as here (the notebook already runs 41 minutes of the 60, printed before its summary).'
+    the estimate is over the notebook''s limit, as here (the notebook already runs 41 to 48 minutes of the 60, printed before its summary).'
   deviations:
   - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
     carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
@@ -561,7 +561,7 @@ outcomes:
   notebook: reproduce_sosa_2025.ipynb
   notes: 'Depends on fig3b-decode-rr-position, which was not run (too large for this run). The block stays
     too_large: the protocol records a claim as too_large when the estimate is over the notebook''s limit,
-    as here (the notebook already runs 41 minutes of the 60, printed before its summary).'
+    as here (the notebook already runs 41 to 48 minutes of the 60, printed before its summary).'
   deviations:
   - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
     carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
@@ -929,7 +929,7 @@ outcomes:
     events are not in the files, so whether they had this scale cannot be checked. Outcomes that changed
     between the rounds rest on this choice (assumption).'
 - claim: ed4l-disappearing-decrease
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_sosa_2025.ipynb
   output: claim:ed4l-disappearing-decrease
   notes: 'Mixed models of fractions of place cells by switch. Disappearing near reward: slope -0.0021, p
@@ -937,9 +937,11 @@ outcomes:
     p = 0.23 (the fit did not converge; OLS with mouse-clustered errors p = 0.17) and far p = 0.11, so neither
     changes significantly, as the paper''s test of absence requires. The disappearing decrease is significant
     near reward only; far from reward it has the stated sign but p = 0.069. The criterion has no partial
-    clause (reproduced only when the disappearing slope is significant in both windows); the round-2 verifier
-    would record not reproduced, and this revision agrees, so the change is proposed below and the verified
-    outcome is kept until a third round.'
+    clause (reproduced only when the disappearing slope is significant in both windows), so the outcome
+    is not reproduced, as for fig4j; the third verification round agreed. OLS with mouse-clustered errors
+    gives the opposite pattern (far p = 0.030, near p = 0.083), so under it too the slope is not significant
+    in both windows. Only the raw fraction is fitted; the logit reading that fig4m defines is not run
+    for this claim.'
   deviations:
   - Dataset version 0.251124.0550, not the cited 0.250406.0045. In the cited version every file of a mouse
     carries the behaviour of one session (11 distinct behaviour series in 152 files), so imaging and behaviour
@@ -969,12 +971,6 @@ outcomes:
   - Disappearing cells are placed by their pre-switch peak relative to the pre-switch zone, appearing
     and non-RR cells by their post-switch peak (assumption; the legend does not say).
   assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion defines only a reproduced outcome, met when the disappearing slope is negative
-      at p < 0.05 in both windows. Far from reward it is -0.0048 with p = 0.069 (notebook, ed4l section),
-      so the criterion is not met, and with no partial clause the outcome is not reproduced. The same reading
-      was applied to fig4j. The analysis is unchanged from round 2; only the reading of the criterion changes.
 - claim: ed5-teleport-fractions
   outcome: blocked
   blocked_by: other
@@ -2539,3 +2535,27 @@ verifications:
     response: 'Not resolved in this round: the field rule follows the code (Ext3_FieldQuant.md) and the
       Methods, and the open detail (which samples the s.d. covers) is the methods_unavailable finding.
       Re-run, unchanged; outcome kept.'
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (ed4l-disappearing-decrease, partially reproduced
+    to not reproduced) and the analysis behind it in the executed notebook after the round-2 revision
+    (cells 9, 86 and 87), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/001361/verifier-3-report.md.
+  results:
+  - claim: ed4l-disappearing-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion is applied as written, the numbers come from the data, and only the reading
+      of the criterion changed. It has no partial clause, so an outcome that does not meet the single
+      reproduced condition is not_reproduced; the record treats fig4j the same way. Disappearing near
+      reward: slope -0.0021, p = 0.020. Disappearing far from reward: slope -0.0048, p = 0.069, so the
+      "both windows" condition fails. Appearing p = 0.14 and 0.39, non-RR p = 0.23 and 0.11. The mouse-clustered
+      OLS printed in cell 86 gives the opposite pattern (far p = 0.030, near p = 0.083), so under that
+      fit too the slope is not significant in both windows. Caveat: the criterion cites the fig4m model,
+      which defines a raw and a logit reading; cell 86 fits only the raw fraction, so it is not known
+      whether the logit far-window p would fall below 0.05. On the analysis as run, not_reproduced is
+      the correct outcome.'
+    response: Outcome changed to not reproduced and the proposal removed. The notebook's result text,
+      header and Summary, the README and the attempt notes updated, and the notebook re-run (48.1 minutes this time; the run-time text now says 41 to 48). The logit
+      fit is not added in this round (a change that needs an analysis not yet run waits for a new attempt);
+      whether fig4m's readings carry over to ed4l is added to questions/001361.yaml.
