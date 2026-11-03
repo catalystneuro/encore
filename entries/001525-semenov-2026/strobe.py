@@ -16,10 +16,13 @@ Where the parameters come from:
   +-5 degrees (Methods 2.3; Results 3.7, "Fig. 7B compares polarization at cell poles (within
   +-5o)"). `N_BASELINE`, `POLE_HALF_WIDTH_DEG`, `N_POINTS`.
 - A 6-pixel-wide trace along the cell perimeter (Methods 2.3). The paper draws it by hand in
-  MetaMorph; here it is found automatically (`find_cells`, `trace`): the perimeter at each angle is the radius of peak intensity along
-  the ray within 0.7 to 1.35 times the object's equivalent radius, smoothed over angle, and F at that angle is
-  the mean over 6 radial pixels centred on it (`TRACE_WIDTH_PX`). This is the author's
-  implementation of the Methods' trace; the search band and the smoothing are standard choices.
+  MetaMorph; here it is found automatically (`find_cells`, `trace`): at each angle the cell's
+  outer edge is the steepest outward fall of intensity along the ray, the membrane is the
+  intensity peak within 8 pixels inside it (`EDGE_WINDOW_PX`), smoothed over angle, and F at that
+  angle is the mean over 6 radial pixels centred on it (`TRACE_WIDTH_PX`). The first round's
+  trace, the plain intensity peak along the ray, fell on bright dye inside some cells (c5, c9)
+  and is kept as a variant ('dF_peak'). This is the author's implementation of the Methods'
+  trace; the windows and the smoothing are standard choices.
 - Which object is the cell: the paper images "one cell per experiment" (Fig. 2 legend). The
   field holds several cells; the one analysed is the largest object found in the subject's
   first file, then the object nearest that position in each later file (`pick_cell`). An
@@ -60,6 +63,7 @@ N_POINTS = 360
 TRACE_WIDTH_PX = 6
 DARK_FRACTION = 0.9
 BG_ANNULUS = (1.6, 2.2)
+EDGE_WINDOW_PX = 8
 
 # Eq. (2) parameters, Methods 2.3
 LAMBDA_I = 0.4
@@ -166,14 +170,38 @@ def pick_cell(img: np.ndarray, near: tuple[float, float] | None):
     return float(cells[i, 0]), float(cells[i, 1]), float(cells[i, 2])
 
 
-def trace(img: np.ndarray, cx: float, cy: float, r0: float):
-    """Membrane radius per degree: peak of intensity along each ray, smoothed over angle."""
+def _edge_profiles(sm, cx, cy, r0, ang):
+    rr = np.arange(0.6 * r0, 1.35 * r0, 0.5)
+    prof = ndimage.map_coordinates(sm, [cy + np.outer(np.sin(ang), rr), cx + np.outer(np.cos(ang), rr)], order=1)
+    prof = ndimage.uniform_filter1d(prof, 9, axis=0, mode="wrap")
+    return rr, prof, np.argmin(np.gradient(prof, axis=1), axis=1)
+
+
+def outer_edge(img: np.ndarray, cx: float, cy: float, r0: float) -> np.ndarray:
+    """Radius (pixels) of the cell's outer edge per degree: the steepest outward fall of intensity."""
     ang = np.deg2rad(np.arange(N_POINTS) + 0.5)
-    rr = np.arange(0.7 * r0, 1.35 * r0, 0.5)
-    xs = cx + np.outer(np.cos(ang), rr)
-    ys = cy + np.outer(np.sin(ang), rr)
-    prof = ndimage.map_coordinates(ndimage.gaussian_filter(img, 1), [ys, xs], order=1)
-    rpk = rr[np.argmax(prof, axis=1)]
+    rr, _, edge = _edge_profiles(ndimage.gaussian_filter(img, 1), cx, cy, r0, ang)
+    return rr[edge]
+
+
+def trace(img: np.ndarray, cx: float, cy: float, r0: float, method: str = "edge"):
+    """Membrane radius per degree, smoothed over angle.
+
+    'edge' (main): along each ray the cell's outer edge is the steepest outward fall of intensity
+    within 0.6 to 1.35 times the object's equivalent radius, and the membrane is the intensity peak
+    within 8 pixels inside that edge. 'peak' (the first round's trace, a variant): the peak of
+    intensity along the ray within 0.7 to 1.35 times the radius, which can fall on bright dye inside
+    the cell. The windows and smoothing are standard choices."""
+    ang = np.deg2rad(np.arange(N_POINTS) + 0.5)
+    sm = ndimage.gaussian_filter(img, 1)
+    if method == "peak":
+        rr = np.arange(0.7 * r0, 1.35 * r0, 0.5)
+        prof = ndimage.map_coordinates(sm, [cy + np.outer(np.sin(ang), rr), cx + np.outer(np.cos(ang), rr)], order=1)
+        rpk = rr[np.argmax(prof, axis=1)]
+    else:
+        rr, prof, edge = _edge_profiles(sm, cx, cy, r0, ang)
+        lo = np.maximum(edge - int(EDGE_WINDOW_PX / 0.5), 0)    # radii are in 0.5-pixel steps
+        rpk = np.array([rr[lo[i] + np.argmax(prof[i, lo[i]:edge[i] + 1])] for i in range(N_POINTS)])
     rpk = ndimage.median_filter(rpk, size=15, mode="wrap")
     rpk = ndimage.uniform_filter1d(rpk, size=9, mode="wrap")
     return ang, rpk
@@ -204,19 +232,32 @@ def image_profiles(x: np.ndarray, near: tuple[float, float]) -> dict:
     dark = dark_frames(x)
     b_all, _ = collapse(x, drop_dark=False)
     cx, cy, r0 = pick_cell(b_all, near)
-    ang, rpk = trace(b_all, cx, cy, r0)
+    ang, rpk = trace(b_all, cx, cy, r0, "edge")
+    _, rpk_peak = trace(b_all, cx, cy, r0, "peak")
     out = dict(cx=cx, cy=cy, r0=r0, r_membrane=float(np.mean(rpk)), n_dark=int(dark.sum()),
-               dark_idx=np.flatnonzero(dark).tolist(), frame_mean=x.mean(axis=(1, 2)))
-    # per-frame trace intensity, for the clock check
+               dark_idx=np.flatnonzero(dark).tolist(), frame_mean=x.mean(axis=(1, 2)), rpk=rpk,
+               rpk_peak=rpk_peak)
+    # per-frame trace intensity, for the clock check, and per-frame annulus background, for the
+    # baseline trend
     out["frame_trace"] = np.array([sample_trace(f, cx, cy, ang, rpk) for f in x])
+    yy, xx = np.indices(x.shape[1:])
+    d = np.hypot(xx - cx, yy - cy)
+    ring = (d >= BG_ANNULUS[0] * r0) & (d <= BG_ANNULUS[1] * r0)
+    out["frame_bg"] = np.median(x[:, ring], axis=1)
+    # the baseline image around the cell (2.5 radii), for the overlay of cell and trace
+    h = int(round(2.5 * r0))
+    y0, x0 = max(int(cy) - h, 0), max(int(cx) - h, 0)
+    out["crop"], out["crop_origin"] = b_all[y0:int(cy) + h, x0:int(cx) + h].copy(), (x0, y0)
     for drop in (False, True):
         b, p = collapse(x, drop)
-        fb, fp = sample_trace(b, cx, cy, ang, rpk), sample_trace(p, cx, cy, ang, rpk)
-        for bg in (False, True):
-            bb = annulus_background(b, cx, cy, r0) if bg else 0.0
-            bp = annulus_background(p, cx, cy, r0) if bg else 0.0
-            out[("dF", drop, bg)] = 100.0 * ((fp - bp) - (fb - bb)) / (fb - bb)
-            out[("bg", drop, bg)] = (bb, bp)
+        for name, rr_ in (("dF", rpk), ("dF_peak", rpk_peak)):
+            fb, fp = sample_trace(b, cx, cy, ang, rr_), sample_trace(p, cx, cy, ang, rr_)
+            for bg in (False, True):
+                bb = annulus_background(b, cx, cy, r0) if bg else 0.0
+                bp = annulus_background(p, cx, cy, r0) if bg else 0.0
+                out[(name, drop, bg)] = 100.0 * ((fp - bp) - (fb - bb)) / (fb - bb)
+                if name == "dF":
+                    out[("bg", drop, bg)] = (bb, bp)
     return out
 
 
