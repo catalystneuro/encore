@@ -53,8 +53,9 @@ GEO_SAMPLES_URL = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE317499&
 
 GO_RELEASE = "2024-06-17"
 GO_DOI = "10.5281/zenodo.12173881"
-GO_OBO_URL = f"https://release.geneontology.org/{GO_RELEASE}/ontology/go-basic.obo"
-GO_GAF_URL = f"https://release.geneontology.org/{GO_RELEASE}/annotations/mgi.gaf.gz"
+# Two other releases, before and after, used only as a variant for the ECM claim (verifier, round 2).
+GO_RELEASE_VARIANTS = {"2024-01-17": "10.5281/zenodo.10536401", "2025-03-16": "10.5281/zenodo.15066566"}
+GO_URL = "https://release.geneontology.org/{release}/{path}"
 
 DEG_PADJ = 0.05  # Methods 2.5
 DEG_LFC = 1.0  # Methods 2.5
@@ -256,10 +257,10 @@ def degs(res: pd.DataFrame, lfc_col: str = "lfc", padj_col: str = "padj") -> tup
 
 # ---------------------------------------------------------------- GO
 
-def load_go() -> tuple[dict, dict]:
-    """GO Biological Process terms of the pinned release (id -> name, id -> ancestors including
-    itself, over is_a and part_of), and mouse gene symbol -> set of BP terms with ancestors."""
-    obo = requests.get(GO_OBO_URL, timeout=300).text
+def load_go(release: str = GO_RELEASE) -> tuple[dict, dict]:
+    """GO Biological Process terms of a release, the pinned one by default (id -> name), and mouse
+    gene symbol -> set of BP terms with their ancestors over is_a and part_of."""
+    obo = requests.get(GO_URL.format(release=release, path="ontology/go-basic.obo"), timeout=300).text
     names, parents, space, obsolete = {}, defaultdict(set), {}, set()
     for block in obo.split("\n\n[Term]\n")[1:]:
         block = block.split("\n\n")[0]
@@ -283,7 +284,8 @@ def load_go() -> tuple[dict, dict]:
     import sys
     sys.setrecursionlimit(10000)
     bp = {t for t, s in space.items() if s == "biological_process" and t not in obsolete}
-    gaf = gzip.decompress(requests.get(GO_GAF_URL, timeout=300).content).decode()
+    gaf = gzip.decompress(requests.get(GO_URL.format(release=release, path="annotations/mgi.gaf.gz"),
+                                       timeout=300).content).decode()
     gene_terms = defaultdict(set)
     for line in gaf.splitlines():
         if line.startswith("!"):

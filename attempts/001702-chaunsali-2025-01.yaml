@@ -27,6 +27,12 @@ inputs:
 - what: Gene Ontology release 2024-06-17, go-basic.obo and the mouse annotations mgi.gaf.gz, read from the release's
     mirror at release.geneontology.org/2024-06-17.
   source: doi:10.5281/zenodo.12173881
+- what: Gene Ontology release 2024-01-17, go-basic.obo and mgi.gaf.gz from the release's mirror at release.geneontology.org/2024-01-17,
+    used only as a variant for fig4fg-ecm-go-terms.
+  source: doi:10.5281/zenodo.10536401
+- what: Gene Ontology release 2025-03-16, go-basic.obo and mgi.gaf.gz from the release's mirror at release.geneontology.org/2025-03-16,
+    used only as a variant for fig4fg-ecm-go-terms.
+  source: doi:10.5281/zenodo.15066566
 outcomes:
 - claim: fig1g-3m-pnn-area-no-difference
   outcome: blocked
@@ -382,11 +388,12 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_chaunsali_2025.ipynb
   output: claim:fig4b-3m-degs
-  notes: 'The four readings give different outcomes. One model per age, unshrunken, gives 95 up and 136 down, both
-    within tolerance (reproduced); one model on all 16 samples, unshrunken, gives 51 and 141, the down count within
-    tolerance and more down than up (partially reproduced); shrunken fold changes give 88 and 45 (separate) and
-    39 and 37 (joint), which meet neither the full nor the partial criterion. Filtering at pydeseq2''s alpha 0.05
-    gives 98 and 137 for the separate unshrunken reading and the same outcome under every reading. The paper names
+  notes: 'The four readings give different outcomes. With independent filtering at alpha 0.1, one model per age,
+    unshrunken, gives 95 up and 136 down, both within tolerance (reproduced); one model on all 16 samples, unshrunken,
+    gives 51 and 141, the down count within tolerance and more down than up (partially reproduced); shrunken fold
+    changes give 88 and 45 (separate) and 39 and 37 (joint), which meet neither the full nor the partial criterion.
+    Filtering at pydeseq2''s alpha 0.05 changes only the separate model''s counts, to 98 and 137 unshrunken and 91
+    and 45 shrunken, and gives the same outcome under every reading. The paper names
     only DESeq2 1.44.0 (Methods 2.5). Question for the paper''s authors (finding methods_unavailable): which DESeq2
     design gave Figure 4B, and were the fold changes shrunken? The match of the separate unshrunken reading suggests
     that design, but an outcome cannot be chosen by its match.'
@@ -410,7 +417,8 @@ outcomes:
   notes: Under every reading the up count is within 314 +/- 31.4 (284 to 320) and the down count is below 20 (0
     to 7), but none is within 6 +/- 0.6. Separate unshrunken 317 and 7 (given as measured, the first reading the
     criterion lists), separate shrunken 284 and 3, joint unshrunken 320 and 2, joint shrunken 284 and 0. Filtering
-    at pydeseq2's alpha 0.05 gives the same outcome under every reading (separate unshrunken 320 and 7).
+    at pydeseq2's alpha 0.05 gives the same outcome under every reading (separate unshrunken 320 and 7). The criterion's
+    tolerance of 0.6 on the down count admits only exactly 6; it is the claims file's and is not changed.
   deviations:
   - The counts are GEO GSE317499 (GSE317499_counts.csv.gz, read and checked against its SHA-256), not data in the
     dandiset; 4 mice per age and genotype, from GEO, as the paper does not give n.
@@ -479,9 +487,14 @@ outcomes:
   notes: 'The 16 readings give different outcomes. In 15 no term naming extracellular matrix organization, assembly,
     disassembly or secretion reaches adjusted p < 0.05 in either 7 M contrast (not reproduced). In one (separate
     model, shrunken, all annotated genes, no size limit) extracellular matrix organization reaches 0.048 in 7 M
-    against 3 M 5XFAD (partially reproduced). In 7 M 5XFAD against control the smallest ECM-term adjusted p under
-    any reading is 0.061. The 3 M contrast has none under any reading (smallest 0.145), as the claim says. Under
-    the joint unshrunken reading the 7 M ECM terms hold 5 DEGs, all up. Asked of a reader (questions/001702.yaml):
+    against 3 M 5XFAD (partially reproduced). With the 10 to 500 limit alone all 8 readings give not reproduced,
+    so the outcome rests on running the term-size limit as a reading (see deviations). The deciding value is
+    marginal: the term holds 6 of the 224 DEGs (p 0.018, rank 1183 of 3171 terms tested), and with one DEG fewer
+    its adjusted p would be 0.113. It also rests on pydeseq2''s shrinkage standing in for R''s apeglm, not compared
+    with R, and on the GO release. With release 2024-01-17 the same reading gives 0.046 and the same outcomes per
+    reading; with release 2025-03-16 it gives 0.052 and all 16 readings give not reproduced. In 7 M 5XFAD against control the smallest ECM-term adjusted p
+    under any reading is 0.061 (0.059 to 0.065 over the three releases). The 3 M contrast has none under any reading
+    (smallest 0.145), as the claim says. Under the joint unshrunken reading the 7 M ECM terms hold 5 DEGs, all up. Asked of a reader (questions/001702.yaml):
     the Figure 4F and 4G legend ranks the top 10 PNN and ECM terms by adjusted p but does not say they were significant,
     so the criterion''s adjusted p < 0.05 may be stricter than the paper.'
   deviations:
@@ -501,6 +514,12 @@ outcomes:
   - The paper names R and GOplot but no enrichment tool (Methods 2.5), so the term-size limit is open; two readings
     are run, terms of 10 to 500 genes (clusterProfiler enrichGO's defaults) and no limit, giving 16 readings with
     the DESeq2 readings and the two backgrounds.
+  - The criterion lists only the two backgrounds, so running the term-size limit as a reading extends the claims
+    file's readings. It is done because the paper names no enrichment tool (Methods 2.5), so neither limit has a
+    basis over the other. The outcome rests on this choice, as the one reading that differs is a no-limit reading;
+    the notebook prints the result under both limits.
+  - As a variant, the ECM test is also run on GO releases 2024-01-17 (doi:10.5281/zenodo.10536401) and 2025-03-16
+    (doi:10.5281/zenodo.15066566), one before and one after the pinned release.
   - Terms are counted when their name is extracellular matrix organization, assembly, disassembly or secretion.
 - claim: fig4h-pnn-synthesis-genes
   outcome: reproduced
@@ -508,8 +527,9 @@ outcomes:
   output: claim:fig4h-pnn-synthesis-genes
   notes: Vcan, Cspg5, Tnr and Hapln1 are lower at 3 M (unshrunken log2 FC -0.24 to -0.13) and Vcan and Bgn higher
     at 7 M (0.16 to 0.49) under every reading, 6 of 6. None of the six is a DEG; only Bgn at 7 M has adjusted p
-    below 0.05 (0.009 separate, 0.023 joint). The statement's "broadly stable" holds in that no PNN gene listed
-    in the notebook is a DEG at either age.
+    below 0.05 (0.009 separate, 0.023 joint). The statement's "broadly stable" holds in that none of the 12 PNN
+    genes the notebook lists (Acan, Bcan, Ncan, Vcan, Hapln1, Hapln4, Tnr, Cspg5, Bgn, Has1, Has2, Has3) is a DEG
+    at 3 or 7 M under any of the four readings.
   deviations:
   - The counts are GEO GSE317499 (GSE317499_counts.csv.gz, read and checked against its SHA-256), not data in the
     dandiset; 4 mice per age and genotype, from GEO, as the paper does not give n.
@@ -677,8 +697,8 @@ findings:
 - kind: methods_unavailable
   statement: 'Question for the paper''s authors: which DESeq2 design gave the DEG counts of Figure 4B and 4C (one
     model per age, or one model on all 16 samples with contrasts), and were fold changes shrunken before the |log2FC|
-    > 1 cut? One model per age reproduces 95 and 136 at 3 M; one model on all samples gives 51 and 141. And which
-    enrichment tool, background, term-size limits and GO release gave Figures 4D to 4G? The number of learning and
+    > 1 cut? One model per age reproduces 95 and 136 at 3 M (98 and 137 with independent filtering at 0.05 in place
+    of R''s 0.1); one model on all samples gives 51 and 141. And which enrichment tool, background, term-size limits and GO release gave Figures 4D to 4G? The number of learning and
     memory terms in the 3 M top 10 is 0 to 3 depending on these choices, and an ECM term reaches adjusted p < 0.05
     in one of 16 readings. Three claims are blocked on these choices.'
 - kind: other
@@ -692,7 +712,9 @@ verifications:
     module and the claims file, with the paper. The verifier queried the archive API and tested the helper''s DEG,
     enrichment, z-score and term-pattern functions on synthetic inputs. It gave its own outcome for each claim.
     Its other points: the GEO library name 20790 of GSM9473154 against run name 20690 (already a finding), and the
-    background (a) and Cauchy-prior shrinkage choices, which it found reasonable; neither changed anything.'
+    background (a) and Cauchy-prior shrinkage choices, which it found reasonable; neither changed anything. It
+    also noted that the fig4c down-count tolerance of 0.6 requires exactly 6 genes, a point about the claims file,
+    which is not changed.'
   results:
   - claim: fig1g-3m-pnn-area-no-difference
     agrees: true
@@ -1132,4 +1154,299 @@ verifications:
     reason: 'I confirmed this against the archive API. All 481 NWB files are 185,480 bytes, have empty variableMeasured,
       and hold only file-level metadata (cell 3: 0 of 481 hold any data object). No images, ROIs or measurements
       were deposited.'
+    response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook, the helper module, the claims file and the attempt record, with the
+    paper. The verifier agreed with all 51 outcomes. Its other points: no outcome is marked assumed; the round-1 reasons
+    in the record reproduce its round-1 text and outcomes faithfully, and the reviewed paragraph summarises its remaining
+    points correctly but omits the fig4c tolerance point; the comparison with R DESeq2 is still not done, and it cannot
+    change fig4b, fig4d or fig4c but can change fig4fg.'
+  results:
+  - claim: fig1g-3m-pnn-area-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1g-pnn-area-reduced-6-to-12m
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1h-wfa-intensity-reduced-6-to-12m
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1gh-aging-reduction-smaller-than-5xfad
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1a-pv-pnns-intense-in-5xfad
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1b-loss-of-wfa-peaks
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1i-pv-density-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig1j-neun-density-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs2-pcp4-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs3-other-regions-subtle
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs4-ca2-pnn-loss-j20-3xtg
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs5-aggrecan-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs6-ca2-devoid-of-plaques
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig2b-3m-intact-social-memory
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig2cd-3m-difference-scores-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig2e-6m-impaired-social-memory
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig2fg-6m-difference-scores-lower
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: figs7-nor-training-no-side-preference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig2i-nor-novel-object-preference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig2j-nor-discrimination-index-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig2k-distance-moved-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: figs8-baseline-social-memory-before-injection
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig3b-acan-ko-eliminates-ca2-pnns
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs9-partial-knockout
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs9-wt-cre-pnns-intact
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig3c-acan-ko-impairs-social-memory
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig3de-acan-ko-difference-scores
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: figs1-chabc-removes-wfa-adds-2b6
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: figs1-heat-inactivated-chabc-no-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig3g-chabc-pnn-loss-and-regrowth
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig3h-5dpi-chabc-impairs-social-memory
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig3ij-5dpi-difference-scores
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig3k-14dpi-social-memory-restored
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig3lm-14dpi-difference-scores-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig4b-3m-degs
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 13: reproduced, not reproduced, partially reproduced and not reproduced across the four readings, at
+      both alphas. Cell 14, the record''s notes, its round-1 response, the methods_unavailable finding and the README
+      say 95 up and 136 down and 88 and 45 (separate, shrunken), but cell 13 prints 98 and 137 at alpha 0.1, and 91 and
+      45; they must be corrected to 98/137 and 91/45. The outcome itself stands.'
+    response: No change to the numbers, which the re-run confirms. Cell 13's first table, filtering at alpha 0.1, prints
+      95 and 136 (separate, unshrunken) and 88 and 45 (separate, shrunken); its second table, the alpha 0.05 variant,
+      prints 98 and 137 and 91 and 45. Two fits of the 3 M separate model in the locked environment gave the same counts.
+      98/137 and 91/45 are also the counts of round 1, which filtered at 0.05. The conclusion, notes, finding and README
+      now name the alpha of each count and give 91 and 45 for the variant. Outcome kept.
+  - claim: fig4c-7m-degs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 16: under all four readings and both alphas, up is 284 to 320 and down is 0 to 7. None is within 6
+      +/- 0.6. The round-1 reviewed paragraph does not mention that the down-count tolerance of 0.6 requires exactly
+      6 genes.'
+    response: Outcome kept. The notes now say the tolerance of 0.6 admits only exactly 6, a point about the claims file,
+      which is not changed, and the round-1 reviewed paragraph now mentions it.
+  - claim: fig4d-3m-go-memory-terms-down
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 21: 2, 5 and 9 readings. The readings disagree even within one term-size limit (10 to 500: 3,3,0,0,1,2,1,1;
+      none: 0,0,0,0,1,0,0,0), so the size choice doesn''t decide the outcome. Cell 22''s "larger terms such as synaptic
+      signalling fill the top 10" is not what cell 21 prints: the no-limit top 10s are filled by broad terms such as
+      behavior, system process, G protein-coupled receptor signaling pathway and regulation of biological quality; synaptic
+      signaling appears only in the 10 to 500 lists.'
+    response: Cell 22 now names behavior, system process and G protein-coupled receptor signaling pathway as the broad
+      terms that fill the no-limit top 10. Outcome kept.
+  - claim: fig4e-7m-go-immune-terms-up
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: 5 to 8 terms in all 16 readings; minimum top-10 z is 4.47.'
+    response: No change needed.
+  - claim: fig4fg-ecm-go-terms
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 27: 15 readings give not reproduced and 1 gives partially reproduced (0.048). The outcome rests on
+      running the GO term-size limit as a reading, which extends the claims file, whose criterion lists only backgrounds
+      (a) and (b). The choice is reasonable, since the paper names no enrichment tool, but the record should mark it
+      assumed: true and say how marginal the deciding value is. That value comes from the pydeseq2 shrunken reading,
+      which stands in for R''s apeglm and was never compared with R, and depends on the GO release; with R''s apeglm
+      or another GO release it could fall above 0.05, and the outcome would become not_reproduced.'
+    response: 'Outcome kept. The schema does not allow assumed true on a blocked outcome, so a deviation now says the
+      term-size reading extends the claims file''s readings and that the outcome rests on it, and the notes say the same.
+      Cell 27 now prints the deciding term''s margin: 6 of 224 DEGs, adjusted p 0.113 with one DEG fewer. A new cell
+      runs the ECM test on GO releases 2024-01-17 and 2025-03-16. The deciding reading gives 0.046 and 0.052; with 2025-03-16
+      all 16 readings give not reproduced, while 2024-01-17 gives the same split as the pinned release. The readings
+      still disagree across releases, so no change of outcome is proposed. R''s apeglm was not run, as R cannot be pinned
+      in the entry''s locked environment.'
+  - claim: fig4h-pnn-synthesis-genes
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: 6 of 6 under every reading. The notes'' "no PNN gene listed in the notebook is a DEG at either
+      age" goes beyond cell 32, which checks the 12 PNN genes under reading (b)(c) only; for the six named genes, "None
+      of the six is a DEG" holds under every reading.'
+    response: Cell 32 now checks the 12 PNN genes under all four readings, and none is a DEG at 3 or 7 M under any. The
+      notes and conclusion name the 12 genes and say so. Outcome kept.
+  - claim: fig4i-3m-remodeling-genes-up
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 35: 13 of 13 positive. Cell 36 and the notes say only Mmp2 in the separate model has adjusted p below
+      0.05 (0.038); cell 35 prints 0.0389, which rounds to 0.039.'
+    response: No change. The re-run prints 0.03787 for Mmp2 in the separate model (padj_a, filtering at alpha 0.1), which
+      rounds to 0.038; 0.0389 is not printed. Outcome kept.
+  - claim: fig4i-7m-remodeling-genes-up
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 38: 7 of 7 positive.'
+    response: No change needed.
+  - claim: fig4i-common-and-7m-vs-3m-up
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: 12 of 12 positive.'
+    response: No change needed.
+  - claim: fig4a-7m-social-memory-deficit
+    agrees: true
+    outcome: blocked
+    reason: Agreed, with no further note.
+    response: No change needed.
+  - claim: fig5-5m-pnns-normal
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig5b-5m-intact-social-memory
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig5cd-5m-difference-scores-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig5e-gm6001-preserves-social-memory
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig5fg-gm6001-difference-scores
+    agrees: true
+    outcome: blocked
+    reason: Cells 6 to 8.
+    response: No change needed.
+  - claim: fig5i-gm6001-preserves-ca2-pnns
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
+    response: No change needed.
+  - claim: fig5i-gm6001-controls-comparable
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 3: 0 of 481 NWB files hold any data object.'
     response: No change needed.

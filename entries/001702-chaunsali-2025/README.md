@@ -28,8 +28,11 @@ The paper does not say which DESeq2 design or GO enrichment method it used. Ever
 claims file names is run (one model per age or one on all 16 samples, unshrunken or shrunken fold
 changes, two GO backgrounds), with two GO term-size limits, and a claim whose readings give
 different outcomes is blocked as methods underspecified. With one model per age and unshrunken
-fold changes the 3 M DEG counts are 95 and 136, both within tolerance; with one model on all
-samples they are 51 and 141. The attempt record, with the reasons and the differences from the paper's
+fold changes the 3 M DEG counts are 95 and 136 with independent filtering at alpha 0.1, as in R
+(98 and 137 at pydeseq2's 0.05), both within tolerance; with one model on all samples they are 51
+and 141. The ECM claim is blocked on a single reading of the 16 where an ECM term reaches adjusted
+p 0.048, which would be 0.113 with one DEG fewer in the term and is 0.052 with the GO release of
+2025-03-16. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001702-chaunsali-2025-01.yaml`](../../attempts/001702-chaunsali-2025-01.yaml).
 
 - `reproduce_chaunsali_2025.ipynb`: the data check of the dandiset and the RNA-seq analysis. It
