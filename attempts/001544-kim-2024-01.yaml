@@ -221,20 +221,23 @@ outcomes:
     as 10 ms at the trace's minimum (a standard choice).
 - claim: figs12-other-features-shared
   outcome: reproduced
-  assumed: true
   notebook: reproduce_kim_2024.ipynb
   output: claim:figs12-other-features-shared
   notes: >-
-    By the cell-level one-way ANOVA, 9 of the 14 features show no difference on all cells (tau, rheobase,
-    threshold, spike amplitude, latency, upstroke, AHP width, adaptation index, CV of ISIs); input resistance
-    (p = 0.023), spike width (p = 0.00051), downstroke (p = 0.0077), AHP latency (p = 0.012) and f-I slope
-    (p = 0.00033) differ. The count is 7 of 14 without the `_FL` cells (not more than half) and 12 of
-    14 without the changed cells; the mixed model gives 10, 8 and 12. The Figure S12 legend, in the supplement
-    now in the paper's text, names input resistance, spike width, downstroke and f-I slope as differing
-    between APP and ALL, and here ALL against APP gives p from 2.9e-05 to 0.0089 for those four. Of the
-    ten features the legend names as similar, 9 show no difference on all cells (7 without `_FL`, 10 without
-    the changed cells). A question to a reader asks whether the criterion's fourteen features should be
-    the legend's ten.
+    Judged on the ten features the Figure S12 legend names as similar, as the claims file now has it.
+    By the cell-level one-way ANOVA, 9 of the 10 show no difference on all cells (threshold, upstroke,
+    spike amplitude, spike latency, AHP width, CV of ISIs, rheobase, tau, adaptation index); AHP latency
+    differs (p = 0.012, APP 24.9 ms against ALL 48.6 and AV 56.8). The count is 7 of 10 without the `_FL`
+    cells (rheobase p = 0.045 and adaptation index p = 0.040 also differ) and 10 of 10 without the cells
+    whose resistance changed by more than 20%; the mixed model gives 9, 7 and 10. Adaptation index, marked
+    with an asterisk in the figure, has p = 0.056 on all cells. What the answer changed. The question asked
+    whether the claim should be judged on the legend's ten features in place of the fourteen (the eighteen
+    of the Methods less max firing rate, sag, membrane potential and AHP amplitude). The reader agreed and
+    amended the claim, and moved input resistance, spike width, downstroke and f-I slope to the new claim
+    figs12-app-differs-from-all. On the fourteen the outcome was reproduced resting on the cell set (9
+    of 14 on all cells, 7 of 14 without the `_FL` cells, 12 of 14 without the changed cells), marked
+    assumed. On the ten, every cell set and both tests give more than half, so the outcome no longer rests
+    on which ALL cells are used and is no longer marked assumed.
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -255,6 +258,47 @@ outcomes:
     adaptation and CV at the largest step from -60 to 200 pA (the Methods' "maximal current step"); downstroke
     as the minimum dV/dt within 5 ms after the first peak (a standard choice; the code's window runs to
     the end of the step); AHP latency and width from reading (a) of AHP amplitude.
+- claim: figs12-app-differs-from-all
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2024.ipynb
+  output: claim:figs12-app-differs-from-all
+  notes: >-
+    A claim the reader added in answer to this attempt's question on figs12-other-features-shared; it was
+    not in the claims file before, so it has no earlier outcome. ALL against APP on all cells, reading
+    (a) and reading (b), mixed model. Input resistance higher in APP, 548 against 335.5 MOhm (t = 2.78,
+    p = 0.0089; mixed model p = 0.022); spike width shorter, 0.915 against 1.52 ms (p = 0.00037; 0.00082);
+    downstroke steeper, -74.7 against -41.2 mV/ms (p = 0.0015; 0.026); f-I slope larger, 0.329 against
+    0.108 Hz/pA (p = 2.8e-05; 0.0012). All four differ under both readings, as they do without the `_FL`
+    cells (p from 9.1e-05 to 0.041). Without the cells whose resistance changed by more than 20%, input
+    resistance does not differ (p = 0.20 and 0.19) and the downstroke differs only by reading (a) (p =
+    0.029; mixed model p = 0.11), which on that set would give partially reproduced; the outcome rests
+    on using all 24 ALL cells, hence assumed.
+  deviations:
+  - >-
+    The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
+    which were left out. All 24 are used (assumed, as the dataset labels them), with the 21 cells left
+    when the three `_FL` files are set aside, and the cells passing the 20% change rule, shown as variants.
+  - >-
+    Exclusion rules (STAR Methods, Electrophysiology). Input resistance under 50 MOhm and resting potential
+    above -50 mV exclude no cell. Series resistance is not in the files. The 20% change rule was read
+    through the -20 pA test pulse of each sweep, first sweep against last; it would remove 2 APP, 2 AV
+    and 10 ALL cells, which does not fit the dandiset's APP and AV counts already equalling the paper's,
+    so it is a variant, not the main set.
+  - >-
+    Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
+    ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
+    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
+    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+  - >-
+    Spike detection, the step window and the f-I slope follow the paper's code, nsdesai/patch_clamp_analysis
+    v1.0.0 (commit 4ee1125), as the claims file says.
+  - >-
+    Input resistance from the -20 pA step (Methods item 3, steady state as the code's inputresistance.m
+    takes it); spike width at half amplitude (item 8) with threshold at 20 mV/ms (item 6) on the trace
+    interpolated tenfold (code); downstroke as the minimum dV/dt within 5 ms after the first peak (item
+    11, a standard choice; the code's window runs to the end of the step); f-I slope as the code's ficurve.m
+    fits it.
 - claim: fig6g-av-more-hyperpolarized
   outcome: not_reproduced
   notebook: reproduce_kim_2024.ipynb
@@ -368,7 +412,7 @@ findings:
     The dandiset holds only the current-clamp step recordings of Figure 6 and Figure S12. The behaviour,
     immunohistochemistry counts, fiber photometry, chirp recordings and neuronal reconstructions are not
     in it, and the paper's data statement says all data will be shared by the lead contact on request.
-    24 of the paper's 30 main findings in the claims file cannot be tested.
+    24 of the 31 claims in the claims file cannot be tested.
 - kind: metadata_error
   statement: >-
     Every CurrentClampStimulusSeries is stated in amperes with conversion 1, but holds values from -60

@@ -10,7 +10,8 @@ photometry and morphology of the paper are not in it.
 |---|---|
 | APP and AV neurons have a higher maximum firing rate than home-cage neurons | Reproduced |
 | APP and AV neurons have a larger sag than home-cage neurons | Partially reproduced |
-| Most other features are shared | Reproduced |
+| Most other features are shared (the ten Figure S12 names as similar) | Reproduced |
+| APP neurons differ from home-cage neurons in input resistance, spike width, downstroke and f-I slope | Reproduced |
 | AV neurons are more hyperpolarized than APP neurons | Not reproduced |
 | AV neurons have a smaller AHP than APP neurons | Not reproduced |
 | APP neurons are less excitable than AV neurons | Not reproduced |
@@ -21,8 +22,8 @@ reasoning and the differences from the paper's method.
 
 The membrane potential in the files is measured under the DC current that holds each cell near
 -65 mV, so it cannot show differences in resting potential. The home-cage group holds 24 cells
-from 11 mice, where the paper analysed 21 from 8; the sag and shared-feature outcomes depend on
-which cells are used. The attempt record, with the reasons and the differences from the paper's
+from 11 mice, where the paper analysed 21 from 8; the sag outcome, and that of the four
+APP-specific differences, depend on which cells are used. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001544-kim-2024-01.yaml`](../../attempts/001544-kim-2024-01.yaml).
 
 - `reproduce_kim_2024.ipynb`: the analysis. It takes about four minutes, most of it streaming the
