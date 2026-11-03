@@ -67,7 +67,7 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: The pooled counts need B3's 11 sessions. Participant B3 is not in the dandiset. For B1, no trial
-    carries a day, session, block, or open-loop or closed-loop label (trial start and stop times are placeholders).
+    carries a day, session, block, or open-loop or closed-loop label (trial start and stop times are placeholders),
     so the trials cannot be assigned to the 10 daily sessions or to OL, CL1 and CL2 (metadata_insufficient).
 - claim: fig2e-above-chance
   outcome: blocked
@@ -294,9 +294,9 @@ outcomes:
     has a day label.
 - claim: fig4i-boundary-convergence
   outcome: blocked
-  blocked_by: metadata_insufficient
+  blocked_by: data_missing
   notes: The claim needs B1 OL trials of the 10 daily sessions and a later held-out day; no trial has
-    a day label and the target ids have no names. The claim needs the 200 ms delta, beta and high-gamma
+    a day label and the target ids have no names (metadata_insufficient). The claim also needs the 200 ms delta, beta and high-gamma
     band-power features of the MLP pipeline (Methods, Spatial feature extraction), which the dandiset
     does not hold; its features are the biLSTM input (Methods, Spatiotemporal feature extraction for RNNs).
 - claim: fig5abc-pnp1-b1
@@ -391,8 +391,10 @@ outcomes:
     trials are later fine-tuning data. Reading (b), the active portion, cannot be run as the file has
     no task states; it is at most reading (a). The channel-mean high gamma of the virtual trials stays
     at 0.830 to 0.843 (trial RMS 1) for the first 0.4 s and rises to 0.926 by 0.7 s, while the robot
-    trials show no rise; if the first 0.5 s of every virtual trial were outside the active portion,
-    reading (b) would be 771.9 min, outside the tolerance. The criterion asks for a match under one
+    trials show no rise. This low start may be a period before the cue or the reaction time after it,
+    which would lie inside the active (cue and control) portion; the outputs cannot tell which. In the
+    worst case, if the first 0.5 s of every virtual trial were outside the active portion, reading (b)
+    would be 771.9 min, outside the tolerance; this is a lower bound, not an estimate. The criterion asks for a match under one
     reading, which (a) gives. Whether the robot trials are the real-world practice with the MLP that the
     paper counts, or the later RNN fine-tuning data, and whether the stored trials are whole trials, is
     a question for the paper's authors; whether the criterion should require the readings to agree is
@@ -459,8 +461,8 @@ findings:
     was trained on (the 14 h 48 min of the Methods), and are its robot trials the real-world practice
     with the MLP counted there, or the later fine-tuning of the RNN? Is each stored trial the whole trial
     or only its active portion? The virtual trials' high gamma rises only after about 0.4 s, which
-    could be a period before the cue; excluding 0.5 s of each virtual trial would bring the total to
-    771.9 min.
+    could be a period before the cue or the reaction time after it; in the worst case, excluding 0.5
+    s of each virtual trial would bring the total to 771.9 min.
 - kind: other
   statement: The subject's age is P38Y, where the paper (STAR Methods, Participants) gives B1 as 41 years
     old; neither says at what date the age applies, so the two may refer to different dates.
@@ -866,7 +868,7 @@ verifications:
     response: Outcome kept, with assumed true. The notebook now quotes the Methods passages on both sides
       of the robot question, gives durations per context and target, the runs of context in trial-id order
       (all virtual trials first, ids 1 to 7851, then all robot trials) and the high-gamma time course
-      at trial start and end by context. The time course does not support the argument that the stored
+      at trial start and end by context. The time course does not settle whether the stored
       trials are already the active epochs; the virtual trials' high gamma stays low for the first 0.4
       s, and excluding 0.5 s of each virtual trial would give 771.9 min, outside the tolerance. The conclusion,
       notes and findings say this. The acquisition group was listed in full; it holds only the 9737 trial
@@ -887,3 +889,297 @@ verifications:
       and column-major layouts and 200 random layouts; pooling lowers the median variance under every
       one (z 7.05 and 7.12, random 7.40 to 8.05), which confirms the result is mechanical and cannot test
       the grid, so the claim stays blocked.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (claude-opus-5-5, Claude Code; separate context, did not
+    write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, the helper module bci.py,
+    the claims file, the README and the attempt record. The verifier did not have questions/001535.yaml
+    and could not run the helper (numpy and h5py were not installed); it checked the helper by hand.
+  results:
+  - claim: fig1g-somatotopy-b1
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig1h-somatotopy-b3
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig1ij-within-effector-levels
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs2-pairwise-distances-significant
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig1kl-b1-b3-correlation
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig1mn-hierarchical-clustering
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2-session-trial-counts
+    agrees: true
+    outcome: blocked
+    reason: 'I agree, with the reasons as given. Minor: in the notes, "placeholders). so" is a typo.'
+    response: No change of outcome. The typo in the notes is corrected.
+  - claim: fig2e-above-chance
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2e-cl2-vs-ol-accuracy
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2e-cl1-vs-ol-accuracy
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2e-cl2-vs-cl1-accuracy
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs4ef-ol-accuracy-stable
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs4g-percent-change-accuracy
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs4hi-feature-importance
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2i-distance-cl-vs-ol
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2i-distance-cl2-vs-cl1
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2j-variance-cl-vs-ol
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2j-variance-cl2-vs-cl1
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs5-channel-variance-reduction
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs5bc-somatotopy-preserved
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs6-nine-actions
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2kl-ol-distance-stable
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2kl-cl-distance-increase
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs6gh-highdim-trends
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig2mn-distance-predicts-accuracy
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig3c-manifold-stable
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs7b-refit-less-discernible
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs7cd-refit-less-stable
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs7i-ibid-straighter-than-refit
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig4b-day-differences
+    agrees: true
+    outcome: blocked
+    reason: I agree with blocked as metadata_insufficient.
+    response: No change.
+  - claim: fig4cd-day-decodable
+    agrees: true
+    outcome: blocked
+    reason: I agree; they need B3 or the band-power features.
+    response: No change.
+  - claim: fig4cd-demeaned-chance
+    agrees: true
+    outcome: blocked
+    reason: I agree; they need B3 or the band-power features.
+    response: No change.
+  - claim: figs8ab-day-decodable-trials
+    agrees: true
+    outcome: blocked
+    reason: I agree; they need B3 or the band-power features.
+    response: No change.
+  - claim: fig4fg-sampling-days-increases-distance
+    agrees: true
+    outcome: blocked
+    reason: I agree; they need B3 or the band-power features.
+    response: No change.
+  - claim: fig4i-boundary-convergence
+    agrees: true
+    outcome: blocked
+    reason: Blocked is right, but the reason contradicts its own notes. The notes say the claim needs
+      the 200 ms band-power features, which the dandiset does not hold. Other claims are blocked as data_missing
+      on exactly that ground (for example figs4hi), so this one should be too. The outcome does not change.
+    response: Outcome kept as blocked; blocked_by changed from metadata_insufficient to data_missing,
+      as the verifier gives it, with the missing day labels named as metadata_insufficient in the notes.
+      The notebook's header and summary and the README now count it with the data_missing claims (49 data_missing,
+      2 metadata_insufficient).
+  - claim: fig5abc-pnp1-b1
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig5def-pnp2-b1
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig5-pnp-experiments-equal
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs8cde-pnp-stable
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig5-pnp-b1-overall-bitrate
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig5ghi-pnp-b3
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig6g-ibid-angular-error
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig6g-velocity-covariation
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs8hi-perspective-perturbation
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: figs8g-coactivation
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig7de-mode-switch-learned
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig7ij-reach-rotate
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig7k-wall-first-half
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig7k-wall-full-decline
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: fig7kl-recalibration-restores
+    agrees: true
+    outcome: blocked
+    reason: I agree, with the reasons as given.
+    response: No change.
+  - claim: rnn-training-data-amount
+    agrees: true
+    outcome: reproduced
+    reason: I agree under the criterion as written. All trials together are inside the tolerance (837.4
+      min against a floor of 799.2). The assumption that the 1886 robot trials are the practice with the
+      Kinova Jaco using the MLP is stated and defensible, since only with them does the total come near
+      888 min, but nothing establishes it. The paper's next sentences lean the other way ("We split the
+      collected data from the virtual environment into 85% training and 15% validation"; "Having created
+      the RNN-based decoder from the virtual environment data, we then fine-tuned..."); under that reading
+      the total is 540.0 min, which is not reproduced. The assumption decides the outcome. The criterion
+      accepts a match under one reading, which is inconsistent with the all-readings rule the 2026-10-21
+      check applied to other claims; reading (b) cannot be run and could fall below the floor (771.9 min).
+      The 771.9 min is a worst case, not an estimate, since a low first 0.4 s may be reaction time after
+      the cue, inside the cue and control portion; the round-1 response should say the time course does
+      not settle the question, not that it does not support it.
+    response: Outcome kept, with assumed true; the verifier finds the assumption defensible, so no proposed
+      change. Cells 16 and 17, the notes and the methods_unavailable finding now call 771.9 min a worst
+      case and lower bound, not an estimate, and say the low start may be reaction time inside the cue
+      and control portion. The round-1 response now says the time course does not settle the question.
+      The question in questions/001535.yaml now names the inconsistency between this criterion's one-reading
+      rule and the all-readings rule the claims check applied to other claims, and the paper's two sentences
+      on the virtual environment data. Re-run; all numbers unchanged.
+  - claim: figs3-spatial-pooling
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with blocked as metadata_insufficient. Cell 20''s "so the result does not depend
+      on where the channels are on the grid" holds for the direction and significance but not for the
+      size of the effect: the column-major ratio (0.538) lies above the whole range of the 200 random
+      layouts (0.457 to 0.533). The conclusion is unaffected.'
+    response: 'Outcome kept. Cell 20 now says the direction and significance do not depend on the layout,
+      and that the size does: the column-major ratio (0.538) lies above every random layout''s.'

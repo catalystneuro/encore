@@ -9,7 +9,7 @@ robot flag.
 | Claim | Outcome |
 |---|---|
 | The biLSTM was trained on about 14 h 48 min of data | Reproduced (resting on an assumption) |
-| The other 51 claims (Figures 1 to 7 and S2 to S8) | Blocked: data missing (48), metadata insufficient (3) |
+| The other 51 claims (Figures 1 to 7 and S2 to S8) | Blocked: data missing (49), metadata insufficient (2) |
 
 The stored trials last 13 h 57 min in total. This matches if the robot trials are the real-world
 practice the paper counts, which the file does not say; without them the total is 540 min, outside
