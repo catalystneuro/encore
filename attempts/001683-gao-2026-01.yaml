@@ -1,0 +1,387 @@
+schema_version: 2
+id: 001683-gao-2026-01
+dataset:
+  archive: dandi
+  id: "001683"
+  version: 0.260109.2104
+  doi: 10.48324/dandi.001683/0.260109.2104
+paper: doi:10.1109/tnsre.2025.3644273
+date: 2026-11-03
+entry: 001683-gao-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41601386820
+outcomes:
+- claim: fig2c-sham-duration-stable
+  outcome: not_reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig2c-sham-duration-stable
+  notes: The block effect on sham seizure duration is significant under every reading. Per seizure
+    (1046 seizures) F = 30.45, p = 5.5e-24 ordinary and p = 2.4e-31 repeated, with 12 and 13 of 25
+    Bonferroni post hoc comparisons significant; per rat p = 0.00145 ordinary (no post hoc
+    comparison significant) and p = 3.9e-05 repeated (contralateral baseline against post 3,
+    p = 0.012). The hemisphere effect is not significant (p = 0.16 to 0.63). Mean durations fall
+    from 49.6 to 53.0 s at baseline to 34.8 to 35.7 s at post 3. The readings agree, so the
+    outcome rests on none of them.
+  deviations:
+  - The seizure labels are the dandiset's own; their times are in minutes and are multiplied by
+    60 (checked against the EEG in eeg_blocks.ipynb).
+  - Durations leave out the 6 seizures that start at a block's first sample (Methods C, "Seizures
+    that either started before or continued after the recording were excluded").
+  - BH635's five files are taken in time order (see fig2f-sham-percent-time-post3).
+  - The repeated-measures reading of M3 is a linear mixed model with a random intercept per rat
+    and Wald tests of the contrasts, a standard stand-in for Prism's repeated-measures and
+    mixed-effects analysis.
+- claim: fig2d-seizures-under-two-minutes
+  outcome: reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig2d-seizures-under-two-minutes
+  notes: 99.4% of 527 ipsilateral and 99.2% of 521 contralateral sham seizures last under 120 s;
+    medians 41.5 and 43.5 s; every rat 97% or more. KS D = 0.082, p = 0.056 (description only).
+  deviations:
+  - All seizures are counted, including the two that start at a block's first sample.
+- claim: fig2e-sham-count-stable
+  outcome: reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig2e-sham-count-stable
+  notes: Block p = 0.97 (ordinary) and 0.82 (repeated), hemisphere p = 0.93 and 0.88, no post hoc
+    comparison significant (smallest Bonferroni p = 1). Mean count 18.11 over baseline to post 1
+    and 16.50 over post 2 and post 3. With BH635's blocks by their labels the block effect stays
+    non-significant (p = 0.66 and 0.61).
+  deviations:
+  - BH635's five files are taken in time order (see fig2f-sham-percent-time-post3); the label
+    variant gives the same outcome.
+- claim: fig2f-sham-percent-time-post3
+  outcome: reproduced
+  assumed: true
+  notebook: seizure_metrics.ipynb
+  output: claim:fig2f-sham-percent-time-post3
+  notes: Under the repeated-measures reading, contralateral baseline (reading b of "sham") against
+    post 3 is significant, Bonferroni p = 0.021 in the block family and 0.026 over all 25
+    comparisons, a decrease from 25.6% to 15.5%. Condition against post 3 is not (p = 0.096).
+    Under the ordinary reading no comparison is significant (p = 1). With BH635's files taken by
+    their labels the comparison is not significant (p = 0.083).
+  deviations:
+  - Assumed that BH635's five files are the blocks baseline, condition, post 1, post 2 and post 3
+    in time order, though their labels read BASELINE, SHAM, SHAM, BH636_post1 and BH635_post2. The
+    files start 63 to 68 min apart like every other rat's blocks (Methods D, ~62.5 min blocks), and
+    every other sham rat has five blocks. The outcome depends on this choice; the label reading is
+    shown as a variant.
+  - The result holds under the repeated-measures reading of M3 only, which the criterion allows
+    ("under one reading").
+- claim: fig3a-count-reduction
+  outcome: reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3a-count-reduction
+  measured:
+  - 8.7
+  - 36.4
+  - 41.9
+  - 10.5
+  - 41.4
+  - 42.4
+  notes: Under reading (b) of M4 all six decreases are within tolerance. Reading (a) gives 24.1,
+    46.2, 49.4, 27.0, 47.2 and 50.3%, outside. Under the repeated-measures reading baseline against
+    post 1 and post 2 are significant in both hemispheres (Bonferroni p = 0.0085 and 0.0039
+    ipsilateral, 0.0054 and 0.0024 contralateral, within family; 0.014, 0.0065, 0.009 and 0.004
+    over all ten). Under the ordinary reading none of the four is (p = 0.057 to 0.115).
+- claim: fig3a-count-sham-vs-tfus
+  outcome: reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3a-count-sham-vs-tfus
+  notes: Under the repeated-measures reading with the between family, sham against tFUS is
+    significant at post 1 and post 2 in the ipsilateral S1 (p = 0.026 and 0.046), reading (b) of
+    the hemisphere; contralateral post 1 p = 0.018, post 2 p = 0.057. Ordinary reading, post 1
+    significant in both hemispheres (0.035, 0.025), post 2 in neither (0.057, 0.069). No sham block
+    differs from sham baseline (p = 1). With BH635 by its labels post 1 and post 2 are significant
+    in both hemispheres (0.029 to 0.044).
+- claim: fig3b-percent-time-reduction
+  outcome: reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3b-percent-time-reduction
+  measured:
+  - 32.5
+  - 34.8
+  - 55.5
+  - 54.9
+  notes: Reading (b) of M4 gives 32.5 and 34.8% at stimulation, 55.5 and 55.3% at post 1, 54.9 and
+    55.2% at post 2 (ipsilateral and contralateral; the measured values for the "each hemisphere"
+    expectations are the ipsilateral ones), all within tolerance; reading (a) gives 35.8 to 57.3%,
+    also within. Under the repeated-measures reading all six comparisons with baseline are
+    significant (Bonferroni p from 0.0007 to below 0.0001); under the ordinary reading post 1 and
+    post 2 are (0.008 to 0.012) and stimulation is not (0.22, 0.17).
+- claim: fig3b-sham-percent-time-no-change
+  outcome: not_reproduced
+  assumed: true
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3b-sham-percent-time-no-change
+  notes: The ANOVA readings disagree. Ordinary, no sham block differs from baseline (smallest
+    Bonferroni p = 0.79). Repeated, post 2 differs in both hemispheres (p = 0.043 ipsilateral,
+    0.021 contralateral; 0.072 and 0.036 over all ten comparisons). Sham percent time falls from
+    24.0 to 16.4% (ipsilateral) and from 25.6 to 17.6% (contralateral). With BH635 by its labels
+    contralateral post 2 stays significant (p = 0.014).
+  deviations:
+  - Assumed that the paper's two-way ANOVA is the repeated-measures reading of M3, since the
+    readings disagree on this claim of absence. Methods F says only "two-way ANOVA ... in GraphPad
+    Prism"; the blocks are repeated on the same rats, and the paper's significant within-group
+    changes of Fig. 3 (count and percent time against baseline, interval at contralateral post 1,
+    Results B) are found only under the repeated-measures reading. Under the ordinary reading the
+    claim would be reproduced.
+- claim: fig3b-percent-time-sham-vs-tfus
+  outcome: not_reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3b-percent-time-sham-vs-tfus
+  notes: tFUS is lower than sham in all three named comparisons (by 11.4, 9.8 and 10.0 percentage
+    points), but none is significant. Contralateral post 1 p = 0.062 (repeated) and 0.075
+    (ordinary), ipsilateral stimulation 0.12 and 0.14, ipsilateral post 1 0.11 and 0.13, between
+    family; larger over all ten comparisons.
+- claim: fig3c-interval-increase
+  outcome: reproduced
+  assumed: true
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3c-interval-increase
+  measured:
+  - 27.4
+  - 49.1
+  - 27.8
+  - 30.1
+  - 51.9
+  - 30.9
+  notes: Gap reading of the interval and reading (b) of M4, all six increases within tolerance.
+    The two rats left out are BH634 and BH638 (no seizures at post 2). Under the repeated-measures
+    reading with all ten comparisons in one family, contralateral post 1 is the only significant
+    comparison with baseline (p = 0.0056; ipsilateral post 1 p = 0.060, the others 0.65 or more).
+    With the within family ipsilateral post 1 is significant too (p = 0.036). The ordinary reading
+    finds none (contralateral post 1 p = 0.18). Onset-to-onset intervals give increases of 12.6 to
+    30.6%, outside tolerance.
+  deviations:
+  - Assumed that the Inter-Seizure Interval is the gap from one seizure's end to the next one's
+    start. Methods C defines it as "time between neighboring seizures" and the claims file (M2)
+    does not fix it; the onset-to-onset reading is shown. The gap reading gives the paper's six
+    percentages to within 0.4 point.
+- claim: fig3c-interval-sham-vs-tfus
+  outcome: reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3c-interval-sham-vs-tfus
+  notes: Repeated-measures reading, between family, sham against tFUS at post 1 is significant in
+    both hemispheres with tFUS higher (122 s ipsilateral, p = 0.039; 140 s contralateral,
+    p = 0.018); the onset-to-onset interval gives the same (0.044, 0.020). Ordinary, ipsilateral
+    p = 0.051. No sham block differs from sham baseline (p = 1). No single Bonferroni family gives
+    both this claim and fig3c-interval-increase; with all ten comparisons in one family the
+    ipsilateral comparison here is p = 0.096.
+- claim: fig3d-duration-decline
+  outcome: not_reproduced
+  notebook: seizure_metrics.ipynb
+  output: claim:fig3d-duration-decline
+  notes: Means decline in both groups (tFUS 59.8 to 48.7 s ipsilateral, 61.0 to 49.9 s
+    contralateral; sham 53.0 to 37.8 and 56.8 to 40.6 s), but tFUS baseline against post 2 is not
+    significant (Bonferroni p = 0.37 and 0.29 repeated, 0.62 and 0.59 ordinary), nor is any other
+    within-group comparison (smallest p = 0.13).
+  deviations:
+  - Per-rat mean durations, leaving out the 6 seizures that start at a block's first sample; the
+    two tFUS rats without seizures at post 2 have no duration there (N = 8 at post 2).
+- claim: fig4-no-theta-alpha-gamma-power-change
+  outcome: not_reproduced
+  assumed: true
+  notebook: eeg_blocks.ipynb
+  output: claim:fig4-no-theta-alpha-gamma-power-change
+  notes: The M5 readings agree within each ANOVA reading; the ANOVA readings disagree. Ordinary, no
+    within-group comparison against baseline is significant for theta, alpha or gamma. Repeated,
+    the sham theta ratio rises above baseline in 4 or 5 of 12 comparisons under every M5 reading
+    (ipsilateral post 2 p = 0.009 over the whole block, ratio 0.098 to 0.136; p = 0.0004 over the
+    seizure periods), and the tFUS gamma ratio differs at ipsilateral post 2 with the 0 Hz to
+    Nyquist total (p = 0.043). No between-group comparison is significant.
+  deviations:
+  - Assumed the repeated-measures reading of M3 is the paper's test, as for
+    fig3b-sham-percent-time-no-change; under the ordinary reading the claim would be reproduced.
+  - No ICA; which components the authors removed (Methods C) is not recorded. Common average
+    reference and 60 Hz notch as in Methods C.
+  - The channels are 8 (ipsilateral) and 25 (contralateral), the electrodes encircled in the
+    drawing of Fig. S1, which prints the channel numbers; Methods E uses "the EEG electrode
+    closest to the burr hole".
+  - Seizure segment per hemisphere is the union of that hemisphere's labels; Welch PSD with 2 s
+    Hann windows (the claims file's standard choice), periods shorter than a window skipped.
+- claim: fig4c-beta-decrease
+  outcome: partially_reproduced
+  notebook: eeg_blocks.ipynb
+  output: claim:fig4c-beta-decrease
+  notes: Whole block, repeated-measures reading, the tFUS beta ratio at post 1 is significantly
+    below baseline in both hemispheres (3-300 Hz total p = 0.0028 ipsilateral and 0.026
+    contralateral; 0 Hz to Nyquist 0.0005 and 0.0094), but the condition block is not (p = 0.16 to
+    0.60) although its mean is lower (ipsilateral 0.445 to 0.417). Over the seizure periods the
+    beta ratio does not fall (ipsilateral 0.493, 0.487, 0.500) and nothing is significant. Under
+    the ordinary reading nothing is significant.
+  deviations:
+  - As for fig4-no-theta-alpha-gamma-power-change (no ICA, channels 8 and 25 from Fig. S1).
+- claim: figs4-sham-power-no-change
+  outcome: not_reproduced
+  assumed: true
+  notebook: eeg_blocks.ipynb
+  output: claim:figs4-sham-power-no-change
+  notes: Over the whole block beta has significant block and hemisphere effects under both readings
+    (ordinary block p = 0.0004 and 0.0002 for the two totals, hemisphere p below 0.0001, 4 and 5
+    post hoc comparisons significant) and gamma a hemisphere effect (0.0037 and 0.0004). Over the
+    seizure periods the repeated-measures reading finds a beta block effect (0.0009, 0.0007, 2 post
+    hoc comparisons); the ordinary reading finds nothing in any band (smallest p = 0.09).
+  deviations:
+  - Under the ordinary reading the M5 readings disagree (whole block not reproduced, seizure
+    periods reproduced), which the criterion would block as methods_underspecified; under the
+    repeated-measures reading, assumed to be the paper's test as for
+    fig3b-sham-percent-time-no-change, they agree.
+  - As for fig4-no-theta-alpha-gamma-power-change (no ICA, channels 8 and 25 from Fig. S1).
+- claim: fig4ef-ai-increase
+  outcome: partially_reproduced
+  notebook: eeg_blocks.ipynb
+  output: claim:fig4ef-ai-increase
+  notes: Mean baseline AI is negative in both groups (whole block, sham -0.58 to -0.61, tFUS -0.24
+    to -0.29). With subtraction (reading b), the whole block and the repeated-measures reading, the
+    tFUS normalized AI rises above baseline, toward balance, in theta (post 1 p = 0.033, post 2
+    p = 0.0047) and alpha (post 2 p = 0.0057). Sham against tFUS is not significant in any band,
+    block or combination of readings. With division the same change is a significant fall (theta
+    post 2 p = 0.0006); over the seizure periods nothing is significant.
+  deviations:
+  - AI is computed on the band power (sum of PSD in the band) of channels 8 and 25, Eq. 1; the
+    seizure segment is the union of both hemispheres' labels.
+  - As for fig4-no-theta-alpha-gamma-power-change (no ICA).
+- claim: figs5-seizures-lower-ai
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: eeg_blocks.ipynb
+  output: claim:figs5-seizures-lower-ai
+  notes: The pre-4-AP baseline state is not in the dandiset. The resting recordings of the target
+    confirmation (EP data, BASELINE) hold only the 64 intracranial channels of left S1, and no EEG
+    before the first injection was deposited (the labelled blocks start at the baseline block;
+    the monitoring block is not there). The part against 0 holds. Seizure AI of the baseline block
+    is -0.41 to -0.43 over the 16 rats (p < 0.0001 in each band) and -0.27 to -0.30 over the 10
+    tFUS rats (p = 0.0001 to 0.0012), one-sample t-tests.
+- claim: fig6-epileptic-pli-s1-decrease
+  outcome: partially_reproduced
+  notebook: eeg_blocks.ipynb
+  output: claim:fig6-epileptic-pli-s1-decrease
+  notes: Per seizure and averaged, the tFUS S1 PLI is below the group's baseline in 8 of 12 band and
+    block cells (theta and alpha at all three blocks, alpha -0.026, -0.032, -0.057; beta only at the
+    condition block; gamma only at post 1); over concatenated samples 6 of 12. The non-S1 PLI also
+    falls (not below baseline in only 4 of 12 cells), so that part fails. No sham against tFUS
+    comparison of S1 PLI is significant under either ANOVA reading. The criterion's partial outcome
+    (S1 decreases in some bands only, without a significant group difference) applies; the S1
+    specificity is not seen, and the sham S1 PLI falls as much in theta (-0.022 to -0.080).
+  deviations:
+  - S1 channels are 7, 8, 10, 12 and 21, 23, 25, 26, taken from the notes of the dandiset's PLV
+    files; the paper draws them only in Fig. 5A, which the text read does not list.
+  - Seizure periods are the union of both hemispheres' labels, 1 s or longer; the EEG is decimated
+    by 3 to 1017 Hz before the band filters, a standard choice; band filters run on each seizure
+    with 2 s of margin. No ICA.
+- claim: figs7-seizure-pli-s1-vs-non-s1
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: eeg_blocks.ipynb
+  notes: The change is from the pre-4-AP baseline state, whose EEG is not in the dandiset (see
+    figs5-seizures-lower-ai).
+- claim: fig5b-tfus-evoked-potentials
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: wild_type.ipynb
+  output: claim:fig5b-tfus-evoked-potentials
+  notes: The readings disagree. With the mean over the 64 channels, 1 of 12 combinations of
+    position (CENTER, largest EP), sham onsets (every 2 s, random, the file's own intervals) and
+    ANOVA (ordinary, repeated) finds significant time points (CENTER, random onsets, ordinary, 13 of
+    610 points from 66.5 ms, smallest Bonferroni p = 0.013); the other 11 find none (smallest p =
+    0.05 to 1). With each channel, 0 to 39 of 64 channels have a significant point depending on the
+    combination. The CENTER channel-mean EP reaches 3.1 uV, the sham 1.7 uV. The criterion blocks
+    the claim when the readings disagree. Question for the authors (findings) which channels,
+    which position and which sham onsets were used.
+- claim: fig5cdj-wild-type-gamma-pli-decrease
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: wild_type.ipynb
+  output: claim:fig5cdj-wild-type-gamma-pli-decrease
+  notes: The sham, the EEG of the resting baseline recording of the target confirmation, is not in
+    the dandiset; its resting recordings hold only the intracranial LFP. The tFUS part, from the
+    PLV EEG files of 20 rats, shows gamma PLI falling in the 20 to 200 ms window in both regions
+    under every reading (S1 -0.029 and non-S1 -0.016 over concatenated samples, -0.386 and -0.386
+    per trial; 62% or 100% of pairs decreasing), and in the 0 to 20 ms window under the per-trial
+    reading only (S1 -0.013, non-S1 -0.024, 69% of pairs; concatenated +0.002 and +0.005, 47%).
+- claim: fig5ghi-low-band-pli-s1-only
+  outcome: not_reproduced
+  notebook: wild_type.ipynb
+  output: claim:fig5ghi-low-band-pli-s1-only
+  notes: In no band and under no combination of readings does the S1 PLI fall while the non-S1 PLI
+    does not. In the 0 to 20 ms window S1 PLI does not fall in theta, alpha or beta under any
+    reading (differences +0.0002 to +0.070); in the 20 to 200 ms window both regions fall together
+    (alpha -0.017 S1, -0.021 non-S1, concatenated). The per-trial PLI of the 20 ms pre window is
+    near 1 in theta and alpha (0.98, 0.97), so per-trial changes to the longer window reflect the
+    window lengths.
+  deviations:
+  - The epochs are the first 200 pulses of the dandiset's PLV EEG files (20 ms pulses, labelled
+    EEG data for PLV analysis), for 20 of the 23 rats; the claims file reads them as the 200
+    bursts of the target confirmation, whose EEG is not in the dandiset. The Methods' "tFUS (20 ms
+    of stimulation" fits these files.
+  - S1 channels from the PLV files' notes (see fig6-epileptic-pli-s1-decrease). The ratio reading
+    divides the region's mean PLI by its mean pre PLI, a standard choice.
+findings:
+- kind: metadata_error
+  statement: The seizure label table (intervals/custom_intervals_table_name) of all 70 labelled
+    EEG blocks gives start and stop times in minutes, while NWB prescribes seconds; the stops reach
+    62.7 in blocks of 3750 s. Read as minutes the labels match the EEG (30 to 80 Hz power 2.5 to 50
+    times higher inside them in all 136 block-hemispheres); read as seconds they do not. The EP and
+    PLV files' interval tables are in seconds.
+- kind: metadata_error
+  statement: The five block files of sham rat BH635 are labelled BASELINE, SHAM, SHAM, BH636_post1
+    (another rat's number) and BH635_post2, with no post3, while every other sham rat has
+    BASELINE, SHAM, post1, post2, post3. The files follow each other at 63 to 68 min like the other
+    rats' blocks. BH649's post 3 file has the session id None in its path.
+- kind: metadata_error
+  statement: Every file gives the subject as "HSD:WI rat" (Envigo's Wistar code) of age P24W, while
+    the paper used Sprague-Dawley rats (Envigo) of 3 to 6 months.
+- kind: metadata_error
+  statement: The ElectricalSeries of the EP files is described as "EEG data" though the files hold
+    the 64 intracranial channels of left S1 (location Left S1, notes "LFP signal for EP test"). The
+    PLV files are labelled 1Hz but 19 of 20 carry their pulses every 2 s.
+- kind: metadata_insufficient
+  statement: The files do not say which EEG channels were used to label the seizures (channels 8
+    and 25, read from the drawing of Fig. S1) or which channels cover S1 (given only in the notes of
+    the PLV files, not in the electrode tables of the labelled blocks).
+- kind: metadata_insufficient
+  statement: The target-confirmation recordings do not say which transducer position was chosen
+    for the experiment ("the coordinates with the clearest EP", supplement), so the tFUS EPs of
+    Fig. 5B cannot be selected.
+- kind: data_missing
+  statement: The EEG of the pre-4-AP baseline state (Figs. S5 and S7) and of the resting baseline
+    of the target confirmation (the sham of Figs. 5E-F) are not in the dandiset; the resting
+    recordings hold only the intracranial LFP, and the first monitoring block after the first
+    injection was not deposited. PLV EEG files exist for 20 of the 23 wild-type rats (not BH638,
+    BH642, BH644), while Fig. 5 gives N = 23.
+- kind: methods_unavailable
+  statement: Question for the authors. Was the two-way ANOVA of Figs. 2 to 4 and 6 ordinary or
+    repeated measures (or Prism's mixed-effects model), and which comparisons formed each
+    Bonferroni family? The paper's within-group significance in Fig. 3 appears here only under a
+    repeated-measures reading, and no single family reading gives every significance the Results
+    state; this attempt assumed repeated measures for the claims of absence.
+- kind: methods_unavailable
+  statement: Question for the authors. For Fig. 5B, which LFP channel or channels, which
+    target-confirmation recording, which sham onsets in the resting recording and what time
+    resolution were tested? Under the readings tried here the result ranges from no significant
+    time point to 13 of 610 points from 66.5 ms.
+- kind: methods_unavailable
+  statement: Question for the authors. Over which segment were band power, AI and seizure PLI
+    computed (whole block or seizure periods, and for two hemispheres whose labels differ, which
+    periods), what total was the band power divided by, and was AI normalized to the group's
+    baseline by division or by subtraction? With a negative baseline AI the two normalizations give
+    opposite directions.
+- kind: paper_inconsistency
+  statement: Methods E gives the wild-type tFUS window as "20 ms of stimulation" of "200 EPs from the
+    target confirmation procedure", but the target-confirmation bursts last 67 ms (supplement). The
+    dandiset resolves it with separate EEG recordings of 20 ms pulses made in the wild-type phase,
+    labelled EEG data for PLV analysis, which the paper does not describe.
+- kind: other
+  statement: The baseline AI of the labelling channels is strongly negative in both groups (whole
+    block, sham -0.58 to -0.61, tFUS -0.24 to -0.29), so the contralateral band power is 1.7 to 4
+    times the ipsilateral; the paper reports only AI normalized to the baseline.
