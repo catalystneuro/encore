@@ -86,26 +86,17 @@ outcomes:
   - Two-tailed rank-sum p-values are computed as MATLAB's ranksum does by default (exact for these group sizes),
     as the code's Fig. 5 scripts call it.
 - claim: fig5b-sipsc-frequency
-  outcome: not_reproduced
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The criterion gives not reproduced, but the measurement it is applied to does not separate events from
-      noise in these files. No sIPSC file has noise below 2 pA; in 13 of the 15 files opposite-polarity peaks are
-      0.87 to 1.54 times as frequent as the events at 5 pA (0.43 and 0.59 in w9b4ds and 1tsbdsc); 44 to 83% of
-      injected events are recovered per file; the 5 pA frequencies are 1.9 to 24 times the code's sheet values;
-      and the RMS reading counts noise in every experiment. The paper gives no detection setting beyond the 5 pA
-      threshold, so no measurement of sIPSC frequency here has a defensible basis (reproduce_liu_2026.ipynb, the
-      cell after the fig5b-sipsc-frequency table). Proposed after the second verification round, whose verifier
-      recommends it.
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig5b-sipsc-frequency
-  notes: Under neither threshold reading is the VEN median below the PC median. At 5 pA, VEN 19.9 against PC 15.4
+  notes: Blocked because the detection does not separate events from noise in these files and the paper gives no
+    detection setting beyond the 5 pA threshold; as written, the criterion would give not reproduced, as under neither
+    threshold reading is the VEN median below the PC median. At 5 pA, VEN 19.9 against PC 15.4
     Hz (p = 0.34 to 0.40 under the three assignments of file fwphyw). At the RMS noise, VEN 13.0 to 13.6 against
     PC 9.5 to 10.1 Hz (p = 0.0006 to 0.072). With three times the noise, a variant, VEN 1.88 against PC 2.27 to
     2.55 Hz (p = 0.23 to 0.54). Events are outward, as the files are described as held at +20 mV and their holding
-    currents are positive. The detection here largely measures noise in these recordings, so the outcome may be
-    a failure of this attempt. No sIPSC file has noise below 2 pA; in 13 of the 15 files opposite-polarity peaks
+    currents are positive. The detection here largely measures noise in these recordings. No sIPSC file has noise below 2 pA; in 13 of the 15 files opposite-polarity peaks
     are 0.87 to 1.54 times as frequent as events, and about half in the other two (subtracting them leaves medians
     below zero, p = 0.69 to 0.96); injected events are recovered at 44 to 83% per file; and the 5 pA frequencies
     are 1.9 to 24 times the code's sheet values (median 5.5). In the files of at least 5 min VENs are
@@ -168,19 +159,14 @@ outcomes:
   - Two-tailed rank-sum p-values are computed as MATLAB's ranksum does by default (exact for these group sizes),
     as the code's Fig. 5 scripts call it.
 - claim: fig5c-sipsc-amplitude
-  outcome: reproduced
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The amplitudes come from the same detection as fig5b-sipsc-frequency, which does not separate events
-      from noise in these files (see its proposed change); the amplitudes here are 0.19 to 0.53 times the code's
-      sheet per file. A finding of no difference from a measurement that does not measure the paper's events cannot
-      stand for the paper's, and the paper gives no detection setting that would. Proposed after the second verification
-      round, whose verifier no longer agrees with reproduced.
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig5c-sipsc-amplitude
   measured: 0.094
-  notes: At 5 pA, whole recording, the table's labels as they are, VEN 11.8 against PC 14.4 pA, p = 0.094 (fwphyw
+  notes: Blocked with fig5b-sipsc-frequency, whose detection the criterion names; noise peaks just above the 5 pA
+    threshold pull every cell's mean amplitude towards the same value, which biases the test towards no difference.
+    At 5 pA, whole recording, the table's labels as they are, VEN 11.8 against PC 14.4 pA, p = 0.094 (fwphyw
     as either cell, 0.072 and 0.094). RMS threshold p = 0.40 to 0.54, first 30 s p = 0.054 to 0.072, three times
     the noise p = 0.34 to 0.40. No sIPSC file has noise below 2 pA and the amplitudes are 0.21 to 0.40 times the
     code's sheet (median per subject; 0.19 to 0.53 per file), so the detection does not measure the paper's amplitudes in these recordings; the sheet's amplitudes
@@ -309,17 +295,13 @@ outcomes:
   - The code's group sizes (30, 22, 122, 29, 17, 13, with one empty row in two groups) differ from the Fig. 2 legend's
     n that the criterion cites (30, 17, 119, 22, 16, 13).
 - claim: fig4ac-ap-width-amplitude
-  outcome: partially_reproduced
-  proposed:
-    outcome: not_reproduced
-    reason: On the cells deposited, neither feature reaches the criterion's p < 0.001; amplitude does not reach p <
-      0.05 (0.073), and with the PCs of the L5 subclasses neither is significant (p = 0.22 and 0.35). Only the direction
-      agrees with the paper, which does not make the effect present in part. Not reproduced on the deposited subset,
-      with the subset in the notes, as the second verification round gives (elsewhere_liu_2026.ipynb, cell claim:fig4ac-ap-width-amplitude).
+  outcome: not_reproduced
   notebook: elsewhere_liu_2026.ipynb
   output: claim:fig4ac-ap-width-amplitude
-  notes: From DANDI:001746, the 68 VENs and 135 L5 PCs (cell subtype PC_L5, PC_L5ET or PC_5) of the code's table,
-    about a quarter of the paper's 281 and 306. VEN APs are broader (median 3.17 against 2.94 ms, p = 0.015) and
+  notes: From DANDI:001746, the 68 VENs and 135 L5 PCs (cell subtype PC_L5, PC_L5ET or PC_5) of the code's table.
+    The Results describe the 281 VENs and 306 PCs as whole-cell recordings on additional L5 projection neurons, so
+    the deposited Patch-seq cells may not be the cells of Fig. 4a-c at all, and the outcome holds only for the deposited
+    cells (a question to a reader asks). VEN APs are broader (median 3.17 against 2.94 ms, p = 0.015) and
     lower (88.5 against 91.2 mV, p = 0.073), the direction the paper reports, but neither reaches the criterion's
     p < 0.001. With the PCs of the L5 subclasses instead (143), p = 0.22 and 0.35. The other recordings are in no
     deposit the paper names.
@@ -1029,3 +1011,54 @@ verifications:
     outcome: partially_reproduced
     reason: Agreed.
     response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. The three outcome changes proposed after round 2 (fig5b-sipsc-frequency, fig5c-sipsc-amplitude
+    and fig4ac-ap-width-amplitude), checked against the re-executed notebooks and the claims file. The verifier did
+    not re-run anything.
+  results:
+  - claim: fig5b-sipsc-frequency
+    agrees: true
+    outcome: blocked
+    reason: The numbers come from the data (cell 31; the frequencies are 1.92 to 24.19 times the sheet's, median 5.49;
+      in cell 12 the RMS reading finds opposite peaks at about the same rate as events, median ratio 1.04). The choice
+      was not made to reach the result, as the noise check is the same for every experiment, the noise bands were
+      set in round 2, and the same rule leaves the low-noise mEPSC, mIPSC and sEPSC results standing; variants closer
+      to a working detection point the other way (three times the noise, VEN 1.88 against PC 2.27 to 2.55 Hz; files
+      of at least 5 min, 9.9 to 10.6 against 18.5 Hz), neither significant. The criterion as written gives not reproduced,
+      but it assumes the standard detector measures events, and cell 31 shows that in these files it does not. The
+      paper gives only the 5 pA threshold, so methods_underspecified is the right reason for the block. Two caveats
+      that do not change the view. The recovery test injects events of median 10 pA, against about 37 pA in the sheet,
+      so the 44 to 83% recovery overstates how many real events are missed; and the opposite-polarity count is slightly
+      inflated where events are frequent, though at most 0.15 of the event rate in the low-noise files.
+    response: Outcome changed to blocked (methods_underspecified) and proposed removed. The notes now lead with the
+      reason for the block and keep what the criterion as written would give.
+  - claim: fig5c-sipsc-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Same detection as fig5b-sipsc-frequency; the per-file amplitudes are 0.19 to 0.53 times the sheet's (cell
+      31) and the deciding p is 0.094 (cell 43). When noise peaks just above the 5 pA threshold dominate the detected
+      events, every cell's mean amplitude is pulled towards the same value, which biases the test towards no difference,
+      the outcome this claim of absence needs; reproduced would rest on that bias. The criterion says events detected
+      as for fig5b-sipsc-frequency, so this claim inherits that block. The sheet's own amplitudes also show no difference
+      (p = 0.69), but that is the paper's data, not a reproduction.
+    response: Outcome changed to blocked (methods_underspecified) and proposed removed. The notes give the bias the
+      verifier describes.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 40 matches the record (reading (a), half-width 3.17 against 2.94 ms, p = 0.015, amplitude 88.5 against
+      91.2 mV, p = 0.073, 68 VENs and 135 PCs; reading (b), p = 0.22 and 0.35 with 143 PCs; the first-run extraction
+      gives p = 0.0089 and 0.23). The criterion requires p < 0.001 for each feature, neither reaches it under any reading,
+      and it defines no partial case; agreement in direction alone does not make the effect partly present. Both readings
+      of L5 PC are shown, and the extraction is the one fixed for fig2d-f before this claim. A possible misreading
+      in the claims file, reported and not corrected. The Results say the 281 VENs and 306 PCs came from whole-cell
+      recordings on additional macaque L5 projection neurons, which suggests these recordings are separate from the
+      Patch-seq cells in DANDI:001746, so where DANDI:001746 may misread the paper. The notes' about a quarter of
+      the paper's 281 and 306 assumes a subset; they should say the deposited cells may not be the cells of Fig. 4a-c
+      at all. On that reading not reproduced means only not shown on the deposited Patch-seq cells, which is still
+      the outcome the criterion gives as written.
+    response: Outcome changed to not_reproduced and proposed removed. The notes no longer call the deposited cells a
+      quarter of the paper's and say they may not be the cells of Fig. 4a-c; the claim's where is left as it is, and
+      a question to a reader on it is added to questions/001752.yaml.
