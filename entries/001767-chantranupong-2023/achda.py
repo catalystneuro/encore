@@ -40,7 +40,8 @@ Where the parameters come from:
   `single_state_model_sessions`). The fit there uses stochastic gradient descent from a module
   the repository does not hold; here the same likelihood is maximised with Nelder-Mead from two starting
   points (a standard choice: any optimiser that reaches the maximum gives the same estimate). Decision time = side entry minus centre entry and ITI =
-  centre entry minus the previous side exit, from the trials table; the code reads them from the
+  start_time minus the previous trial's stop_time, from the trials table; the notebook shows this
+  ITI equals centre entry minus the previous side exit taken from the photometry sample indices. The code reads them from the
   box's 'Trial Duration (s)' and 'Since last trial (s)' columns, which the files do not hold (an
   assumption about what those columns measured).
 """
