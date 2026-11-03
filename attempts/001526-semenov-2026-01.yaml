@@ -1,0 +1,818 @@
+schema_version: 2
+id: 001526-semenov-2026-01
+dataset:
+  archive: dandi
+  id: '001526'
+  version: 0.261006.1851
+  doi: 10.48324/dandi.001526/0.261006.1851
+paper: doi:10.1016/j.bioelechem.2026.109283
+date: '2026-11-02'
+entry: 001526-semenov-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41537949973
+outcomes:
+- claim: fig2cd-nonelectroporating-stable
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2cd-nonelectroporating-stable
+  notes: 'Paired t-tests of each pre-exposure 150 or 230 V/cm set against the first set of its field, per pole,
+    n = 11 cells (10 for the fourth 230 V/cm set). With each cell''s background recording subtracted (adopted),
+    1 of 12 comparisons has p < 0.05, the third 150 V/cm set at the cathodic pole, 10.8% against 17.6% (p = 0.031).
+    The annulus and darkest-pixel readings also give 1 of 12 (p = 0.045 and 0.038); without subtraction none (smallest
+    p 0.055), which would reproduce the claim. F0 from images 2 to 40 gives 3 of 12 with the background recording.
+    At the cathodic pole every later pre-exposure 150 V/cm set is 27 to 39% below the first, the 230 V/cm sets -11.9
+    to 4.7%. Within sets, the first and last 10 PEF images differ by at most 1.15% (p 0.39 or more). The outcome
+    rests on the cells: without c3 and c4, the two whose pre-exposure sets depart from the described order, no comparison
+    differs under any reading (smallest p 0.067, background recording), and among the 165 choices of 8 of the 11
+    cells none differs in 76 (background recording), 80 (annulus), 83 (floor) and 100 (none). With per-cell pole
+    angles 2 of 12 differ. Whether the right cells were picked is open: c4, c8 and c10 have first 150 V/cm cathodic
+    sets of 3.4 to 3.8%, against 5.0 to 15.3% for their later pre-exposure 150 V/cm sets, and c4 has the weakest cosine
+    amplitude of the session (4.28). The result is weak, one uncorrected test of 12. The criterion is binary (not
+    reproduced when any set differs); the background reading and the choice of cells are put to the paper''s authors (findings).'
+  deviations:
+  - Background subtraction is an assumption. Section 2.3 describes dF = 100 (F - F0)/F0 with no background step,
+    section 2.4 subtracts the background fluorescence of a cell-free region for Fluo-4, and the claims file names
+    both readings. The adopted reading subtracts, for 2025-05-01, the mean of the cell-free background recording
+    made with each cell (the files call it a recording in the background region without cells, so the experimenters
+    recorded it with every cell of that session), point by point along the trace; for 2025-05-06, which has no background
+    recordings, the per-image median of a cell-free annulus 2 to 3 radii from the cell, whose level the background
+    recordings of the first session match within 0.97 to 1.08 times. Cell-free background is 52 to 54% of the trace
+    intensity, and 65 to 66 counts above the darkest pixels (no dark frame or camera offset is given), and the paper's
+    own values at 1000 V/cm (40 and 26.6%) are on the scale of the subtracted readings and about 3 times the unsubtracted
+    ones (40/13.3 = 3.0 and 26.6/8.5 = 3.1 under window (b)). The notebook shows every reading (background recording,
+    annulus, darkest-pixel floor, none). Round 1 adopted the annulus for both sessions; the background recording
+    was adopted in the revision after round 1, after the results under both readings had been seen, and in that
+    revision the annulus reading stopped meeting fig2c-1000-within-set while the background recording met it. The
+    choice is to be read as made after the results.
+  - The analysed cell is the one nearest the image centre of the cell's sham recording (an assumption; the files
+    do not say which of the one to eight cells found in each field was analysed, and section 2.2 centres the field
+    of view between the electrodes). The notebook draws every traced membrane on its baseline image.
+  - The 6-pixel-wide perimeter trace is found automatically as the outer ridge of the membrane staining in the sham
+    recording's baseline image and moved by the measured drift (at most 2 pixels), where the paper draws it by hand
+    in MetaMorph (section 2.3); the 360 points are spaced by 1 degree of angle, not by equal arc length. For 2025-05-01
+    c4 the default rule (steepest outward fall) put the trace on internal staining (median radius 21.2 px), so that
+    cell is traced with the outermost strong fall (34.1 px); the other cells keep the default rule, which the overlays
+    show on the membrane (c3's trace cuts inside the cell on one side, away from the poles).
+  - The cathodic pole angle is the median over the session's cells of the phase of a cosine fitted to the polarization
+    profile at non-electroporating fields (83.0 degrees for 1 us, 82.1 degrees for 0.3 us, close to straight up,
+    as in Fig. 1); the paper places the poles by the field direction. Per-cell phases (73.1 to 93.6 degrees) are
+    shown as a variant.
+  - Field strengths are the paper's labels (Fig. 2C; the Fig. 4D axis labels 357, 760, 1000, 1200, 1420, 1630, 2050,
+    2473 and 3320 V/cm, read from the figure on page 6 of the PDF) matched by order to the pulse amplitudes in volts
+    that the files give; the labels are not proportional to the volts.
+  - 11 cells are used where the paper reports n = 8; the dataset does not say which 8. Four cells depart from the
+    described order of sets (c3 and c4 before the 1000 V/cm exposure, c1 and c11 after); sets are matched by their
+    rank at each field. The notebook applies the criteria without c4, without c3 and c4, without all four, and to
+    every choice of 8 of the 11 cells.
+  - The fifth pre-exposure 150 V/cm set exists in one cell only and is not tested.
+- claim: fig2c-1000-within-set
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2c-1000-within-set
+  measured:
+  - 31.71
+  - 20.99
+  notes: Background recording subtracted, reading (b) (PEF images 1 to 10 and 51 to 60), 31.7 +- 4.4% to 21.0 +-
+    5.2%, n = 11, paired t-test p = 0.094, end lower in 8 of 11 cells; this is the reading that matches and is given
+    as measured. Readings (a) 40.7 to 22.4% (p = 0.008) and (c) 35.4 to 23.4% (p = 0.006) have values within tolerance
+    but p below 0.05. Annulus, reading (b), 33.5 to 21.5% with p = 0.035, so no window meets the criterion under
+    the annulus; without subtraction (13.3 and 8.5%) and with the darkest-pixel floor (24.0 and 15.7%) the start
+    is outside the tolerance. With F0 from images 2 to 40 the start under (b) is 28.5%, just outside. Among the
+    165 choices of 8 of the 11 cells the criterion is met in 91 (background recording), 100 (annulus) and none without
+    subtraction or with the floor. With per-cell pole angles it is met under the background recording (p = 0.080),
+    not under the annulus (p = 0.028). In round 1 (annulus, c4 traced on internal staining) the match was 31.9 to
+    21.0% with p = 0.051. The match rests on the background reading, and the background recording was adopted
+    after the annulus reading had stopped meeting this claim, so it rests on a choice made after the results.
+    If the darkest pixels are the camera offset (floor reading), the claim is not met.
+  deviations:
+  - Background subtraction is an assumption. Section 2.3 describes dF = 100 (F - F0)/F0 with no background step,
+    section 2.4 subtracts the background fluorescence of a cell-free region for Fluo-4, and the claims file names
+    both readings. The adopted reading subtracts, for 2025-05-01, the mean of the cell-free background recording
+    made with each cell (the files call it a recording in the background region without cells, so the experimenters
+    recorded it with every cell of that session), point by point along the trace; for 2025-05-06, which has no background
+    recordings, the per-image median of a cell-free annulus 2 to 3 radii from the cell, whose level the background
+    recordings of the first session match within 0.97 to 1.08 times. Cell-free background is 52 to 54% of the trace
+    intensity, and 65 to 66 counts above the darkest pixels (no dark frame or camera offset is given), and the paper's
+    own values at 1000 V/cm (40 and 26.6%) are on the scale of the subtracted readings and about 3 times the unsubtracted
+    ones (40/13.3 = 3.0 and 26.6/8.5 = 3.1 under window (b)). The notebook shows every reading (background recording,
+    annulus, darkest-pixel floor, none). Round 1 adopted the annulus for both sessions; the background recording
+    was adopted in the revision after round 1, after the results under both readings had been seen, and in that
+    revision the annulus reading stopped meeting fig2c-1000-within-set while the background recording met it. The
+    choice is to be read as made after the results.
+  - The analysed cell is the one nearest the image centre of the cell's sham recording (an assumption; the files
+    do not say which of the one to eight cells found in each field was analysed, and section 2.2 centres the field
+    of view between the electrodes). The notebook draws every traced membrane on its baseline image.
+  - The 6-pixel-wide perimeter trace is found automatically as the outer ridge of the membrane staining in the sham
+    recording's baseline image and moved by the measured drift (at most 2 pixels), where the paper draws it by hand
+    in MetaMorph (section 2.3); the 360 points are spaced by 1 degree of angle, not by equal arc length. For 2025-05-01
+    c4 the default rule (steepest outward fall) put the trace on internal staining (median radius 21.2 px), so that
+    cell is traced with the outermost strong fall (34.1 px); the other cells keep the default rule, which the overlays
+    show on the membrane (c3's trace cuts inside the cell on one side, away from the poles).
+  - The cathodic pole angle is the median over the session's cells of the phase of a cosine fitted to the polarization
+    profile at non-electroporating fields (83.0 degrees for 1 us, 82.1 degrees for 0.3 us, close to straight up,
+    as in Fig. 1); the paper places the poles by the field direction. Per-cell phases (73.1 to 93.6 degrees) are
+    shown as a variant.
+  - Field strengths are the paper's labels (Fig. 2C; the Fig. 4D axis labels 357, 760, 1000, 1200, 1420, 1630, 2050,
+    2473 and 3320 V/cm, read from the figure on page 6 of the PDF) matched by order to the pulse amplitudes in volts
+    that the files give; the labels are not proportional to the volts.
+  - 11 cells are used where the paper reports n = 8; the dataset does not say which 8. Four cells depart from the
+    described order of sets (c3 and c4 before the 1000 V/cm exposure, c1 and c11 after); sets are matched by their
+    rank at each field. The notebook applies the criteria without c4, without c3 and c4, without all four, and to
+    every choice of 8 of the 11 cells.
+- claim: fig2d-lasting-reduction
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig2d-lasting-reduction
+  measured: 27.24
+  notes: Measured is the mean reduction over the four post-exposure sets of both poles' |dF| averaged (readings
+    b and i), background recording subtracted. Per set 30.3, 28.8, 26.1 and 23.8% (p = 0.017, 0.018, 0.019, 0.094).
+    Under every background and F0 reading the both-pole mean is 26.9 to 28.1% and no set with p < 0.05 has a reduction
+    within 18 to 22%. At single poles the drop is at the cathodic pole for 150 V/cm (49.5 and 43.1%, p = 0.017 and
+    0.026) and at the anodic pole for 230 V/cm (32.4 and 33.3%, p = 0.051 and 0.109). The only per-pole mean within
+    18 to 22% is the anodic pole with F0 from images 2 to 40 and the annulus (18.7%), an average of set reductions
+    of 2.3 to 30.4% that comes with a pre-exposure set at p = 0.029, so it does not meet the reproduced clause,
+    and the partial clause (size outside the tolerance under every reading) is not literally met there either;
+    partial is the closer description, as every both-pole set size is outside the tolerance with the session pole
+    angle; the round-1
+    pass of this kind (annulus, anodic, 18.0%) is gone with c4 re-traced (17.4%). The criterion's condition that
+    no pre-exposure set differs fails under the adopted reading (p = 0.031) and holds without subtraction. The reduction
+    is significant under every reading and larger than about 20%, the partial case the criterion names. Without
+    c3 and c4 the criterion is met under the background recording, annulus and no-subtraction readings; among the
+    165 choices of 8 cells it is met in 2 (background recording), and in 16 more the size is met with a pre-exposure
+    set that differs, which meets neither clause; without all four protocol-breaking cells (n =
+    7) no post-exposure set reaches p < 0.05.
+  deviations:
+  - Background subtraction is an assumption. Section 2.3 describes dF = 100 (F - F0)/F0 with no background step,
+    section 2.4 subtracts the background fluorescence of a cell-free region for Fluo-4, and the claims file names
+    both readings. The adopted reading subtracts, for 2025-05-01, the mean of the cell-free background recording
+    made with each cell (the files call it a recording in the background region without cells, so the experimenters
+    recorded it with every cell of that session), point by point along the trace; for 2025-05-06, which has no background
+    recordings, the per-image median of a cell-free annulus 2 to 3 radii from the cell, whose level the background
+    recordings of the first session match within 0.97 to 1.08 times. Cell-free background is 52 to 54% of the trace
+    intensity, and 65 to 66 counts above the darkest pixels (no dark frame or camera offset is given), and the paper's
+    own values at 1000 V/cm (40 and 26.6%) are on the scale of the subtracted readings and about 3 times the unsubtracted
+    ones (40/13.3 = 3.0 and 26.6/8.5 = 3.1 under window (b)). The notebook shows every reading (background recording,
+    annulus, darkest-pixel floor, none). Round 1 adopted the annulus for both sessions; the background recording
+    was adopted in the revision after round 1, after the results under both readings had been seen, and in that
+    revision the annulus reading stopped meeting fig2c-1000-within-set while the background recording met it. The
+    choice is to be read as made after the results.
+  - The analysed cell is the one nearest the image centre of the cell's sham recording (an assumption; the files
+    do not say which of the one to eight cells found in each field was analysed, and section 2.2 centres the field
+    of view between the electrodes). The notebook draws every traced membrane on its baseline image.
+  - The 6-pixel-wide perimeter trace is found automatically as the outer ridge of the membrane staining in the sham
+    recording's baseline image and moved by the measured drift (at most 2 pixels), where the paper draws it by hand
+    in MetaMorph (section 2.3); the 360 points are spaced by 1 degree of angle, not by equal arc length. For 2025-05-01
+    c4 the default rule (steepest outward fall) put the trace on internal staining (median radius 21.2 px), so that
+    cell is traced with the outermost strong fall (34.1 px); the other cells keep the default rule, which the overlays
+    show on the membrane (c3's trace cuts inside the cell on one side, away from the poles).
+  - The cathodic pole angle is the median over the session's cells of the phase of a cosine fitted to the polarization
+    profile at non-electroporating fields (83.0 degrees for 1 us, 82.1 degrees for 0.3 us, close to straight up,
+    as in Fig. 1); the paper places the poles by the field direction. Per-cell phases (73.1 to 93.6 degrees) are
+    shown as a variant.
+  - Field strengths are the paper's labels (Fig. 2C; the Fig. 4D axis labels 357, 760, 1000, 1200, 1420, 1630, 2050,
+    2473 and 3320 V/cm, read from the figure on page 6 of the PDF) matched by order to the pulse amplitudes in volts
+    that the files give; the labels are not proportional to the volts.
+  - 11 cells are used where the paper reports n = 8; the dataset does not say which 8. Four cells depart from the
+    described order of sets (c3 and c4 before the 1000 V/cm exposure, c1 and c11 after); sets are matched by their
+    rank at each field. The notebook applies the criteria without c4, without c3 and c4, without all four, and to
+    every choice of 8 of the 11 cells.
+  - The third post-exposure 150 V/cm set exists in 2 cells and is not tested.
+- claim: fig4d-short-pulses-same-limit
+  outcome: not_reproduced
+  assumed: false
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig4d-short-pulses-same-limit
+  measured: 34.9
+  notes: Measured is the larger of the two pole maxima. Annulus background (the session has no background recordings),
+    maximum mean |dF| 34.9% at the cathodic pole (1200 V/cm) and 34.0% at the anodic pole (1630 V/cm); darkest-pixel
+    floor 26.6 and 26.5%; without subtraction 15.0% and 16.7%; all outside 49 to 57%. Per cell, the maxima span
+    18.8 to 52.4% (cathodic) and 24.1 to 49.9% (anodic); three of 8 cells reach 49.6 to 52.4% at the cathodic pole.
+    The pattern part holds under every reading; |dF| falls at every step beyond the maximum, by 82% (cathodic) and
+    49% (anodic) of the maximum at 3320 V/cm. Both poles' maxima are out of tolerance, so the outcome is not the
+    partial case. The dataset holds 8 of the paper's 10 cells, so no choice of cells can be tested; the two missing
+    cells would each need |dF| above 100% to bring the mean into range, so the outcome does not rest on the background
+    reading or the choice of cells.
+  deviations:
+  - Background subtraction is an assumption. Section 2.3 describes dF = 100 (F - F0)/F0 with no background step,
+    section 2.4 subtracts the background fluorescence of a cell-free region for Fluo-4, and the claims file names
+    both readings. The adopted reading subtracts, for 2025-05-01, the mean of the cell-free background recording
+    made with each cell (the files call it a recording in the background region without cells, so the experimenters
+    recorded it with every cell of that session), point by point along the trace; for 2025-05-06, which has no background
+    recordings, the per-image median of a cell-free annulus 2 to 3 radii from the cell, whose level the background
+    recordings of the first session match within 0.97 to 1.08 times. Cell-free background is 52 to 54% of the trace
+    intensity, and 65 to 66 counts above the darkest pixels (no dark frame or camera offset is given), and the paper's
+    own values at 1000 V/cm (40 and 26.6%) are on the scale of the subtracted readings and about 3 times the unsubtracted
+    ones (40/13.3 = 3.0 and 26.6/8.5 = 3.1 under window (b)). The notebook shows every reading (background recording,
+    annulus, darkest-pixel floor, none). Round 1 adopted the annulus for both sessions; the background recording
+    was adopted in the revision after round 1, after the results under both readings had been seen, and in that
+    revision the annulus reading stopped meeting fig2c-1000-within-set while the background recording met it. The
+    choice is to be read as made after the results.
+  - The analysed cell is the one nearest the image centre of the cell's sham recording (an assumption; the files
+    do not say which of the one to eight cells found in each field was analysed, and section 2.2 centres the field
+    of view between the electrodes). The notebook draws every traced membrane on its baseline image.
+  - The 6-pixel-wide perimeter trace is found automatically as the outer ridge of the membrane staining in the sham
+    recording's baseline image and moved by the measured drift (at most 2 pixels), where the paper draws it by hand
+    in MetaMorph (section 2.3); the 360 points are spaced by 1 degree of angle, not by equal arc length. For 2025-05-01
+    c4 the default rule (steepest outward fall) put the trace on internal staining (median radius 21.2 px), so that
+    cell is traced with the outermost strong fall (34.1 px); the other cells keep the default rule, which the overlays
+    show on the membrane (c3's trace cuts inside the cell on one side, away from the poles).
+  - The cathodic pole angle is the median over the session's cells of the phase of a cosine fitted to the polarization
+    profile at non-electroporating fields (83.0 degrees for 1 us, 82.1 degrees for 0.3 us, close to straight up,
+    as in Fig. 1); the paper places the poles by the field direction. Per-cell phases (73.1 to 93.6 degrees) are
+    shown as a variant.
+  - Field strengths are the paper's labels (Fig. 2C; the Fig. 4D axis labels 357, 760, 1000, 1200, 1420, 1630, 2050,
+    2473 and 3320 V/cm, read from the figure on page 6 of the PDF) matched by order to the pulse amplitudes in volts
+    that the files give; the labels are not proportional to the volts.
+  - 8 cells are used where the paper reports n = 10; one cell's 450 V set has no Fig. 4D field and is left out,
+    and two cells lack the 100 V (357 V/cm) set and one the 800 V (3320 V/cm) set.
+- claim: fig5b-eq2-sensitivity
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2026.ipynb
+  output: claim:fig5b-eq2-sensitivity
+  measured:
+  - 1.33
+  - 11.87
+  notes: Eq. (2) as printed in the PDF gives f = 1.498 at the intact conductivity. 100-fold increase 11.87% reduction
+    (11.75% against f at the intact value), within 10.8 to 13.2%. 10-fold increase 1.33% (1.20%), outside 1.8 to
+    2.2%; a 2% reduction needs about a 15-fold increase. The criterion gives no partial case; one of two values
+    matching is recorded as partial.
+  deviations:
+  - Eq. (2) is read from the PDF, as the extracted text garbles it.
+- claim: fig1-pattern-poles-leaky
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Di-8-ANEPPS 1 us escalation from 43 to 1400 V/cm (the Fig. 4B group, n = 5); the dandiset holds
+    1 us recordings only at 150, 230 and 1000 V/cm, in the alternating protocol of Fig. 2C, and the paper's data
+    availability statement says data are available on request.
+- claim: fig2a-fluovolt-saturation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FluoVolt recordings; every file in the dandiset is Di-8-ANEPPS (its description says so).
+- claim: fig2a-fluovolt-baseline-stable
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FluoVolt recordings; every file in the dandiset is Di-8-ANEPPS (its description says so).
+- claim: fig2a-fluovolt-stable-electroporating
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FluoVolt recordings; every file in the dandiset is Di-8-ANEPPS (its description says so).
+- claim: fig2b-di8-climbs-to-570
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Fig. 2B Di-8-ANEPPS escalation from 43 to 1400 V/cm, not in the dandiset. The FluoVolt comparison
+    is missing as well.
+- claim: fig2b-di8-bleaching-43
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 43 V/cm set of the Fig. 2B escalation, not in the dandiset (no 43 V/cm recordings at all).
+- claim: fig2b-di8-decline-within-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 780 to 1400 V/cm sets of the Fig. 2B escalation, not in the dandiset.
+- claim: fig3-dye-slopes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'Needs the FluoVolt calibration cells, not in the dandiset, so the criterion (both slopes) cannot be applied.
+    The Di-8-ANEPPS half under reading (b) can be approximated on the pre-exposure 150 and 230 V/cm sets of the
+    11 cells of 2025-05-01 (88 sets) with two assumptions the criterion does not make: a pixel size of 0.267 um
+    (the iXon Ultra 897''s 16 um pixel over the 60x objective, section 2.3; the files give none) and tau of 200
+    or 300 ns (the tau-radius fit of reference [20] is not available). The notebook''s exploratory section gives
+    a through-origin slope of 6.1 to 6.5% dF per 100 mV with a background subtracted and 2.6 to 2.7% without, against
+    9.1 +- 0.91%, with correlation 0.62 to 0.70 against 0.78. This decides no outcome.'
+- claim: fig3-fluovolt-nonlinear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3-dye-slopes, blocked; also needs FluoVolt data.
+- claim: fig4a-fluovolt-limits
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FluoVolt recordings; every file in the dandiset is Di-8-ANEPPS (its description says so).
+- claim: fig4b-di8-threshold-570
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Di-8-ANEPPS 1 us escalation from 43 to 1400 V/cm (the Fig. 4B group, n = 5); the dandiset holds
+    1 us recordings only at 150, 230 and 1000 V/cm, in the alternating protocol of Fig. 2C, and the paper's data
+    availability statement says data are available on request.
+- claim: fig4b-first10-cathodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Di-8-ANEPPS 1 us escalation from 43 to 1400 V/cm (the Fig. 4B group, n = 5); the dandiset holds
+    1 us recordings only at 150, 230 and 1000 V/cm, in the alternating protocol of Fig. 2C, and the paper's data
+    availability statement says data are available on request.
+- claim: fig4b-asymmetric-decline
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Di-8-ANEPPS 1 us escalation from 43 to 1400 V/cm (the Fig. 4B group, n = 5); the dandiset holds
+    1 us recordings only at 150, 230 and 1000 V/cm, in the alternating protocol of Fig. 2C, and the paper's data
+    availability statement says data are available on request.
+- claim: fig4c-equator-cosine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Di-8-ANEPPS 1 us escalation from 43 to 1400 V/cm (the Fig. 4B group, n = 5); the dandiset holds
+    1 us recordings only at 150, 230 and 1000 V/cm, in the alternating protocol of Fig. 2C, and the paper's data
+    availability statement says data are available on request.
+- claim: fig5a-gd-anodic-extension
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Gd3+ (n = 7) and parallel control (n = 5) experiments of Fig. 5A, not in the dandiset.
+- claim: fig5a-gd-linear-to-780
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Gd3+ (n = 7) and parallel control (n = 5) experiments of Fig. 5A, not in the dandiset.
+- claim: fig5a-gd-cathodic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Gd3+ (n = 7) and parallel control (n = 5) experiments of Fig. 5A, not in the dandiset.
+- claim: fig5a-gd-significant-points
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Gd3+ (n = 7) and parallel control (n = 5) experiments of Fig. 5A, not in the dandiset.
+- claim: fig5c-gd-reduces-conductivity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Gd3+ (n = 7) and parallel control (n = 5) experiments of Fig. 5A, not in the dandiset. Its dependency
+    fig5b-eq2-sensitivity was tested.
+- claim: fig6a-single-pulse-ca
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs Fluo-4 calcium imaging, not in the dandiset.
+- claim: fig6b-train-ca
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs Fluo-4 calcium imaging (224 cells), not in the dandiset.
+- claim: fig7a-test-pulse-cosine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the two-pulse (conditioning and 150 V/cm test pulse) experiments of Fig. 7A, not in the dandiset.
+- claim: fig7b-conditioning-sublinear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Di-8-ANEPPS 1 us escalation from 43 to 1400 V/cm (the Fig. 4B group, n = 5); the dandiset holds
+    1 us recordings only at 150, 230 and 1000 V/cm, in the alternating protocol of Fig. 2C, and the paper's data
+    availability statement says data are available on request. Section 3.7 says the top panel of Fig. 7B uses the
+    Fig. 4B data.
+- claim: fig7b-test-pulse-recovery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the two-pulse (conditioning and 150 V/cm test pulse) experiments of Fig. 7A, not in the dandiset.
+- claim: fig7c-fast-resealing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-conditioning-sublinear and fig7b-test-pulse-recovery, both blocked for missing data.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the Di-8-ANEPPS experiments of Fig. 2C and D (11 cells) and Fig. 4D (8 cells).
+    The FluoVolt experiments (Fig. 2A, 3, 4A), the Di-8-ANEPPS 1 us escalation (Fig. 1, 2B, 3, 4B, 4C, 7B top),
+    the Gd3+ experiments (Fig. 5), the Fluo-4 calcium imaging (Fig. 6) and the two-pulse experiments (Fig. 7) are
+    not in it; 25 of 30 claims cannot be tested.
+- kind: metadata_insufficient
+  statement: The files give pulse amplitudes in volts and no field strengths, while the paper reports every result
+    in V/cm from a Sim4Life model; the mapping (50, 70 and 250 V to 150, 230 and 1000 V/cm; 100 to 800 V to 357
+    to 3320 V/cm) had to be inferred by order from the paper's figure labels, and the labels are not proportional
+    to the volts (3.0, 3.3 and 4.0 V/cm per volt for 1 us, 3.57 to 4.15 for 0.3 us). A 450 V set (2025-05-06 c1)
+    has no counterpart in Fig. 4D.
+- kind: metadata_error
+  statement: The files state an electrode distance of 1.00 mm; the paper (section 2.2) states a 1.6 mm spacing.
+- kind: metadata_error
+  statement: Every file carries the same general description, of the 2025-05-01 protocol (50, 70 or 250 V, 13 recordings),
+    including the 2025-05-06 files that hold 0.3 us pulses of 100 to 800 V. The description also calls each recording
+    a single pulse, while each set holds 60 pulsed images, and the dandiset's title and description mention only
+    the post-electroporation experiment.
+- kind: metadata_error
+  statement: StrobeImaging starting_time holds Unix times (1746136603 to 1746572254 s), not seconds from session_start_time.
+- kind: metadata_insufficient
+  statement: No pixel size is given, so cell radii (needed for IMPC in Eq. 1) are known only in pixels.
+- kind: selection_undocumented
+  statement: Most fields of view hold several cells (one to eight are found), and the files do not say which cell
+    was analysed. The dataset holds 11 cells for the Fig. 2C and D protocol where the paper reports n = 8, and 8
+    cells for Fig. 4D where it reports n = 10, without saying which cells form the paper's groups. Four of the 11
+    (2025-05-01 c1, c3, c4 and c11) depart from the order of sets the files' description gives.
+- kind: other
+  statement: In 174 of 232 cell recordings the first image is about 22% darker over the whole frame than the next
+    39 (median ratio 0.782), which biases F0, defined as the mean of the first 40 images.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors. Was a background subtracted from the potentiometric images before
+    computing dF, and if so which: the cell-free background recording made with each 2025-05-01 cell, a cell-free
+    region of the same image, or the camera offset? Section 2.3 describes none; section 2.4 subtracts a cell-free
+    region for Fluo-4. Cell-free background is 52 to 54% of the membrane intensity in these files, so dF without
+    subtraction is about 40% of dF with it. This attempt assumed subtraction of the background recording (and of
+    a cell-free annulus for 2025-05-06). The outcomes of fig2cd-nonelectroporating-stable (not reproduced with subtraction,
+    reproduced without) and fig2c-1000-within-set (reproduced with the background recording only) depend on the
+    answer.'
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which cell in each field of view, and which 8 of the 11 cells of
+    the 2025-05-01 session, form Fig. 2C and D, and are 10 cells of Fig. 4D in the dandiset (it holds 8)? This attempt
+    used the cell nearest the image centre and every cell in the dandiset. Without c3 and c4, the two cells whose
+    pre-exposure sets depart from the described order, all three Fig. 2C and D claims are met; among the 165 choices
+    of 8 cells they are met together in 1 (background recording reading).
+- kind: paper_inconsistency
+  statement: Eq. (2) as printed, with the parameters of section 2.3, gives a 1.3% IMP reduction for a 10-fold increase
+    of membrane conductivity, where section 3.5 states ~2% (the 100-fold value, 11.9%, matches the stated 12%).
+- kind: metadata_insufficient
+  statement: No dark frame or camera offset is given. The darkest 0.1% of pixels are at about 202 to 208 counts
+    and cell-free regions 65 to 66 counts above them, so how much of the cell-free level is offset and how much
+    stray fluorescence cannot be told from the files. If the darkest pixels are the offset, fig2c-1000-within-set
+    is not met (start 24.0%) and fig2cd-nonelectroporating-stable is not reproduced (p = 0.038).
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed, the helper
+    module and the claims file, with the paper under paper/.
+  results:
+  - claim: fig2cd-nonelectroporating-stable
+    agrees: false
+    outcome: partially_reproduced
+    reason: The result depends on the background reading. With no subtraction (section 2.3 as written), 0 of 12
+      pre-exposure comparisons reach p<0.05 (smallest 0.057). With the annulus it is 1 of 12 (p=0.047), and with
+      the background file 2 of 12. In every reading the cathodic 150 V/cm sets fall 26-39% below the first set (p
+      0.034-0.20), which does not look constant.
+    response: 'Outcome kept as not reproduced, with the disagreement recorded: the criterion is binary (not reproduced
+      when any pre-exposure set differs) and gives no partial case, and under the adopted reading 1 of 12 differs
+      (p = 0.031). The adopted reading is now the cell''s own background recording (round 1 used the annulus), c4
+      is re-traced on its membrane, and the notebook adds the darkest-pixel reading, the criteria without c4, without
+      c3 and c4, without the four cells that break the protocol and over all 165 choices of 8 cells, and per-cell
+      pole angles. Without c3 and c4 no comparison differs; the notes say so.'
+  - claim: fig2c-1000-within-set
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced but fragile. Only with images 1-10 vs 51-60 and background subtraction: annulus gives 31.9
+      to 21.0%, p=0.051; background file gives 30.1 to 20.5%, p=0.126. It fails with no subtraction, with F0 taken
+      from images 2-40 (start 29.6%), and with windows (a) and (c), where p <= 0.01.'
+    response: Outcome kept. With c4 re-traced the annulus reading now fails (p = 0.035) and the background recording,
+      now adopted, gives 31.7 to 21.0% with p = 0.094; measured values updated. The notes give every reading, the
+      165-subset counts (met in 91 under the background recording, none without subtraction) and the per-cell pole
+      variant.
+  - claim: fig2d-lasting-reduction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Averaging both poles, the reduction is significant in every variant (p 0.011-0.042) but its size is
+      27-28% (sets 21-33%), outside 18-22%. The one literal pass (annulus, anodic pole, mean 18.0%) averages per-set
+      reductions of 2, 11, 30 and 29%, and in that same background reading a cathodic pre-exposure set differs (p=0.047).
+      The only pass of the size criterion is chosen from 30 combinations of background, pole and summary.
+    response: Outcome kept. With c4 re-traced that anodic mean is 17.4%, outside the tolerance; the one remaining
+      in-tolerance per-pole mean (18.7%, annulus, F0 from images 2 to 40) comes with a pre-exposure set at p = 0.029,
+      and the notes say why neither meets the criterion. measured is the adopted both-pole mean, 27.24%. The cell-choice
+      sensitivity is added (met without c3 and c4, in 2 of 165 choices of 8). assumed set to true, as the outcome
+      rests on the background reading and the choice of cells.
+  - claim: fig4d-short-pulses-same-limit
+    agrees: true
+    outcome: not_reproduced
+    reason: Maximum pole |dF| is 34.9% cathodic and 34.0% anodic with the annulus, and 15.0% and 16.7% with no subtraction,
+      against 53+-4 at both poles. The decline beyond the maximum, larger at the cathodic pole (0.82 vs 0.49), does
+      hold. The Fig. 4D labels are said to come from the figure, which could not be checked; no outcome depends
+      on the exact labels.
+    response: Outcome kept. The Fig. 4D axis labels were read from the figure image on page 6 of the PDF and match
+      the ones used; the deviation now says so. The darkest-pixel reading (26.6 and 26.5%) and per-cell maxima are
+      added. assumed set to true (background reading and cell choice).
+  - claim: fig5b-eq2-sensitivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Eq. (2) is transcribed correctly; checked independently, f=1.498 at the intact conductivity. A 100-fold
+      increase gives 11.87% (within 10.8-13.2). A 10-fold increase gives 1.33% (outside 1.8-2.2); 2% needs about
+      a 15-fold increase. The criterion has no partial clause.
+    response: No change.
+  - claim: fig1-pattern-poles-leaky
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed in the archive: there is no 1 us escalation. The 1 us amplitudes are only 50, 70 and 250
+      V.'
+    response: No change.
+  - claim: fig2a-fluovolt-saturation
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: all 243 assets say Di-8-ANEPPS, as does the dandiset description.'
+    response: No change.
+  - claim: fig2a-fluovolt-baseline-stable
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: all 243 assets say Di-8-ANEPPS, as does the dandiset description.'
+    response: No change.
+  - claim: fig2a-fluovolt-stable-electroporating
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: all 243 assets say Di-8-ANEPPS, as does the dandiset description.'
+    response: No change.
+  - claim: fig2b-di8-climbs-to-570
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: there is no 43-1400 V/cm escalation group. The only 1000 V/cm 1 us set belongs to the Fig.
+      2C group.'
+    response: No change.
+  - claim: fig2b-di8-bleaching-43
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: there is no 43-1400 V/cm escalation group. The only 1000 V/cm 1 us set belongs to the Fig.
+      2C group.'
+    response: No change.
+  - claim: fig2b-di8-decline-within-set
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: there is no 43-1400 V/cm escalation group. The only 1000 V/cm 1 us set belongs to the Fig.
+      2C group.'
+    response: No change.
+  - claim: fig3-dye-slopes
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), partly testable. The FluoVolt half cannot be tested. The Di-8-ANEPPS slope under
+      reading (b) could be partly tested on the 150 and 230 V/cm sets of 11 cells. That needs an assumed pixel size
+      (16 um iXon pixel / 60x, about 0.267 um). tau matters little at 900 ns (1-e^(-t/tau) about 0.95-0.98 for tau
+      about 200-300 ns).
+    response: 'Outcome kept as blocked. The notebook adds an exploratory section computing that slope with the suggested
+      pixel size and tau of 200 and 300 ns: 6.1 to 6.5% per 100 mV with a background subtracted, against 9.1 +-
+      0.91%; the notes give it and say it decides no outcome.'
+  - claim: fig3-fluovolt-nonlinear
+    agrees: true
+    outcome: blocked
+    reason: No FluoVolt, and no non-electroporating Di-8-ANEPPS data out to +-500 mV.
+    response: No change.
+  - claim: fig4a-fluovolt-limits
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: all 243 assets say Di-8-ANEPPS, as does the dandiset description.'
+    response: No change.
+  - claim: fig4b-di8-threshold-570
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed in the archive: there is no 1 us escalation. The 1 us amplitudes are only 50, 70 and 250
+      V.'
+    response: No change.
+  - claim: fig4b-first10-cathodic
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed in the archive: there is no 1 us escalation. The 1 us amplitudes are only 50, 70 and 250
+      V.'
+    response: No change.
+  - claim: fig4b-asymmetric-decline
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed in the archive: there is no 1 us escalation. The 1 us amplitudes are only 50, 70 and 250
+      V.'
+    response: No change.
+  - claim: fig4c-equator-cosine
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed in the archive: there is no 1 us escalation. The 1 us amplitudes are only 50, 70 and 250
+      V.'
+    response: No change.
+  - claim: fig5a-gd-anodic-extension
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Gd3+ in any asset description.'
+    response: No change.
+  - claim: fig5a-gd-linear-to-780
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Gd3+ in any asset description.'
+    response: No change.
+  - claim: fig5a-gd-cathodic
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Gd3+ in any asset description.'
+    response: No change.
+  - claim: fig5a-gd-significant-points
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Gd3+ in any asset description.'
+    response: No change.
+  - claim: fig5c-gd-reduces-conductivity
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Gd3+ in any asset description.'
+    response: No change.
+  - claim: fig6a-single-pulse-ca
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Fluo-4 recordings.'
+    response: No change.
+  - claim: fig6b-train-ca
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no Fluo-4 recordings.'
+    response: No change.
+  - claim: fig7a-test-pulse-cosine
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: every asset is a single pulse per set; there are no two-pulse recordings.'
+    response: No change.
+  - claim: fig7b-conditioning-sublinear
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed in the archive: there is no 1 us escalation. The 1 us amplitudes are only 50, 70 and 250
+      V.'
+    response: No change.
+  - claim: fig7b-test-pulse-recovery
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: every asset is a single pulse per set; there are no two-pulse recordings.'
+    response: No change.
+  - claim: fig7c-fast-resealing
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: every asset is a single pulse per set; there are no two-pulse recordings.'
+    response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revision after round 1 (executed by the workflow), the helper module,
+    the attempt record, the README and the claims file, with the paper under paper/.
+  results:
+  - claim: fig2cd-nonelectroporating-stable
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Changed from round 1. The criterion is binary ("not reproduced when any does"); under the adopted reading
+      1 of 12 comparisons is at p=0.031, and the round-1 "partial" had no clause to rest on. The result is weak: one
+      uncorrected test out of 12. It disappears without subtraction, and also without c3 and c4. The background reading
+      and the choice of cells are both stated and reasonable.'
+    response: Outcome kept. The notes now say the result is one uncorrected test of 12, and add the open question
+      of the weak first-set responders (c4, c8 and c10, first 150 V/cm cathodic sets of 3.4 to 3.8% against later
+      means of 5.0 to 15.3%; c4 the weakest cosine amplitude, 4.28) and what the floor reading gives if it is the
+      camera offset (p = 0.038). The smallest p without c3 and c4 is now given as 0.067. The annulus p (0.045) and
+      the within-set change (at most 1.15%) the report flags are what this run prints; see the general response
+      under fig2d on why the verifier's copy differed.
+  - claim: fig2c-1000-within-set
+    agrees: true
+    outcome: reproduced
+    reason: Yes, but fragile. It holds only with the background recording and window (b), p=0.094. It fails with
+      the annulus (p=0.035), the floor, no subtraction, F0 from images 2-40, and windows (a) and (c), where p <= 0.008.
+      The adopted reading was switched from the annulus to the background recording in the same round that the annulus
+      stopped meeting this claim; the reason given is plausible and was argued beforehand, but the switch should be
+      read as a forking path, and the record should say this plainly. If the darkest-pixel floor is the true camera
+      offset, fig2c fails (start 24.0%).
+    response: Outcome kept. The background deviation (on every tested claim), the notes, the notebook's background
+      section, the fig2c conclusion, the summary and the README now say plainly that the background recording was
+      adopted after the results under both readings had been seen, in the revision in which the annulus stopped
+      meeting this claim. The notes and the dark-frame finding say that under the floor reading the claim is not
+      met. The per-cell pole p-values (0.080 and 0.028) the report flags are what this run prints.
+  - claim: fig2d-lasting-reduction
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'One gap in the criterion: under annulus with F0 from images 2-40, the anodic-pole mean is 18.7%, inside
+      tolerance, so the partial clause ("size outside the tolerance under every reading") is not literally met either;
+      the reproduced clause also fails there, because a pre-exposure set has p=0.029. Partial is the sensible call,
+      and the notes explain it. evaluate() (cell 17) labels any significant post-exposure set "partial", which is
+      looser than the criterion; that affects only the 165-subset counts. The subset counts (fig2d met in 2, all three
+      in 1) and several set figures (0.019, 0.094, 0.026, 32.4/33.3, 0.051/0.109, 2.3) do not match the printed outputs
+      (3, 2, 0.018, 0.092, 0.025, 33.4, 0.050/0.107, 2.2).'
+    response: 'Outcome kept. The notes and the notebook now say that the 18.7% reading meets neither clause literally
+      and why partial is the closer description. evaluate() now labels partial only as the criterion words it and
+      counts a size within tolerance with a differing pre-exposure set apart (16 of 165 subsets under the background
+      recording); the reproduced counts are unchanged. On the mismatched figures: the entry was re-run here twice
+      (in float32 as before, and after switching the helper to float64), and both runs print the figures the text
+      gives (fig2d met in 2 subsets, all three in 1; 0.017, 0.018, 0.019, 0.094; 0.026; 32.4 and 33.3%, p 0.051 and
+      0.109; 2.3 to 30.4%), as did the author''s run of the previous revision. The verifier''s copy was executed
+      separately and differs in the third decimal; the likely cause is float32 sums rounding differently on another
+      CPU and moving a traced edge by a sampling step, so the helper now computes in float64. No outcome depends
+      on these differences.'
+  - claim: fig4d-short-pulses-same-limit
+    agrees: true
+    outcome: not_reproduced
+    reason: Both poles' maxima are out of tolerance under every reading (34.9 and 34.0% at most). The two missing cells
+      would each need |dF| above 100% to bring the mean into range, so the outcome does not actually rest on the
+      assumptions; assumed true is harmless but not needed. The Fig. 4D labels read from page 6 of the PDF could not
+      be checked (no poppler); no outcome depends on them.
+    response: assumed set to false, and the notes say the outcome does not rest on the background reading or the choice
+      of cells. The labels are unchanged.
+  - claim: fig5b-eq2-sensitivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: The 100-fold value (11.87%) matches; the 10-fold value (1.33%) does not. The criterion has no partial clause,
+      and the notes say so. Not assumed, correctly.
+    response: No change.
+  - claim: fig1-pattern-poles-leaky
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig2a-fluovolt-saturation
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig2a-fluovolt-baseline-stable
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig2a-fluovolt-stable-electroporating
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig2b-di8-climbs-to-570
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig2b-di8-bleaching-43
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig2b-di8-decline-within-set
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig3-dye-slopes
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig3-fluovolt-nonlinear
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig4a-fluovolt-limits
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig4b-di8-threshold-570
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig4b-first10-cathodic
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig4b-asymmetric-decline
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig4c-equator-cosine
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig5a-gd-anodic-extension
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig5a-gd-linear-to-780
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig5a-gd-cathodic
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig5a-gd-significant-points
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig5c-gd-reduces-conductivity
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig6a-single-pulse-ca
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig6b-train-ca
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig7a-test-pulse-cosine
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig7b-conditioning-sublinear
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig7b-test-pulse-recovery
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
+  - claim: fig7c-fast-resealing
+    agrees: true
+    outcome: blocked
+    reason: Yes, as in round 1 (data_missing).
+    response: No change.
