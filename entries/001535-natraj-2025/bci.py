@@ -20,7 +20,16 @@ each with its own handle on the file. `WORKERS` is a standard choice that cannot
 
 Per trial only summaries are kept: the length, the timestamp step, the L2 norm of each block of
 128 columns, the mean of each column over time, the largest absolute value, and a hash of the
-data, used to find trials deposited more than once.
+data, used to find trials deposited more than once. Also kept are the first and last `EDGE`
+samples of the channel-averaged high gamma (columns 0 to 127, which the data check finds
+non-negative), multiplied by sqrt(samples x 128) to undo the per-trial L2 scaling, so that the
+time course at a trial's start and end can be compared across trials of different lengths. For
+the trials asked for in `keep_binned`, the high gamma is kept in 200 ms bins per channel
+(`BIN_SAMPLES`, from the Methods, Spatial feature extraction, as the claims file's figs3 criterion
+gives it).
+
+`pool_2x2` forms the 2x2 pooling of Figure S3. The file has no electrodes table, so the place of
+each channel on B1's 8x16 grid is an assumption, passed in as `layout`.
 """
 
 from __future__ import annotations
@@ -40,6 +49,10 @@ ASSET_PATH = "sub-BRAVO1/sub-BRAVO1.nwb"
 SAMPLING_HZ = 100.0     # dandiset description: down-sampled to 100 Hz; checked against timestamps
 N_CHANNELS = 128        # Methods, ECoG array and implantation: B1 has a 128-channel 8x16 grid
 WORKERS = 16            # parallel readers; I/O bound, a standard choice
+EDGE = 100              # samples (1 s) kept at each end of a trial for the time course; a plotting choice
+BIN_SAMPLES = 20        # 200 ms bins at 100 Hz (figs3 criterion, Methods: Spatial feature extraction)
+SMOOTH_BINS = 5         # 1 s running average of 200 ms bins (same source)
+GRID = (8, 16)          # Methods, ECoG array and implantation
 
 
 def asset_url() -> str:
@@ -82,8 +95,13 @@ def file_metadata(url: str) -> dict:
     return meta, table
 
 
+def acquisition_names(url: str) -> list:
+    """Names of every object in the acquisition group (slow: minutes over the network)."""
+    return list(open_file(url)["acquisition"].keys())
+
+
 def _summarise(args):
-    url, ids = args
+    url, ids, keep = args
     f = open_file(url)
     rows = []
     for i in ids:
@@ -91,6 +109,7 @@ def _summarise(args):
         x = g["data"][:]
         ts = g["timestamps"][:]
         dt = np.diff(ts)
+        hg = x[:, :N_CHANNELS].mean(axis=1) * np.sqrt(x.shape[0] * N_CHANNELS)
         rows.append({
             "id": i,
             "n_samples": x.shape[0],
@@ -107,14 +126,41 @@ def _summarise(args):
             "n_nan": int(np.isnan(x).sum()),
             "hash": hashlib.sha1(np.ascontiguousarray(x).tobytes()).hexdigest(),
             "mean": x.mean(axis=0).astype(np.float32),
+            "hg_start": hg[:EDGE].astype(np.float32),
+            "hg_end": hg[-EDGE:].astype(np.float32),
+            "binned": _bin(x[:, :N_CHANNELS]) if i in keep else None,
         })
     return rows
 
 
-def trial_summaries(url: str, ids, workers: int = WORKERS) -> pd.DataFrame:
-    """Per-trial summaries for the given trial ids, read in parallel."""
+def _bin(x: np.ndarray) -> np.ndarray:
+    """Mean of each channel in consecutive 200 ms bins; a last partial bin is dropped."""
+    n = x.shape[0] // BIN_SAMPLES
+    return x[:n * BIN_SAMPLES].reshape(n, BIN_SAMPLES, -1).mean(axis=1).astype(np.float32)
+
+
+def running_mean(b: np.ndarray, k: int = SMOOTH_BINS) -> np.ndarray:
+    """Running average over k bins within a trial, valid part only."""
+    c = np.cumsum(np.vstack([np.zeros((1, b.shape[1])), b]), axis=0)
+    return (c[k:] - c[:-k]) / k
+
+
+def pool_2x2(b: np.ndarray, layout: np.ndarray) -> np.ndarray:
+    """2x2 pooling with stride 2 of binned channels (time, 128) placed on the 8x16 grid.
+
+    layout[r, c] is the column of the channel at grid row r, column c (an assumption: the file
+    gives no electrode positions). Returns (time, 32)."""
+    g = b[:, layout]                                   # (time, 8, 16)
+    t = g.shape[0]
+    return g.reshape(t, GRID[0] // 2, 2, GRID[1] // 2, 2).mean(axis=(2, 4)).reshape(t, -1)
+
+
+def trial_summaries(url: str, ids, workers: int = WORKERS, keep_binned=()) -> pd.DataFrame:
+    """Per-trial summaries for the given trial ids, read in parallel; binned high gamma is kept
+    for the ids in keep_binned."""
     ids = list(ids)
-    parts = [(url, ids[k::workers]) for k in range(workers)]
+    keep = set(int(i) for i in keep_binned)
+    parts = [(url, ids[k::workers], keep) for k in range(workers)]
     with ProcessPoolExecutor(workers) as pool:
         rows = [r for part in pool.map(_summarise, parts) for r in part]
     return pd.DataFrame(rows).sort_values("id").reset_index(drop=True)
