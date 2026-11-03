@@ -86,7 +86,7 @@ class Session:
     """Everything the analyses use from one file, read by streaming.
 
     Attributes: subject, session, epochs (n x 2), epoch_types, trials (DataFrame), pos (DataFrame
-    t, x, y, v), units (DataFrame: spikes, tetrode, region, row_region), channels (DataFrame of the
+    t, x, y, v), units (DataFrame: spikes, tetrode, region, row_region, group_region), channels (DataFrame of the
     LFP columns: col, tetrode, region, ref), lfp_ts (LFP timestamps), and the byte offset of the
     LFP array for range reads.
     """
@@ -129,7 +129,11 @@ class Session:
                 group=[f[r].name.split("/")[-1] for r in e["group"][:]],
             )
         )
+        self.ref_description = _s(e["referenced"].attrs.get("description", ""))
         tet_region = dict(zip(self.channels.tetrode, self.channels.region))
+        # the third reading of a unit's electrodes value: the number N of the electrode group
+        # "TetrodeN" (group names and labels disagree in every file; data check)
+        grp_region = dict(zip(self.channels.group.str.replace("Tetrode", "").astype(int), self.channels.region))
         st = f["units/spike_times"][:]
         idx = f["units/spike_times_index"][:]
         uel = f["units/electrodes"][:]
@@ -140,7 +144,21 @@ class Session:
                 tetrode=uel,
                 region=[tet_region.get(int(u), "?") for u in uel],
                 row_region=[locs[int(u)] if int(u) < len(locs) else "?" for u in uel],
+                group_region=[grp_region.get(int(u), "?") for u in uel],
             )
+        )
+        # inventory of the file, to show what it does and does not hold (data check)
+        def _keys(g):
+            return sorted(g.keys()) if isinstance(g, h5py.Group) else []
+
+        self.inventory = dict(
+            acquisition=_keys(f["acquisition"]) if "acquisition" in f else [],
+            stimulus=[k + "/" + x for k in _keys(f["stimulus"]) for x in _keys(f["stimulus"][k])] if "stimulus" in f else [],
+            processing={m: _keys(f["processing"][m]) for m in _keys(f["processing"])} if "processing" in f else {},
+            intervals=_keys(f["intervals"]) if "intervals" in f else [],
+            units_columns=_keys(f["units"]),
+            electrodes_columns=_keys(e),
+            trials_columns=_keys(tr),
         )
         self.units["n_spikes"] = [len(s) for s in spikes]
         self.units["sorted"] = [bool(np.all(np.diff(s) >= 0)) for s in spikes]
