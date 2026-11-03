@@ -27,7 +27,9 @@ reasoning and the differences from the paper's method.
 The dandiset has no tract or ROI masks. Which voxel belongs to which tract, CB subregion or target
 ROI is taken from the paper's source data in DANDI:001773, so the FA and seed results repeat the
 paper's statistics on the dandiset's values. Cells are counted here from the images, by an
-automatic approximation of the paper's FIJI counts that matches them in three of the four regions. The attempt
+automatic approximation of the paper's FIJI counts. It matches them in three of the four regions, but
+with a different size filter in different regions (10 pixels in the MCC-CB and dACC-CB of N and T, 50
+in the MCC-CB of D), and under no single setting in all four. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/001785-fujimoto-2026-01.yaml`](../../attempts/001785-fujimoto-2026-01.yaml).
 

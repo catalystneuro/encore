@@ -51,10 +51,17 @@ outcomes:
     within 5e-7, 199 by exact float32 equality and 6133 as the nearest value within 1e-6. 641 values
     have more than one candidate voxel (17 exact, 624 within 1e-6), so for about one value in ten the
     voxel itself is not identified; the candidates' values differ by at most 1.6e-6, and the tests
-    use values only. The lists repeat voxels within one monkey, session, side and tract (99 repeats
-    in the whole-tract list of N and T, 44 in the subregion list, 40 and 18 in the lists of D); each
-    repeat is the same value listed twice in the paper's sheet, and no voxel is matched by two
-    different values, so the paper's voxel n counts some voxels more than once. Pre and post values
+    use values only. The lists repeat voxels in two ways. Within one monkey, session, side and tract
+    there are 99 repeats in the whole-tract list of N and T, 44 in the subregion list, and 40 and 18
+    in the lists of D, each the same value listed twice in the paper's sheet. Across the tracts of
+    one session, 233 voxels of the whole-tract list of N and T are listed in two or more tracts (2
+    across sides), most often UF with FM or CB with UF on one side, as are 71 voxels of the
+    whole-tract list of D, 1 of the N and T subregion list and 18 of the D subregion list (dACC-CB
+    with MCC-CB). Each carries the same value in every tract it is listed in; for 23, 12, 1 and 3 of
+    them the value has more than one candidate voxel, so they may be two voxels of equal value, and
+    the others are one voxel in two tract lists, where the paper's tracts overlap. No voxel is
+    matched by two different values. So the paper's voxel n counts some voxels twice within a
+    tract, and some voxels enter the tests in more than one tract. Pre and post values
     are both found in the deposited maps, although these lie each in their own space. Since the
     values are the paper's and every tract and subregion selection is the paper's, the FA claims
     re-run the paper's statistics on its own data.
@@ -182,8 +189,10 @@ outcomes:
     0.055 to 0.068); the CC1 and DAPI counts do not differ (p = 0.29 to 0.80). With the paper's own
     counts the ratio does not differ (F = 2.93, p = 0.090), as reported, so the difference comes from
     the counts made here; in this region they correlate with the paper's at r = 0.98 for each
-    channel but run 8 to 14% higher, and DAPI counts are higher on the stimulated side (by 9
-    to 13 cells per field), which lowers the ratio there. The link holds in this region, but the
+    channel and run 8 to 14% higher with the smallest object 10 pixels (r = 0.94 and 0.98, 9 to 21%
+    lower, with 50 pixels), and DAPI counts are higher on the stimulated side (by 9
+    to 13 cells per field), which lowers the ratio there. The link holds in this region at 10
+    pixels, but the
     counting only approximates the paper's (link-if-counts), so the difference may come from the
     method of counting, not the tissue.
   deviations:
@@ -319,8 +328,9 @@ outcomes:
   - 1102
   notes: PrePost x side F(1,21967) = 51.09, p = 9.1e-13, as reported; the stimulated-side DMN (-0.064),
     LIM (-0.025) and CEN (-0.035) fall with Tukey-Kramer p at the floor. With the Methods' LIM
-    without area 25 the LIM still falls (p printed as 0, below the floor; interaction F = 61.6, error
-    df 21895).
+    without area 25 the LIM still falls (-0.029; interaction F = 61.6, error df 21895), but its
+    Tukey-Kramer p could not be computed (printed as 0 for every network, with scipy's warning that
+    the integral is probably divergent).
   deviations:
   - As for fig5b-scc-decreases. Networks as in the code (LIM with area 25), the Methods' LIM shown as
     a variant.
@@ -684,6 +694,250 @@ verifications:
     outcome: reproduced
     reason: No significant decrease in sham-side DMN, LIM or CEN (p >= 0.73). Counts 453/404 match.
     response: No change.
+- date: 2026-11-03
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims
+    file and the attempt record, with the paper. Report in transcripts/001785/verifier-2-report.md.
+    The verifier agreed with all 35 outcomes, and listed six sentences the printed numbers do not
+    support (2.1 to 2.6), all wording fixes; B3, the counting pipeline, it found unchanged and
+    bearing on ed6a-dacc-cb-no-change and ed6b-uf-fm-no-change.
+  results:
+  - claim: link-fc-voxels
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs. B4 is
+      resolved, 're-runs the paper's statistics on its own data' is now stated in cell 59, the
+      Summary, the README and the record notes.
+    response: No change.
+  - claim: link-fa-voxels
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B5 is resolved, the match path of each value is printed (199 exact, 6133
+      nearest), and the 641 ambiguous values have candidates that differ by at most 1.6e-6. But the
+      notes and the finding say each repeat is the same value listed twice; cell 9 checks only
+      within a monkey x session x side x tract group (99 repeats), while cell 8 implies 373 repeated
+      voxels for whole_NT, so at least 274 voxels are shared between different tracts or sides
+      within one session, never examined (overlapping tract masks or collisions among the ambiguous
+      nearest-value matches). This does not bear on a conclusion, because the tests use values only
+      (2.5).
+    response: Cell 9 now prints, per list and session, the voxels listed in two or more tracts or
+      sides, across which sides, whether with different values, and whether with an ambiguous match.
+      In the whole-tract list of N and T 233 voxels are listed in two or more tracts (2 across
+      sides), most often UF with FM or CB with UF on one side; all carry the same value in every
+      tract, none is matched by two different values, and 23 have an ambiguous match. The other
+      lists have 71, 1 and 18 such voxels. Cell 59, the notes and the finding now describe both
+      kinds of repeat. Outcome kept.
+  - claim: link-if-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The scatter plots are in cell 83 and the channel check in cell 82 (red counts
+      follow the sheet's CC1 column and lie below blue). The Summary's 'in none under one reading'
+      is false read literally, since at 10 pixels the link holds in two regions; cell 82 supports
+      'under no single reading in all four' (2.2). The README's 'matches them in three of the four
+      regions' reads as one procedure, though the three regions need different size filters, 10
+      pixels for N and T and 50 for D (2.3). B3, the counting pipeline, is stated openly but
+      unchanged.
+    response: 'The Summary now says ''under no single reading in all four'' and names the size
+      filter per region; the README says the three regions need different size filters and that no
+      single setting matches in all four. B3 is not changed: the paper does not give its FIJI
+      parameters, so no better-founded pipeline is available, and the question stays with the
+      paper''s authors (methods_unavailable finding). Outcome kept.'
+  - claim: ed1-behavior-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs. B10 is
+      resolved, the column headers are printed.
+    response: No change.
+  - claim: ed1-sham-no-behavior-change
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig2a-cb-fa-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig2a-no-other-tract-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: ed2-cb-both-monkeys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig2b-mcc-cb-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig3c-cc1-dapi-ratio-mcc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The IF outcomes rest on the author's own counting pipeline; the result holds
+      under every reading, and the claims file sets no dependency on link-if-counts, so it does not
+      turn on a single chosen value. The notes state the approximation.
+    response: No change.
+  - claim: ed5-cc1-count-dapi
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, on the same basis as fig3c-cc1-dapi-ratio-mcc: it holds under every reading,
+      and the notes state the approximation.'
+    response: No change.
+  - claim: ed6a-dacc-cb-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. B3 remains and bears on it: the ratio is significant under every reading, while
+      the paper''s own counts give p = 0.090. The scatter plots show a level offset in this region,
+      and the stimulated-side DAPI counts are higher by 9 to 13 cells per field; the not_reproduced
+      outcome may come from the method, not the tissue, as the record now says. The notes'' ''r =
+      0.98 for each channel but run 8 to 14% higher'' is true at 10 pixels only; at 50 pixels the
+      counts run 9 to 21% lower (CC1 0.792, DAPI 0.907), and the sentence should name the reading
+      (2.4).'
+    response: 'The notes now name the reading: 8 to 14% higher with 10 pixels, 9 to 21% lower (r =
+      0.94 and 0.98) with 50, and the link holds in this region at 10 pixels. B3 is not changed, as
+      for link-if-counts; no analysis available here shows the outcome should change. Outcome kept.'
+  - claim: ed6b-uf-fm-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The flag assumed was removed because the 40-field design gives the same outcome
+      under all four readings (cell 97); B2 and B11 are resolved. It is a claim of absence, and it
+      rests on counts that fail the link in that region under every reading (UF-FM holds False x4;
+      CC1 r 0.69 at 10 pixels); the smallest p is 0.0685. The outcome follows the criterion, but its
+      support is weak.
+    response: The notes already say the counts in this region do not pass the link. B3 is not
+      changed, as for link-if-counts. Outcome kept.
+  - claim: fig3f-gratio-decrease
+    agrees: true
+    outcome: blocked
+    reason: Agrees. B12 is resolved, fig3f now gives its reason category, and the EM sheet has no
+      axon positions (cell 12), so fig3f stays blocked.
+    response: No change.
+  - claim: fig4a-cortical-decrease-subcortical-increase
+    agrees: true
+    outcome: blocked
+    reason: Agrees. B8 is resolved, the two files in 001773 are named.
+    response: No change.
+  - claim: fig4b-dbs-widespread-roi-changes
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as fig4a.
+    response: No change.
+  - claim: fig4c-cortical-network-reduction
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as fig4a.
+    response: No change.
+  - claim: fig4-control-no-systematic-pattern
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as fig4a.
+    response: No change.
+  - claim: ed10c-sham-subcortical-decrease
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as fig4a.
+    response: No change.
+  - claim: fig5a-pre-scc-connectivity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig5b-scc-decreases
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs. B6 is
+      resolved, the floor of scipy's studentized range is stated.
+    response: No change.
+  - claim: fig5b-scc-increases
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: ed7-decreases-both-monkeys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig5-bilateral-changes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig5a-control-group-no-reduction
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. Blocked is right, because reading (a) cannot be run. The argument that leaving
+      out the cluster correction can only add clusters holds: the >20-voxel minimum is the paper''s
+      (Fig. 5a legend), and the correction is an extra requirement on top of it. B9 is resolved,
+      reading (b) without the correction finds no negative cluster above 20 voxels (cell 55).'
+    response: No change.
+  - claim: fig5c-network-decreases
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unaffected, since this is a variant. Cell 35 and the notes say
+      that with the Methods' LIM the LIM still falls 'p printed as 0, below the floor'. Cell 34
+      prints p = 0.0 for every network in that variant, with scipy's IntegrationWarning 'The
+      integral is probably divergent'. p = 0.0 there is an integration failure, not evidence that p
+      lies below the floor; 'not computable' is what the output shows (2.1).
+    response: Cell 35 and the notes now say the LIM falls in the variant (-0.029, interaction F =
+      61.6) but its Tukey-Kramer p could not be computed, printed as 0 for every network with
+      scipy's warning. Outcome kept.
+  - claim: fig5c-smn-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: disc-no-motor-roi-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig5c-vis-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig5bc-san-no-net-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig6a-sham-cb-fa-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig6b-sham-dacc-cb-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
+  - claim: fig6c-sham-cc1-no-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Blocked as methods_underspecified is reasonable. The size filter is the author's
+      parameter, but the paper gives none, and it reverses the outcome, p 0.31 at 10 pixels against
+      0.044 at 50 (cell 99). B1 is resolved, cell 100 states that the two readings disagree.
+    response: No change.
+  - claim: fig6d-sham-scc-little-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. B7 is as far as the data allow: D has one map per session, so no thresholded
+      map can be made, and the unthresholded change is reported instead. Cell 50''s ''this fits a
+      local increase at the implantation site'' is interpretation; the claims file says the local
+      increase is to be reported, not judged, and the printed numbers (top-10 changes, mean change
+      +0.0008) do not test it. It does not bear on a conclusion (2.6).'
+    response: The clause is removed from cell 50; the cell reports the ten largest increases and the
+      mean change only. Outcome kept.
+  - claim: fig6e-sham-no-network-reduction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence matches the printed outputs.
+    response: No change.
 findings:
 - kind: format_error
   statement: dataset_description.json is not valid JSON, so BIDS tools cannot read it; the second
@@ -731,10 +985,12 @@ findings:
     per inch) and no channel names; red holding CC1 and blue holding DAPI is inferred from the
     paper's labels. The sections differ in bit depth (8-bit for N603, N613, N623; 16-bit elsewhere).
 - kind: other
-  statement: The paper's per-voxel FA lists repeat voxels within one tract and session (for example
-    904 values over 833 distinct voxels for the pre-DBS tracts of N; each repeat is the same value
-    listed twice), so the voxel n of the FA tests counts some voxels more than once. The paper does
-    not explain the repeats.
+  statement: The paper's per-voxel FA lists repeat voxels. Within one tract, side and session the same
+    value is listed twice (99 times in the whole-tract list of N and T, 44 in its subregion list, 40
+    and 18 in the lists of D), so the voxel n of the FA tests counts some voxels twice. Other voxels
+    are listed, with the same value, in two or more tracts of one session (233 in the whole-tract
+    list of N and T, mostly UF with FM or CB with UF on one side; 71, 1 and 18 in the other lists).
+    The paper does not explain either kind of repeat.
 - kind: paper_inconsistency
   statement: Extended Data Fig. 6b legend gives the UF-FM DAPI side effect as F 1,76 = 0, P = 0.9611,
     partial eta squared 4.97e-05. The paper's own per-field counts (CC1_UF-FMoverlap_data_a.xlsx,
