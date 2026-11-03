@@ -34,7 +34,8 @@ Where each parameter comes from:
   bins of 4.2 cm).
 - Single-basis regressions (Supplementary Fig. 6): equation (3) with the centre at the value of
   maximal averaged activity (Online Methods, Regression analysis); the free width is profiled
-  over a grid of 25 values (an assumption standing in for four optimizer starts); sound intensity
+  over a grid of 25 values and refined by a bounded optimizer between the neighbouring grid
+  values (an assumption standing in for four optimizer starts); sound intensity
   100 dB SPL at 25 cm, 6 dB lower per doubling (Online Methods, Behavioral training); readings of
   frames (O6) and of the intensity below 25 cm from the claims file.
 """
@@ -44,7 +45,7 @@ import numpy as np
 import h5py
 import remfile
 import requests
-from scipy import sparse, stats
+from scipy import optimize, sparse, stats
 from scipy.ndimage import uniform_filter1d, gaussian_filter1d
 
 DANDISET = "001605"
@@ -150,11 +151,35 @@ def load_session(path, asset_id, dff=True):
         trials=dict(s0=s0, nfr=nfr, gd=gd, state=state, goal_f=goal_f, rew_f=rew_f, lick_f=lick_f,
                     reward_s=reward_s, valid=valid, t0=t0),
         n_speaker_rows=len(f["intervals/speaker_presentations/start_time"]),
+        checks=_file_checks(f, t0, nfr, T, rew_t),
     )
     if dff:
         out["dff"] = f["processing/ophys/DfOverF/dF_over_F/data"][:].astype(np.float32)
     f.close()
     return out
+
+
+def _file_checks(f, t0, nfr, T, rew_t):
+    """Checks of the file against its description (verifier round 1): where the rows of
+    speaker_presentations fall relative to the trial starts and how long they last, whether
+    the trial table's frames sum to the series length, and the sampling rate of each series."""
+    sp = f["intervals/speaker_presentations"]
+    st, et = sp["start_time"][:], sp["stop_time"][:]
+    near = np.abs(st[:, None] - t0[None, :]).min(1)
+    per_trial = np.bincount(np.searchsorted(t0, st + 1e-9) - 1, minlength=len(t0))
+    b = f["processing/behavior"]
+    rates = {k: float(b[k]["starting_time"].attrs["rate"]) for k in
+             ("VirtualMovement/move_scan", "Licking/lick_rate", "Sound/sound_on_off", "Speed/speed_x")}
+    ophys = f["processing/ophys/DfOverF/dF_over_F"]
+    rates["dF_over_F"] = float(ophys["starting_time"].attrs["rate"]) if "starting_time" in ophys else float("nan")
+    return dict(speaker_start_to_trial_start_max_s=float(near.max()),
+                speaker_durations_s=sorted(set(np.round(et - st, 5).tolist())),
+                speaker_unique_starts=int(len(np.unique(st))),
+                speaker_rows_per_trial=(int(per_trial.min()), int(per_trial.max())),
+                speaker_ids=sorted(set(sp["speaker_id"][:].tolist())),
+                frames_sum_equals_T=bool(int(nfr.sum()) == T),
+                trial_start_vs_frames_max_s=float(np.abs(np.diff(t0) - nfr[:-1] / FS).max()),
+                rates=rates, n_reward_timestamps=int(len(rew_t)))
 
 
 # ---------------------------------------------------------------- behaviour
@@ -493,6 +518,9 @@ def summarize(s):
                lick_slope=ls, lick_slope_speed=lsp, zone_a=za, zone_b=zb,
                first_lick_cm=np.where(tr["lick_f"] >= 0, s["pos"][np.maximum(tr["lick_f"], 0)], np.nan),
                first_lick_any_cm=first_lick_any(s),
+               first_lick_bout_cm=first_lick_bout(s),
+               lick_form=lick_form(s),
+               checks=s["checks"],
                sound_frames=int((s["sound"] > 0).sum()),
                sound_at_start=int((s["sound"][tr["s0"]] > 0).sum()),
                ranges=dict(pos=(float(s["pos"].min()), float(s["pos"].max())),
@@ -532,6 +560,48 @@ def first_lick_any(s):
     return out
 
 
+def first_lick_bout(s):
+    """Variant lick onset: the first frame beyond 33 cm from the start where the lick frequency
+    turns from 0 to a non-zero value, the start of a bout (start-to-lick distance, cm)."""
+    tr = s["trials"]
+    rise = (s["lick"] > 0) & (np.r_[0.0, s["lick"][:-1]] == 0)
+    out = np.full(len(tr["gd"]), np.nan)
+    for k in range(len(tr["gd"])):
+        a, e = tr["s0"][k], tr["s0"][k] + tr["nfr"][k]
+        i = np.flatnonzero(rise[a:e] & (s["pos"][a:e] > LICK_START_CM))
+        if len(i):
+            out[k] = s["pos"][a + i[0]]
+    return out
+
+
+def lick_form(s):
+    """The form of the lick frequency (verifier round 1): the fraction of frames at 0 Hz, over
+    the session and from the start to 33 cm in valid trials; the fraction of valid trials whose
+    frequency is non-zero at the frame where the mouse passes 33 cm; the lengths of runs of one
+    held non-zero value; and a sample trace around the first lick onset of the first valid trial."""
+    tr, lk = s["trials"], s["lick"]
+    v = np.flatnonzero(tr["valid"])
+    pre = np.concatenate([np.arange(tr["s0"][k], tr["s0"][k] + tr["nfr"][k])[s["pos"][tr["s0"][k]:tr["s0"][k] + tr["nfr"][k]] <= LICK_START_CM]
+                          for k in v])
+    at33 = []
+    for k in v:
+        a, e = tr["s0"][k], tr["s0"][k] + tr["nfr"][k]
+        j = np.flatnonzero(s["pos"][a:e] > LICK_START_CM)
+        if len(j):
+            at33.append(lk[a + j[0]] > 0)
+    ch = np.flatnonzero(np.diff(lk) != 0) + 1
+    runs = np.diff(np.r_[0, ch, len(lk)])
+    vals = lk[np.r_[0, ch]]
+    held = runs[(vals > 0) & (vals < 10)]
+    k = v[0]
+    f0 = tr["lick_f"][k] if tr["lick_f"][k] >= 0 else tr["s0"][k]
+    w = np.arange(max(f0 - 20, 0), min(f0 + 40, len(lk)))
+    return dict(zero_frac=float((lk == 0).mean()), zero_frac_before33=float((lk[pre] == 0).mean()),
+                nonzero_at33_frac=float(np.mean(at33)) if at33 else np.nan,
+                held_run_frames=np.percentile(held, [5, 50, 95]).tolist() if len(held) else [np.nan] * 3,
+                sample=dict(frame=(w - f0).tolist(), pos=np.round(s["pos"][w], 2).tolist(), lick=np.round(lk[w], 2).tolist()))
+
+
 # ---------------------------------------------------------------- single-basis regression (Supplementary Fig. 6)
 
 WIDTHS = np.geomspace(0.5, 200.0, 25)          # profile grid for the free width s
@@ -567,7 +637,9 @@ def step_distance(s, frames):
 def fit_single(y, v, binw, smooth):
     """y = b0 + b1 phi(v), phi Gaussian with centre at the value of maximal averaged activity
     (equation 3) and width profiled over WIDTHS by least squares (a grid in place of four
-    initial values of an optimizer). Returns RMSE, width and b1 per neuron."""
+    initial values of an optimizer), then refined by a bounded scalar optimizer of log width
+    between the neighbours of the best grid value, so the widths are not quantized to the grid.
+    Returns RMSE, width and b1 per neuron."""
     nb = int(np.ceil((v.max() - v.min()) / binw)) + 1
     b = ((v - v.min()) / binw).astype(int)
     cnt = np.bincount(b, minlength=nb)
@@ -585,8 +657,23 @@ def fit_single(y, v, binw, smooth):
         spp = (phc ** 2).sum(0); spy = phc.T @ yc[:, i]
         sse = syy[i] - np.where(spp > 1e-12, spy ** 2 / np.maximum(spp, 1e-12), 0)
         k = int(np.argmin(sse))
-        rmse[i] = np.sqrt(max(sse[k], 0) / len(v)); wid[i] = WIDTHS[k]; beta[i] = spy[k] / max(spp[k], 1e-12)
+        lo, hi = np.log(WIDTHS[max(k - 1, 0)]), np.log(WIDTHS[min(k + 1, len(WIDTHS) - 1)])
+        res = optimize.minimize_scalar(lambda lw: _sse_at(np.exp(lw), d2, yc[:, i], syy[i])[0], bounds=(lo, hi),
+                                       method="bounded", options=dict(xatol=1e-3))
+        w = float(np.exp(res.x)) if res.fun < sse[k] else WIDTHS[k]
+        e, b1 = _sse_at(w, d2, yc[:, i], syy[i])
+        rmse[i] = np.sqrt(max(e, 0) / len(v)); wid[i] = w; beta[i] = b1
     return rmse, wid, beta
+
+
+def _sse_at(w, d2, yc, syy):
+    """Sum of squared errors and b1 of y = b0 + b1 phi at width w (centred y)."""
+    phi = np.exp(-d2 / (2 * w ** 2))
+    phc = phi - phi.mean()
+    spp = float(phc @ phc); spy = float(phc @ yc)
+    if spp <= 1e-12:
+        return syy, 0.0
+    return syy - spy ** 2 / spp, spy / spp
 
 
 def regressions(s, neurons):

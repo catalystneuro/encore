@@ -9,21 +9,23 @@ virtual navigation. The muscimol experiment and the sound-mapping trials are not
 |---|---|
 | Session and neuron counts (94 sessions, 41,031 neurons) | Reproduced |
 | Time to reward and time per no-sound zone | Not reproduced |
-| Start-to-lick distance correlates with goal distance in every session | Partially reproduced |
-| Licking rises in no-sound zones (Fig. 1c); faster mice lick more steeply (Supp. Fig. 1) | Reproduced |
+| Start-to-lick distance correlates with goal distance in every session | Not reproduced |
+| Licking rises in no-sound zones (Fig. 1c) | Reproduced |
+| Faster mice lick more steeply without sound (Supp. Fig. 1) | Blocked: methods underspecified |
 | Muscimol experiment (five claims) and sound-responsive neurons | Blocked: data missing |
 | Counts of goal-distance and after-reaching neurons; task-relevant percentages | Not reproduced |
 | PPC has more goal-distance neurons than PM | Reproduced |
-| After- against before-reaching neurons; layer distance preference | Reproduced (assumption) |
+| After- against before-reaching neurons; layer distance preference | Blocked: methods underspecified |
 | Distance or time in single-neuron regressions (Fig. 3b) | Blocked: too large |
 | Distance fits better than Step or Sound (Supp. Fig. 6) | Partially reproduced |
 | Tuning curves similar between PPC and PM | Blocked: methods underspecified |
-| Ramping of after-reaching neurons with and without sound (Fig. 3c, Supp. Fig. 8a,b) | Reproduced (two with assumptions) |
-| PPC steeper than PM without sound (Supp. Fig. 8c) | Partially reproduced (assumption) |
-| PPC preserves distance preference more than PM (Supp. Fig. 9) | Reproduced (assumption) |
-| Decoding above chance; PPC lower error, better MAP near the goal, lower uncertainty (Fig. 4) | Reproduced (assumptions) |
+| Ramping of after-reaching neurons in the continuous condition and in PPC without sound (Fig. 3c) | Reproduced |
+| PM slopes without sound, slopes lower without sound, PPC steeper than PM (Supp. Fig. 8) | Blocked: methods underspecified |
+| PPC preserves distance preference more than PM (Supp. Fig. 9) | Not reproduced |
+| Decoding above chance; PPC lower error; better MAP near the goal (Fig. 4b-d) | Blocked: methods underspecified |
+| PPC lower uncertainty (Fig. 4e) | Partially reproduced |
 | Sound reduces decoding error (Supp. Fig. 11) | Reproduced |
-| MAP follows distance in the continuous condition; falls in most intermittent zones | Reproduced; partially reproduced |
+| MAP follows distance in the continuous condition; falls in every intermittent zone of PPC layers 3 and 5 | Reproduced; not reproduced |
 | MAP slopes lower and uncertainty falls less without sound (Fig. 5b-d) | Reproduced |
 | PPC layer 3 steeper than layer 2; fast trials steeper (Supp. Fig. 13); log-normal decoder better | Not reproduced |
 | SVM decoders and neural correlations | Blocked: too large |
@@ -31,9 +33,10 @@ virtual navigation. The muscimol experiment and the sound-mapping trials are not
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-Several outcomes rest on one assumption: the baseline of the task-relevance t-test is zero (the
-session mean of R). Under it, 91 of 94 sessions have goal-distance neurons, as the paper
-reports. The attempt record, with the reasons and the differences from the paper's method, is
+Where the readings of a method detail the claims file names give different outcomes (the
+baseline of the task-relevance t-test, the trace, the chance level, the bin width), the claim is
+blocked as methods underspecified, as the claims file directs, and the result of every reading
+is shown. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001605-funamizu-2016-01.yaml`](../../attempts/001605-funamizu-2016-01.yaml).
 
 - `reproduce_funamizu_2016.ipynb`: the analysis. It takes about 25 minutes, most of it streaming
