@@ -385,7 +385,7 @@ outcomes:
     with the rewarded well on 99.85% of rewarded trials).
 - claim: fig4d-ccg-lags
   outcome: blocked
-  blocked_by: methods_underspecified
+  blocked_by: data_missing
   notebook: reproduce_symanski_2022.ipynb
   output: claim:fig4d-ccg-lags
   notes: The window and threshold readings differ under the main rule (9.5 Hz). Window b (last 0.5 s)
@@ -399,17 +399,10 @@ outcomes:
     type is skewed (p >= 0.33). Pair counts tested 130, 410, 176 and 458 (9.5 Hz) against the paper's
     significant 87, 283, 111 and 224. Question for the authors (findings), the window and the significance
     band. The rate rule changes the outcome (by the 7 Hz rule every reading gives not reproduced, by the
-    9.5 Hz rule the readings disagree), so the main cause is the missing spike width; the change of cause
-    is proposed below.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: The outcome depends on the interneuron rule. By the 7 Hz rule every window and threshold
-      reading gives not reproduced (no pair type skewed, smallest p 0.219); by the 9.5 Hz rule the readings
-      disagree (window b int-int p = 0.042 and 0.046, window a p >= 0.71). Neither rate-only rule is the
-      Methods' rule (rate over 7 Hz and width under 0.3 ms), and the files hold no spike widths, so the
-      claim is blocked for missing data in the first place; the window and band questions remain (methods
-      underspecified, a second reason). Notebook, "Proposed changes of outcome".
+    9.5 Hz rule the readings disagree). Neither rate-only rule is the Methods' rule (rate over 7 Hz and
+    width under 0.3 ms), and the files hold no spike widths, so the main cause is the missing width (data
+    missing), agreed in the third verification round; the window and band questions are a second reason
+    (methods underspecified).
   deviations:
   - Assumption. The files hold no waveforms or spike widths, so the Methods' rule (rate over 7 Hz and
     width under 0.3 ms) cannot be applied and its width part is missing data. Interneurons are defined
@@ -475,23 +468,17 @@ outcomes:
     in the claims file's opening comment), the rule the code applies without widths; the Methods' 7 Hz
     threshold alone is shown beside it.
 - claim: fig5gh-phase-preference
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_symanski_2022.ipynb
   output: claim:fig5gh-phase-preference
-  assumed: true
   notes: Main rule (9.5 Hz), all eight tests hold under both selections, CA1 pyramidal beta p = 3.0e-6,
     RR p = 0.0017; CA1 interneurons p = 9.5e-5, 3.3e-7; PFC interneuron RR p = 2.2e-4; PFC pyramidal beta
     p = 0.86, RR p = 0.94; PFC interneuron beta p = 0.054 and 0.051 (paper p > 0.05), close to the threshold.
-    By the 7 Hz rule PFC interneuron beta p = 0.0063 and 0.0070, seven of eight, partial. The outcome
-    rests on the rate-only rule; a change to blocked (data missing) is proposed below.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: The two rate-only interneuron rules give different outcomes (9.5 Hz, all eight tests hold;
-      7 Hz, seven of eight, PFC interneuron beta p = 0.0063 and 0.0070). The claims file follows the
-      Methods and names the code's 9.5 Hz as a variant; the Methods' rule needs spike widths, which the
-      files lack, and nothing in the paper prefers one rate-only rule. The outcome therefore rests on
-      the missing width. Notebook, "Proposed changes of outcome".
+    By the 7 Hz rule PFC interneuron beta p = 0.0063 and 0.0070, seven of eight, partial. The two rate-only
+    rules give different outcomes; the claims file follows the Methods and names the code's 9.5 Hz as
+    a variant, and the Methods' rule needs spike widths, which the files lack. The outcome therefore rests
+    on the missing width, so the claim is blocked (data missing), agreed in the third verification round.
   deviations:
   - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
     'zero-phase IIR filter' (Local field potential) without an order.
@@ -501,23 +488,17 @@ outcomes:
     in the claims file's opening comment), the rule the code applies without widths; the Methods' 7 Hz
     threshold alone is shown beside it.
 - claim: fig5-rr-more-than-beta
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_symanski_2022.ipynb
   output: claim:fig5-rr-more-than-beta
-  assumed: true
   notes: Proportions RR against beta, CA1 166 against 72 of 226, PFC 49 against 12 of 210 (local; z-test
     p = 8.3e-19 and 3.0e-7); CA1 or PFC LFP 179 against 85 and 73 against 25 (p = 3.0e-19 and 3.1e-8).
     Pyramidal Rayleigh Z RR against beta, main rule (9.5 Hz), CA1 13.2 against 0.99 (p = 4.0e-21), PFC
-    1.04 against 0.81 (p = 0.037). By the 7 Hz rule PFC 0.89 against 0.77 (p = 0.091), which fails. The
-    outcome rests on the rate-only rule; a change to blocked (data missing) is proposed below.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: The two rate-only interneuron rules give different outcomes (9.5 Hz, PFC pyramidal Rayleigh
-      Z RR against beta p = 0.037 and every part holds; 7 Hz, p = 0.091 and the claim is not reproduced).
-      The claims file follows the Methods and names the code's 9.5 Hz as a variant; the Methods' rule
-      needs spike widths, which the files lack, and nothing in the paper prefers one rate-only rule. The
-      outcome therefore rests on the missing width. Notebook, "Proposed changes of outcome".
+    1.04 against 0.81 (p = 0.037). By the 7 Hz rule PFC 0.89 against 0.77 (p = 0.091), which fails. Every
+    part holds at 9.5 Hz and the claim is not reproduced at 7 Hz; the rule changes which cells count as
+    pyramidal, and the Methods' rule needs spike widths, which the files lack. The outcome therefore rests
+    on the missing width, so the claim is blocked (data missing), agreed in the third verification round.
   deviations:
   - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
     'zero-phase IIR filter' (Local field potential) without an order.
@@ -879,7 +860,8 @@ findings:
     thermocouple signal, no air-only sessions and no sleep epochs; an inventory of every object in the
     38 files finds none of them. Three claims cannot be tested, and every claim that separates pyramidal
     cells from interneurons rests on a rate-only rule. The two rate-only rules (the Methods' 7 Hz alone and the code's 9.5 Hz)
-    give different outcomes for three claims (fig5gh-phase-preference, fig5-rr-more-than-beta, fig4d-ccg-lags).
+    give different outcomes for three claims (fig5gh-phase-preference, fig5-rr-more-than-beta, fig4d-ccg-lags),
+    which are blocked for this reason.
 - kind: other
   statement: The acquisition ElectricalSeries is a copy of the processed LFP in every file (equal on the
     stretch checked), which doubles the dandiset to 95 GB; the LFP is stored as uncompressed, unchunked
@@ -1541,3 +1523,53 @@ verifications:
     outcome: reproduced
     reason: I agree with 43 of the 47 outcomes.
     response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3, run 41605453226; same harness, separate context,
+    did not write the notebook)
+  reviewed: The three changes of outcome proposed after round 2 (fig5gh-phase-preference, fig5-rr-more-than-beta,
+    fig4d-ccg-lags), in the full executed notebook of the author-revise-2 run (commit fe2125e1), with the
+    attempt record, the README, the helper module and the claims file. Only these three claims were reviewed.
+  results:
+  - claim: fig5gh-phase-preference
+    agrees: true
+    outcome: blocked
+    reason: The numbers come from the data (cell 102, Rayleigh test on each task-responsive cell's mean
+      phase per region, cell type, band and selection; cell 176 summarises them correctly). With the 9.5
+      Hz rule all 8 tests hold, but the PFC interneuron beta p is 0.054 (selection a) and 0.051 (selection
+      b), just over the threshold. With the 7 Hz rule that same p is 0.0063 and 0.0070, so 7 of 8 tests
+      hold, the partial band. The claims file's opening comment defines interneurons by the Methods' rule
+      (rate over 7 Hz and spike width under 0.3 ms) and lists the code's 9.5 Hz rule as a variant. The
+      files hold no spike widths, so neither rate-only rule is the defined rule. The two rules give different
+      outcomes, so the outcome depends on missing data, and calling it blocked removes a reading the author
+      chose.
+    response: Changed to blocked (data_missing); the assumed flag is removed, and the notebook's conclusion,
+      the summary and the README now give the blocked outcome.
+  - claim: fig5-rr-more-than-beta
+    agrees: true
+    outcome: blocked
+    reason: The numbers come from the data in cell 105. The proportion tests hold under both rules and
+      every reading (CA1 166 against 72 of 226, PFC 49 against 12 of 210, p <= 3.1e-8 in every case). The
+      PFC pyramidal comparison of Rayleigh Z (RR against beta, rank-sum) gives p = 0.037 with the 9.5 Hz
+      rule (medians 1.04 against 0.81) and p = 0.091 with the 7 Hz rule (0.89 against 0.77). The criterion
+      needs every part to hold and has no partial band, so the outcome is reproduced at 9.5 Hz and not
+      reproduced at 7 Hz. The rule changes which cells count as pyramidal, so the deciding part depends
+      on the missing width. The criterion's own blocked clause (methods_underspecified) covers only the
+      LFP readings, which agree, so data_missing is the right cause.
+    response: Changed to blocked (data_missing); the assumed flag is removed, and the notebook's conclusion,
+      the summary and the README now give the blocked outcome.
+  - claim: fig4d-ccg-lags
+    agrees: true
+    outcome: blocked
+    reason: The numbers come from the data in cell 90 (jittered cross-correlograms, signed-rank test per
+      rule, window, threshold and pair type), and cell 176 summarises them correctly. With the 7 Hz rule
+      no pair type is skewed under any window or threshold (smallest p = 0.219), so every reading gives
+      not reproduced. With the 9.5 Hz rule the readings disagree (window b int-int p = 0.042 and 0.046,
+      2 of 4 parts, partial; window a int-int p >= 0.71, not reproduced). The rate rule decides whether
+      the readings disagree at all, so the first cause is the missing width; the criterion's methods_underspecified
+      clause remains the second reason. Only the recorded cause changes. A caveat that does not change
+      the outcome, the window-b skew comes from pointwise thresholds that keep 127 to 130 of the 130 pairs,
+      and with the global band no type is skewed (p >= 0.33).
+    response: Changed the cause to data_missing, with methods underspecified (the window and band) named
+      as a second reason in the notes. The caveat on the pointwise thresholds was already in the notes and
+      the notebook and is kept.
