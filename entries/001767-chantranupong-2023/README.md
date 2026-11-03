@@ -17,7 +17,9 @@ experiments are not in it.
 | GLMs (Extended Data Figs. 5, 6h, 11b,c; five claims) | 2 partially, 1 not reproduced, 2 blocked: methods underspecified |
 | Slice, histology, head-fixed, DAN-inhibition and CIN-stimulation experiments, Fig. 3d (seven claims) | Blocked: data missing |
 
-The counts by claim are in the attempt record. A failure to reproduce here may be a failure of this attempt, not of the paper:
+The counts by claim are in the attempt record. After the second verification round a change to not reproduced is proposed
+for three claims (fig1e-reward-outcome-not-pre, ed8g-vls-telc-ach-suppressed, ed11-cko-glm-r2); a third round reviews it,
+and the table gives the outcomes as they stand. A failure to reproduce here may be a failure of this attempt, not of the paper:
 see the reasoning and the differences from the paper's method.
 
 The files carry no figure, cohort or genotype labels; they come from `manuscript_sessions.csv` of the dandiset's export code,

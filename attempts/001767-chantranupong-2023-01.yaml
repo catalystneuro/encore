@@ -99,7 +99,15 @@ outcomes:
   notes: Before side entry 6 of 14 DA mice differ significantly under W1 and under the code's window,
     all lower in unrewarded trials (median -0.05 z, T2 p = 0.0045), and 7 of 14 under W2, which is not
     fewer than half. For Ach 3 of 16 mice differ under W1 and W2 (2 under the code's window), all opposite
-    to the post effect. The outcome takes W1.
+    to the post effect. The outcome takes W1. The criterion names W1 and W2 and does not leave the choice
+    open, and W2 fails it, so a change to not reproduced is proposed. The count rests on one DA mouse more
+    than the paper's 13, which cannot be identified.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion judges the pre window under readings W1 and W2 and does not leave the window to
+      the author. Under W2, 7 of 14 DA mice differ significantly before side entry, which is not fewer than
+      half. The Fig. 1 scripts' own window (-18 to 0) includes the side-entry sample, so they do not support
+      W1 over W2. Shown in the fig1e cell (W1 6, W2 7, code window 6 of 14).
   deviations:
   - The window readings disagree for DA (W1 6 of 14, W2 7 of 14 against a rule of fewer than half). Assumed
     W1, in which 'before side entry' excludes the side-entry sample, as the paper's Fig. 1f, Fig. 3 and
@@ -158,6 +166,10 @@ outcomes:
   - The cue-omission sessions and their cued pairs are taken from the paper's aa_processStats_Fig1_DA_Ach_LED.m
     (WT62 to WT65, 2021-11-22 against 11-08 or 11-10); nothing in the files marks them, and their LED
     channel still has onsets.
+  - Assumed that the sessions of the script's list are the cue-omission sessions. The paper's own code is
+    the only source that names them, and the files' LED channels show cue onsets in every trial of those
+    sessions, so the files cannot confirm it.
+  assumed: true
 - claim: fig1g-history-stay
   outcome: reproduced
   notebook: reproduce_chantranupong_2023.ipynb
@@ -198,8 +210,9 @@ outcomes:
   notebook: reproduce_chantranupong_2023.ipynb
   output: claim:ed4bc-iti-port-entries
   notes: Isolated ITI side entries are few (median 6 per DA mouse and 7.5 per Ach mouse, range 1 to 53).
-    After side entry DA is lower in unrewarded trials in 7 (W1) and 8 (W2) of 14 DA mice with T1 p < 0.05;
-    before side entry higher in 5 of 14. The Ach minimum after side entry is higher in 1 mouse and lower
+    Of the 14 DA mice 12 have more than one isolated ITI entry and can be tested. After side entry DA is
+    lower in unrewarded trials in 7 (W1) and 8 (W2) of these 12 with T1 p < 0.05, more than half under both;
+    before side entry higher in 5 of 12. The Ach minimum after side entry is higher in 1 mouse and lower
     in 1 (W1), and before it lower in 5, opposite to the stated direction. Delta-Ach, shown as a variant,
     gives no consistent effect either.
   deviations:
@@ -232,11 +245,13 @@ outcomes:
   output: claim:ed5f-leave-out
   notes: The criterion fails under every one of the 12 GLM readings, so the open readings of ed5-base-glm-r2
     do not change the outcome. Leaving out reward raises the DA validation MSE beyond the full model's
-    range under all 12 (rise 0.021 to 0.030); leaving out side entry does not under any (rise 0.003 to
-    0.008). For Ach, leaving out side entry raises it beyond the range with P1 only, reward under 5 of
+    range under all 6 DA readings (P1 and P2 by G1 to G3; rise 0.021 to 0.030); leaving out side entry
+    does not under any (rise 0.003 to 0.008). For Ach, leaving out side entry raises it beyond the range with P1 only, reward under 5 of
     6 readings, lick under G1 and G3 with P1, side exit under none (rise 0.008 to 0.012). Leaving out
-    centre entry or centre exit keeps the median within the full model's range under 11 of 12 readings;
-    with P2 and G3 the DA median without centre entry falls just below it (0.7631 against 0.7632).
+    centre entry or centre exit keeps the median within the full model's range in 11 of the 12 signal-reading
+    pairs; with P2 and G3 the DA median without centre entry falls just below it (0.7631 against 0.7632).
+    The criterion fixes Y = 10 runs; with the first 3 runs, a variant, no reading has every part hold for
+    both signals.
   deviations:
   - The test MSE splits are shared by the base and history models of each signal (one set of 10 runs).
   - Cohorts are selected by the figure and genotype labels of the export table manuscript_sessions.csv
@@ -324,7 +339,10 @@ outcomes:
     Ach 0.268 to 0.366 (0.349 to 0.427, inside under G2 and G3). The criterion fails under every reading.
     The DA kernel that predicts Ach has its most negative coefficient at +1 sample (54 ms, Ach following
     DA) in every model and reading (-0.098 to -0.117); the Ach kernel that predicts DA has its minimum
-    at -1 sample, the predicted DA preceding the predictor. The measured values are G1 with P1.'
+    at -1 sample, the predicted DA preceding the predictor. Y = 3 gives the same R2 to within 0.001. The
+    criterion''s requirement that the predicted signal follow the predictor in both models is asked of
+    a reader (questions/001767.yaml); it does not change the outcome. The measured values are G1 with
+    P1.'
   deviations:
   - The other channel's z-scored signal enters with the 41 shifts of the event predictors; the legend's
     kernels are from the GLM with behavioural, history and photometry variables (Fig. 2h legend).
@@ -396,7 +414,15 @@ outcomes:
     is lower in the TelC hemisphere in all 4 mice under both F0 readings (median F0 0.013 against 0.019,
     0.005 against 0.021, 0.005 against 0.051, 0.006 against 0.042). Under reading (a) z-scored delta-Ach
     is lower with T1 p < 0.05 in 1 mouse under W1 and 3 under W2, and higher in S952 under both. The readings
-    disagree; the outcome takes (b).
+    disagree; the outcome takes (b). The criterion requires Ach to be lower under each reading, and (a)
+    fails, so a change to not reproduced is proposed.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion says "Reproduced when, under each reading, Ach is lower in the TelC hemisphere
+      in every one of the 4 mice", so it does not leave the reading to the author. Under reading (a) S952
+      is significantly higher in the TelC hemisphere under W1 and W2, S950 is not lower under W1 and S1143
+      has p = 0.073 under W1 (ed8g cell). The point that z-scoring hides a loss of amplitude questions the
+      criterion and is not a ground to choose reading (b).
   deviations:
   - Assumed reading (b), dF/F0; z-scoring each channel separately removes the loss of amplitude TelC causes,
     as the claims file notes, and the paper's in vivo TelC validation (Fig. 3d) is in dF/F0.
@@ -448,7 +474,7 @@ outcomes:
     stored; no session illuminating the Chrimson hemisphere is in the dataset. As run on the left dLight1.1,
     stimulated trials have a smaller peak change than unstimulated ones (1.466 against 1.663 z, lower
     in 7 of 7 mice, paired p = 5.6e-06), and the trace is lower during the laser (-0.44 against +0.01
-    z); neither tests CIN activation. Decision time (1.41 against 1.44 s, p = 0.090) and side-port occupancy
+    z); neither tests CIN activation, and the data do not explain that dip. Decision time (1.41 against 1.44 s, p = 0.090) and side-port occupancy
     (2.10 against 2.10 s, p = 0.997) do not differ with the laser. Bursts last 18 to 20 samples (1.0 s),
     where the Methods give 1.5 s.'
   deviations:
@@ -513,7 +539,16 @@ outcomes:
     the run bands apart for all eight histories under 5 of 6 readings (not aB under G1 with P2); shift
     by shift at 6 to 20 of the 20 shifts. The DA kernels' bands of the three genotypes overlap at 18 to
     41% of the history-shift points, so 'comparable' fails under every reading; the bands are the s.d.
-    over runs of the same data. The measured values are G1 with P1.
+    over runs of the same data. Y = 3 gives the same pattern (under G1 all six R2 within tolerance with
+    P1 and P2, under G2 and G3 all above). No part holds under every reading as the criterion states it,
+    so a change to not reproduced is proposed. The measured values are G1 with P1.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion requires the six R2 within tolerance under every reading, the cKO Ach kernels above
+      both controls at negative shifts for all histories, and the DA kernels' bands overlapping. The R2
+      part holds under G1 only. The Ach part holds for the mean over the negative shifts under 5 of 6 readings,
+      and shift by shift under none. The DA part fails under every reading (ed11 cell). No part holds as
+      the criterion states it, so the effect is not shown even in part.
   deviations:
   - The kernels of the four rewarded histories are taken with the reward kernel added, as reward is coded
     at the side entry of rewarded trials and the two are not identified apart.
@@ -557,14 +592,12 @@ outcomes:
   notes: 'Resampling sessions, no two- or three-trial history has a 95% interval of the Drd2-cKO minus
     control difference below zero against both controls, two-sided or one-sided (Aa: upper 95% bound -0.023
     against WT, +0.009 against Drd2 f/f). Resampling trials one does under both (Aa, 0.516 against 0.597
-    and 0.616; AAa among three-trial histories). The outcome takes the session unit.'
+    and 0.616; AAa among three-trial histories). The criterion requires a significant history under each
+    resampling unit, so the outcome follows from it without choosing a unit.'
   deviations:
-  - Assumed session resampling, the unit of the paper's bootstrap code (resampled_means in block_transition_stats.ipynb);
-    the trial unit is shown.
   - Groups are resampled separately; the code resamples sessions from both groups together.
   - Cohorts are selected by the figure and genotype labels of the export table manuscript_sessions.csv
     (link-manuscript-sessions); the paper selected them from its data folders.
-  assumed: true
 - claim: fig5a-inputs-to-vls
   outcome: blocked
   blocked_by: data_missing
@@ -611,6 +644,10 @@ outcomes:
   deviations:
   - 3 cortical TelC mice where the paper has 5; two mice the export table lists (S1427, S1480) are not
     in the dataset.
+  - The thalamic mCherry controls are the export table's (S1351, S1389, S1393, Vglut2-Cre). Their files
+    give virus 349, retro mCherry, at the VLS fibres in both hemispheres, the virus of the cortical controls,
+    where the Fig. 5f legend describes mCh expression in the thalamus; the files record no thalamic injection.
+    They are used as the thalamic control, as the table labels them.
   - Cohorts are selected by the figure and genotype labels of the export table manuscript_sessions.csv
     (link-manuscript-sessions); the paper selected them from its data folders.
 - claim: fig5ef-input-specific-ach
@@ -622,6 +659,10 @@ outcomes:
     than for cortical TelC (0.162 s).
   deviations:
   - 3 cortical TelC mice where the paper has 5; each mouse has one session.
+  - The thalamic mCherry controls are the export table's (S1351, S1389, S1393, Vglut2-Cre). Their files
+    give virus 349, retro mCherry, at the VLS fibres in both hemispheres, the virus of the cortical controls,
+    where the Fig. 5f legend describes mCh expression in the thalamus; the files record no thalamic injection.
+    They are used as the thalamic control, as the table labels them.
   - Cohorts are selected by the figure and genotype labels of the export table manuscript_sessions.csv
     (link-manuscript-sessions); the paper selected them from its data folders.
 - claim: ed13-input-telc-behaviour
@@ -634,6 +675,10 @@ outcomes:
     (beta p = 0.72, tau p = 0.48, reward rate p = 0.66, win-switch p = 0.54).
   deviations:
   - Each mouse has one session in the dataset; 3 cortical TelC mice where the paper has 5.
+  - The thalamic mCherry controls are the export table's (S1351, S1389, S1393, Vglut2-Cre). Their files
+    give virus 349, retro mCherry, at the VLS fibres in both hemispheres, the virus of the cortical controls,
+    where the Fig. 5f legend describes mCh expression in the thalamus; the files record no thalamic injection.
+    They are used as the thalamic control, as the table labels them.
   - Cohorts are selected by the figure and genotype labels of the export table manuscript_sessions.csv
     (link-manuscript-sessions); the paper selected them from its data folders.
 - claim: ed2op-mutant-sensors-flat
@@ -668,7 +713,7 @@ findings:
     the laser channel of the seven CIN-stimulation sessions has bursts starting at side entry in about
     a quarter of trials.
 - kind: data_missing
-  statement: Channels whose notes name a sensor have no raw trace in 193 channel-sessions (23 mice) and
+  statement: Channels whose notes name a sensor have no raw trace in 193 channel-sessions (30 mice) and
     no z-scored trace in 30 (14 mice). This removes the right-hemisphere dLight1.1 of all CIN-stimulation
     mice, the raw traces of the thalamic mCherry mice and of several Drd2 and Fig. 5 mice, and some Ach
     channels.
@@ -710,7 +755,7 @@ findings:
     highest).
 - kind: methods_unavailable
   statement: Question for the paper's authors on the windows of the Supplementary Methods. Is the side-entry
-    sample in the 17-sample pre or post window? It decides one claim here (7 against 6 of 14 mice with
+    sample in the 17-sample pre or post window? It bears on one claim here (7 against 6 of 14 mice with
     a pre-entry DA difference). And is the bootstrap of conditional switch probabilities (Extended Data
     Fig. 11j) over sessions or trials? Only trials give a significant history.
 - kind: metadata_error
@@ -725,8 +770,8 @@ findings:
     no control group in the dataset matches the VLS-TelC task parameters.
 - kind: selection_undocumented
   statement: The thalamic mCherry controls (S1351, S1389, S1393, Vglut2Cre) carry virus 349, named retro
-    mCherry, the virus of the cortical controls, and were recorded in both hemispheres; the paper does
-    not describe the thalamic control.
+    mCherry, the virus of the cortical controls, at VLS fibres in both hemispheres; the Fig. 5f legend
+    describes mCh expression in the thalamus, and the files record no injection into the thalamus.
 verifications:
 - date: '2026-11-03'
   kind: agent
@@ -1047,3 +1092,299 @@ verifications:
       has no wild-type channel to compare against. There is no dLight mutant; WT16-WT20 are absent from
       the archive.
     response: Added the list of channels whose notes name no sensor, by mouse. No change.
+- date: '2026-11-03'
+  kind: agent
+  by: verifier-2 (Claude Code, claude-opus-5-5)
+  reviewed: 'Round 2: the full executed notebook with its conclusions, achda.py, the claims file and the attempt
+    record, at commit 0bdc267707. Report in transcripts/001767/verifier-2-report.md. Text corrections asked for
+    besides the claims below: the data_missing finding gave 23 mice for 193 channel-sessions without a raw trace
+    (30 mice; corrected, and the count is now printed in the data check), and the Summary said that every reading
+    named is shown and the outcomes resting on one are marked, where for fig1e-reward-outcome-not-pre and ed8g-vls-telc-ach-suppressed
+    the claims file did not leave the reading open (rewritten).'
+  results:
+  - claim: link-manuscript-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed1b-switch-after-block-transition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed1hj-rflr-predicts-switching
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig1e-reward-outcome-post
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig1e-reward-outcome-not-pre
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion judges both W1 and W2, and the claims-file checks say claims need both window readings;
+      W2 gives 7 of 14 DA mice, which is not fewer than half, so choosing a window is not left open to the author.
+      The assumption''s basis is weak: the claims-file header gives the Fig. 1 scripts a pre window of -18 to 0,
+      which includes the side-entry sample, and the startDrop = -1 scripts the record cites are for other figures.
+      The result is borderline and depends on one extra DA mouse that cannot be identified.'
+    response: Outcome kept, as no outcome may change in this round; a change to not_reproduced is proposed under
+      `proposed`, with the reason. The notebook text and the notes now say the criterion names both windows, that
+      W2 fails it, and that the Fig. 1 scripts' window includes the side-entry sample. The assumption stays marked
+      on the verified outcome.
+  - claim: fig1e-lda-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed3-not-lateralized
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig1f-cue-omission
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The outcome rests entirely on the session list in the paper's script; the LED
+      channels show cue onsets in every trial of the no-cue sessions. The deviation says this, but the outcome is
+      not marked assumed.
+    response: 'Marked `assumed: true`, with a deviation that states the assumption (the script''s sessions are the
+      cue-omission sessions) and why the files cannot confirm it; the notebook result and the summary say so.'
+  - claim: fig1g-history-stay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig1h-switch-no-history-post
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig1h-switch-da-approach
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed4bc-iti-port-entries
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Cell 32 and the notes say DA is lower in 7 (W1) and 8 (W2) of 14 DA mice, 'reaching
+      more than half only under W2', but cell 31 prints 12 testable DA mice, and 7 of 12 is more than half. The
+      outcome is unaffected, because the Ach part fails.
+    response: 'Corrected the notebook and the notes: 12 of the 14 DA mice can be tested, and DA is lower in 7 (W1)
+      and 8 (W2) of these 12, more than half under both; before side entry 5 of 12. Outcome unchanged.'
+  - claim: ed5-base-glm-r2
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed5f-leave-out
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Cell 99 and the notes say leaving out reward raises the DA validation MSE beyond
+      the full model's range under all 12 readings, but cell 98 prints 6 DA readings. Y = 3 is not run for ed5f.
+    response: Corrected to 'all 6 DA readings' and '11 of the 12 signal-reading pairs'. Added the leave-out summary
+      with the first 3 runs as a variant; the criterion fixes Y = 10, and with 3 runs no reading has every part
+      hold for both signals. Outcome unchanged.
+  - claim: ed5-history-glm-r2
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig2a-rdah-smaller-than-dlight
+    agrees: false
+    outcome: not_reproduced
+    reason: Same as round 1. In unrewarded trials rDAh is significantly larger than dLight1.1 in 2 of 3 mice, against
+      'consistently smaller'. The correlation of WT65's rewarded traces is 0.788, below 0.8. Only the rewarded half
+      of the amplitude part holds, and the criterion fails as a whole under every reading.
+    response: Outcome kept and no change proposed; the disagreement is recorded here. The rewarded-trial amplitude
+      part holds in all 3 mice under every reading (p < 0.0001), and 5 of the 6 trace correlations exceed 0.8 (the
+      sixth 0.788), so the effect holds in part, which partially_reproduced names; the unrewarded failure is stated
+      in the notes.
+  - claim: ed6c-da-bilateral
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig2d-anticorrelated-lag
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig2e-trial-and-noise-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig2fg-off-diagonal
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig2h-photometry-glm
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Claims-file issue: the criterion requires the predicted signal to follow the
+      predictor in both models; when Ach predicts DA, the DA-leads-Ach lag implies a minimum at a negative shift,
+      which is what was found (-54 ms). The outcome does not change, because the R2 values fail anyway. Y = 3 is
+      not run for fig2h.'
+    response: Added the question to questions/001767.yaml for a reader; the claim is unchanged. Added the Y = 3
+      R2 (the first 3 runs), which agree with Y = 10 to within 0.001. Outcome unchanged.
+  - claim: ed6b-separate-hemispheres
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig3d-telc-abolishes-ach
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig3c-telc-blocks-cin-evoked-da-in-vitro
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig3e-striatum-wide-telc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig3f-vls-telc-da-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed8g-vls-telc-ach-suppressed
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion says ''Reproduced when, under each reading, Ach is lower ... in every one of the 4 mice''.
+      Reading (a) fails: S952 is significantly higher under W1 and W2, S950 is not lower under W1, and S1143 has
+      p = 0.073 under W1. The argument that z-scoring hides an amplitude loss questions the claims file; it does
+      not let the author pick one reading.'
+    response: Outcome kept, as no outcome may change in this round; a change to not_reproduced is proposed under
+      `proposed`, with the reason. The notebook result and the notes now say that the criterion requires each reading
+      and that reading (a) fails.
+  - claim: ed9jm-vls-telc-behaviour-normal
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed8f-amplitude-no-consistent-effect
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Claims-file issue: the criterion still names no sensor.'
+    response: Already asked of a reader in questions/001767.yaml; the claim is unchanged. No change.
+  - claim: fig3g-dan-inhibition-lowers-da
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed7e-cin-activation-evokes-da
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The laser artefact is in the right red channel in all 7 sessions and absent on the left; this
+      is an inference from the data, and it fits the Methods' one-hemisphere illumination. The dip in the left dLight1.1
+      during the laser (-0.44 z) is left unexplained.
+    response: The notebook and the notes now say that the data do not explain the dip. No change of outcome.
+  - claim: fig4bc-da-bidirectionally-controls-ach
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig4ef-d2r-needed-for-cin-pause
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig4g-cko-ach-suppression-lost
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Claims-file issue: delta-Ach against mean Ach (round-1 point B16) is still
+      open with a reader, and it decides the outcome.'
+    response: The question is in questions/001767.yaml for a reader, and the claim is tested as written. No change.
+  - claim: fig4g-cko-da-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed11e-cko-anticorrelation-reduced
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed11-cko-glm-r2
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion requires every part under every reading, and no part holds: the R2 part holds only under
+      one model per genotype (G1); the Ach-kernel part holds only under the author''s mean-over-shifts reading and
+      fails shift by shift under every reading; the DA ''comparable'' part fails under every reading. Y = 3 is not
+      run for ed11.'
+    response: Outcome kept, as no outcome may change in this round; a change to not_reproduced is proposed under
+      `proposed`, with the reason. Added the Y = 3 R2, which give the same pattern (G1 within tolerance, G2 and
+      G3 above).
+  - claim: ed11fh-cko-general-behaviour-comparable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed11i-cko-rflr
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: ed11j-cko-switching-impaired
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome, but the assumption is not needed: the criterion requires a significant history
+      under each resampling unit, and session resampling gives none, so the outcome follows from the criterion without
+      assuming session resampling.'
+    response: 'Removed `assumed: true` and the assumption deviation; the notes, the notebook and the summary now
+      say the outcome follows from the criterion.'
+  - claim: fig5a-inputs-to-vls
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig5b-glutamate-not-lateralized
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig5c-glutamate-like-ach
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig5d-terminal-calcium-coincides
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
+  - claim: fig5ef-input-telc-dampens-ach
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. Remaining point B10: the thalamic control''s virus (349, ''retro mCherry'')
+      is recorded as a finding but not reconciled; it bears on ed13 and fig5ef.'
+    response: 'The fig5ef cell now prints each input group''s channel metadata and the table''s virus codes: the
+      thalamic controls carry 349 (retro mCherry) at VLS fibres in both hemispheres, the cortical controls'' virus,
+      and no file records a thalamic injection, where the Fig. 5f legend describes mCh in the thalamus. Stated in
+      the notebook, as a deviation on fig5ef and ed13, and in the finding. The files cannot settle it further. Outcome
+      unchanged.'
+  - claim: fig5ef-input-specific-ach
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Remaining point B10 (thalamic control virus) bears on fig5ef.
+    response: Deviation added on the thalamic controls' virus (see fig5ef-input-telc-dampens-ach). Outcome unchanged.
+  - claim: ed13-input-telc-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Remaining point B10 (thalamic control virus) bears on ed13.
+    response: Deviation added on the thalamic controls' virus (see fig5ef-input-telc-dampens-ach). Outcome unchanged.
+  - claim: ed2op-mutant-sensors-flat
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; no point raised.
+    response: No change.
