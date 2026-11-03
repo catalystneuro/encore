@@ -25,7 +25,11 @@ Sources of the parameters:
   reference [20] (Semenov et al. 2025, doi:10.1016/j.bioelechem.2025.109143, Results),
   as Methods 2.3 says this study used.
 - Field strength: the files give volts only; the factor from volts to V/cm is not in the
-  paper, in reference [20] or in the dataset. Readings, see FIELD_PER_VOLT.
+  paper, in reference [20] or in the dataset. Readings, see FIELD_PER_VOLT. Assumption: "top"
+  (5.6 V/cm per V), which lies inside the range rod_field_per_volt gives for the electrodes of
+  Methods 2.2 (4.6 to 7.2); "bottom" is a variant.
+- Background: the camera offset (camera_offset, the dark-frame level) is a third background
+  reading, a variant between none and the cell-free median.
 """
 
 import json
@@ -49,8 +53,9 @@ SENS = {"Di8": 9.1, "FV": 26.0}  # % dF per 100 mV, paper Fig. 3
 N_BASE = 40  # Methods 2.3
 POLE_HALF_DEG = 5  # Methods 2.3
 # Volts to V/cm. Readings (assumptions; the paper gives field strengths only):
-# "top": the paper's highest level, 1400 V/cm, is the dataset's highest, 250 V.
-# "bottom": the paper's lowest level, 43 V/cm, is the dataset's lowest, 25 V.
+# "top" (adopted): the paper's highest level, 1400 V/cm, is the dataset's highest, 250 V;
+#   it agrees with the electrode geometry (rod_field_per_volt).
+# "bottom" (variant): the paper's lowest level, 43 V/cm, is the dataset's lowest, 25 V.
 FIELD_PER_VOLT = {"top": 1400.0 / 250.0, "bottom": 43.0 / 25.0}
 # The field strengths the paper names for the 1-us escalation (claims file header).
 PAPER_LEVELS = [43, 150, 230, 360, 570, 780, 1000, 1200, 1400]
@@ -113,6 +118,29 @@ def trace(base, cy, cx, r):
     return Y, X, rmem, area_r
 
 
+def trace_edge(base, cy, cx, r, bg):
+    """Variant trace: the cell edge at each of 360 angles is the outermost radius (0.5 to 1.6
+    mask radii) where the baseline image is above bg + half the rise of the cell's median
+    (inside the mask radius) over bg; the 6-pixel trace is centred 3 pixels inside that edge,
+    so that it covers the bright rim. A median over 15 degrees, then a mean over 15 degrees.
+    Standard choice, a check of trace: bright spots inside the cell (dye taken up) can draw the
+    peak-intensity trace inwards. Returns (Y, X, rmem, area_r) as trace."""
+    th = np.deg2rad(np.arange(360))
+    rr = np.arange(0.5 * r, 1.6 * r, 0.5)
+    pb = ndi.map_coordinates(base, [cy + np.outer(np.sin(th), rr), cx + np.outer(np.cos(th), rr)], order=1)
+    pb = ndi.uniform_filter1d(pb, 3, axis=1)
+    inside = pb[:, rr <= r]
+    thr = bg + 0.5 * (np.median(inside) - bg)
+    above = pb > thr
+    j = np.array([np.nonzero(a)[0].max() if a.any() else 0 for a in above])
+    edge = ndi.uniform_filter1d(ndi.median_filter(rr[j], 15, mode="wrap"), 15, mode="wrap")
+    rmem = edge - 3.0
+    off = np.arange(-2.5, 3.0, 1.0)
+    Y = cy + np.sin(th)[:, None] * (rmem[:, None] + off)
+    X = cx + np.cos(th)[:, None] * (rmem[:, None] + off)
+    return Y, X, rmem, np.sqrt(np.mean(edge**2))
+
+
 def load_set(asset_id):
     """Read one file and reduce it to per-frame membrane profiles of every cell."""
     url = f"{API}/assets/{asset_id}/download/"
@@ -126,14 +154,16 @@ def load_set(asset_id):
     cells, lab = find_cells(base)
     free = ~ndi.binary_dilation(lab > 0, iterations=15)
     bg = np.median(frames[:, free], axis=1)
+    bg0 = float(np.median(base[free]))
     out = []
     for cy, cx, r in cells:
-        Y, X, rmem, area_r = trace(base, cy, cx, r)
-        prof = np.stack([ndi.map_coordinates(f, [Y, X], order=1).mean(1) for f in frames])
-        out.append(dict(cy=cy, cx=cx, rmem=rmem, perim_r=None, area_r=area_r,
-                        perim_len=float(np.sum(np.hypot(np.diff(np.r_[Y[:, 2], Y[0, 2]]),
-                                                         np.diff(np.r_[X[:, 2], X[0, 2]])))),
-                        prof=prof.astype(np.float32)))
+        c = dict(cy=cy, cx=cx, perim_r=None)
+        for sfx, (Y, X, rmem, area_r) in [("", trace(base, cy, cx, r)), ("_edge", trace_edge(base, cy, cx, r, bg0))]:
+            prof = np.stack([ndi.map_coordinates(f, [Y, X], order=1).mean(1) for f in frames])
+            c.update({"rmem" + sfx: rmem, "area_r" + sfx: area_r, "prof" + sfx: prof.astype(np.float32),
+                      "perim_len" + sfx: float(np.sum(np.hypot(np.diff(np.r_[Y[:, 2], Y[0, 2]]),
+                                                               np.diff(np.r_[X[:, 2], X[0, 2]]))))})
+        out.append(c)
     return dict(asset_id=asset_id, subject=subject, start=start,
                 volt=int(re.search(r"at (\d+)V", desc).group(1)),
                 dye="FV" if "FluoVolt" in desc else "Di8",
@@ -142,11 +172,53 @@ def load_set(asset_id):
                 cells=out, desc=desc)
 
 
+def radial_poles(s, cells, cath_deg, offsets=np.arange(-8, 9)):
+    """Check of the automated trace: re-read one set and give, for each cell (indices into
+    s["cells"]), the background-subtracted collapsed dF in the +-5 degree pole arcs on
+    1-pixel-wide rings at the given radial offsets (pixels) from the trace. Also returns the
+    baseline image and the dark-frame (camera offset) level of the set."""
+    url = f"{API}/assets/{s['asset_id']}/download/"
+    with h5py.File(remfile.File(url), "r") as h:
+        frames = h["/acquisition/StrobeImaging/data"][()].astype(np.float32)
+    g = s["good"]
+    ib, ip = np.arange(N_BASE)[g[:N_BASE]], np.arange(N_BASE, 100)[g[N_BASE:]]
+    base, puls = frames[ib].mean(0), frames[ip].mean(0)
+    bgb, bgp = s["bg"][ib].mean(), s["bg"][ip].mean()
+    out = []
+    for ci in cells:
+        c = s["cells"][ci]
+        row = {}
+        for pole, centre in [("cath", cath_deg), ("anod", cath_deg + 180)]:
+            ang = (np.arange(-POLE_HALF_DEG, POLE_HALF_DEG + 1) + int(round(centre))) % 360
+            th = np.deg2rad(ang)
+            rr = c["rmem"][ang][None, :] + offsets[:, None]
+            Y, X = c["cy"] + np.sin(th) * rr, c["cx"] + np.cos(th) * rr
+            F0 = ndi.map_coordinates(base, [Y, X], order=1).mean(1) - bgb
+            F = ndi.map_coordinates(puls, [Y, X], order=1).mean(1) - bgp
+            row[pole] = 100 * (F - F0) / F0
+        out.append(row)
+    return dict(offsets=offsets, cells=out, base=base, dark=float(np.median(s["frame_mean"][~g])) if (~g).any() else np.nan)
+
+
 def load_all(assets=None, threads=16):
     """Load every set of the pinned version (or the given (path, asset_id) list)."""
     assets = assets or list_assets()
     with ThreadPoolExecutor(threads) as ex:
         return list(ex.map(lambda a: load_set(a[1]), assets))
+
+
+def with_trace(resp, name):
+    """The responding cells of `responding` with their profiles and radii taken from the given
+    trace: "peak" (trace, the main reading) or "edge" (trace_edge, a variant). The cells, field
+    direction and selection stay those of the peak trace."""
+    if name == "peak":
+        return resp
+    out = {}
+    for sub, (ss, keep, cath, n) in resp.items():
+        ss2 = [dict(s, cells=[dict(c, prof=c["prof_edge"], rmem=c["rmem_edge"], area_r=c["area_r_edge"],
+                                   perim_len=c["perim_len_edge"]) for c in s["cells"]]) for s in ss]
+        out[sub] = (ss2, keep, cath, n)
+    return out
 
 
 def track(sets, max_shift=10.0):
@@ -171,6 +243,21 @@ def track(sets, max_shift=10.0):
     return out
 
 
+def camera_offset(sets):
+    """Camera offset: median whole-image mean of the dark (laser misfire) frames of all sets."""
+    return float(np.median(np.concatenate([s["frame_mean"][~s["good"]] for s in sets])))
+
+
+def _subtract(s, background):
+    """Per-frame value subtracted from the profiles: True, the cell-free median (reading b);
+    False, nothing (reading a); a number, that constant (the camera offset, a variant)."""
+    if background is True:
+        return s["bg"][:, None]
+    if background is False:
+        return 0.0
+    return float(background)
+
+
 def dF_profile(s, ci, frames=None, background=True):
     """Collapsed dF profile (360 points) of cell ci of set s: mean of the good baseline
     frames against the mean of the given pulse frames (default all 60)."""
@@ -179,13 +266,9 @@ def dF_profile(s, ci, frames=None, background=True):
     idx_b = np.arange(N_BASE)[g[:N_BASE]]
     fr = np.arange(N_BASE, 100) if frames is None else np.asarray(frames)
     idx_p = fr[g[fr]]
-    P, bg = c["prof"], s["bg"]
-    if background:
-        F0 = (P[idx_b] - bg[idx_b, None]).mean(0)
-        F = (P[idx_p] - bg[idx_p, None]).mean(0)
-    else:
-        F0 = P[idx_b].mean(0)
-        F = P[idx_p].mean(0)
+    P = c["prof"] - _subtract(s, background)
+    F0 = P[idx_b].mean(0)
+    F = P[idx_p].mean(0)
     return 100 * (F - F0) / F0
 
 
@@ -193,7 +276,7 @@ def per_frame_dF(s, ci, background=True):
     """dF of every frame (100 x 360) against the baseline mean; dark frames are NaN."""
     c = s["cells"][ci]
     g = s["good"]
-    P = c["prof"] - (s["bg"][:, None] if background else 0)
+    P = c["prof"] - _subtract(s, background)
     F0 = P[:N_BASE][g[:N_BASE]].mean(0)
     d = 100 * (P - F0) / F0
     d[~g] = np.nan
@@ -218,6 +301,17 @@ def impc_mV(E_vcm, R_um, theta_deg):
     """Schwan equation, Eq. (1): IMPC = 1.5 E R cos(theta) (1 - exp(-t/tau)), in mV."""
     tau = TAU_NS_PER_UM * R_um
     return 1.5 * (E_vcm * 100.0) * (R_um * 1e-6) * np.cos(np.deg2rad(theta_deg)) * (1 - np.exp(-T_IMAGE_NS / tau)) * 1e3
+
+
+def rod_field_per_volt(spacing_mm, diameter_mm=0.5, gap=False):
+    """Field at the midpoint between two long parallel rods, V/cm per volt, in two dimensions
+    (the rods' image line charges). spacing_mm is centre to centre, or the gap between the rod
+    surfaces when gap is True. Rod diameter and spacing: Methods 2.2. A check of the order of
+    the factor from volts to V/cm, not the paper's Sim4Life model."""
+    a = diameter_mm / 20.0  # radius, cm
+    h = (spacing_mm / 10.0 + (2 * a if gap else 0.0)) / 2.0  # half the centre distance, cm
+    b = np.sqrt(h**2 - a**2)
+    return 1.0 / (b * np.arccosh(h / a))
 
 
 def f_factor(lm, R=8e-6, d=5e-9, li=0.4, lo=1.64):
