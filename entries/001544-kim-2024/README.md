@@ -29,7 +29,7 @@ non-parametric tests when normality fails; the claims file's tests do not, and t
 the rank tests beside them. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001544-kim-2024-01.yaml`](../../attempts/001544-kim-2024-01.yaml).
 
-- `reproduce_kim_2024.ipynb`: the analysis. It takes about four minutes, most of it streaming the
+- `reproduce_kim_2024.ipynb`: the analysis. It takes about six minutes (345 to 348 s in the last runs), most of it streaming the
   files.
 - `vpchat.py`: loading the files, the eighteen features of the paper's Methods (with the paper's
   code where the Methods are silent), and the cell-level and nested tests. Other notebooks on this

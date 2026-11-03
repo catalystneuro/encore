@@ -204,7 +204,8 @@ outcomes:
     0.010 with t on 18 df) but not by the non-parametric tests the Methods prescribe when normality fails
     (Shapiro-Wilk p = 0.0016; Kruskal-Wallis p = 0.12; Mann-Whitney ALL against APP p = 0.10, ALL against
     AV p = 0.094). Five cells (four APP, one ALL) sit at -105.62 mV for 45 to 463 ms of the -60 pA step,
-    which clips their minimum and underestimates their sag. With the next unsaturated step for them neither
+    which clips their minimum and underestimates their sag (one other APP file, 20221214_001, passes
+    that value and reaches -112.88 mV, so it is not a floor in every file). With the next unsaturated step for them neither
     pair holds (p = 0.053 and 0.085); leaving them out, APP exceeds ALL (p = 0.016; mixed model p = 0.017)
     and AV does not (p = 0.092; mixed model p = 0.13). The outcome rests on the dandiset's 24 ALL cells,
     hence assumed. Without the `_FL` cells reading (a) gives both pairs (p = 0.0036 and 0.0072) and reading
@@ -511,8 +512,9 @@ findings:
 - kind: other
   statement: >-
     Five recordings (four APP, one ALL) reach -105.6 mV and stay there for 10 ms or more during the -60
-    pA step, a floor that truncates the response; sag measured on these sweeps is underestimated. One other
-    file has a single sample at -112.9 mV, so the floor is not shown to hold for every recording.
+    pA step, flat at that value, which truncates the response; sag measured on these sweeps is underestimated.
+    The value is not a floor in every file: one other APP file (20221214_001) has 7 samples at -105.62 mV
+    and 1735 below -105.7 mV, down to -112.88 mV.
     Three sweeps hold NaN for their last 0.1 to 0.6 s, after the step.
 - kind: code_mismatch
   statement: >-
@@ -526,12 +528,19 @@ findings:
     The STAR Methods say a nested ANOVA was run for the electrophysiology to account for cells from the
     same mouse, but the reported degrees of freedom (F(2, 38), t(31), t(27), t(18)) are those of cell-level
     tests on 41 cells.
+- kind: paper_inconsistency
+  statement: >-
+    The Results say the convex hull of APP neurons was smaller than that of AV neurons in surface area
+    and volume (Figure S13C), but the Figure S13 legend lists the volume of the convex hull among the
+    features with no significant difference between the groups.
 - kind: methods_unavailable
   statement: >-
     Question for the paper's authors. Which 21 of the 24 home-cage cells (and which 8 of the 11 mice)
     were analysed, and how was the rule on a 20% change of series resistance, input resistance or resting
-    potential applied? The sag and shared-feature outcomes here change with the cell set (sag of AV against
-    ALL p = 0.087 on all 24 cells, 0.0072 without the three `_FL` cells). And how was the membrane potential
+    potential applied? The outcomes of figs12a-sag-higher and figs12-app-differs-from-all here change with the
+    cell set (sag of AV against ALL p = 0.087 on all 24 cells, 0.0072 without the three `_FL` cells; in
+    the set passing the 20% change rule, 3 of the 4 APP-specific features differ by reading (a) and 2 by
+    reading (b)). And how was the membrane potential
     of Figure 6G measured "in the absence of a current injection", when the files hold only sweeps under
     the DC holding current?
 verifications:
@@ -575,7 +584,7 @@ verifications:
       (Kruskal-Wallis p = 0.12, Mann-Whitney p = 0.10, unsaturated-step variant p = 0.053). Added the
       code's saturation test run on every -60 pA sweep (mode count 1 in every cell, never fires), a plot
       and the minima of the five saturated sweeps, a check of -105.62 mV as a floor (one other file
-      reaches -112.88 mV in one sample), and a variant leaving the five cells out (APP p = 0.016, AV p =
+      reaches -112.88 mV; see the round-2 response for the sample counts), and a variant leaving the five cells out (APP p = 0.016, AV p =
       0.092). Added a question for a reader on the normality rule.
   - claim: fig6g-av-more-hyperpolarized
     agrees: true
@@ -798,3 +807,189 @@ verifications:
       No neurobiotin reconstructions are in the dandiset (no image or morphology data types). No part can
       be tested.
     response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook, with the conclusion cells and the summary, the helper module,
+    the claims file, the attempt record and the entry README, with the paper. The verifier checked every
+    sentence of the seven result cells, the summary, the README and the record against the printed
+    outputs, and checked that its round-1 reasons are stated faithfully. It agrees with all 31 outcomes.
+    It found four statements the printed numbers do not support, an inconsistency in how the sag outcome
+    is argued, and two places where the claims file misreads the paper's supplement (Figure S13). It
+    also found that the README gave the run time as about four minutes where cell 49 printed 302 s; the
+    README now says about six minutes, from the 345 and 348 s that cell 49 printed in this revision's two runs.
+  results:
+  - claim: fig6f-max-firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 21. APP and AV are above ALL in every cell set, under both readings and with t on the mice df. Kruskal-Wallis and Mann-Whitney agree. In cell 23, "3 of 6 APP mice ... are above every ALL mouse" is not what the per-mouse table shows. The highest ALL mouse mean is 29.00 (CG355), and APP mice CC328 (87), CC330 (85), CC396 (65) and CC356 (29.33) are all above it, so the count is 4 of 6. This does not affect the outcome.
+    response: >-
+      No change to the outcome. The conclusion now says 4 of 6 APP mice (CC328, CC330, CC356, CC396) and 2 of 4 AV mice (CC318, CC399) are above every ALL mouse, the highest being CG355 at 29.00 Hz.
+  - claim: figs12a-sag-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cells 25 to 28. AV is not above ALL in the main set, (a) p = 0.087, (b) p = 0.24. The assumption is stated and reasonable; without the `_FL` cells reading (a) gives both pairs but reading (b) misses AV (p = 0.12), which under the claims file's rule would make the claim blocked as methods_underspecified. The notebook prints only the global minimum, -112.88 mV, and no cell prints how many samples lie at that value; cell 26 does print that the same file, 20221214_001, has 7 samples at -105.62 mV, which the record does not mention. The conclusion (cell 29) and the record use the rank tests to choose not_reproduced over partially_reproduced, while the deviations say the outcome follows readings (a) and (b) only. The outcome stands without that argument, because the claim needs both groups and AV fails both readings.
+    response: >-
+      No change to the outcome, still marked assumed. Cell 26 now prints, per file, the samples below -105.7 mV and at the global minimum. 20221214_001 has 7 samples at -105.62 mV, 1735 below -105.7 mV and 1 at -112.88 mV, so -105.62 mV is not a floor in that file. The conclusion, the finding and the round-1 response now say this. The conclusion now rests the outcome on readings (a) and (b) only, and says the rank tests and the unsaturated-step variant do not decide it. The summary says the same.
+  - claim: figs12-other-features-shared
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 41. 9, 7 and 10 of 10 features show no difference by ANOVA and by the mixed model; Kruskal-Wallis gives 7, 6 and 9 of 10. Every count is 6 or more. The methods_unavailable finding ("The sag and shared-feature outcomes here change with the cell set") is out of date; since the amendment this claim holds in every set, and the outcomes that change with the cell set are sag and figs12-app-differs-from-all.
+    response: >-
+      No change to the outcome. The methods_unavailable finding now names figs12a-sag-higher and figs12-app-differs-from-all as the outcomes that change with the cell set.
+  - claim: figs12-app-differs-from-all
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 45. All four features differ under (a) and (b) in `all` and `no_FL`. The assumption is stated and reasonable; in `change20`, 3 of 4 features differ by (a) and 2 of 4 by (b), which would make it partially reproduced, or blocked if the readings are judged to disagree.
+    response: >-
+      No change to the outcome, still marked assumed. The methods_unavailable finding now gives the change20 counts.
+  - claim: fig6g-av-more-hyperpolarized
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 31. APP against AV p 0.34 or more in every set; reading (b) cannot be run. The only reading that could be run is measured under the holding current, so the not_reproduced outcome says little about the paper's resting potential. The record now says this.
+    response: >-
+      No change.
+  - claim: fig6h-av-smaller-ahp
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cells 34 and 35.
+    response: >-
+      No change.
+  - claim: fig6-app-less-excitable
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 38.
+    response: >-
+      No change.
+  - claim: fig1c-app-approach
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig1c-av-avoidance
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: figs1-locomotion-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig2c-hm4di-app-reversal
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig2e-hm4di-av-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig5c-adcd-app-reversal
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig5e-adcd-av-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig1f-cfos-total
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig1g-chat-cfos
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig3-same-odor-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig4d-different-odor-no-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: figs5-activation-counts
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: figs7-ram-replication
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: figs9-valence-specific
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: figs11-intermingled
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig7d-bla-projecting-av
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig1k-app-calcium-auc
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig1l-av-calcium-auc
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig1mn-calcium-max-z
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig6j-convex-hull-area
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Unchanged from round 1. The claim says APP has a smaller convex hull area "(and volume)". The S13 legend reports no significant difference in convex hull volume (S13C), which contradicts the Results sentence. The claim is blocked, so this does not affect an outcome.
+    response: >-
+      No change to the outcome or the claim. Added a question for a reader in questions/001544.yaml on the convex hull volume.
+  - claim: fig6kl-dendrite-area-volume
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig6m-sholl-proximal
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: fig6n-sholl-reach
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change needed.
+  - claim: figs13-other-morphometrics
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Unchanged from round 1. The claim says the S13 features are "not known here ... needs the supplement". The supplement now in `paper/` names them, dendrite orders, branching angle, convex hull volume, dendrite length, branch points, terminal points and maximum segment length. The claim is blocked, so this does not affect an outcome.
+    response: >-
+      No change to the outcome or the claim. Added a question for a reader in questions/001544.yaml on the features Figure S13 shows.
