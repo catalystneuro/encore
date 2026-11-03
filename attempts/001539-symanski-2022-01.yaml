@@ -1,0 +1,712 @@
+schema_version: 2
+id: 001539-symanski-2022-01
+dataset:
+  archive: dandi
+  id: "001539"
+  version: 0.250815.1203
+  doi: 10.48324/dandi.001539/0.250815.1203
+paper: doi:10.7554/elife.79545
+date: '2026-11-03'
+entry: 001539-symanski-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41557793049
+outcomes:
+- claim: fig1b-performance
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig1b-performance
+  measured:
+  - 75.74
+  notes: Reading (a), the mean over the 8 rats of each rat's mean session performance, is 75.74% (s.e.m.
+    1.03), within 77.0 +/- 1.3; reading (b), the mean over the 38 sessions, is 76.11% (s.e.m. 1.06). The
+    files hold no trial with sampling under 0.5 s, so the readings with and without such trials coincide.
+  deviations:
+  - The files hold no trial with sampling under 0.5 s; whether the paper's performance counted such trials
+    cannot be tested.
+- claim: fig1c-sampling-duration
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig1c-sampling-duration
+  measured:
+  - 0.819
+  - 0.245
+  notes: Mean sampling duration over sessions 0.819 s (s.e.m. 0.017, 38 sessions); s.d. across 4,182 trials
+    0.245 s. Correct 0.815 against incorrect 0.828 s, median paired difference 0.016 s, signed-rank p
+    = 0.72 (paper 0.71); the code's rank-sum variant p = 0.55.
+- claim: fig1d-turn-direction
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig1d-turn-direction
+  measured:
+  - 95.9
+  - 1615
+  - 47
+  - 490
+  - 30
+  notes: Both binomial tests are significant with more same than opposite turns. On the full-maze rats
+    and CS39 (6 rats; 2,182 trials against the paper's 2,176) correct trials give 1,615 same and 47 opposite
+    and incorrect trials 490 and 30; the same counts are within tolerance, the opposite counts are not
+    (32 +/- 3 and 21 +/- 2). The fraction same is 95.9% over sessions (reading a) and 96.5% pooled (b),
+    against 95.4 +/- 0.12. On the five full-maze rats alone 1,390 and 30, 430 and 24, 97.1%. Measured
+    values are for the 6-rat set, whose trial counts match the paper's.
+  deviations:
+  - The chosen arm is read from the position (the files hold no chosen well). The odor of a trial is read
+    from the data, as the files do not hold it; the chosen side on rewarded trials and the other side
+    on unrewarded ones, the side read from the position after exit (it agrees with the rewarded well on
+    99.85% of rewarded trials).
+  - Which sessions count as truncated is not stated; CS39 (40 cm stem, wells at the ends of the T arms)
+    is shown both included and excluded.
+  - The odor port position is the median position at odor port entry in each epoch; the code's reference
+    position is not known.
+- claim: fig1s1e-sniff-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold no thermocouple channel, the electrode table lists only CA1, PFC and OB tetrodes,
+    and there is no other acquisition series. No part of the claim can be tested.
+- claim: fig1s1f-air-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every epoch in the 38 files is typed odorplace and the 38 files are the paper's 38 odor-cued
+    sessions; the air-only sessions are not in the dandiset.
+- claim: fig2d-beta-power-increase
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2d-beta-power-increase
+  assumed: true
+  notes: Reading A p = 9.0e-7 (CA1), 1.3e-8 (PFC), 7.3e-12 (OB); reading B p = 1.2e-4, 3.3e-9, 3.6e-11;
+    31 to 38 of 38 sessions positive. Correct trials only give the same.
+  deviations:
+  - Assumption. The epoch mean and s.d. used to z-score power and coherence (reading A) and to scale the
+    LFP (reading B) are estimated from 60 windows of 2 s at random times in each day's task epochs, not
+    from the whole epoch, to keep the run within its time limit (Methods, Local field potential, 'z-scored
+    to the epoch mean'). A within-session difference keeps its sign under this scaling; only the size
+    changes.
+  - All trials are used for the pre-odor comparison (neither the Methods nor the criterion restricts it);
+    correct trials only are shown as a variant.
+- claim: fig2d-rr-power-no-increase
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2d-rr-power-no-increase
+  assumed: true
+  notes: The CA1 decrease is not found (reading A median -0.037, p = 0.099; reading B p = 0.21). Reading
+    A finds RR increases in OB (p = 9.4e-8) and PFC (p = 0.049); reading B finds no significant change
+    (PFC p = 0.074, OB p = 0.057). The criterion is met under neither reading.
+  deviations:
+  - Assumption. The epoch mean and s.d. used to z-score power and coherence (reading A) and to scale the
+    LFP (reading B) are estimated from 60 windows of 2 s at random times in each day's task epochs, not
+    from the whole epoch, to keep the run within its time limit (Methods, Local field potential, 'z-scored
+    to the epoch mean'). A within-session difference keeps its sign under this scaling; only the size
+    changes.
+- claim: fig2e-beta-coherence-increase
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2e-beta-coherence-increase
+  assumed: true
+  notes: Reading A p = 3.7e-7 (CA1-PFC), 5.1e-11 (CA1-OB), 1.4e-10 (PFC-OB); reading B p = 2.6e-5, 1.2e-7,
+    1.1e-8.
+  deviations:
+  - Assumption. The epoch mean and s.d. used to z-score power and coherence (reading A) and to scale the
+    LFP (reading B) are estimated from 60 windows of 2 s at random times in each day's task epochs, not
+    from the whole epoch, to keep the run within its time limit (Methods, Local field potential, 'z-scored
+    to the epoch mean'). A within-session difference keeps its sign under this scaling; only the size
+    changes.
+- claim: fig2e-rr-coherence-increase
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2e-rr-coherence-increase
+  assumed: true
+  notes: CA1-OB (A p = 3.9e-5, B p = 3.0e-4) and PFC-OB (p = 3.6e-8, 5.8e-5) rise; CA1-PFC does not (p
+    = 0.11, 0.10). Both readings give two of three pairs.
+  deviations:
+  - Assumption. The epoch mean and s.d. used to z-score power and coherence (reading A) and to scale the
+    LFP (reading B) are estimated from 60 windows of 2 s at random times in each day's task epochs, not
+    from the whole epoch, to keep the run within its time limit (Methods, Local field potential, 'z-scored
+    to the epoch mean'). A within-session difference keeps its sign under this scaling; only the size
+    changes.
+- claim: fig2e-beta-coherence-odor-vs-reward
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2e-beta-coherence-odor-vs-reward
+  assumed: true
+  notes: All three pairs higher at the odor port under both settings (A p = 3.1e-10, 1.5e-11, 5.5e-9;
+    B p = 2.2e-9, 3.9e-9, 3.8e-6).
+  deviations:
+  - Assumption. The epoch mean and s.d. used to z-score power and coherence (reading A) and to scale the
+    LFP (reading B) are estimated from 60 windows of 2 s at random times in each day's task epochs, not
+    from the whole epoch, to keep the run within its time limit (Methods, Local field potential, 'z-scored
+    to the epoch mean'). A within-session difference keeps its sign under this scaling; only the size
+    changes.
+  - Reward well exit is the trial table's reward_end_time; the code's DIO-based exit and its windows centred
+    on exit cannot be built, as the files hold no DIO events.
+- claim: fig2e-rr-coherence-odor-vs-reward
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2e-rr-coherence-odor-vs-reward
+  notes: The settings differ. Reading A, CA1-OB higher (p = 0.010), PFC-OB higher (p = 1.8e-10), CA1-PFC
+    not significant (p = 0.055), all three parts hold. Reading B, CA1-OB higher (p = 0.0012), PFC-OB not
+    significant (p = 0.074), CA1-PFC significant (p = 0.027), one part holds. The criterion blocks the
+    claim when the settings differ. Question for the authors (findings), which pipeline produced Figure
+    2e middle.
+- claim: fig2d-power-odor-vs-reward
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2d-power-odor-vs-reward
+  assumed: true
+  notes: Beta differs in all three regions under both settings (p from 7.3e-12 to 1.4e-6, higher at the
+    odor port); RR differs in OB (p = 7.3e-12 and 1.0e-6). RR also differs in PFC (A p = 1.0e-10, B p
+    = 0.014) and in CA1 under A (p = 1.0e-5; B p = 0.21). Four of six parts hold under A, five under B.
+  deviations:
+  - Assumption. The epoch mean and s.d. used to z-score power and coherence (reading A) and to scale the
+    LFP (reading B) are estimated from 60 windows of 2 s at random times in each day's task epochs, not
+    from the whole epoch, to keep the run within its time limit (Methods, Local field potential, 'z-scored
+    to the epoch mean'). A within-session difference keeps its sign under this scaling; only the size
+    changes.
+- claim: fig2de-correct-incorrect-no-difference
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2de-correct-incorrect-no-difference
+  notes: The rank-sum test (legend) finds no difference in any of 24 comparisons (smallest p = 0.65).
+    The signed-rank test (Results) finds none under reading A (smallest p = 0.12) and one under reading
+    B (PFC beta power, p = 0.023). The criterion blocks the claim when the two tests differ. Over 20 other
+    subsampling seeds the signed-rank test finds at least one difference in 7 (A) and 13 (B), the rank-sum
+    test in none. Question for the authors (findings), which test, and how many subsamples.
+- claim: fig2g-air-beta-coherence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The air-only sessions are not in the dandiset (every epoch is odorplace). The odor-cued side
+    is complete, the files hold 3,174 rewarded trials, the 3,174 odor-cued correct trials of the legend.
+- claim: fig2f-swr-odor-vs-reward
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2f-swr-odor-vs-reward
+  assumed: true
+  notes: (a) 0.013 against 3.54 ripples per trial, fewer at the odor port in 38 of 38 sessions, p = 7.3e-12;
+    (b) 0.036 against 0.80 in the speed-defined stops, fewer in 37 of 38, p = 8.0e-10.
+  deviations:
+  - Assumption. The ripple envelope's mean and s.d. come from 60 random 2 s windows of the task epochs;
+    the files hold no sleep epochs and the Methods do not say over which periods the s.d. is taken.
+  - The ripple band-pass is a Butterworth of order 4 applied forward and backward (order not given; a
+    standard choice).
+- claim: fig2s1f-rr-beta-coupling
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2s1f-rr-beta-coupling
+  assumed: true
+  notes: The pooled MI exceeds all 500 shuffles in each region, with all trials and correct trials (MI
+    4.3e-5, 0.7e-5, 1.3e-5 for CA1, PFC, OB against shuffle maxima 0.5e-5 to 0.7e-5). Per session 15,
+    9 and 17 of 38 exceed 95% of their shuffles.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Each session's beta amplitude is divided by its mean before pooling, and shuffles pair trials within
+    a session (standard choices).
+- claim: fig2s2d-phase-offsets
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2s2d-phase-offsets
+  assumed: true
+  notes: Both windows, CA1 beta leads PFC (10.8 and 12.1 degrees, p = 2.0e-4 and 7e-5), CA1 RR leads PFC
+    (43 and 42 degrees, p < 1e-5) and OB (28 and 30 degrees, p = 3e-5 and < 1e-5). PFC-OB beta has no
+    consistent offset (p = 0.44, 0.42) but CA1-OB beta has (20 and 23 degrees, p = 0.011 and 0.012), where
+    the paper finds none.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+- claim: fig2s1e-run-theta-shift
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig2s1e-run-theta-shift
+  notes: The window readings differ, (a) CA1 run peak higher on 7 of 19 days, never lower, p = 0.011;
+    PFC unchanged (p = 1); partial. (b) Neither region shifts (CA1 p = 0.058, PFC p = 1). The PFC peak
+    in the 6 to 12 Hz search lies at its lower edge (6.6 Hz) on every day. Question for the authors (findings),
+    the windows and the frequency range of the peak search.
+- claim: unit-counts
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:unit-counts
+  measured:
+  - 915
+  - 508
+  - 876
+  - 494
+  - 742
+  - 397
+  - 134
+  - 97
+  - 138
+  - 166
+  - 114
+  - 131
+  notes: The dandiset holds 915 CA1 and 508 PFC units, the paper's active units (934 and 508), not its
+    1,309 and 717; the criterion's note that the totals compare what was deposited is read as comparing
+    these with the active counts. Active by the two readings CA1 871 and 876, PFC 493 and 494 (within
+    tolerance). Pyramidal cells CA1 737 to 755 (within) and PFC 396 to 430 (within only at 9.5 Hz); interneurons
+    by rate alone CA1 121 to 134, PFC 64 to 97 (expected 121 and 44). Odor-period active pyramidal CA1
+    138 to 146, PFC 166 to 194 (expected 170, 234); task responsive CA1 111 to 122, PFC 124 to 156 (expected
+    138, 185), all outside tolerance. Measured values are for active reading B, 7 Hz, task responsiveness
+    reading a.
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - The units' regions are read from the tetrode number in the units table's electrodes column (findings).
+- claim: fig3-choice-selective-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig3-choice-selective-fraction
+  measured:
+  - 38
+  - 51
+  - 33.3
+  - 38.9
+  notes: CA1 33.3% to 35.1% selective under every reading (within 34 +/- 3.4%); PFC 35.9% to 41.1% (outside
+    31 +/- 3.1%). No reading reproduces 138 and 185 task-responsive cells, so counts are not judged (CA1
+    38 to 42, PFC 51 to 56). Measured for active B, 7 Hz, reading a.
+  deviations:
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - Which side is odor 1 is not known, so the sign of an SI is arbitrary within a session; no analysis
+    uses its sign across sessions.
+- claim: fig3ij-si-anticorrelated
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig3ij-si-anticorrelated
+  measured:
+  - -0.487
+  - -0.536
+  notes: Spearman, rates SI, CA1 r = -0.49 (p = 0.0019, 38 cells), PFC r = -0.54 (p = 6.0e-5, 51 cells,
+    1 dropped); binned SI, CA1 r = -0.59 (p = 1.0e-4), PFC r = -0.55 (p = 3.6e-5). Negative and significant
+    under both readings; PFC outside -0.68 +/- 0.068 under both, CA1 within -0.58 +/- 0.058 with the binned
+    SI only. Pearson variant similar.
+  deviations:
+  - Cells by the Methods' reading of the selection (active by at least 100 spikes over the task epochs,
+    interneurons over 7 Hz by rate alone, task responsive by reading a); the other readings are in the
+    notebook.
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+- claim: fig3s1e-nonselective-si
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig3s1e-nonselective-si
+  notes: The SI readings differ. Rates SI, no significant correlation (CA1 r = -0.21, p = 0.078; PFC r
+    = 0.01, p = 0.91), the Results' reading in both regions. Binned SI, CA1 r = -0.31 (p = 0.0059, within
+    the legend's -0.34 +/- 0.034), PFC r = -0.44 (p = 7.3e-5, outside), the legend's reading in CA1 only.
+    The inherited rule of fig3ij-si-anticorrelated blocks the claim. Question for the authors (findings),
+    which SI produced Figure 3 i-j and its supplement.
+- claim: fig3s1c-odor-vs-reward-rate
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig3s1c-odor-vs-reward-rate
+  notes: CA1 median 5.4 Hz during sampling against 0.7 Hz at the reward well (101 of 114 cells higher
+    during sampling, p = 1.3e-17); PFC 3.3 against 2.9 Hz (86 of 131, p = 8.1e-5). Reward times exist
+    only on rewarded trials, so the criterion's two trial readings coincide.
+  deviations:
+  - Cells by the Methods' reading of the selection (active by at least 100 spikes over the task epochs,
+    interneurons over 7 Hz by rate alone, task responsive by reading a); the other readings are in the
+    notebook.
+- claim: fig4c-interneuron-si
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig4c-interneuron-si
+  measured:
+  - -0.186
+  - 39
+  - 23
+  notes: Selective task-responsive interneurons CA1 39, PFC 23 (expected 32 and 10). CA1 Spearman r =
+    -0.19 (p = 0.26) with rates SI and -0.40 (p = 0.011) with binned SI, far from -0.80 +/- 0.08; PFC
+    p = 0.14 and 0.025. At 9.5 Hz (variant) CA1 r = -0.27, p = 0.11. The rate-only interneuron rule is
+    a likely cause.
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+- claim: fig4d-ccg-lags
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig4d-ccg-lags
+  measured:
+  - 0.00125
+  - -0.00125
+  notes: No pair type shows a lag skew under any reading (int-int median -6.3 to 5.0 ms, p >= 0.21; CA1
+    int-PFC pyr p >= 0.23; CA1 pyr-PFC int p >= 0.23; pyr-pyr p >= 0.57). Nearly all tested pairs reach
+    the pointwise thresholds (for example 196 of 203 interneuron pairs), so the paper's selection of significant
+    pairs (87, 283, 111, 224) cannot be matched. Measured lags are medians, whole-period window, one-sided
+    threshold.
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - The code's 200 jitters are not run; its z > 3 is shown on the 1000 jitters.
+- claim: fig5c-local-locking
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5c-local-locking
+  measured:
+  - 86
+  - 80
+  - 26
+  - 23
+  - 22
+  - 50
+  - 6
+  - 6
+  assumed: true
+  notes: CA1 pyramidal beta 22/114 (19.3%, p = 4.9e-8 against 5%); PFC beta 6/131 (4.6%, p = 0.64) and
+    6/79 (7.6%, p = 0.20). Within tolerance, CA1 pyramidal RR 75.4%, CA1 pyramidal beta, CA1 interneuron
+    beta 44.6%, PFC beta. Outside, CA1 interneuron RR 71.4% (89% or 77%), PFC pyramidal RR 19.8% (22.7
+    +/- 2.2%), PFC interneuron RR 29.1% (43% or 33%). Both spike-count readings give the same cells.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - Cells by the Methods' reading of the selection (active by at least 100 spikes over the task epochs,
+    interneurons over 7 Hz by rate alone, task responsive by reading a); the other readings are in the
+    notebook.
+- claim: fig5d-cross-region-beta
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5d-cross-region-beta
+  measured:
+  - 12
+  - 3
+  - 3
+  - 6
+  assumed: true
+  notes: CA1 interneurons to PFC beta 12/112 (p = 4.3e-7 at chance 0.0167, 0.010 at 0.05); CA1 pyramidal
+    to PFC and to OB beta 3/114 each (p = 0.30); PFC pyramidal to CA1 beta 6/131 (p = 0.023 at 0.0167,
+    above that threshold; 0.64 at 0.05). The counts differ from the expected values (12 against 9, 3 against
+    11 and 10, 6 against 10), which the criterion does not judge.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig5gh-phase-preference
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5gh-phase-preference
+  assumed: true
+  notes: Seven of eight hold under both selections, CA1 pyramidal beta p = 2.1e-5, RR p = 0.0055; CA1
+    interneurons p = 1.9e-5, 8.7e-8; PFC interneuron RR p = 0.011; PFC pyramidal beta p = 0.30, RR p =
+    0.86. PFC interneuron beta p = 0.0063 (the paper p > 0.05).
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig5-rr-more-than-beta
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5-rr-more-than-beta
+  assumed: true
+  notes: Proportions RR against beta, CA1 166 against 72 of 226, PFC 49 against 12 of 210 (local; z-test
+    p = 8.3e-19 and 3.0e-7); CA1 or PFC LFP 179 against 85 and 73 against 25 (p = 3.0e-19 and 3.1e-8).
+    Pyramidal Rayleigh Z RR against beta, CA1 13.5 against 0.95 (p = 2.9e-20); PFC 0.89 against 0.77 (p
+    = 0.091). All readings agree; the PFC depth comparison fails.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig5s1de-beta-rr-overlap
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5s1de-beta-rr-overlap
+  assumed: true
+  notes: Observed against chance, CA1 pyramidal 0.167 against 0.146 (p = 0.51), CA1 interneurons 0.295
+    against 0.319 (p = 0.61), PFC pyramidal 0.008 against 0.009 (p = 1.0), PFC interneurons 0.025 against
+    0.022 (p = 0.69).
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig5s1fh-selective-and-locked
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5s1fh-selective-and-locked
+  assumed: true
+  notes: All six tests p >= 0.05 with locking to any region (0.54 to 1.0) and to the local LFP (0.45 to
+    1.0).
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+- claim: fig5e-beta-mvl-correct-incorrect
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5e-beta-mvl-correct-incorrect
+  assumed: true
+  notes: Lower MVL on incorrect trials, CA1 pyramidal 13 of 22 (p = 0.039), CA1 interneurons 32 of 50
+    (p = 0.014), PFC pyramidal 6 of 6 (p = 0.031). Over 10 other bootstrap seeds the CA1 pyramidal p ranges
+    0.033 to 0.054 (under 0.05 in 8). Cell counts 22, 50, 6 against the paper's 28, 36, 8.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig5f-rr-mvl-no-difference
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5f-rr-mvl-no-difference
+  assumed: true
+  notes: No group differs, CA1 pyramidal p = 0.88 (85 cells), CA1 interneurons p = 0.98 (80), PFC pyramidal
+    p = 0.13 (26), PFC interneurons p = 0.34 (23).
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig5s2-ca1-int-pfc-beta-accuracy
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig5s2-ca1-int-pfc-beta-accuracy
+  assumed: true
+  notes: CA1 interneurons locked to PFC beta, p < 0.05, 33 cells, 26 lower on incorrect trials, p = 1.0e-4;
+    p < 0.0167, 22 cells, p = 1.5e-4. Other combinations, CA1 interneurons to OB beta also differ (p =
+    0.0081, 13 cells; 0.039, 9 cells), PFC pyramidal to CA1 beta p = 0.052, the rest p > 0.15.
+  deviations:
+  - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
+    'zero-phase IIR filter' (Local field potential) without an order.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig6d-discrimination-time
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig6d-discrimination-time
+  measured:
+  - 200
+  - 1000
+  - 100
+  - 1000
+  notes: 12 CA1 and 18 PFC sessions have at least 4 task-responsive pyramidal cells (paper 24 sessions).
+    Ranges of the first significant bin (bin end) under the four readings, CA1 100 or 200 to 1000 ms,
+    PFC 100 to 900 or 1000 ms, outside 200-800 and 400-700 ms widened by 10%. CA1 against PFC p = 0.44
+    to 0.63 on 5 paired sessions. Measured, PCA on the trial-averaged matrix, 95th percentile.
+  deviations:
+  - Cells by the Methods' reading of the selection (active by at least 100 spikes over the task epochs,
+    interneurons over 7 Hz by rate alone, task responsive by reading a); the other readings are in the
+    notebook.
+  - A bin's time is its end (100 ms for the first bin); the paper does not say which edge it reports.
+- claim: fig6c-even-odd-control
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig6c-even-odd-control
+  notes: The even-odd distance crosses the bound in at least one bin in 5 to 8 of 12 CA1 sessions and
+    10 to 14 of 18 PFC sessions, depending on the reading.
+  deviations:
+  - Cells by the Methods' reading of the selection (active by at least 100 spikes over the task epochs,
+    interneurons over 7 Hz by rate alone, task responsive by reading a); the other readings are in the
+    notebook.
+- claim: fig6e-glm-choice-prediction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig6e-glm-choice-prediction
+  notes: The alignments differ. Reading a (exit-aligned), CA1 from 0.2 s and PFC from 0.4 s before exit,
+    both within tolerance. Reading b (onset-aligned), both from 0.12 s before exit, PFC outside tolerance.
+    With at least 4 cells per session, a 0.0 and 0.3 s, b 0.22 and 0.42 s. Question for the authors (findings),
+    the window alignment and any minimum ensemble size.
+  deviations:
+  - Assumption. A session enters a window when at least one cell qualifies (the Methods give no minimum);
+    at least 4 cells is shown as a variant.
+  - The code's logit link is used; the Methods' log link is not run.
+- claim: fig6e-glm-with-interneurons
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig6e-glm-with-interneurons
+  notes: Depends on fig6e-glm-choice-prediction, which is blocked. For the record, reading a gives 0.4
+    s before exit for CA1 with interneurons (expected 0.2 +/- 0.1), 0.4 s for PFC (expected 0.3 +/- 0.1)
+    and 0.1 s for the resampled CA1 control (expected 0.1); reading b gives 0.12, 0.32 and 0.12 s.
+  deviations:
+  - The resampled control uses 10 resamples per session with 10 label shuffles each, not 100 resamples,
+    to keep the run within its time limit.
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7-spatial-field-counts
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7-spatial-field-counts
+  measured:
+  - 365
+  - 591
+  - 163
+  - 278
+  notes: Results' 26 sessions, 365 of 591 CA1 and 163 of 278 PFC pyramidal cells have a field; Methods'
+    19 sessions, 339 of 545 and 147 of 250. The first set is within tolerance on all four values.
+  deviations:
+  - Assumption. The outbound route is linearized on a T-maze skeleton (stem from the port to the wells'
+    level, then the arm), divided into 100 bins of each session's route length; on unrewarded trials a
+    run ends when the rat comes within 15% of the well separation of the chosen well (the files give no
+    arrival time).
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7b-odor-active-more-fields
+  outcome: partially_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7b-odor-active-more-fields
+  measured:
+  - 67
+  - 101
+  - 73
+  - 115
+  notes: Results' sessions, CA1 67/101 active against 298/490 inactive with fields, P(X >= k) = 0.15;
+    PFC 73/115 against 90/163, p = 0.045. Methods' sessions, CA1 63/90 against 276/455, p = 0.042; PFC
+    62/97 against 85/153, p = 0.059. Each set has one significant region; with the code's P(X > k) both
+    regions are significant on the Methods' sessions (0.026, 0.038).
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7s1b-odor-active-higher-rate
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7s1b-odor-active-higher-rate
+  notes: CA1 2.35 against 0.97 Hz (p = 1.5e-10), PFC 3.47 against 1.11 Hz (p = 1.4e-12); Methods' sessions
+    p = 5.3e-10 and 1.6e-11.
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7c-field-properties-no-difference
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7c-field-properties-no-difference
+  notes: CA1, width 14 against 21 bins (p = 1.6e-7), sparsity 0.33 against 0.27 (p = 2.8e-5), peak p =
+    0.82. PFC, peak 11.9 against 7.4 Hz (p = 1.2e-4), sparsity 0.58 against 0.42 (p = 3.2e-10), width
+    p = 0.96. Four of six tests significant; the Methods' sessions give the same. Fields 491 CA1 and 231
+    PFC (paper 452 and 207).
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7s1e-trajectory-selective-odor-active
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7s1e-trajectory-selective-odor-active
+  notes: 369 of 499 CA1 and 165 of 268 PFC cells are trajectory selective by the Methods' rule. CA1 selective
+    cells are less often odor active (17% against 25%, p = 1.0). PFC 45% against 40% (p = 0.11) on the
+    Results' sessions, 43% against 36% (p = 0.049) on the Methods' sessions.
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+  - 500 shuffles of trajectory identity (the code's count for its scores).
+- claim: fig7d-trajectory-choice-unrelated
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7d-trajectory-choice-unrelated
+  notes: CA1, rank-sum p = 0.24 (Results' sessions), 0.12 (Methods'). PFC, p = 0.010 and 0.0061, cells
+    preferring the left choice also prefer the left trajectory (median index 0.05 against -0.13).
+  deviations:
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7e-odor-decoder-first-quintile
+  outcome: not_reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7e-odor-decoder-first-quintile
+  notes: CA1, no quintile above chance (quintile 1 accuracy 0.53 against 0.50, p = 0.53; 25 sessions).
+    PFC, quintile 1 above chance on the Methods' sessions only (0.58 against 0.51, p = 0.031; Results'
+    sessions p = 0.19); no later quintile in either region.
+  deviations:
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+  - Rates of zero are floored at 0.01 Hz (standard choice).
+- claim: fig7f-spatial-decoder-all-quintiles
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7f-spatial-decoder-all-quintiles
+  notes: All five quintiles above chance in CA1 and PFC under both cell readings and both session sets
+    (accuracy 0.75 to 0.99 against about 0.50; every rank-sum p below 1e-4).
+  deviations:
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+- claim: fig7s1f-ensemble-rate-near-port
+  outcome: reproduced
+  notebook: reproduce_symanski_2022.ipynb
+  output: claim:fig7s1f-ensemble-rate-near-port
+  notes: CA1 choice-selective ensemble (25 cells) peaks at bin 0, 4.0 Hz within 20 cm against 1.2 Hz beyond,
+    bins 0 to 6 above the null's 99th percentile; odor-active set (101 cells) the same (3.5 against 2.0
+    Hz, bins 0 to 9). Median route 125 cm.
+  deviations:
+  - The odor of a trial is read from the data, as the files do not hold it; the chosen side on rewarded
+    trials and the other side on unrewarded ones, the side read from the position after exit (it agrees
+    with the rewarded well on 99.85% of rewarded trials).
+  - Interneurons are defined by rate alone (over 7 Hz), since the files hold no waveforms; the Methods
+    also require a spike width under 0.3 ms.
+findings:
+- kind: format_error
+  statement: The units table's electrodes column, a reference to rows of the electrode table, holds tetrode
+    numbers (the N of the electrode labels 'tetrodeN') in all 38 files. Read as rows, as NWB tools do,
+    it places 131 units on OB tetrodes, which carried no units, and gives 540 CA1 and 752 PFC units; read
+    as tetrode numbers it gives 915 CA1, 508 PFC and no OB units, against the paper's 934 and 508 active
+    units.
+- kind: metadata_error
+  statement: Electrode group names and electrode labels disagree in all 38 files (for example group Tetrode5
+    is labelled tetrode6), so the tetrode a channel belongs to is ambiguous without the units' values.
+- kind: metadata_insufficient
+  statement: The trial table has no odor identity and no chosen well; unrewarded trials have no reward
+    times. The odor and the choice must be reconstructed from the rewarded well and the position, and
+    which side is odor 1 (heptanol) cannot be known.
+- kind: selection_undocumented
+  statement: The dandiset holds 915 CA1 and 508 PFC units, close to the paper's active units (934 and
+    508), not the 1,309 and 717 recorded; the selection is not described. 53 units have fewer than 100
+    spikes within the task epochs.
+- kind: data_missing
+  statement: The files hold no spike waveforms or widths (needed for the paper's cell-type rule), no nasal
+    thermocouple signal, no air-only sessions and no sleep epochs. Three claims cannot be tested, and
+    every claim that separates pyramidal cells from interneurons rests on a rate-only rule.
+- kind: other
+  statement: The acquisition ElectricalSeries is a copy of the processed LFP in every file (equal on the
+    stretch checked), which doubles the dandiset to 95 GB; the LFP is stored as uncompressed, unchunked
+    float64.
+- kind: metadata_error
+  statement: Position in CS39 session 02 spans 59 by 25 units against about 105 by 45 cm on the other
+    CS39 days, and its speeds are lower in proportion, so its stated unit of centimeters does not hold
+    for that file.
+- kind: other
+  statement: Four CS42 trials (sessions 02, 04, 05) end after the last LFP sample; the odor port position
+    also moves between epochs in CS31 session 02 and CS34 session 02 (camera frame changes).
+- kind: paper_inconsistency
+  statement: For non-selective task-responsive cells the Results say the correct-incorrect SI correlation
+    is not significant, while the legend of Figure 3-figure supplement 1e reports r = -0.34 with p = 0.001
+    and 3.0e-4. On this dataset the Results' version holds with sampling-period SIs and the legend's (in
+    CA1) with the code's binned SIs.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors, each deciding a blocked claim. (1) Figure 2e middle and
+    2d-e bottom, which pipeline (the F16 spectrogram code with time-matched windows, or the F7 code with
+    fixed 500 ms windows) produced each panel, and which test (signed-rank across sessions, or rank-sum)
+    and how many correct-trial subsamples were used for correct against incorrect. (2) Figure 2-figure
+    supplement 1e, the odor and run windows and the frequency range searched for the peak. (3) Figure
+    3i-j and supplement 1e, whether the SI was computed from sampling-period rates (Methods) or from 50
+    ms bins 0.2 to 1 s after onset (cs_odorSelectivity_v2.m). (4) Figure 6e, whether the GLM windows were
+    aligned to odor onset (Methods) or to odor port exit (Results, cs_predictChoice_GLM_v3.m), and whether
+    sessions needed a minimum number of cells.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors on choices this attempt assumed. (1) Over which period
+    are the epoch mean and s.d. taken for z-scoring power and coherence, and for the ripple threshold
+    (task epochs, sleep, or both)? (2) What order of IIR filter was used for the beta and RR band-passes?
+    (3) Was the interneuron rule (7 Hz and 0.3 ms) applied with rate over run epochs or over all epochs?
