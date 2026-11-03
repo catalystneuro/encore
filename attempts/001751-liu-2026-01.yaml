@@ -55,11 +55,12 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:code-table-link
-  notes: Every file the table names is in the dandiset (296 of 296). Ten presynaptic blocks name no file; 8 are
-    matched one to one to a file of their slice by the firing channel, and 2 (190315s2 channel 7, 20241014HS2 channel
-    8, 13 rows, no annotated connection) have no file in the dandiset. The table's presynaptic channel is the channel
-    that fires on the first pulse in 294 of 296 files (99.3%; 289, 97.6%, when a pre-pulse mean below -30 mV is
-    also required); in the other 2 it does not overshoot 0 mV (median peaks -21.5 and -8.0 mV). The postsynaptic
+  notes: The table names 288 files, all in the dandiset. Ten presynaptic blocks name no file; 8 are matched one
+    to one to a file of their slice by the firing channel, and 2 (190315s2 channel 7, 20241014HS2 channel 8, 13
+    rows, no annotated connection) have no file in the dandiset. The table's presynaptic channel is the channel
+    that fires on the first pulse in 286 of the 288 files it names (99.3%; 281, 97.6%, when a pre-pulse mean below
+    -30 mV is also required); the 8 linked files match by construction, which gives 294 of 296 (289 with the -30
+    mV rule). In the other 2 it does not overshoot 0 mV (median peaks -21.5 and -8.0 mV). The postsynaptic
     channel holds a cell in 1,372 of 1,403 pairs (97.8%; 1,391 at -20 mV, 1,304 at -50 mV); 6 pairs of slice 190314s1
     name channels 6 and 7, which read 0 mV. The dandiset holds 5 files the table does not list (slice 20240912HS2).
     Read block by block, the table lists no ordered pair twice, gives 5 cells two types, labels 2 connections with
@@ -327,7 +328,7 @@ outcomes:
     matched by file name (14 VEN, 21 PC). Largest inward current of the step-averaged traces, low-passed at 1 kHz,
     baseline over the 2 ms before the step, steps up to 0 mV, 0.2 to 3 ms after the step: VEN median -17.3 against
     PC -31.5 pA, rank-sum p = 0.0010; it agrees with the code''s max_Na_current (r = 0.99, median difference 1.28
-    pA), whose own p is 0.0010 (VEN -14.9, PC -29.3 pA). VENs are lower under all 40 readings run. Low-passed at
+    pA), whose own p is 0.0010 (VEN -14.9, PC -29.3 pA); with steps up to +85 mV, r is 0.77 to 0.94. VENs are lower under all 40 readings run. Low-passed at
     500 Hz to 2 kHz, p is 0.0006 to 0.0040 under every window (to 3, 5 or 10 ms) and step range (to 0 or +85 mV).
     Unfiltered, p is 0.0067 to 0.0956 depending on the window, r with the code 0.40 to 0.90, and 6 of 35 peaks fall
     later than 3 ms (up to 9.99 ms), where the low-passed peaks fall at 0.59 to 1.42 ms. Question for the paper''s
@@ -335,8 +336,9 @@ outcomes:
   deviations:
   - Assumed. The Methods give the steps (-80 to 0 mV, 25 ms, leak subtracted online, 100 kHz) but neither a filter
     nor the window in which the peak is taken; unfiltered, the outcome changes between windows ending at 3 ms and
-    at 5 or 10 ms. A 1 kHz low-pass (2nd-order Butterworth, forward and backward, the form of PatchAnaLab's filters,
-    whose filter_1000Lowpass the paper's code uses in extFig9ad_plotVENsubtypeAP_Cmp.m) is adopted because the peaks
+    at 5 or 10 ms. A 1 kHz low-pass (2nd-order Butterworth, forward and backward, the form of PatchAnaLab's filters;
+    the paper's code applies filter_1000Lowpass to first-AP traces in extFig9ad_plotVENsubtypeAP_Cmp.m, line 35,
+    and Fig4d_plotNaCurrent.m calls no filter, both printed in the notebook) is adopted because the peaks
     it gives reproduce the code's per-patch max_Na_current (r = 0.99); with it the window does not change the result.
   - Steps up to 0 mV and the baseline over the 2 ms before the step follow Fig4d_plotNaCurrent.m (nTraces = 17,
     test pulses from -80 to 0 mV; base over the first 2 ms of a snippet starting 2 ms before the step).
@@ -498,8 +500,8 @@ findings:
     2 nA.
 - kind: metadata_error
   statement: The stimulus series of every file names electrode Elec_8 as the stimulated one, while the cell that
-    fires on the pulse is on channel 8 in only 35 of 301 files; in 281 of 288 files the firing channel is the presynaptic
-    channel of the code's table.
+    fires on the pulse is on channel 8 in only 35 of 301 files; in 286 of the 288 files the code's table names, the firing channel
+    is the table's presynaptic channel.
 - kind: metadata_error
   statement: All 301 files have the session start time 2018-01-01T01:00+08:00, while the slices are named for dates
     in 2019 and 2024, and every subject has the same age, P4Y/P6Y, and sex M.
@@ -825,4 +827,249 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Blocked by its criterion, which needs Supplementary Tables 1 and 2.
+    response: No change of outcome.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusion cells and summary, the helper
+    module, the claims file and the attempt record, with the paper. The verifier agrees with 34 of 35 outcomes; it lists
+    six statements the printed outputs do not support (cells 0, 13, 51, 53 and 57, a deviation, a finding and the README's
+    run time), all corrected or given an output in this revision.
+  results:
+  - claim: code-table-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 13 and the notes say every file the table names is in the dandiset (296 of 296), but the table
+      names 288 files; the other 8 were assigned by link_blank_blocks, which picks them by the firing channel. For the same
+      reason the 294 of 296 (99.3%) presynaptic match includes 8 files that match by construction; the independent figure
+      is 286 of 288. The outcome does not change.
+    response: 'Cell 11 now prints the counts over the 288 files the table names itself: 288 in the dandiset, presynaptic
+      channel the firing one in 286 of 288 (281 with the -30 mV rule). Cell 13 and the notes now give these, and say that
+      the 8 linked files match by construction. The metadata_error finding on Elec_8, which still gave the round-1 count
+      of 281 of 288, now gives 286 of 288 named files (294 of 296 with the linked ones). No change of outcome.'
+  - claim: fig5d-connectivity-totals
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-pc-to-pc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-ven-outputs-absent
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the change to partially_reproduced, as the verifier gave in round 1. Supplementary Table 5 is still
+      unread, by the verifier and by the author; its per-class pair and neuron counts bear on every Fig. 5 pair count that
+      fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-pc-to-ven
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-pc-in
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Supplementary Table 5 is still unread, by the verifier and by the author; its per-class pair and neuron
+      counts bear on every Fig. 5 pair count that fails, and a question on it has been put to a reader.
+    response: 'No change of outcome. The PDFs under paper/ were rendered page by page: supp1 is the Supplementary Information
+      (figures and legends), supp2 the Reporting Summary, supp3 the Peer Review File and supp4 to supp9 unprocessed images;
+      none holds Supplementary Table 5, so it cannot be read here. This is added to the question in questions/001751.yaml.'
+  - claim: fig5-in-to-ven-absent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5i-ven-sparse-local-connectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5fg-example-slice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5-pair-distances
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5-pc-rate-comparable-primate
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4j-eepsp-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption that the values in sumData_StimWM.xlsx are the selected monosynaptic eEPSPs is stated
+      and reasonable, given as a deviation with 23 pairs against the paper's 26.
+    response: No change of outcome.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4j-eepsp-latency
+    agrees: true
+    outcome: blocked
+    reason: Accepts blocked (other) in place of data_missing, for the protocol reason the record gives.
+    response: No change of outcome.
+  - claim: fig5b-psc-frequency
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig5c-psc-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4d-sodium-current
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, now reproduced: the peak measure is checked against the code''s values (cell 52); with a 1 kHz low-pass
+      and the code''s 2 ms baseline, r = 0.99, the median difference is 1.28 pA and p = 0.0010 in every window, and any
+      low-pass from 500 Hz to 2 kHz gives p = 0.0006 to 0.0040. The 1 kHz assumption is stated and reasonable. Cell 53''s
+      ''r = 0.99, median difference 1.28 pA, every window'' holds only for steps up to 0 mV; with steps up to +85 mV r is
+      0.77 to 0.94. The deviation''s statement that the paper''s code uses filter_1000Lowpass in extFig9ad_plotVENsubtypeAP_Cmp.m
+      is not shown by any output.'
+    response: 'Cell 53 and the notes now say the agreement holds for steps up to 0 mV and give r for steps up to +85 mV,
+      which cell 52 now prints (1 kHz, 0.77 to 0.94). Cell 52 now prints the lines of Fig4d_plotNaCurrent.m and extFig9ad_plotVENsubtypeAP_Cmp.m
+      that call a filter: Fig4d_plotNaCurrent.m calls none, and extFig9ad_plotVENsubtypeAP_Cmp.m applies filter_1000Lowpass
+      to the first-AP traces (line 35); the deviation now says this. No change of outcome.'
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig8a-metabolite-gradient
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The test now runs on the MetaboLights deposit, which holds the same 558 metabolites (cell 58), so the
+      paper's 581 is a difference in the data, not an input gap; the gradient holds (175 to 195 against 84 to 98), AIC-V1
+      fails its tolerance under every reading and AIC-PrC passes under one. Cell 57's 'the only revision' is not shown by
+      any output.
+    response: Cell 58 now prints the revisions listed under the deposit's METADATA_REVISIONS (MTBLS13927_01 only, modified
+      2026-02-28). No change of outcome.
+  - claim: fig8de-glycolytic-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig6f-g-ven-subtype-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: patchseq-mapping
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Still leans to partially_reproduced: three of the four values are within tolerance and the fourth cannot be
+      tested (cell 62). The claims file gives no criterion for this claim, the record states the disagreement, and no number
+      depends on it.'
+    response: 'Kept as blocked (metadata_insufficient), with the disagreement recorded: no tested part fails or is weaker,
+      and the inhibitory-type count, a quarter of the claim, cannot be tested from the saved tables. Not proposed as a change.'
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: scrna-78-types
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig3ab-ven-axon-from-basal-dendrite
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4i-peak-index-ais-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig4g-model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: model-ven-fires-more
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig6-ven-subtype-morphology
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig6h-subtype-markers
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: ven-subtypes-similar-physiology
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
+    response: No change of outcome.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the report raises no point on this claim beyond its general statement that the other Result sentences,
+      the Summary, the README and the record's notes match the printed numbers.
     response: No change of outcome.

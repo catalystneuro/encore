@@ -50,8 +50,8 @@ per-cell values, on DANDI:001750 for the Na+ currents and on MetaboLights MTBLS1
 metabolites; they are counted apart from the
 dandiset's.
 
-- `reproduce_liu_2026.ipynb`: the analysis. It takes about five minutes, most of it streaming
-  the 7 GB of files into memory.
+- `reproduce_liu_2026.ipynb`: the analysis. Its last run took 4.9 minutes (printed at the end of
+  the last code cell), 175 s of it streaming the 7 GB of files into memory.
 - `multipatch.py`: loading the files, finding the stimulated cell, averaging and filtering the
   responses as the paper's code does, and reading the code's table. Other notebooks on this
   dandiset can import it.
