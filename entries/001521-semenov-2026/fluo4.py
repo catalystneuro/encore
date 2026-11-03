@@ -6,9 +6,9 @@ Bioelectrochemistry 171, 109283, doi:10.1016/j.bioelechem.2026.109283.
 The dandiset holds 73 NWB files, one time-lapse of 512 x 512 widefield Fluo-4 images each
 (`acquisition/TimeLapseImaging`), with no ROIs, traces or tables. Two sessions:
 
-- 2025-02-03 (30 files): a single 1-us pulse (or a sham, 0 V) 60 s into a 300-frame recording
+- 2025-02-03 (31 files): a single 1-us pulse (or a sham, 0 V) 60 s into a 300-frame recording
   at 1 frame/s. This is the paper's first set of Ca2+ experiments (Methods 2.4; Fig. 6A).
-- 2025-05-02 (43 files): sixty 1-us pulses at 6 Hz (or a sham) 30 s into a 90-frame recording
+- 2025-05-02 (42 files): sixty 1-us pulses at 6 Hz (or a sham) 30 s into a 90-frame recording
   at 0.5 frame/s. This is the paper's second set (Methods 2.4; Fig. 6B).
 
 The pulse is given in each file's `session_description` as a voltage; the paper gives field
@@ -207,12 +207,21 @@ def peak_value(dF: np.ndarray, pf: int) -> np.ndarray:
 # Sim4Life field 5 um above the glass, Methods 2.2) and states no conversion. Two readings of the
 # conversion, each a factor in V/cm per V, are run (author, step 1.6):
 #
-# - "M1", 3.9 V/cm per V: the single-pulse voltages 150, 200, 250, 300 and 350 V then fall on
-#   the field series used throughout the paper, 570, 780, 1000, 1200 and 1400 V/cm (Figs. 1, 2,
-#   4), and 780/200 = 3.9.
-# - "M2", 3.3 V/cm per V: the train voltages 70, 200 and 230 V then fall on the three fields the
-#   paper names for the trains, 230, 650 and 780 V/cm (Section 3.6, paragraph 3; 3.29, 3.25 and
-#   3.39 V/cm per V).
+# - "M1", 3.9 V/cm per V, the reading adopted (an assumption). The single-pulse voltages 150, 200,
+#   250, 300 and 350 V then fall on the field series used throughout the paper, 570, 780, 1000,
+#   1200 and 1400 V/cm (Figs. 1, 2, 4), and 780/200 = 3.9. The train voltages 70, 150, 170, 200,
+#   230 and 250 V then fall nearest the six fields labelled in Fig. 6B (230, 570, 650, 780, 900 and
+#   1000 V/cm), and their group sizes in the dataset are close to the n the figure gives for each
+#   field (the notebook compares them). The same electrodes and generator served both sessions
+#   (Methods 2.2), so one factor is assumed for both.
+# - "M2", 3.3 V/cm per V, a variant: the train voltages 70, 200 and 230 V then fall on the three
+#   fields the paper names in the text for the trains, 230, 650 and 780 V/cm (Section 3.6,
+#   paragraph 3; 3.29, 3.25 and 3.39 V/cm per V), but the voltages nearest 900 and 1000 V/cm are
+#   250 and 300 V, and the group sizes do not follow the figure's.
+#
+# Neither factor follows from the electrode gap: V/d is 10 V/cm per V for the 1.00 mm the files
+# state and 6.25 V/cm per V for the 1.6 mm of Methods 2.2, and the Sim4Life field at the cells is
+# not given as a fraction of V/d.
 
 FIELD_PER_VOLT = {"M1": 3.9, "M2": 3.3}
 
