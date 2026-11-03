@@ -132,13 +132,14 @@ class HMMGLM:
         b *= c[:, :, None]
         return A, E, Ey, a, b, c
 
-    def fit(self, X, Y, n_epochs: int = N_EPOCHS):
-        """X (M, D, T), Y (M, T) with labels 0..J-1."""
+    def fit(self, X, Y, n_epochs: int = N_EPOCHS, eta0: float = ETA0):
+        """X (M, D, T), Y (M, T) with labels 0..J-1. `eta0` is the code's learning rate; other values
+        are a variant only (fig1i, z-scored input)."""
         Xa = _aug(X)
         M, T, _ = Xa.shape
         onehot = np.eye(self.J)[Y]                                        # (M, T, J)
         for ep in range(n_epochs):
-            lr = ETA0 / (1 + ep / TEMP)
+            lr = eta0 / (1 + ep / TEMP)
             A, E, Ey, a, b, c = self._forward_backward(Xa, Y)
             g = a * b + FLOOR
             g /= g.sum(2, keepdims=True)                                  # gamma (M, T, K)
@@ -274,9 +275,9 @@ def static_predictions(Xtr, Ytr, Xte, J: int) -> dict[str, np.ndarray]:
 
 
 def _fold(args):
-    X, Y, J, te, seed, k_states, static, n_epochs = args
+    X, Y, J, te, seed, k_states, static, n_epochs, eta0 = args
     tr = np.setdiff1d(np.arange(len(X)), te)
-    m = HMMGLM(X.shape[1], k_states, J, np.random.default_rng(seed)).fit(X[tr], Y[tr], n_epochs)
+    m = HMMGLM(X.shape[1], k_states, J, np.random.default_rng(seed)).fit(X[tr], Y[tr], n_epochs, eta0)
     preds = {"HMM-GLM": m.predict_onestep(X[te], Y[te])}
     ll = float(m.loglik(X[te], Y[te]).mean())
     if static:
@@ -286,14 +287,14 @@ def _fold(args):
 
 def cross_validate(X, Y, J: int, seed: int, k_states: int = K_STATES, contiguous: bool = True,
                    static: bool = True, n_epochs: int = N_EPOCHS, workers: int = 4,
-                   test_sets: list[np.ndarray] | None = None) -> dict:
+                   test_sets: list[np.ndarray] | None = None, eta0: float = ETA0) -> dict:
     """10-fold CV (or the given test sets, such as one animal each). Returns per-model AUC arrays (folds x labels) without and with the shift,
     and the HMM-GLM's mean held-out log-likelihood per fold. Each fold has its own seed, drawn
     from `seed`, so the result does not depend on the number of workers."""
     rng = np.random.default_rng(seed)
     fs = test_sets if test_sets is not None else folds(len(X), rng=None if contiguous else rng)
     seeds = rng.integers(0, 2 ** 31, len(fs))
-    jobs = [(X, Y, J, te, int(s), k_states, static, n_epochs) for te, s in zip(fs, seeds)]
+    jobs = [(X, Y, J, te, int(s), k_states, static, n_epochs, eta0) for te, s in zip(fs, seeds)]
     if workers > 1:
         with ProcessPoolExecutor(workers, mp_context=get_context("fork")) as ex:
             out = list(ex.map(_fold, jobs))

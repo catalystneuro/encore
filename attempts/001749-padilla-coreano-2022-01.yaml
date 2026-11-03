@@ -51,26 +51,31 @@ outcomes:
   notebook: reproduce_padilla_coreano_2022.ipynb
   output: claim:fig1i-hmmglm-decodes-behaviour
   measured:
-  - 965
-  - 34
-  - 14
-  notes: On the 512 trials of the 17 files used, the 6-state HMM-GLM AUCs with the one-bin shift are 0.60
-    to 0.83 (median 0.774), all 9 above 0.5 (sign test p = 0.0039), above the GLM (median 0.541, rank-sum
-    p = 0.0003) and the 9 GLMs (median 0.539, p = 0.0003); GLM against 9 GLMs p = 0.627. Without the shift
-    the HMM-GLM median is 0.713 and p = 0.0009 against each. Crossings in either direction give the same
-    outcome (median 0.910). Random folds pass with the shift (p = 0.047) and fail without it (p = 0.233).
-    Rates z-scored per channel put the HMM-GLM below chance (median 0.475), as the code's learning rate
-    (1e-6) is set for counts. Leave-one-mouse-out (10 mice) gives 9 of 9 above 0.5 (p = 0.0039). On the
-    paper's own processed input the ported code gives HMM-GLM AUCs 0.79 to 0.98 against static medians
-    near 0.59 and meets every test. The labelled files hold 965 trials, 34 files and 14 mice (expected
-    965, 32 and 13, within tolerance if a session is a file); the paper's input holds 14 animals too.
-    The SVM is not run and the Kruskal-Wallis across five models is not judged.
+  - 512
+  - 17
+  - 10
+  notes: On the 512 trials of the 17 files used (10 mice), the 6-state HMM-GLM AUCs with the one-bin shift
+    are 0.60 to 0.83 (median 0.774), all 9 above 0.5 (sign test p = 0.0039), above the GLM (median 0.541,
+    rank-sum p = 0.0003) and the 9 GLMs (median 0.539, p = 0.0003); GLM against 9 GLMs p = 0.627. Without
+    the shift the HMM-GLM median is 0.713 and p = 0.0009 against each. Crossings in either direction give
+    the same outcome (median 0.910). Random folds pass with the shift (p = 0.047) and fail without it (p
+    = 0.233). Without 20191029-chrimson2-2-2v3 (482 trials, 16 files, 9 mice) every test passes (median
+    0.693, p = 0.0003 against each static model, GLM against 9 GLMs p = 0.627). Rates z-scored per channel
+    fail at the code's learning rate of 1e-6 (median 0.475 and 0 of 9 above 0.5 with one seed, median
+    0.511 and 7 of 9 with another), and the paper's own input z-scored gives chance at that rate too (median
+    0.494); at 1e-4 z-scored rates decode all 9 labels here (median 0.576, p = 0.0039) and on the paper's
+    input (median 0.650). Leave-one-mouse-out (10 mice) gives 9 of 9 above 0.5 (p = 0.0039). On the paper's
+    own processed input the ported code gives HMM-GLM AUCs 0.79 to 0.98 against static medians near 0.59
+    and meets every test. The measured values are the trials, files and mice analysed, outside the tolerances
+    of the expected 965, 32 and 13; the labelled files hold 965 trials, 34 files and 14 mice (within tolerance
+    if a session is a file), and the paper's input holds 14 animals too. The SVM is not run and the Kruskal-Wallis
+    across five models is not judged.
   deviations:
   - 17 of the 34 labelled files (512 of 965 trials, 10 of 14 mice), those whose recording can be placed
     on the behaviour clock (clear port-entry offset, within 10 s of the other clear files of that day
     and cage, scaled spikes matching the recording, labels matching the port entries at r >= 0.3); the
     offset is in no file. One of the 17 (20191029-chrimson2-2-2v3, 30 trials) peaks 8 s away from its
-    port-entry offset against the paper's processed input.
+    port-entry offset against the paper's processed input; leaving it out changes no test.
   - Input computed from the raw ElectricalSeries as Methods 17 describe it ("applying a common reference
     average and determining spikes using 4 standard deviations from the mean"; 70 time stamps of 200 ms),
     with the 600 to 6,000 Hz band of Methods 11; mean and SD per channel over each 14 s trial window (the
@@ -82,6 +87,8 @@ outcomes:
     with the shift, contiguous folds in session order). They differ in outcome (z-scored rates fail; random
     folds fail without the shift), so the outcome rests on counts and contiguous folds, which the paper's
     processed input (uint16 counts per bin) and run_model.m (contiguous blocks) support. An assumption.
+    The z-scored failure is at the code's learning rate, set for counts; z-scored rates decode at a learning
+    rate of 1e-4, which the code does not use.
   - Static decoders fitted by maximum likelihood (L-BFGS) with a ridge of 1e-4 on inputs scaled by the
     training SD; the paper names no solver or regularisation.
   - Folds in which a label is absent give no AUC for it and are left out of its mean over folds (2 folds
@@ -93,8 +100,12 @@ outcomes:
   output: claim:ed5j-six-states
   notes: Held-out log-likelihood per trial (mean over 10 folds, SEM) on the input of fig1i-hmmglm-decodes-behaviour
     is -154.8 for 1 state, -124.5 (4.4) for 2, then falls slowly to -126.1 (4.3) at 6 and -126.9 (4.2)
-    at 10. Reading (a) selects 2 and reading (b) selects 2. On the paper's input, run for 1, 6 and 10
-    states only, the values are -529.6, -126.5 and -127.6.
+    at 10. Reading (a) selects 2 and reading (b) selects 2. With crossings in either direction the mean
+    is highest at 4 states (-121.3, SEM 3.8) and the smallest number within one SEM of it is 3, so no
+    reading selects 5, 6 or 7. On the paper's input, run for 1 to 10 states, the values rise from -529.6
+    at 1 state to -126.5 (SEM 0.57) at 6 and are lower at every larger number (-127.6 at 10); both readings
+    select 6. The port selects 6 on the paper's input and not on the input computed from the dandiset,
+    so the difference comes from the input, not from the code.
   deviations:
   - Input, files and code as in fig1i-hmmglm-decodes-behaviour (17 of 34 labelled files, 512 trials).
   - States 1 to 10, as the criterion reads them; each with its own seed.
@@ -105,14 +116,32 @@ outcomes:
   notes: Trials of files of relative dominants (299, 7 mice) and subordinates (213, 4 mice). With the
     shift, dom to sub gives 8 of 9 AUCs above 0.5 (sign test p = 0.039), sub to dom 7 of 9 (p = 0.18;
     AUCs 0.48 to 0.91), dom 10-fold and sub 10-fold 9 of 9 (p = 0.0039); without the shift sub to dom
-    is again 7 of 9 (p = 0.18). Not every combination passes. On the paper's input (its own rank per trial,
-    487 dom and 478 sub trials, the counts of the 34 labelled files here) both directions give 9 of 9
-    (p = 0.0039), so the difference comes from the input (fewer files and mice, and multi-unit counts
-    that differ from the paper's), not from the code.
+    is again 7 of 9 (p = 0.18). Not every combination passes on this reading. With crossings in either
+    direction every combination passes, with and without the shift (dom to sub and sub to dom 9 of 9,
+    medians 0.821 and 0.788, lowest AUC 0.780 and 0.582; both 10-fold runs 9 of 9, p = 0.0039), and with
+    random folds the within-group runs give 9 of 9. On the paper's input (its own rank per trial, 487
+    dom and 478 sub trials, the counts of the 34 labelled files here) both directions and both within-group
+    10-fold runs give 9 of 9 (p = 0.0039).
   deviations:
   - Input, files and code as in fig1i-hmmglm-decodes-behaviour; 512 of the 965 trials (legend 482 dom
     and 478 sub).
   - The sub group holds 4 mice, so training on it rests on few animals.
+  - The outcome rests on the threshold reading. It takes negative crossings below mean minus 4 SD, the
+    reading the criterion lists first and the usual way of detecting extracellular spikes; Methods 17
+    says only "determining spikes using 4 standard deviations from the mean". Crossings in either direction
+    give every combination above chance. An assumption.
+  assumed: true
+  proposed:
+    outcome: reproduced
+    reason: The two threshold readings give different outcomes, so the outcome rests on the better supported
+      one. Matched trial by trial, the paper's processed input holds 1.06 times the counts of crossings
+      in either direction (median over the 17 files, range 0.63 to 1.41) and 1.47 times those of negative
+      crossings (1.21 to 2.11), and its median rate per channel (28.15 Hz) is nearer that of crossings
+      in either direction (23.05 Hz) than of negative crossings (16.41 Hz). Methods 17 ("4 standard deviations
+      from the mean") names no direction. On crossings in either direction every train and test combination
+      gives 9 of 9 AUCs above 0.5 (sign test p = 0.0039), with and without the shift, which meets the criterion.
+      fig1i-hmmglm-decodes-behaviour and ed5j-six-states have the same outcome under both readings. The outcome
+      would still rest on that assumption.
 - claim: ed5b-rank1-wins-most
   outcome: reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
@@ -159,19 +188,26 @@ outcomes:
   output: claim:ed5d-subordinates-slower-latency
   notes: With each label trial set against the tone of the same index, subordinates enter the port later
     in their win trials (median 1.47 against 1.01 s, 189 and 211 trials, rank-sum p = 0.0196, KS p = 0.0036;
-    next entry for a mouse already in the port, p = 0.0204). Leaving out the 12 files whose labels and
-    port entries agree at r below 0.3 or not at all gives p = 0.158 (1.40 against 1.28 s, 158 and 171
-    trials). With each file's best tone shift p = 0.0458, and with that shift and without the files below
-    r = 0.3 at it p = 0.375 (1.48 against 1.38 s, 166 and 185 trials; KS p = 0.067). From the hand-scored
-    labels, which need no alignment, p = 0.206 over all win trials and 0.16 over the trials of the main
-    test; over mouse means p = 0.055 (entries) and 0.059 (labels). Subordinates are slower in every reading,
-    but the rank-sum is below 0.05 only in the readings that keep the files whose labels and entries disagree.
+    next entry for a mouse already in the port, p = 0.0204). With each file's best tone shift p = 0.0458
+    over all files; without the files whose labels and port entries agree at r below a cut-off, p is 0.0623,
+    0.375, 0.375 and 0.0662 at cut-offs of 0.2, 0.3, 0.4 and 0.5 (at 0.3, 1.48 against 1.38 s, 166 and
+    185 trials; KS p = 0.067). Without the shift, keeping only the files that agree at the same index, p
+    is 0.0206 at 0.2, 0.158 at 0.3 (1.40 against 1.28 s, 158 and 171 trials), 0.0211 at 0.4 and 0.0022
+    at 0.5 (17 files, 140 and 115 trials); this reading drops the files whose label trials start at a later
+    tone. From the hand-scored labels, which need no alignment, p = 0.206 over all win trials and 0.16
+    over the trials of the main test; over mouse means p = 0.055 (entries) and 0.059 (labels). Subordinates
+    are slower in every reading. With each file's tones placed by its best shift the rank-sum is below
+    0.05 only when the files whose labels and entries disagree are kept (cut-offs 0 and 0.1); on the files
+    aligned without a shift it is below 0.05 at every cut-off except 0.3, so the outcome rests on the
+    choice of reading.
   deviations:
   - Win trials and their port entries are aligned through the labels; in 18 labelled files the labels
     hold fewer trials than tones and in several the label trials start at a later tone, which no file
     records. The outcome takes the reading that sets aside trials whose labels cannot be placed on the
     port entries (best tone shift, files at r >= 0.3); an assumption, since the paper does not say how
-    its latencies were matched to trials.
+    its latencies were matched to trials. The best shift is taken over the tone index because it places
+    the files whose label trials start at a later tone, which the reading without a shift drops. The
+    cut-off of 0.3 is a choice; with the best shift every cut-off from 0.2 to 0.5 gives p above 0.05.
   - 400 win trials with port entries in the main reading (351 in the outcome's reading), against the paper's
     326 dom and 358 sub trials.
   - How a mouse already at the port at onset is counted is not given; both readings (0, or its next entry)
@@ -414,13 +450,13 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: No file holds an alone session; every one of the 53 subject descriptions says the mouse is in
-    competition with a cagemate, and every file has the competition tone schedule. The claim would also
+    competition with a cagemate (the data check counts 53 of 53, none naming an alone session), and every file has the competition tone schedule. The claim would also
     need the paper's curated cells (see fig2b-subordinates-longer-trajectories).
 - claim: fig2e-alone-vs-competition-trajectories
   outcome: blocked
   blocked_by: data_missing
   notes: No file holds an alone session; every one of the 53 subject descriptions says the mouse is in
-    competition with a cagemate, and every file has the competition tone schedule. The claim would also
+    competition with a cagemate (the data check counts 53 of 53, none naming an alone session), and every file has the competition tone schedule. The claim would also
     need the paper's curated cells.
 - claim: fig3a-functional-clusters
   outcome: blocked
@@ -470,7 +506,7 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: No file holds an alone session; every one of the 53 subject descriptions says the mouse is in
-    competition with a cagemate, and every file has the competition tone schedule.
+    competition with a cagemate (the data check counts 53 of 53, none naming an alone session), and every file has the competition tone schedule.
 - claim: ed9cd-self-entry-cells-competition
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -588,6 +624,17 @@ findings:
   statement: The paper's processed HMM-GLM input holds 14 animals (trial2animal), where Methods 17 says
     13 mice; its 965 trials and its rank per trial (487 dom, 478 sub) match the 34 labelled files of the
     dandiset, where the ED Fig. 5k legend gives 482 dom trials.
+- kind: methods_unavailable
+  statement: Methods 17 does not say in which direction the multi-unit threshold of 4 SD from the mean
+    is applied, or whether the HMM-GLM input is counts or normalised rates. On the dandiset's recordings
+    the two directions give different outcomes for ED Fig. 5k. Which did the paper use? Its processed
+    input holds counts, matched trial by trial at 1.06 times the crossings in either direction and 1.47
+    times the negative crossings computed here.
+- kind: methods_unavailable
+  statement: The paper does not say how the reward latencies of ED Fig. 5d were matched to trials, nor
+    which tones the hand-scored labels cover where a file has fewer label trials than tones. Were the
+    latencies taken from the port entries (lickometer or beam) or from the scored video, and which tone
+    does each label trial belong to?
 inputs:
 - what: The paper's HMM-GLM code (run_model.m, model_HMMGLM.m), ported to hmmglm.py
   source: https://github.com/Tyelab/HMMGLM at commit 3fc3567815b9c891402635664a844320136d2fac
@@ -986,7 +1033,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
-      The notebook never shows a file''s contents to back this up (problem 5).'
+      The API''s measured-variable list has no optogenetic series. The notebook never shows a file''s contents to back this up (problem 5).'
     response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
       intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
       columns; there is no stimulus, optogenetic or light-pulse series.
@@ -994,7 +1041,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
-      The notebook never shows a file''s contents to back this up (problem 5).'
+      The API''s measured-variable list has no optogenetic series. The notebook never shows a file''s contents to back this up (problem 5).'
     response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
       intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
       columns; there is no stimulus, optogenetic or light-pulse series.
@@ -1002,7 +1049,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
-      The notebook never shows a file''s contents to back this up (problem 5).'
+      The API''s measured-variable list has no optogenetic series. The notebook never shows a file''s contents to back this up (problem 5).'
     response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
       intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
       columns; there is no stimulus, optogenetic or light-pulse series.
@@ -1010,7 +1057,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
-      The notebook never shows a file''s contents to back this up (problem 5).'
+      The API''s measured-variable list has no optogenetic series. The notebook never shows a file''s contents to back this up (problem 5).'
     response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
       intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
       columns; there is no stimulus, optogenetic or light-pulse series.
@@ -1018,7 +1065,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
-      The notebook never shows a file''s contents to back this up (problem 5).'
+      The API''s measured-variable list has no optogenetic series. The notebook never shows a file''s contents to back this up (problem 5).'
     response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
       intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
       columns; there is no stimulus, optogenetic or light-pulse series.
@@ -1026,7 +1073,339 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
-      The notebook never shows a file''s contents to back this up (problem 5).'
+      The API''s measured-variable list has no optogenetic series. The notebook never shows a file''s contents to back this up (problem 5).'
     response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
       intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
       columns; there is no stimulus, optogenetic or light-pulse series.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the round-1 revision, the helper modules, the claims file and
+    the attempt record, with the paper. The verifier ran the ported hmmglm.py on synthetic counts. It agreed with
+    every outcome and with the two assumptions (fig1i, ed5d, the latter with a caveat on the cut-off), asked that
+    ed5k be marked assumed or run under the other readings, and asked for the paper''s input at 1 to 10 states (ed5j),
+    z-scored runs at another learning rate and a run without 20191029-chrimson2-2-2v3 (fig1i), and a second cut-off
+    (ed5d). It quoted five sentences the outputs did not support: the -529.6 of ed5j, the Summary''s ED Fig. 5k
+    on the paper''s input, fig1i''s measured values, the 53 subject descriptions, and the 64% and 75% of cell 25
+    (the outputs give 0.675 and 0.756); the last is corrected in cell 25. The fig4a group''s round-1 reason now
+    carries the verifier''s remark on the API''s measured-variable list, which had been left out.'
+  results:
+  - claim: fig1b-dominants-more-rewards
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig1c-port-pushing-displacement
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed1d-pushing-success
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed1g-distance-by-outcome-not-rank
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig1e-alphatracker-precision
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig1i-hmmglm-decodes-behaviour
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes. Cell 53: under the main reading every test passes. Of the other readings, crossings in either
+      direction, no shift, and random folds with the shift all pass. Z-scored rates fail. The assumption (counts
+      and contiguous folds) is stated and reasonable: the paper''s input holds counts and run_model.m forms contiguous
+      folds. One part of it is asserted but not shown: that the z-scored failure comes from the 1e-6 learning rate.
+      Z-scored rates give 0 of 9 AUCs above 0.5, which is systematically below chance, not at chance; in synthetic
+      tests of the ported hmmglm.py on counts carrying no information about the labels, the HMM-GLM AUCs were about
+      0.50, so the one-step predictor does not leak the true label. Remaining: a z-scored run with an adjusted learning
+      rate, or on the paper''s input, to back the learning-rate explanation; a re-run without 20191029-chrimson2-2-2v3;
+      and the measured values should be the analysed set (512, 17, 10), since 965, 34 and 14 are the counts of all
+      labelled files and the test ran on 512 trials, 17 files and 10 mice, outside every tolerance.'
+    response: Outcome kept. measured is now 512, 17 and 10, and the notes say these are outside the tolerances.
+      Cell 54 adds the run without 20191029-chrimson2-2-2v3 (482 trials; every test passes, HMM-GLM median 0.693)
+      and z-scored runs at learning rates of 1e-6, 1e-5 and 1e-4 on this input and on the paper's. At the code's
+      1e-6 a second seed gives median 0.511 and 7 of 9 above 0.5 (against 0.475 and 0 of 9), and the paper's input
+      z-scored gives median 0.494, so at that rate the AUCs lie near chance, on either side of it with the seed.
+      At 1e-4 z-scored rates decode all 9 labels here (median 0.576) and on the paper's input (median 0.650). The
+      conclusion now says this, in place of the unshown claim.
+  - claim: ed5j-six-states
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree, by the criterion. Cell 57: both readings select 2 states. But the paper''s input was run only
+      at 1, 6 and 10 states, so we cannot tell whether the port itself would select 2 on the paper''s data. If it
+      would, the failure comes from the method, not the dandiset. Remaining: run the paper''s input at 1 to 10 states.
+      Also correct the -529.6 in the record: cell 57 prints -498.757 for 1 state.'
+    response: 'Outcome kept. Cell 57 now runs the paper''s input at 1 to 10 states: both readings select 6 (-126.5,
+      SEM 0.57, every larger number lower), so the port selects 6 on the paper''s input and the failure comes from
+      the input computed from the dandiset. It also runs crossings in either direction on this input, which select
+      3 and 4, so no reading on the dandiset selects 5 to 7. In both full runs of this revision cell 57 prints -529.600
+      for 1 state on the paper''s input, with the same seed as before; the -498.757 of the copy reviewed in round
+      2 was not reproduced, and the record gives the value of the current output.'
+  - claim: ed5k-hmmglm-generalizes-across-rank
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree, by the criterion. Cell 60: training on subordinates and testing on dominants gives 7 of 9 above
+      0.5 (p = 0.18). This should be marked assumed, or run under the other readings. It inherits fig1i''s choice
+      of reading but was run only on the main reading, where AUCs are lowest. Crossings in either direction raised
+      fig1i''s median from 0.774 to 0.910. The subordinate group has only 4 mice. Also, the Summary sentence that
+      on the paper''s input the port reproduces ED Fig. 5k is not supported: ED Fig. 5k''s criterion also requires
+      the within-group 10-fold runs, which were not run on that input.'
+    response: 'Outcome kept and marked assumed, with a deviation saying it takes negative crossings. Cell 60 now
+      runs crossings in either direction (all four combinations) and random folds (within groups): with crossings
+      in either direction every combination gives 9 of 9 above 0.5 (p = 0.0039), so the readings differ in outcome.
+      The data check of the HMM-GLM input now shows that the paper''s counts are 1.06 times the crossings in either
+      direction and 1.47 times the negative crossings, so a change to reproduced is proposed under proposed, for
+      round 3. The within-group 10-fold runs on the paper''s input are added (9 of 9 each), and the Summary now
+      names the combinations run on it. A methods_unavailable finding asks the authors which threshold direction
+      they used.'
+  - claim: ed5b-rank1-wins-most
+    agrees: true
+    outcome: reproduced
+    reason: Yes. Unchanged since round 1 (cells 31, 40, 43, 46).
+    response: No change needed.
+  - claim: ed5c-rewards-not-different
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes. Cell 34: p = 0.498 over sessions. Cell 6 shows that no subject record has a weight field.'
+    response: No change needed.
+  - claim: ed5d-subordinates-slower-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Yes, with a caveat. The criterion as written is met by the main reading (p = 0.0196) and by the best-shift
+      reading (p = 0.0458). The record says the outcome departs from it on purpose, and the departure is stated
+      and defensible. The latency from the hand-scored labels needs no alignment and fails (p = 0.16 and 0.206).
+      Dropping the files that cannot be aligned gives p = 0.158 and 0.375. The caveat is that the r >= 0.3 cut-off
+      is arbitrary and was never varied (cell 37). Remaining: show the result at a cut-off other than r >= 0.3 (for
+      example 0.2), so the sensitivity to the cut-off is visible.'
+    response: Outcome kept. Cell 37 now gives both alignments at cut-offs of 0, 0.1, 0.2, 0.3, 0.4 and 0.5. With
+      each file's best tone shift p is 0.0458 at 0 and 0.1, and 0.0623, 0.375, 0.375 and 0.0662 at 0.2 to 0.5, so
+      the outcome's reading fails at every cut-off that removes the files whose labels and entries disagree. Without
+      the shift, on the files aligned at the same index, p is below 0.05 at every cut-off except 0.3 (0.0211 at
+      0.4, 0.0022 at 0.5), so the outcome rests on taking the best shift; this is now said in the conclusion, the
+      deviations, the summary and the README, and a methods_unavailable finding asks the authors how latencies were
+      matched to trials.
+  - claim: ed5e-port-occupancy-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Yes. Unchanged since round 1 (cells 31, 40, 43, 46). Sessions are now the main reading for ed5e.
+    response: No change needed.
+  - claim: ed5f-dominants-displace-more
+    agrees: true
+    outcome: reproduced
+    reason: Yes. Unchanged since round 1 (cells 31, 40, 43, 46).
+    response: No change needed.
+  - claim: ed5g-time-displaced-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Yes. Unchanged since round 1 (cells 31, 40, 43, 46).
+    response: No change needed.
+  - claim: fig2a-win-lose-segregated-before-cue
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed6d-alignment-lower-dominants
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig2b-subordinates-longer-trajectories
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig2b-subordinates-larger-variance
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed6c-rate-of-change-dominants-win
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed6b-intermediates-relative-rank
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed6ef-port-entry-trajectories
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed7b-distance-by-trial-type-not-rank
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed7c-distance-correlation-not-rank
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed7de-trajectories-close-far
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed7f-trajectories-without-place-cells
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed7hij-random-halves-no-group-effect
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig2c-svm-decodes-rank-and-outcome
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig2c-predicts-before-trial
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed8bc-outcome-generalizes-dom-to-sub
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed8d-outcome-winner-loser
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed8e-relative-rank-intermediates
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed8fgh-absolute-rank
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed8ij-alone-vs-competition
+    agrees: true
+    outcome: blocked
+    reason: 'Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels. In the record, "every one of the 53 subject descriptions says the mouse is in competition with a cagemate"
+      is not supported: cell 6 prints one example description, not all 53.'
+    response: 'Block kept. Cell 6 now counts the subject descriptions of all 53 files: 53 contain "compet" and "cagemate",
+      none "alone"; the notes cite the count.'
+  - claim: fig2e-alone-vs-competition-trajectories
+    agrees: true
+    outcome: blocked
+    reason: 'Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels. In the record, "every one of the 53 subject descriptions says the mouse is in competition with a cagemate"
+      is not supported: cell 6 prints one example description, not all 53.'
+    response: 'Block kept. Cell 6 now counts the subject descriptions of all 53 files: 53 contain "compet" and "cagemate",
+      none "alone"; the notes cite the count.'
+  - claim: fig3a-functional-clusters
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig3b-win-trials-larger-sub-excitation
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig3c-tone-port-entries
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig3d-iti-port-entries
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed9b-alone-no-rank-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels. In the record, "every one of the 53 subject descriptions says the mouse is in competition with a cagemate"
+      is not supported: cell 6 prints one example description, not all 53.'
+    response: 'Block kept. Cell 6 now counts the subject descriptions of all 53 files: 53 contain "compet" and "cagemate",
+      none "alone"; the notes cite the count.'
+  - claim: ed9cd-self-entry-cells-competition
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig4a-ex-vivo-latency
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig4b-phototagged-counts
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig4b-lh-stronger-reward-excitation
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed10c-lh-responsive-proportions
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: fig4d-lh-stimulation-dominance
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
+  - claim: ed10ek-no-other-behaviour-effects
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
+      labels.
+    response: No change needed.
