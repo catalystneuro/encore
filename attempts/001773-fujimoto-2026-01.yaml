@@ -46,9 +46,11 @@ outcomes:
     bins before, 3 of 60 after, 0.183 to 0.050, F(1,118) = 5.32, P = 0.023; Fisher exact P =
     0.043). The paper reports no test for monkey D (its Extended Data Fig. 1 legend analyses only
     N and T), so the test is the claims file's reading of the Methods applied to one animal. The
-    deposited FigE1 script fits its ANOVA only to the rows of group 1 (N and T); monkey D's rows
-    (group 2) enter only its plotted means, so the paper ran no test for monkey D. The change in
-    monkey D is a decrease, opposite to the increase of the DBS animals.
+    deposited FigE1 script (135 lines) runs its only test calls, anovan (lines 18 and 19) and
+    multcompare (24 and 26), on the rows of group 1 (N and T); monkey D's rows (monkey 3, group 2)
+    enter only the means, standard errors and sample sizes of lines 35 to 125. The deposited script
+    therefore runs no test for monkey D. The change in monkey D is a decrease, opposite to the
+    increase of the DBS animals.
   deviations:
   - The paper reports no test for monkey D; the criterion applies the Methods' ANOVA to its bins.
 - claim: fig2a-cb-fa-increase
@@ -198,6 +200,7 @@ outcomes:
     have 44 significant ROIs, as the paper lists.
 - claim: fig5a-pre-scc-connectivity
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5a-pre-scc-connectivity
   notes: Before DBS, in the stimulated hemisphere, vmFC 0.123, STG 0.099, DLPFC 0.066, dACC 0.064,
@@ -210,8 +213,13 @@ outcomes:
     concatenated runs or from per-run maps averaged; the file name's "concatenated" may refer to
     runs or to subjects and ROIs combined in one sheet. Only this one version is deposited, so only
     one of the criterion's two run readings is run.
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig5b-scc-decreases
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5b-scc-decreases
   measured:
@@ -224,35 +232,64 @@ outcomes:
     studentized range (1.4e-11; reported as 0).
   deviations:
   - One seed map per session as deposited, as for fig5a-pre-scc-connectivity.
-  - SciPy's studentized range tail loses accuracy below about 1e-7 (values there are 1.1 to 3
-    times the reported ones, for example PCC 4.5e-11 against 8.22e-12) and does not resolve P
-    below about 1e-11, where it prints a floor or 0; this cannot change an outcome at P < 0.05.
+  - SciPy's studentized range tail loses accuracy for small P. Against the reported values the
+    computed P is 1.12 to 1.14 times them near 1e-5 (HIP, AMY), 1.11 to 1.28 times near 1e-6, 1.5 to
+    2.8 times between 5e-9 and 4.4e-8, and 5.5 times for PCC (4.5e-11 against 8.22e-12); below about
+    1e-11 it prints a floor or 0. This cannot change an outcome at P < 0.05.
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig5b-scc-increases
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5b-scc-increases
   notes: The stimulated-side anterior-dorsal insula rises from -0.013 to +0.026 (P = 6.8e-08,
     reported 4.42e-08), the somatosensory cortex from -0.026 to +0.006 (P at the floor, reported 0).
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: ed9-control-hemisphere-changes
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:ed9-control-hemisphere-changes
   measured: 11
   notes: On the control side vmFC (-0.112), PCC (-0.024, P = 5.3e-07), dACC (-0.059) and the
     anterior-dorsal insula (+0.025, P = 0.029) all have P < 0.05. 11 of 17 control-side ROIs have
     P < 0.05, the 11 the criterion lists from Supplementary Table 9.
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: ed9-no-change-motor-mcc
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:ed9-no-change-motor-mcc
   notes: Stimulated-side motor cortex +0.006 (P = 0.99992), SMA -0.002 (P = 1.00000), MCC -0.014
     (P = 0.99180); the reported P values are 0.99991, 0.99999 and 0.99183.
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: ed7-decreases-both-monkeys
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:ed7-decreases-both-monkeys
   notes: All seven stimulated-side ROIs decrease in N (7 of 7, -0.0006 for AMY to -0.082 for STG)
     and in T (7 of 7, -0.024 to -0.103). One seed map per session, as deposited.
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig5a-nonsurgical-no-reduction
   outcome: blocked
   blocked_by: data_missing
@@ -263,6 +300,7 @@ outcomes:
     availability statement names only this dandiset for the fMRI data.
 - claim: fig5c-dmn-lim-cen-decrease
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5c-dmn-lim-cen-decrease
   measured:
@@ -278,27 +316,49 @@ outcomes:
     PCC, dACC, area 25, area 32, MCC, HIP, AMY; SMN; VIS). The script and the legend's LIM n (821
     with area 25, 803 without) settle LIM as reading (a); reading (b) is run as the criterion asks,
     and a reader is asked whether it should stay (questions/001773.yaml).
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig5c-smn-increase
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5c-smn-increase
   notes: The stimulated-side SMN rises from -0.017 to +0.003 (P below 1.7e-11 under both LIM
     readings); the control side rises too (+0.017).
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig5c-vis-no-change
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5c-vis-no-change
   notes: VIS stimulated side +0.001 (P = 1.00), control side -0.005 (P = 0.65 with LIM reading (a),
     0.23 with (b)); stimulated-side visual cortex P = 1.00 and MT P = 0.999. The control-side MT
     decreases (-0.049, P = 1.0e-06, reported 7.85e-07), and the control-side visual cortex does not
     (P = 1.00).
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig5c-san-rebalanced
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig5c-san-rebalanced
   notes: The stimulated-side SAN changes by +0.0002 (P = 1.00 under both LIM readings), while its
     anterior-dorsal insula node increases (+0.039, P = 6.8e-08) and its dACC node decreases (-0.024,
     P = 4.9e-04). The control-side SAN decreases (P = 6.9e-07, reported 6.20e-07).
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 - claim: fig6a-monkey-d-cb-fa-decrease
   outcome: reproduced
   notebook: reproduce_fujimoto_2026.ipynb
@@ -349,9 +409,10 @@ outcomes:
   blocked_by: data_missing
   notes: Depends on fig5a-nonsurgical-no-reduction, blocked for missing data. The claim also needs
     monkey D's whole-brain voxelwise map and the location of the lead track; the dandiset holds
-    only the voxels of the 17 target ROIs and gives no lead location. In those ROIs, area 25 on the
-    sham side, next to the lead, has the largest increase (+0.18, P = 4.3e-12 in the 17-ROI model),
-    which the notebook prints under ed10d-monkey-d-roi-changes but which is not the claim's test.
+    only the voxels of the 17 target ROIs and gives no lead location. In those ROIs the sham-side area 25 has
+    the largest increase (+0.18, P = 4.3e-12 in the 17-ROI model, printed under
+    ed10d-monkey-d-roi-changes). Area 25 is the seed ROI itself, so its rise is not evidence of a
+    local increase at the implantation site, and no output gives the lead location.
 - claim: fig6e-monkey-d-no-network-reduction
   outcome: blocked
   blocked_by: methods_underspecified
@@ -374,12 +435,18 @@ outcomes:
     the criterion asks.
 - claim: ed10d-monkey-d-roi-changes
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:ed10d-monkey-d-roi-changes
   notes: PrePost x side F(1,10106) = 4.58, P = 0.032 (reported). Of the eight comparisons exactly
     the sham-side vmFC (-0.023, P = 8.0e-04, reported 7.83e-04) and the control-side
     anterior-dorsal insula (+0.041, P = 1.1e-11, reported 1.37e-12) have P < 0.05; the others have
     P = 0.31 or more.
+  deviations:
+  - Assumed that the deposited seed maps, one per session, are the maps the paper analysed. The
+    paper leaves open whether runs were concatenated or averaged, and only one version is deposited,
+    so only one run reading can be run. The interaction F values match the reported ones (186.48,
+    51.09, 7.36, 4.58), which supports it.
 findings:
 - kind: data_missing
   statement: The Data availability statement says the functional MRI data are deposited in this
@@ -431,6 +498,10 @@ findings:
   statement: The seed connectivity tables hold one value per voxel and session, and the file
     names say "concatenated". The paper does not say whether a session's seed map was computed on
     concatenated runs or averaged over per-run maps, and no per-run maps are deposited.
+- kind: code_mismatch
+  statement: The FigE1 script computes the foraging standard errors from column 2, the movement
+    column (lines 91 to 96), so the error bars of the foraging plot in Extended Data Fig. 1 are
+    those of movement.
 - kind: other
   statement: Two scripts are deposited twice under two names with identical text
     (`Fig4 Fujimoto_NatNeuro_2026_FCmatrix.m` and `Fig4andE10C_Fujimoto_NatNeuro_2026_FCmatrix.m`;
@@ -678,3 +749,255 @@ verifications:
     reason: 'Cell 75: interaction F=4.58, P=0.032. Of the 8 comparisons, exactly sham vmFC (P=8.0e-4)
       and control insula are significant.'
     response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, with the conclusion cells
+    and the summary, the helper module, the attempt record, the README and the claims file, with the paper.
+    It gave its own outcome for each claim; all 32 agree with the record.
+  results:
+  - claim: ed1-behavior-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: ed1-monkey-d-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the not_reproduced outcome is correct under the criterion. Its reading still depends
+      on a test the paper is not shown to have run (claims file, open note). Cell 22's "monkey D's rows
+      (group 2) enter only the plotted means" is not shown, as cell 21 prints only script lines 10 to
+      20, and "The paper therefore ran no test for monkey D" goes further than those lines, which show
+      that this ANOVA excludes group 2, not that the rest of the script runs no test on monkey D. Printing
+      the rest of the FigE1 script, or at least every line that uses group 2 or mk == 3, would settle
+      it.
+    response: Cell 21 now prints every line of the 135-line FigE1 script that calls a test or selects
+      monkey D (column 4 == 3 or column 6 == 2). The only test calls are anovan (lines 18, 19) and multcompare
+      (24, 26) on group 1; monkey D enters only means, standard errors and sample sizes (lines 35 to 125).
+      Cell 22 and the notes now say the deposited script runs no test for monkey D, without the claim
+      about the paper as a whole. The printout also showed that the foraging standard errors are computed
+      from the movement column, added as a code_mismatch finding. Outcome kept.
+  - claim: fig2a-cb-fa-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig2a-no-change-other-tracts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: ed2-cb-both-monkeys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig2b-mcc-cb-fa-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig3c-cc1-dapi-ratio
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: ed5-cc1-count-dapi-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: ed6-dacc-ufm-no-oligodendrocyte-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig3f-g-ratio-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig4a-cortical-down-subcortical-up
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig4b-roi-changes-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The earlier assumption was correctly dropped after the reader's answer.
+    response: No change needed.
+  - claim: fig4c-network-sorted-reduction
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 55 prints the script lines and the workbook's text cells; no network assignment
+      exists.
+    response: No change needed.
+  - claim: fig4-nonsurgical-no-pattern
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig5a-pre-scc-connectivity
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The criterion requires the result under both seed-map readings (per-run and concatenated);
+      only one version of the seed maps is deposited, so only one reading can be run. The record lists
+      this as a deviation but does not mark the outcome assumed: true; the assumption is that the deposited
+      maps are the ones the paper analysed. It is reasonable, as the interaction F values match the paper
+      exactly (186.48, 51.09, 7.36, 4.58).'
+    response: 'Marked assumed: true and added a deviation stating the assumption that the deposited seed
+      maps, one per session, are the ones the paper analysed. Outcome kept.'
+  - claim: fig5b-scc-decreases
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The criterion requires the result under both seed-map readings (per-run and concatenated);
+      only one version of the seed maps is deposited, so only one reading can be run. The record lists
+      this as a deviation but does not mark the outcome assumed: true; the assumption is that the deposited
+      maps are the ones the paper analysed. It is reasonable, as the interaction F values match the paper
+      exactly (186.48, 51.09, 7.36, 4.58). Separately, the Tukey-Kramer accuracy stated in the Summary,
+      cell 63 and this deviation ("1.1 to 3 times", "to about the second digit down to about 1e-6") does
+      not fit the printed values: HIP 1.34e-5 vs 1.19e-5 and AMY 8.8e-6 vs 7.70e-6 are about 13% off,
+      control MT 1.0e-6 vs 7.85e-7 is 28% off, PCC 4.5e-11 vs 8.22e-12 is 5.5 times and monkey D''s control
+      insula 1.14e-11 vs 1.37e-12 is 8.3 times. This error started in the verifier''s round-1 problem
+      2; no outcome depends on it, as every affected P is far below 0.05.'
+    response: 'Marked assumed: true and added a deviation stating the assumption that the deposited seed
+      maps, one per session, are the ones the paper analysed. Outcome kept. Added a cell before the Summary
+      that prints the computed Tukey-Kramer P next to the 15 reported ones with their ratio, and rewrote
+      the Summary, cell 63, cell 65 and this deviation from it (within 3% above 1e-4, 1.11 to 1.28 times
+      near 1e-5 and 1e-6, 1.5 to 2.8 times between 5e-9 and 4.4e-8, 5.5 and 8.3 times for the reported
+      8.22e-12 and 1.37e-12).'
+  - claim: fig5b-scc-increases
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The criterion requires the result under both seed-map readings (per-run and concatenated);
+      only one version of the seed maps is deposited, so only one reading can be run. The record lists
+      this as a deviation but does not mark the outcome assumed: true; the assumption is that the deposited
+      maps are the ones the paper analysed. It is reasonable, as the interaction F values match the paper
+      exactly (186.48, 51.09, 7.36, 4.58).'
+    response: 'Marked assumed: true and added a deviation stating the assumption that the deposited seed
+      maps, one per session, are the ones the paper analysed. Outcome kept.'
+  - claim: ed9-control-hemisphere-changes
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The criterion requires the result under both seed-map readings (per-run and concatenated);
+      only one version of the seed maps is deposited, so only one reading can be run. The record lists
+      this as a deviation but does not mark the outcome assumed: true; the assumption is that the deposited
+      maps are the ones the paper analysed. It is reasonable, as the interaction F values match the paper
+      exactly (186.48, 51.09, 7.36, 4.58).'
+    response: 'Marked assumed: true and added a deviation stating the assumption that the deposited seed
+      maps, one per session, are the ones the paper analysed. Outcome kept.'
+  - claim: ed9-no-change-motor-mcc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: 'Marked assumed: true and added the same deviation, as every seed connectivity outcome rests
+      on the deposited maps under the header''s run readings. Outcome kept.'
+  - claim: ed7-decreases-both-monkeys
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The criterion requires the result under both seed-map readings (per-run and concatenated);
+      only one version of the seed maps is deposited, so only one reading can be run. The record lists
+      this as a deviation but does not mark the outcome assumed: true; the assumption is that the deposited
+      maps are the ones the paper analysed. It is reasonable, as the interaction F values match the paper
+      exactly (186.48, 51.09, 7.36, 4.58).'
+    response: 'Marked assumed: true and added a deviation stating the assumption that the deposited seed
+      maps, one per session, are the ones the paper analysed. Outcome kept.'
+  - claim: fig5a-nonsurgical-no-reduction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig5c-dmn-lim-cen-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The fig5c criteria (all readings) are covered by the missing assumed: true too, if
+      the header''s run readings apply to them; the assumption that the deposited maps are the ones the
+      paper analysed is reasonable, as the interaction F values match the paper exactly.'
+    response: 'Marked assumed: true and added the same deviation, as every seed connectivity outcome rests
+      on the deposited maps under the header''s run readings. Outcome kept.'
+  - claim: fig5c-smn-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The fig5c criteria (all readings) are covered by the missing assumed: true too, if
+      the header''s run readings apply to them; the assumption that the deposited maps are the ones the
+      paper analysed is reasonable, as the interaction F values match the paper exactly.'
+    response: 'Marked assumed: true and added the same deviation, as every seed connectivity outcome rests
+      on the deposited maps under the header''s run readings. Outcome kept.'
+  - claim: fig5c-vis-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The fig5c criteria (all readings) are covered by the missing assumed: true too, if
+      the header''s run readings apply to them; the assumption that the deposited maps are the ones the
+      paper analysed is reasonable, as the interaction F values match the paper exactly. The control MT
+      P 1.0e-6 against the reported 7.85e-7 is 28% off, outside the stated accuracy range.'
+    response: 'Marked assumed: true and added the same deviation, as every seed connectivity outcome rests
+      on the deposited maps under the header''s run readings. Outcome kept. The accuracy statement now
+      covers this P (see fig5b-scc-decreases).'
+  - claim: fig5c-san-rebalanced
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The fig5c criteria (all readings) are covered by the missing assumed: true too, if
+      the header''s run readings apply to them; the assumption that the deposited maps are the ones the
+      paper analysed is reasonable, as the interaction F values match the paper exactly.'
+    response: 'Marked assumed: true and added the same deviation, as every seed connectivity outcome rests
+      on the deposited maps under the header''s run readings. Outcome kept.'
+  - claim: fig6a-monkey-d-cb-fa-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig6b-monkey-d-dacc-cb-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig6c-monkey-d-cc1-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 97 shows the pairing of rows by section and field.
+    response: No change needed.
+  - claim: ed10c-monkey-d-subcortical-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Every number in the Result cells, the Summary, the README
+      and the record's notes was checked against the outputs with no mismatch.
+    response: No change needed.
+  - claim: fig6d-monkey-d-scc-local-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the outcome stays blocked either way. The notes'' "area 25 on the sham side, next
+      to the lead" is not supported: no output gives the lead location, and area 25 is the seed ROI itself
+      (claims header), so its rise is not evidence of the local increase at the implant site.'
+    response: Removed "next to the lead". The notes now say area 25 is the seed ROI, so its rise is not
+      evidence of a local increase at the implantation site, and that no output gives the lead location.
+      Outcome kept, blocked.
+  - claim: fig6e-monkey-d-no-network-reduction
+    agrees: true
+    outcome: blocked
+    reason: Agrees. A reader is now asked about the LIM reading (b), and the record says the fig6e block
+      does not rest on it.
+    response: No change needed.
+  - claim: ed10d-monkey-d-roi-changes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Monkey D's control insula Tukey-Kramer P 1.14e-11 against the reported 1.37e-12 is
+      8.3 times, outside the stated accuracy range (see fig5b-scc-decreases); no outcome depends on it.
+    response: 'Marked assumed: true and added the same deviation, as every seed connectivity outcome rests
+      on the deposited maps under the header''s run readings. Outcome kept. The new comparison cell lists
+      this P with its ratio.'
