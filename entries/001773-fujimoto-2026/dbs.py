@@ -241,6 +241,8 @@ def tukey_kramer(fit: dict, dims: list, only_vary: str | None = None) -> pd.Data
     The family is all pairs of the cells of `dims`, which sets the studentized range's number
     of means; `only_vary` returns only the pairs that differ in that factor alone (the pre
     against post pairs), which is faster and gives the same P values for those pairs.
+    SciPy's studentized range tail loses accuracy below about 1e-7 and stops near 1e-11 (or
+    returns 0), so P values that small are only read as far below 0.05.
     """
     levels, terms = fit["levels"], fit["terms"]
     combos = list(itertools.product(*[levels[f] for f in dims]))

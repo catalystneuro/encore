@@ -46,7 +46,9 @@ outcomes:
     bins before, 3 of 60 after, 0.183 to 0.050, F(1,118) = 5.32, P = 0.023; Fisher exact P =
     0.043). The paper reports no test for monkey D (its Extended Data Fig. 1 legend analyses only
     N and T), so the test is the claims file's reading of the Methods applied to one animal. The
-    change in monkey D is a decrease, opposite to the increase of the DBS animals.
+    deposited FigE1 script fits its ANOVA only to the rows of group 1 (N and T); monkey D's rows
+    (group 2) enter only its plotted means, so the paper ran no test for monkey D. The change in
+    monkey D is a decrease, opposite to the increase of the DBS animals.
   deviations:
   - The paper reports no test for monkey D; the criterion applies the Methods' ANOVA to its bins.
 - claim: fig2a-cb-fa-increase
@@ -173,13 +175,18 @@ outcomes:
 - claim: fig4c-network-sorted-reduction
   outcome: blocked
   blocked_by: methods_underspecified
+  notebook: reproduce_fujimoto_2026.ipynb
+  output: claim:fig4c-network-sorted-reduction
   notes: The criterion blocks the claim without an assignment of the connectome's ROIs to
     networks. The reader's answer of 2026-11-03 changed the criterion's 122 ROIs to 123, the
     number the deposited connectomes have; this does not change the block. The dandiset's connectomes (123 x 123) have no ROI names, the Fig. 4 script reads the
     names from atlas key files that are not deposited (CHARM_key_4.txt, SARM_key_4.txt,
     reorder_rois.txt), and neither the script nor the paper assigns ROIs to the networks of Fig. 4c.
     The deposited circular plot sheet holds the 54 x 54 cortical block of each group's difference
-    without network labels.
+    without network labels. The notebook prints the script's lines that read labels or draw the
+    circular plot (one colour for decreases, one for increases, no grouping) and every text cell of
+    the workbook (block titles only). Supplementary Tables 3 and 4 name the ROIs but give no
+    network.
 - claim: fig4-nonsurgical-no-pattern
   outcome: reproduced
   notebook: reproduce_fujimoto_2026.ipynb
@@ -198,9 +205,11 @@ outcomes:
     somatosensory cortex -0.026 negative; 9 of 9 signs match, and 9 of 9 with both hemispheres
     pooled. Each sign is the same in N and T separately.
   deviations:
-  - Only seed maps from concatenated runs are deposited (the files are named "concatenated"), so
-    the per-run reading of the criterion cannot be run; the deposited maps are those the paper's
-    scripts analyse.
+  - The deposited seed tables hold one value per voxel and session (column date), and the paper's
+    scripts analyse them as they are. The paper does not say whether a session's map comes from
+    concatenated runs or from per-run maps averaged; the file name's "concatenated" may refer to
+    runs or to subjects and ROIs combined in one sheet. Only this one version is deposited, so only
+    one of the criterion's two run readings is run.
 - claim: fig5b-scc-decreases
   outcome: reproduced
   notebook: reproduce_fujimoto_2026.ipynb
@@ -214,9 +223,10 @@ outcomes:
     AMY 8.8e-06 (7.70e-06), PCC 4.5e-11 (8.22e-12), vmFC, STG and DLPFC at the floor of SciPy's
     studentized range (1.4e-11; reported as 0).
   deviations:
-  - Concatenated-run seed maps only, as for fig5a-pre-scc-connectivity.
-  - SciPy's studentized range tail does not resolve P below about 1e-11, so the smallest P values
-    are shown at that floor; this cannot change an outcome at P < 0.05.
+  - One seed map per session as deposited, as for fig5a-pre-scc-connectivity.
+  - SciPy's studentized range tail loses accuracy below about 1e-7 (values there are 1.1 to 3
+    times the reported ones, for example PCC 4.5e-11 against 8.22e-12) and does not resolve P
+    below about 1e-11, where it prints a floor or 0; this cannot change an outcome at P < 0.05.
 - claim: fig5b-scc-increases
   outcome: reproduced
   notebook: reproduce_fujimoto_2026.ipynb
@@ -242,7 +252,7 @@ outcomes:
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:ed7-decreases-both-monkeys
   notes: All seven stimulated-side ROIs decrease in N (7 of 7, -0.0006 for AMY to -0.082 for STG)
-    and in T (7 of 7, -0.024 to -0.103). Concatenated-run maps only.
+    and in T (7 of 7, -0.024 to -0.103). One seed map per session, as deposited.
 - claim: fig5a-nonsurgical-no-reduction
   outcome: blocked
   blocked_by: data_missing
@@ -265,8 +275,9 @@ outcomes:
     1.7e-11. The network voxel counts match the legend.
   deviations:
   - Network membership is the script's (DMN PCC, vmFC, STG; SAN insula, dACC; CEN DLPFC, PPC; LIM
-    PCC, dACC, area 25, area 32, MCC, HIP, AMY; SMN; VIS). The script settles LIM as reading (a);
-    reading (b) is run as the criterion asks.
+    PCC, dACC, area 25, area 32, MCC, HIP, AMY; SMN; VIS). The script and the legend's LIM n (821
+    with area 25, 803 without) settle LIM as reading (a); reading (b) is run as the criterion asks,
+    and a reader is asked whether it should stay (questions/001773.yaml).
 - claim: fig5c-smn-increase
   outcome: reproduced
   notebook: reproduce_fujimoto_2026.ipynb
@@ -318,7 +329,10 @@ outcomes:
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig6c-monkey-d-cc1-no-change
   notes: Paired t(27) = -0.9888, P = 0.332, Cohen's dz -0.19 (the reported values); lead side 58.0 %
-    against control 59.9 % (mean difference -1.86). The unpaired variant gives P = 0.47.
+    against control 59.9 % (mean difference -1.86). The unpaired variant gives P = 0.47. Each of the
+    28 rows carries one section (slide D284, D294, D304, D314) and field (location 1 to 7), with
+    the lead-side and control-side counts in the same row; the 28 section and field pairs are
+    distinct.
   deviations:
   - Fields are paired by row, as the Fig6C script does; each row holds one section and field of
     both hemispheres (reading (a)).
@@ -351,7 +365,10 @@ outcomes:
     for the sham side with the script's LIM), and the criterion blocks the claim when they do. The
     question for the paper's authors is whether "not observed" covers the control hemisphere,
     where their own legend lists a significant CEN difference (the data show a decrease), and the
-    script settles LIM as including area 25.
+    script settles LIM as including area 25. The Fig. 6e legend's LIM voxel counts (438 sham, 383
+    control) are those with area 25 (428 and 375 without), so the paper's n support reading (a);
+    a reader is asked whether reading (b) should stay (questions/001773.yaml). Under reading (a)
+    alone the sham-side and both-sides scopes still disagree, so the block does not rest on (b).
   deviations:
   - The LIM membership of the script (with area 25) and of the Methods (without) are both run, as
     the criterion asks.
@@ -404,14 +421,260 @@ findings:
   statement: For fig6e-monkey-d-no-network-reduction, the paper does not say whether "the
     widespread reductions ... were not observed" in monkey D covers the control hemisphere. Its own
     Fig. 6e legend lists a significant control-side CEN difference, which the data show to be a
-    decrease (P = 0.0089), and the Methods list LIM without area 25 while the script includes it.
-    The authors could say which hemisphere and which LIM the sentence refers to.
+    decrease (P = 0.0089). The Methods list LIM without area 25, while the script and the legend's
+    voxel counts include it. The authors could say which hemisphere the sentence refers to.
 - kind: metadata_insufficient
   statement: The dandiset's metadata names the paper only in its title, with no related resource,
     and gives no species, approach, measurement technique or variables measured. The sheets have
     no data dictionary beyond the legends inside some of them.
+- kind: methods_unavailable
+  statement: The seed connectivity tables hold one value per voxel and session, and the file
+    names say "concatenated". The paper does not say whether a session's seed map was computed on
+    concatenated runs or averaged over per-run maps, and no per-run maps are deposited.
 - kind: other
   statement: Two scripts are deposited twice under two names with identical text
     (`Fig4 Fujimoto_NatNeuro_2026_FCmatrix.m` and `Fig4andE10C_Fujimoto_NatNeuro_2026_FCmatrix.m`;
     `Fig6DandE10D_dbs_FC_25norm_mkD_analysisscript_a.m` and
     `Fig6DandE10Ddbs_FC_25norm_mkD_analysisscript_a.m`).
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the run after the reader's answer on fig4b-roi-changes-counts, the
+    executed notebook with the conclusion cells and the summary removed, the helper module and the claims
+    file, with the paper. The verifier queried the archive's asset list and tested the helper's anova
+    and tukey_kramer on synthetic data against statsmodels and scipy.stats.tukey_hsd. It gave its own
+    outcome for each claim; all 32 agree with the record.
+  results:
+  - claim: ed1-behavior-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 18: movement F(1,236)=34.61, ηp²=0.128; foraging F=17.35, ηp²=0.068, all within tolerance.
+      Reading (b) is also P<0.05. Post is higher than pre in both monkeys for both behaviors. Problem
+      5: the behavior sheet''s legend codes foraging as 2/1, but the values are 0/1, and monkey D''s rows
+      are labeled group 2; the exact match of F confirms reading foraging as 1 = yes.'
+    response: No change needed. The legend coding is already recorded as a metadata_error finding and
+      a deviation.
+  - claim: ed1-monkey-d-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 20: foraging drops from 0.183 to 0.050, F(1,118)=5.32, P=0.023 (Fisher variant P=0.043).
+      Movement does not differ (P=0.18). The criterion fails when either behavior differs. Problem 6 (affects
+      a conclusion): this is the only claim that fails, and it rests on a test the paper never reports
+      for monkey D, a one-way ANOVA treating the 120 bins as independent; the claims file fixes this test.
+      The notebook does not show whether the deposited FigE1 script tests monkey D.'
+    response: Added to the claim's cell the FigE1 script's lines that select the ANOVA's rows (column
+      6, group, equal to 1) and the group of each monkey (N and T 1, D 2). The script tests only N and
+      T; monkey D enters only its plotted means, so the paper ran no test for monkey D. Outcome kept,
+      as the claims file fixes the test and its own header lists this reading as open; the notes say so.
+  - claim: fig2a-cb-fa-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 22: PrePost×side F=4.64, P=0.031, ηp²=0.00146, within tolerance; type II gives P=0.012.
+      Stimulated CB Tukey P=0.022 with post higher. Voxel counts match the legend (cell 7).'
+    response: No change needed.
+  - claim: fig2a-no-change-other-tracts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: none of the 5 comparisons has P<0.05 (smallest P=0.86).'
+    response: No change needed.
+  - claim: ed2-cb-both-monkeys
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: stimulated CB post−pre is +0.019 in N and +0.079 in T.'
+    response: No change needed.
+  - claim: fig2b-mcc-cb-fa-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: F=5.42, P=0.020, ηp²=0.0040 (type II P=0.045). Stimulated MCC P=0.0018 with post
+      higher; no other cell has a significant increase. MCC change is +0.081 in N and +0.205 in T.'
+    response: No change needed.
+  - claim: fig3c-cc1-dapi-ratio
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: F(1,108)=9.00, P=0.0034, ηp²=0.077; reading (b) and the ratio recomputed from counts
+      agree. Stimulated side is higher in both monkeys (+5.5 and +5.0). Problem 4: the MCC-CB sheet has
+      data errors; the ratio column is wrong for T423 fields 3 and 4, two fields have more CC1 than DAPI
+      cells, and the variant using ratios recomputed from counts gives the same outcome.'
+    response: No change needed. The sheet errors are already recorded as a finding and the recomputed-ratio
+      variant is shown.
+  - claim: ed5-cc1-count-dapi-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: CC1 F=6.22, P=0.014, ηp²=0.054, stimulated side higher. DAPI P=0.46. Both readings
+      agree.'
+    response: No change needed.
+  - claim: ed6-dacc-ufm-no-oligodendrocyte-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34: 0 of 6 reading (a) tests have P<0.05, and reading (b) agrees. UF/FM DAPI gives P=0.951
+      against the paper''s printed 0.9611; the paper''s own ηp² (4.97e-5) implies 0.951, so the printed
+      value is a typo.'
+    response: No change needed.
+  - claim: fig3f-g-ratio-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: F(1,696)=58.98, P=5.4e-14, ηp²=0.078. Stimulated side is lower in N (−0.084) and
+      T (−0.023). 700 axons, all with aspect ratio <2.'
+    response: No change needed.
+  - claim: fig4a-cortical-down-subcortical-up
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 38, DBS group: cortical −0.096 and subcortical +0.012 under (a); −0.052 and +0.006 under
+      (b). The 54-ROI cortical split is confirmed from the order of Supplementary Table 3.'
+    response: No change needed.
+  - claim: fig4b-roi-changes-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 40–41: with the script''s rank-sum against zeros at 0.05/123, the counts are exactly
+      69 (DBS) and 44 (controls). The largest significant P is 3.88e-4, which matches the tables.'
+    response: No change needed.
+  - claim: fig4c-network-sorted-reduction
+    agrees: true
+    outcome: blocked
+    reason: No ROI-to-network assignment appears in the outputs. The criterion says to block in that case.
+      Whether the Fig4 script or the "Circular plot" sheet assigns the 123 ROIs to networks was not checked;
+      printing the script lines that build the circular plot's groups and colours, and the sheet's non-numeric
+      cells, would settle it.
+    response: Added a cell for the claim that prints the Fig. 4 script's lines that read labels, reorder
+      ROIs or draw the circular plot, and every text cell of the connectome workbook. The script reads
+      names from undeposited key files, draws the circular plot with one colour for decreases and one
+      for increases, and assigns no network; the workbook's only text cells are block titles. Outcome
+      kept, blocked.
+  - claim: fig4-nonsurgical-no-pattern
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 43, controls: cortical +0.001 and subcortical −0.004 under (a); +0.001 and −0.001 under
+      (b). The DBS pattern is absent under both readings.'
+    response: No change needed.
+  - claim: fig5a-pre-scc-connectivity
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 45: 9 of 9 signs match under (a) and (b). Only the deposited seed maps exist. Problem
+      3: the claims file asks for both per-run and concatenated seed maps; only one version is deposited.
+      The notebook infers from the file name ("concatenated_all_data") that runs were concatenated; that
+      name could equally mean all subjects and ROIs concatenated into one sheet, so the inference is unchecked.
+      It does not matter here: the interaction F values match the paper exactly.'
+    response: Removed the inference. The data check now prints that each voxel has one value per session
+      (column date) and the Fig5BCandE9 script's loading lines, which read the sheet with no run index.
+      The notebook, the deviations and a new methods_unavailable finding now say the deposited maps are
+      one per session and the paper does not say whether runs were concatenated or averaged. Outcome kept.
+  - claim: fig5b-scc-decreases
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 47: interaction F=186.48, ηp²=0.0091, exactly the paper''s values (type II F=56.2, also
+      significant). All 7 stimulated-side ROIs decrease with P<0.05. Problem 2: SciPy''s studentized_range.sf
+      breaks down in the far tail; it prints a floor of about 1.4e-11 or 1.7e-11, or 0, and values just
+      above the floor run 1.1 to 3× the paper''s (8.4e-9 vs 5.07e-9, 3.6e-8 vs 1.3e-8, 4.5e-11 vs 8.2e-12).
+      Every such P is orders of magnitude below 0.05.'
+    response: The helper's docstring, the notebook's text and summary, and the deviation now say the tail
+      loses accuracy below about 1e-7 (1.1 to 3 times the reported values) as well as stopping near 1e-11
+      or 0. No outcome depends on such a P. Outcome kept.
+  - claim: fig5b-scc-increases
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 49: insula +0.039 (P=6.8e-8) and somatosensory cortex +0.032 (P at the numerical floor).'
+    response: No change needed.
+  - claim: ed9-control-hemisphere-changes
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51: 4 of 4 named ROIs are significant. 11 control-side ROIs are significant, the same
+      list as Supplementary Table 9.'
+    response: No change needed.
+  - claim: ed9-no-change-motor-mcc
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 53: P=0.99992 (motor), 1.0 (SMA), 0.9918 (MCC), matching the paper''s values.'
+    response: No change needed.
+  - claim: ed7-decreases-both-monkeys
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 55: all 7 are negative in both monkeys. N''s AMY change is very small (−0.0006).'
+    response: No change needed; the notes now say one seed map per session in place of concatenated runs.
+  - claim: fig5a-nonsurgical-no-reduction
+    agrees: true
+    outcome: blocked
+    reason: The archive holds seed tables only for N+T and D. There are no seed maps for B, W or H and
+      no voxelwise whole-brain maps, confirmed from the asset list. The control connectome includes an
+      area 25 ROI row, but it is a 123-ROI measure, not the paper's voxelwise test.
+    response: No change needed.
+  - claim: fig5c-dmn-lim-cen-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 57: F=51.09, ηp²=0.0023, exact. DMN, LIM and CEN decrease on the stimulated side under
+      both LIM readings; type II is also significant. Voxel counts (857/821/…) match. Problem 1: the "LIM
+      without area 25" reading is ruled out by the paper itself; the Fig. 6e legend counts for monkey
+      D (sham LIM 438, control 383) equal the hub sums with area 25, and the helper says the script includes
+      ROI 8. The claims file keeps reading (b) open, which misreads the reported n.'
+    response: Added a question for a reader (questions/001773.yaml) on whether reading (b) should be dropped
+      from this criterion and that of fig6e-monkey-d-no-network-reduction; the claim is unchanged and
+      both readings are still run. The deviation now says the legend's n settle LIM as reading (a). Outcome
+      kept; it is the same under both readings.
+  - claim: fig5c-smn-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 59: stimulated-side SMN +0.020, P at the numerical floor, under both readings.'
+    response: No change needed.
+  - claim: fig5c-vis-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 61: VIS P=1.0 (stimulated) and 0.65/0.23 (control). Stimulated-side V1 P=1.0 and MT
+      P=0.999.'
+    response: No change needed.
+  - claim: fig5c-san-rebalanced
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 63/49: stimulated-side SAN P=1.0. Insula increases (P=6.8e-8) and dACC decreases (P=4.9e-4).'
+    response: No change needed.
+  - claim: fig6a-monkey-d-cb-fa-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 65: three-way interaction F(2,1238)=6.02, P=0.0025, ηp²=0.0096. Sham CB decreases (P=8.4e-9);
+      none of the other 5 comparisons has P<0.05.'
+    response: No change needed.
+  - claim: fig6b-monkey-d-dacc-cb-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 67: F=24.55, ηp²=0.0475. Sham dACC decreases (P=3.6e-8). Sham MCC goes down, not up
+      (P=0.44).'
+    response: No change needed.
+  - claim: fig6c-monkey-d-cc1-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 69: t(27)=−0.9888, P=0.3316, dz=−0.19, identical to the paper. That rows pair the same
+      section and field across hemispheres was not checked; printing the cc1_mkD() columns would show
+      it. The exact t match makes this low-risk.'
+    response: Added to the claim's cell the sheet's columns, the fields of each section and the count
+      of distinct section and field pairs (28), and the Fig6C script's ttest lines. Each row carries one
+      slide and location with both hemispheres' counts. Outcome kept.
+  - claim: ed10c-monkey-d-subcortical-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 71: subcortical −0.035 under (a) and −0.022 under (b).'
+    response: No change needed.
+  - claim: fig6d-monkey-d-scc-local-increase
+    agrees: true
+    outcome: blocked
+    reason: The archive has no voxelwise whole-brain map for D and no lead coordinates; D's seed table
+      covers only 17 target ROIs. Monkey D's sham-side area 25 rises (0.55 to 0.74, P=4e-12), but sham
+      vmFC and HIP decrease significantly, so an ROI-level reading would fail the "no decrease" half anyway.
+    response: No change needed.
+  - claim: fig6e-monkey-d-no-network-reduction
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 73: under the LIM-with-area-25 reading, the sham side shows 0 significant decreases
+      (reproduced), but both sides together show the control-side CEN decrease (P=0.0089, not reproduced).
+      The claims file''s rule blocks when readings disagree. Problem 1: the Fig. 6e legend counts (sham
+      LIM 438, control 383) equal the hub sums with area 25, so the reading without area 25 is ruled out
+      by the paper; fig6e stays blocked because the sham-side and both-sides readings still disagree under
+      reading (a).'
+    response: Added to the claim's cell the LIM voxel counts with and without area 25 against the legend
+      (438 and 383 with, 428 and 375 without), and a question for a reader on dropping reading (b). The
+      notes, the conclusion and the methods_unavailable finding now say the block does not rest on reading
+      (b). Outcome kept, blocked.
+  - claim: ed10d-monkey-d-roi-changes
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 75: interaction F=4.58, P=0.032. Of the 8 comparisons, exactly sham vmFC (P=8.0e-4)
+      and control insula are significant.'
+    response: No change needed.
