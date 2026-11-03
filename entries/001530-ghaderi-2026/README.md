@@ -36,18 +36,20 @@ and the differences from the paper's method.
 | No context effect on the whisker coding direction (Fig. 7c) | Reproduced |
 | Context decoding after the whisker stimulus (Fig. 7d) | Blocked: methods underspecified |
 | wM2 lick divergence at 30 ms (Fig. 8a) | Partially reproduced |
-| Lick coding direction (Fig. 8b, Supplementary Fig. 18) | Blocked (2 claims) |
+| Lick coding direction at 30 ms (Fig. 8b) | Reproduced |
+| Later lick coding ranked by area (Supplementary Fig. 18) | Not reproduced |
 
 Several single-neuron and population values come out at the paper's numbers only with the quiet-trial
 rule of the paper's code (mean absolute deviation), not with the rule the Methods state (median
 absolute deviation), which the claims file follows. The areas of the units need the CCF label lists of
-the paper's Zenodo record (`Area_list.mat`); with them the unit counts match the paper exactly. The
+the paper's Zenodo record (`Area_list.mat`); with them the unit counts match the paper exactly. The lick coding direction needs the lick times of
+the same record (`Lick_times.mat`). The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001530-ghaderi-2026-01.yaml`](../../attempts/001530-ghaderi-2026-01.yaml).
 
 - `reproduce_ghaderi_2026.ipynb`: data check, behaviour, optogenetics, unit counts, single-neuron and
-  population analyses, cluster labels. About 6 minutes.
-- `decoding_delay.ipynb`: context decoding during the delay (Fig. 5b). About 15 minutes.
+  population analyses, cluster labels, lick coding direction. About 15 minutes.
+- `decoding_delay.ipynb`: context decoding during the delay (Fig. 5b). About 30 minutes.
 - `decoding_clusters_whisker.ipynb`: cluster removal, decoding after the whisker stimulus and the
   clustering of Fig. 4a. About 22 minutes.
 - `ghaderi.py`: streaming, trial and quiet-trial selection, area assignment, spike counts, the

@@ -509,6 +509,164 @@ def global_ids(S):
     return out
 
 
+# ---------------------------------------------------------------- outside input: lick times
+
+LICK_MEMBER = "data_helpers/Lick_times.mat"
+
+
+def _zip_member_parallel(name, workers=32, chunk=16 * 2 ** 20):
+    """Bytes of one deflated member of the Zenodo zip, fetched by parallel range requests into
+    memory and inflated (the member is 1.4 GB compressed; one stream would take about 18 min)."""
+    import zlib
+    import fsspec
+    with fsspec.open(ZENODO_ZIP, block_size=2 ** 20).open() as f:
+        info = zipfile.ZipFile(f).getinfo(name)
+    def get(a, b):
+        for attempt in range(5):
+            try:
+                req = urllib.request.Request(ZENODO_ZIP, headers={"Range": f"bytes={a}-{b - 1}"})
+                with urllib.request.urlopen(req, timeout=300) as r:
+                    data = r.read()
+                if len(data) == b - a:
+                    return data
+            except OSError:
+                if attempt == 4:
+                    raise
+        raise OSError(f"short read {a}-{b}")
+    head = get(info.header_offset, info.header_offset + 30)
+    n, m = struct.unpack("<HH", head[26:30])
+    start = info.header_offset + 30 + n + m
+    spans = [(a, min(a + chunk, start + info.compress_size)) for a in range(start, start + info.compress_size, chunk)]
+    with ThreadPoolExecutor(workers) as ex:
+        comp = b"".join(ex.map(lambda ab: get(*ab), spans))
+    raw = zlib.decompress(comp, -15)
+    if len(raw) != info.file_size:
+        raise OSError("size mismatch after inflating")
+    return raw
+
+
+def lick_times():
+    """Per session, from data_helpers/Lick_times.mat (Zenodo; read by code
+    Coding_direction_SpontLick.m): the detected lick times (`lick_time`, s), the lick mask on
+    the video frames (`lick_mask`), and the file's continuous jaw trace and video timestamps
+    (`jaw`, `video_ts`), kept to check them against the dataset. The file has one entry per
+    probe; entries of the same session are checked to be identical and one is kept."""
+    raw = _zip_member_parallel(LICK_MEMBER)
+    f = h5py.File(io.BytesIO(raw), "r")
+    L = f["lick_times"]
+
+    def deref(ref):
+        o = f[ref][()]
+        while o.dtype == object:
+            o = f[o.ravel()[0]][()]
+        return o
+
+    out, n_entries, mismatched = {}, L["lick_time"].shape[0], []
+    for i in range(n_entries):
+        sid = "".join(chr(c) for c in deref(L["session_id"][i, 0]).ravel())
+        rec = {"lick_time": deref(L["lick_time"][i, 0]).ravel().astype(float),
+               "lick_mask": deref(L["lick_mask"][i, 0]).ravel().astype(bool),
+               "jaw": deref(L["jaw_movement_continues"][i, 0]).ravel().astype(float),
+               "video_ts": deref(L["video_timestamp_continues"][i, 0]).ravel().astype(float)}
+        if sid in out:
+            if not all(np.array_equal(out[sid][k], rec[k], equal_nan=True) for k in rec):
+                mismatched.append(sid)
+            continue
+        out[sid] = rec
+    f.close()
+    return out, n_entries, mismatched
+
+
+def spontaneous_licks(lick_t, lick_mask, video_ts, jaw, trial_starts, bout_min=0.5, ratio=3.0):
+    """Spontaneous licks as code Coding_direction_SpontLick.m: a lick outside [start, start + 6
+    s] of every trial; the lick-mask bout around the video frame nearest it lasts more than
+    `bout_min` s (frames joined while the mask is set on either side, as the code's while
+    loops); and the mean jaw trace over [t, t + 0.1] exceeds `ratio` times its mean over
+    [t - 1, t] (nanmean, closed windows). Returns the times and the counts removed by each
+    filter."""
+    keep, n_out, n_dur, n_qual = [], 0, 0, 0
+    st = np.asarray(trial_starts, float)
+    for t in lick_t:
+        if np.any((t >= st) & (t <= st + 6)):
+            continue
+        n_out += 1
+        c = int(np.argmin(np.abs(video_ts - t)))
+        a = c
+        while a > 0 and lick_mask[a - 1]:
+            a -= 1
+        b = c
+        while b < len(lick_mask) - 1 and lick_mask[b + 1]:
+            b += 1
+        if not video_ts[b] - video_ts[a] > bout_min:
+            n_dur += 1
+            continue
+        before = jaw[(video_ts >= t - 1) & (video_ts <= t)]
+        after = jaw[(video_ts >= t) & (video_ts <= t + 0.1)]
+        with np.errstate(all="ignore"):
+            if not np.nanmean(after) > ratio * np.nanmean(before):
+                n_qual += 1
+                continue
+        keep.append(t)
+    return np.array(keep), {"outside trials": n_out, "removed by bout length": n_dur, "removed by jaw rule": n_qual}
+
+
+def jaw_trace(asset_path):
+    """The session's continuous jaw movement (distance of the jaw tip from the mode of its x and
+    y, as read_behavior) and its video timestamps."""
+    aid = {p: a for p, _, a in ephys_assets()}[asset_path]
+    f = open_nwb(aid)
+    g = f["processing/behavior/BehavioralTimeSeries/Jaw_Coordinate"]
+    ts, jaw = g["timestamps"][:], g["data"][:].astype(float)
+    f.close()
+    return ts, np.hypot(jaw[:, 0] - _mode(jaw[:, 0]), jaw[:, 1] - _mode(jaw[:, 1]))
+
+
+def event_counts(asset_path, unit_rows, times, windows):
+    """Spike counts of the given unit rows of one ephys file in [t + w0, t + w1) for each event
+    time t and window (w0, w1). Returns an array windows x events x units."""
+    aid = {p: a for p, _, a in ephys_assets()}[asset_path]
+    f = open_nwb(aid)
+    U = f["units"]
+    index = U["spike_times_index"][:]
+    st = U["spike_times"][:]
+    out = np.zeros((len(windows), len(times), len(unit_rows)))
+    times = np.asarray(times, float)
+    for j, u in enumerate(unit_rows):
+        a = 0 if u == 0 else int(index[u - 1])
+        sp = np.sort(st[a:int(index[u])])
+        for k, (w0, w1) in enumerate(windows):
+            out[k, :, j] = np.searchsorted(sp, times + w1) - np.searchsorted(sp, times + w0)
+    f.close()
+    return out
+
+
+# ---------------------------------------------------------------- the paper's code, for citation
+
+CODE_COMMIT = "20cf10c7b95069c12f762b7dd89817beedcc382f"
+CODE_RAW = f"https://raw.githubusercontent.com/LSENS-BMI-EPFL/Ghaderi_et_al_NCOMMS_2026/{CODE_COMMIT}/"
+
+
+@lru_cache(maxsize=None)
+def code_file(path):
+    """Text of one file of the paper's code, from GitHub at the pinned commit (the same files
+    are in the Zenodo record)."""
+    url = CODE_RAW + urllib.request.quote(path)
+    with urllib.request.urlopen(url, timeout=120) as r:
+        return r.read().decode("utf-8", errors="replace")
+
+
+def code_lines(path, pattern, context=0):
+    """Lines of a code file that match a regular expression, with `context` lines after each,
+    numbered as in the file."""
+    lines = code_file(path).splitlines()
+    out = []
+    for i, line in enumerate(lines):
+        if re.search(pattern, line):
+            for j in range(i, min(i + context + 1, len(lines))):
+                out.append(f"{path}:{j + 1}: {lines[j]}")
+    return "\n".join(dict.fromkeys(out))
+
+
 # ---------------------------------------------------------------- per-neuron PSTH measures
 
 def neuron_window_means(S, area, masks, window, rule="median", signals=("whisker_speed", "jaw_movement"),
