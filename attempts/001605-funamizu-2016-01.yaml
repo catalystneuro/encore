@@ -1,0 +1,532 @@
+schema_version: 2
+id: 001605-funamizu-2016-01
+dataset:
+  archive: dandi
+  id: "001605"
+  version: 0.251007.0553
+  doi: 10.48324/dandi.001605/0.251007.0553
+paper: doi:10.1038/nn.4390
+date: 2026-11-03
+entry: 001605-funamizu-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41571873343
+outcomes:
+- claim: session-counts
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:session-counts
+  measured: [94, 8, 17, 15, 14, 16, 15, 17]
+  notes: >-
+    94 files of 8 mice, sessions per mouse 2, 10, 5, 14, 15, 15, 12 and 21 for the labels mouse1
+    to mouse8 (the paper's list in its order), and 17, 15, 14 PPC and 16, 15, 17 PM sessions in
+    layers 2, 3 and 5. Every count matches.
+- claim: neuron-counts
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:neuron-counts
+  measured: [41031, 8371, 7108, 4859, 7788, 7005, 5900]
+  notes: >-
+    Under reading (a), all ROIs in the files, the counts equal the paper's active-neuron counts
+    exactly, so the files hold the active ROIs only. Reading (b) was not run, since the criterion
+    needs one reading.
+- claim: behaviour-timing
+  outcome: not_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:behaviour-timing
+  measured: [9.299, 1.009]
+  notes: >-
+    Start tone (first frame of the trial record) to the first reward edge, 9.30 s, s.e.m. 0.11 s
+    over 94 sessions (session means 7.39 to 12.66 s), against 7.4 +- 0.1 s. To reaching the goal
+    9.18 s; from the end of the 970 ms start tone 8.33 s. Time per no-sound zone 1.009 +- 0.020 s
+    under reading (a) and 0.896 +- 0.016 s under reading (b), against 0.86 +- 0.01 s. Both parts
+    fail under every reading. Trials over 20 s to reward are 0.48% per session, against 2.71% in
+    the paper; with longer times to reward the data still have fewer slow trials, so the
+    difference does not come from the exclusion.
+  deviations:
+  - >-
+    The trial start is taken as the first frame of each trial record, where sound_on_off marks the
+    start tone; the paper does not say from which event its 7.4 s is measured.
+- claim: lick-goal-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:lick-goal-correlation
+  measured: [0.218, 0.822]
+  notes: >-
+    Pearson r (reading a) is positive with P < 0.01 in all 94 sessions (largest P 0.0079) and
+    spans 0.218 to 0.822; the upper value matches the paper's 0.822, but two sessions (0.218 and
+    0.227) fall below the criterion's lower bound of 0.232. Spearman (reading b) gives 5 sessions
+    with P >= 0.01 and r from 0.151. The criterion is not met under either reading; the effect it
+    tests is present in every session under Pearson, so the outcome is partial.
+  deviations:
+  - >-
+    The files hold a lick frequency (1/inter-lick interval, capped at 10 Hz, held between licks),
+    not lick times. The first lick is the first frame beyond 33 cm from the start where this
+    frequency changes to a non-zero value or stays at the cap. A variant (the first frame of
+    non-zero frequency beyond 33 cm) gives the same values.
+- claim: fig1c-licking-without-sound
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig1c-licking-without-sound
+  notes: >-
+    One-sided signed-rank tests over 94 sessions; the four no-sound comparisons rise with z = 7.37
+    and 5.79 (intermittent 1, 29.4-25.2 and 4.2-0 cm) and 6.32 and 5.41 (intermittent 2, 21.0-16.8
+    and 12.6-8.4 cm), all P < 1e-7; the four continuous comparisons z = 7.42 to 8.42. All other
+    comparisons also rise with P < 0.01 (intermittent 2 at 29.4-25.2 cm, P = 0.0007). Five of
+    eight mice rise in all four no-sound comparisons by their session medians.
+  deviations:
+  - >-
+    Lick counts per bin are the integral of the lick frequency over the frames in the bin (the
+    files hold no lick times). Bin edges are multiples of 4.2 cm from the goal, as the criterion
+    says; the bins are labelled 29.4-25.2 cm where the claims file writes 29.3-25.1.
+- claim: supp1-licking-speed
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp1-licking-speed
+  notes: >-
+    In the no-sound zone nearest the goal, fast trials have steeper lick slopes than slow trials;
+    speed over the trial, intermittent 1 z = 3.06 (P = 0.0022) and intermittent 2 z = 2.72
+    (P = 0.0066); speed in the zone, z = 3.21 (P = 0.0013) and 2.92 (P = 0.0035). Averaged over
+    every no-sound zone (O9 zone reading a), P = 0.013 to 0.79, shown only.
+  deviations:
+  - >-
+    The no-sound zone of O9 is taken from the panel titles of Supplementary Fig. 1,
+    "Intermittent 1: 8.4 cm to 0 cm from goal" and "Intermittent 2: 25 cm to 8.4 cm from goal",
+    reading (b). Both speed readings are run and agree.
+  - Lick frequency is the files' lick_rate series.
+- claim: fig1d-muscimol-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The muscimol and PBS sessions of three further mice are not in the dandiset, which holds 94
+    imaging sessions of the 8 imaging mice only (all files have imaging data and an imaging-plane
+    description). The paper's data page, https://groups.oist.jp/ncu/data, was fetched (HTTP 200);
+    its text names no file for this paper. No other deposit was found.
+- claim: fig1e-muscimol-variance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Muscimol sessions not in the dandiset nor found elsewhere (see fig1d-muscimol-correlation).
+- claim: fig1fg-muscimol-no-sound-licking
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Muscimol sessions not in the dandiset nor found elsewhere (see fig1d-muscimol-correlation).
+- claim: supp2d-muscimol-overrun
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Muscimol sessions not in the dandiset nor found elsewhere (see fig1d-muscimol-correlation).
+- claim: muscimol-locomotion
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Muscimol sessions not in the dandiset nor found elsewhere (see fig1d-muscimol-correlation).
+- claim: sound-responsive-layer3
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The sound-mapping trials recorded before each imaging session (120 presentations of 200 ms)
+    are not in the files. Every file starts at its first task trial; sound_on_off and
+    speaker_on_matrix are on in exactly 150 frames, the first frame of each trial, and every row
+    of speaker_presentations starts at a trial start and lasts one frame (checked in full on one
+    file; row counts 1,085 to 1,240 in all). Not found elsewhere (see fig1d-muscimol-correlation).
+- claim: neuron-classes
+  outcome: not_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:neuron-classes
+  measured: [1353, 1292, 555, 659, 512, 158, 942, 1061, 431, 225, 228, 76]
+  notes: >-
+    Under O1 a (baseline zero) and either O3 reading, 2 of 12 counts are within 10% (PM layer 2
+    and 3 goal-distance neurons, 659 and 512); the others are 12 to 41% above the paper's. Under
+    O1 b none is within 10% (goal-distance 1,650, 1,402, 775, 961, 738, 304). O3 changes no count
+    by more than 3. Values recorded are O1 a, O3 a. The order of the groups is the paper's (PPC
+    above PM, layer 5 lowest). Per session the goal-distance neurons average 79.6, 86.1, 39.6,
+    41.2, 34.1 and 9.3 (paper 65.6, 70.3, 34.5, 37.6, 31.9, 7.59). By mouse the share of
+    goal-distance neurons ranges from 1.4% (mouse2) to 25.6% (mouse3).
+  deviations:
+  - >-
+    k-means (two clusters) is run once on the after-reaching group pooled over all sessions, with
+    seed 0 and 20 starts; the paper does not say whether it clustered per session.
+  - >-
+    The inter-trial interval of baseline O1 b is the last 7 s of each trial record, from the
+    Methods' "The inter-trial interval (ITI) was 7 s"; the records run 7.9 to 8.2 s past the
+    reward.
+  - >-
+    Distance-aligned activity is interpolated at 0.42 cm bin centres between the frames from the
+    start to the goal (a standard choice; most 0.42 cm bins hold no frame at the mice's speeds).
+    Moving averages are 15 frames (500 ms) and 20 bins (8.4 cm).
+- claim: fig2d-task-relevant-proportions
+  outcome: not_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig2d-task-relevant-proportions
+  measured: [47.6, 38.5, 24.0, 27.3, 23.4, 8.5]
+  notes: >-
+    No percentage is within tolerance under any reading of O1, O2 or O5. Recorded is O1 a, O2
+    0-67 cm, O5 a (mean of per-session percentages); pooled (O5 b) 48.1, 38.1, 25.4, 27.6, 23.5
+    and 8.1%; under O1 b 52.7 to 12.7%. PPC exceeds PM in every layer; Mann-Whitney P < 0.05 in
+    layers 2 and 5 under every reading (P <= 0.0011), and in layer 3 P = 0.051 under O1 a and
+    0.023 to 0.025 under O1 b, so the second part holds under O1 b only.
+- claim: fig2d-goal-distance-ppc-more
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig2d-goal-distance-ppc-more
+  notes: >-
+    PPC exceeds PM in all three layers, as proportions and as counts, under all four O1 and O3
+    readings (Mann-Whitney P 0.0002 to 0.013). Under O1 a, proportions P = 0.0030, 0.0090 and
+    0.0005.
+- claim: fig2d-after-vs-before
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig2d-after-vs-before
+  notes: >-
+    Under O1 a (adopted), PPC has more after- than before-reaching neurons in layers 2, 3 and 5
+    (counts P = 0.0086, 0.0038, 0.011; proportions 0.0086, 0.0038, 0.0060), PM layer 2 has more
+    before-reaching neurons (P = 0.0038 counts, 0.0045 proportions) and PM layers 3 and 5 do not
+    differ (P 0.39 to 0.64). Under O1 b, PPC does not differ in any layer (P 0.07 to 0.52) and
+    PM has more before-reaching neurons in all three layers (P <= 0.0013), so the claim fails
+    there.
+  deviations:
+  - >-
+    Assumption. The baseline of the task-relevance t-test (O1) is open and the readings disagree.
+    Reading (a), zero, is adopted for every claim that uses the classification. dR/R is defined
+    against the session mean of R, so zero is its reference, and under (a) 91 of 94 sessions have
+    goal-distance neurons, the paper's count ("sessions with 0 goal-distance neurons (3 sessions
+    of 94) were excluded", Online Methods, Probabilistic decoding), while (b) gives 94 of 94. The
+    counts of neuron-classes are also nearer the paper's under (a). Both readings are shown.
+- claim: fig2d-layer-distance-preference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig2d-layer-distance-preference
+  notes: >-
+    Under O1 a, layer 3 and layer 5 goal-distance neurons prefer distances nearer the goal than
+    layer 2 in PPC (z = 7.93 and 4.59, P < 1e-5) and PM (z = 4.19, P = 2e-5; z = 2.61,
+    P = 0.0083). Layer 3 against 5 does not differ (PPC P = 0.13, PM P = 0.85). Under O1 b PM
+    layer 5 does not differ from layer 2 (P = 0.38), so the claim fails there.
+  deviations:
+  - Assumption O1 a, as in fig2d-after-vs-before.
+  - >-
+    Distance preference is the goal distance of the peak of the smoothed distance-aligned
+    average over 67.2 to 0 cm (O4).
+- claim: fig3b-distance-over-time
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The regression fits up to three Gaussian bases with free widths, for 11 variable sets and four
+    initial values, to every frame of 150 trials. A nonlinear least-squares fit of this form on
+    45,000 frames took 0.23 s (timed outside the notebook, on synthetic data of the same size),
+    so 44 fits per neuron for about 5,000 goal-distance neurons need about 14 h, and 56 h over the
+    four readings of O6. Not run.
+- claim: supp6-distance-not-sound
+  outcome: partially_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp6-distance-not-sound
+  notes: >-
+    Distance has the lower RMSE with P < 0.05 in 23 of 24 comparisons under every reading (frames
+    O6 a and b, sound readings a and b, all four classification readings). The exception is PM
+    layer 5 after-reaching neurons against Step (P = 0.10, n = 76 under O1 a). The criterion's
+    partial threshold is 20. Differences of median RMSE are below 0.002 dR/R.
+  deviations:
+  - >-
+    The free width is profiled over a grid of 25 log-spaced values from 0.5 to 200 (cm or dB),
+    with the linear coefficients fitted by least squares at each, in place of an optimizer from
+    four initial values (Online Methods, Regression analysis). The basis centre is the value of
+    the variable at the peak of the neuron's activity averaged in 0.42 cm (1 dB for Sound) bins
+    and smoothed over 20 bins (3 for Sound).
+  - >-
+    Sound intensity follows the Methods (100 dB SPL at 25 cm, 6 dB lower per doubling); Step holds
+    the goal distance on entering each no-sound zone. Zones are computed from the condition and
+    distance, as the files hold no task sound.
+- claim: tuning-similar-ppc-pm
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:tuning-similar-ppc-pm
+  notes: >-
+    The readings disagree, and the criterion directs a block. With frames O6 a, PPC and PM differ
+    in the width s in all three layers (P 2e-12 to 0.03) and in b1 in layers 3 and 5 under every
+    classification reading. With frames O6 b and O1 a the widths do not differ (P 0.095 to 0.22),
+    while b1 differs in all three layers (P 5e-10 to 0.008). Open for the authors which coefficient
+    the comparison used and over which frames the fits ran (finding below).
+  deviations:
+  - >-
+    The fit is the distance-only set of equation (2), y = b0 + b1 phi(distance), with the width
+    profiled over a grid as in supp6-distance-not-sound.
+- claim: fig3c-continuous-ramp
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig3c-continuous-ramp
+  notes: >-
+    All 12 area, layer and zone tests positive with P < 0.01 under all four classification
+    readings and both trace readings (z 6.3 to 27.9 under O1 a, trace a; n 76 to 1,061 neurons).
+- claim: fig3c-ppc-ramp-without-sound
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig3c-ppc-ramp-without-sound
+  notes: >-
+    All 12 PPC tests positive with P < 0.01 under every reading, including the six no-sound tests
+    (z 5.6 to 15.4 under O1 a, trace a).
+- claim: supp8a-pm-no-sound
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp8a-pm-no-sound
+  notes: >-
+    Under O1 a and trace reading (a), PM intermittent 2 no-sound slopes at 25.1-8.4 cm are positive
+    with P < 0.01 in all three layers (z 5.3 to 7.6), and intermittent 1 at 8.4-0 cm in none
+    (P = 0.47, 0.57, 0.017). With the moving average (trace b) or O1 b, layer 5 in intermittent 1
+    has P = 0.0026 or 0.006 (0.0012 with both), so the absence part fails under those readings.
+  deviations:
+  - >-
+    Trace reading (a) taken from the Methods, which define y(distance) as "the neural activity
+    trace dR/R at a given goal distance binned every 0.42 cm" without a moving average; the
+    claims file names the moving average as a second reading, which is shown.
+  - Assumption O1 a, as in fig2d-after-vs-before.
+- claim: supp8b-slopes-lower-without-sound
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp8b-slopes-lower-without-sound
+  notes: >-
+    Under O1 a, slopes without sound are lower with P < 0.01 in all six PPC comparisons and four of
+    six PM comparisons under both trace readings (PM layer 5, P = 0.029 and 0.017). Under O1 b PM
+    has three of six, short of the criterion's four.
+  deviations:
+  - Assumption O1 a, as in fig2d-after-vs-before.
+- claim: supp8c-ppc-steeper-than-pm
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp8c-ppc-steeper-than-pm
+  notes: >-
+    Under O1 a and trace (a), PPC no-sound slopes exceed PM in layer 2 (8.4-0 cm, P = 0.0010) and
+    layer 3 (8.4-0 cm, P = 0.0006), and PM is significantly steeper in no comparison, but layer 3
+    at 25.1-8.4 cm does not differ (P = 0.59; 0.10 with trace b). Under O1 b with trace (b) all
+    parts hold (layer 3 at 25.1-8.4 cm P = 0.013).
+  deviations:
+  - Assumption O1 a, as in fig2d-after-vs-before; trace reading (a) as in supp8a-pm-no-sound.
+- claim: supp9-preserved-representation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp9-preserved-representation
+  notes: >-
+    Under O1 a and groups (a), in intermittent 1 PPC after-reaching neurons have the smaller
+    absolute change of distance preference than PM in all three layers (P < 0.05) and PM is
+    significantly smaller in none of 30 comparisons. With groups (b) one comparison of 30 favours
+    PM; under O1 b PPC after-reaching is smaller in two of three layers. The legend's measure may
+    be signed (asked of a reader, questions/001605.yaml); the median signed difference
+    (continuous minus intermittent 1) of after-reaching neurons is -2.10 cm in PPC and -5.04 cm in
+    PM.
+  deviations:
+  - >-
+    Assumption. The borders of the four before-reaching groups are open. Equal quarters (reading
+    a) give group sizes close to the n of Supplementary Fig. 9a (PPC layer 2, 110, 52, 69, 180
+    against 82, 53, 66, 171; summed share difference over the six groups 0.63), the zone borders
+    (b) do not (3.09), so (a) is adopted. Assumption O1 a as in fig2d-after-vs-before.
+  - >-
+    Distance preference per condition is the peak of the condition's trial-averaged 0.42 cm trace
+    after the 8.4 cm moving average.
+- claim: fig4-above-chance
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig4-above-chance
+  notes: >-
+    Decoder RMSE is below the flat prior's in all 18 settings under all eight classification and
+    shift readings (z -88 to -366, P = 0). Against decoders trained on distances permuted across
+    trials (chance reading b), 17 of 18 settings are lower in six readings and 18 of 18 in two;
+    under O1 a and shift 0.01 the exception is PPC layer 3 in intermittent 1 (z = +13.6).
+  deviations:
+  - >-
+    Assumption. Chance is not defined and the readings disagree. Reading (a), the flat prior's
+    RMSE, is adopted, since the decoder's prior is flat; reading (b) keeps the fall of distance
+    within every trial, so its decoder still decodes distance (median RMSE within 1 cm of the
+    real decoder in every setting of the main reading) and does not measure chance.
+  - >-
+    Decoder details from the claims file and Methods; the positive shift (O7) is run at 0.01 and
+    0.1. Frames are those from the start to the goal with goal distance 67.2 to 0 cm.
+- claim: fig4c-ppc-lower-error
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig4c-ppc-lower-error
+  notes: >-
+    Layer 2, O1 a, shift 0.01, 4.2 cm bins; PPC lower median RMSE in 100%, 88% and 88% of bins
+    (continuous, intermittent 1, intermittent 2), significantly lower in 12, 8 and 8 bins, PM
+    significantly lower in none. The criterion holds under O1 a with both shifts and both bin
+    widths, and under O1 b except with shift 0.1 and 0.42 cm bins (one intermittent 2 bin favours
+    PM). Layers 3 and 5 are shown.
+  deviations:
+  - Assumption O1 a, as in fig2d-after-vs-before.
+- claim: fig4d-map-near-goal
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig4d-map-near-goal
+  notes: >-
+    Continuous, layer 2; both 4.2 cm bins in 8.4-0 cm have PPC MAP closer to the actual distance
+    with P < 0.01 (medians 2.64 against 5.53 cm at 4.2-0 cm and 7.19 against 10.17 cm at 8.4-4.2
+    cm) and PM closer in none, under every classification and shift reading; 9 of 16 bins differ.
+    With 0.42 cm bins PM is closer with P < 0.01 in 3 to 8 of the 20 bins near the goal.
+  deviations:
+  - >-
+    Assumption. The bin width of O8 is open and the readings disagree; 4.2 cm, the decoder's bin
+    width and the tick spacing of Fig. 4c-e, is adopted. "Closer" compares each area's median of
+    per-trial mean MAP with the bin centre. Assumption O1 a as in fig2d-after-vs-before.
+- claim: fig4e-ppc-lower-uncertainty
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig4e-ppc-lower-uncertainty
+  notes: >-
+    Layer 2; PPC uncertainty is lower with P < 0.01 in all 48 bins of 4.2 cm and all 480 of 0.42
+    cm under O1 a; under O1 b with shift 0.1 and 0.42 cm bins, 479 of 480. Layers 3 and 5 are lower
+    in PPC in all 48 bins.
+  deviations:
+  - Assumption O1 a, as in fig2d-after-vs-before.
+- claim: supp11-sound-reduces-error
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp11-sound-reduces-error
+  notes: >-
+    The dRMSE slope per cm is lower in sound than no-sound zones with P < 0.01 in all three PPC
+    layers under both readings of n and all eight decoder readings. PM reaches it in two of three
+    layers with four zones and in none or one with two zones.
+- claim: fig5a-map-follows-continuous
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig5a-map-follows-continuous
+  notes: All 24 area, layer and zone tests positive with P < 0.01 under every reading (PPC z 8.9 to 33.9 in the main reading).
+- claim: fig5a-map-decreases-without-sound
+  outcome: partially_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig5a-map-decreases-without-sound
+  notes: >-
+    Most zones have positive median MAP slopes with P < 0.01 (39 of 48 under O1 a, 42 under O1 b),
+    but PPC layers 3 and 5 reach it in 13 (O1 a) or 14 (O1 b) of 16, not all. Failures include the
+    intermittent 1 no-sound zone 8.4-0 cm, where the median slope is 0 (MAP takes values on a 0.84
+    cm grid and often does not change within the zone).
+  deviations:
+  - >-
+    Frames within 33 cm of the start, which always have sound, are left out of zones that are
+    silent in their condition.
+- claim: fig5b-map-slope-lower-without-sound
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig5b-map-slope-lower-without-sound
+  notes: >-
+    No-sound MAP slopes are lower with P < 0.01 in all six PPC comparisons and in five (O1 a) or
+    four (O1 b) of six PM comparisons, under both shifts.
+- claim: fig5-layer3-steeper-than-layer2
+  outcome: not_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig5-layer3-steeper-than-layer2
+  notes: >-
+    Intermittent 1, 8.4-0 cm; PPC layer 3 MAP slopes are not steeper than layer 2 (z = 1.48,
+    P = 0.14 under O1 a, shift 0.01; P 0.07 to 0.56 over all readings; medians 0 in both layers,
+    n = 331 and 397 trials). The s.d. slopes do not differ (P 0.06 to 0.66), the second part.
+- claim: supp13-map-speed
+  outcome: not_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:supp13-map-speed
+  notes: >-
+    Fast trials have a significantly steeper fall of MAP over time (P < 0.05) in at most three of
+    the four PPC layer 2 and 3 tests under any of the 32 readings (O9 speed and zone, O1, O3, O7),
+    and in one or two under most; the criterion needs all four under every reading.
+- claim: fig5cd-uncertainty-updating
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig5cd-uncertainty-updating
+  notes: >-
+    The fall of uncertainty is larger with sound than without with P < 0.05 in all six PPC
+    comparisons under every reading (P <= 0.0003 under O1 a, shift 0.01). PM in three (O1 a) or two
+    (O1 b) of six.
+- claim: fig5c-uncertainty-decreases-with-sound
+  outcome: reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:fig5c-uncertainty-decreases-with-sound
+  notes: >-
+    At 8.4-0 cm uncertainty falls with P < 0.01 in all six PPC tests of the continuous and
+    intermittent 2 conditions under every reading (z 5.6 to 10.1 in the main reading); intermittent
+    1 and PM tests are shown (5 of 12 significant in the main reading).
+- claim: lognormal-decoder-better
+  outcome: not_reproduced
+  notebook: reproduce_funamizu_2016.ipynb
+  output: claim:lognormal-decoder-better
+  notes: >-
+    By RMSE the Gaussian decoder is better with P < 0.01 in 15 to 18 of 18 settings and the
+    log-normal one in none. By absolute MAP error the log-normal decoder is better in 11 or 12 of
+    18 settings and the Gaussian in 5 or 6. The criterion needs 16 under every reading.
+  deviations:
+  - >-
+    The Gaussian decoder uses raw activity with per-bin mean and s.d., smoothed and resampled as
+    for the log-normal (claims file).
+- claim: svm-correlations
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    Leave-one-trial-out training of recorded and shuffled SVMs; one linear multiclass SVM fit on
+    about 15,000 frames of 34 neurons took 0.27 s (timed outside the notebook, synthetic data of
+    the same size), so 105 folds in 91 sessions for two decoders take about 1.4 h per reading,
+    about 3 h for the claim's two readings, over the time left. Not run.
+findings:
+- kind: data_missing
+  statement: >-
+    The dandiset holds only the 94 imaging sessions. The muscimol experiment (three further mice,
+    muscimol and PBS sessions, Fig. 1d-g and Supplementary Fig. 2) and the sound-mapping trials
+    recorded before each imaging session (Supplementary Fig. 4) are not in it, and the paper's data
+    page names no other deposit. Six claims cannot be tested.
+- kind: metadata_error
+  statement: >-
+    The description says the files hold "sound on/off indicators", and sound_on_off is described
+    as "any speaker on". In every file sound_on_off and speaker_on_matrix are on only in the first
+    frame of each trial (150 frames), and every speaker_presentations row lasts one frame at a
+    trial start. The task sound of the continuous and intermittent conditions is not recorded, so
+    sound and no-sound zones must be computed from the condition and distance.
+- kind: metadata_insufficient
+  statement: >-
+    Licking is stored as lick_rate, "Lick frequency (0-10 Hz)", a held 1/inter-lick-interval value
+    capped at 10 Hz, without lick times or a description of how it was derived. Lick counts and
+    first licks can only be approximated from it.
+- kind: other
+  statement: >-
+    Each trial record runs from one start tone to the next, so it holds the reward and the
+    inter-trial interval; the goal time and the first reward edge are not stored per trial and
+    must be derived from the position and reward series. The mean time from the start tone to the
+    reward is 9.30 s (s.e.m. 0.11 s over sessions), against 7.4 +- 0.1 s in the Methods, and 0.48%
+    of trials take over 20 s, against 2.71%.
+- kind: other
+  statement: >-
+    The files hold exactly the paper's counts (94 sessions, 8 mice, sessions per area and layer,
+    41,031 ROIs per area and layer equal to the active-neuron counts) and dF_over_F equals
+    (R - mean R)/mean R of RawFluorescence to 3e-5, as the Methods define dR/R. No recording is
+    deposited twice (94 distinct trial sequences).
+- kind: methods_unavailable
+  statement: >-
+    For the paper's authors. The baseline of the task-relevance t-test is not given. Zero (the
+    session mean of R) and the mean dR/R of the inter-trial intervals give different neuron
+    classes (PPC layer 2 goal-distance neurons 1,353 against 1,650) and different outcomes for
+    fig2d-after-vs-before, fig2d-layer-distance-preference, supp8a and supp8b. Zero was assumed,
+    since under it 91 of 94 sessions have goal-distance neurons, as the paper reports. Which
+    baseline was used, and was k-means run per session or pooled?
+- kind: methods_unavailable
+  statement: >-
+    For the paper's authors. Chance level of Fig. 4b, the bin width of the per-trial values of
+    Fig. 4c-e, and the borders of the before-reaching groups of Supplementary Fig. 9 are not given;
+    the flat prior, 4.2 cm bins and equal quarters of 67 to 0 cm were assumed. Which coefficient
+    of the distance fit is compared in "fitted coefficients ... were similar between PPC and PM",
+    and over which frames were the regressions fitted (to the goal or past it)? The readings
+    disagree on that claim, which is blocked.
+- kind: other
+  statement: >-
+    With the decoder as described, a Gaussian likelihood gives lower RMSE than the log-normal one
+    in 15 to 18 of 18 settings, contrary to the Methods' statement, and PPC layer 3 MAP slopes in
+    intermittent 1 near the goal are not steeper than layer 2. These may come from details of the
+    decoder the Methods leave open (the positive shift, the decoded range).
