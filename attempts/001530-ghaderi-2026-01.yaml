@@ -55,19 +55,26 @@ outcomes:
   notebook: reproduce_ghaderi_2026.ipynb
   output: claim:fig1f-movement-latencies
   measured:
-  - 48.2
-  - 81.5
-  - 140.0
+  - 54.4
+  - 115.3
+  - 192.4
   - 330.1
-  notes: The lick latency is 330.1 +/- 20.2 ms over 35 sessions, the paper's value. The movement
-    latencies are shorter than reported under both readings of the criterion; reading (a) gives whisker
-    48.2, jaw 81.5 and tongue 140.0 ms (34, 34 and 27 sessions with a latency), reading (b) 65.2, 83.3
-    and 153.6 ms; only the reading (b) whisker value is within tolerance. The order whisker, jaw,
-    tongue, spout contact holds under both, so the criterion's partial case applies. The tongue trace
-    keeps rising after 1.2 s, so a maximum over 1.0 to 1.2 s cannot give the reported 231 ms; with the
-    maximum over 1.0 to 2.0 s (a variant outside the criterion) reading (a) gives 54.4, 115.3 and
-    192.4 ms. A question on the window is in questions/001530.yaml. The code's mean absolute deviation
-    for the quiet rule is shown as a variant.
+  notes: The lick latency is 330.1 +/- 20.2 ms over 35 sessions, the paper's value. With the maximum
+    over 1.0 to 2.0 s, reading (a) gives whisker 54.4 +/- 4.4, jaw 115.3 +/- 15.3 and tongue 192.4 +/-
+    18.4 ms (34 sessions each), so the whisker and jaw latencies are within tolerance and the tongue
+    latency, 38.6 ms below 231, is not; reading (b) gives 94.6, 142.9 and 254.6 ms, with only the tongue
+    latency within tolerance. The order whisker, jaw, tongue, spout contact holds under both readings,
+    so both give the criterion's partial case. The means are raised by a few late sessions; the
+    medians over sessions under reading (a) are 50.0, 95.0 and 155.0 ms, and the two PG019 sessions
+    average 315.0 ms for the jaw and 385.0 ms for the tongue. What the answer changed. The first run
+    took the maximum over 1.0 to 1.2 s, as the claims file then said, and gave reading (a) 48.2, 81.5
+    and 140.0 ms and reading (b) 65.2, 83.3 and 153.6 ms, with only the reading (b) whisker latency
+    within tolerance; it asked whether the window was the paper's, since a crossing at 231 ms cannot
+    occur under a maximum over 200 ms. The reader changed the criterion's window to 1.0 to 2.0 s, the
+    1 s response window of the Methods (questions/001530.yaml). Under it reading (a) moves two of the
+    three movement latencies into tolerance and reading (b) the tongue latency; the outcome stays
+    partially reproduced. The 1.0 to 1.2 s and 1.0 to 1.5 s windows and the code's mean absolute
+    deviation for the quiet rule (reading a 50.9, 118.0 and 196.0 ms) are shown as variants.
   deviations:
   - The latency is the right edge of the first 10 ms bin after 1.0 s that reaches 20% of the maximum,
     minus 1.0 s (code, PSTHBehavior.m labels bins by their right edge); the paper does not say how the
@@ -498,6 +505,13 @@ findings:
     trains libsvm nu-SVC with default parameters and no search. Which was used, and over which grid?
     With a C grid of 10^-3 to 10^3 the cluster-removal and post-whisker results differ from the code's
     decoder (Fig. 5c cluster 25 not significant; Fig. 7d wM2 onset after ALM).
+- kind: methods_unavailable
+  statement: Question for the authors on Fig. 1f. How is "time to 20% max" computed, on the
+    session-mean trace or on each trial, and over which window is the maximum taken? None of the
+    code computes it. With the maximum over the 1 s response window the session-mean reading gives
+    54.4, 115.3 and 192.4 ms and the per-trial reading 94.6, 142.9 and 254.6 ms, against the reported
+    58, 115 and 231 ms; with the maximum over the plotted 1.0 to 1.2 s the tongue latency cannot reach
+    231 ms.
 - kind: other
   statement: The spontaneous lick times and lick mask used for the lick coding direction (Fig. 8b,
     Supplementary Fig. 18) are only in the Zenodo record (Lick_times.mat); the dandiset holds the raw
