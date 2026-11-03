@@ -287,8 +287,8 @@ claims:
     gives P >= 0.05 for both measures; the effect sizes are reported. Not testable if the dataset
     does not hold the control animals.
 - id: figs2de-behaviour-increase-comparison
-  statement: In the behaviourally trained animals, over the same weeks as the controls, density
-    within 200 um and the number of activated neurons at 5 uA increase.
+  statement: In the behaviourally trained animals, compared over training as for the controls,
+    density within 200 um and the number of activated neurons at 5 uA increase.
   source: fig. S2, D and E legend
   quote: whereas behaviorally trained animals exhibited significant increases in activation
     density (two-sided Mann-Whitney U, nearly = 22, nlate = 29, p = 0.044, r = 0.28)
@@ -304,8 +304,12 @@ claims:
     p: 9.0e-4
     n: 18 early, 20 late
   criterion: As fig2e-density-200um-increase (density) and fig2c-count-increase-fixed-current at
-    5 uA (counts, channel x week medians), with late limited to weeks 2 and 3 and Mouse 5 left
-    out, as the code does (figs2d and figs2e scripts). Reproduced when both tests give P < 0.05
+    5 uA (counts, channel x week medians), with Mouse 5 left out as the code does (figs2d and
+    figs2e scripts, numel(anID)-1). The legend says the behavioural data are reproduced from
+    Figs. 2E and 2C, yet its n (22 and 29; 18 and 20) differ from theirs (22 and 40; 20 and 35);
+    the code limits late to weeks 2 and 3 (weeks 0 to 3 kept, early 0 to 1 against late 2 to 3).
+    Readings (a) late weeks 2 and 3 (code, whose n the legend's should match) and (b) late weeks
+    2 to 4 as in Figs. 2C and 2E. Reproduced when, under one reading, both tests give P < 0.05
     with late higher.
 - id: fig2g-stable-at-threshold
   statement: When the current is set to each session's detection threshold, the activation density
@@ -483,9 +487,10 @@ claims:
     2, 3 and 4 give P < 0.05 with the subgroup higher; partially reproduced when weeks 3 and 4
     are significant and weeks 0 and 1 are not.
 - id: fig3lm-deconvolved-spikes-subgroup
-  statement: In deconvolved spike trains, the high-intensity subgroup starts with spike counts and
-    onset latencies comparable to the rest (weeks 0 and 1) and diverges from week 2 to week 4,
-    with more spikes and shorter latency.
+  statement: In deconvolved spike trains, the high-intensity subgroup's spike counts rise and its
+    spike onset latencies fall from the early to the late phase, while the remaining neurons change
+    little; the subgroup starts with spike counts and onset latencies comparable to the rest
+    (weeks 0 and 1) and diverges from week 2 to week 4, with more spikes and shorter latency.
   source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
     subpopulations, paragraph 3; Figure 3, L and M
   quote: Neurons in the high intensity subgroup exhibited a significant increase in spike counts
@@ -494,9 +499,11 @@ claims:
   statistics:
   - about: spike count, week 0
     test: two-sided Mann-Whitney U test
+    statistic: r < 0.01
     p: 0.9699
   - about: spike count, week 1
     test: two-sided Mann-Whitney U test
+    statistic: r = 0.08
     p: 0.1076
   - about: spike count, week 2
     test: two-sided Mann-Whitney U test
@@ -512,6 +519,7 @@ claims:
     p: 1.16e-8
   - about: onset latency, week 0
     test: two-sided Mann-Whitney U test
+    statistic: r < 0.01
     p: 0.8767
   - about: onset latency, week 1
     test: two-sided Mann-Whitney U test
@@ -538,7 +546,11 @@ claims:
     and readings as fig3j-high-intensity-subgroup-increase; per-week tests as
     fig3j-weekly-divergence. Reproduced when, for spike count and onset, weeks 0 and 1 give
     P >= 0.05 and weeks 2 to 4 give P < 0.05 with the subgroup higher in count and shorter in
-    onset; partially reproduced when that holds for one measure or for weeks 3 and 4 only.
+    onset; partially reproduced when that holds for one measure or for weeks 3 and 4 only. The
+    early-to-late change within each group, for which the text gives no P, is tested as in
+    fig3j-high-intensity-subgroup-increase (two-sided Mann-Whitney, early against late, Fig. 3
+    legend) and reported; the subgroup is expected to rise in count and fall in onset, the
+    remaining neurons to change little.
 - id: fig3n-newly-recruited-weaker
   statement: Neurons recruited only in the last week have lower dF/Fmax and fewer deconvolved spikes
     than the high-intensity subgroup in weeks 2 to 4, with similar onset time.
@@ -549,11 +561,11 @@ claims:
     subgroup during weeks 2 to 4 while activation onset time remained similar between the two
     groups ( P = 0.0633)
   statistics:
-  - about: dF/Fmax across groups
+  - about: dF/Fmax, newly recruited against subgroup at weeks 2 to 4
     test: Kruskal-Wallis with Tukey-Kramer post hoc correction
     p: 3.09e-19
     n: 23 week-0, 57 weeks 2 to 4, 700 week-4 neurons
-  - about: deconvolved spikes
+  - about: deconvolved spikes, newly recruited against subgroup at weeks 2 to 4
     test: Kruskal-Wallis with Tukey-Kramer post hoc correction
     p: 3.29e-17
   - about: onset time, newly recruited against subgroup
@@ -566,7 +578,7 @@ claims:
   - quantity: subgroup neurons at weeks 2 to 4
     value: 57
     tolerance: 6
-  - quantity: subgroup neurons at week 0
+  - quantity: week-0 group neurons
     value: 23
     tolerance: 2.3
   depends_on:
@@ -576,7 +588,9 @@ claims:
     present in exactly one session, in week 4, and activated there). The legend names the first
     group "all longitudinally recruited neurons at week 0" while the code uses the subgroup at
     week 0; readings (g1) the code and (g2) all tracked responses at week 0. Kruskal-Wallis
-    followed by Tukey-Kramer comparisons (MATLAB multcompare default). Reproduced when the newly
+    followed by Tukey-Kramer comparisons (MATLAB multcompare default). The text does not say
+    whether each printed P is the Kruskal-Wallis omnibus P or the post hoc pairwise P; both are
+    computed and shown, and significance of a pair is judged on the post hoc P. Reproduced when the newly
     recruited group is significantly lower than the weeks 2 to 4 subgroup in dF/Fmax and spike
     count and not significantly different in onset, under one reading.
 - id: fig3n-enhanced-vs-week0
@@ -909,18 +923,23 @@ claims:
     p: 0.53
   expected:
     quantity: conduction velocity range
-    value: 0.235
-    tolerance: 0.062
+    value: 0.2385
+    tolerance: 0.0585
     unit: m/s
-  criterion: For PL responses, latency is the time of the peak spike probability after the pulse and
-    jitter its trial-to-trial spread; distance is from the unit's estimated location to the
-    stimulation contact; means in 120 um distance bins and OLS on the binned means per current
-    (fig. S4B legend). The latency and jitter definitions and which bins form the "monotonically
-    increasing segment" are not fixed by the paper or the code (python/fig_s4 reads them
-    precomputed); readings (a) all bins and (b) bins up to the bin of maximum mean latency.
-    Reproduced when, under one reading, the slope is positive with P < 0.05 at every current, each
-    velocity (1 / slope) is inside 0.2 to 0.27 m/s widened by 10% of each bound (0.18 to 0.297),
-    and jitter shows no slope with P < 0.05. The expected value stands for that range.
+  criterion: For each PL response, latency is the mean, over the bootstrap draws of the common
+    method, of the time of the peak bin of the spike-probability curve, and jitter is the variance
+    of those peak times in ms^2 (code processing/.../responses_v2/pulse_locked_response_metrics.py,
+    get_bootstrapped_metrics; responses_v3/process_stim_responses.py, jitter = std_latency**2);
+    distance is from the unit's estimated location to the stimulation contact. Bins are 120 um wide
+    from 60 um (code python/fig_s4/generate_figure.py). The legend says OLS on binned means; the
+    code fits latency on binned medians of 120 to 840 um (its "monotonic segment") and fits jitter
+    on the unbinned responses. Readings for latency (a) binned means over 120 to 840 um (legend,
+    with the code's segment) and (b) binned medians over 120 to 840 um (code); for jitter (c)
+    binned means (legend) and (d) unbinned responses (code). Velocity is 1e-3 / slope m/s with the
+    slope in ms/um (code). Reproduced when, under one reading, the latency slope is positive with
+    P < 0.05 at every current, each velocity is inside 0.2 to 0.27 m/s widened by 10% of each
+    bound (0.18 to 0.297, which the expected value and tolerance span), and jitter shows no slope
+    with P < 0.05.
 - id: fig5fg-pl-modulation-increase
   statement: PL modulation over the 700 ms train increases from early to late at 4, 5 and 6 uA, and
     PL time to maximum firing rate decreases at 5 and 6 uA.
@@ -1398,3 +1417,57 @@ claims:
     exceeds PL with corrected P < 0.05 in both phases for the 120 ms window, and the control tests
     give corrected P >= 0.05 in both phases (a claim of absence, judged on the paper's test).
     Not testable for controls if the dataset does not hold them.
+- id: figs9a-coupling-700ms
+  statement: In the 700 ms window of fig. S9A, PL population coupling increases from early to late
+    while NPL coupling does not change, and PL coupling is lower than NPL coupling in both phases.
+  source: Results, Differential behavioral correlates of PL and NPL neurons, paragraph 4; fig. S9A
+  quote: PL coupling increased significantly over time (PL early vs late
+  statistics:
+  - about: PL early against late
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = 0.17
+    p: 1.3e-6
+    corrected: FDR-BH
+    n: 446 early, 763 late
+  - about: NPL early against late
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = -0.05
+    p: 0.22
+    corrected: FDR-BH
+    n: 255 early, 547 late
+  - about: PL against NPL, early
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = 0.46
+    p: 5.5e-24
+    corrected: FDR-BH
+  - about: PL against NPL, late
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = 0.28
+    p: 3.4e-17
+    corrected: FDR-BH
+  depends_on:
+  - fig6f-population-coupling
+  criterion: The Results cite fig. S9A for the PL increase being "driven primarily by stronger
+    coupling among PL cells", while the legend describes coupling of PL and NPL units as in
+    Fig. 6F, and the code (python/fig_s9/generate_figure.py) computes it as Fig. 6F with Mouse 6
+    (ICMS83) left out, its comment matching the legend's PL n of 446 and 763. Readings (a) as
+    fig6f-population-coupling without Mouse 6 (code, legend) and (b) the population trace built
+    from the other modulated PL units only (Results). Four tests corrected together by FDR-BH.
+    Reproduced when, under one reading, PL rises with corrected P < 0.05, NPL early against late
+    gives corrected P >= 0.05, and NPL exceeds PL in both phases with corrected P < 0.05.
+checks:
+- date: 2026-11-03
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs4b-pl-latency-distance, criterion said the code does not fix latency, jitter or the fitted segment; the code does (latency the bootstrap mean of the peak-bin time, jitter its variance in ms^2, 120 um bins from 60 um, latency fit on binned medians over 120 to 840 um, jitter fit on unbinned responses), so these are now taken from it, with the legend's binned means as the other reading.
+  - figs4b-pl-latency-distance, expected value 0.235 and tolerance 0.062 spanned 0.173 to 0.297, not the 0.18 to 0.297 the criterion states (the range 0.2 to 0.27 widened by 10% of each bound); set to 0.2385 and 0.0585.
+  - fig3lm-deconvolved-spikes-subgroup, added the effect sizes the text gives and the file left out (spike count week 0 r < 0.01, week 1 r = 0.08; onset week 0 r < 0.01).
+  - fig3lm-deconvolved-spikes-subgroup, the statement left out the finding its quote states (subgroup spike counts up and onset down from early to late, remaining neurons little change); added to the statement, and the criterion says how it is tested.
+  - fig3n-newly-recruited-weaker, the first two statistics were labelled "across groups", but the text attaches them to the newly recruited against weeks 2 to 4 subgroup comparison; relabelled. Renamed the expected "subgroup neurons at week 0" to "week-0 group neurons", as the legend and text call that group all tracked neurons at week 0 and the file itself leaves which group open. The criterion now names as open whether the printed P values are omnibus or post hoc.
+  - figs2de-behaviour-increase-comparison, the statement said "over the same weeks as the controls", which comes from the code, not the paper; removed. The criterion fixed late as weeks 2 and 3; the legend says the data are reproduced from Figs. 2C and 2E (late weeks 2 to 4), so both are now readings.
+  - figs9a-coupling-700ms, new claim. Fig. S9A reports its own tests (n 446 and 763 PL) and the Results cite it for the PL coupling increase; no claim covered it. The text and the legend describe it differently, so both are readings.
+  - Checker flagged p 9.0e-4 (figs2de-behaviour-increase-comparison) and p 2.0e-4 (fig4ij-pyramidal-modulation-increase) as not found; read in the text as "p = 9.0e-4" (fig. S2E legend) and "P = 2.0 × 10 −4" (Results); both are right.
+  - Code citations spot-checked at commit d1922d1 (animal order and the Mouse 4 channel left out of Fig. 2C, Mouse 5 left out of Fig. 2E and fig. S2D, weeks 0 to 3 in fig. S2D and S2E, the modulation filters, the cluster onset of Fig. 6D); they match. The other code details were not all re-read.
+  - Open, not settled. Fig. S2D and S2E n do not match Figs. 2C and 2E although the legend says the data are reproduced from them; fig3df and later imaging claims rest on code-defined dF/F, onset and subgroup readings the paper does not give; the control currents for fig. S7 are not given in the paper.
