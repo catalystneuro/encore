@@ -351,8 +351,6 @@ def _pf_session(a, r, kind, sa, sk, form, clip, npart, seed, out_pl, out_pred, o
             ws += w[i]
         for i in range(npart):
             w[i] /= ws
-        out_post[t, 0] = (w * QL).sum(); out_post[t, 1] = (w * QR).sum(); out_post[t, 2] = (w * A1).sum()
-        out_post[t, 3] = (w * A2).sum(); out_post[t, 4] = (w * K1).sum(); out_post[t, 5] = (w * K2).sum()
         # systematic resampling
         u0 = np.random.random() / npart
         c = w[0]
@@ -371,6 +369,11 @@ def _pf_session(a, r, kind, sa, sk, form, clip, npart, seed, out_pl, out_pred, o
             else:
                 qr, ql = q_update(QR[i], QL[i], r[t], A1[i], A2[i], K1[i], K2[i], form)
                 QL[i] = ql; QR[i] = qr
+        # posterior mean after e(t) (reading O13 b): the resampled particles, with Q updated by a(t) and
+        # r(t), before the parameters drift to trial t + 1
+        out_post[t, 0] = QL.mean(); out_post[t, 1] = QR.mean(); out_post[t, 2] = A1.mean()
+        out_post[t, 3] = A2.mean(); out_post[t, 4] = K1.mean(); out_post[t, 5] = K2.mean()
+        for i in range(npart):
             A1[i] += sa * np.random.standard_normal()
             K1[i] += sk * np.random.standard_normal()
             if kind == 2:
@@ -398,7 +401,8 @@ KIND = {"Q": 0, "FQ": 1, "DFQ": 2}
 
 def particle_filter(seqs, model, sa, sk, form=0, clip=0, npart=N_PARTICLES, seed=0):
     """Run the filter on each session. Returns per-session lists of P_L, the predictive means of
-    h (given e(1:t-1)) and the posterior means (after e(t)), columns QL, QR, a1, a2, k1, k2.
+    h (given e(1:t-1)) and the posterior means after e(t) (choice and reward of trial t, Q updated, before
+    the parameters drift), columns QL, QR, a1, a2, k1, k2.
     Each session's random stream is seeded from `seed` and its own index (sess column)."""
     a = np.concatenate([s.a.values for s in seqs]).astype(np.int64)
     r = np.concatenate([s.r.values for s in seqs]).astype(np.int64)
