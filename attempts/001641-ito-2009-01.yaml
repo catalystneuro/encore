@@ -1,0 +1,1173 @@
+schema_version: 2
+id: 001641-ito-2009-01
+dataset:
+  archive: dandi
+  id: '001641'
+  version: 0.260922.0719
+  doi: 10.48324/dandi.001641/0.260922.0719
+paper: doi:10.1523/jneurosci.6157-08.2009
+date: 2026-11-03
+entry: 001641-ito-2009
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41574775768
+outcomes:
+- claim: trial-counts
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:trial-counts
+  measured: [60211, 70, 6, 39175, 12707, 8329]
+  notes: Both readings of the total give 60,211 trials, as every trial has a cue tone. Choice, no-choice and error
+    trials are 39,175, 12,707 and 8329, exactly as reported, in 70 sessions from 6 rats. The paper's own parts sum
+    to 60,211, 10 fewer than its stated total of 60,221.
+  deviations:
+  - Choice trials are tone-A trials with result 1 or 3 and an L or R choice, no-choice trials tone-B trials with
+    result 1, and all others errors; the result codes are not described in the files and were read from the other
+    columns.
+- claim: block-structure
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:block-structure
+  measured: [104.9, 8.2, 5, 12]
+  notes: Under reading (a), all trials and every block, 104.9 trials per block and 8.2 blocks per session, 5 to
+    12. Counting completed blocks only gives 7.44 blocks and a fewest of 4; counting choice trials only gives 68
+    to 70 trials per block. Blocks are those of the BlockDesign table (574, of which 521 finished).
+- claim: reaction-time
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:reaction-time
+  measured: [72.1, 0.754]
+  notes: 72.1% of choice-trial reaction times are under 1 s, median 0.754 s, over 39,172 trials. Three choice trials
+    have a negative reaction time (L or R entry recorded before the center exit) and are left out; keeping them
+    changes neither value. The rats range from 35.0% to 91.3% under 1 s.
+  deviations:
+  - Three trials with a negative reaction time were left out as timing errors.
+- claim: tone-discrimination-errors
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:tone-discrimination-errors
+  measured: [0.809, 1.015]
+  notes: Counted from the event series, 317 tone-A trials in which the rat held the cue and made no L or R entry
+    within 60 s (0.81% of choice trials, 0.80% with the errors in the denominator) and 129 tone-B trials with an
+    L or R entry within 1 s of center exit (1.02% and 1.01%). 96 of the 317 tone-A trials had a cue tone under 1
+    s (1st percentile 0.12 s), shorter than any cue of the task (1000 to 2000 ms), so the tone probably stopped
+    when the rat left early and the hold test let these through; keeping tones of at least 1 s gives 221 and 125
+    trials (0.56% and 0.98%). Counted from the rare result codes 5 (tone A) and 4 (tone B), whose tones last over
+    1 s (1st percentile 1.05 and 1.03 s), 0.27% and 1.11%. No numerator gives both of the paper's 0.39% and 0.73%
+    under either denominator. The outcome rests on the tone-B part, 0.97 to 1.11% under every numerator and denominator
+    against 0.73 +- 0.073. The tone-A rate is not determined by these data, as the paper's 0.39% lies between the
+    counts (0.27 to 0.81%), and even the 1 s filter gives only an upper bound, since a cue of 1 to 2 s cut short
+    after 1 s still passes it. The result codes are undocumented, so the paper's counting may differ from all three.
+  deviations:
+  - The numerators are not in the claims file; they were counted from the definitions in the Results (Reaction time
+    and tone discrimination, paragraph 2), from the L and R sensor series, with a recount keeping cue tones of at
+    least 1 s (Behavioral task, cue 1000 to 2000 ms) and the result codes as variants.
+- claim: fig2b-reward-stronger-than-noreward
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2b-reward-stronger-than-noreward
+  measured: [0.6775, 0.6165, 0.3004, 0.3862]
+  notes: Histories within blocks give P(L|L1) 0.678, P(L|R0) 0.617, P(L|R1) 0.300 and P(L|L0) 0.386; within sessions
+    0.680, 0.616, 0.299 and 0.388. All are in tolerance and in the stated order. The Mann-Whitney tests give p of
+    7.5e-19 and 4.0e-36 on trials and 3.8e-06 and 2.3e-06 on sessions (history within blocks), all below 0.0001.
+    By rat, P(L|L1) exceeds P(L|R0) in four of six rats.
+- claim: fig2b-two-back-history
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2b-two-back-history
+  measured: [0.6627, 0.7179]
+  notes: P(L|R0 L1) 0.663 and P(L|L1 L1) 0.718 with histories within blocks (0.661 and 0.721 within sessions), in
+    the stated order and within tolerance. The Mann-Whitney test on the choices of the trials that follow each history
+    (O8 a) gives p = 9.1e-07 and 5.9e-08; on per-session probabilities (O8 b) p = 0.032 and 0.012, which do not
+    reach the paper's p < 0.0001. The criterion asks for p < 0.0001 under every reading, and the claims file blocks
+    a claim whose method readings disagree. What the paper's tests rank is not stated (Results, History dependence,
+    paragraphs 1 and 2); O8 (a) alone matches the paper's p = 0.94 for P(L|L1 L1 L1 L1) against P(L|R0 L1 L1 L1)
+    (0.919 and 0.938 here, against 0.23 and 0.24 under O8 b). Asked of the paper's authors (findings).
+- claim: fig2c-sequence-frequencies
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2c-sequence-frequencies
+  measured: [6.783, 2.942, 2.637, 1.292]
+  notes: With a pair's percentage the sum of the two mirror sequences, the four pairs make 6.78, 2.94, 2.64 and
+    1.29% of 37,463 windows within blocks, and 6.88, 2.87, 2.54 and 1.28% of 38,965 windows within sessions; all
+    are in tolerance and the first three pairs are the three most frequent, in order. The within-session values
+    match the paper's to 0.01. Taking the mean of the two sequences gives half these values and does not match.
+- claim: fig2c-reward-effects-fade
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2c-reward-effects-fade
+  measured: [0.7337, 0.736]
+  notes: P(L|L1 L1 L1 L1) 0.734 and P(L|R0 L1 L1 L1) 0.736 (within sessions 0.743 and 0.741). The paper's test (O8
+    a) gives p = 0.919 and 0.938 (paper 0.94); O8 (b) gives 0.23 and 0.24. The left-choice probability rises from
+    0.678 (L1) to 0.718 (L1 L1) and 0.734 (L1 L1 L1 L1), within 0.075 of 0.75; P(L|L1 L1 L1) is 0.738.
+- claim: fig2d-switching
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2d-switching
+  notes: Under both history readings, after each prefix ending in L0 P(L) is 0.31 to 0.39, and after each ending
+    in R0 it is 0.62 to 0.70; every 99% interval excludes 0.5.
+- claim: fig2e-persevering
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2e-persevering
+  notes: P(L) after L0 L0, L0 L0 L0 and L0 L0 L0 L0 is 0.464, 0.575 and 0.698 within blocks (0.467, 0.574, 0.697
+    within sessions), rising, with the last two above 0.5. For the mirrored R0 sequence P(R) rises too (0.43, 0.45,
+    0.51), but P(R|R0 R0 R0) stays below 0.5; the criterion tests the left sequence.
+- claim: fig3-lsq-switching
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig3-lsq-switching
+  measured: [0.01018, 0.0072, 0.00094, 0.00027]
+  notes: Under all eight readings (O7, O1, residual) the residuals are in the order local matching (0.0099 to 0.0102)
+    > standard Q (0.0071 to 0.0073) > F-Q (0.00079 to 0.00102) > DF-Q (0.00011 to 0.00027), and switching is represented
+    by F-Q and DF-Q but not by the local matching law or standard Q. The DF-Q residual is outside its tolerance
+    (0.0002 +- 0.00002) under every reading and F-Q is outside under the 12-point reading, so the order and switching
+    hold and some values do not. The local matching law's optimum is alpha 0, a constant 0.5.
+  deviations:
+  - Fitted with L-BFGS-B from a grid of starting points under the bounds alpha in [0, 1], kappa1 in [0, 10], kappa2
+    in [-10, 10] and Q0 in [0, 10]; the paper names no optimizer or bounds (a standard choice).
+- claim: table1-lsq-parameters
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:table1-lsq-parameters
+  measured: [0.32, 2.707, 1.242, 0.974, 0.972, 0.629, 1.0, 0.54, 0.883, 1.145, 1.375, 0.704, 0.0, 0.0]
+  notes: 'Under O1 (a) 8 of 14 values are within tolerance (6 under O1 b), fewer than the 10 needed for partial
+    reproduction. F-Q alpha, kappa1 and kappa2 and all five DF-Q values match; standard Q (alpha 0.30 to 0.32, kappa1
+    2.71 to 2.85, Q0 1.24 to 1.29), F-Q Q0 and the local matching law (alpha 0 and Q0 0, against 0.05 and 0.07)
+    do not. With alpha1 = alpha2 the initial value cancels from QL - QR, so the F-Q Q0 is not determined by the
+    fit (0.05 to 1.0 here); the paper''s 0.00 is one of many equal optima. Under O1 (a) the paper''s own Table 1
+    values give nearly the fitted residual (mean over 24 points, O7 a: local matching law 0.0103 against 0.0102
+    at alpha 0.05 and Q0 0.07, standard Q 0.00722 against 0.00720, F-Q equal, DF-Q 0.00028 against 0.00027), so
+    the surface is flat and the paper''s values lie near the optimum; under O1 (b) they are far worse (0.018 to
+    0.044 for all but F-Q).'
+- claim: fig5-markov-accuracy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-markov-accuracy
+  measured: [0.5283, 0.5318, 0.5336, 0.5319]
+  notes: With the split by alternate sessions (O3 a) the four orders score 0.5283, 0.5318, 0.5336 and 0.5319, with
+    order 3 highest and order 4 lower; O3 (b) gives the same order. The random split (O3 c) gives values in tolerance
+    but order 4 (0.5334) above order 3 (0.5332). The criterion asks for the result under every reading of the split,
+    and the readings disagree. O3 (a) is the only reading whose training set holds the paper's 19,986 choice trials
+    (test 19,189 against 19,186). Both O6 readings agree. Asked of the paper's authors (findings).
+- claim: fig5-constant-models
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-constant-models
+  measured: [0.5266, 0.5306, 0.5295, 0.5064]
+  notes: In every reading standard Q, F-Q and DF-Q (constant) score 0.5240 to 0.5267, 0.5280 to 0.5308 and 0.5283
+    to 0.5306, within tolerance, above the local matching law. The local matching law with Qi(1) = 0, as the Methods
+    and the criterion give it, predicts 0/0 at the first trial and probability 1 after the first reward on one side;
+    fitted, its optimum is alpha 0, a constant 0.5, and it scores 0.500 under O1 (a) and less under O1 (b), out
+    of tolerance. With an initial value the paper does not give (0.1, 0.5 or 1.0) it scores 0.504 to 0.508 under
+    O1 (a), in tolerance, and 0.491 to 0.502 under O1 (b). The measured local matching law value (0.5064) is the
+    one under the assumed Qi(1) = 0.5; under Qi(1) = 0 it is 0.5000. The paper's 0.508 cannot come from the model as specified,
+    so its procedure is not fixed. F-Q and DF-Q (constant) exceed the first-order Markov model, as the paper's numbers
+    do (not part of the outcome). Asked of the paper's authors (findings).
+  deviations:
+  - Constant fits use L-BFGS-B (O4 b) and the best point of a 0.05 grid within 3 steps of it in every parameter
+    (O4 a); a full four-parameter grid was not run.
+- claim: fig5-variable-models-best
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-variable-models-best
+  measured: [0.5304, 0.5374, 0.5369]
+  notes: In all 48 readings the three time-varying models are in tolerance and each beats its constant version;
+    the main reading gives 0.5304, 0.5374 and 0.5369 (paper 0.5304, 0.5375, 0.5368). F-Q (variable) is the best
+    model in 40 readings; in 8 of the 12 with O1 (b) and clipped drift (O5 b), those on splits (a) and (b), DF-Q (variable)
+    leads it by at most 0.0002 (on split c F-Q leads), so the criterion's partial rule (F-Q or DF-Q highest, values
+    in tolerance, F-Q not always first) holds under every reading. On split (a) the average of six filter seeds keeps the order (F-Q 0.53752 against DF-Q 0.53710
+    under O1 a, O5 a; DF-Q 0.53481 against 0.53468 under O1 b, O5 b). A 5000-particle sigma search on a wider grid
+    (split a, O1 a) gives F-Q 0.5372 and DF-Q 0.5372 under O5 (a), 0.5374 and 0.5373 under O5 (b); the paper's Table
+    2 sigmas give 0.5376 and 0.5369 in the main reading. The claim depends on fig5-markov-accuracy and fig5-constant-models,
+    which are blocked for details this claim does not use (the Markov order 3 against 4 under one split, the local
+    matching law's initial value); F-Q and DF-Q (variable) exceed every Markov and local-matching score under every
+    reading, so the claim is tested.
+  assumed: true
+  deviations:
+  - The outcome reads the criterion's partial rule as holding when its condition (F-Q or DF-Q variable highest,
+    values in tolerance) holds under every reading, although in 40 readings F-Q is first, which alone would give
+    reproduced. The claims file's general rule blocks a claim whose readings give different outcomes; this reading
+    was assumed as the partial rule is written for the case where F-Q is not first under every reading.
+  - The sigma search ran with 1000 particles on a 4 x 4 grid holding the Table 2 values; the chosen sigmas were
+    then run with 5000 particles. A 5000-particle search on a 6 x 5 grid (sigma_alpha 0.0025 to 0.08, sigma_kappa
+    0.025 to 0.15) was run for split (a) and O1 (a) as a check.
+  - Systematic resampling in the particle filter (a standard choice for the offspring numbers the supplement describes).
+- claim: fig5-fq-dfq-beat-all-models
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-fq-dfq-beat-all-models
+  notes: In the main reading (O3 a, O1 a, O5 a) 15 of 18 comparisons meet the paper's levels. F-Q (variable) against
+    DF-Q (constant) gives p = 0.036 (needs 0.01); DF-Q (variable) against standard Q (variable) p = 0.030 and against
+    DF-Q (constant) p = 0.073. Both beat the third-order Markov model (p = 0.0067 and 0.014, two-sided). With the
+    six-seed average of the filter these three p are 0.034, 0.026 and 0.073, and over the six seeds 0.036 to 0.044,
+    0.027 to 0.040 and 0.073 to 0.090, so filter noise does not decide them. All 18 pass two-sided in 2 of 48 readings
+    (split b, O1 a, O5 a) and one-sided in 8; the partial condition holds in some readings and not others, and under
+    O1 (b) only 4 to 8 pass. The readings give different outcomes. Against the local matching law p < 1e-9 under
+    every initial value.
+- claim: fig5-fq-dfq-no-difference
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-fq-dfq-no-difference
+  notes: 'In the main reading the two-sided paired Wilcoxon test finds F-Q (variable) better than DF-Q (variable),
+    p = 0.0082, 27 of 35 sessions, median difference 0.00064 (one-sided 0.0041). In 4 of 12 readings the test finds
+    a difference and in 8 it does not (p 0.058 to 0.70). Filter noise does not explain the split: on split (a) with
+    O1 (a) each of six seeds finds a difference (p 0.0053 to 0.039 under O5 a, 0.0030 to 0.030 under O5 b; six-seed
+    average 0.017 and 0.0091), and with O1 (b) none does (p 0.13 to 0.98). The readings disagree.'
+- claim: binary-prediction-accuracy
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:binary-prediction-accuracy
+  measured: 67.68
+  notes: F-Q (variable) predicts 67.7% of test choices correctly on average in the main reading (sessions 60.7 to
+    77.2%), and 67.0 to 68.0% across the 12 readings.
+- claim: table2-ml-parameters
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:table2-ml-parameters
+  measured: [0.5, 1.2, 0.6, 1.15, 0.55, 0.45, 0.05, 2.25, -1.1, 0.01, 0.02, 0.07, 0.01, 0.07, 0.01, 0.07]
+  notes: 'In the main reading 8 of 16 values are within 10%; other readings of O3 to O5 under O1 (a) give 6 to 8,
+    and O1 (b) gives 0 to 4, so the 8 needed for partial reproduction is not reached under every reading of O3 to
+    O5. Standard Q kappa1, F-Q alpha1, kappa1 and kappa2, the local matching law''s alpha (with Qi(1) = 0.5; 0 with
+    Qi(1) = 0) and three of six sigmas match in the main reading. The DF-Q constant optimum on the split-a training
+    data is alpha1 0.45, alpha2 0.05, kappa1 2.25, kappa2 -1.1, with a training normalized likelihood 0.00029 above
+    that at Table 2''s values, a different optimum; on splits b and c the paper''s values are within 0.0002 of the
+    optimum. Under O1 (b) Table 2''s values are 0.010 to 0.027 below the optimum for every Q model. The sigma surface
+    is flat: with 5000 particles on a wider grid (split a, O1 a) the best sigmas are standard Q (0.02, 0.07), F-Q
+    (0.02, 0.025), DF-Q (0.01, 0.025) under O5 (a) and (0.04, 0.15), (0.08, 0.07), (0.04, 0.05) under O5 (b), the
+    last two at or near the grid''s edge. Table 2''s F-Q and DF-Q sigmas are within 0.0005 of the best training
+    score under O5 (a); under O5 (b) F-Q''s are 0.0008 below and DF-Q''s 0.0002. The local matching law alpha matches
+    only with the initial value Qi(1) = 0.5, which the paper does not give; with the Methods'' Qi(1) = 0 the main
+    reading has 7 of 16, and the outcome is the same. Under O5 (a) one grid point (standard Q, 0.02 and 0.10) collapsed the filter in one session (score 0.398
+    over the training sessions).'
+  deviations:
+  - The 1000-particle sigma search of fig5-variable-models-best gives the sigmas compared; a 5000-particle search
+    on a wider grid is shown as a check for split (a) and O1 (a).
+- claim: table3-parameter-averages
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:table3-parameter-averages
+  measured: [0.45, 1.83, 0.48, 1.64, 1.19, 0.47, 0.51, 1.72, 1.26]
+  notes: With the Table 2 sigmas and O1 (a), all nine means are within tolerance in all 8 readings of O5, O13 and
+    the averaging (pooled trials and O13 a, standard Q 0.45 +- 0.25 and 1.83 +- 0.85, F-Q 0.48 +- 0.27, 1.64 +-
+    0.79 and 1.19 +- 0.82, DF-Q 0.47 +- 0.24, 0.51 +- 0.27, 1.72 +- 0.78 and 1.26 +- 0.86). Under O1 (b) 6 of 9
+    means match, the three kappa1 means about half the paper's. The criterion asks for every O1 reading and the
+    readings disagree. The table 1 and 2 criteria treat O1 as the parameterization of the reported values, under
+    which O1 (a) would be the match; this is asked of a reader (questions/001641.yaml).
+- claim: fig4-strategy-tracking
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig4-strategy-tracking
+  notes: In all 24 readings (O1, O5, O13, run length 5, 10, 15) some win-stay-lose-switch episode ends with F-Q
+    kappa2 within 25% of kappa1 (22 to 728 such episodes of 75 to 2374), some persevering episode ends with kappa2
+    below 0 (4 to 82 of 4 to 131), and over the episodes F-Q (variable) has the higher mean per-trial likelihood
+    (0.62 to 0.74 against 0.59 to 0.68 for standard Q).
+  deviations:
+  - Runs use the Table 2 sigmas; the representative sessions of Fig. 4 are not identified.
+- claim: suppdata1-choice-vs-q-difference
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:suppdata1-choice-vs-q-difference
+  notes: For all 12 readings (variable and constant versions, three models, two update forms) the left-choice fraction
+    rises over ten equal-count bins of QL - QR, Spearman 1.0, from 0.22 to 0.24 in the lowest bin to 0.73 to 0.78
+    in the highest.
+- claim: neuron-counts
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:neuron-counts
+  measured: [148, 66]
+  notes: 148 NAc and 66 VP units, from six rats, in 52 of 70 sessions; 18 files have no units table. Rat 44 contributes
+    one unit and rat 35 none in the VP.
+- claim: firing-rates
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:firing-rates
+  measured: [10.21, 2.6, 9.14, 2.59]
+  notes: Over the whole recording (O15 a) VP 10.21 +- 9.14 Hz and NAc 2.60 +- 2.59 Hz; over the trials (O15 b) 10.21
+    +- 9.15 and 2.62 +- 2.61 Hz. Means and SDs are within tolerance and VP is faster in every rat with VP units.
+  deviations:
+  - The files give no recording span; reading O15 (a) takes the session's first to last spike or trial event.
+- claim: fig8b-state-coding
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-state-coding
+  measured: [80, 33]
+  notes: With successful choice and no-choice trials (O14 a) 80 of 148 NAc and 33 of 66 VP units, exactly as reported.
+    With all tone-A and tone-B trials (O14 b) 83 and 37; 37 is outside the VP tolerance. The criterion asks for
+    every reading and they disagree. O14 (a) follows the Methods' comparison of "choice trials and no-choice trials"
+    (Comparison of perievent time histograms), which the Behavioral task defines as successful trials, but the paper
+    does not say that error trials were left out. Asked of the paper's authors (findings).
+- claim: fig8b-action-value-psth
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-action-value-psth
+  measured: [13, 9, 16, 7, 15, 11, 12, 8, 11, 13, 10, 8]
+  notes: 9 of 12 counts are within 2 neurons; all populations are under 25% of their region (largest 19.7%). NAc
+    QL in phases 1 and 2 (13 and 15 against 9 and 12) and NAc QR in phase 1 (16 against 11) are higher.
+  deviations:
+  - The last 20 choice trials of every block were used, including a session's last, unfinished block; the paper
+    does not say whether it was included.
+- claim: fig8b-action-command-coding
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-action-command-coding
+  measured: [15, 14]
+  notes: 15 of 148 NAc units (expected 17, tolerance 1.7) and 14 of 66 VP units (expected 12, tolerance 1.2) code
+    the upcoming action in phase 3. Each count is 2 from the expected one, NAc below and VP above.
+- claim: fig8b-action-coding
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-action-coding
+  measured: [63, 26]
+  notes: 63 of 148 NAc and 26 of 66 VP units code the chosen action in phase 4 (expected 61 and 26).
+- claim: fig8b-reward-coding
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-reward-coding
+  measured: [96, 44]
+  notes: 96 of 148 NAc and 44 of 66 VP units code reward in phase 5 (expected 93 and 45). The no-reward tone onset
+    was found for all but 695 unit-trials (30 units), whose phase-5 count is missing.
+  deviations:
+  - Phase 5 starts at the reward tone onset or at the onset of a short (under 1.5 s) tone in the SpTone Err series
+    within 1 s after L or R entry, as the no-reward tone is stored there.
+- claim: fig8b-nac-vp-same-event-coding
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-nac-vp-same-event-coding
+  notes: The test as O9 reads it reproduces the paper's p-values from the paper's counts (0.031, 0.0038, 0.58).
+    On this dataset it finds no difference for state (54.1% against 50.0%, p = 0.58), action (42.6% against 39.4%,
+    p = 0.66) or reward (64.9% against 66.7%, p = 0.80), but finds one for action command (10.1% NAc against 21.2%
+    VP, p = 0.029; paper p = 0.19).
+- claim: fig8b-ql-vp-higher
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-ql-vp-higher
+  notes: Phase 3, VP 19.7% against NAc 7.4%, p = 0.0088; phase 2, VP 16.7% against NAc 10.1%, p = 0.18. The VP share
+    is higher in both but significant only in phase 3.
+- claim: fig8b-qr-no-region-difference
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-qr-no-region-difference
+  notes: Phase 2, NAc 8.1% and VP 12.1% (difference 4.0 points, p = 0.35); phase 3, 6.8% and 12.1% (5.4 points,
+    p = 0.19). Neither finds a difference.
+- claim: preference-balance
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:preference-balance
+  measured: [47.5, 36.4, 46.7, 50.0, 54.0, 50.0]
+  notes: No signed-rank test (O11 a, p 0.43 to 0.90) or sign test (O11 b, p 0.16 to 1.0) finds a departure from
+    50%. Five of six percentages are within tolerance; NAc action command is 46.7% (7 of 15) against 53%.
+- claim: nac-noreward-preference
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:nac-noreward-preference
+  measured: [72.9, 52.3]
+  notes: 70 of 96 NAc reward-coding units (72.9%) respond more to the no-reward tone. The sign test (O11 b) gives
+    p = 8e-06, but the signed-rank test of the differences (O11 a) gives p = 0.0032, above the paper's p < 0.0001,
+    so the NAc part fails under one reading. The VP part holds, 23 of 44 (52.3%), signed-rank p = 0.30.
+- claim: core-shell-no-difference
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:core-shell-no-difference
+  notes: Units are labelled NAc or VP only. The files give no core or shell assignment, no bundle coordinates and
+    no per-session depth, so the NAc units cannot be split as the paper's Fig. 6 does. The archive's metadata and
+    the electrode table (location NAc or VP) were checked.
+- claim: fig8c-regression-action-value
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8c-regression-action-value
+  measured: [12.2, 11.5, 9.5, 18.2, 25.8, 24.2, 11.5, 8.1, 10.1, 10.6, 13.6, 16.7]
+  notes: 6 of 12 percentages within tolerance, fewer than the 9 needed for partial reproduction. NAc QL is higher
+    than reported in all three phases (12.2, 11.5, 9.5% against 9, 10, 7%), as are VP QL in phase 1 and NAc QR in
+    phase 3; VP QR in phase 2 is lower (13.6 against 17%). One unit had no variance in its last-20 counts and was
+    counted as not coding.
+- claim: fig8c-ql-vp-higher
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8c-ql-vp-higher
+  notes: VP against NAc QL share 25.8% against 11.5% in phase 2 (p = 0.0085) and 24.2% against 9.5% in phase 3 (p
+    = 0.0041), both p < 0.01 (paper 0.007 and 0.0001).
+- claim: fig8c-regression-detects-more
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8c-regression-detects-more
+  notes: Regression 165 QL- and QR-coding units over phases and regions, block comparison 133 (paper about 146 and
+    116). The VP has the larger QL share in phases 2 and 3 in both analyses.
+- claim: fig8d-state-value-vp-higher
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8d-state-value-vp-higher
+  measured: [12.8, 10.8, 10.8, 13.6, 13.6, 19.7]
+  notes: 2 of 6 percentages match (NAc phase 1, VP phase 3). The VP share is higher than the NAc's in phases 2 and
+    3 (13.6 against 10.8%, 19.7 against 10.8%) but not significantly (p = 0.55 and 0.080).
+- claim: fig8d-policy
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8d-policy
+  measured: [7.4, 8.8, 7.4, 13.6, 16.7, 16.7]
+  notes: 5 of 6 percentages match; NAc phase 1 is 7.4% against 10% (outside 2 neurons).
+- claim: fig8-above-chance
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8-above-chance
+  notes: All 44 populations of Fig. 8B to 8D give p < 0.01 under both chance levels (largest p 4.7e-06).
+- claim: fig9-state-information
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-state-information
+  notes: In all 12 readings (window placement, random events) and both regions, state MI within 0.5 s after cue
+    onset (0.030 to 0.057 bits/s) is above threshold and above the 0.5 s before (0.0003 to 0.027), and the exit-aligned
+    curve has a later local maximum above threshold (0.108 to 0.121 bits/s at 0.8 to 2.1 s) exceeding its value
+    at the exit (0.033 to 0.040).
+  deviations:
+  - Time ranges of the curves (-1 to 3 s from cue onset, -2 to 4 s from center exit) are a standard choice; the
+    paper's figure, not readable here, sets its own.
+- claim: fig9-action-information
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-action-information
+  notes: Action MI before center exit averages 0.003 to 0.009 bits/s, under a fifth of the peak (0.048 to 0.059),
+    and peaks 0.3 to 1.1 s after exit, within 0.5 s of the median reaction time (0.754 s), in all readings and both
+    regions.
+- claim: fig9-reward-information
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-reward-information
+  notes: 'Reward MI peaks at 0.093 (NAc) and 0.106 (VP) bits/s 1.3 to 1.9 s after center exit, decreases, and the
+    previous trial''s reward is above threshold around the next cue onset (0.015 to 0.019 bits/s) in all readings.
+    Before the median L or R entry it is low but above threshold in 16 to 28 of 23 to 28 windows (up to 0.0044 NAc
+    and 0.0070 VP against thresholds up to 0.0023 and 0.0033); aligned to each trial''s own entry, 12 to 21 of 16
+    to 21 windows before entry are above threshold (up to 0.0063 and 0.0067 bits/s, 5.6 to 6.7% of the peak). The criterion''s
+    condition below threshold before entry fails in every reading and the criterion gives no partial rule. Whether
+    the paper says this is asked of a reader (questions/001641.yaml): it says reward information started to increase
+    at the tone and lasted into the next trial, which would allow some information before entry.'
+- claim: fig9-action-value-information-low
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-action-value-information-low
+  notes: Across the four F-Q runs (O1 and O5, Table 2 sigmas) and all 192 readings, QL and QR MI exceed the threshold
+    in every window and peak at up to 0.042 bits/s, under the peaks of state, action and reward MI (0.108 to 0.121).
+    With the predictive mean (O13 a) the curves are flat in all 96 readings (maximum at most 1.76 times the median
+    in the O1 a, O5 a run). With the posterior mean after e(t) (O13 b), which now includes trial t's choice and
+    reward (corrected after verification), the largest maximum per run is 2.4 to 3.4 times the median and flatness
+    fails in 48 of 96 readings. The comparison with the other events holds in every reading, the criterion's partial
+    rule.
+  assumed: true
+  deviations:
+  - The outcome reads the criterion's partial rule as holding when its condition (the comparison with the other
+    events) holds under every reading, although under O13 (a) all parts hold, which alone would give reproduced.
+    The claims file's general rule blocks a claim whose readings give different outcomes; this reading was assumed,
+    as for fig5-variable-models-best.
+  - The O13 (b) estimate is the mean of the resampled particles after the Q update with a(t) and r(t), before the
+    parameters drift.
+- claim: action-information-outlasts-reward-peak
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:action-information-outlasts-reward-peak
+  notes: At the reward MI peak (1.3 to 1.9 s after exit) action MI is 0.027 to 0.032 bits/s and 0.5 s later 0.019
+    to 0.026, above thresholds of at most 0.0027, in all readings and both regions.
+findings:
+- kind: metadata_insufficient
+  statement: The trial table's `result` column says "Refer to the Discription in 'Result' column", but no such description
+    is in the files. Codes 1 to 5 occur (33,243, 8084, 18,639, 141 and 104 trials). Codes 1 and 3 can be read from
+    the other columns (rewarded or successful, and unrewarded choice); the error codes 2, 4 and 5 cannot be told
+    apart with certainty, so the paper's error rates (0.39% and 0.73%) could not be recounted with certainty; the
+    tone-A rate is not determined (0.27 to 0.81% under different counts), while every count of the tone-B rate gives
+    0.97 to 1.11%.
+- kind: metadata_error
+  statement: The no-reward tone of choice trials (500 Hz, 250 ms) is stored in the `SpTone Err` and `ViTone Err`
+    series, named as the error tone, together with the error tone; the two are told apart only by their duration
+    (about 0.3 s and 2 s).
+- kind: other
+  statement: The error tone lasts about 2 s in the event series (8299 tones over 1.5 s), where the paper's Behavioral
+    task gives 1000 ms.
+- kind: metadata_insufficient
+  statement: Units carry only `Area` (NAc or VP) and an electrode number. The NAc core and shell assignment the
+    paper uses (Fig. 6, supplemental Data 3), the bundle positions and the per-session depth are not in the dataset.
+- kind: other
+  statement: 18 of the 70 files have no units table (11 of the 12 sessions of rat 44, and seven others); the files
+    do not say whether no unit was recorded or none was accepted in these sessions. Units in the other 52 sessions
+    match the paper's counts (148 NAc, 66 VP).
+- kind: other
+  statement: Three choice trials have an L or R entry time before the center-hole exit (reaction times of -19,829,
+    -11,554 and -5.2 s), and one error trial has no `state`.
+- kind: paper_inconsistency
+  statement: The paper reports 60,221 trials, but its parts (39,175 choice, 12,707 no-choice and 8329 error trials)
+    sum to 60,211, the number of trials in the dataset; the parts match the dataset exactly.
+- kind: paper_inconsistency
+  statement: The Results say the constant-parameter Q models predict worse than the first- or second-order Markov
+    models, but the reported F-Q and DF-Q (constant) values (0.531) exceed the first-order Markov model (0.528);
+    the dataset agrees with the numbers (0.5306 and 0.5295 against 0.5283).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The Q update (Methods, equation 3) is an image missing from the text.
+    Is the chosen action's value updated as (1 - alpha1) Q + alpha1 kappa1 after reward and (1 - alpha1) Q - alpha1
+    kappa2 after no reward (assumed here, as under it the paper's Table 1 and Table 2 constant values lie near the
+    fitted optimum and all Table 3 means match, though Table 2 itself is not reproduced), or with kappa1 and -kappa2 added
+    without the factor alpha1? Table 1 to 3 and the model comparison depend on it.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the 70 sessions divided into training and test sets? Alternate
+    sessions in the order of the files (sorted by rat and session) gives exactly 19,986 training choice trials,
+    as reported, and was assumed; the test set then has 19,189 trials, not 19,186. The paired tests of Fig. 5 (fig5-fq-dfq-beat-all-models,
+    fig5-fq-dfq-no-difference) change outcome with the split.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. With Qi(1) = 0, the local matching law P(L) = QL / (QL + QR) is undefined
+    at the first trial and predicts one side with probability 1 after the first reward. What initial value, or what
+    rule, gave its normalized likelihood of 0.508? A non-zero initial value (0.1 to 1.0) was assumed and gives 0.504
+    to 0.508.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. What do the Mann-Whitney tests of Fig. 2B and 2C rank, the 0/1 choices
+    of all trials following each history (assumed; it gives p = 0.92 to 0.94 for the Fig. 2C test the paper reports
+    as 0.94) or per-session probabilities? Under the latter, P(L|R0 L1) against P(L|L1 L1) gives p = 0.01 to 0.03,
+    not p < 0.0001.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were sigma_alpha and sigma_kappa searched, and was the random
+    walk of alpha bounded? With 5000 particles (split a, O1 a) the training likelihood of each model varies by at
+    most 0.0074 over sigma_alpha 0.0025 to 0.08 and sigma_kappa 0.025 to 0.15 (at most 0.0035 for sigma_alpha up
+    to 0.04), apart from one grid point where the filter collapsed in one session (standard Q under O5 a at 0.02
+    and 0.10, 0.398); with alpha clipped (O5 b) the best F-Q sigma_alpha is 0.08, the top of the grid. The fitted
+    sigmas (Table 2) depend on the search.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. In the state-coding test (Fig. 8B), were error trials with a cue
+    tone included? Excluding them (assumed) gives exactly 80 and 33 state-coding units; including them gives 83
+    and 37.
+- kind: other
+  statement: 'The cue tone probably stops when the rat leaves the center hole early. Some tone-A tones in the event
+    series last under 1 s (1st percentile 0.46 s), against the task''s 1000 to 2000 ms, and 96 of the 317 tone-A
+    error trials with no L or R entry have a cue under 1 s (1st percentile 0.12 s), while the trials with result
+    codes 5 and 4 have full-length cues (1st percentile 1.05 and 1.03 s). In the 96 short-tone trials the center
+    exit falls within 10 ms of the trial table''s tone offset (5th to 95th percentile -0.010 to -0.003 s), as it
+    does in most trials with a full cue, so early exits cannot be told from held cues by the exit time. Cue duration
+    marks only exits before 1 s, as a cue of 1 to 2 s cut short after 1 s looks like a full one. The files do not
+    describe this.'
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier tested class_index, mi_bias_corrected, q_update,
+    count_spikes and mw_indicator_p on synthetic inputs, ran the particle filter over four seeds on synthetic F-Q
+    data, and range-read the electrode tables of two files for the core and shell check. Its report gave its own
+    outcome for each claim; 36 of 46 agree with the record as it was. Report in transcripts/001641/verifier-1-report.md.
+  results:
+  - claim: trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 10: 70 sessions, 6 rats, 60,211 trials (paper 60,221), and 39,175, 12,707 and 8329 choice, no-choice
+      and error trials, which match exactly.'
+    response: No change needed.
+  - claim: block-structure
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12, reading (a): 104.9 trials per block, 8.2 blocks per session, range 5 to 12. All four values
+      are within tolerance.'
+    response: No change needed.
+  - claim: reaction-time
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 14: 72.1% under 1 s, median 0.754 s.'
+    response: No change needed.
+  - claim: tone-discrimination-errors
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 16: 0.81% and 1.02% from the events, 0.27% and 1.11% from result codes 5 and 4; no reading is
+      within tolerance. The event count is probably inflated (problem 4: tone-A tones under 1 s suggest the tone
+      stops when the rat exits early, so premature exits pass the held test), so this outcome could change. It asked
+      for the tone durations of the counted error trials and a recount keeping tones of at least 1 s.'
+    response: Added the tone durations of the counted error trials (96 of the 317 tone-A trials under 1 s, 1st percentile
+      0.12 s; 4 of the 129 tone-B trials) and of the result-code 5 and 4 trials (1st percentile 1.05 and 1.03 s),
+      and a recount keeping tones of at least 1 s (221 and 125 trials, 0.56% and 0.98%). Still no reading gives
+      both rates; outcome kept. Added a finding on the cue tone stopping at early exit.
+  - claim: fig2b-reward-stronger-than-noreward
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: 0.68, 0.62, 0.39, 0.30 and the order hold under both O7 readings; every p is below 1e-5 under
+      both O8 readings.'
+    response: No change needed.
+  - claim: fig2b-two-back-history
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 22: both values and the direction match. O8 (a) gives p about 1e-6, but O8 (b) gives p = 0.032
+      and 0.012, not < 0.0001. The readings disagree (methods_underspecified).'
+    response: Changed to blocked (methods_underspecified). The claims file blocks a claim whose method readings
+      disagree, and the criterion asks for p < 0.0001 under every reading; O8 (a) is still named as the reading
+      that matches the paper's p = 0.94, and the question to the paper's authors stays.
+  - claim: fig2c-sequence-frequencies
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24, pair as sum: 6.78, 2.94, 2.64, 1.29% under O7 (a) and 6.88, 2.87, 2.54, 1.28% under O7 (b);
+      the top three are in order.'
+    response: No change needed.
+  - claim: fig2c-reward-effects-fade
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: under O8 (a), p = 0.92 and 0.94. Both values are about 0.74, the rise L1 < L1L1 < L1x4 holds,
+      and the last is within 0.075 of 0.75.'
+    response: No change needed.
+  - claim: fig2d-switching
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: every prefix is on the switching side of 0.5 under both O7 readings.'
+    response: No change needed.
+  - claim: fig2e-persevering
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: 0.46 < 0.575 < 0.70, and both last values are above 0.5, under both O7 readings. The mirror
+      sequence does not show it (P(R|R0R0R0) = 0.45); not in the criterion but worth reporting.'
+    response: No change needed; the notes already report the mirror sequence.
+  - claim: fig3-lsq-switching
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 33: the order LM > Q > F-Q > DF-Q and the switching pattern hold under every reading. Only 2 to
+      3 of the 4 residuals are within tolerance (DF-Q 0.00025 to 0.00027 against 0.0002 +- 0.00002). Problem 11:
+      mirror_avg pairs row 5 as the left sequence instead of row 4; the squared error is unchanged. It asked for
+      the local matching law''s residual at the paper''s alpha = 0.05, Q0 = 0.07.'
+    response: Corrected the pairing in mirror_avg (rows 0, 2, 4 left-ending); the residuals are unchanged. Added
+      the residuals at the paper's Table 1 values (local matching law 0.0103 at alpha 0.05, Q0 0.07, against 0.0102
+      fitted, O7 a, O1 a). Outcome kept.
+  - claim: table1-lsq-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 34: at most 8 of 14 values are within tolerance (O1 a); 10 are needed for partial. It asked for
+      the fit at the paper''s Table 1 values next to the fitted optimum, to tell a second optimum from a mismatch.'
+    response: 'Added the residuals at the paper''s Table 1 values: under O1 (a) they are within 0.00012 of the fitted
+      optimum for every model, so the surface is flat and the paper''s values lie near it; under O1 (b) they are
+      far worse. Outcome kept.'
+  - claim: fig5-markov-accuracy
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 41: all values are within 0.005 under every reading, and order 3 is highest under O3 (a) and (b).
+      Under O3 (c), order 4 (0.5334) beats order 3 (0.5332). O3 (a) gives exactly the paper''s 19,986 training trials.
+      Blocked (methods_underspecified).'
+    response: 'Changed to blocked (methods_underspecified): the criterion asks for every reading of the split and
+      the claims file blocks a claim whose method readings disagree. The question on the split to the paper''s authors
+      stays.'
+  - claim: fig5-constant-models
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 43: Q, F-Q and DF-Q are within tolerance and above the local matching law under every reading.
+      With Qi(1) = 0, as the criterion fixes, the local matching law scores 0.500 (O1 a) or 0.41 to 0.43 (O1 b),
+      out of tolerance; it reaches 0.506 to 0.507 only with the author''s assumed Qi(1) of 0.1 to 1.0, and only
+      under O1 (a). As the paper specifies it, the model is degenerate (problem 3: the headline row and the Wilcoxon
+      inputs use Qi(1) = 0.5, so the main table reads as if the local matching law were reproduced). Blocked (methods_underspecified).'
+    response: Changed to blocked (methods_underspecified). The main table now shows the local matching law under
+      Qi(1) = 0 (0.5000) and, labelled as an assumption, under 0.5 (0.5064). Added the Wilcoxon tests of F-Q and
+      DF-Q (variable) against the local matching law under each initial value (p < 1e-9 under all). The question
+      to the paper's authors stays.
+  - claim: fig5-variable-models-best
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 45: all three values are within tolerance and above their constant versions in 48 of 48 readings.
+      F-Q is best in 40 readings; DF-Q is best in 8 (O1 b, O5 b, splits a and b). Problem 1: each 5000-particle
+      run uses one seed, and on synthetic data the seed noise is about the size of the F-Q and DF-Q differences.
+      Problem 2: the sigma search used 1000 particles on a 4 x 4 grid with sigma_alpha at the grid maximum. It asked
+      for scores over several seeds, the test scores at the paper''s Table 2 sigmas and a 5000-particle search past
+      sigma_alpha 0.02.'
+    response: 'Changed to partially_reproduced, the criterion''s partial rule holding under every reading. Added
+      six seeds of the filter on split (a) under every O1 and O5 reading (the six-seed average keeps the order:
+      F-Q ahead under O1 a, DF-Q under O1 b, O5 b), a 5000-particle sigma search on a 6 x 5 grid up to sigma_alpha
+      0.08 (split a, O1 a), with its test scores, and the test scores at the Table 2 sigmas under every split and
+      reading. The notes say why the blocked fig5-markov-accuracy and fig5-constant-models do not block this claim.'
+  - claim: fig5-fq-dfq-beat-all-models
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 47: all 18 comparisons pass only under O3 (b), O1 (a), O5 (a). Under split (a), the paper''s split,
+      they fail; for example DF-Q (variable) against DF-Q (constant) gives two-sided p = 0.073. Blocked (methods_underspecified).
+      Problem 10: the partial column is computed two-sided only; one-sided, the main reading would meet the partial
+      condition. It asked for the local matching law comparisons under the other Qi(1) values.'
+    response: Changed to blocked (methods_underspecified). Added the one-sided partial column, the comparisons against
+      the local matching law under each initial value, and the main reading with six filter seeds and their average
+      (p for the three failing comparisons 0.036 to 0.044, 0.027 to 0.040 and 0.073 to 0.090), so filter noise does
+      not decide them.
+  - claim: fig5-fq-dfq-no-difference
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 48: two-sided p < 0.05 in 4 of 12 readings, including the main one (O3 a, O1 a, O5 a: p = 0.008).
+      The filter''s seed noise is about the size of the effect (problem 1). Blocked (methods_underspecified).'
+    response: 'Changed to blocked (methods_underspecified). Added the test for six seeds and for their average on
+      split (a) under every O1 and O5 reading: under O1 (a) every seed finds a difference (p 0.0030 to 0.039), under
+      O1 (b) none does (p 0.13 to 0.98), so the readings, not the seeds, decide it.'
+  - claim: binary-prediction-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 50: 67.0 to 68.0% in every reading.'
+    response: No change needed.
+  - claim: table2-ml-parameters
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 52: under O1 (a), 6 to 8 of 16 values match depending on O3 to O5, so the criterion''s 8 is not
+      reached under every reading. The DF-Q constant parameters differ (split a: alpha2 0.05, kappa2 -1.1, against
+      0.45 and 0.45). The sigma values are unreliable (problem 2). It asked for the training likelihood at the paper''s
+      values next to the optimum.'
+    response: Changed to not_reproduced. Added the training normalized likelihood at Table 2's constant values against
+      the fitted optimum (DF-Q on split a 0.00029 below the optimum, a different optimum; within 0.0002 on splits
+      b and c; 0.010 to 0.027 below under O1 b) and the 5000-particle sigma search, whose best sigmas differ from
+      the 1000-particle ones in 5 of 6 cases (standard Q under O5 a is unchanged at 0.02 and 0.07) and lie at or
+      near the grid edge under O5 (b).
+  - claim: table3-parameter-averages
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 56: 9 of 9 means match under O1 (a) and 6 of 9 under O1 (b). The criterion requires every O1 reading
+      (problem 9: tables 1 and 2 treat O1 as the parameterization, table 3 requires every O1 reading, and under
+      O1 (b) kappa is on a different scale by construction). Blocked (methods_underspecified).'
+    response: Changed to blocked (methods_underspecified) and asked a reader about the inconsistency (questions/001641.yaml).
+     
+  - claim: fig4-strategy-tracking
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 58: the criterion holds in 24 of 24 readings.'
+    response: No change needed; re-run after the O13 (b) correction, still 24 of 24.
+  - claim: suppdata1-choice-vs-q-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 60: Spearman correlation is 1.0 for every model and version.'
+    response: No change needed.
+  - claim: neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 64: 148 NAc and 66 VP units.'
+    response: No change needed.
+  - claim: firing-rates
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 66: NAc 2.60 +- 2.59 Hz and VP 10.21 +- 9.14 Hz under both readings.'
+    response: No change needed.
+  - claim: fig8b-state-coding
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 68: O14 (a) gives 80 and 33, an exact match. O14 (b) gives VP 37 against 33 +- 3.3. Blocked (methods_underspecified).'
+    response: Changed to blocked (methods_underspecified), as the criterion asks for both readings. The question
+      to the paper's authors stays.
+  - claim: fig8b-action-value-psth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 70: 9 of 12 counts are within 2 neurons, and all are below 25% of their region.'
+    response: No change needed.
+  - claim: fig8b-action-command-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 72: 15 and 14 neurons against 17 +- 1.7 and 12 +- 1.2.'
+    response: No change needed.
+  - claim: fig8b-action-coding
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 73: 63 and 26 neurons.'
+    response: No change needed.
+  - claim: fig8b-reward-coding
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 74: 96 and 44 neurons.'
+    response: No change needed.
+  - claim: fig8b-nac-vp-same-event-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 76: action command differs between regions, p = 0.029.'
+    response: No change needed.
+  - claim: fig8b-ql-vp-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 77: phase 3 gives p = 0.009 with VP higher; phase 2 gives p = 0.18.'
+    response: No change needed.
+  - claim: fig8b-qr-no-region-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 78: p = 0.35 and 0.19.'
+    response: No change needed.
+  - claim: preference-balance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 80: none of the six tests departs from 50% (all p > 0.4). NAc action command is 46.7% against
+      53 +- 5.3, reported but not part of the outcome.'
+    response: No change needed.
+  - claim: nac-noreward-preference
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 81: NAc 72.9%, but the O11 (a) signed-rank test gives p = 0.003, not < 0.0001; the sign test gives
+      8e-6. The VP part holds.'
+    response: No change needed.
+  - claim: core-shell-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: the asset metadata and dandiset description name only NAc and VP; the electrode
+      table has only location (NAc or VP), group and group_name, and units carry only Area and Electrode_ID, so
+      nothing assigns NAc wires to core or shell.'
+    response: No change needed.
+  - claim: fig8c-regression-action-value
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 85: 6 of 12 values match.'
+    response: No change needed.
+  - claim: fig8c-ql-vp-higher
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 86: p = 0.0085 and 0.0041, VP higher in both phases.'
+    response: No change needed.
+  - claim: fig8c-regression-detects-more
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 87: 165 against 133 neurons, and VP has the larger QL share in phases 2 and 3 in both analyses.'
+    response: No change needed.
+  - claim: fig8d-state-value-vp-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 88: 2 of 6 values match; the region test gives p = 0.55 and 0.08.'
+    response: No change needed.
+  - claim: fig8d-policy
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 89: 5 of 6 values match.'
+    response: No change needed.
+  - claim: fig8-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 91: 44 of 44 populations give p < 0.01 under both chance levels. The paper states no chance level.'
+    response: No change needed.
+  - claim: fig9-state-information
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 95: holds in every reading.'
+    response: No change needed.
+  - claim: fig9-action-information
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 97: holds in every reading.'
+    response: No change needed.
+  - claim: fig9-reward-information
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 99: reward information is above threshold before the L/R entry in 16 to 28 of 23 to 28 windows,
+      in every reading. Problem 5: the paper says only that reward information started to increase at the tone and
+      lasted into the next trial, so pre-entry information above threshold is expected (about 5% of the peak) and
+      the paper''s qualitative statement is supported; this is a claims-file reading. Before entry also uses the
+      median reaction time, not each trial''s entry time.'
+    response: Changed to not_reproduced, as the criterion fails in every reading and gives no partial rule. Added
+      the reward information aligned to each trial's own L or R entry (12 to 21 of 16 to 21 windows before entry
+      above threshold, 5.6 to 6.7% of the peak). Asked a reader whether the criterion's absence before entry is what
+      the paper says (questions/001641.yaml).
+  - claim: fig9-action-value-information-low
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 101: holds in 48 of 48 readings. Problem 6: the QL and QR MI is computed only from the F-Q run
+      under O1 (a) and O5 (a). Problem 7: the O13 (b) posterior mean is the weighted mean of Q before the update
+      with r(t), so O13 (b) is almost the same as O13 (a). Problem 8: slow drift of QL, QR and firing may inflate
+      the above-threshold result; this follows the paper''s method.'
+    response: Fixed the O13 (b) estimate in the helper (now the particle mean after the Q update with a(t) and r(t),
+      before the parameters drift) and added the MI from the F-Q runs under every O1 and O5 reading. With the corrected
+      O13 (b), which includes trial t's reward, flatness fails in 48 of 96 readings (largest maximum 2.4 to 3.4
+      times the median), while it holds in all 96 under O13 (a). Changed to partially_reproduced, the criterion's
+      partial rule holding under every reading. Problem 8 is left as it is, as the threshold follows the paper's
+      method.
+  - claim: action-information-outlasts-reward-peak
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 103: holds in every reading.'
+    response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the first revision (155 cells), the helper module, the claims file and
+    the attempt record, with the paper. The verifier agreed with all 46 outcomes and found that round-1 points
+    1, 3, 4, 6, 7, 10, 11 and section C are resolved and point 2 partly. It quoted sentences the outputs do not
+    support, all corrected, and asked that the reading of the partial rule and the initial value Qi(1) = 0.5 be
+    stated. Report in transcripts/001641/verifier-2-report.md.'
+  results:
+  - claim: trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: block-structure
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: reaction-time
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: tone-discrimination-errors
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The tone-A numerators bracket the paper''s value, 0.27% from result codes and 0.56% from events with tones of
+      at least 1 s (cell 19), and even the 1 s filter is only an upper bound, since cues run 1 to 2 s and a tone
+      cut short after 1 s still passes. So the not_reproduced outcome rests on the tone-B part, 0.97 to 1.11%
+      under every numerator against 0.73 +- 0.073; the record should say so. Its own metadata_insufficient
+      finding, that the paper''s rates could not be recounted, sits awkwardly with not_reproduced. Cell 20,
+      ''The paper''s 0.39% and 0.73% lie between these'', holds for 0.39% only. In the summary (cell 154) and
+      the cue-tone finding, ''The cue tone stops when the rat leaves the center hole early'' is stated as fact
+      though cell 20 says ''probably''; ''The trial table''s tone offset then equals the exit'' is not shown by
+      any printed output; ''cue duration ... tells such trials apart'' is only partly true, since cues of 1 to 2
+      s can be cut short after 1 s.'
+    response: 'Notes, cell 20 and the metadata_insufficient finding now say the outcome rests on the tone-B part (0.97 to
+      1.11% under every count) and that the tone-A rate is not determined, the 1 s filter being only an upper
+      bound. Corrected the ''lie between'' sentence. Cell 19 now prints the center exit minus the tone offset:
+      in the 96 short-tone tone-A trials it is -0.010 to -0.003 s (5th to 95th percentile). The summary and the
+      cue-tone finding now say the tone probably stops at an early exit, cite that output, and say cue duration
+      marks only exits before 1 s. Outcome kept.'
+  - claim: fig2b-reward-stronger-than-noreward
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig2b-two-back-history
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig2c-sequence-frequencies
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig2c-reward-effects-fade
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig2d-switching
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig2e-persevering
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig3-lsq-switching
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. Round-1 problem 11 (mirror_avg pairing) is fixed.'
+    response: 'No change needed.'
+  - claim: table1-lsq-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Section C items, including the Table 1 likelihoods at the paper''s values, were run.'
+    response: 'No change needed.'
+  - claim: fig5-markov-accuracy
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig5-constant-models
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Problem 3 is resolved, the main table showing Qi(1) = 0 next to the labelled
+      assumption. The initial value Qi(1) = 0.5 feeds the measured local-matching-law value (0.5064) and should
+      be stated; the outcome does not change.'
+    response: 'The notes now say the measured 0.5064 is under the assumed Qi(1) = 0.5 and give 0.5000 under Qi(1) = 0. Outcome
+      kept.'
+  - claim: fig5-variable-models-best
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. The record reads the claims file''s rule as partial when the partial condition holds
+      under every reading, although some readings give reproduced; the general rule says to block when readings
+      disagree. The reading is reasonable and applied consistently, but it is an interpretation and should be
+      marked as an assumption. Cell 64 and the notes say ''in the 8 readings with the update O1 (b) and clipped
+      drift O5 (b), DF-Q (variable) is highest''; twelve readings have O1 (b) and O5 (b), and DF-Q leads only in
+      the 8 on splits (a) and (b), F-Q leading on split (c) (cell 63). Problem 1 (filter seeds) is resolved.
+      Problem 2 (sigma search) is partly resolved: the wider 5000-particle grid covers split (a) and O1 (a)
+      only, and under O5 (b) F-Q''s best sigma_alpha is still at the grid edge (0.08); the outcome does not
+      change.'
+    response: 'Marked assumed, with a deviation stating the reading of the partial rule, and said so in cell 64. Corrected the
+      8-of-12 sentence in cell 64 and the notes. The sigma grid was not widened further, as the verifier found
+      the outcome partial either way; the sigma finding now says F-Q''s best sigma_alpha under O5 (b) is the top
+      of the grid. Outcome kept.'
+  - claim: fig5-fq-dfq-beat-all-models
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome; it is blocked because its partial condition fails in some readings. Seed noise does
+      not decide any outcome (problem 1 resolved); problem 10 (one-sided column) is resolved.'
+    response: 'No change needed.'
+  - claim: fig5-fq-dfq-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Six seeds were run on split (a) under every O1 and O5 reading, and seed noise does not
+      decide any outcome (problem 1 resolved).'
+    response: 'No change needed.'
+  - claim: binary-prediction-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: table2-ml-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Qi(1) = 0.5 gives one of the 8 matching values, which would be 7 under Qi(1) = 0, as
+      the claims file fixes it; the outcome does not change. The notes'' ''with Table 2''s F-Q and DF-Q sigmas
+      within 0.0005 of the best training score'' is true under O5 (a); under O5 (b) F-Q is 0.0008 below (cell
+      74). The Q-update finding''s ''as it reproduces Table 2 and Table 3'' is not right, as Table 2 is not
+      reproduced under O1 (a) (6 to 8 of 16, cell 74). The sigma-search finding''s ''varies by under 0.003''
+      leaves out the collapsed grid point (standard Q at 0.02, 0.10 scores 0.398, cell 54), and ''the best
+      sigma_alpha lies at the top of that grid'' refers to a 0.0025 to 0.04 range though the grid ran to 0.08
+      and F-Q under O5 (b) is best at 0.08. The round-1 response says the 5000-particle best sigmas differ from
+      the 1000-particle ones; they do in 5 of 6 cases, standard Q under O5 (a) being unchanged at (0.02, 0.07).
+      Problem 2 is partly resolved and does not change the outcome, which fails on the constant parameters.'
+    response: 'Notes and cell 75 now limit the 0.0005 statement to O5 (a) and give O5 (b) (F-Q 0.0008, DF-Q 0.0002 below), and
+      say the main reading has 7 of 16 under Qi(1) = 0. The Q-update finding now says the paper''s Table 1 and 2
+      constant values lie near the optimum under it and all Table 3 means match, while Table 2 itself is not
+      reproduced. The sigma-search finding now gives the range over the whole grid (at most 0.0074; at most
+      0.0035 for sigma_alpha up to 0.04, which also corrects ''under 0.003'' for DF-Q), names the collapsed
+      point and the top of the grid at 0.08. Corrected the round-1 response to 5 of 6. Outcome kept.'
+  - claim: table3-parameter-averages
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Problem 9 remains: the criterion requires every O1 reading while the Table 1 and 2
+      criteria treat O1 as the parameterization; this inconsistency alone blocks the claim, and is with a
+      reader.'
+    response: 'No change; the question is in questions/001641.yaml.'
+  - claim: fig4-strategy-tracking
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: suppdata1-choice-vs-q-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: firing-rates
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-state-coding
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-action-value-psth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-action-command-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-action-coding
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-reward-coding
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-nac-vp-same-event-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-ql-vp-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8b-qr-no-region-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: preference-balance
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: nac-noreward-preference
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: core-shell-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8c-regression-action-value
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8c-ql-vp-higher
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8c-regression-detects-more
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8d-state-value-vp-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8d-policy
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig8-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig9-state-information
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig9-action-information
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
+  - claim: fig9-reward-information
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the outcome. Problem 5 remains: the criterion''s ''below threshold before entry'' may misread the
+      paper; this is with a reader. ''6 to 7% of the peak'' (cell 147 and the record) is 5.6 to 6.7% in cell
+      146.'
+    response: 'Corrected to 5.6 to 6.7% in cell 147, the notes and the round-1 response. The question stays in
+      questions/001641.yaml. Outcome kept.'
+  - claim: fig9-action-value-information-low
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome, which changed from reproduced; the change is correct, as the O13 (b) estimate now
+      takes the particle mean after the Q update with a(t) and r(t), and with it flatness fails in 48 of 96
+      readings (cell 149). Problems 6 and 7 are resolved. The reading of the partial rule (partial when the
+      partial condition holds under every reading, although some readings give reproduced) is an interpretation
+      and should be marked as an assumption. Problem 8 (drift in the MI threshold) remains and follows the
+      paper''s method; it does not bear on an outcome.'
+    response: 'Marked assumed, with a deviation stating the reading of the partial rule, and said so in cell 150. Problem 8 is
+      left as it is. Outcome kept.'
+  - claim: action-information-outlasts-reward-peak
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome. Every other Result sentence agrees with the printed outputs.'
+    response: 'No change needed.'
