@@ -27,7 +27,7 @@ the whole time course of their speckle contrast, as a partial look and not a tes
 the reasons and the differences from the paper's method, is
 [`attempts/001559-tian-2025-01.yaml`](../../attempts/001559-tian-2025-01.yaml).
 
-- `reproduce_tian_2025.ipynb`: the analysis. It takes about nine minutes, most of it streaming
-  the files.
+- `reproduce_tian_2025.ipynb`: the analysis. It takes 9 to 12 minutes (8.6 and 11.5 in the last two
+  runs), most of it streaming the files.
 - `ebric.py`: loading the files, the stimulus marker, trial responses, averages, peak and rise
   times, and image projections. Other notebooks on this dandiset can import it.

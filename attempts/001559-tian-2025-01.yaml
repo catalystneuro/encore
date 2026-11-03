@@ -57,8 +57,9 @@ outcomes:
     not a test, the notebook reads every frame. The whole-field flow index (1/K^2 relative to its
     median) has an s.d. of 0.8% to 4.5% in exposure phases 1 to 3 (5.9% to 11.3% in phase 0);
     departures of its 1 s smoothed value from a 30 s running median pass 3 robust s.d. at most three
-    times per movie in phases 1 to 3 (0.9% to 2.6%); the spectrum between 2 and 33 s peaks at 30 s
-    in phases 1 to 3 except phase 1 of 12:49 (4.6 s); regions of 40 by 40 pixels share a median of
+    times per movie in phases 1 to 3 (0.9% to 2.6%); the spectrum between 2 and 33 s peaks at its
+    longest period (30 s), a slow drift with no regular rhythm, in phases 1 to 3 except phase 1 of
+    12:49 (4.6 s); regions of 40 by 40 pixels share a median of
     6% to 12% of their fluctuation variance with the whole field. No repeated change at a regular
     period is seen, and whether any change is a response cannot be told.
 - claim: fig4d-steady-baseline
@@ -117,12 +118,16 @@ outcomes:
     of four under the others (the 14:50 session also fails the Wilcoxon test in window a,
     p = 0.125). The criterion makes the claim methods_underspecified when the readings disagree.
     The result does not depend on which session is which condition, since every condition must
-    show an increase. One mouse is in the dandiset, so the two readings of which mice coincide.
+    show an increase, but it rests on each session being one condition. The 15:04 session's
+    trials split into five below zero (-2.0 to -0.3) and five above (2.9 to 7.5); if it held two
+    conditions, the per-condition tests would change, and the outcome could change with them. One mouse is in the dandiset, so the two readings of which mice coincide.
     In the 15:04 session two of ten trials have baselines that start within 10 s of the previous
     onset. The question of which window and test the paper used is for the paper's authors.
   deviations:
   - Assumed that the four stimulated sessions are the four conditions (two electrodes by two
-    currents); the dataset does not label them.
+    currents), one condition per session; the dataset does not label them. The trial order shows no
+    alternation or blocks within a session (Mann-Whitney p 0.31 to 0.89), which is consistent with
+    this but does not show it.
   - Channel 4 is taken as the 645/65 PMT and channel 3 shown; both give the same disagreement
     among readings.
   - One mouse of the paper's six is in the dandiset; it is taken to be the representative mouse
@@ -137,10 +142,12 @@ outcomes:
     assumed current, all 15 trials of the two 4 mA sessions exceed 3 times the s.d. of their
     smoothed baseline, in both windows, both thresholds and both channels. With one weak session
     in the 4 mA pair the pooled fraction is 0.53 to 0.75, and with the two weak sessions 0.28 to
-    0.50. The 2 mA fractions are 0.20 to 0.50 (channel 4). The single-pulse variant does not show
-    responses to individual pulses; the folded modulation at the 0.2 s period during
-    stimulation is 0.31 and 0.47 against 0.27 and 0.37 in the 5 s before (channel 4, the two
-    4 mA sessions), per-trial p 0.11 to 0.13. With the baseline s.d. taken without its last 0.5 s
+    0.50. The 2 mA fractions are 0.20 to 0.50 (channel 4). In channel 4 the single-pulse variant does
+    not show responses to individual pulses; the folded modulation at the 0.2 s period during
+    stimulation is 0.31 and 0.47 against 0.27 and 0.37 in the 5 s before (the two 4 mA sessions),
+    and the per-trial comparison is not significant in any session (p 0.11 to 0.19). In channel 3
+    it is significant in 14:59 (an assumed 4 mA session, p = 0.023) and 14:50 (assumed 2 mA,
+    p = 0.039), and not in 14:55 (p = 0.156) or 15:04, so the variant does not decide the claim. With the baseline s.d. taken without its last 0.5 s
     (whose centred 1 s average takes in signal after onset), every 4 mA fraction stays 1.0 and the 2
     mA pooled fractions are 0.17 to 0.44.
   deviations:
@@ -467,4 +474,156 @@ verifications:
     outcome: blocked
     reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
       none are in the 35 assets.
+    response: No change.
+- date: 2026-11-03
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 2. The full executed notebook of the revised run (with its conclusions and
+    summary, including the figures of the expression stacks, the speckle time course and the
+    trial traces), the helper module, the claims file, the paper under paper/, and the attempt
+    record.
+  results:
+  - claim: fig4b-expression-healthy
+    agrees: true
+    outcome: reproduced
+    reason: Cell 26 shows many labelled somata. A few branching processes are visible from bright
+      cells (for example, lower right). "Three months" is correctly reported as not shown.
+    response: No change.
+  - claim: fig4c-speckle-responsive-region
+    agrees: true
+    outcome: blocked
+    reason: Cell 7 confirms no file has stimulus times. The time course is correctly labelled "a
+      partial look, not a test". The verifier noted that the record's "the spectrum between 2 and
+      33 s peaks at 30 s" drops the qualifier that 30 s is the longest-period bin in that band, so
+      it describes a red spectrum, not a 30 s rhythm, and that the conclusion gives the episode
+      times of phases 2 and 3 of 12:49 for its phase 1 episodes, which are at 27.5, 60.3 and
+      99.6 s.
+    response: Outcome kept. The record's notes now say the spectrum peaks at its longest period
+      (30 s), a slow drift with no regular rhythm. The conclusion now gives the 12:49 episode times
+      by phase (27.5, 60.3 and 99.6 s in phase 1; about 27.5, 41.6 and 99.6 s in phases 2 and 3).
+  - claim: fig4d-steady-baseline
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated and reasonable. It is not actually decisive; in cell 36, 14:50
+      fails and at least two recordings pass under all 12 combinations of pairing and window. The
+      conclusion's "at most 6.64 against 14.13 or more, in both channels and both windows" is
+      wrong for channel 3 window b, whose reference is 13.60; the outcome is unaffected.
+    response: Outcome kept. The conclusion now reads "at most 6.64 against 13.60 or more".
+  - claim: fig4d-evoked-increase
+    agrees: true
+    outcome: blocked
+    reason: Cell 39 shows the readings disagree, which is the case the criterion assigns to
+      methods_underspecified. This outcome rests on one condition per session, but it is not
+      flagged assumed. It matters because of session 15:04, which splits into five trials at -2.0
+      to -0.3 and five at 2.9 to 7.5; if 15:04 were a mix of two conditions, the per-condition
+      tests would change, and the outcome could change with them. The outcome should be marked
+      assumed.
+    response: Outcome kept. The flag was not added, since the attempt schema allows `assumed` only on
+      an outcome that stands, not on a blocked one (protocol, Author, step 1.6, which marks a result
+      as resting on an assumption and blocks the claim only where no choice is defensible). The
+      assumption is instead stated where the outcome is given; the notes, the deviation, the claim's
+      section and its conclusion in the notebook now say that the outcome rests on one condition per
+      session and that a 15:04 holding two conditions could change it.
+  - claim: fig4d-4ma-single-trials
+    agrees: true
+    outcome: blocked
+    reason: Changed from round 1, where the verifier gave reproduced (conditional). The claims file
+      lists the claim as depending on fig4d-evoked-increase, and the record applies the protocol's
+      rule that such a claim is blocked with its parent; the notes report the test as it ran. The
+      statement "The single-pulse variant does not show responses to individual pulses" holds for
+      channel 4 only. In channel 3, per-trial p = 0.023 for 145933 (an assumed 4 mA session) and
+      p = 0.039 for 145053. The variant does not decide the claim. The session-to-condition
+      assumption bears on this claim through fig4d-evoked-increase.
+    response: Outcome kept; it is blocked, so it cannot carry the `assumed` flag (see
+      fig4d-evoked-increase), and its deviations already say it rests on the same assignment of
+      sessions to conditions. The conclusion and the notes now limit the single-pulse statement to channel 4,
+      give the channel 3 p-values (0.023 for 14:59, 0.039 for 14:50, 0.156 for 14:55) and say the
+      variant does not decide the claim.
+  - claim: fig4d-electrode-timing
+    agrees: true
+    outcome: blocked
+    reason: Changed from round 1, where the verifier gave partially_reproduced, for the same reason
+      as fig4d-4ma-single-trials. The 15:04 "earlier rise" starts before onset; its smoothed trace
+      crosses half its peak at -0.23 s, and the unsmoothed average is already 0.77 above baseline
+      in the second before onset. If fig4d-evoked-increase were ever unblocked, the 2 mA timing
+      result would rest on a session whose early rise is partly not stimulus-locked. The record
+      says this; it does not change the current outcome.
+    response: Outcome kept; it is blocked, so it cannot carry the `assumed` flag (see
+      fig4d-evoked-increase), and its deviations already say it rests on the same assignment of
+      sessions to conditions. The notes already state the 15:04 rise before onset; no other change.
+  - claim: fig5-bla-footshock-increase
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig5-brep-minimal
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig5-10hz-imaging
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig5-double-bric
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig1a-lysate-18fold
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig1b-mutations
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig1d-purified-response
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig1e-kd
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: lysate-brightness
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig2b-hela-5fold
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig2c-hek-3p5fold
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: fig3-neurons-7p3fold
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: cell-brightness
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: hek-spectrum
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
+    response: No change.
+  - claim: table-s1-fold-gains
+    agrees: true
+    outcome: blocked
+    reason: No such data are in the 35 files (cells 3 and 7).
     response: No change.
