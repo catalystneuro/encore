@@ -1,0 +1,955 @@
+schema_version: 2
+id: 001750-liu-2026-01
+dataset:
+  archive: dandi
+  id: "001750"
+  version: 0.260825.0222
+  doi: 10.48324/dandi.001750/0.260825.0222
+paper: doi:10.1038/s41556-026-02009-4
+date: 2026-11-03
+entry: 001750-liu-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41643032774
+inputs:
+- what: Cell type (VEN or PC) and maximal Na+ current of each of the 35 patches, with the NWB file
+    name that links them to the dandiset, from the paper's code table
+    ephysio/data_ephy/rawdata_ephysio/metadata_outSideOutSodiumCurrentRec.csv.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
+- what: Metabolite assignment file (558 metabolites, 19 samples of AIC, PrC and V1) and the sample
+    table of MetaboLights study MTBLS13927, metadata revision MTBLS13927_01, used for
+    fig8a-metabolite-gradient and fig8de-glycolytic-bias.
+  source: https://ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS13927/METADATA_REVISIONS/MTBLS13927_01/
+- what: Per-pair eEPSP amplitudes of VENs and PCs at three stimulation levels, with the VEN
+    subtype of each pair (ephysio/data_ephy/sumData_StimWM.xlsx), used for fig4j-eepsp-amplitude
+    and ven-subtypes-similar-physiology; per-cell AP half-width and amplitude of 85 VEN-L and 41
+    VEN-S (ephysio/data_ephy/VENsubtypeCmp_extFig8ab/VENsubtype_APs.mat), used for
+    ven-subtypes-similar-physiology; per-cell phase peak index by transcriptomic type
+    (ephysio/data_ephy/PeakIdx_Fig5e.xlsx), used for fig3e-phase-peak-index; and per-cell AIS
+    length and distance
+    (morpho/dataMorph/AIScmp_PCvsVEN_Fig5c.xlsx), read for fig3c-ais-distance-length.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
+outcomes:
+- claim: na-cell-table-link
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:na-cell-table-link
+  notes: All 35 files match the 35 rows of the code table by file name, and every table cell ID
+    agrees with the file's electrode cell_id in session and cell number (35 of 35). The dataset
+    carries no cell type, so none can disagree with the table (14 VEN, 21 PC). Under the
+    criterion's eight readings at most 2 of 35 computed maxima are within 10% of the table, short
+    of the 28 required. The as-recorded readings (a1) are a median 4.15 to 4.61 times the table,
+    because the traces keep holding currents of tens of pA. The baseline-subtracted readings (a2)
+    are a median 1.32 to 1.40 times the table, Spearman 0.47 to 0.68, and a2b1c1 agrees best.
+    Under a2b1c1, 11 maxima (6 VEN, 5 PC) lie later than 3 ms after the onset or at steps below
+    -55 mV, and in 10 cells (6 VEN, 4 PC) the maximum is a brief biphasic transient 0.07 to 0.16 ms
+    wide (every other maximum is 0.33 ms or wider), an artefact; their ratio to the table is a
+    median 1.94 against 1.28 for the other cells. Noise SD (median 6.9 pA in VENs, 9.6 pA in PCs,
+    p = 0.34) and repetition count (2.5 against 3, p = 0.89) do not differ by type. Bessel filters
+    at 2.9, 5 and 10 kHz (4-pole, run once forward) and a 0 to 3 ms window bring at most 3 of 35
+    within 10%. A moving average before the peak gives 19 of 35 at 0.5 ms and at most 26 of 35 at
+    0.75 ms (median ratio 1.006, Spearman 0.982), below the criterion's 28, and that width was
+    chosen as the best fit to the table. No measure tried matches the table to the criterion's
+    tolerance; the smoothed peak comes closest. None of these variants is a reading of the paper,
+    and none decides.
+  deviations:
+  - The link's value comparison used the eight readings of fig4d-sodium-current-lower, as the
+    criterion says. The smoothing variant is the attempt's own and decides nothing.
+- claim: fig4d-sodium-current-lower
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig4d-sodium-current-lower
+  notes: The counts are 14 VEN and 21 PC, as stated. The VEN median is lower under all eight
+    readings, but significance differs between them. Rank-sum p is 0.045 (a1b1c1) and 0.025
+    (a1b1c2), and 0.077 to 0.29 under the six others, so by the criterion the claim is blocked.
+    Both significant readings keep each patch's holding current in the measure, but the other two
+    a1 readings, over all steps, do not find the effect (a1b2c1 p = 0.27, a1b2c2 p = 0.18). Under the code's
+    example reading (a2 b1 c1), VEN 30.4 against PC 38.1 pA, p = 0.10. By session under that
+    reading, VEN is lower in HS (15.9 against 40.3 pA, 7 and 11 cells, p = 0.0028) and not in AS
+    (40.7 against 36.2 pA, 7 and 10 cells, p = 0.60). In the code table's values VENs are lower in
+    both sessions (HS 12.4 against 31.5 pA, p = 0.0028; AS 17.5 against 29.1 pA, ratio 0.60,
+    p = 0.11), so only the significance rests on HS. The AS reversal under a2 b1 c1 is mostly the
+    artefact, not a session effect. Under that reading, the only one for which widths were
+    computed, the maximum is a brief transient in 10 cells (6 of 14 VENs, 4 of 21 PCs), and 9 of
+    them are in AS (5 of its 7 VENs, 4 of its 10 PCs; the one in HS is HS1c18). Three AS VEN
+    transients are 3 to 5 times the table's value (AS4c14 70.7 against 15.5 pA, AS3c11 87.7
+    against 17.5, AS1c1 42.1 against 13.8). Without the transient cells AS keeps 2 VENs and 6 PCs
+    (37.2 against 34.3 pA, p = 0.86), too few to tell, and HS keeps its difference (15.6 against
+    40.3 pA, p = 0.0019). In variants that are not readings of the paper and decide nothing, a
+    4-pole Bessel low-pass run once forward as an amplifier's filter acts (2.9, 5 or 10 kHz,
+    cut-offs fixed in advance) and a 0 to 3 ms window, 13 of the 24 baseline-subtracted variants
+    give p < 0.05, every a2 reading at 2.9 kHz, every one with the short window, and a2b1c2 at
+    5 kHz. The paper's code table gives 14.9 against 29.3 pA, p = 0.001, and the
+    smoothed variant 16.0 against 29.9 pA, p = 0.0008, but that variant was fitted to the table.
+    The t-test variant gives p = 0.013 to 0.96 over the readings. Whether the criterion should
+    include a filtered reading is asked of a reader (questions/001750.yaml). Current density cannot be computed,
+    as no capacitance is stored. Question for the paper's authors (finding methods_unavailable)
+    is how the maximal current was measured from the traces. It asks which baseline was used,
+    whether the traces were filtered or the peak fitted, and over which steps and window. Two of
+    the four readings that subtract no baseline find the effect (a1b1c1, a1b1c2), and none with
+    the code's own baseline subtraction does, unless the trace is filtered, smoothed or the window
+    cut short.
+  deviations:
+  - Cell types come from the paper's code table through na-cell-table-link, as the files carry
+    none.
+  - Repetitions were averaged before the peak was taken (criterion). The baseline window of
+    reading a2 is 18.0 to 19.0 ms, the first 100 samples of a cut starting 2 ms before the onset
+    at 100 kHz, as in Fig4d_plotNaCurrent.m.
+- claim: model-na-ratio
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:model-na-ratio
+  notes: Depends on fig4d-sodium-current-lower, which is blocked. The ratios were computed for
+    every reading of the measure. They are 0.68 to 0.99, and in tolerance (0.619 to 0.756) under
+    some summary only for the four as-recorded readings (a1), whose values include each patch's
+    holding current. The baseline-subtracted readings give 0.79 to 0.99. The code table's values
+    give 0.58 (mean) and 0.51 (median), and the smoothed variant 0.58 and 0.54, none in tolerance.
+    In the non-deciding filtered and short-window variants, 10 of 24 baseline-subtracted variants
+    give a ratio in tolerance under some summary. The Extended Data Fig. 7c legend says the
+    conductance range was also set from previous publications, so 55 pS/um2 may not be the
+    recorded ratio alone.
+- claim: na-patch-capacitance
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:na-patch-capacitance
+  notes: No VoltageClampSeries in any file holds a capacitance, compensation or series resistance
+    value (only data, electrode, gain and starting_time). Every file holds the same 52 values and
+    attributes outside the data series, all printed; the IntracellularElectrode has only cell_id,
+    description and location, there is no lab_meta_data and no notes, and none of them, nor the
+    metadata of any of the 35 assets, names a capacitance, resistance, seal or compensation. The
+    Methods say the traces were leak subtracted online, which would also remove the capacitive
+    transients from which a capacitance might be estimated; this is inferred from the Methods, and
+    no such estimate was tried. The paper's code table holds no capacitance either.
+- claim: fig8a-metabolite-gradient
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig8a-metabolite-gradient
+  measured:
+  - 175
+  - 84
+  notes: On the deposited values, Welch's ANOVA at P < 0.05 followed by Games-Howell at P < 0.05
+    gives 175 metabolites for AIC against V1 (expected 205.2 to 250.8) and 84 for AIC against PrC
+    (expected 97.2 to 118.8). Games-Howell alone gives 179 and 85. On log2 values the counts are
+    190 and 95 (194 and 98 without the ANOVA gate), also outside tolerance; the one zero value
+    (L-Cystine, clipped before log2) does not change them. The direction holds
+    under every variant, with about twice as many differences against V1 as against PrC. The
+    deposited table holds 558 metabolites against the 581 the Results report, which may account
+    for part of the shortfall. The samples are 6 AIC, 6 PrC and 7 V1, as the Fig. 8 legend gives.
+  deviations:
+  - The Methods name no transform of the peak areas. The deposited values are used, and log2
+    values are a variant; both fall short.
+  - The words "followed by" are read as the pair counted when Welch's ANOVA gives P < 0.05; the pair test
+    alone is shown and also falls short. Games-Howell was computed with the studentized range
+    for three groups and Welch degrees of freedom.
+- claim: fig8de-glycolytic-bias
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig8de-glycolytic-bias
+  notes: Citric acid is higher in AIC than in V1 (ratio 1.37, Games-Howell p = 0.00046) and
+    L-glutamic acid too (ratio 1.35, p = 0.0001). 2-Ketobutyric acid is lower (ratio 0.37) but
+    not significantly (Games-Howell p = 0.18, Welch's ANOVA p = 0.17; on log2 values p = 0.086).
+    Two of the three parts hold. A second entry named "Glutamic acid glutamate" is higher (1.18)
+    without significance (p = 0.15); had it been taken as glutamate, only citrate would hold. The
+    criterion defines no partial outcome; the outcome follows the protocol's definition, an effect
+    that holds only in part.
+  deviations:
+  - Metabolites were found by name in the deposited table; citrate is "Citric acid", glutamate
+    "L-Glutamic acid", 2-ketobutyrate "2-Ketobutyric acid". The paper does not say which table
+    entries it plotted. Glutamate is taken as "L-Glutamic acid", the entry named as the amino acid
+    itself; the notebook selects it explicitly and shows the other entry as a variant.
+- claim: fig4j-eepsp-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig4j-eepsp-amplitude
+  notes: In the 26 VEN-PC pairs of sumData_StimWM.xlsx the VEN amplitudes are higher at each of the
+    three stimulation levels (means 0.0067, 0.0133 and 0.0193 against 0.0036, 0.0066 and 0.0128,
+    unit not stated) and in 21 of 26 pairs. Cell type effect, ordinary two-way ANOVA F = 7.62,
+    p = 0.0065, and repeated-measures ANOVA with the pair as subject F = 8.72, p = 0.0068 (paper
+    P = 0.0034). Stimulation level, p = 5.3e-05 and 1.6e-08. The table holds amplitudes already
+    measured by the authors, so this checks the statistics, not the selection of monosynaptic
+    eEPSPs. The same sheet's "re-orgnized data" block, with the stimulation value on every row,
+    shares 69 of its 78 rows with the copied block and differs in 9; its two-way ANOVA gives cell
+    type p = 0.0033 (paper 0.0034), VENs higher at every level, so the paper's test was most likely
+    run on that block.
+  deviations:
+  - Tested on the paper's per-pair amplitude table, as the claims file names it, not on raw
+    recordings, whose dandiset the paper does not name. In the copied block levels are taken by
+    their order within each pair, as 9 rows give no stimulation value; the re-organized block,
+    with explicit levels, is the cross-check.
+- claim: fig3c-ais-distance-length
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig3c-ais-distance-length
+  notes: AIScmp_PCvsVEN_Fig5c.xlsx holds AIS length and distance per cell by type (500 PC and 120
+    VEN values) with no slice or animal, so neither reading of the two-way ANOVA can be formed.
+    Its counts differ from the legend's 430 PCs and 108 VENs. As a description that decides
+    nothing, the VEN median distance is 15.85 against 3.95 um for PCs, and length 24.33 against
+    29.13 um (rank-sum p = 3.1e-42 and 2.3e-16), the directions the claim states.
+- claim: model-sd-na-density
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The repository at commit 44cd8a6 holds, under VEN_modeling, only MATLAB plotting scripts
+    (FigPlot) and a note that the data are on Zenodo; the simulation code and model files are not
+    in it. The processed data, Zenodo doi:10.5281/zenodo.18814764, are six parts of a RAR archive
+    (about 11.8 GB), which cannot be read without downloading all parts to disk. No simulation was
+    run.
+- claim: fig4i-peak-index-ais-distance
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs the VEN model simulations and the real neurons' phase peak index and AIS distance.
+    The model code is not in the repository (see model-sd-na-density), and the simulation
+    outputs are only in the multi-part RAR archive on Zenodo. The real-neuron values would come
+    from DANDI:001746 and the morphologies, not attempted here.
+- claim: fig4g-model-ais-distance-ap-shape
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Model simulations; the model code is not in the repository and its outputs are in the
+    multi-part RAR archive on Zenodo (see model-sd-na-density).
+- claim: model-ven-fires-more
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Model simulations; the model code is not in the repository and its outputs are in the
+    multi-part RAR archive on Zenodo (see model-sd-na-density).
+- claim: ext7d-ais-length-no-effect
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Model simulations; the model code is not in the repository and its outputs are in the
+    multi-part RAR archive on Zenodo (see model-sd-na-density).
+- claim: fig5d-connectivity-totals
+  outcome: blocked
+  blocked_by: other
+  notes: The criterion assigns the test to the claims file of DANDI:001751 (multi-patch
+    recordings, 301 files, about 7 GB, version 0.260825.0222). It was not repeated in this
+    attempt, which had five hours for 34 claims; the data are public there.
+- claim: fig5-ven-sparse-connectivity
+  outcome: blocked
+  blocked_by: other
+  notes: As fig5d-connectivity-totals; the criterion assigns the test to the claims file of
+    DANDI:001751, and it was not repeated here.
+- claim: fig5b-psc-frequency
+  outcome: blocked
+  blocked_by: other
+  notes: The criterion assigns the test to the claims file of DANDI:001752 (84 files, about 0.18
+    GB). Event detection on those recordings was not attempted in this run's time.
+- claim: fig5c-psc-amplitude
+  outcome: blocked
+  blocked_by: other
+  notes: Uses the events of fig5b-psc-frequency on DANDI:001752, not attempted in this run's time.
+- claim: scrna-classes
+  outcome: blocked
+  blocked_by: too_large
+  notes: GEO GSE319557 holds FASTQ reads of 122,663 cells; aligning and clustering them is beyond
+    the runner and the notebook's 60 minutes. The processed data on Zenodo
+    (doi:10.5281/zenodo.18814764) are a multi-part RAR archive of about 11.8 GB that cannot be
+    streamed.
+- claim: scrna-78-types
+  outcome: blocked
+  blocked_by: too_large
+  notes: As scrna-classes; the cluster labels are in the processed data on Zenodo, a multi-part RAR
+    archive of about 11.8 GB.
+- claim: patchseq-mapping
+  outcome: blocked
+  blocked_by: too_large
+  notes: Mapping needs the Patch-seq reads (GEO GSE319369) and the 10x reference (scrna-classes).
+    The repository's mapping outputs (patchSeqMappingTo10X/data/mappingRes) give clusters as
+    numbers without names, and no table there gives the 33 inhibitory types, so they cannot
+    stand in for the mapping.
+- claim: ven-map-et-ct
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the Patch-seq mapping (see patchseq-mapping).
+- claim: fig6f-g-ven-subtype-mapping
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the Patch-seq mapping and the 10x subclustering (see patchseq-mapping,
+    scrna-classes).
+- claim: fig6h-subtype-markers
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the 10x expression data and the VEN subtype labels (see scrna-classes).
+- claim: fig7c-tau-rna-distance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the 10x expression data and the Patch-seq electrophysiology of DANDI:001746 with the
+    type mapping (see scrna-classes, patchseq-mapping).
+- claim: ven-firing-rate-variability
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The criterion blocks the claim as methods_underspecified unless the paper's values and
+    tests (Supplementary Tables 1 and 2) are supplied, since the text names no measure of
+    spike-timing variability; they were not supplied. The data are also large, DANDI:001746 (462
+    files, about 14.7 GB, version 0.260825.0222); streaming 001750's 0.33 GB took 150 to 256 s
+    in this attempt's runs, so 001746 would take about 1.9 to 3.2 hours to stream before any
+    analysis, beyond the notebook's 60 minutes.
+- claim: fig3e-phase-peak-index
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig3e-phase-peak-index
+  notes: The VEN median phase peak index (0.117, 29 cells) is the lowest of the six types (0.223 to
+    0.338 for the others). Kruskal-Wallis p = 4.9e-08, and Dunn's test separates VENs from every
+    PC type, Bonferroni p = 1.5e-07 to 0.001 (unadjusted 1e-08 to 6.8e-05). The sheet's counts
+    (30 L2/3 IT HPCAL1, 21 IT RORB, 121 L5 IT, 29 VEN, 17 L5 ET, 13 L6 PC) differ in four types
+    from the Fig. 2d-f counts the legend refers to (30, 17, 119, 22, 16, 13), so the selection is
+    not exactly the paper's.
+  deviations:
+  - Tested on the paper's per-cell table in its code repository at 44cd8a6
+    (ephysio/data_ephy/PeakIdx_Fig5e.xlsx, Sheet1), not on the recordings of DANDI:001746 the
+    claims file points to, which were not streamed (see ven-firing-rate-variability). This checks
+    the statistics on the authors' values and their type labels, not the measure. The mean, std
+    and SE rows under each column are dropped, keeping rows named by a cell ID.
+  - The p adjustment of Dunn's test is not in the legend; the sheet's statistics tab names
+    Bonferroni-corrected p values. Both unadjusted and Bonferroni p are shown, and both are below
+    0.05 for every PC type.
+- claim: fig4ac-ap-width-amplitude
+  outcome: blocked
+  blocked_by: too_large
+  notes: The claims file points to DANDI:001746, though the paper does not say which dandiset holds
+    these 587 recordings; streaming it would take about 1.9 to 3.2 hours (see ven-firing-rate-variability).
+    No table in the paper's code repository holds AP width and amplitude for 281 VENs and 306 PCs.
+- claim: ven-subtypes-similar-physiology
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:ven-subtypes-similar-physiology
+  notes: None of the three tests is significant. AP half-width is a median 3.28 ms in 85 VEN-L and
+    3.30 ms in 41 VEN-S (rank-sum p = 0.55), AP amplitude 85.9 and 87.1 mV (p = 0.27), BH q = 0.55
+    and 0.54 over the two. The two-way ANOVA (subtype and stimulation level) of the eEPSP
+    amplitudes of 12 VEN-L and 12 VEN-S gives p = 0.958 for subtype (paper p = 0.9852). The paired
+    comparisons with PCs come out as the legend gives them (VEN-L p = 0.051 against 0.0500, VEN-S
+    p = 0.037 against 0.0355). The counts (85, 41, 12, 12, and two VENs without a subtype) match
+    the Extended Data Fig. 9 legend. The other features of Supplementary Table 8 were not read, as
+    the criterion says.
+  deviations:
+  - Tested on the paper's per-cell tables in its code repository at 44cd8a6
+    (VENsubtypeCmp_extFig8ab/VENsubtype_APs.mat, read by extFig9ad_plotVENsubtypeAP_Cmp.m, and
+    column J of sumData_StimWM.xlsx), not on the recordings of DANDI:001746 the claims file points
+    to, which were not streamed (see ven-firing-rate-variability). This checks the statistics on
+    the authors' measurements, not the measurements.
+  - The FDR family is not stated (the code's calFDR_VENsubtype_ephysio.m corrects over every
+    feature of a different, Patch-seq table). Benjamini-Hochberg over the two AP tests is shown;
+    since a BH q is never below its raw p and both raw p exceed 0.05, no family can change the
+    result.
+- claim: fig2df-l23-it-tau-width
+  outcome: blocked
+  blocked_by: too_large
+  notes: DANDI:001746 with the transcriptomic subclasses from GSE319369; see
+    ven-firing-rate-variability and patchseq-mapping. The code repository's Ins_patchseq_ephs.xlsx
+    holds tau and AP half-width per Patch-seq cell, but with cluster numbers, not subclass names;
+    subclass names per cell would have to be taken from the table of another figure
+    (PeakIdx_Fig5e.xlsx), whose counts differ from the Fig. 2 legend, and this was not done.
+- claim: fig3ab-ven-axon-from-basal-dendrite
+  outcome: blocked
+  blocked_by: other
+  notes: The morphologies are public on NeuroMorpho.org (doi:10.13021/y4be-0p18). Reading and
+    tracing the axon origin of each reconstruction was not attempted in this run's time.
+- claim: fig6-ven-subtype-morphology
+  outcome: blocked
+  blocked_by: other
+  notes: NeuroMorpho.org morphologies (doi:10.13021/y4be-0p18), not attempted in this run's time.
+- claim: ext7i-basal-dendrite-diameter
+  outcome: blocked
+  blocked_by: other
+  notes: NeuroMorpho.org morphologies (doi:10.13021/y4be-0p18), not attempted in this run's time.
+- claim: fig3f-ais-distance-types
+  outcome: blocked
+  blocked_by: other
+  notes: Needs AIS distances of the Patch-seq neurons with their subclasses (NeuroMorpho.org and the
+    Patch-seq mapping), not attempted in this run's time.
+- claim: fig4j-eepsp-latency
+  outcome: blocked
+  blocked_by: other
+  notes: The table the claims file names (sumData_StimWM.xlsx) holds eEPSP amplitudes and no
+    latencies, and the paper does not say which dandiset holds the raw recordings. No latency
+    could be measured.
+findings:
+- kind: metadata_insufficient
+  statement: The files carry no cell type, so VENs and PCs cannot be told apart from the dandiset.
+    Types come only from the paper's code table metadata_outSideOutSodiumCurrentRec.csv, which
+    names each NWB file; the file names and electrode cell IDs agree with it for all 35 patches.
+- kind: data_missing
+  statement: No file holds the patch capacitance, series resistance or compensation values, so the
+    patch size the Methods report (about 50 fF, 5 um2) and current densities cannot be computed.
+- kind: methods_unavailable
+  statement: How the maximal Na+ current was measured from the traces is not stated in the paper or
+    its code. Plain peaks of the repetition-averaged traces, with or without a pre-step baseline,
+    do not match the code table (at most 2 of 35 within 10%), and the VEN against PC difference is
+    significant only under two readings without baseline subtraction. With a 2.9 kHz Bessel
+    low-pass, or a 0 to 3 ms window, it is significant under every baseline-subtracted reading. A
+    peak after 0.75 ms smoothing comes closest to the table (26 of 35 within 10%, 19 of 35 at
+    0.5 ms), at a width fitted to it. Question for the authors, which baseline, filter
+    or fit, steps and window gave the maximal currents of Fig. 4d?
+- kind: metadata_error
+  statement: Every file gives the session start time 2018-01-01 01:00, while the session ids and
+    the code table's cell IDs date the recordings to 6 December 2022. The series starting_time
+    values (0 to 3 s) carry no order.
+- kind: other
+  statement: The traces keep holding currents of -131 to +92 pA before the step although the
+    Methods say they were leak subtracted online, so a baseline must be removed before a peak is
+    taken. One file (cell HS018, a VEN) has a positive holding current and noise near 57 pA SD.
+    Files hold 28 or 34 steps (to +55 or +85 mV) and 1 to 10 repetitions, where the Methods
+    describe steps to 0 mV.
+- kind: other
+  statement: The MetaboLights metabolite table of MTBLS13927 holds 558 identified metabolites, where
+    the Results report 581, and one AIC sample is named A1C-1-Q. The Welch and Games-Howell counts
+    on it fall short of the reported 228 and 108.
+- kind: other
+  statement: In the paper's code repository, AIScmp_PCvsVEN_Fig5c.xlsx has 500 PC and 120 VEN values
+    where the Fig. 3c legend gives 430 and 108, and no slice or animal column for its two-way
+    ANOVA. sumData_StimWM.xlsx gives stimulation values 0.5, 1 and 2 labelled mA where the Methods
+    give 0.05 to 0.2 mA, and no unit for the amplitudes.
+- kind: other
+  statement: In at least 10 of the 35 files the repetition-averaged trace holds brief biphasic
+    transients about 0.1 ms wide (0.07 to 0.16 ms at half height), larger than the Na+ current in
+    some patches (for example AS3c11, AS4c14, AS5c20). They set the maximum of the unfiltered trace
+    in 6 of the 14 VENs and 4 of the 21 PCs under the baseline-subtracted reading a2 b1 c1, 9 of the
+    10 in session 221206AS, so a peak taken without a filter measures them, not the Na+ current.
+- kind: code_mismatch
+  statement: In the paper's code repository, the two blocks of sumData_StimWM.xlsx that hold the
+    eEPSP amplitudes of Fig. 4j ("copied data" and "re-orgnized data") agree in 69 of 78 rows and
+    differ in 9; the re-organized block reproduces the paper's P = 0.0034 (0.0033). The script
+    extFig9ad_plotVENsubtypeAP_Cmp.m loads VENsubtype_APs.mat from a folder
+    VENsubtypeCmp_extFig9ab that is not in the repository, which holds it under
+    VENsubtypeCmp_extFig8ab.
+verifications:
+- date: 2026-11-03
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1, same harness, separate context, did not
+    write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper. The verifier had no attempt
+    record.
+  results:
+  - claim: na-cell-table-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 35 files match the code table by file name, and all 35 cell IDs agree. The files
+      carry no cell type, so no type can disagree. But at most 2 of 35 cells are within 10% of the
+      table under any reading, against the 28 required. The post-hoc smoothing variant reaches 26,
+      and the criterion does not let it decide. The maximum takes the single most negative sample
+      of unfiltered 100 kHz traces, and noise inflates it; several maxima are not Na+ peaks.
+    response: No change of outcome. Added, per cell, the repetition count, noise SD, the step,
+      latency and width of the maximum, an I-V table of the peaks, and the averaged trace at each
+      cell's step of maximum. In 10 cells (6 VEN, 4 PC) the maximum is a biphasic transient 0.07
+      to 0.16 ms wide, an artefact. Added Bessel-filtered (2.9, 5, 10 kHz) and 0 to 3 ms window
+      variants, not fitted to the table (at most 8 of 35 within 10%). The smoothing variant is now
+      said to be fitted to the table and not independent evidence.
+  - claim: fig4d-sodium-current-lower
+    agrees: true
+    outcome: blocked
+    reason: The VEN median is lower under all 8 readings, but rank-sum p < 0.05 only under a1b1c1
+      (p = 0.045) and a1b1c2 (0.025); readings disagree, so the criterion gives blocked. Under the
+      four a2 readings, which remove the holding offset, p >= 0.077. The a1 values mostly measure
+      the holding offset, not the Na+ current. Repetition count and noise were never shown by cell
+      type, and the session dependence (VEN > PC in AS, VEN < PC in HS) is reported but not
+      discussed.
+    response: No change of outcome. Added noise and repetitions by cell type (no difference, p =
+      0.34 and 0.89), the session breakdown with p values for the readings and the code table
+      (both find the difference in HS only), and the filtered and short-window variants (17 of 24
+      baseline-subtracted variants significant), which decide nothing. Added to questions/001750.yaml
+      whether the criterion should include a filtered reading, the gap the verifier located in the
+      claims file.
+  - claim: model-na-ratio
+    agrees: false
+    outcome: partially_reproduced
+    reason: Only the four a1 readings give a ratio within 0.6875 +/- 0.069 under some summary (0.68
+      to 0.75). All a2 readings fall outside (0.79 to 0.99), and so does the code table (0.58 mean,
+      0.51 median). The a1 ratios carry the holding-current offset and the parent claim is
+      blocked, so this "partial" is weak.
+    response: Kept blocked (methods_underspecified). The claim lists fig4d-sodium-current-lower
+      under depends_on, and the protocol blocks a claim that depends on a blocked claim (Author,
+      step 1.5); the ratios under every reading are still reported. The disagreement is recorded.
+      The notes now add the filtered and short-window variants (13 of 24 in tolerance) and that
+      the a1 ratios include the holding current.
+  - claim: na-patch-capacitance
+    agrees: true
+    outcome: blocked
+    reason: The series hold only data, electrode, gain and starting_time, and none of the metadata
+      of all 35 assets and the dandiset mentions capacitance or resistance. Only the series fields
+      and asset metadata were inspected; every field and attribute of the IntracellularElectrode,
+      lab_meta_data and notes would confirm data_missing from the files themselves.
+    response: No change of outcome. The notebook now prints every value and attribute of every file
+      outside the data series (52 per file), including the IntracellularElectrode fields, and
+      searches them and the metadata of all 35 assets for capacitance, resistance, seal and
+      compensation; none is found, and no file has lab_meta_data or notes.
+  - claim: fig8a-metabolite-gradient
+    agrees: true
+    outcome: not_reproduced
+    reason: Welch's ANOVA then Games-Howell gives 175 metabolites for AIC vs V1 (tolerance 205 to
+      251) and 84 for AIC vs PrC (97 to 119); the log2 variant gives 190 and 95, outside tolerance
+      either way. The deposit holds 558 of the paper's 581 metabolites. In the log2 variant the one
+      zero value is clipped to 1e-9, which makes one extreme value.
+    response: No change of outcome. The notebook names the metabolite with the zero (L-Cystine) and
+      shows the log2 counts without it (190 and 95, unchanged).
+  - claim: fig8de-glycolytic-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Citrate is higher in AIC (ratio 1.37, p = 0.0005) and L-glutamic acid is higher (1.35,
+      p = 1e-4). 2-Ketobutyrate is lower (0.37) but not significant (p = 0.18). The criterion
+      requires all three at P < 0.05 and defines no partial outcome; strictly read, the claim is not
+      reproduced. Glutamate has two entries, and the notebook picks neither explicitly.
+    response: No change of outcome; the protocol defines partially_reproduced as an effect that
+      holds only in part, and the notes now say the criterion defines no partial outcome. The
+      notebook now selects "L-Glutamic acid" explicitly, says why, and shows that with the other
+      entry only citrate would hold.
+  - claim: fig4j-eepsp-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: VEN amplitude is higher at every level. The cell-type effect is p = 0.0065 in the
+      two-way ANOVA and p = 0.0068 in the repeated-measures ANOVA with 26 pairs; the paper gives
+      P = 0.0034. The level is assigned by row order, 9 rows have no stimulation value, and the
+      "re-orgnized data" block, with an explicit level on every row, was not used as a cross-check.
+    response: No change of outcome. Added the cross-check; the blocks share 69 of 78 rows and
+      differ in 9, and the re-organized block gives cell type p = 0.0033, matching the paper's
+      0.0034. The difference between the blocks is recorded as a finding.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: The sheet has no slice or animal column, so neither two-way ANOVA can be run. Its counts
+      (120 VEN, 500 PC) also differ from the legend (108, 430).
+    response: No change.
+  - claim: ven-subtypes-similar-physiology
+    agrees: false
+    outcome: blocked
+    reason: It is left blocked although part of it can be tested. Column J of the same sheet types
+      24 of the 26 pairs as VENL or VENS (12 each at every stimulation level), which matches the
+      Extended Data Fig. 9f design, so the VEN-L vs VEN-S eEPSP ANOVA (paper p = 0.9852) can be run.
+    response: Changed to reproduced. The eEPSP ANOVA was run (subtype p = 0.958), and the AP width
+      and amplitude tests were run on the repository's per-cell table of Extended Data Fig. 9c,d,
+      VENsubtype_APs.mat, with 85 VEN-L and 41 VEN-S (p = 0.55 and 0.27). None of the three is
+      significant. The test uses the authors' per-cell tables, a deviation from the claims file's
+      DANDI:001746.
+  - claim: model-sd-na-density
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig4i-peak-index-ais-distance
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig4g-model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: model-ven-fires-more
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: ext7d-ais-length-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig5d-connectivity-totals
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig5-ven-sparse-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig5b-psc-frequency
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig5c-psc-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: scrna-78-types
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: patchseq-mapping
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig6f-g-ven-subtype-mapping
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig6h-subtype-markers
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: Still blocked, now as methods_underspecified, the reason the criterion itself gives
+      (Supplementary Tables 1 and 2 not supplied), with the data size in the notes. The notebook
+      now gives the reason for each claim under "Claims not tested here".
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: Changed to reproduced. In looking for the per-claim reasons, the paper's code
+      repository was found to hold the per-cell phase peak index by type (PeakIdx_Fig5e.xlsx), as
+      it held the subtype tables the verifier pointed to for ven-subtypes-similar-physiology. The
+      claim was tested on it (Kruskal-Wallis p = 4.9e-08, Dunn's Bonferroni p <= 0.001 against
+      every PC type, VEN median lowest); the counts differ from the legend's in four types.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig2df-l23-it-tau-width
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig3ab-ven-axon-from-basal-dendrite
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig6-ven-subtype-morphology
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: ext7i-basal-dendrite-diameter
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig3f-ais-distance-types
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The notebook gives no reason per claim beyond "see the
+      record", which the verifier did not have.
+    response: No change of outcome. The notebook now gives the reason for each claim under "Claims
+      not tested here", the same as the record.
+  - claim: fig4j-eepsp-latency
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as the notebook. The verifier confirmed that sumData_StimWM.xlsx has no latency
+      column.
+    response: No change of outcome. The reason is now also in the notebook, under "Claims not
+      tested here".
+- date: 2026-11-03
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, same harness, separate context, did not
+    write the notebook)
+  reviewed: The full executed notebook of the revised run, the helper module, the claims file, the
+    attempt record, the README and the questions file, with the paper. The verifier could not read
+    docs/protocol.md.
+  results:
+  - claim: na-cell-table-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 35/35 files and cell IDs match. At most 2 of 35 cells are within 10% under the readings
+      (cell 7). The record's notes hold a stray fragment ("a2b1c1 agrees best. A Under
+      a2b1c1"). The methods_unavailable finding says "a peak after 0.5 to 1 ms smoothing matches
+      the table closely", but at 0.5 ms only 19 of 35 cells are within 10% (cell 9), and the
+      Summary's "the code table's values match a peak taken after smoothing" rests on a best fit,
+      at a width chosen to fit the table, of 26 of 35, below the link criterion's own 28 (cells 9
+      and 13).
+    response: No change of outcome. The fragment is removed. The notes, cell 13, the Summary and the
+      finding now say that no measure tried matches the table to the criterion's tolerance and that
+      the smoothed peak comes closest (19 of 35 at 0.5 ms, 26 of 35 at 0.75 ms, a width fitted to
+      the table). The Bessel variants are now run once forward (see fig4d-sodium-current-lower),
+      and bring at most 3 of 35 within 10%.
+  - claim: fig4d-sodium-current-lower
+    agrees: true
+    outcome: blocked
+    reason: Only a1b1c1 (p = 0.045) and a1b1c2 (p = 0.025) are significant; the other readings give
+      0.077 to 0.29 (cell 14). The record's "the readings that subtract no baseline find the
+      effect" is wrong, only 2 of the 4 a1 readings do (a1b2c1 p = 0.27, a1b2c2 p = 0.18). The
+      transient count (6 of the 14 VENs and 4 of the 21 PCs) is given as holding under the
+      readings, but the widths were computed only under a2b1c1 (cell 11). Cell 18's "in the
+      paper's values too the difference rests mostly on one session" is not supported. In AS the
+      table's medians are 17.5 against 29.1 pA, a ratio of 0.60, in the same direction as HS,
+      non-significant only at n = 7 and 10 (p = 0.11); only the significance rests on one session.
+      9 of the 10 transient maxima are in session AS, including 5 of its 7 VENs, and the only HS one
+      is HS1c18, so the AS reversal under a2b1c1 (VEN 40.7 against PC 36.2 pA) coincides with the
+      transients. The record should say that the AS result under the readings is mostly the
+      artefact. The "4-pole Bessel at 2.9/5/10 kHz" is run with sosfiltfilt, which makes it
+      effectively 8-pole, about -6 dB at the stated cut-off, so it is not equivalent to an
+      amplifier's 2.9 kHz Bessel. These variants decide nothing, but the record cites them in the
+      methods_unavailable finding.
+    response: No change of outcome. The a1 sentence now says that two of the four a1 readings find
+      the effect. The transient counts are said to hold under a2b1c1, the reading for which widths
+      were computed. Cell 14 now prints the transients by session and the session contrast without
+      the transient cells (AS 2 VENs and 6 PCs, 37.2 against 34.3 pA, p = 0.86; HS 15.6 against
+      40.3 pA, p = 0.0019), and the per-cell transient values against the table. Cell 18 and the
+      notes now say that in the paper's values VENs are lower in both sessions and only the
+      significance rests on HS, and that the AS reversal under the readings is mostly the artefact.
+      The Bessel variant (nacurrent.lowpass) now runs once forward with sosfilt, a 4-pole filter at
+      -3 dB at the cut-off as an amplifier's acts. With it 13 of the 24 baseline-subtracted variants
+      give p < 0.05 (17 with the forward-backward filter), every a2 reading at 2.9 kHz, every one
+      with the 0 to 3 ms window and a2b1c2 at 5 kHz; the notes, cell 18, the Summary, the finding
+      and the question in questions/001750.yaml give the new counts.
+  - claim: model-na-ratio
+    agrees: true
+    outcome: blocked
+    reason: In round 1 the verifier gave partially_reproduced. The record cites the protocol rule
+      that a claim whose parent is blocked is itself blocked (Author, step 1.5), and the claim lists
+      fig4d under depends_on. The verifier could not read docs/protocol.md to confirm the rule; if
+      it holds, blocked is correct. It is also the sounder outcome, because every in-tolerance ratio
+      comes from an a1 reading.
+    response: No change of outcome. The rule is in docs/protocol.md, Author, step 1.5, last
+      sentence, "A claim that depends on a blocked claim is blocked for the same reason." With the
+      Bessel filter run once forward, 10 of the 24 baseline-subtracted variants (13 before) give a
+      ratio in tolerance under some summary; the notes and cell 20 give the new count.
+  - claim: na-patch-capacitance
+    agrees: true
+    outcome: blocked
+    reason: Cell 21 prints all 52 entries per file. None names a capacitance, resistance, seal or
+      compensation, and neither does the metadata of any of the 35 assets. The sentence that
+      capacitive transients that could give an estimate are removed is inferred from the Methods;
+      no printed output shows it.
+    response: No change of outcome. The notes and cell 22 now say that this is inferred from the
+      Methods' online leak subtraction and that no estimate from the traces was tried.
+  - claim: fig8a-metabolite-gradient
+    agrees: true
+    outcome: not_reproduced
+    reason: 175 and 84; log2 190 and 95 (cell 23). The 23 missing metabolites cannot close the gap
+      of 30 or more for AIC vs V1.
+    response: No change.
+  - claim: fig8de-glycolytic-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: The criterion defines no partial outcome, so the protocol's definition (an effect that
+      holds only in part) is a fair basis. The outcome is partial with either glutamate entry, 2 of
+      3 parts hold with L-Glutamic acid, 1 of 3 with the other entry (cell 26).
+    response: No change.
+  - claim: fig4j-eepsp-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Two-way ANOVA p = 0.0065 and repeated-measures p = 0.0068. The re-organized block gives
+      p = 0.0033 (cells 28-29).
+    response: No change.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: The sheet has no slice or animal column (cell 39).
+    response: No change.
+  - claim: ven-subtypes-similar-physiology
+    agrees: true
+    outcome: reproduced
+    reason: Tested on the authors' per-cell tables, a deviation the record states. p = 0.55 and
+      0.27, BH q = 0.55 and 0.54, ANOVA p = 0.958 (cells 32-33). The BH argument is correct, an
+      adjusted q is never below its raw p.
+    response: No change.
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with a caveat. The VEN median is lowest and every Bonferroni p is at most 0.001
+      (cell 36). The sheet has 29 VENs against the 22 of Fig. 2d-f, a 32% excess, so the cell set is
+      clearly not the paper's. The record says this.
+    response: No change; the notes already say that the counts differ from the legend's and the
+      selection is not exactly the paper's.
+  - claim: model-sd-na-density
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig4i-peak-index-ais-distance
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig4g-model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: model-ven-fires-more
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: ext7d-ais-length-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig5d-connectivity-totals
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig5-ven-sparse-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig5b-psc-frequency
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig5c-psc-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: scrna-78-types
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: patchseq-mapping
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig6f-g-ven-subtype-mapping
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig6h-subtype-markers
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record;
+      ven-firing-rate-variability is now blocked as methods_underspecified, which is what its
+      criterion says. The record and cell 41 say "0.33 GB in about 3 minutes", but cell 1 prints
+      256 s (about 4.3 min) and the README says about four minutes; the "over two hours"
+      conclusion still holds.
+    response: No change of outcome. The timing now quotes the measured times, 150 to 256 s for 0.33 GB in
+      this attempt's runs (150 s in this run), which gives about 1.9 to 3.2 hours for DANDI:001746,
+      beyond the notebook's 60 minutes; the notes, cell 41 and fig4ac-ap-width-amplitude say so.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change of outcome. The streaming time is now stated as about 1.9 to 3.2 hours from the
+      measured rates (see ven-firing-rate-variability).
+  - claim: fig2df-l23-it-tau-width
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change of outcome. Cell 41's streaming time is corrected as for
+      ven-firing-rate-variability.
+  - claim: fig3ab-ven-axon-from-basal-dendrite
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig6-ven-subtype-morphology
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: ext7i-basal-dendrite-diameter
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig3f-ais-distance-types
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record.
+    response: No change.
+  - claim: fig4j-eepsp-latency
+    agrees: true
+    outcome: blocked
+    reason: Blocked. Cell 41 now gives a reason for each claim, and the reasons match the record. The
+      README's "24 claims on other data (other dandisets, GEO, NeuroMorpho, models)" leaves out
+      fig4j-eepsp-latency, which has no data source, and ven-firing-rate-variability, which is
+      blocked on method; this is minor.
+    response: No change of outcome. The README row now names the repository table without latencies for
+      fig4j-eepsp-latency and says that ven-firing-rate-variability is blocked on method.
