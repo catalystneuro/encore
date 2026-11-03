@@ -15,7 +15,7 @@ schedule, port entries, AlphaTracker poses and the nine hand-scored behaviour la
 | Time displaced does not differ by rank (ED Fig. 5g) | Reproduced |
 | A 6-state HMM-GLM decodes behaviour from multi-unit activity better than static models (Figure 1i) | Reproduced, on 17 of the 34 labelled files |
 | Held-out likelihood plateaus at 6 states (ED Fig. 5j) | Not reproduced (6 states on the paper's own input) |
-| The HMM-GLM generalizes across relative rank (ED Fig. 5k) | Not reproduced on the main reading; a change to reproduced is proposed, as every combination passes with threshold crossings in either direction |
+| The HMM-GLM generalizes across relative rank (ED Fig. 5k) | Reproduced, with threshold crossings in either direction (an assumption; negative crossings fail one combination) |
 | Single-unit findings of Figures 2 and 3 and ED Figures 6 to 9 (22 claims), distance to port (ED Fig. 7b) | Blocked: metadata insufficient |
 | Unimplanted cohort, AlphaTracker evaluation, alone sessions, ex vivo, phototagging and optogenetics (14 claims) | Blocked: data missing |
 

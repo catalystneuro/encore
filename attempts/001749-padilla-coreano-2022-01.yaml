@@ -110,38 +110,36 @@ outcomes:
   - Input, files and code as in fig1i-hmmglm-decodes-behaviour (17 of 34 labelled files, 512 trials).
   - States 1 to 10, as the criterion reads them; each with its own seed.
 - claim: ed5k-hmmglm-generalizes-across-rank
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
   output: claim:ed5k-hmmglm-generalizes-across-rank
-  notes: Trials of files of relative dominants (299, 7 mice) and subordinates (213, 4 mice). With the
-    shift, dom to sub gives 8 of 9 AUCs above 0.5 (sign test p = 0.039), sub to dom 7 of 9 (p = 0.18;
-    AUCs 0.48 to 0.91), dom 10-fold and sub 10-fold 9 of 9 (p = 0.0039); without the shift sub to dom
-    is again 7 of 9 (p = 0.18). Not every combination passes on this reading. With crossings in either
-    direction every combination passes, with and without the shift (dom to sub and sub to dom 9 of 9,
-    medians 0.821 and 0.788, lowest AUC 0.780 and 0.582; both 10-fold runs 9 of 9, p = 0.0039), and with
-    random folds the within-group runs give 9 of 9. On the paper's input (its own rank per trial, 487
-    dom and 478 sub trials, the counts of the 34 labelled files here) both directions and both within-group
-    10-fold runs give 9 of 9 (p = 0.0039).
+  notes: Trials of files of relative dominants (299, 7 mice) and subordinates (213, 4 mice). With crossings
+    in either direction, the reading the outcome rests on, every combination passes, with and without
+    the shift. Dom to sub and sub to dom give 9 of 9 AUCs above 0.5 (sign test p = 0.0039; medians 0.821
+    and 0.788, lowest AUC 0.780 and 0.582), and both 10-fold runs within a group give 9 of 9 (p = 0.0039).
+    With negative crossings, dom to sub gives 8 of 9 (p = 0.039), sub to dom 7 of 9 (p = 0.18; AUCs 0.48
+    to 0.91), dom 10-fold and sub 10-fold 9 of 9 (p = 0.0039); without the shift sub to dom is again 7
+    of 9 (p = 0.18), so not every combination passes on that reading. With random folds the within-group
+    runs give 9 of 9. On the paper's input (its own rank per trial, 487 dom and 478 sub trials, the counts
+    of the 34 labelled files here) both directions and both within-group 10-fold runs give 9 of 9 (p =
+    0.0039).
   deviations:
-  - Input, files and code as in fig1i-hmmglm-decodes-behaviour; 512 of the 965 trials (legend 482 dom
-    and 478 sub).
-  - The sub group holds 4 mice, so training on it rests on few animals.
-  - The outcome rests on the threshold reading. It takes negative crossings below mean minus 4 SD, the
-    reading the criterion lists first and the usual way of detecting extracellular spikes; Methods 17
-    says only "determining spikes using 4 standard deviations from the mean". Crossings in either direction
-    give every combination above chance. An assumption.
+  - Input, files and code as in fig1i-hmmglm-decodes-behaviour, except the threshold direction; 512 of
+    the 965 trials (legend 482 dom and 478 sub).
+  - The sub group holds 4 mice (213 trials), so training on it rests on few animals.
+  - The outcome rests on the threshold reading. It takes crossings in either direction of mean plus or
+    minus 4 SD; Methods 17 says only "determining spikes using 4 standard deviations from the mean".
+    The two readings give different outcomes, and this one is better supported by the paper's processed
+    input. Matched trial by trial, the paper's counts are 1.06 times the crossings in either direction
+    (median over the 17 files, range 0.63 to 1.41) and 1.47 times the negative crossings (1.21 to 2.11,
+    never below 1), and its median rate per channel (28.15 Hz) is nearer that of crossings in either
+    direction (23.05 Hz) than of negative crossings (16.41 Hz). The choice was made after the result
+    was seen, and the counts computed here follow the paper's poorly in time under both readings, so
+    the count level does not settle the direction. An assumption.
+  - This claim rests on crossings in either direction, while fig1i-hmmglm-decodes-behaviour and ed5j-six-states
+    keep negative crossings as their main reading; each has the same outcome under both readings, so
+    no outcome depends on the difference.
   assumed: true
-  proposed:
-    outcome: reproduced
-    reason: The two threshold readings give different outcomes, so the outcome rests on the better supported
-      one. Matched trial by trial, the paper's processed input holds 1.06 times the counts of crossings
-      in either direction (median over the 17 files, range 0.63 to 1.41) and 1.47 times those of negative
-      crossings (1.21 to 2.11), and its median rate per channel (28.15 Hz) is nearer that of crossings
-      in either direction (23.05 Hz) than of negative crossings (16.41 Hz). Methods 17 ("4 standard deviations
-      from the mean") names no direction. On crossings in either direction every train and test combination
-      gives 9 of 9 AUCs above 0.5 (sign test p = 0.0039), with and without the shift, which meets the criterion.
-      fig1i-hmmglm-decodes-behaviour and ed5j-six-states have the same outcome under both readings. The outcome
-      would still rest on that assumption.
 - claim: ed5b-rank1-wins-most
   outcome: reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
@@ -1409,3 +1407,30 @@ verifications:
     reason: Yes. Cell 6 now shows the file tree, the subject fields, the units columns and the "unsorted" quality
       labels.
     response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on ed5k-hmmglm-generalizes-across-rank (not reproduced
+    to reproduced), and the analysis behind it in the executed notebook after the round-2 revision (cells 49,
+    50, 51, 53, 57, 60 and 61), with the claims file and the paper. Nothing else was reviewed. Report in
+    transcripts/001749/verifier-3-report.md.
+  results:
+  - claim: ed5k-hmmglm-generalizes-across-rank
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, provided assumed true is kept. Cell 60: with crossings in either direction, dom to sub, sub
+      to dom, dom 10-fold and sub 10-fold each give 9 of 9 AUCs above 0.5 (sign p = 0.0039), with and without
+      the shift, the lowest AUC 0.580 or more in every case; the criterion is applied as written. The choice
+      is post hoc, but the evidence for it comes from outside the decoding, the count level of the paper''s
+      own input (cell 50): 1.47 times the negative crossings (range 1.21 to 2.11) and 1.06 times the crossings
+      in either direction (0.63 to 1.41), the same rule the record applies to fig1i. The assumption must stay,
+      since the counts here barely follow the paper''s in time under either reading, so the paper''s thresholding
+      or channel order differs in ways Methods 17 does not fix, and a 1.47-fold gap could come from those
+      differences (another noise estimate or filter band). fig1i passes and ed5j fails under both readings,
+      so no other outcome changes, but ed5k''s deviations should say it rests on reading (b) while fig1i and
+      ed5j keep reading (a). The subordinate group still holds only 4 mice (213 trials).'
+    response: Outcome changed to reproduced, assumed true kept, and the proposal removed. The deviations now
+      say the outcome rests on crossings in either direction, that the choice was made after the result was
+      seen and the count level does not settle it, and that fig1i and ed5j keep negative crossings with the
+      same outcome under both readings. The methods_unavailable finding asking the authors stays. The notebook's
+      conclusion and Summary, the README and the attempt notes updated.
