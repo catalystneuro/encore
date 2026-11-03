@@ -1,0 +1,526 @@
+schema_version: 2
+id: 001641-ito-2009-01
+dataset:
+  archive: dandi
+  id: "001641"
+  version: 0.260922.0719
+  doi: 10.48324/dandi.001641/0.260922.0719
+paper: doi:10.1523/jneurosci.6157-08.2009
+date: 2026-11-03
+entry: 001641-ito-2009
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41574775768
+outcomes:
+- claim: trial-counts
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:trial-counts
+  measured: [60211, 70, 6, 39175, 12707, 8329]
+  notes: Both readings of the total give 60,211 trials, as every trial has a cue tone. Choice, no-choice
+    and error trials are 39,175, 12,707 and 8329, exactly as reported, in 70 sessions from 6 rats. The
+    paper's own parts sum to 60,211, 10 fewer than its stated total of 60,221.
+  deviations:
+  - Choice trials are tone-A trials with result 1 or 3 and an L or R choice, no-choice trials tone-B
+    trials with result 1, and all others errors; the result codes are not described in the files and were
+    read from the other columns.
+- claim: block-structure
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:block-structure
+  measured: [104.9, 8.2, 5, 12]
+  notes: Under reading (a), all trials and every block, 104.9 trials per block and 8.2 blocks per session,
+    5 to 12. Counting completed blocks only gives 7.44 blocks and a fewest of 4; counting choice trials only
+    gives 68 to 70 trials per block. Blocks are those of the BlockDesign table (574, of which 521 finished).
+- claim: reaction-time
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:reaction-time
+  measured: [72.1, 0.754]
+  notes: 72.1% of choice-trial reaction times are under 1 s, median 0.754 s, over 39,172 trials. Three
+    choice trials have a negative reaction time (L or R entry recorded before the center exit) and are left
+    out; keeping them changes neither value. The rats range from 35.0% to 91.3% under 1 s.
+  deviations:
+  - Three trials with a negative reaction time were left out as timing errors.
+- claim: tone-discrimination-errors
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:tone-discrimination-errors
+  measured: [0.809, 1.015]
+  notes: Counted from the event series, 317 tone-A trials in which the rat held the cue and made no L or R
+    entry within 60 s (0.81% of choice trials, 0.80% with the errors in the denominator) and 129 tone-B
+    trials with an L or R entry within 1 s of center exit (1.02% and 1.01%). Counted from the rare result
+    codes 5 (tone A) and 4 (tone B), 0.27% and 1.11%. Neither numerator gives both of the paper's 0.39% and
+    0.73% under either denominator. The result codes are undocumented, so the paper's counting may differ
+    from both.
+  deviations:
+  - The numerators are not in the claims file; they were counted from the definitions in the Results
+    (Reaction time and tone discrimination, paragraph 2), from the L and R sensor series, with the result
+    codes as a variant.
+- claim: fig2b-reward-stronger-than-noreward
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2b-reward-stronger-than-noreward
+  measured: [0.6775, 0.6165, 0.3004, 0.3862]
+  notes: Histories within blocks give P(L|L1) 0.678, P(L|R0) 0.617, P(L|R1) 0.300 and P(L|L0) 0.386;
+    within sessions 0.680, 0.616, 0.299 and 0.388. All are in tolerance and in the stated order. The
+    Mann-Whitney tests give p of 7.5e-19 and 4.0e-36 on trials and 3.8e-06 and 2.3e-06 on sessions (history
+    within blocks), all below 0.0001. By rat, P(L|L1) exceeds P(L|R0) in four of six rats.
+- claim: fig2b-two-back-history
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2b-two-back-history
+  measured: [0.6627, 0.7179]
+  notes: P(L|R0 L1) 0.663 and P(L|L1 L1) 0.718 with histories within blocks (0.661 and 0.721 within
+    sessions). The Mann-Whitney test on the choices of the trials that follow each history (O8 a) gives
+    p = 9.1e-07 and 5.9e-08; on per-session probabilities (O8 b) p = 0.032 and 0.012, which do not reach
+    the paper's p < 0.0001. The outcome rests on O8 (a). What the paper's Mann-Whitney tests rank is not
+    stated (Results, History dependence, paragraphs 1 and 2); O8 (a) is adopted because it alone matches the
+    paper's p = 0.94 for P(L|L1 L1 L1 L1) against P(L|R0 L1 L1 L1) (0.919 and 0.938 here, against 0.23 and
+    0.24 under O8 b). Asked of the paper's authors (findings).
+  deviations:
+  - Assumed the Mann-Whitney tests of Fig. 2 rank the 0/1 choices of the trials that follow each history
+    (O8 a); under per-session probabilities (O8 b) the test does not reach p < 0.0001.
+- claim: fig2c-sequence-frequencies
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2c-sequence-frequencies
+  measured: [6.783, 2.942, 2.637, 1.292]
+  notes: With a pair's percentage the sum of the two mirror sequences, the four pairs make 6.78, 2.94, 2.64
+    and 1.29% of 37,463 windows within blocks, and 6.88, 2.87, 2.54 and 1.28% of 38,965 windows within
+    sessions; all are in tolerance and the first three pairs are the three most frequent, in order. The
+    within-session values match the paper's to 0.01. Taking the mean of the two sequences gives half these
+    values and does not match.
+- claim: fig2c-reward-effects-fade
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2c-reward-effects-fade
+  measured: [0.7337, 0.7360]
+  notes: P(L|L1 L1 L1 L1) 0.734 and P(L|R0 L1 L1 L1) 0.736 (within sessions 0.743 and 0.741). The paper's
+    test (O8 a) gives p = 0.919 and 0.938 (paper 0.94); O8 (b) gives 0.23 and 0.24. The left-choice
+    probability rises from 0.678 (L1) to 0.718 (L1 L1) and 0.734 (L1 L1 L1 L1), within 0.075 of 0.75;
+    P(L|L1 L1 L1) is 0.738.
+- claim: fig2d-switching
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2d-switching
+  notes: Under both history readings, after each prefix ending in L0 P(L) is 0.31 to 0.39, and after each
+    ending in R0 it is 0.62 to 0.70; every 99% interval excludes 0.5.
+- claim: fig2e-persevering
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig2e-persevering
+  notes: P(L) after L0 L0, L0 L0 L0 and L0 L0 L0 L0 is 0.464, 0.575 and 0.698 within blocks (0.467, 0.574,
+    0.697 within sessions), rising, with the last two above 0.5. For the mirrored R0 sequence P(R) rises
+    too (0.43, 0.45, 0.51), but P(R|R0 R0 R0) stays below 0.5; the criterion tests the left sequence.
+- claim: fig3-lsq-switching
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig3-lsq-switching
+  measured: [0.01018, 0.0072, 0.00094, 0.00027]
+  notes: Under all eight readings (O7, O1, residual) the residuals are in the order local matching (0.0099
+    to 0.0102) > standard Q (0.0071 to 0.0073) > F-Q (0.00079 to 0.00102) > DF-Q (0.00011 to 0.00027), and
+    switching is represented by F-Q and DF-Q but not by the local matching law or standard Q. The DF-Q
+    residual is outside its tolerance (0.0002 +- 0.00002) under every reading and F-Q is outside under the
+    12-point reading, so the order and switching hold and some values do not. The local matching law's
+    optimum is alpha 0, a constant 0.5.
+  deviations:
+  - Fitted with L-BFGS-B from a grid of starting points under the bounds alpha in [0, 1], kappa1 in [0, 10],
+    kappa2 in [-10, 10] and Q0 in [0, 10]; the paper names no optimizer or bounds (a standard choice).
+- claim: table1-lsq-parameters
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:table1-lsq-parameters
+  measured: [0.32, 2.707, 1.242, 0.974, 0.972, 0.629, 1.0, 0.54, 0.883, 1.145, 1.375, 0.704, 0.0, 0.0]
+  notes: Under O1 (a) 8 of 14 values are within tolerance (6 under O1 b), fewer than the 10 needed for
+    partial reproduction. F-Q alpha, kappa1 and kappa2 and all five DF-Q values match; standard Q (alpha
+    0.30 to 0.32, kappa1 2.71 to 2.85, Q0 1.24 to 1.29), F-Q Q0 and the local matching law (alpha 0 and
+    Q0 0, against 0.05 and 0.07) do not. With alpha1 = alpha2 the initial value cancels from QL - QR, so
+    the F-Q Q0 is not determined by the fit (0.05 to 1.0 here); the paper's 0.00 is one of many equal
+    optima.
+- claim: fig5-markov-accuracy
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-markov-accuracy
+  measured: [0.5283, 0.5318, 0.5336, 0.5319]
+  notes: With the split by alternate sessions (O3 a) the four orders score 0.5283, 0.5318, 0.5336 and
+    0.5319, with order 3 highest and order 4 lower; O3 (b) gives the same order. The random split (O3 c)
+    gives values in tolerance but order 4 (0.5334) above order 3 (0.5332). O3 (a) is adopted because its
+    training set holds exactly the paper's 19,986 choice trials (test 19,189 against 19,186). Both O6
+    readings agree.
+  deviations:
+  - Assumed the training sessions are the alternate sessions in the files' order (O3 a), the only reading
+    whose trial counts match the paper's.
+- claim: fig5-constant-models
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-constant-models
+  measured: [0.5266, 0.5306, 0.5295, 0.5064]
+  notes: In every reading standard Q, F-Q and DF-Q (constant) score 0.5240 to 0.5267, 0.5280 to 0.5308 and
+    0.5283 to 0.5306, within tolerance, above the local matching law. The local matching law scores 0.504 to
+    0.508 under O1 (a) with Qi(1) of 0.1, 0.5 or 1.0 (alpha 0.01), in tolerance; with Qi(1) = 0 it is
+    undefined (0.500 with alpha 0), and under O1 (b) it scores 0.491 to 0.502. F-Q and DF-Q (constant)
+    exceed the first-order Markov model, as the paper's numbers do (not part of the outcome).
+  deviations:
+  - The local matching law with Qi(1) = 0 (Methods) predicts 0/0 at the first trial and probability 1 after
+    the first reward on one side, so its likelihood is 0 after one choice of the other side. Assumed a
+    non-zero initial value (0.1, 0.5 and 1.0 shown, 0.5 reported) for this model only.
+  - Assumed the Q update of O1 (a); under O1 (b) the local matching law falls outside tolerance.
+  - Constant fits use L-BFGS-B (O4 b) and the best point of a 0.05 grid within 3 steps of it in every
+    parameter (O4 a); a full four-parameter grid was not run.
+- claim: fig5-variable-models-best
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-variable-models-best
+  measured: [0.5304, 0.5374, 0.5369]
+  notes: In all 48 readings the three time-varying models are in tolerance and each beats its constant
+    version; the main reading gives 0.5304, 0.5374 and 0.5369 (paper 0.5304, 0.5375, 0.5368). F-Q
+    (variable) is the best model in 40 readings; in the 8 with O1 (b) and clipped drift (O5 b) DF-Q
+    (variable) leads it by at most 0.0002. Under O1 (a), adopted, F-Q is first in every reading.
+  deviations:
+  - The sigma search ran with 1000 particles on a 4 x 4 grid holding the Table 2 values; the chosen sigmas
+    were then run with 5000 particles. The training likelihood surface is flat (within 0.003 over the grid).
+  - Systematic resampling in the particle filter (a standard choice for the offspring numbers the supplement
+    describes).
+  - Assumed the Q update of O1 (a), whose constant fits match Table 2.
+- claim: fig5-fq-dfq-beat-all-models
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-fq-dfq-beat-all-models
+  notes: In the main reading (O3 a, O1 a, O5 a) 15 of 18 comparisons meet the paper's levels. F-Q (variable)
+    against DF-Q (constant) gives p = 0.036 (needs 0.01); DF-Q (variable) against standard Q (variable)
+    p = 0.030 and against DF-Q (constant) p = 0.073. Both beat the third-order Markov model (p = 0.0067 and
+    0.014, two-sided). All 18 pass two-sided in 2 of 48 readings (split b, O1 a, O5 a) and one-sided in 8;
+    under O1 (b) only 4 to 8 pass. The readings disagree, and the main reading is adopted for the reasons
+    under fig5-markov-accuracy and table2-ml-parameters.
+  deviations:
+  - Outcome taken under the main reading (O3 a, O1 a, O5 a); other readings are shown and some reproduce the
+    claim.
+- claim: fig5-fq-dfq-no-difference
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig5-fq-dfq-no-difference
+  notes: In the main reading the two-sided paired Wilcoxon test finds F-Q (variable) better than DF-Q
+    (variable), p = 0.0082, 27 of 35 sessions, median difference 0.00064 (one-sided 0.0041). In 4 of 12
+    readings the test finds a difference and in 8 it does not (p 0.058 to 0.70). The effect is small and
+    favours F-Q, the model the paper prefers.
+  deviations:
+  - Outcome taken under the main reading (O3 a, O1 a, O5 a).
+- claim: binary-prediction-accuracy
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:binary-prediction-accuracy
+  measured: 67.68
+  notes: F-Q (variable) predicts 67.7% of test choices correctly on average in the main reading (sessions
+    60.7 to 77.2%), and 67.0 to 68.0% across the 12 readings.
+- claim: table2-ml-parameters
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:table2-ml-parameters
+  measured: [0.5, 1.2, 0.6, 1.15, 0.55, 0.45, 0.05, 2.25, -1.1, 0.01, 0.02, 0.07, 0.01, 0.07, 0.01, 0.07]
+  notes: In the main reading 8 of 16 values are within 10%, the threshold for partial reproduction; other
+    readings of O3 to O5 under O1 (a) give 6 to 8, and O1 (b) gives 0 to 4. Standard Q kappa1, F-Q alpha1,
+    kappa1 and kappa2, the local matching law's alpha and three of six sigmas match. The DF-Q constant
+    optimum on the split-a training data is alpha1 0.45, alpha2 0.05, kappa1 2.25, kappa2 -1.1, a better
+    likelihood than any point near Table 2's values; on splits b and c it lies near them (alpha1 0.45 to
+    0.60, alpha2 0.30 to 0.50). Sigmas are poorly determined because the training likelihood changes by
+    under 0.003 over the grid.
+  deviations:
+  - Outcome taken under the main reading; under O1 (b) the kappas are about half the size and few values
+    match.
+- claim: table3-parameter-averages
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:table3-parameter-averages
+  measured: [0.45, 1.83, 0.48, 1.64, 1.19, 0.47, 0.51, 1.72, 1.26]
+  notes: With the Table 2 sigmas and O1 (a), all nine means are within tolerance in all 8 readings of O5,
+    O13 and the averaging (pooled trials and O13 a, standard Q 0.45 +- 0.25 and 1.83 +- 0.85, F-Q 0.48 +- 0.27,
+    1.64 +- 0.79 and 1.19 +- 0.82, DF-Q 0.47 +- 0.24, 0.51 +- 0.27, 1.72 +- 0.78 and 1.26 +- 0.86). The SDs
+    over pooled trials are close to the paper's; over sessions they are smaller. Under O1 (b) 6 of 9 means
+    match, the kappas being about half.
+  deviations:
+  - Assumed the Q update of O1 (a), as for Table 2.
+- claim: fig4-strategy-tracking
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig4-strategy-tracking
+  notes: In all 24 readings (O1, O5, O13, run length 5, 10, 15) some win-stay-lose-switch episode ends with
+    F-Q kappa2 within 25% of kappa1 (22 to 725 such episodes of 75 to 2374), some persevering episode ends
+    with kappa2 below 0 (4 to 82 of 4 to 131), and over the episodes F-Q (variable) has the higher mean
+    per-trial likelihood (0.62 to 0.74 against 0.59 to 0.68 for standard Q).
+  deviations:
+  - Runs use the Table 2 sigmas; the representative sessions of Fig. 4 are not identified.
+- claim: suppdata1-choice-vs-q-difference
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:suppdata1-choice-vs-q-difference
+  notes: For all 12 readings (variable and constant versions, three models, two update forms) the
+    left-choice fraction rises over ten equal-count bins of QL - QR, Spearman 1.0, from 0.22 to 0.24 in the
+    lowest bin to 0.73 to 0.78 in the highest.
+- claim: neuron-counts
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:neuron-counts
+  measured: [148, 66]
+  notes: 148 NAc and 66 VP units, from six rats, in 52 of 70 sessions; 18 files have no units table. Rat 44
+    contributes one unit and rat 35 none in the VP.
+- claim: firing-rates
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:firing-rates
+  measured: [10.21, 2.6, 9.14, 2.59]
+  notes: Over the whole recording (O15 a) VP 10.21 +- 9.14 Hz and NAc 2.60 +- 2.59 Hz; over the trials
+    (O15 b) 10.21 +- 9.15 and 2.62 +- 2.61 Hz. Means and SDs are within tolerance and VP is faster in every
+    rat with VP units.
+  deviations:
+  - The files give no recording span; reading O15 (a) takes the session's first to last spike or trial
+    event.
+- claim: fig8b-state-coding
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-state-coding
+  measured: [80, 33]
+  notes: With successful choice and no-choice trials (O14 a) 80 of 148 NAc and 33 of 66 VP units, exactly
+    as reported. With all tone-A and tone-B trials (O14 b) 83 and 37; 37 is outside the VP tolerance. O14
+    (a) is adopted because the Methods compare "choice trials and no-choice trials" (Comparison of perievent
+    time histograms), which the Behavioral task defines as successful trials, separate from error trials.
+  deviations:
+  - Assumed error trials are excluded (O14 a).
+- claim: fig8b-action-value-psth
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-action-value-psth
+  measured: [13, 9, 16, 7, 15, 11, 12, 8, 11, 13, 10, 8]
+  notes: 9 of 12 counts are within 2 neurons; all populations are under 25% of their region (largest 19.7%).
+    NAc QL in phases 1 and 2 (13 and 15 against 9 and 12) and NAc QR in phase 1 (16 against 11) are higher.
+  deviations:
+  - The last 20 choice trials of every block were used, including a session's last, unfinished block; the
+    paper does not say whether it was included.
+- claim: fig8b-action-command-coding
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-action-command-coding
+  measured: [15, 14]
+  notes: 15 of 148 NAc units (expected 17, tolerance 1.7) and 14 of 66 VP units (expected 12, tolerance 1.2)
+    code the upcoming action in phase 3. Each count is 2 from the expected one, NAc below and VP above.
+- claim: fig8b-action-coding
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-action-coding
+  measured: [63, 26]
+  notes: 63 of 148 NAc and 26 of 66 VP units code the chosen action in phase 4 (expected 61 and 26).
+- claim: fig8b-reward-coding
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-reward-coding
+  measured: [96, 44]
+  notes: 96 of 148 NAc and 44 of 66 VP units code reward in phase 5 (expected 93 and 45). The no-reward tone
+    onset was found for all but 695 unit-trials (30 units), whose phase-5 count is missing.
+  deviations:
+  - Phase 5 starts at the reward tone onset or at the onset of a short (under 1.5 s) tone in the SpTone Err
+    series within 1 s after L or R entry, as the no-reward tone is stored there.
+- claim: fig8b-nac-vp-same-event-coding
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-nac-vp-same-event-coding
+  notes: The test as O9 reads it reproduces the paper's p-values from the paper's counts (0.031, 0.0038,
+    0.58). On this dataset it finds no difference for state (54.1% against 50.0%, p = 0.58), action (42.6%
+    against 39.4%, p = 0.66) or reward (64.9% against 66.7%, p = 0.80), but finds one for action command
+    (10.1% NAc against 21.2% VP, p = 0.029; paper p = 0.19).
+- claim: fig8b-ql-vp-higher
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-ql-vp-higher
+  notes: Phase 3, VP 19.7% against NAc 7.4%, p = 0.0088; phase 2, VP 16.7% against NAc 10.1%, p = 0.18. The
+    VP share is higher in both but significant only in phase 3.
+- claim: fig8b-qr-no-region-difference
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8b-qr-no-region-difference
+  notes: Phase 2, NAc 8.1% and VP 12.1% (difference 4.0 points, p = 0.35); phase 3, 6.8% and 12.1% (5.4
+    points, p = 0.19). Neither finds a difference.
+- claim: preference-balance
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:preference-balance
+  measured: [47.5, 36.4, 46.7, 50.0, 54.0, 50.0]
+  notes: No signed-rank test (O11 a, p 0.43 to 0.90) or sign test (O11 b, p 0.16 to 1.0) finds a departure
+    from 50%. Five of six percentages are within tolerance; NAc action command is 46.7% (7 of 15) against
+    53%.
+- claim: nac-noreward-preference
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:nac-noreward-preference
+  measured: [72.9, 52.3]
+  notes: 70 of 96 NAc reward-coding units (72.9%) respond more to the no-reward tone. The sign test (O11 b)
+    gives p = 8e-06, but the signed-rank test of the differences (O11 a) gives p = 0.0032, above the paper's
+    p < 0.0001, so the NAc part fails under one reading. The VP part holds, 23 of 44 (52.3%), signed-rank
+    p = 0.30.
+- claim: core-shell-no-difference
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:core-shell-no-difference
+  notes: Units are labelled NAc or VP only. The files give no core or shell assignment, no bundle
+    coordinates and no per-session depth, so the NAc units cannot be split as the paper's Fig. 6 does. The
+    archive's metadata and the electrode table (location NAc or VP) were checked.
+- claim: fig8c-regression-action-value
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8c-regression-action-value
+  measured: [12.2, 11.5, 9.5, 18.2, 25.8, 24.2, 11.5, 8.1, 10.1, 10.6, 13.6, 16.7]
+  notes: 6 of 12 percentages within tolerance, fewer than the 9 needed for partial reproduction. NAc QL is
+    higher than reported in all three phases (12.2, 11.5, 9.5% against 9, 10, 7%), as are VP QL in phase 1
+    and NAc QR in phase 3; VP QR in phase 2 is lower (13.6 against 17%). One unit had no variance in its
+    last-20 counts and was counted as not coding.
+- claim: fig8c-ql-vp-higher
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8c-ql-vp-higher
+  notes: VP against NAc QL share 25.8% against 11.5% in phase 2 (p = 0.0085) and 24.2% against 9.5% in phase
+    3 (p = 0.0041), both p < 0.01 (paper 0.007 and 0.0001).
+- claim: fig8c-regression-detects-more
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8c-regression-detects-more
+  notes: Regression 165 QL- and QR-coding units over phases and regions, block comparison 133 (paper about
+    146 and 116). The VP has the larger QL share in phases 2 and 3 in both analyses.
+- claim: fig8d-state-value-vp-higher
+  outcome: not_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8d-state-value-vp-higher
+  measured: [12.8, 10.8, 10.8, 13.6, 13.6, 19.7]
+  notes: 2 of 6 percentages match (NAc phase 1, VP phase 3). The VP share is higher than the NAc's in phases
+    2 and 3 (13.6 against 10.8%, 19.7 against 10.8%) but not significantly (p = 0.55 and 0.080).
+- claim: fig8d-policy
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8d-policy
+  measured: [7.4, 8.8, 7.4, 13.6, 16.7, 16.7]
+  notes: 5 of 6 percentages match; NAc phase 1 is 7.4% against 10% (outside 2 neurons).
+- claim: fig8-above-chance
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig8-above-chance
+  notes: All 44 populations of Fig. 8B to 8D give p < 0.01 under both chance levels (largest p 4.7e-06).
+- claim: fig9-state-information
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-state-information
+  notes: In all 12 readings (window placement, random events) and both regions, state MI within 0.5 s after
+    cue onset (0.030 to 0.057 bits/s) is above threshold and above the 0.5 s before (0.0003 to 0.027), and the
+    exit-aligned curve has a later local maximum above threshold (0.108 to 0.121 bits/s at 0.8 to 2.1 s)
+    exceeding its value at the exit (0.033 to 0.040).
+  deviations:
+  - Time ranges of the curves (-1 to 3 s from cue onset, -2 to 4 s from center exit) are a standard choice;
+    the paper's figure, not readable here, sets its own.
+- claim: fig9-action-information
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-action-information
+  notes: Action MI before center exit averages 0.003 to 0.009 bits/s, under a fifth of the peak (0.048 to
+    0.059), and peaks 0.3 to 1.1 s after exit, within 0.5 s of the median reaction time (0.754 s), in all
+    readings and both regions.
+- claim: fig9-reward-information
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-reward-information
+  notes: Reward MI peaks at 0.093 (NAc) and 0.106 (VP) bits/s 1.3 to 1.9 s after center exit, decreases, and
+    the previous trial's reward is above threshold around the next cue onset (0.015 to 0.019 bits/s) in all
+    readings. Before the median L or R entry it is low but above threshold in 16 to 28 of 23 to 28 windows
+    (up to 0.0044 NAc and 0.0070 VP against thresholds up to 0.0023 and 0.0033), so the part "below
+    threshold before entry" fails while the rise and the persistence hold. The criterion gives no partial
+    rule; the outcome follows the protocol's "holds only in part".
+- claim: fig9-action-value-information-low
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:fig9-action-value-information-low
+  notes: In all 48 readings QL and QR MI exceed the threshold in every window, peak at 0.013 to 0.030 bits/s
+    against 0.108 to 0.121 for state, action and reward, and their maxima are 1.13 to 1.82 times their
+    medians.
+- claim: action-information-outlasts-reward-peak
+  outcome: reproduced
+  notebook: reproduce_ito_2009.ipynb
+  output: claim:action-information-outlasts-reward-peak
+  notes: At the reward MI peak (1.3 to 1.9 s after exit) action MI is 0.027 to 0.032 bits/s and 0.5 s later
+    0.019 to 0.026, above thresholds of at most 0.0027, in all readings and both regions.
+findings:
+- kind: metadata_insufficient
+  statement: The trial table's `result` column says "Refer to the Discription in 'Result' column", but no
+    such description is in the files. Codes 1 to 5 occur (33,243, 8084, 18,639, 141 and 104 trials). Codes
+    1 and 3 can be read from the other columns (rewarded or successful, and unrewarded choice); the error
+    codes 2, 4 and 5 cannot be told apart with certainty, so the paper's error rates (0.39% and 0.73%) could
+    not be recounted.
+- kind: metadata_error
+  statement: The no-reward tone of choice trials (500 Hz, 250 ms) is stored in the `SpTone Err` and `ViTone
+    Err` series, named as the error tone, together with the error tone; the two are told apart only by their
+    duration (about 0.3 s and 2 s).
+- kind: other
+  statement: The error tone lasts about 2 s in the event series (8299 tones over 1.5 s), where the paper's
+    Behavioral task gives 1000 ms.
+- kind: metadata_insufficient
+  statement: Units carry only `Area` (NAc or VP) and an electrode number. The NAc core and shell assignment
+    the paper uses (Fig. 6, supplemental Data 3), the bundle positions and the per-session depth are not in
+    the dataset.
+- kind: other
+  statement: 18 of the 70 files have no units table (11 of the 12 sessions of rat 44, and seven others); the
+    files do not say whether no unit was recorded or none was accepted in these sessions. Units in the other
+    52 sessions match the paper's counts (148 NAc, 66 VP).
+- kind: other
+  statement: Three choice trials have an L or R entry time before the center-hole exit (reaction times of
+    -19,829, -11,554 and -5.2 s), and one error trial has no `state`.
+- kind: paper_inconsistency
+  statement: The paper reports 60,221 trials, but its parts (39,175 choice, 12,707 no-choice and 8329 error
+    trials) sum to 60,211, the number of trials in the dataset; the parts match the dataset exactly.
+- kind: paper_inconsistency
+  statement: The Results say the constant-parameter Q models predict worse than the first- or second-order
+    Markov models, but the reported F-Q and DF-Q (constant) values (0.531) exceed the first-order Markov
+    model (0.528); the dataset agrees with the numbers (0.5306 and 0.5295 against 0.5283).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The Q update (Methods, equation 3) is an image missing from
+    the text. Is the chosen action's value updated as (1 - alpha1) Q + alpha1 kappa1 after reward and
+    (1 - alpha1) Q - alpha1 kappa2 after no reward (assumed here, as it reproduces Table 2 and Table 3), or
+    with kappa1 and -kappa2 added without the factor alpha1? Table 1 to 3 and the model comparison depend on
+    it.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the 70 sessions divided into training and test
+    sets? Alternate sessions in the order of the files (sorted by rat and session) gives exactly 19,986
+    training choice trials, as reported, and was assumed; the test set then has 19,189 trials, not 19,186.
+    The paired tests of Fig. 5 (fig5-fq-dfq-beat-all-models, fig5-fq-dfq-no-difference) change outcome with
+    the split.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. With Qi(1) = 0, the local matching law P(L) = QL / (QL + QR)
+    is undefined at the first trial and predicts one side with probability 1 after the first reward. What
+    initial value, or what rule, gave its normalized likelihood of 0.508? A non-zero initial value (0.1 to
+    1.0) was assumed and gives 0.504 to 0.508.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. What do the Mann-Whitney tests of Fig. 2B and 2C rank, the
+    0/1 choices of all trials following each history (assumed; it gives p = 0.92 to 0.94 for the Fig. 2C test
+    the paper reports as 0.94) or per-session probabilities? Under the latter, P(L|R0 L1) against
+    P(L|L1 L1) gives p = 0.01 to 0.03, not p < 0.0001.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were sigma_alpha and sigma_kappa searched, and was the
+    random walk of alpha bounded? The training likelihood varies by under 0.003 over sigma_alpha 0.0025 to
+    0.02 and sigma_kappa 0.05 to 0.15, so the fitted sigmas (Table 2) and the paired tests of Fig. 5 depend
+    on the search and on particle-filter noise.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. In the state-coding test (Fig. 8B), were error trials with a
+    cue tone included? Excluding them (assumed) gives exactly 80 and 33 state-coding units; including them
+    gives 83 and 37.
