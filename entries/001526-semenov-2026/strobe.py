@@ -157,10 +157,15 @@ def table(max_workers: int = 16) -> pd.DataFrame:
 
 
 def read_stack(asset_id: str) -> np.ndarray:
-    """The 100 images of a file, as float32 (frames, rows, columns)."""
+    """The 100 images of a file, as float64 (frames, rows, columns).
+
+    float64 throughout: in float32 the sums could round differently on
+    different CPUs and move a traced edge by a sampling step, the likely
+    reason printed values changed in the third decimal between executions.
+    """
     f, io, nwb = _open(asset_id)
     try:
-        return np.asarray(nwb.acquisition["StrobeImaging"].data[:], dtype=np.float32)
+        return np.asarray(nwb.acquisition["StrobeImaging"].data[:], dtype=np.float64)
     finally:
         io.close()
         f.close()
@@ -260,7 +265,7 @@ def trace_coords(center, rm):
 
 def sample_trace(stack: np.ndarray, coords) -> np.ndarray:
     """Mean intensity across the trace width at each of the 360 points, per image: (frames, 360)."""
-    out = np.empty((stack.shape[0], N_POINTS), np.float32)
+    out = np.empty((stack.shape[0], N_POINTS), np.float64)
     for k in range(stack.shape[0]):
         v = ndimage.map_coordinates(stack[k], coords.reshape(2, -1), order=1)
         out[k] = v.reshape(N_POINTS, TRACE_WIDTH).mean(1)
@@ -326,7 +331,7 @@ def process(asset_id: str, ref: dict | None = None, outermost: bool = False) -> 
     tr = sample_trace(st, coords)
     ann = annulus_mask(base.shape, c, float(np.median(rm)), lab)
     bg = np.median(st[:, ann], axis=1) if ann.sum() > 50 else np.full(st.shape[0], np.nan)
-    out = dict(asset_id=asset_id, trace=tr, bg=bg.astype(np.float32), center=c, radius=float(np.median(rm)),
+    out = dict(asset_id=asset_id, trace=tr, bg=bg.astype(np.float64), center=c, radius=float(np.median(rm)),
                 rm=rm, shift=shift, frame_mean=st.reshape(st.shape[0], -1).mean(1), n_annulus=int(ann.sum()),
                 base=base, floor=float(np.percentile(base, 0.1)))
     if ref is None:

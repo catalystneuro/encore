@@ -22,7 +22,9 @@ The outcomes marked as resting on assumptions depend on whether and how a cell-f
 subtracted before dF is computed, which the paper does not say for these images (the adopted reading
 subtracts the background recording made with each cell), and on which cells form the paper's group
 of 8: the dataset holds 11, and without the two whose sets depart from the described order before
-the exposure, all three Fig. 2C/D claims are met. The files give amplitudes in volts, not field
+the exposure, all three Fig. 2C/D claims are met under the background recording and annulus
+readings. The background recording was adopted after the results under both readings had been
+seen, in the revision in which the annulus reading stopped meeting the Fig. 2C claim. The files give amplitudes in volts, not field
 strengths, and do not say which cell in each field was analysed. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/001526-semenov-2026-01.yaml`](../../attempts/001526-semenov-2026-01.yaml).
