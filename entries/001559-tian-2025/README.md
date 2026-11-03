@@ -22,11 +22,12 @@ reasoning and the differences from the paper's method.
 The files hold no stimulus table. The stimulus times come from a marker recorded as image
 channel 1 of the PMT acquisitions, and nothing records which electrode or current each session
 used, so the four stimulated sessions are taken as the four conditions and the two with the larger
-responses as the 4 mA ones. The speckle movies carry no stimulus times. The attempt record, with
+responses as the 4 mA ones. The speckle movies carry no stimulus times; the notebook describes
+the whole time course of their speckle contrast, as a partial look and not a test. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/001559-tian-2025-01.yaml`](../../attempts/001559-tian-2025-01.yaml).
 
-- `reproduce_tian_2025.ipynb`: the analysis. It takes about eight minutes, most of it streaming
+- `reproduce_tian_2025.ipynb`: the analysis. It takes about nine minutes, most of it streaming
   the files.
 - `ebric.py`: loading the files, the stimulus marker, trial responses, averages, peak and rise
   times, and image projections. Other notebooks on this dandiset can import it.

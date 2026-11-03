@@ -129,6 +129,20 @@ def describe(asset):
     }
 
 
+def layout(asset):
+    """Top-level groups of one file and what the data-bearing ones hold, without reading data."""
+    f = open_asset(asset)
+    out = {"path": asset.path.split("/")[-1], "top level": sorted(f)}
+    for g in ("acquisition", "stimulus", "intervals", "processing", "analysis"):
+        if g in f:
+            sub = f[g]
+            out[g] = sorted(f"{k}/{'/'.join(sorted(sub[k]))}" if isinstance(sub[k], h5py.Group) and k in ("presentation", "templates")
+                            else k for k in sub)
+        else:
+            out[g] = None
+    return out
+
+
 def survey(workers=8):
     with ThreadPoolExecutor(workers) as ex:
         return pd.DataFrame(list(ex.map(describe, assets())))
@@ -226,8 +240,11 @@ def trial_table(t, x, onsets, windows=WINDOWS, baseline_s=BASELINE_S):
     rows = []
     for i, t0 in enumerate(onsets):
         b = (t >= t0 - baseline_s) & (t < t0)
+        # The 1 s centred average of the last 0.5 s of the baseline takes in signal after onset;
+        # `baseline_sd_smoothed_pre` leaves those bins out (a variant).
+        bp = (t >= t0 - baseline_s) & (t < t0 - SMOOTH_S / 2)
         row = {"trial": i, "onset_s": t0, "baseline": x[b].mean(), "baseline_sd_smoothed": xs[b].std(ddof=1),
-               "n_baseline_bins": int(b.sum())}
+               "baseline_sd_smoothed_pre": xs[bp].std(ddof=1), "n_baseline_bins": int(b.sum())}
         for k, (w0, w1) in windows.items():
             w = (t >= t0 + w0) & (t < t0 + w1)
             row[f"resp_{k}"] = x[w].mean() - x[b].mean()
@@ -236,10 +253,11 @@ def trial_table(t, x, onsets, windows=WINDOWS, baseline_s=BASELINE_S):
     return pd.DataFrame(rows)
 
 
-def event_average(t, x, onsets, pre=BASELINE_S, post=15.0):
-    """Trials aligned on onset, on a common grid of bin times; the 1 s smoothed signal."""
+def event_average(t, x, onsets, pre=BASELINE_S, post=15.0, smoothed=True):
+    """Trials aligned on onset, on a common grid of bin times; the 1 s smoothed signal, or the
+    unsmoothed one with `smoothed=False` (a variant)."""
     dt = float(np.median(np.diff(t)))
-    xs, _ = smooth(x, dt)
+    xs = smooth(x, dt)[0] if smoothed else x
     grid = np.arange(-pre, post, dt)
     tr = []
     for t0 in onsets:
@@ -249,18 +267,27 @@ def event_average(t, x, onsets, pre=BASELINE_S, post=15.0):
     return grid, np.array(tr)
 
 
-def peak_and_rise(grid, avg, baseline_s=BASELINE_S, peak_window=(0.0, 10.0)):
-    """Time of the maximum within the peak window, and first time after onset above half peak.
+def peak_and_rise(grid, avg, baseline_s=BASELINE_S, peak_window=(0.0, 10.0), rise="first"):
+    """Time of the maximum within the peak window, and the time of rise to half the peak.
 
-    Both relative to the mean of the averaged trace in the 5 s before onset.
+    Both relative to the mean of the averaged trace in the 5 s before onset. `rise="first"` is
+    the criterion's reading: the first time after onset above half the peak. `rise="crossing"`
+    is a variant for a trace already above half its peak at onset: the start of the run above
+    half peak that holds the peak, searched from the start of the baseline, so it can be before
+    onset.
     """
     base = avg[(grid >= -baseline_s) & (grid < 0)].mean()
     y = avg - base
     w = (grid >= peak_window[0]) & (grid < peak_window[1])
     ip = np.argmax(np.where(w, y, -np.inf))
     half = y[ip] / 2
-    after = np.where((grid >= 0) & (y > half))[0]
-    return {"peak_time_s": grid[ip], "peak": y[ip], "rise_time_s": grid[after[0]] if after.size else np.nan}
+    if rise == "first":
+        after = np.where((grid >= 0) & (y > half))[0]
+        rt = grid[after[0]] if after.size else np.nan
+    else:
+        below = np.where((grid >= -baseline_s) & (np.arange(grid.size) < ip) & (y <= half))[0]
+        rt = grid[below[-1] + 1] if below.size else np.nan
+    return {"peak_time_s": grid[ip], "peak": y[ip], "rise_time_s": rt}
 
 
 def shifted_null(t, x, onsets, n=1000, seed=0, window=WINDOWS["a"]):
@@ -333,3 +360,52 @@ def speckle_head(asset, n_frames=400, block=8):
         K.append(x.std((2, 4)) / np.maximum(m, 1e-3))
         M.append(m)
     return np.concatenate(K), np.concatenate(M), float(s["starting_time"].attrs["rate"])
+
+
+def _speckle_part(args):
+    path, start, stop, block, region = args
+    a = next(x for x in assets() if x.path == path)
+    f = open_asset(a)
+    _, s = _series(f)
+    d = s["data"]
+    c = d.chunks[0]
+    R, Ksum, Kn = [], None, np.zeros(4)
+    for i in range(start, stop, c):
+        x = d[i:min(i + c, stop)].astype(np.float32)
+        h, w = x.shape[1] // block, x.shape[2] // block
+        x = x[:, :h * block, :w * block].reshape(-1, h, block, w, block)
+        m = x.mean((2, 4))
+        k = x.std((2, 4)) / np.maximum(m, 1e-3)
+        hr, wr = h // region, w // region
+        R.append(k[:, :hr * region, :wr * region].reshape(-1, hr, region, wr, region).mean((2, 4)))
+        if Ksum is None:
+            Ksum = np.zeros((4, h, w))
+        for j in range(k.shape[0]):
+            Ksum[(i + j) % 4] += k[j]
+            Kn[(i + j) % 4] += 1
+    return np.concatenate(R), Ksum, Kn
+
+
+def speckle_timecourse(asset, block=8, region=5, workers=8, part_frames=500):
+    """Block speckle contrast K over every frame of one movie, read in parallel processes.
+
+    K = s.d./mean in `block` x `block` pixels (8 x 8, a standard choice for spatial speckle
+    contrast), averaged over `region` x `region` blocks (40 x 40 pixels) for the time course.
+    Returns (frames x regions-y x regions-x array of K, mean block K map per exposure phase
+    (frame index mod 4), rate). Separate processes are used because h5py reads serialise in
+    threads.
+    """
+    import multiprocessing as mp
+    f = open_asset(asset)
+    _, s = _series(f)
+    n = s["data"].shape[0]
+    rate = float(s["starting_time"].attrs["rate"])
+    c = s["data"].chunks[0]
+    part = max(c, part_frames // c * c)
+    jobs = [(asset.path, i, min(i + part, n), block, region) for i in range(0, n, part)]
+    with mp.get_context("fork").Pool(workers) as pool:
+        out = pool.map(_speckle_part, jobs)
+    R = np.concatenate([o[0] for o in out])
+    Ksum = sum(o[1] for o in out)
+    Kn = sum(o[2] for o in out)
+    return R, Ksum / Kn[:, None, None], rate

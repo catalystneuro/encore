@@ -46,14 +46,21 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notebook: reproduce_tian_2025.ipynb
+  output: claim:fig4c-speckle-responsive-region
   notes: The three 2025-04-07 movies (40 Hz, 1000 by 920 pixels, 108 to 147 s) are present; their
     frames cycle through four exposure levels and their contrast maps show the vessel tree,
     consistent with multi-exposure laser speckle imaging. They carry no stimulus marker,
-    stimulus times or description, so the comparison of stimulation with the time before it
-    cannot be formed. While preparing (not in the notebook), the spectrum of the whole-field
-    flow index 1/K^2 of all frames of the three movies showed no peak at a stimulation period;
-    finding stimulation periods from the flow itself would assume the response the claim
-    tests. The registration of the speckle field to the eBRIC region is also not recorded.
+    stimulus times or description (no file has an intervals group, and the stimulus group is empty
+    in all 35), so the comparison of stimulation with the time before it cannot be formed; finding
+    stimulation periods from the flow itself would assume the response the claim tests. The
+    registration of the speckle field to the eBRIC region is also not recorded. As a partial look,
+    not a test, the notebook reads every frame. The whole-field flow index (1/K^2 relative to its
+    median) has an s.d. of 0.8% to 4.5% in exposure phases 1 to 3 (5.9% to 11.3% in phase 0);
+    departures of its 1 s smoothed value from a 30 s running median pass 3 robust s.d. at most three
+    times per movie in phases 1 to 3 (0.9% to 2.6%); the spectrum between 2 and 33 s peaks at 30 s
+    in phases 1 to 3 except phase 1 of 12:49 (4.6 s); regions of 40 by 40 pixels share a median of
+    6% to 12% of their fluctuation variance with the whole field. No repeated change at a regular
+    period is seen, and whether any change is a response cannot be told.
 - claim: fig4d-steady-baseline
   outcome: partially_reproduced
   assumed: true
@@ -64,10 +71,16 @@ outcomes:
     4 mA response of 17.44 (window a) and 14.13 (window b). Three of four recordings meet the
     criterion in both channels and both windows; the 14:50 recording does not (channel 3, 17.53
     against 16.61 and 13.60). The channel 4 level also rises by 6.39 and 11.02 units within the
-    two unstimulated recordings before it, and from about 352 to about 402 over the six
-    recordings of the day. With the 4 mA reference taken from the two weak sessions (2.49 or
+    two unstimulated recordings before it, and from about 352 to about 402 over the six recordings
+    of the day, a rise larger than the mean 4 mA response; the criterion judges each recording, so
+    this does not enter the outcome, but the level is not steady across the recordings. With the 4
+    mA reference taken from the two weak sessions (2.49 or
     2.02), the 14:55 recording fails as well; with any pairing that includes one strong
-    session, the same three recordings pass.
+    session, the same three recordings pass. With a straight-line trend in place of the
+    first-to-last difference, 14:50 still fails in channel 4 (16.11 over the trial baselines and
+    18.00 over all bins outside the responses); in channel 3 (15.18 and 15.08) it passes against
+    window a (16.61) and fails against window b (13.60); the 14:55 trend over its whole recording
+    (13.83, channel 4) is close to the window b reference (14.13).
   deviations:
   - The criterion compares the drift with the 4 mA response in the same recording, but each
     recording here holds one condition. The comparison is with the mean 4 mA response of the
@@ -77,7 +90,11 @@ outcomes:
     stimulated sessions are the four conditions of Figure 4D and that the two with the larger
     mean responses are the 4 mA ones. The paper says the 4 mA condition gives the response
     strong enough to detect single events (Results, In Vivo BLI, paragraph 1), which supports
-    the larger responses being 4 mA. Every pairing is shown.
+    the larger responses being 4 mA. Every pairing is shown. The per-trial responses in trial order
+    show no alternation or blocks within a session (odd against even trials and first against second
+    half, Mann-Whitney p 0.31 to 0.89); every trial of the two strong sessions is 7.64 or more, and
+    one of the 18 trials of the weak sessions (7.77) is above that. This is consistent with one
+    current per session but does not show it.
   - Assumed that channel 4 is the PMT with the 645/65 filter (Methods, Surgery Preparation and
     Bioluminescence Recording), from the 2025-06-09 images where channel 4 shows the red
     expression without the FITC-dextran vessels and channel 3 shows both. Channel 3 is shown and
@@ -123,7 +140,9 @@ outcomes:
     0.50. The 2 mA fractions are 0.20 to 0.50 (channel 4). The single-pulse variant does not show
     responses to individual pulses; the folded modulation at the 0.2 s period during
     stimulation is 0.31 and 0.47 against 0.27 and 0.37 in the 5 s before (channel 4, the two
-    4 mA sessions), per-trial p 0.11 to 0.13.
+    4 mA sessions), per-trial p 0.11 to 0.13. With the baseline s.d. taken without its last 0.5 s
+    (whose centred 1 s average takes in signal after onset), every 4 mA fraction stays 1.0 and the 2
+    mA pooled fractions are 0.17 to 0.44.
   deviations:
   - Rests on the same assumed current assignment and channel as fig4d-steady-baseline.
   - The single-pulse variant uses the line signal (0.46 ms per line), with each stimulation
@@ -141,8 +160,14 @@ outcomes:
     half its peak at onset. At the assumed 4 mA neither session has both later times (channel 4
     peaks both at 3.71 s, rises 1.42 and 1.01 s; channel 3 peaks 3.24 and 3.95 s with rises 1.18
     and 0.89 s). So the criterion's condition holds at one current, the weaker, under the
-    assumed pairing. The dataset does not label the electrodes, so no session can be named
-    region 1.
+    assumed pairing. The dataset does not label the electrodes, so no session can be named region 1.
+    The 15:04 rise of 0.005 s is a step at onset. Its unsmoothed average is 0.77 above baseline in
+    the second before onset and above half its peak (1.27) from the first bin after onset (mean 2.54
+    over 0 to 0.5 s); the centred 1 s average moves the step earlier, so the smoothed trace is
+    already 1.69 at onset. With the rise taken as the start of the run above half peak (-0.23 s for
+    15:04, 2.54 s for 14:50) or from the unsmoothed average (0.005 and 2.36 s), 14:50 still has both
+    later times at the assumed 2 mA in both channels, and neither 4 mA session does. The 15:04
+    session is the one whose increase does not pass every reading of fig4d-evoked-increase.
   deviations:
   - Rests on the same assumed current assignment and channel as fig4d-steady-baseline; under the
     other pairings of sessions into currents, some session also has both later times at one
@@ -269,3 +294,177 @@ findings:
   statement: Question for the paper's authors. When was the whisker pad stimulated during the
     three speckle movies of 2025-04-07, and how was the speckle response of Figure 4C measured?
     The files record no stimulus times.
+verifications:
+- date: 2026-11-03
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 1. The handover of the first run (the executed notebook with the conclusions and
+    summary removed, the helper module and the claims file), the paper under paper/, and the
+    archive's asset metadata. The verifier did not have the attempt record.
+  results:
+  - claim: fig4b-expression-healthy
+    agrees: true
+    outcome: reproduced
+    reason: Cell 24 finds 91 to 184 bright, compact objects in the channel 4 cell stack, and the
+      wide field shows labelled tissue around dark vessels. The notebook checks cell bodies only,
+      not processes, which rest on the image as displayed. "Three months after surgery" cannot be
+      checked, since the surgery date is not in the metadata and the stacks were taken 63 days
+      after the first recording through the window.
+    response: No change of outcome. The notes already say that processes are not resolved one by
+      one and are judged from the image; no measure here separates processes from neuropil, since
+      the files give neither a usable pixel size nor the z step.
+  - claim: fig4c-speckle-responsive-region
+    agrees: true
+    outcome: blocked
+    reason: The archive metadata confirms there are no stimulus times for the 2025-04-07 movies.
+      But the notebook read only the first 400 frames (10 s) of each 108 to 147 s movie, so the
+      time course of speckle contrast over the expression region was never looked at; even without
+      stimulus times it could report whether contrast shows episodic changes and how large they
+      are, as a partial test labelled as such.
+    response: Outcome kept. The notebook now reads every frame of the three movies in parallel
+      processes (ebric.speckle_timecourse) and reports, per movie and exposure phase, the size of
+      the whole-field flow index changes, the episodes above 3 robust s.d., the spectral peak and
+      how much each 40 by 40 pixel region shares with the whole field, labelled as a partial look,
+      not a test. Since the speckle field is not registered to the eBRIC region, it uses the whole
+      field and the regions. A sanity cell now lists every file's top-level groups, showing no
+      intervals group and an empty stimulus group in all 35 files.
+  - claim: fig4d-steady-baseline
+    agrees: true
+    outcome: partially_reproduced
+    reason: Three of four recordings have a baseline change smaller than the 4 mA mean response;
+      session 145053 fails narrowly (18.34 against 17.44 on channel 4, 17.53 against 16.61 on
+      channel 3). Across the day the channel 4 level rises from about 352 to 402 over all six
+      sessions, unstimulated ones included, which is larger than the 4 mA response, and the
+      first-to-last measure hides it. The use of a 4 mA reference from other sessions is stated
+      and unavoidable.
+    response: No change of outcome. A variant with a straight-line trend over the trial baselines
+      and over all bins outside the responses was added; 14:50 still fails on channel 4 and passes
+      or fails on channel 3 by window. The conclusion and notes now say that the rise over the day
+      is larger than the 4 mA response and that the level is not steady across the recordings,
+      while the criterion judges each recording.
+  - claim: fig4d-evoked-increase
+    agrees: true
+    outcome: blocked
+    reason: Channel 4, window (a) with the t-test gives 4 of 4 conditions; Wilcoxon gives 3 of 4,
+      and window (b) gives 3 of 4 with either test. The failing condition is session 150418. The
+      criterion says readings that disagree give methods_underspecified. Channel 3 agrees, though
+      its count under window (a) with Wilcoxon is 2 of 4 against 3 of 4.
+    response: No change. The notes already give the channel 3 counts (two or three of four).
+  - claim: fig4d-4ma-single-trials
+    agrees: false
+    outcome: reproduced
+    reason: In the assumed 4 mA sessions 100% of trials are detected under both windows, k = 2 and
+      k = 3, on both channels, and the fraction stays above half under 5 of the 6 ways of choosing
+      the two 4 mA sessions; the exception (0.278) makes the two weakest sessions the 4 mA ones,
+      which contradicts the paper. The verifier gives it as reproduced, conditional on the
+      unverified session-to-current assumption and on fig4d-evoked-increase, which is blocked.
+    response: Outcome kept as blocked, methods_underspecified, and the disagreement recorded. The
+      claims file lists fig4d-evoked-increase under depends_on, and the protocol blocks a claim
+      that depends on a blocked claim for the same reason; the notes give the result of the test
+      as run. Per-trial responses in trial order are now printed for every session, testing one
+      condition per session as far as the data allow (no alternation or blocks; consistent with,
+      not shown). The baseline s.d. without its last 0.5 s is shown as a variant; every 4 mA
+      fraction stays 1.0.
+  - claim: fig4d-electrode-timing
+    agrees: false
+    outcome: partially_reproduced
+    reason: At 2 mA, 145053 has both the later peak and the later rise, which formally meets the
+      criterion, but the earlier rise of 0.005 s comes from 150418, whose response does not pass
+      every reading of fig4d-evoked-increase; its averaged trace is already above half its peak at
+      onset, possibly carried over from earlier trials, so this is not a rise after onset. At 4 mA
+      the peak times tie at 3.714 s and no electrode is later on both measures.
+    response: Outcome kept as blocked, methods_underspecified, since the claim depends on
+      fig4d-evoked-increase, and the disagreement recorded. The notebook now prints the averaged
+      traces from -2 to +3 s, smoothed and unsmoothed, with baselines. The unsmoothed 150418
+      average is 0.77 above baseline in the second before onset and passes half its peak in the
+      first bin after onset, so its early rise is a step at onset that the centred 1 s average
+      moves earlier, with a smaller elevation before it. Two variants of the rise time (start of
+      the run above half peak; unsmoothed average) give the same result, 145053 later on both at
+      the assumed 2 mA and no session at 4 mA. The notes now say that 150418 is the session whose
+      increase does not pass every reading.
+  - claim: fig5-bla-footshock-increase
+    agrees: true
+    outcome: blocked
+    reason: The archive lists 35 NWB files from one subject, all cortical imaging; there are no
+      BLA, footshock or camera data.
+    response: No change.
+  - claim: fig5-brep-minimal
+    agrees: true
+    outcome: blocked
+    reason: The archive lists 35 NWB files from one subject, all cortical imaging; there are no
+      BLA, footshock or camera data.
+    response: No change.
+  - claim: fig5-10hz-imaging
+    agrees: true
+    outcome: blocked
+    reason: The archive lists 35 NWB files from one subject, all cortical imaging; there are no
+      BLA, footshock or camera data.
+    response: No change.
+  - claim: fig5-double-bric
+    agrees: true
+    outcome: blocked
+    reason: The archive has no Figure 5 data, and for this with_inputs claim the eBRIC value from
+      Figure 5C is also absent.
+    response: No change.
+  - claim: fig1a-lysate-18fold
+    agrees: true
+    outcome: blocked
+    reason: None of the 35 assets is in vitro data; confirmed against the archive.
+    response: No change.
+  - claim: fig1b-mutations
+    agrees: true
+    outcome: blocked
+    reason: None of the 35 assets is in vitro data; confirmed against the archive.
+    response: No change.
+  - claim: fig1d-purified-response
+    agrees: true
+    outcome: blocked
+    reason: None of the 35 assets is in vitro data; confirmed against the archive.
+    response: No change.
+  - claim: fig1e-kd
+    agrees: true
+    outcome: blocked
+    reason: None of the 35 assets is in vitro data; confirmed against the archive.
+    response: No change.
+  - claim: lysate-brightness
+    agrees: true
+    outcome: blocked
+    reason: None of the 35 assets is in vitro data; confirmed against the archive.
+    response: No change.
+  - claim: fig2b-hela-5fold
+    agrees: true
+    outcome: blocked
+    reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
+      none are in the 35 assets.
+    response: No change.
+  - claim: fig2c-hek-3p5fold
+    agrees: true
+    outcome: blocked
+    reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
+      none are in the 35 assets.
+    response: No change.
+  - claim: fig3-neurons-7p3fold
+    agrees: true
+    outcome: blocked
+    reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
+      none are in the 35 assets.
+    response: No change.
+  - claim: cell-brightness
+    agrees: true
+    outcome: blocked
+    reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
+      none are in the 35 assets.
+    response: No change.
+  - claim: hek-spectrum
+    agrees: true
+    outcome: blocked
+    reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
+      none are in the 35 assets.
+    response: No change.
+  - claim: table-s1-fold-gains
+    agrees: true
+    outcome: blocked
+    reason: No cell-culture data in the dandiset. The description promises analysis scripts, but
+      none are in the 35 assets.
+    response: No change.
