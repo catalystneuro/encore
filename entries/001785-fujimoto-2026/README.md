@@ -14,7 +14,8 @@ micrographs of the cingulum bundle.
 | FA rises in the stimulated CB, mid-cingulate part only, in both animals; no other tract changes | Reproduced (four claims) |
 | More CC1-positive oligodendrocytes in the stimulated MCC-CB, DAPI unchanged | Reproduced (two claims) |
 | No oligodendrocyte change in the dACC-CB | Not reproduced |
-| No oligodendrocyte change in the UF-FM overlap, nor in the implanted control | Reproduced, resting on an assumed size filter |
+| No oligodendrocyte change in the UF-FM overlap | Reproduced |
+| No oligodendrocyte change in the implanted control | Blocked: the size filter, which the paper does not give, decides the outcome |
 | Lower g-ratio in the stimulated MCC-CB | Blocked: hand measurements not in the dandiset |
 | Seed connectivity of the SCC: before DBS, decreases, increases, both monkeys, both hemispheres, networks, no motor or visual change, SAN | Reproduced (ten claims) |
 | FA and connectivity in the implanted control | Reproduced (four claims) |
@@ -25,7 +26,8 @@ reasoning and the differences from the paper's method.
 
 The dandiset has no tract or ROI masks. Which voxel belongs to which tract, CB subregion or target
 ROI is taken from the paper's source data in DANDI:001773, so the FA and seed results repeat the
-paper's statistics on the dandiset's values. Cells are counted here from the images. The attempt
+paper's statistics on the dandiset's values. Cells are counted here from the images, by an
+automatic approximation of the paper's FIJI counts that matches them in three of the four regions. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/001785-fujimoto-2026-01.yaml`](../../attempts/001785-fujimoto-2026-01.yaml).
 
