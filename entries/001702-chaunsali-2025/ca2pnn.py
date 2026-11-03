@@ -11,7 +11,8 @@ SHA-256 recorded in `GEO_COUNTS_SHA256`. GO annotations come from the Gene Ontol
 Where each parameter comes from:
 - DEG rule, adjusted p < 0.05 and |log2 fold change| > 1: Methods 2.5 (claim fig4b-3m-degs).
 - DESeq2 defaults (Benjamini-Hochberg, independent filtering, Cooks outlier refit): the claim's
-  criterion; DESeq2 1.44.0 in R is replaced by pydeseq2, its Python port (deviation; R cannot be
+  criterion. Independent filtering is tuned at alpha 0.1, the default of R's results(), set
+  explicitly since pydeseq2's default is 0.05; DESeq2 1.44.0 in R is replaced by pydeseq2, its Python port (deviation; R cannot be
   locked in the entry's environment).
 - Model readings (separate per contrast, or one model on all 16 samples with a four-level group)
   and LFC readings (unshrunken, or apeglm-type shrinkage): the claim's criterion.
@@ -19,8 +20,9 @@ Where each parameter comes from:
   Benjamini-Hochberg, backgrounds (a) genes tested by DESeq2 and (b) all BP-annotated mouse
   genes: the criterion of fig4d-3m-go-memory-terms-down. Annotations propagated over is_a and
   part_of, NOT qualifiers dropped, all evidence codes kept: standard choices of GO tools
-  (goatools, GO.db). Term size limits 10 to 500 genes: clusterProfiler enrichGO's defaults, an
-  assumption (the paper names R and GOplot but no enrichment tool); no limit is run as a variant.
+  (goatools, GO.db). Term size: the paper names R and GOplot but no enrichment tool
+  (Methods 2.5), so two readings are run, terms of 10 to 500 genes (clusterProfiler enrichGO's
+  defaults) and no size limit.
 - GOplot z-score, (up - down) / sqrt(count): the criterion (GOplot, Methods 2.5).
 - GO release 2024-06-17: a standard choice near the paper's R 4.4.1 and DESeq2 1.44.0 (2024).
 """
@@ -56,7 +58,8 @@ GO_GAF_URL = f"https://release.geneontology.org/{GO_RELEASE}/annotations/mgi.gaf
 
 DEG_PADJ = 0.05  # Methods 2.5
 DEG_LFC = 1.0  # Methods 2.5
-GO_MIN, GO_MAX = 10, 500  # clusterProfiler enrichGO defaults (assumption, see docstring)
+FILTER_ALPHA = 0.1  # R DESeq2 results() default; pydeseq2's DeseqStats default is 0.05
+GO_MIN, GO_MAX = 10, 500  # clusterProfiler enrichGO defaults, one of two term-size readings (see docstring)
 
 
 # ---------------------------------------------------------------- dandiset
@@ -217,10 +220,12 @@ def geo_sample_records() -> pd.DataFrame:
 # ---------------------------------------------------------------- DESeq2 (pydeseq2)
 
 def deseq(counts: pd.DataFrame, samples: pd.DataFrame, cols, factor: str, test: str, ref: str,
-          n_cpus: int | None = None) -> pd.DataFrame:
+          alpha: float = FILTER_ALPHA, n_cpus: int | None = None) -> pd.DataFrame:
     """DESeq2 Wald test of `test` against `ref` for `factor`, on the samples `cols`, with DESeq2's
-    defaults. Returns baseMean, the unshrunken log2 fold change (`lfc`), the apeglm-type shrunken
-    one (`lfc_shrunk`), p and adjusted p. The reference level is renamed so that it sorts first,
+    defaults (independent filtering tuned at `alpha`, R results()'s default 0.1). Returns baseMean,
+    the unshrunken log2 fold change (`lfc`), the apeglm-type shrunken one (`lfc_shrunk`), p,
+    adjusted p, and the adjusted p with filtering tuned at 0.05 (`padj_filter005`, pydeseq2's
+    default, as a variant). The reference level is renamed so that it sorts first,
     which makes `test` a coefficient of the model, as lfcShrink(coef=) needs."""
     from pydeseq2.dds import DeseqDataSet
     from pydeseq2.default_inference import DefaultInference
@@ -231,18 +236,21 @@ def deseq(counts: pd.DataFrame, samples: pd.DataFrame, cols, factor: str, test: 
     inf = DefaultInference(n_cpus=n_cpus)
     dds = DeseqDataSet(counts=counts[cols].T, metadata=meta, design=f"~{factor}", inference=inf, quiet=True)
     dds.deseq2()
-    st = DeseqStats(dds, contrast=[factor, test, "0ref"], inference=inf, quiet=True)
+    st = DeseqStats(dds, contrast=[factor, test, "0ref"], alpha=alpha, inference=inf, quiet=True)
     st.summary()
     res = st.results_df[["baseMean", "log2FoldChange", "pvalue", "padj"]].rename(columns={"log2FoldChange": "lfc"})
+    st05 = DeseqStats(dds, contrast=[factor, test, "0ref"], alpha=0.05, inference=inf, quiet=True)
+    st05.summary()
+    res["padj_filter005"] = st05.results_df["padj"]
     coeff = [c for c in dds.varm["LFC"].columns if test in c]
     st.lfc_shrink(coeff=coeff[0])
     res["lfc_shrunk"] = st.results_df["log2FoldChange"]
     return res
 
 
-def degs(res: pd.DataFrame, lfc_col: str = "lfc") -> tuple[set, set]:
+def degs(res: pd.DataFrame, lfc_col: str = "lfc", padj_col: str = "padj") -> tuple[set, set]:
     """Up and down DEGs, Methods 2.5: adjusted p < 0.05 and |log2 fold change| > 1."""
-    sig = res.padj < DEG_PADJ
+    sig = res[padj_col] < DEG_PADJ
     return set(res.index[sig & (res[lfc_col] > DEG_LFC)]), set(res.index[sig & (res[lfc_col] < -DEG_LFC)])
 
 
@@ -315,7 +323,7 @@ def enrich(up: set, down: set, universe: set, gene_terms: dict, names: dict,
         return df
     df["padj"] = multipletests(df.p, method="fdr_bh")[1]
     df["zscore"] = (df.up - df.down) / np.sqrt(df["count"])
-    return df.sort_values(["padj", "p"]).reset_index(drop=True)
+    return df.sort_values(["padj", "p", "term"]).reset_index(drop=True)
 
 
 MEMORY = re.compile(r"learning|memory|cognition", re.I)

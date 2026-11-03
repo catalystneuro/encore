@@ -10,11 +10,11 @@ not hold.
 
 | Claim | Outcome |
 |---|---|
-| 3 M 5XFAD against control, 98 up and 133 down DEGs | Partially reproduced (assumed) |
+| 3 M 5XFAD against control, 98 up and 133 down DEGs | Blocked: methods underspecified |
 | 7 M 5XFAD against control, 314 up and 6 down DEGs | Partially reproduced |
-| 3 M top GO terms include learning, memory and cognition, down | Partially reproduced (assumed) |
+| 3 M top GO terms include learning, memory and cognition, down | Blocked: methods underspecified |
 | 7 M top GO terms are immune responses, up | Reproduced |
-| ECM GO terms change at 7 M but not at 3 M | Not reproduced (assumed) |
+| ECM GO terms change at 7 M but not at 3 M | Blocked: methods underspecified |
 | PNN synthesis genes: Vcan, Cspg5, Tnr, Hapln1 down at 3 M; Vcan, Bgn up at 7 M | Reproduced |
 | MMP, TIMP and ADAM genes up at 3 M, at 7 M, and at 7 M against 3 M | Reproduced (three claims) |
 | Immunohistochemistry, Figures 1, 3, 5 and S1 to S6, S9 (22 claims) | Blocked: data missing |
@@ -25,9 +25,11 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 and the differences from the paper's method.
 
 The paper does not say which DESeq2 design or GO enrichment method it used. Every reading the
-claims file names is run, and where they disagree one model on all 16 samples with unshrunken
-fold changes is adopted, as the DESeq2 vignette recommends; with one model per age the 3 M DEG
-counts are 98 and 137. The attempt record, with the reasons and the differences from the paper's
+claims file names is run (one model per age or one on all 16 samples, unshrunken or shrunken fold
+changes, two GO backgrounds), with two GO term-size limits, and a claim whose readings give
+different outcomes is blocked as methods underspecified. With one model per age and unshrunken
+fold changes the 3 M DEG counts are 95 and 136, both within tolerance; with one model on all
+samples they are 51 and 141. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001702-chaunsali-2025-01.yaml`](../../attempts/001702-chaunsali-2025-01.yaml).
 
 - `reproduce_chaunsali_2025.ipynb`: the data check of the dandiset and the RNA-seq analysis. It
