@@ -1,0 +1,597 @@
+schema_version: 2
+id: 001545-rajebhosale-2025-01
+dataset:
+  archive: dandi
+  id: '001545'
+  version: 0.250809.1653
+  doi: 10.48324/dandi.001545/0.250809.1653
+paper: doi:10.26508/lsa.202403169
+date: '2026-11-03'
+entry: 001545-rajebhosale-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41565429170
+inputs:
+- what: Feature definitions and parameters where the claims file's reference (Kim et al 2024) is silent,
+    from the paper's electrophysiology analysis code (MATLAB, folder basic_scripts_for_analysis). Method
+    only; no data.
+  source: https://github.com/nsdesai/patch_clamp_analysis at commit 5d756c2b3a4ee1b95a3cabb1e39ec548e22de549
+- what: Sample records (title, genotype, sex, files) and barcode and feature lists of the paper's snMultiome
+    deposit, read only to describe what it holds. Last updated in GEO on 22 July 2025.
+  source: GEO accession GSE280167 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE280167)
+- what: The snMultiome analysis code, read to see what the snRNA-Seq and snATAC-Seq claims need.
+  source: https://github.com/RajNINDS/V321L-snMultiome at commit c124726ea5047d0d0f9a632fa85bcfa09ae13483
+outcomes:
+- claim: fig1f-sgc-soma-superficial
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the soma position of each cell (distance from the GCL-MOL boundary, from the biocytin fills).
+    The NWB files hold only the current clamp sweeps and no position, image or morphology; the paper deposits
+    these measurements nowhere else (GEO holds the snMultiome data only).
+- claim: fig1g-sgc-wider-splay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the splay angle of each filled cell; no morphology is in the dandiset or deposited elsewhere.
+- claim: fig1h-gc-more-branch-points
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Imaris reconstructions (branch points per primary dendrite); not in the dandiset or
+    deposited elsewhere.
+- claim: fig1i-gc-longer-dendrites
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Imaris reconstructions (dendritic length per primary dendrite); not in the dandiset
+    or deposited elsewhere.
+- claim: fig1j-sgc-hyperpolarized-rmp
+  outcome: not_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig1j-sgc-hyperpolarized-rmp
+  notes: Median RMP WT GC -75.3 mV (13 cells), WT SGC -83.8 mV (9 cells), in the paper's direction; two-tailed
+    Mann-Whitney U = 32, p = 0.083 (paper U = 26, P = 0.02). Welch's t test gives p = 0.044. Leaving out
+    one WT GC at a time gives p from 0.043 to 0.127, so the missing 14th GC could move the test either
+    side of 0.05. Per mouse, the two mice with both types and more than one SGC (VV317, VV326) have SGC
+    medians 1.6 and 2.1 mV below their GC medians; VV256 gave 7 GCs and no SGC, VV318 2 SGCs and no GC.
+  deviations:
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - RMP is the mean voltage 10 to 1 ms before step onset over all sweeps, as the claims file and the code
+    define it. The file's stimulus field says cells were held near -65 mV with a constant current, but
+    the baselines are -68 to -89 mV and the bias_current attribute is 10 pA in every sweep, so whether
+    a holding current was applied cannot be told from the files.
+- claim: fig1k-sgc-narrower-spike
+  outcome: not_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig1k-sgc-narrower-spike
+  notes: Median spike width WT GC 1.29 ms, WT SGC 1.18 ms, in the paper's direction; U = 32, p = 0.082
+    (paper U = 24, P = 0.012). With the code's 10 mV/ms threshold U = 34, p = 0.109. The 4 GCs of mouse
+    VV253 have widths of 2.1 to 2.7 ms (median 2.24) and its SGC 3.06 ms; without that mouse the medians
+    are 1.23 and 1.17 ms, p = 0.112.
+  deviations:
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - Threshold found on the ten-fold interpolated trace from 3 ms before the first peak, as spikeproperties.m
+    does, with the 20 mV/ms of Kim et al that the criterion names.
+- claim: fig1l-sgc-faster-downstroke
+  outcome: not_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig1l-sgc-faster-downstroke
+  notes: Median downstroke WT GC -54.93 mV/ms, WT SGC -61.95 mV/ms, in the paper's direction; U = 44,
+    p = 0.350 (paper U = 31, P = 0.046). The code's window gives the same value in all 48 cells, so the
+    two readings agree.
+  deviations:
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - The Kim et al reading takes the minimum dV/dt from the first peak until the voltage returns to threshold;
+    the criterion says only the repolarizing phase of the first spike.
+- claim: fig1m-phase-plots
+  outcome: not_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig1m-phase-plots
+  notes: Judged through fig1k and fig1l as the criterion says; neither is reproduced (p = 0.082 and 0.350).
+    The phase plots of the first spike at rheobase are shown for both genotypes.
+  deviations:
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Plotted on the raw 10 kHz trace, dV/dt as the first difference (makephaseplot.m), Vm minus the 20
+    mV/ms threshold.
+- claim: figs1a-f-properties-covary-with-position
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Regressions on soma position; the dandiset holds no soma positions and they are deposited nowhere
+    else.
+- claim: figs1-remaining-properties-no-difference
+  outcome: partially_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:figs1-remaining-properties-no-difference
+  notes: Only the cell-type half could be run. None of the 13 features of reading (a) nor the 16 of reading
+    (b) differs between WT GCs and SGCs at p < 0.05 under the paper's rule (Welch when both groups pass
+    Shapiro-Wilk and Lilliefors tests, else Mann-Whitney); the smallest p is 0.139 (spike peak), and no
+    feature has p < 0.05 under either test. The soma-position half cannot be tested, as the dandiset holds
+    no soma positions; the outcome is partial for that reason, not because an effect was found.
+  deviations:
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - The Kolmogorov-Smirnov normality test is taken as Prism's, with the Lilliefors (Dallal-Wilkinson)
+    correction (statsmodels lilliefors); the choice of test changes no result, as every feature has p
+    >= 0.139 by both Welch and Mann-Whitney.
+- claim: figs1g-l-gc-only-position
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Regressions on soma position among WT GCs; the dandiset holds no soma positions.
+- claim: fig2a-v321l-more-multiple-dendrite-gcs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Golgi-stained cell counts per mouse; not in the dandiset or deposited elsewhere.
+- claim: fig2c-v321l-sgc-position-not-different
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs soma positions of the V321L cells; not in the dandiset.
+- claim: fig2d-v321l-splay-not-different
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs splay angles; no morphology is in the dandiset.
+- claim: fig2ef-v321l-dendritic-complexity-preserved
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Imaris reconstructions; not in the dandiset.
+- claim: fig2g-morphology-lda-separates-cell-type
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 15 morphological parameters; not in the dandiset.
+- claim: figs2b-morphology-kmeans-by-cell-type
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the morphological parameters; not in the dandiset.
+- claim: fig2i-v321l-rmp-not-different
+  outcome: reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig2i-v321l-rmp-not-different
+  notes: Welch t = 0.54, df = 23.7, p = 0.595 (paper t = 0.2081, P = 0.8374); difference of means 1.2
+    mV. Medians V321L GC -80.1, V321L SGC -82.9, WT SGC -83.8, WT GC -75.3 mV; the V321L GC median is
+    3.7 mV from the WT SGC median and 4.8 mV from the WT GC median. Mann-Whitney p = 0.554.
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+- claim: fig2j-v321l-spike-width-not-different
+  outcome: reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig2j-v321l-spike-width-not-different
+  notes: Medians V321L GC 1.245 ms, SGC 1.205 ms; U = 59.5, p = 0.216 (paper U = 55, P = 0.2776). With
+    the code's 10 mV/ms threshold p = 0.327.
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+- claim: fig2k-v321l-downstroke-not-different
+  outcome: reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig2k-v321l-downstroke-not-different
+  notes: Medians V321L GC -59.05, SGC -57.53 mV/ms; U = 80.5, p = 0.877 (paper U = 63.5, P = 0.5392).
+    The code's window gives the same values.
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+- claim: fig2m-ephys-lda-wt-gc-apart
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:fig2m-ephys-lda-wt-gc-apart
+  notes: The criterion's two readings disagree, and it says to block in that case. On the 18 z-scored
+    features (a) the WT GC mean LD1 is 1.97 and the other groups -1.43 to -0.33, and spike width has the
+    largest LD1 coefficient (3.01, then downstroke -2.88), as the paper says. On the top 9 PCs (b) WT
+    SGC is the group apart (1.67, the others -0.74 to -0.26) and the largest coefficients mapped back
+    to the features are spike amplitude, AHP amplitude and sag (-0.48 to -0.43). Question for the paper's
+    authors (recorded as a methods_unavailable finding). Was the four-class LDA of Fig 2M fitted on the
+    z-scored features or on PCs, as the classifier of Fig S2G is? The Methods' LDA section describes only
+    the classifier (scale, prcomp, top 9 PCs, caret lda).
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
+    multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
+    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+  - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
+    an absolute sample index; here it runs to the end of the segment (a standard choice).
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - LDA is scikit-learn's (SVD solver, priors from the class sizes) in place of MASS lda; LD1 coefficients
+    are its scalings, mapped through the PCA loadings for reading (b).
+- claim: figs2d-ephys-kmeans-v321l-like-wt-sgc
+  outcome: reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:figs2d-ephys-kmeans-v321l-like-wt-sgc
+  notes: Seed 0, 100 starts. On the z-scored features WT GCs fall 4, 6 and 2 of 12 across the three clusters,
+    and WT SGC, V321L GC and V321L SGC have 6 of 8, 7 of 10 and 10 of 14 in one same cluster; on two PCs
+    6, 4, 2 and 6 of 8, 6 of 10, 10 of 14. Both conditions hold for seeds 1 to 10 under both readings.
+    Six of 12 WT GCs in one cluster is exactly half, which the criterion allows.
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
+    multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
+    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+  - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
+    an absolute sample index; here it runs to the end of the segment (a standard choice).
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - k-means is scikit-learn's in place of R's kmeans.
+- claim: v321l-multiple-regression-wt-only
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The model has soma position as a covariate; the dandiset holds no soma positions.
+- claim: figs2e-pca-separation-lost
+  outcome: not_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:figs2e-pca-separation-lost
+  notes: PC1 and PC2 explain 28.4% and 17.4%. WT GC and SGC centroids are 2.07 PC units apart and each
+    lies inside the other's 95% ellipse under both readings (squared Mahalanobis distances 1.31 and 0.69
+    against 9.47 and 7.96 for the data ellipse, 1.50 and 0.75 for the ellipse of the mean). The V321L
+    centroids are 0.86 apart and inside each other's ellipses under both readings, as the claim says for
+    V321L. So the V321L half holds and the WT half does not.
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
+    multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
+    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+  - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
+    an absolute sample index; here it runs to the end of the segment (a standard choice).
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - Ellipses computed from the group covariance in PC space, radius from F(2, n - 1) for the data ellipse
+    (as ggplot2 stat_ellipse type norm) and Hotelling's F(2, n - 2) for the mean.
+- claim: figs2f-centroid-separation-reduced
+  outcome: partially_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:figs2f-centroid-separation-reduced
+  notes: WT centroids on LD1 GC -0.87, SGC 1.31 (distance 2.18), boundary 0.40. V321L centroids GC -0.10
+    and SGC 0.07 with their own scaling (distance 0.17, 0.08 of WT), or -0.47 and -0.17 with the WT scaling
+    (0.30, 0.14 of WT). The distance condition holds; both V321L centroids lie on the WT GC side of the
+    boundary, and of the midpoint boundary (0.22), so the side condition does not. The criterion gives
+    no partial rule; the outcome is partial because one of its two conditions holds. The classifier it
+    rests on is at chance on held-out WT cells (figs2g).
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
+    multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
+    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+  - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
+    an absolute sample index; here it runs to the end of the segment (a standard choice).
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - The boundary is where the scikit-learn classifier's decision function is zero (with the class priors);
+    the midpoint of the WT centroids is shown as a variant.
+- claim: figs2g-lda-classifier-accuracy
+  outcome: not_reproduced
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:figs2g-lda-classifier-accuracy
+  measured:
+  - 55.0
+  - 0.12
+  - 41.7
+  - -0.11
+  notes: Over 100 random stratified five-fold splits, WT pooled out-of-fold accuracy median 55.0% (35.0
+    to 75.0) and kappa 0.12 (-0.33 to 0.49); the mean over folds also 55.0%. Always predicting GC would
+    give 60%. V321L with its own scaling 41.7% (kappa -0.11, confusion GC 6 right 4 wrong, SGC 4 right
+    10 wrong), with the WT scaling 45.8% (kappa -0.01). Neither the four values nor the two accuracies
+    are within tolerance under any reading, and WT accuracy exceeds V321L accuracy by 13.3 or 9.2 points,
+    under the criterion's 15.
+  deviations:
+  - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
+    says which cells differ.
+  - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
+    not known.
+  - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
+    multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
+    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+  - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
+    an absolute sample index; here it runs to the end of the segment (a standard choice).
+  - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
+    at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
+  - Folds are stratified by cell type, as caret's createFolds makes them; the model applied to V321L is
+    fitted on all WT cells, as caret's finalModel is. PCA is fitted on all WT cells before the cross-validation,
+    as the Methods describe.
+  - The paper's text gives V321L 52% and kappa 0.08, while its Fig S2G matrix (8, 5, 7, 3) gives 48% (claims
+    file); neither is matched.
+- claim: fig3b-penk-position-altered
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope FISH positions of Penk+ cells; not in the dandiset or deposited elsewhere.
+- claim: fig3d-more-penk-gcs
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs3b-prox1-count-not-different
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs3c-cluster18-penk-enriched
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs3d-sorcs3-marks-cluster18
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs5a-penk-sorcs3-subsets
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: fig4a-more-penk-sorcs3-cells-fish
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope counts; not deposited.
+- claim: fig4a-prime-penk-sorcs3-position
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope positions; not deposited.
+- claim: fig4b-penk-enriched-genes
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: fig4b2-marker-penk-cells-increased
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: fig4d-penk-marker-overlap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope counts; not deposited.
+- claim: figs6-increase-in-nrg1-expressing
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted. The FISH percentage
+    (94%) rests on RNAScope counts that are not deposited.
+- claim: fig5b-pseudotime-sorcs3-top
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted. Monocle3 is also
+    R.
+- claim: trajectory-geometry-directionality
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted. TrajectoryGeometry
+    is also R.
+- claim: fig5d-atac-cluster-composition
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs per-nucleus ATAC fragments (the Methods import atac_fragments.tsv.gz into Signac). GEO
+    holds only a smoothed cut-site track per sample and per-barcode peak counts in the raw matrices; the
+    fragments would have to be regenerated from the raw reads with Cell Ranger ARC, and the analysis needs
+    Signac and Monocle3 (R), which cannot be installed in this entry's locked Python environment. Not
+    attempted.
+- claim: fig5f-sgc-genes-broadly-accessible
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs per-nucleus ATAC fragments (the Methods import atac_fragments.tsv.gz into Signac). GEO
+    holds only a smoothed cut-site track per sample and per-barcode peak counts in the raw matrices; the
+    fragments would have to be regenerated from the raw reads with Cell Ranger ARC, and the analysis needs
+    Signac and Monocle3 (R), which cannot be installed in this entry's locked Python environment. Not
+    attempted.
+- claim: figs8b-penk-accessibility-not-different
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs per-nucleus ATAC fragments (the Methods import atac_fragments.tsv.gz into Signac). GEO
+    holds only a smoothed cut-site track per sample and per-barcode peak counts in the raw matrices; the
+    fragments would have to be regenerated from the raw reads with Cell Ranger ARC, and the analysis needs
+    Signac and Monocle3 (R), which cannot be installed in this entry's locked Python environment. Not
+    attempted.
+- claim: tables4-suz12-enrichment
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted. The 60 genes
+    come from Monocle3 modules intersected with the Penk+ markers.
+- claim: fig6a-penk-increases-with-age
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope counts by age; not deposited.
+- claim: fig6b-sgc-count-increases-with-age
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope counts by age; not deposited.
+- claim: figs9a-age-dynamics-lost-v321l
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope counts by age; not deposited.
+- claim: figs9b-marker-fraction-stable
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope counts by age; not deposited.
+- claim: figs9d-penk-not-immature
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RNAScope Penk and Dcx images; not deposited.
+- claim: figs10d-go-resting-membrane-potential
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: fig7a-type3-nrg1-declines
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Type III Nrg1 FISH intensities; not deposited.
+- claim: fig7bc-bace1-low-in-sgcs
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs5bc-penk-sorcs3-neg-outside-cluster18
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs7-downsampled-pseudotime-robust
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GEO GSE280167 holds, per mouse, the raw multiome feature-barcode matrix (342,506 to 501,480 barcodes,
+    every barcode Cell Ranger saw) and, for ATAC, a smoothed cut-site track. The criterion rests on the
+    paper's R pipeline (Seurat with scDblFinder doublet removal, harmony integration, clustering over
+    41 resolutions and a hand-curated merge into final clusters, Rcode_20230522.txt in RajNINDS/V321L-snMultiome
+    at c124726), whose packages cannot be installed in this entry's locked Python environment. The nuclei
+    it kept and its cluster labels (the GC clusters 0, 1, 5 and 18) are not deposited, so a Python re-analysis
+    would substitute its own cell calling and clustering for the paper's. Not attempted.
+- claim: figs8a-atac-pseudotime-cluster9
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs per-nucleus ATAC fragments (the Methods import atac_fragments.tsv.gz into Signac). GEO
+    holds only a smoothed cut-site track per sample and per-barcode peak counts in the raw matrices; the
+    fragments would have to be regenerated from the raw reads with Cell Ranger ARC, and the analysis needs
+    Signac and Monocle3 (R), which cannot be installed in this entry's locked Python environment. Not
+    attempted. The criterion's parenthesis calls the LL samples WT and VV V321L; the GEO sample records
+    and the dandiset say VV is the wild type. Asked of a reader in questions/001545.yaml.
+- claim: figs9c-embryonic-sgc-genes
+  outcome: blocked
+  blocked_by: other
+  notes: A qualitative reading of Allen Developing Mouse Brain Atlas ISH images, with no statistic and
+    no experiment ids in the paper; a notebook cannot compute the judgement from data, so it was not attempted.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the current clamp recordings. The soma positions and the morphology
+    from the biocytin fills (splay angle, branch points, dendritic length, 15 parameters), on which Fig
+    1F to I, Fig 2C to H, Fig S1 and the multiple regression rest, are not in it, and neither are the
+    Golgi and RNAScope data; 23 of the paper's 56 claims cannot be tested for this reason.
+- kind: selection_undocumented
+  statement: The files hold 13 WT GCs and 9 WT SGCs, where the paper's electrophysiology has 14 and 9,
+    and 12 V321L GCs and 14 V321L SGCs, where the paper has 10 and 15. Nothing in the files says which
+    WT GC is missing or why the V321L cell types differ, so the paper's cell sets cannot be rebuilt.
+- kind: metadata_error
+  statement: Every CurrentClampStimulusSeries stores the current in picoamperes (values -60 to 300) under
+    the unit amperes with conversion 1.
+- kind: metadata_error
+  statement: The electrode cell_id is VP neuron in all 48 files, though the cells are dentate granule
+    cells.
+- kind: metadata_error
+  statement: The general stimulus field says neurons were kept near -65 mV with a constant current and
+    stepped from -60 to 200 pA. The voltage before the steps is -68 to -89 mV in every cell, 14 cells
+    were stepped to 250 or 300 pA, and the bias_current attribute is 10 pA in every sweep, so whether
+    a holding current was applied, and how much, cannot be told.
+- kind: metadata_insufficient
+  statement: The genotype is coded only as VV or LL in the subject ids; the surgery field says VV is wild
+    type and LL the valine-to-leucine mutant, and GEO agrees, but the cell type is given only as the end
+    of the session description (semilunar or not semilunar), with no column or field of its own.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Was the four-class LDA of Fig 2M and Fig S2C fitted on
+    the z-scored features or on principal components, as the classifier of Fig S2G is? The Methods' LDA
+    section describes only the classifier. On this dandiset the two give different groups apart on LD1
+    (WT GC on the features, WT SGC on 9 PCs).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which twenty features were extracted, and how were cells
+    with a missing feature handled in the LDA, k-means and PCA? The Methods cite Kim et al (2024), Fig
+    S2C lists eighteen, and the linked code returns twenty-one. Here 4 cells lack the code's AHP width
+    and were dropped, which fits the 21 WT and 23 V321L cells of the Fig S2G matrices.
+- kind: data_missing
+  statement: GEO GSE280167, where the paper deposited the snMultiome data, holds the raw feature-barcode
+    matrix of every barcode per mouse and a smoothed ATAC cut-site track per sample. The nuclei kept after
+    filtering and doublet removal, the cluster labels the paper's snRNA-Seq figures rest on, and the per-nucleus
+    ATAC fragments are not deposited.
