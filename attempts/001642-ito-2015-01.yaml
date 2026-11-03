@@ -1,0 +1,603 @@
+schema_version: 2
+id: 001642-ito-2015-01
+dataset:
+  archive: dandi
+  id: '001642'
+  version: 0.260205.0153
+  doi: 10.48324/dandi.001642/0.260205.0153
+paper: doi:10.1523/jneurosci.1962-14.2015
+date: '2026-11-03'
+entry: 001642-ito-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41576692070
+outcomes:
+- claim: trial-counts
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:trial-counts
+  measured:
+  - 75348
+  - 86
+  - 7
+  - 12639
+  - 22695
+  - 36496
+  - 3518
+  notes: Reading b (trials with an L/R choice) on the 86 sessions with units gives 75,348 trials from
+    7 rats, 12,639 single fixed, 22,695 double fixed, 36,496 free-choice and 3518 extinction trials, all
+    within 10% of the paper. Reading a (all 79,431 trials started) puts single fixed (13,485) outside
+    10%. Over all 87 files reading b misses single fixed (13,417).
+  deviations:
+  - The 87th file, LE115_14, holds behaviour and no units; the 86 recording sessions are taken as the
+    files with units.
+- claim: trials-per-block
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:trials-per-block
+  measured:
+  - 22.5
+  - 47.15
+  - 41.05
+  - 8.62
+  - 20.34
+  - 27.54
+  notes: Reading a (choice trials, completed blocks) gives 22.50 ± 8.62 (551 single fixed blocks), 47.15
+    ± 20.34 (469 double fixed) and 41.05 ± 27.54 (866 free). Readings b and c also match; reading d misses
+    the double fixed SD (22.86).
+- claim: fig2c-extinction-differs
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig2c-extinction-differs
+  notes: Over five extinction trials P(left) is 0.822 for the left tone and 0.108 for the right tone,
+    0.646 and 0.344 for the choice tone after left- and right-optimal blocks. All six chi-square tests
+    (both readings, with and without Yates) give p of 2.4e-16 or less, with the fixed tones further from
+    0.5. The pooled P(optimal) is higher for the fixed tones in all 7 rats.
+  deviations:
+  - Extinction trials are numbered among the choice trials of each extinction block; wait-error trials
+    are left out.
+- claim: fig2b-extinction-time-course
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig2b-extinction-time-course
+  notes: Choice-tone P(left) moves from 0.815 to 0.551 (after left-optimal blocks, 119) and from 0.175
+    to 0.379 (after right-optimal blocks, 103) between trials 1 and 2. At trial 5 the left tone is at
+    0.818 (Wilson 0.765 to 0.862) and the right tone at 0.155 (0.115 to 0.207); Clopper-Pearson gives
+    the same.
+- claim: fig2d-f-decision-trees
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig2d-f-decision-trees
+  notes: Choice tone, P(L) after L1 0.804 (0.796 to 0.812) and after R1 0.185 (0.177 to 0.193). Every
+    left-tone branch at d = 1 and 2 is at 0.699 or more and every right-tone branch at 0.254 or less,.
+    All 12 readings hold.
+  deviations:
+  - Whether the choice-tone sequences include the extinction trials is not stated; both are run and agree.
+- claim: fig2g-fq-variable-best
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig2g-fq-variable-best
+  notes: 'Normalized likelihood of test data, alternate and random split: FQ variable 0.5758 and 0.5762,
+    DFQ variable 0.5770 and 0.5775, Markov 3 0.5770 and 0.5782, Markov 4 0.5785 and 0.5797, FQ const 0.5744
+    and 0.5750. FQ variable is not the best model and is below Markov 3 and 4 under both splits; per session,
+    Markov 4 is above it with Wilcoxon p = 0.026 and 0.0044. The paper''s statement that FQ variable predicts
+    best is not seen with these model forms; the differences between models are within 0.016.'
+  deviations:
+  - The model equations are missing from the paper's text; the update, choice rule, initial values (0),
+    bounds and the particle-filter priors (alpha uniform on 0 to 1, kappa uniform on 0 to 5, clipped random
+    walks) are assumed as models.py states, and the drift SDs are chosen on a 3 x 3 grid by the training
+    likelihood.
+  - 86 sessions with free-choice trials, split 43 and 43, where the paper used 101 training and 101 test
+    sessions.
+  - Markov models use one pseudo-count per action, so unseen sequences give 0.5, and the available shorter
+    history at the start of a session (standard choices).
+  assumed: true
+- claim: actor-critic-near-chance
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:actor-critic-near-chance
+  measured: 0.5
+  notes: Normalized likelihood of test data 0.5000 (shared rate) and 0.5013 (separate rates) on the alternate
+    split, 0.5026 and 0.5000 on the random split, all within 0.0508 of 0.5080. The fits drive the rates
+    or the inverse temperature toward 0 (fitted values printed in the notebook).
+  deviations:
+  - Constant parameters fitted by maximum likelihood on the training sessions, as in fig2g-fq-variable-best;
+    rates in 0 to 1, inverse temperature in 0 to 50 (standard bounds).
+- claim: neuron-counts
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:neuron-counts
+  measured:
+  - 233
+  - 204
+  - 142
+  - 183
+  - 147
+  - 119
+  notes: The dandiset holds 297 DLS, 255 DMS and 215 VS units (and 92 CS). After the computable exclusions
+    (condition 3, condition 4 read as all bins below 1 Hz, and the duplicate check, which removes 90 units)
+    233, 204 and 142 remain, against 260, 178 and 179. The PAN rule then gives 183, 147 and 119 (DLS and
+    VS within 10%, DMS not). Reading condition 4 as any bin below 1 Hz leaves 47, 57 and 21. The deposited
+    PANs flag gives 204, 112 and 138, VS outside 10%. No set matches all six counts.
+  deviations:
+  - Exclusion conditions 1, 2 and 5 need waveforms or histology and are not applied; the PETH-similarity
+    part of the duplicate rule is not defined and is not applied.
+- claim: fig4b-vs-phase1
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig4b-vs-phase1
+  measured:
+  - 0.652
+  notes: 'Adopted reading: 0.652 of VS PANs activated in Phase 1, DLS 0.461 (chi-square p = 0.0005), DMS
+    0.339 (p < 1e-5). Holds in all 24 readings on the deposited PANs and all 24 on the Methods-rule set.
+    By rat, VS proportions are 0.44 to 0.80 (one rat has no VS PANs).'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+- claim: fig4b-dms-phase5
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig4b-dms-phase5
+  measured:
+  - 0.652
+  notes: 'Adopted reading: 0.652 of DMS PANs activated in Phase 5, DLS 0.436 (p = 0.00025), VS 0.514 (p
+    = 0.029, 0.040 with Yates). DMS against VS is not significant with 10 ms or no smoothing (p 0.083
+    to 0.21), with extinction trials included (p 0.050 and 0.067 at 30 ms), or on the Methods-rule set
+    (p 0.064 to 0.39). The first-crossing reading gives DMS 0.21 to 0.22.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Extinction trials are left out of the trials of EASHs and of the Fig. 5 mutual information (O3, reading
+    a), adopted because the Methods list the blocks used as 'whole trials, including single fixed-, double
+    fixed-, and free-choice blocks' (Methods, Mutual information); reading b is shown.
+  - EASHs are smoothed with a 30 ms Gaussian (O2, reading b), adopted from the Fig. 3 legend ('All EASHs
+    (10 ms bins) are smoothed by Gaussian kernel with 30 ms SD'); 10 ms and no smoothing are shown.
+  - Activated in a phase is read as some bin of the normalized EASH at or above 0.5 in that phase (reading
+    a), adopted from the Fig. 4B legend ('the normalized EASHs of which reached 0.5 during each trial
+    phase'); the first-crossing reading cannot give proportions above 0.6 in more than one phase of a
+    region and is shown.
+  assumed: true
+- claim: fig4b-vs-phase7
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig4b-vs-phase7
+  notes: 'Adopted reading: VS 0.659 against DLS 0.520 activated in Phase 7 (p = 0.010; 0.014 with Yates).
+    The any-bin reading holds in all 12 variants on each unit set; the first-crossing reading gives proportions
+    of 0.05 to 0.14 with no difference (p 0.36 to 1).'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Extinction trials are left out of the trials of EASHs and of the Fig. 5 mutual information (O3, reading
+    a), adopted because the Methods list the blocks used as 'whole trials, including single fixed-, double
+    fixed-, and free-choice blocks' (Methods, Mutual information); reading b is shown.
+  - EASHs are smoothed with a 30 ms Gaussian (O2, reading b), adopted from the Fig. 3 legend ('All EASHs
+    (10 ms bins) are smoothed by Gaussian kernel with 30 ms SD'); 10 ms and no smoothing are shown.
+  - Activated in a phase is read as some bin of the normalized EASH at or above 0.5 in that phase (reading
+    a), adopted from the Fig. 4B legend ('the normalized EASHs of which reached 0.5 during each trial
+    phase'); the first-crossing reading cannot give proportions above 0.6 in more than one phase of a
+    region and is shown.
+  assumed: true
+- claim: fig4c-activation-duration
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig4c-activation-duration
+  notes: 'Adopted reading: mean activity ratio VS 0.216, DMS 0.130, DLS 0.117; VS above DLS and DMS with
+    p < 1e-5, DLS below DMS with p = 0.065 (0.054 to 0.082 over the six deposited readings). On the Methods-rule
+    set DLS is below DMS with p 0.018 to 0.050 at 10 and 30 ms smoothing. The order VS > DMS > DLS holds
+    in every reading.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Extinction trials are left out of the trials of EASHs and of the Fig. 5 mutual information (O3, reading
+    a), adopted because the Methods list the blocks used as 'whole trials, including single fixed-, double
+    fixed-, and free-choice blocks' (Methods, Mutual information); reading b is shown.
+  - EASHs are smoothed with a 30 ms Gaussian (O2, reading b), adopted from the Fig. 3 legend ('All EASHs
+    (10 ms bins) are smoothed by Gaussian kernel with 30 ms SD'); 10 ms and no smoothing are shown.
+  assumed: true
+- claim: fig5b-state-info-vs
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig5b-state-info-vs
+  notes: 'Adopted reading (bias-corrected MI averaged over Phase 1): VS 0.053, DMS 0.023, DLS 0.013 bits/s;
+    VS against DLS p < 1e-4, against DMS p = 0.071 (0.053 with extinction trials). Plug-in and shuffle-corrected
+    MI give VS against DMS p 0.022 to 0.036, and the Methods-rule set p 0.017 to 0.035 under every reading.
+    The VS average is above its threshold in all 20 Phase 1 bins. Per bin, VS exceeds both regions significantly
+    in 8 to 13 of 20 bins.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Extinction trials are left out of the trials of EASHs and of the Fig. 5 mutual information (O3, reading
+    a), adopted because the Methods list the blocks used as 'whole trials, including single fixed-, double
+    fixed-, and free-choice blocks' (Methods, Mutual information); reading b is shown.
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+  - The test is taken on the per-neuron MI averaged over the Phase 1 bins (reading a), adopted because
+    the paper reports one p-value per comparison for Phase 1; the per-bin reading is shown.
+  assumed: true
+- claim: fig5e-action-info-rises-dls
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig5e-action-info-rises-dls
+  notes: In every reading all three regions' action information is above the shuffle threshold in all
+    15 Phase 3 bins (VS in 14 in four readings), and DLS is above it in 12 to 17 of the 27 bins of Phases
+    1 and 2. Above the threshold DLS grows from 0.003 to 0.060 bits/s across Phase 3, while DMS stays
+    within 0.003 to 0.015 and VS within 0.002 to 0.012, so a DLS-specific rise exists, but the threshold
+    test of the criterion does not separate it.
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+- claim: fig5e-action-info-cue-offset-dls
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig5e-action-info-cue-offset-dls
+  notes: 'Adopted reading: action MI in the 100 ms before E3 is DLS 0.066, DMS 0.014, VS 0.012 bits/s;
+    DLS against DMS p = 0.047 (0.039 with extinction trials), against VS p = 0.0009. Plug-in and shuffle-corrected
+    MI give DLS against DMS p 0.060 to 0.21, and the Methods-rule set p 0.072 to 0.31; DLS against VS
+    is significant in every reading.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Extinction trials are left out of the trials of EASHs and of the Fig. 5 mutual information (O3, reading
+    a), adopted because the Methods list the blocks used as 'whole trials, including single fixed-, double
+    fixed-, and free-choice blocks' (Methods, Mutual information); reading b is shown.
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+  assumed: true
+- claim: fig5e-action-info-center-exit
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig5e-action-info-center-exit
+  notes: In the 100 ms before E4, DMS 0.216 to 0.230, DLS 0.113 to 0.122, VS 0.015 to 0.025 bits/s on
+    the deposited PANs; DMS against VS and DLS against VS p < 1e-4, DMS against DLS p = 0.13 to 0.30 (paper
+    0.16). All 12 readings hold.
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+- claim: fig5d-action-info-phase5-dms
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig5d-action-info-phase5-dms
+  notes: 'Phase 5 mean: DMS 0.52 to 0.53, DLS 0.31 to 0.33, VS 0.10 to 0.11 bits/s; DMS against DLS p
+    = 2e-5, against VS p < 1e-4, DLS against VS p < 1e-4. The DMS peak bin (4.95 s) gives the same. All
+    24 readings hold.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+- claim: fig5g-reward-info
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig5g-reward-info
+  notes: 'Part 1 holds in every reading: each region''s reward information first passes its threshold
+    after E5 in Phase 6. Part 2 depends on the window, which the paper does not give. At the VS peak bin
+    (7.05 s, Phase 7) VS 0.34 > DMS 0.26 to 0.28 > DLS 0.21 to 0.22, DLS below DMS (p 0.031 to 0.049)
+    and VS (p < 0.001) on the deposited PANs. Over Phase 6 DMS (0.075 to 0.085) is above VS (0.073 to
+    0.083) and DLS against DMS gives p 0.36 to 0.47; over Phases 6 and 7 DLS against VS gives p 0.12 to
+    0.16. On the Methods-rule set no window satisfies part 2. Question for the authors: over which bins
+    were the regions'' reward information compared (Phase 6, Phases 6 and 7, or the peak)?'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+- claim: fig6-event-coding-proportions
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig6-event-coding-proportions
+  notes: 'Adopted trials (extinction excluded), deposited PANs, EASH axis: VS has the largest Reward1
+    proportion (0.435; DLS 0.319, DMS 0.321), DLS the largest AC (0.422 against DMS 0.411, p = 0.85),
+    DMS the largest action (0.839). State with the 500 ms before E3: VS largest (0.362, DMS 0.348, DLS
+    0.289); with all of Phase 3: DMS largest (0.509, VS 0.493); no state pair differs significantly (p
+    0.15 to 0.80). Real-time windows give the same pattern. With extinction trials DMS overtakes DLS for
+    AC on the EASH axis. On the Methods-rule set all parts hold in every reading.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Extinction trials are left out of the trials of EASHs and of the Fig. 5 mutual information (O3, reading
+    a), adopted because the Methods list the blocks used as 'whole trials, including single fixed-, double
+    fixed-, and free-choice blocks' (Methods, Mutual information); reading b is shown.
+  - The legend does not say whether the windows are on the EASH axis or in real time; both are run.
+  - The state window is drawn only in Fig. 6A; both readings of the criterion are run and disagree, so
+    the state part is reported as not settled.
+  assumed: true
+- claim: fig6-above-chance
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig6-above-chance
+  notes: All 120 binomial tests per unit set (regions, events, trial sets, both axes) give p < 0.01 against
+    0.01; the smallest proportion is 0.094 (13 of 138 VS PANs, AC, free-choice trials, real-time window,
+    p = 1.8e-9).
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Chance is 0.01, as the criterion reads it.
+- claim: fig6bc-similar-fixed-free
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig6bc-similar-fixed-free
+  notes: On the deposited PANs the largest region is the same in fixed and free trials for action (DMS),
+    Reward1 (VS) and Reward2 (VS) on both axes, not for AC (fixed DMS 0.38 against DLS 0.36; free DLS
+    0.31, DMS 0.24). One of 12 fixed against free differences is significant on the EASH axis (DMS AC
+    0.38 against 0.24, p = 0.021). On the Methods-rule set the largest region agrees for all four events.
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+- claim: fig8a-d-action-reward-coding
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig8a-d-action-reward-coding
+  notes: 'Free-choice trials, EASH axis: a(t) above chance in every region before and after E4, r(t) after
+    E5, a(t-1) in DMS in Phase 5, under every reading. r(t-1) is above chance in every region and phase
+    with the windows around E1 to E7; with the windows around E0 to E6 DMS has no window above chance
+    in Phase 7 (after E6, 0.036, p = 0.027). With all choice trials all four parts hold under both event
+    sets.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - The Fig. 8 regression uses free-choice trials (O7 a), adopted because the action values come from
+    the FQ model fitted to free-choice blocks (Results, Model-based analysis, paragraph 1), and windows
+    on the EASH axis (O6 b), adopted because the regression bins of Fig. 7 are EASH bins (Fig. 7A legend);
+    all-choice trials and real-time windows are shown. Both event sets (E1 to E7, E0 to E6) are run. The
+    subset search keeps the constant in every model and searches the other seven terms (O7 c). QL and
+    QR are the predictive means of the FQ model with time-varying parameters (drift SDs 0.01 and 0.05
+    from the training half of the alternate split).
+  - The fig2g-fq-variable-best claim, whose model supplies QL and QR, is not reproduced; the values are
+    those of the FQ model as fitted here.
+  assumed: true
+- claim: fig8e-action-value-dms
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig8e-action-value-dms
+  notes: 'Free-choice trials, EASH axis, 500 ms before E5: action-value coding 0.321 in DMS, 0.261 in
+    VS, 0.176 in DLS; DMS against DLS p = 0.0034, against VS p = 0.29 (paper 0.081). With real-time windows
+    VS is highest (0.341, DMS 0.295), and with all choice trials VS is highest in every Phase 5 window.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - The Fig. 8 regression uses free-choice trials (O7 a), adopted because the action values come from
+    the FQ model fitted to free-choice blocks (Results, Model-based analysis, paragraph 1), and windows
+    on the EASH axis (O6 b), adopted because the regression bins of Fig. 7 are EASH bins (Fig. 7A legend);
+    all-choice trials and real-time windows are shown. Both event sets (E1 to E7, E0 to E6) are run. The
+    subset search keeps the constant in every model and searches the other seven terms (O7 c). QL and
+    QR are the predictive means of the FQ model with time-varying parameters (drift SDs 0.01 and 0.05
+    from the training half of the alternate split).
+  assumed: true
+- claim: fig8e-qr-dms
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig8e-qr-dms
+  notes: 'Free-choice trials, EASH axis: 0.60 (after E4) and 0.47 (before E5) of DMS action-value neurons
+    code QR; the QR proportion in DMS (0.16, 0.15) is not significantly above DLS (0.11; p = 0.18 and
+    0.32). With real-time windows it holds (0.64 to 0.70 code QR; DMS 0.17 to 0.19 against DLS 0.07 to
+    0.08, p 0.004 to 0.009).'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - The Fig. 8 regression uses free-choice trials (O7 a), adopted because the action values come from
+    the FQ model fitted to free-choice blocks (Results, Model-based analysis, paragraph 1), and windows
+    on the EASH axis (O6 b), adopted because the regression bins of Fig. 7 are EASH bins (Fig. 7A legend);
+    all-choice trials and real-time windows are shown. Both event sets (E1 to E7, E0 to E6) are run. The
+    subset search keeps the constant in every model and searches the other seven terms (O7 c). QL and
+    QR are the predictive means of the FQ model with time-varying parameters (drift SDs 0.01 and 0.05
+    from the training half of the alternate split).
+  assumed: true
+- claim: fig8f-state-value-vs
+  outcome: partially_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig8f-state-value-vs
+  notes: 'Free-choice trials, EASH axis: VS has the largest proportion of state-value neurons in every
+    phase; in the 500 ms before E1, VS exceeds DLS (p = 0.0002) and DMS (p = 0.029); after E3 (first half
+    of Phase 4) VS exceeds DLS (p = 0.0005) but not DMS (p = 0.76). With all choice trials the Phase 1
+    test against DMS fails too (p = 0.10).'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - The Fig. 8 regression uses free-choice trials (O7 a), adopted because the action values come from
+    the FQ model fitted to free-choice blocks (Results, Model-based analysis, paragraph 1), and windows
+    on the EASH axis (O6 b), adopted because the regression bins of Fig. 7 are EASH bins (Fig. 7A legend);
+    all-choice trials and real-time windows are shown. Both event sets (E1 to E7, E0 to E6) are run. The
+    subset search keeps the constant in every model and searches the other seven terms (O7 c). QL and
+    QR are the predictive means of the FQ model with time-varying parameters (drift SDs 0.01 and 0.05
+    from the training half of the alternate split).
+  assumed: true
+- claim: no-policy-coding
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:no-policy-coding
+  notes: Under all eight readings no region and window gives p < 0.01 for policy coding; the largest proportion
+    is 0.015 to 0.036 and the smallest binomial p 0.027.
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - The Fig. 8 regression uses free-choice trials (O7 a), adopted because the action values come from
+    the FQ model fitted to free-choice blocks (Results, Model-based analysis, paragraph 1), and windows
+    on the EASH axis (O6 b), adopted because the regression bins of Fig. 7 are EASH bins (Fig. 7A legend);
+    all-choice trials and real-time windows are shown. Both event sets (E1 to E7, E0 to E6) are run. The
+    subset search keeps the constant in every model and searches the other seven terms (O7 c). QL and
+    QR are the predictive means of the FQ model with time-varying parameters (drift SDs 0.01 and 0.05
+    from the training half of the alternate split).
+- claim: fig9-temporal-order-all-blocks
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig9-temporal-order-all-blocks
+  notes: No reading gives DLS in Phase 3, DMS in Phase 4 and VS in Phase 5 in both fixed-choice block
+    types. Pooled, all three regions start their sustained rise between 2.75 and 3.20 s in single and
+    double fixed blocks. Per block, single fixed blocks on the deposited PANs show the order (DLS 4.10
+    s, DMS 4.40 to 4.50, VS 5.05 to 5.10) but double fixed blocks do not (all in Phase 3). In free-choice
+    blocks the order DLS, DMS, VS holds in 6 of 12 readings. Region averages often pass the threshold
+    in Phase 1 (first crossings 0.50 to 1.20 s).
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+  - Blocks with fewer than 20 choice trials give all of theirs.
+- claim: fig9-dms-never-above-dls
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig9-dms-never-above-dls
+  notes: 'Adopted reading: DMS is not significantly above DLS in any block type or window, pooled or per
+    block, on either unit set. Of all 96 tests one shows DMS above DLS (per block, shuffle-corrected MI,
+    single fixed blocks, window ending at E4, 0.039 against 0.018 bits/s, p = 0.021).'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+  assumed: true
+- claim: fig10a-dls-fixed-above-free
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig10a-dls-fixed-above-free
+  notes: 'The order of crossings fails in every reading: pooled, FH rises first (2.15 s, before SF 2.85
+    and DF 2.75 to 2.80); per block, the FL peak in Phases 3 and 4 is above the SF peak. Fixed above free
+    in both windows holds with the Wilcoxon test under shuffle-corrected MI (pooled or per block) and
+    bias-corrected MI pooled (E3 0.043 against 0.024, p = 0.039; E4 0.061 against 0.046, p = 0.029), never
+    with the Mann-Whitney test on the deposited PANs.'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+  - '''500 ms before cue presentation'' is read as the window ending at E3, as the criterion says; the
+    window ending at E2 is shown.'
+- claim: fig10b-dms-fixed-above-free
+  outcome: not_reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig10b-dms-fixed-above-free
+  notes: No reading gives fixed above free with p < 0.05 in both windows. At the window ending at E4 fixed
+    exceeds free (bias-corrected, pooled, 0.070 against 0.038, Wilcoxon p = 0.0003); at the window ending
+    at E3 it does not (0.017 against 0.007, p = 0.079; per block p 0.20 to 0.22).
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+- claim: fig10c-vs-no-fixed-free-difference
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig10c-vs-no-fixed-free-difference
+  notes: 'With the last 20 trials pooled no window gives p < 0.05 under either test or any MI reading
+    (bias-corrected Wilcoxon p = 0.77 and 0.63). With MI per block the Wilcoxon test finds fixed above
+    free at the window ending at E3 (bias-corrected 0.066 against 0.053, p = 0.024). The readings disagree
+    and the paper does not say how the blocks of a type are combined. The VS average passes its threshold
+    in Phase 3 in all four block types when pooled (17 to 28 windows); per block, SF in 1 window, DF 17,
+    FH 3 to 4, FL 0 to 2, so no SF-specific peak is seen. Question for the authors: was action information
+    computed on the last 20 trials of all blocks of a type pooled, or per block and averaged?'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+- claim: fig10d-dls-stay-above-switch
+  outcome: reproduced
+  notebook: reproduce_ito_2015.ipynb
+  output: claim:fig10d-dls-stay-above-switch
+  notes: 'Adopted reading: DLS stay above switch at the window ending at E3 (last 20 trials 0.031 against
+    0.008 bits/s, p = 2e-5; all free trials 0.028 against 0.008, p = 0.00014); DMS shows no difference
+    in either window (p 0.18 to 0.72). With plug-in MI, which is biased upward for the fewer switch trials
+    (median 66 against 152 per neuron), DLS shows no difference (p 0.18 to 0.94) and with the last 20
+    trials DMS switch exceeds stay (p = 0.005 and 0.036).'
+  deviations:
+  - The neural analyses use the 454 units the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138);
+    the set rebuilt from the Methods (183, 147, 119) is shown as a variant (see neuron-counts).
+  - Mutual information is corrected for bias by the Panzeri and Treves (1996) estimate (O1, reading c,
+    added from the paper), adopted because the Results cite Panzeri and Treves (1996) for the mutual information
+    (Information coding of state, action, and reward, paragraph 1); the plug-in (O1 a) and shuffle-corrected
+    (O1 b) estimates are shown. Levels are quartiles of the trial counts; the random events of the threshold
+    are permutations of the real labels (a standard choice).
+  assumed: true
+findings:
+- kind: metadata_error
+  statement: 'The trial table describes `state` as 1 = Tone A (left), 2 = Tone B (right), 3 = Tone C (choice).
+    The data show 2 = left tone, 3 = right tone and 1 = choice tone: state 2 is the only state in single
+    fixed-choice blocks with rule (50, 0), its right choices are never rewarded (2669 trials), state 3
+    left choices are never rewarded (2026), and state 1 is the only state in free-choice blocks.'
+- kind: selection_undocumented
+  statement: The dandiset holds 859 units (297 DLS, 255 DMS, 215 VS, 92 CS), more than the paper's 617
+    stable neurons, without a column saying which passed the paper's stability, amplitude, histology and
+    duplicate exclusions. Its `PANs` flag (204, 112, 138 in DLS, DMS, VS) is described as Prop(ISI > 1
+    s) > 0.4, but 174 units that pass that rule are not flagged, so the flag rests on a further criterion
+    that is not described. 15 CS units are flagged, though the paper analyses only DLS, DMS and VS.
+- kind: metadata_insufficient
+  statement: No waveforms, amplitudes or recording depths are deposited, so the paper's exclusion conditions
+    1, 2 and 5 and its waveform basis for the PAN class cannot be applied.
+- kind: other
+  statement: The dandiset has 87 files for the paper's 86 recording sessions; LE115_14 holds behaviour
+    (802 trials) and no units.
+- kind: data_missing
+  statement: The paper's model comparison used 202 behavioural sessions (101 training, 101 test); the
+    dandiset holds 86 sessions with free-choice trials, so the comparison of Fig. 2G can be run only on
+    these.
+- kind: other
+  statement: 'Some event times fall outside the task''s stated ranges: cue durations (E2 to E3) from 0.009
+    s where the paper gives 1 to 2 s (1st percentile 1.04 s), centre-poke durations before the cue (E1
+    to E2) from 0.026 s where the paper gives 500 to 1000 ms (1st percentile 0.51 s), and 942 choice trials
+    lack one of the six events or have them out of order.'
+- kind: methods_unavailable
+  statement: 'Mutual information (Figs. 5, 9, 10): was the plug-in estimate corrected for bias, and if
+    so by the Panzeri and Treves (1996) estimate the Results cite, or by shuffling? How were the four
+    firing levels defined (quartiles of the trial counts?), and were the random events of the threshold
+    drawn with the real proportions? The cue-offset, state, dms-never-above-dls and stay-switch results
+    depend on it.'
+- kind: methods_unavailable
+  statement: 'Fig. 4: which smoothing was applied to the EASHs before normalizing, were extinction trials
+    among the ''whole trials'', and does ''reached 0.5 during each trial phase'' mean any bin at or above
+    0.5 in the phase? The DMS against VS test of Phase 5 depends on these.'
+- kind: methods_unavailable
+  statement: 'Fig. 5G: over which bins were the regions'' reward information compared (Phase 6, Phases
+    6 and 7, or the peak)?'
+- kind: methods_unavailable
+  statement: 'Figs. 9 and 10: was action information computed on the last 20 trials of all blocks of a
+    type pooled, or per block and averaged, and is the ''paired-Mann-Whitney U test'' the Wilcoxon signed-rank
+    test over neurons? The VS absence of Fig. 10C and the DLS and DMS differences depend on it.'
+- kind: methods_unavailable
+  statement: 'Fig. 8: were the regression windows on the EASH axis or in real time, which seven events
+    were used (E1 to E7 or E0 to E6), were the trials free-choice trials only, and which subsets of regressors
+    were searched (the text gives six variables and 2^6 models for the eight terms listed)? The QR and
+    action-value results of DMS depend on the window axis.'
+- kind: methods_unavailable
+  statement: 'Fig. 6: which window defines state coding (all of Phase 3, or a 500 ms window), and were
+    the windows on the EASH axis or in real time?'
+- kind: methods_unavailable
+  statement: 'Fig. 2G: the update and choice equations, the initial values, and the priors and parameter
+    ranges of the particle filter are images missing from the text or referred to Ito and Doya (2009);
+    how were the 202 sessions split into training and test halves?'
