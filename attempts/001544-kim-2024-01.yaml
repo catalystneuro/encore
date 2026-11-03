@@ -159,8 +159,10 @@ outcomes:
     = 3.91, p = 0.00049 (paper t(27) = 2.80). Reading (b), mixed model, p = 0.00085 and 0.0098. Both pairs
     stay below 0.05 without the `_FL` cells (21 ALL, F(2, 38) = 9.80), without the cells whose test-pulse
     resistance changed by more than 20% (p 0.0011 to 0.024) and with all steps in the file as the code
-    takes them (p 6.6e-05 to 0.025). Per mouse, APP means 4 to 87 Hz, AV 13 to 90, ALL 4 to 29. The Methods'
-    switch to non-parametric tests would apply (Shapiro-Wilk p 0.00023); Kruskal-Wallis p = 0.003.
+    takes them (p 6.6e-05 to 0.025). Per mouse, APP means 4 to 87 Hz, AV 13 to 90, ALL 4 to 29. With the
+    mixed-model contrasts referred to t on 18 df (mice minus 3), p = 0.0037 and 0.019. The Methods' switch
+    to non-parametric tests would apply (Shapiro-Wilk p 0.00023), and they agree, Kruskal-Wallis p = 0.0030,
+    Mann-Whitney ALL against APP p = 0.0023 and ALL against AV p = 0.022.
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -169,8 +171,9 @@ outcomes:
   - >-
     Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
     ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
-    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
-    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+    mixed model with a random intercept per mouse (REML) and Wald tests against the normal, with the same
+    contrasts against t on the number of mice minus 3 df and the classical nested F beside them; the paper
+    does not give its software's model beyond Prism or SigmaPlot.
   - >-
     Exclusion rules (STAR Methods, Electrophysiology). Input resistance under 50 MOhm and resting potential
     above -50 mV exclude no cell. Series resistance is not in the files. The 20% change rule was read
@@ -184,20 +187,31 @@ outcomes:
     Only steps from -60 to 200 pA are used (STAR Methods, Electrophysiology, "-60 to 200 pA amplitude",
     and item 16, "a current step between 0 and 200 pA"); the code's use of every step in the file is a
     variant.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: figs12a-sag-higher
-  outcome: partially_reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2024.ipynb
   output: claim:figs12a-sag-higher
   notes: >-
-    Sag ALL 3.22, APP 6.68, AV 4.90 mV. APP exceeds ALL under both readings (t = 2.71, p = 0.011; mixed
-    model p = 0.0041); AV does not (t = 1.77, p = 0.087; mixed model p = 0.24). The outcome depends on
-    the cells. Without the `_FL` cells reading (a) gives both pairs (p = 0.0036 and 0.0072) and reading
-    (b) misses AV (p = 0.12); without the cells that changed by more than 20% neither pair holds (p =
-    0.18 and 0.086). Five cells (four APP, one ALL) saturate at -105.6 mV during the -60 pA step. Using
-    the next unsaturated step for them, neither pair holds on all cells (p = 0.053 and 0.085), and both
-    hold on the cells without `_FL` (reading (a) p = 0.0082 and 0.0067, reading (b) p = 0.0051 and 0.028).
-    Question for the paper's authors (see findings) on which 21 ALL cells were analysed.
+    Sag ALL 3.22, APP 6.68, AV 4.90 mV on all 44 cells. AV does not exceed ALL under either reading (t
+    = 1.77, p = 0.087; mixed model p = 0.24, 0.25 with t on 18 df), so the criterion, which needs both
+    groups, fails. APP exceeds ALL by both parametric readings (t = 2.71, p = 0.011; mixed model p = 0.0041,
+    0.010 with t on 18 df) but not by the non-parametric tests the Methods prescribe when normality fails
+    (Shapiro-Wilk p = 0.0016; Kruskal-Wallis p = 0.12; Mann-Whitney ALL against APP p = 0.10, ALL against
+    AV p = 0.094). Five cells (four APP, one ALL) sit at -105.62 mV for 45 to 463 ms of the -60 pA step,
+    which clips their minimum and underestimates their sag. With the next unsaturated step for them neither
+    pair holds (p = 0.053 and 0.085); leaving them out, APP exceeds ALL (p = 0.016; mixed model p = 0.017)
+    and AV does not (p = 0.092; mixed model p = 0.13). The outcome rests on the dandiset's 24 ALL cells,
+    hence assumed. Without the `_FL` cells reading (a) gives both pairs (p = 0.0036 and 0.0072) and reading
+    (b) misses AV (p = 0.12), so on that set the readings would disagree; without the cells whose test-pulse
+    resistance changed by more than 20% neither pair holds (p = 0.18 and 0.086). Changed in revision from
+    partially_reproduced (see verifications). Question for the paper's authors (see findings) on which
+    21 ALL cells were analysed; question for a reader (questions/001544.yaml) on the normality rule.
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -206,8 +220,9 @@ outcomes:
   - >-
     Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
     ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
-    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
-    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+    mixed model with a random intercept per mouse (REML) and Wald tests against the normal, with the same
+    contrasts against t on the number of mice minus 3 df and the classical nested F beside them; the paper
+    does not give its software's model beyond Prism or SigmaPlot.
   - >-
     Exclusion rules (STAR Methods, Electrophysiology). Input resistance under 50 MOhm and resting potential
     above -50 mV exclude no cell. Series resistance is not in the files. The 20% change rule was read
@@ -218,7 +233,14 @@ outcomes:
     Sag uses the -60 pA step as the code computes it (sagpotential.m, 20 ms median filter, maximum of
     the second half minus minimum of the first half). The code means to move to the next step when the
     response saturates, but its test never fires; the intended rule is shown as a variant, with saturation
-    as 10 ms at the trace's minimum (a standard choice).
+    as 10 ms at the trace's minimum (a standard choice). The notebook repeats the code's test on every
+    -60 pA sweep (its mode count is 1 in every cell, so it never fires) and shows the five saturated cells
+    left out as a further variant.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: figs12-other-features-shared
   outcome: reproduced
   notebook: reproduce_kim_2024.ipynb
@@ -230,7 +252,10 @@ outcomes:
     differs (p = 0.012, APP 24.9 ms against ALL 48.6 and AV 56.8). The count is 7 of 10 without the `_FL`
     cells (rheobase p = 0.045 and adaptation index p = 0.040 also differ) and 10 of 10 without the cells
     whose resistance changed by more than 20%; the mixed model gives 9, 7 and 10. Adaptation index, marked
-    with an asterisk in the figure, has p = 0.056 on all cells. What the answer changed. The question asked
+    with an asterisk in the figure, has p = 0.056 on all cells. By Kruskal-Wallis, the Methods' test when
+    normality fails, the count is 7 of 10 on all cells (spike latency, AHP latency and adaptation index
+    differ), 6 of 10 without the `_FL` cells and 9 of 10 without the changed cells, still more than half.
+    What the answer changed. The question asked
     whether the claim should be judged on the legend's ten features in place of the fourteen (the eighteen
     of the Methods less max firing rate, sag, membrane potential and AHP amplitude). The reader agreed and
     amended the claim, and moved input resistance, spike width, downstroke and f-I slope to the new claim
@@ -258,6 +283,11 @@ outcomes:
     adaptation and CV at the largest step from -60 to 200 pA (the Methods' "maximal current step"); downstroke
     as the minimum dV/dt within 5 ms after the first peak (a standard choice; the code's window runs to
     the end of the step); AHP latency and width from reading (a) of AHP amplitude.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: figs12-app-differs-from-all
   outcome: reproduced
   assumed: true
@@ -273,7 +303,10 @@ outcomes:
     cells (p from 9.1e-05 to 0.041). Without the cells whose resistance changed by more than 20%, input
     resistance does not differ (p = 0.20 and 0.19) and the downstroke differs only by reading (a) (p =
     0.029; mixed model p = 0.11), which on that set would give partially reproduced; the outcome rests
-    on using all 24 ALL cells, hence assumed.
+    on using all 24 ALL cells, hence assumed. With the mixed-model contrasts referred to t on mice minus
+    3 df, the downstroke p is 0.039 on all cells and 0.057 without the `_FL` cells, so that feature is marginal;
+    the other three stay below 0.05 in both sets. Mann-Whitney agrees on all cells (p = 0.0051, 0.00051,
+    0.0046 and 0.00066).
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -288,8 +321,9 @@ outcomes:
   - >-
     Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
     ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
-    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
-    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+    mixed model with a random intercept per mouse (REML) and Wald tests against the normal, with the same
+    contrasts against t on the number of mice minus 3 df and the classical nested F beside them; the paper
+    does not give its software's model beyond Prism or SigmaPlot.
   - >-
     Spike detection, the step window and the f-I slope follow the paper's code, nsdesai/patch_clamp_analysis
     v1.0.0 (commit 4ee1125), as the claims file says.
@@ -299,6 +333,11 @@ outcomes:
     interpolated tenfold (code); downstroke as the minimum dV/dt within 5 ms after the first peak (item
     11, a standard choice; the code's window runs to the end of the step); f-I slope as the code's ficurve.m
     fits it.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: fig6g-av-more-hyperpolarized
   outcome: not_reproduced
   notebook: reproduce_kim_2024.ipynb
@@ -310,7 +349,12 @@ outcomes:
     set and reading. Reading (b), the potential without injected current, cannot be run, as the files
     hold no segment without the DC holding current; every cell sits between -73.5 and -62.0 mV because
     of it, so this measure cannot show resting-potential differences. If the paper's value came from the
-    code, as reading (a) assumes, it was measured under the same holding current.
+    code, as reading (a) assumes, it was measured under the same holding current. A potential measured under
+    a DC injection meant to hold every cell at -65 mV can hardly differ by group, so reading (a) may not
+    be what Figure 6G plots; the outcome follows the claims file's criterion, and says little about the
+    paper's resting potential. The stimulus is 0 before the step in every file and the 0 pA sweep sits
+    at -61.2 to -76.9 mV, the pre-step level, so no sweep is free of the holding current. Kruskal-Wallis
+    p = 0.89; Mann-Whitney APP against AV p = 0.79.
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -319,10 +363,16 @@ outcomes:
   - >-
     Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
     ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
-    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
-    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+    mixed model with a random intercept per mouse (REML) and Wald tests against the normal, with the same
+    contrasts against t on the number of mice minus 3 df and the classical nested F beside them; the paper
+    does not give its software's model beyond Prism or SigmaPlot.
   - >-
     Only reading (a) of the claims file could be run; reading (b) needs data the files do not hold.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: fig6h-av-smaller-ahp
   outcome: not_reproduced
   notebook: reproduce_kim_2024.ipynb
@@ -333,7 +383,9 @@ outcomes:
     direction, p = 0.18; mixed model 0.41); its ANOVA p = 0.049 comes from ALL above APP. One APP and
     one ALL cell have no reading (b) value, their first spike being less than 100 ms before the end of
     the step. The code's definition gives AV below APP (9.45 against 15.61 mV), t = -1.85, p = 0.081,
-    mixed model p = 0.27. Threshold at 10 mV/ms changes neither reading.
+    mixed model p = 0.27. Threshold at 10 mV/ms changes neither reading. In the same two cells the reading
+    (a) window is cut by the end of the step to 76.8 and 53.3 ms; their minima fall at 8.7 and 37.0 ms,
+    inside it. Mann-Whitney APP against AV p = 0.91 (a), 0.24 (b), 0.083 (code).
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -342,11 +394,17 @@ outcomes:
   - >-
     Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
     ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
-    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
-    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+    mixed model with a random intercept per mouse (REML) and Wald tests against the normal, with the same
+    contrasts against t on the number of mice minus 3 df and the classical nested F beside them; the paper
+    does not give its software's model beyond Prism or SigmaPlot.
   - >-
     Spike detection, the step window and the f-I slope follow the paper's code, nsdesai/patch_clamp_analysis
     v1.0.0 (commit 4ee1125), as the claims file says.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: fig6-app-less-excitable
   outcome: not_reproduced
   notebook: reproduce_kim_2024.ipynb
@@ -355,7 +413,7 @@ outcomes:
     Latency at rheobase APP 153.2 against AV 74.5 ms, longer in APP but not significantly (t(18) = -1.90,
     p = 0.074; mixed model p = 0.097); the same to the peak or at 10 mV/ms. Rheobase APP 35.0 against
     AV 51.25 pA, the opposite direction (p = 0.26). No reading gives a significant difference in the stated
-    direction in any cell set.
+    direction in any cell set. Mann-Whitney APP against AV p = 0.057 for latency and 0.37 for rheobase.
   deviations:
   - >-
     The dandiset holds 24 ALL cells from 11 mice where the paper analysed 21 from 8, and does not say
@@ -364,11 +422,17 @@ outcomes:
   - >-
     Reading (b), the nested ANOVA of the STAR Methods (Quantification and statistical analysis, "a nested
     ANOVA was run to account for replicate values obtained from the same mouse"), is fitted as a linear
-    mixed model with a random intercept per mouse (REML) and Wald tests, with the classical nested F beside
-    it; the paper does not give its software's model beyond Prism or SigmaPlot.
+    mixed model with a random intercept per mouse (REML) and Wald tests against the normal, with the same
+    contrasts against t on the number of mice minus 3 df and the classical nested F beside them; the paper
+    does not give its software's model beyond Prism or SigmaPlot.
   - >-
     Spike detection, the step window and the f-I slope follow the paper's code, nsdesai/patch_clamp_analysis
     v1.0.0 (commit 4ee1125), as the claims file says.
+  - >-
+    The STAR Methods (Quantification and statistical analysis) say "Non-parametric tests were conducted
+    if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov). The claims file's readings
+    do not include this rule, so the outcome follows readings (a) and (b), and Kruskal-Wallis and Mann-Whitney
+    results are shown beside them; a question for a reader is in questions/001544.yaml.
 - claim: fig6j-convex-hull-area
   outcome: blocked
   blocked_by: data_missing
@@ -426,8 +490,9 @@ findings:
 - kind: selection_undocumented
   statement: >-
     The home-cage (ALL) group holds 24 cells from 11 mice, where the Figure 6 legend reports 21 cells
-    from 8 mice; the dandiset does not say which cells the paper left out or why. The APP (12 cells, 6
-    mice) and AV (8 cells, 4 mice) groups match the legend.
+    from 8 mice; the dandiset does not say which cells the paper left out or why. No 8 of the 11 mice
+    hold 21 cells (any 8 hold 14 to 20), so the paper's set is not the deposit less whole mice. The APP
+    (12 cells, 6 mice) and AV (8 cells, 4 mice) groups match the legend.
 - kind: metadata_error
   statement: >-
     The six APP mice are 4 male and 2 female in the files, where the Figure 6 legend says 3 male and 3
@@ -446,14 +511,16 @@ findings:
 - kind: other
   statement: >-
     Five recordings (four APP, one ALL) reach -105.6 mV and stay there for 10 ms or more during the -60
-    pA step, a recording floor that truncates the response; sag measured on these sweeps is underestimated.
+    pA step, a floor that truncates the response; sag measured on these sweeps is underestimated. One other
+    file has a single sample at -112.9 mV, so the floor is not shown to hold for every recording.
     Three sweeps hold NaN for their last 0.1 to 0.6 s, after the step.
 - kind: code_mismatch
   statement: >-
     The paper's code (v1.0.0) differs from the Methods in the spike threshold (10 against 20 mV/ms), spike
     latency (to the peak, not the threshold), AHP amplitude (minimum to the next spike on the first step
     with two spikes, not within 100 ms at rheobase) and tau (the -40 pA step, not -20 pA). Its downstroke
-    window runs to the end of the step, and its test for a saturated sag response never fires.
+    window runs to the end of the step, and its test for a saturated sag response never fires (it compares
+    with 1000 the count of the most frequent index among the unchanged samples, which is always 1).
 - kind: paper_inconsistency
   statement: >-
     The STAR Methods say a nested ANOVA was run for the electrophysiology to account for cells from the
@@ -467,3 +534,267 @@ findings:
     ALL p = 0.087 on all 24 cells, 0.0072 without the three `_FL` cells). And how was the membrane potential
     of Figure 6G measured "in the absence of a current injection", when the files hold only sweeps under
     the DC holding current?
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper. The verifier queried the archive metadata, tested the helper
+    on a synthetic cell and rebuilt the mixed-model p-values from the printed feature table. It gave its
+    own outcome for each claim; 30 of 31 agree with the record, and figs12a-sag-higher does not. Problems
+    5 and 6 (the 20% change rule and the cell counts) were answered with a per-sweep table of test-pulse
+    resistance and pre-step potential, the largest-departure reading of the rule (it would remove 30 of
+    44 cells), and a check that no 8 of the 11 ALL mice hold 21 cells.
+  results:
+  - claim: fig6f-max-firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 16, APP and AV are above ALL in every cell set and under both readings. In the all set, reading
+      (a) gives p = 1.4e-5 for APP and 4.9e-4 for AV, and reading (b) gives 8.5e-4 and 0.0098. The F is
+      10.83 in all and 9.80 at df (2, 38) in no_FL, against 10.71 reported. The t values are 5.08 and
+      3.91, against 5.36 and 2.80. Rank tests agree (Mann-Whitney p 0.002 and 0.02, my recomputation).
+    response: >-
+      No change to the outcome. The tables now print the Mann-Whitney p for each pair (0.0023 and 0.022),
+      the Kruskal-Wallis p and the mixed-model contrasts referred to t on mice minus 3 df (p = 0.0037 and
+      0.019); the conclusion and notes give them.
+  - claim: figs12a-sag-higher
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Cell 19, all set, AV is not above ALL under either reading ((a) p = 0.087, (b) p = 0.24), and the
+      nested reading fails for AV in every set. APP above ALL holds by parametric tests ((a) 0.011, (b)
+      0.004). It does not hold in the unsaturated-step variant (cell 20, p about 0.05) or by the Methods'
+      non-parametric rule (Shapiro p = 0.0016; Kruskal-Wallis p = 0.12). Saturated responses in four APP
+      cells clip the minimum, so the APP sag rests on unreliable traces, and the unsaturated-step variant
+      gives smaller sags by construction (problems 1 and 2).
+    response: >-
+      Outcome changed from partially_reproduced to not_reproduced, still marked assumed. The criterion
+      needs both groups and AV fails under every reading in the main set; the APP half is not robust
+      (Kruskal-Wallis p = 0.12, Mann-Whitney p = 0.10, unsaturated-step variant p = 0.053). Added the
+      code's saturation test run on every -60 pA sweep (mode count 1 in every cell, never fires), a plot
+      and the minima of the five saturated sweeps, a check of -105.62 mV as a floor (one other file
+      reaches -112.88 mV in one sample), and a variant leaving the five cells out (APP p = 0.016, AV p =
+      0.092). Added a question for a reader on the normality rule.
+  - claim: fig6g-av-more-hyperpolarized
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 22, under reading (a), the pre-step Vm, APP is -66.6 mV and AV -67.3 mV; ANOVA p = 0.75, APP vs
+      AV p = 0.60, nested p = 0.76. Reading (b) cannot be run, because no segment is free of the holding
+      current (cell 6). Only one reading could be run, and it fails. Reading (a) measures the potential
+      under a DC injection meant to hold every cell at -65 mV, so it can hardly show a resting difference,
+      and may not be what Figure 6G plots (problem 4).
+    response: >-
+      No change to the outcome. The conclusion and notes now say that reading (a) is measured under the
+      holding current and may not be what Figure 6G plots. Added a data-check table of the stimulus before
+      the step (0 in every file) and the mean potential of the 0 pA sweep per cell (-61.2 to -76.9 mV),
+      which shows no segment free of the holding current.
+  - claim: fig6h-av-smaller-ahp
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 24, under reading (a), ANOVA p = 0.55 and APP vs AV p = 0.68. Under reading (b), AV is larger
+      than APP (12.6 vs 9.5 mV), the wrong direction, p = 0.18. The code variant has AV smaller, but p =
+      0.08 (a) and 0.27 (b). When the first spike comes late, the 100 ms window is cut off at step end;
+      this is stated for ahp_b but not for ahp_a (problem 7).
+    response: >-
+      No change to the outcome. The helper now records the length of the reading (a) window, and the
+      notebook lists the two cells where it is cut (76.8 and 53.3 ms) with their minima (at 8.7 and 37.0
+      ms, inside the window); the docstring states the truncation for both readings. Mann-Whitney p added.
+  - claim: fig6-app-less-excitable
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 27, latency is longer in APP (153 vs 75 ms) but not significant (p = 0.074 (a), 0.097 (b)).
+      Rheobase goes the wrong way (APP 35 vs AV 51 pA). No reading is significant in the stated direction.
+    response: >-
+      No change. Mann-Whitney p added (0.057 for latency, 0.37 for rheobase).
+  - claim: figs12-other-features-shared
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 29, 9 of 10 features show no difference by ANOVA and 9 of 10 by the mixed model in all. The
+      counts are 7/10 in no_FL and 10/10 in change20, so the claim holds in every set (the rule is 6 or
+      more).
+    response: >-
+      No change to the outcome. Added the Kruskal-Wallis count (7 of 10 on all cells, 6 of 10 without the
+      _FL cells, 9 of 10 without the changed cells), still more than half.
+  - claim: figs12-app-differs-from-all
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 32, in all and no_FL, APP differs from ALL in all four features under both readings. APP has
+      higher input resistance, narrower spikes, a faster downstroke and a steeper f-I slope. The change20
+      set gives only 3 of 4 (a) and 2 of 4 (b), and the downstroke result is marginal; with t on df =
+      number of mice minus 3, the downstroke ALL vs APP p rises from 0.026 to 0.039 in all and from 0.041
+      to 0.057 in no_FL (problem 3).
+    response: >-
+      No change to the outcome, still marked assumed. The helper now gives the mixed-model contrasts
+      against t on mice minus 3 df beside the Wald z, and the summary table counts features by it and by
+      Mann-Whitney; the conclusion and notes say the downstroke is marginal (0.039 on all cells, 0.057
+      without the _FL cells).
+  - claim: fig1c-app-approach
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: fig1c-av-avoidance
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: figs1-locomotion-unchanged
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: fig2c-hm4di-app-reversal
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: fig2e-hm4di-av-unchanged
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: fig5c-adcd-app-reversal
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: fig5e-adcd-av-unchanged
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No behaviour tracking is in the dandiset. I confirmed this on the archive, 44 NWB files, 21
+      subjects, variableMeasured lists only CurrentClampSeries and CurrentClampStimulusSeries. The draft
+      is identical.
+    response: No change needed.
+  - claim: fig1f-cfos-total
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: fig1g-chat-cfos
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: fig3-same-odor-reactivation
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: fig4d-different-odor-no-reactivation
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: figs5-activation-counts
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: figs7-ram-replication
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: figs9-valence-specific
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: figs11-intermingled
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: fig7d-bla-projecting-av
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No histology counts are in the dandiset; same archive check. No part can be tested.
+    response: No change needed.
+  - claim: fig1k-app-calcium-auc
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No fiber photometry is in the dandiset; same archive check.
+    response: No change needed.
+  - claim: fig1l-av-calcium-auc
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No fiber photometry is in the dandiset; same archive check.
+    response: No change needed.
+  - claim: fig1mn-calcium-max-z
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No fiber photometry is in the dandiset; same archive check.
+    response: No change needed.
+  - claim: fig6j-convex-hull-area
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No neurobiotin reconstructions are in the dandiset (no image or morphology data types). No part can
+      be tested.
+    response: No change needed.
+  - claim: fig6kl-dendrite-area-volume
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No neurobiotin reconstructions are in the dandiset (no image or morphology data types). No part can
+      be tested.
+    response: No change needed.
+  - claim: fig6m-sholl-proximal
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No neurobiotin reconstructions are in the dandiset (no image or morphology data types). No part can
+      be tested.
+    response: No change needed.
+  - claim: fig6n-sholl-reach
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No neurobiotin reconstructions are in the dandiset (no image or morphology data types). No part can
+      be tested.
+    response: No change needed.
+  - claim: figs13-other-morphometrics
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No neurobiotin reconstructions are in the dandiset (no image or morphology data types). No part can
+      be tested.
+    response: No change needed.

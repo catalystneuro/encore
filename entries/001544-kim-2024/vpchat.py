@@ -31,7 +31,10 @@ Where the parameters come from:
   least 0. The code means to move to the next step when the response is saturated, but its test
   (the mode of the indices where the voltage does not change) never fires, so it always uses
   -60 pA; that is the main reading. `skip_saturated_sag=True` applies the intended rule, with
-  saturation as 10 ms at the trace's minimum (`saturated`, a standard choice).
+  saturation as 10 ms at the trace's minimum (`saturated`, a standard choice). `code_saturation_test`
+  repeats the code's test (the count of the most frequent index among the indices where the voltage
+  does not change, against 1000), which is 1 for any trace, and gives the count of unchanged samples
+  the test seems meant to compare. Dropping the saturated cells is a further variant.
 - Input resistance and tau (Methods items 3 and 4): the response to the -20 pA step, steady state
   as the mean of the last 100 ms of the step against the 45 ms before it (inputresistance.m); tau
   from a single exponential fitted from 2 ms after step onset to the end of the step, as the code
@@ -52,13 +55,22 @@ Where the parameters come from:
   a variant): the first step at or above rheobase with two or more spikes, the minimum between the
   first spike and 0.75 ms before the second (or to the end of the window), threshold at 10 mV/ms on
   uninterpolated data. AHP latency and width (items 13, 14) from reading (a): threshold to the
-  minimum, and the time between the half-amplitude crossings within the 100 ms.
+  minimum, and the time between the half-amplitude crossings within the 100 ms. When the first spike
+  comes less than 100 ms before the end of the analysed step, the window of reading (a) is cut at the
+  end of the step (`ahp_window_ms` gives its length) and reading (b) has no value.
 - f-I slope (item 15, code ficurve.m): linear fit of rate against current from the step before the
   first spiking step to the step with the most spikes. Max firing rate (item 16): the largest count
   over the 500 ms of any step from 0 to 200 pA, over 0.5 s.
 - Adaptation index and CV of ISIs (items 17, 18): the Methods' "maximal current step", taken as the
   largest step used (200 pA where present); second half count over first 250 ms count; CV is 0
   with fewer than three spikes (code).
+- Statistics. Reading (a): cell-level one-way ANOVA and two-tailed Student t-tests; reading (b):
+  a mixed model with a random intercept per mouse, pairs by Wald tests against the normal (`p`) and
+  against t on the number of mice minus 3 degrees of freedom (`p_t`, a small-sample reference, a
+  standard choice). The STAR Methods (Quantification and statistical analysis) say "Non-parametric
+  tests were conducted if the data failed these tests" (Shapiro-Wilk and Kolmogorov-Smirnov); the
+  claims file's readings do not include this rule, so Kruskal-Wallis and two-sided Mann-Whitney U
+  tests are given beside them (`p_kruskal`, `p_mw`).
 - Exclusion rules (STAR Methods, Electrophysiology): input resistance under 50 MOhm, resting
   potential above -50 mV, or a change of more than 20% in these. Series resistance is not in the
   files. The change is checked on the -20 pA test pulse that every sweep carries after the step
@@ -193,6 +205,18 @@ def saturated(v: np.ndarray, n: int = 100) -> bool:
     return int((v <= np.nanmin(v) + 0.01).sum()) >= n
 
 
+def code_saturation_test(v: np.ndarray) -> dict:
+    """The saturation test of sagpotential.m (code v1.0.0) on the step part of one sweep:
+    foo = find(diff(v) == 0); [~, boo] = mode(foo); saturated when boo >= 1000. `mode_count` is boo,
+    the count of the most frequent index, which is 1 for any trace (each index occurs once) or 0 when
+    no sample repeats; `zero_diffs` is the number of unchanged samples, the count the test seems
+    meant to compare with 1000."""
+    idx = np.nonzero(np.diff(v) == 0)[0]
+    mode_count = int(np.unique(idx, return_counts=True)[1].max()) if len(idx) else 0
+    return dict(mode_count=mode_count, code_fires=mode_count >= 1000, zero_diffs=len(idx),
+                intended_fires=len(idx) >= 1000)
+
+
 def features(cell: dict, dvdt_threshold: float = METHODS_DVDT, use_all_steps: bool = False,
              skip_saturated_sag: bool = False) -> dict:
     """The eighteen features of the STAR Methods for one cell, with the variants named above."""
@@ -252,7 +276,7 @@ def features(cell: dict, dvdt_threshold: float = METHODS_DVDT, use_all_steps: bo
     out["max_step"] = float(steps[order].max())
     for k in ["rheobase", "threshold", "amplitude", "width", "latency", "latency_peak", "upstroke",
               "downstroke", "ahp_a", "ahp_b", "ahp_latency", "ahp_width", "ahp_code", "fi_slope",
-              "adaptation", "cv_isi"]:
+              "adaptation", "cv_isi", "ahp_window_ms"]:
         out[k] = np.nan
     if not spiking:
         return out
@@ -285,6 +309,7 @@ def features(cell: dict, dvdt_threshold: float = METHODS_DVDT, use_all_steps: bo
             out["downstroke"] = float(dvdt[p0:p0 + round(5 / dti) + 1].min())
             w100 = round(100 / dti)
             seg = vi[ti:ti + w100 + 1]
+            out["ahp_window_ms"] = float((len(seg) - 1) * dti)
             if len(seg) > w100:
                 out["ahp_b"] = float(thr - vi[ti + w100])
             # reading (a): the minimum within 100 ms (to the end of the step if shorter)
@@ -370,7 +395,9 @@ def quality(cell: dict) -> dict:
                 rin_tp_change=float(abs(rin_tp[-1] - rin_tp[0]) / rin_tp[0]),
                 vm_first=float(base[0]), vm_last=float(base[-1]),
                 vm_change=float(abs(base[-1] - base[0]) / abs(base[0])),
-                vm_max=float(base.max()))
+                vm_max=float(base.max()),
+                rin_tp_sweeps=rin_tp.round(1).tolist(), vm_sweeps=base.round(2).tolist(),
+                rin_tp_maxdev=float(np.max(np.abs(rin_tp - rin_tp[0])) / rin_tp[0]))
 
 
 # ---------------------------------------------------------------- statistics
@@ -391,7 +418,7 @@ def cell_tests(df: pd.DataFrame, col: str, pairs=(("ALL", "APP"), ("ALL", "AV"),
         t = stats.ttest_ind(g[b], g[a])
         out[f"{a}-{b}"] = dict(t=t.statistic, p=t.pvalue, df=len(g[a]) + len(g[b]) - 2,
                                diff=float(np.mean(g[b]) - np.mean(g[a])),
-                               p_mw=stats.mannwhitneyu(g[b], g[a]).pvalue)
+                               p_mw=stats.mannwhitneyu(g[b], g[a], alternative="two-sided").pvalue)
     return out
 
 
@@ -418,6 +445,8 @@ def nested_tests(df: pd.DataFrame, col: str, pairs=(("ALL", "APP"), ("ALL", "AV"
     out["mouse_var"] = float(m.cov_re.iloc[0, 0])
     out["resid_var"] = float(m.scale)
     out["converged"] = bool(m.converged)
+    df_t = d["subject"].nunique() - 3
+    out["df_t"] = df_t
     idx = {"ALL": None, "APP": 1, "AV": 2}
     for a, c in pairs:
         v = np.zeros(len(names))
@@ -427,7 +456,8 @@ def nested_tests(df: pd.DataFrame, col: str, pairs=(("ALL", "APP"), ("ALL", "AV"
             v[idx[a]] -= 1
         est = float(v @ b)
         se = float(np.sqrt(v @ cov @ v))
-        out[f"{a}-{c}"] = dict(diff=est, z=est / se, p=float(2 * stats.norm.sf(abs(est / se))))
+        out[f"{a}-{c}"] = dict(diff=est, z=est / se, p=float(2 * stats.norm.sf(abs(est / se))),
+                               p_t=float(2 * stats.t.sf(abs(est / se), df_t)))
     # classical nested ANOVA: group mean square over the mouse-within-group mean square
     mice = d.groupby(["group", "subject"])["y"].agg(["mean", "count"]).reset_index()
     gm = d.groupby("group")["y"].mean()
@@ -462,9 +492,16 @@ def readings_table(sets: dict, col: str, pairs=(("ALL", "APP"), ("ALL", "AV"), (
         for pr in pairs:
             k = f"{pr[0]}-{pr[1]}"
             r[f"(b) p {k}"] = b[k]["p"]
+        for pr in pairs:
+            k = f"{pr[0]}-{pr[1]}"
+            r[f"(b) p_t {k}"] = b[k]["p_t"]
+        r["(b) df_t"] = b["df_t"]
         r["(b) nested F"] = b["F_nested"]
         r["(b) nested p"] = b["p_nested"]
         r["Kruskal p"] = a["p_kruskal"]
+        for pr in pairs:
+            k = f"{pr[0]}-{pr[1]}"
+            r[f"MW p {k}"] = a[k]["p_mw"]
         r["Shapiro min p"] = a["shapiro_min_p"]
         rows.append(r)
     return pd.DataFrame(rows).set_index("cells")
