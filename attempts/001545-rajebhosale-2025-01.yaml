@@ -29,6 +29,10 @@ inputs:
   source: GEO accession GSE280167 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE280167)
 - what: The snMultiome analysis code, read to see what the snRNA-Seq and snATAC-Seq claims need.
   source: https://github.com/RajNINDS/V321L-snMultiome at commit c124726ea5047d0d0f9a632fa85bcfa09ae13483
+- what: Allen Developing Mouse Brain Atlas E18.5 ISH series for Penk (100055886), Scg2 (100083699), Nrg1
+    (100057764) and Cit (100077439), their section images and expression masks, the E18.5 reference annotation
+    (well-known file 263212128) and the atlas alignment services, read for figs9c-embryonic-sgc-genes.
+  source: Allen Brain Atlas API, https://api.brain-map.org/api/v2 (section data set ids as listed; no DOI)
 outcomes:
 - claim: fig1f-sgc-soma-superficial
   outcome: blocked
@@ -55,10 +59,13 @@ outcomes:
   notebook: reproduce_rajebhosale_2025.ipynb
   output: claim:fig1j-sgc-hyperpolarized-rmp
   notes: Median RMP WT GC -75.3 mV (13 cells), WT SGC -83.8 mV (9 cells), in the paper's direction; two-tailed
-    Mann-Whitney U = 32, p = 0.083 (paper U = 26, P = 0.02). Welch's t test gives p = 0.044. Leaving out
-    one WT GC at a time gives p from 0.043 to 0.127, so the missing 14th GC could move the test either
-    side of 0.05. Per mouse, the two mice with both types and more than one SGC (VV317, VV326) have SGC
-    medians 1.6 and 2.1 mV below their GC medians; VV256 gave 7 GCs and no SGC, VV318 2 SGCs and no GC.
+    Mann-Whitney U = 32, p = 0.083 (paper U = 26, P = 0.02). Welch's t test gives p = 0.044, and the
+    exact p is 0.082. The missing 14th WT GC cannot explain the failure. Added above every cell,
+    the best case for the claim, it gives U = 32, p = 0.055 (exact 0.053). Per mouse, the two mice with
+    both types and more than one SGC (VV317, VV326) have SGC medians 1.6 and 2.1 mV below their GC medians;
+    VV256 gave 7 GCs and no SGC, VV318 2 SGCs and no GC. If the 10 pA bias current stored in every sweep
+    was injected, the baselines sit 1.1 to 8.5 mV (10 pA times the input resistance) above the true RMP;
+    removing that offset gives medians -79.2 and -85.4 mV and p = 0.125.
   deviations:
   - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
     not known.
@@ -89,7 +96,9 @@ outcomes:
   output: claim:fig1l-sgc-faster-downstroke
   notes: Median downstroke WT GC -54.93 mV/ms, WT SGC -61.95 mV/ms, in the paper's direction; U = 44,
     p = 0.350 (paper U = 31, P = 0.046). The code's window gives the same value in all 48 cells, so the
-    two readings agree.
+    two readings agree; 44 of the 48 rheobase sweeps hold one spike, and in the 4 with 2 to 6 spikes the
+    first spike repolarizes fastest. Without mouse VV253 (GC median -30.36 mV/ms) the medians are -62.87
+    and -63.78 mV/ms, p = 0.673.
   deviations:
   - The dandiset holds 13 WT GCs and 9 WT SGCs where the paper has 14 and 9; which WT GC is missing is
     not known.
@@ -201,7 +210,10 @@ outcomes:
     features (a) the WT GC mean LD1 is 1.97 and the other groups -1.43 to -0.33, and spike width has the
     largest LD1 coefficient (3.01, then downstroke -2.88), as the paper says. On the top 9 PCs (b) WT
     SGC is the group apart (1.67, the others -0.74 to -0.26) and the largest coefficients mapped back
-    to the features are spike amplitude, AHP amplitude and sag (-0.48 to -0.43). Question for the paper's
+    to the features are spike amplitude, AHP amplitude and sag (-0.48 to -0.43). The match of reading
+    (a) is fragile. With the AHP width left out and all 48 cells kept, WT SGC is the group apart under
+    both readings (so that variant would be not reproduced), and without mouse VV253 WT GC is apart under
+    neither (reading (a) puts WT GC at 1.16 and WT SGC at 1.37, against -1.49 and -0.46). Question for the paper's
     authors (recorded as a methods_unavailable finding). Was the four-class LDA of Fig 2M fitted on the
     z-scored features or on PCs, as the classifier of Fig S2G is? The Methods' LDA section describes only
     the classifier (scale, prcomp, top 9 PCs, caret lda).
@@ -212,7 +224,8 @@ outcomes:
     not known.
   - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
     multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
-    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+    V321L cells (the paper's Fig S2G matrices count 21 and 23). Two variants are shown, all 48 cells
+    on the 17 features without the AHP width, and the 18 features without mouse VV253.
   - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
     an absolute sample index; here it runs to the end of the segment (a standard choice).
   - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
@@ -226,7 +239,11 @@ outcomes:
   notes: Seed 0, 100 starts. On the z-scored features WT GCs fall 4, 6 and 2 of 12 across the three clusters,
     and WT SGC, V321L GC and V321L SGC have 6 of 8, 7 of 10 and 10 of 14 in one same cluster; on two PCs
     6, 4, 2 and 6 of 8, 6 of 10, 10 of 14. Both conditions hold for seeds 1 to 10 under both readings.
-    Six of 12 WT GCs in one cluster is exactly half, which the criterion allows.
+    Six of 12 WT GCs in one cluster is exactly half, which the criterion allows. With the AHP width left
+    out and all 48 cells kept, both conditions still hold under both readings and for seeds 1 to 10 (WT
+    GCs 4, 6, 3 and 4, 5, 4 of 13). Without mouse VV253, 6 of 9 WT GCs fall in one cluster under both
+    readings with seed 0 and both conditions hold for none of seeds 1 to 10, so the WT GC spread rests
+    on that mouse's 4 GCs.
   deviations:
   - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
     says which cells differ.
@@ -234,7 +251,8 @@ outcomes:
     not known.
   - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
     multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
-    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+    V321L cells (the paper's Fig S2G matrices count 21 and 23). Two variants are shown, all 48 cells
+    on the 17 features without the AHP width, and the 18 features without mouse VV253.
   - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
     an absolute sample index; here it runs to the end of the segment (a standard choice).
   - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
@@ -252,7 +270,11 @@ outcomes:
     lies inside the other's 95% ellipse under both readings (squared Mahalanobis distances 1.31 and 0.69
     against 9.47 and 7.96 for the data ellipse, 1.50 and 0.75 for the ellipse of the mean). The V321L
     centroids are 0.86 apart and inside each other's ellipses under both readings, as the claim says for
-    V321L. So the V321L half holds and the WT half does not.
+    V321L. So the V321L half holds and the WT half does not. The stat_ellipse type "t" ellipse, which
+    is ggplot2's default (the claims file calls the normal ellipse the default; asked in questions/001545.yaml),
+    gives the same (WT squared distances 1.50 and 0.70 against 9.47 and 7.96). With the AHP width left
+    out and all 48 cells kept (WT distance 1.32), and without mouse VV253 (1.21), the WT centroids again
+    lie inside each other's ellipses under all three ellipse types.
   deviations:
   - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
     says which cells differ.
@@ -260,23 +282,28 @@ outcomes:
     not known.
   - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
     multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
-    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+    V321L cells (the paper's Fig S2G matrices count 21 and 23). Two variants are shown, all 48 cells
+    on the 17 features without the AHP width, and the 18 features without mouse VV253.
   - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
     an absolute sample index; here it runs to the end of the segment (a standard choice).
   - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
     at 5d756c2); scipy find_peaks stands in for MATLAB findpeaks and scipy.ndimage.median_filter for medfilt1.
   - Ellipses computed from the group covariance in PC space, radius from F(2, n - 1) for the data ellipse
-    (as ggplot2 stat_ellipse type norm) and Hotelling's F(2, n - 2) for the mean.
+    (as ggplot2 stat_ellipse type norm) and Hotelling's F(2, n - 2) for the mean. The type "t" ellipse
+    (MASS cov.trob reimplemented, nu = 5, same radius as type norm) is shown as a third reading.
 - claim: figs2f-centroid-separation-reduced
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_rajebhosale_2025.ipynb
   output: claim:figs2f-centroid-separation-reduced
   notes: WT centroids on LD1 GC -0.87, SGC 1.31 (distance 2.18), boundary 0.40. V321L centroids GC -0.10
     and SGC 0.07 with their own scaling (distance 0.17, 0.08 of WT), or -0.47 and -0.17 with the WT scaling
     (0.30, 0.14 of WT). The distance condition holds; both V321L centroids lie on the WT GC side of the
-    boundary, and of the midpoint boundary (0.22), so the side condition does not. The criterion gives
-    no partial rule; the outcome is partial because one of its two conditions holds. The classifier it
-    rests on is at chance on held-out WT cells (figs2g).
+    boundary, and of the midpoint boundary (0.22), so the side condition does not. The criterion requires
+    both conditions and gives no partial rule, so the outcome is not reproduced (changed from partially
+    reproduced after verification). The classifier it rests on is at chance on held-out WT cells (figs2g),
+    so the small V321L distance carries little weight. With the AHP width left out and all 48 cells kept,
+    and without mouse VV253, the distance ratio is 0.02 to 0.26 and no V321L centroid pair lies on the
+    WT SGC side.
   deviations:
   - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
     says which cells differ.
@@ -284,7 +311,8 @@ outcomes:
     not known.
   - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
     multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
-    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+    V321L cells (the paper's Fig S2G matrices count 21 and 23). Two variants are shown, all 48 cells
+    on the 17 features without the AHP width, and the 18 features without mouse VV253.
   - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
     an absolute sample index; here it runs to the end of the segment (a standard choice).
   - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
@@ -305,7 +333,10 @@ outcomes:
     give 60%. V321L with its own scaling 41.7% (kappa -0.11, confusion GC 6 right 4 wrong, SGC 4 right
     10 wrong), with the WT scaling 45.8% (kappa -0.01). Neither the four values nor the two accuracies
     are within tolerance under any reading, and WT accuracy exceeds V321L accuracy by 13.3 or 9.2 points,
-    under the criterion's 15.
+    under the criterion's 15. With the AHP width left out and all 48 cells kept (22 WT, 26 V321L), WT
+    accuracy is 50.0% (kappa 0.02, majority class 59.1%) and V321L 46.2% or 42.3%. Without mouse VV253,
+    WT accuracy is 47.1% (kappa -0.06, majority class 52.9%) and V321L 50.0% (kappa 0.00) or 54.2% (kappa
+    0.14), the latter within tolerance of the paper's V321L values, but WT stays far from 78%.
   deviations:
   - The dandiset holds 12 V321L GCs and 14 V321L SGCs where the paper has 10 and 15; nothing in the files
     says which cells differ.
@@ -313,7 +344,8 @@ outcomes:
     not known.
   - Cells with a missing feature are left out (the rule of the fig2m criterion, used here for the other
     multivariate claims, whose criteria do not say); 4 cells lack the AHP width, leaving 20 WT and 24
-    V321L cells (the paper's Fig S2G matrices count 21 and 23).
+    V321L cells (the paper's Fig S2G matrices count 21 and 23). Two variants are shown, all 48 cells
+    on the 17 features without the AHP width, and the 18 features without mouse VV253.
   - Where only one crossing of the AHP half level exists, the code measures the AHP width to stopLoc,
     an absolute sample index; here it runs to the end of the segment (a standard choice).
   - Features reimplemented in Python from the claims file's definitions and the paper's MATLAB code (patch_clamp_analysis
@@ -466,6 +498,9 @@ outcomes:
     fragments would have to be regenerated from the raw reads with Cell Ranger ARC, and the analysis needs
     Signac and Monocle3 (R), which cannot be installed in this entry's locked Python environment. Not
     attempted.
+    The per-barcode peak counts would allow an approximation of Penk locus accessibility without the
+    fragments, but the claim counts GCs, so it would still need the nuclei and GC labels the paper called,
+    which are not deposited.
 - claim: tables4-suz12-enrichment
   outcome: blocked
   blocked_by: not_runnable
@@ -555,10 +590,32 @@ outcomes:
     bear on the block (no fragments, and R tools outside the locked environment), so the claim stays
     blocked as before; a later attempt that can run it should take VV as WT.
 - claim: figs9c-embryonic-sgc-genes
-  outcome: blocked
-  blocked_by: other
-  notes: A qualitative reading of Allen Developing Mouse Brain Atlas ISH images, with no statistic and
-    no experiment ids in the paper; a notebook cannot compute the judgement from data, so it was not attempted.
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_rajebhosale_2025.ipynb
+  output: claim:figs9c-embryonic-sgc-genes
+  notes: Tested after verification (it was blocked as other, not attempted). The Allen Developing Mouse
+    Brain Atlas holds one E18.5 ISH series per gene, all sagittal (Penk 100055886, Scg2 100083699, Nrg1
+    100057764, Cit 100077439). The criterion is a reading of the images by eye. Penk labels a band of
+    cells along the dorsal (outer) edge of the dentate crescent in all three sections shown (45, 52, 59),
+    and Nrg1 a dense band along the same edge (26, 33, 47). Scg2 (29, 43) and Cit (27, 41, 48) show only
+    a faint signal along that edge with few distinct labelled cells; the atlas's expression mask covers
+    0.0008 and 0.0007 of the full-resolution dentate crop, against 0.0123 for Penk and 0.0072 for Nrg1.
+    Scg2 labels other regions strongly (whole-brain expression density 0.043). Two of the four genes
+    clearly show what the claim describes and two only faintly, so the outcome is partial. The outcome
+    rests on locating the dentate gyrus by eye, as the atlas does not annotate it at E18.5, and on a
+    judgement by eye. Which images Fig S9C shows is asked of the paper's authors (methods_unavailable
+    finding).
+  deviations:
+  - The Allen data are identified by their section data set ids and read through the Allen API; they
+    have no DOI or versioned release to pin.
+  - Assumed. The dentate gyrus is located by eye on Penk section 52 (image 101094568, pixel 3200, 2080),
+    mapped to the E18.5 reference with the atlas's image_to_reference service and from there to each
+    series with reference_to_image; the E18.5 annotation draws only the medial pallium, so no annotated
+    location exists. The overviews in the notebook show where each crop lies.
+  - Three sections per gene are shown, those nearest the dentate point and 150 um to either side, at
+    2 um per pixel, and the middle one at full resolution with the atlas's expression mask (display
+    choices).
 findings:
 - kind: data_missing
   statement: The dandiset holds only the current clamp recordings. The soma positions and the morphology
@@ -579,7 +636,8 @@ findings:
   statement: The general stimulus field says neurons were kept near -65 mV with a constant current and
     stepped from -60 to 200 pA. The voltage before the steps is -68 to -89 mV in every cell, 14 cells
     were stepped to 250 or 300 pA, and the bias_current attribute is 10 pA in every sweep, so whether
-    a holding current was applied, and how much, cannot be told.
+    a holding current was applied, and how much, cannot be told. Every sweep of every file also stores
+    the same bridge balance (20 MOhm) and capacitance compensation (1 pF), which look like defaults.
 - kind: metadata_insufficient
   statement: The genotype is coded only as VV or LL in the subject ids; the surgery field says VV is wild
     type and LL the valine-to-leucine mutant, and GEO agrees, but the cell type is given only as the end
@@ -594,8 +652,481 @@ findings:
     with a missing feature handled in the LDA, k-means and PCA? The Methods cite Kim et al (2024), Fig
     S2C lists eighteen, and the linked code returns twenty-one. Here 4 cells lack the code's AHP width
     and were dropped, which fits the 21 WT and 23 V321L cells of the Fig S2G matrices.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which Allen Developing Mouse Brain ISH series and sections
+    does Fig S9C show for Penk, Scg2, Nrg1 and Cit at E18.5? The atlas holds one sagittal E18.5 series
+    per gene; in those, Penk and Nrg1 label cells along the dorsal edge of the dentate crescent clearly,
+    and Scg2 and Cit only faintly.
 - kind: data_missing
   statement: GEO GSE280167, where the paper deposited the snMultiome data, holds the raw feature-barcode
-    matrix of every barcode per mouse and a smoothed ATAC cut-site track per sample. The nuclei kept after
+    matrix of every barcode per mouse (genes and peaks) and a smoothed ATAC cut-site track per sample. The nuclei kept after
     filtering and doublet removal, the cluster labels the paper's snRNA-Seq figures rest on, and the per-nucleus
     ATAC fragments are not deposited.
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The round-1 handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module nrg1_ephys.py and the claims file, with the paper under paper/. The verifier
+    also checked the archive for the blocked claims and tested the helper on synthetic cells.
+  results:
+  - claim: fig1f-sgc-soma-superficial
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig1g-sgc-wider-splay
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig1h-gc-more-branch-points
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig1i-gc-longer-dendrites
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig1j-sgc-hyperpolarized-rmp
+    agrees: true
+    outcome: not_reproduced
+    reason: SGCs are more negative (median -83.8 against -75.3 mV), but the Mann-Whitney test gives U = 32,
+      p = 0.083 with 13 GCs and 9 SGCs. Adding the missing 14th GC cannot help, as at best U stays 32 and
+      the exact p for 14 and 9 cells is then 0.053, which the verifier computed.
+    response: No change of outcome. The notes and conclusion said the missing GC could move the test either
+      side of 0.05, from a leave-one-out that removes cells; this is corrected, and the notebook now prints
+      the best case for a 14th GC (U = 32, p = 0.055, exact 0.053) and the exact p of the main test (0.082).
+      A variant with a 10 pA bias times input resistance removed from each baseline was added (p = 0.125),
+      with the amplifier settings stored in every sweep.
+  - claim: fig1k-sgc-narrower-spike
+    agrees: true
+    outcome: not_reproduced
+    reason: p = 0.082 under the 20 mV/ms threshold and 0.109 under 10 mV/ms. The medians point the right way.
+    response: No change.
+  - claim: fig1l-sgc-faster-downstroke
+    agrees: true
+    outcome: not_reproduced
+    reason: p = 0.35 under both readings, which give identical values in all 48 cells. The readings agree,
+      so the criterion's blocked branch does not apply.
+    response: No change of outcome. The spike count in each rheobase sweep is now printed (44 of 48 hold one
+      spike, 4 hold 2 to 6), and the test without mouse VV253 was added (p = 0.673).
+  - claim: fig1m-phase-plots
+    agrees: true
+    outcome: not_reproduced
+    reason: Its criterion depends on fig1k and fig1l, and neither reproduces.
+    response: No change.
+  - claim: figs1a-f-properties-covary-with-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: figs1-remaining-properties-no-difference
+    agrees: true
+    outcome: partially_reproduced
+    reason: The cell-type half holds, as no property reaches p < 0.05 under reading (a), 13 properties, or
+      reading (b), 16 properties. The soma-position half is blocked (data_missing). This absence carries little
+      weight, because the same data also miss the paper's positive effects.
+    response: No change. The full per-cell feature table is now printed in the data check.
+  - claim: figs1g-l-gc-only-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig2a-v321l-more-multiple-dendrite-gcs
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: fig2c-v321l-sgc-position-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig2d-v321l-splay-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig2ef-v321l-dendritic-complexity-preserved
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig2g-morphology-lda-separates-cell-type
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: figs2b-morphology-kmeans-by-cell-type
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: fig2i-v321l-rmp-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Welch p = 0.59. The near the WT SGC median part is only shown (V321L GC -80.1, V321L SGC -82.9,
+      WT SGC -83.8, WT GC -75.3 mV).
+    response: No change.
+  - claim: fig2j-v321l-spike-width-not-different
+    agrees: true
+    outcome: reproduced
+    reason: Mann-Whitney p = 0.22 under 20 mV/ms and 0.33 under 10 mV/ms.
+    response: No change.
+  - claim: fig2k-v321l-downstroke-not-different
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.88 under both readings.
+    response: No change.
+  - claim: fig2m-ephys-lda-wt-gc-apart
+    agrees: true
+    outcome: blocked
+    reason: The readings disagree. In (a), on the z-scored features, WT GC is apart from the other groups
+      and spike width has the top coefficient. In (b), on the top 9 PCs, WT SGC is the extreme group and the
+      top coefficient is spike amplitude. The criterion says blocked when the readings disagree.
+    response: No change of outcome. The two variants the verifier asked for were added. With the AHP width
+      left out and all 48 cells kept, WT SGC is apart under both readings; without mouse VV253, WT GC is apart
+      under neither. The notes now say the match of reading (a) is fragile.
+  - claim: figs2d-ephys-kmeans-v321l-like-wt-sgc
+    agrees: true
+    outcome: reproduced
+    reason: Both conditions hold under both readings and 10 of 10 extra seeds. This is marginal, as under
+      reading (a) WT GCs split 4/6/2, so the largest WT GC cluster holds exactly half, the limit.
+    response: No change of outcome. With the AHP width left out and all 48 cells kept both conditions still
+      hold under both readings and all seeds; without mouse VV253 the WT GC condition fails (6 of 9 in one
+      cluster) under both readings and all seeds. The notes and conclusion now say the WT GC spread rests
+      on that mouse.
+  - claim: v321l-multiple-regression-wt-only
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), confirmed in the archive. Every one of the 48 assets lists only CurrentClampSeries
+      and CurrentClampStimulusSeries in variableMeasured. No positions or reconstructions are deposited.
+    response: No change.
+  - claim: figs2e-pca-separation-lost
+    agrees: true
+    outcome: not_reproduced
+    reason: The WT GC and WT SGC centroids each lie inside the other group's ellipse under both readings.
+      For the data ellipse d2 is 1.31 against r2 = 9.5, so the WT separation is absent.
+    response: No change of outcome. The stat_ellipse type t ellipse was added as a third reading (WT d2 1.50
+      and 0.70 against 9.47 and 7.96), and the two variants (17 features with all cells, no VV253) give the
+      same. The claims file's description of the ggplot2 default is asked of a reader in questions/001545.yaml.
+  - claim: figs2f-centroid-separation-reduced
+    agrees: false
+    outcome: not_reproduced
+    reason: The distance ratio of 0.08 or 0.14 is below one half. But neither V321L centroid lies on the WT
+      SGC side, under the prior-including boundary or the midpoint variant. It also depends on figs2g, which
+      failed.
+    response: Outcome changed from partially reproduced to not reproduced. The criterion requires both conditions
+      and gives no partial rule, and the side condition fails under both boundaries, scalings and variants.
+  - claim: figs2g-lda-classifier-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: WT pooled accuracy has a median of 55% over 100 fold assignments, range 35 to 75%, with kappa
+      0.12, and majority-class chance is 60%. V321L accuracy is 41.7% or 45.8% depending on scaling. Neither
+      accuracy is within tolerance, and the WT-V321L gap of 9 to 13 points is under 15.
+    response: No change of outcome. Both variants were added. With 17 features and all cells WT accuracy is
+      50.0% and V321L 46.2% or 42.3%; without VV253 WT accuracy is 47.1%, and V321L 50.0% or 54.2%, the latter
+      within tolerance of the paper's V321L values while WT stays far from 78%.
+  - claim: fig3b-penk-position-altered
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: fig3d-more-penk-gcs
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs3b-prox1-count-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs3c-cluster18-penk-enriched
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs3d-sorcs3-marks-cluster18
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs5a-penk-sorcs3-subsets
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig4a-more-penk-sorcs3-cells-fish
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: fig4a-prime-penk-sorcs3-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: fig4b-penk-enriched-genes
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig4b2-marker-penk-cells-increased
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig4d-penk-marker-overlap
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: figs6-increase-in-nrg1-expressing
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig5b-pseudotime-sorcs3-top
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: trajectory-geometry-directionality
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig5d-atac-cluster-composition
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig5f-sgc-genes-broadly-accessible
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs8b-penk-accessibility-not-different
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: tables4-suz12-enrichment
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig6a-penk-increases-with-age
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: fig6b-sgc-count-increases-with-age
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: figs9a-age-dynamics-lost-v321l
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: figs9b-marker-fraction-stable
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: figs9d-penk-not-immature
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: figs10d-go-resting-membrane-potential
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: fig7a-type3-nrg1-declines
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), by the same archive check; the dandiset holds no imaging data.
+    response: No change.
+  - claim: fig7bc-bace1-low-in-sgcs
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs5bc-penk-sorcs3-neg-outside-cluster18
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs7-downsampled-pseudotime-robust
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs8a-atac-pseudotime-cluster9
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other in the verifier's table). GEO holds raw multiome matrices covering every barcode.
+      It lacks called nuclei, cluster labels and fragment files, so testing would mean rebuilding the paper's
+      pipeline. The verifier says not runnable is not one of the protocol's blocked reasons and should be
+      other, or data_missing for the missing cluster labels.
+    response: Outcome kept, and blocked_by kept as not_runnable. The protocol lists not_runnable among the
+      blocked reasons (Author, step 1.5, for software that cannot be installed in a locked environment), and
+      for a data elsewhere claim it rules out data_missing (step 1.4). The notebook text that GEO holds only
+      a smoothed track for ATAC was corrected to say the raw matrices also hold per-barcode peak counts; the
+      figs8b notes now say a peak-based approximation would still need the GC labels, which are not deposited.
+  - claim: figs9c-embryonic-sgc-genes
+    agrees: true
+    outcome: blocked
+    reason: Blocked as other without any attempt. The Allen Developing Mouse Brain ISH images at E18.5 are
+      public, so the claim could at least be partly tested.
+    response: Tested. A new section reads the one sagittal E18.5 series per gene from the Allen API (helper
+      allen_ish.py), locates the dentate gyrus by eye on one Penk section and carries it to the other series
+      through the atlas alignment, and shows three sections per gene and an expression-mask crop. Penk and
+      Nrg1 label cells along the dorsal edge of the dentate crescent clearly, Scg2 and Cit only faintly, so
+      the outcome is partially reproduced, marked as assumed, and a methods_unavailable finding asks which
+      images Fig S9C shows.

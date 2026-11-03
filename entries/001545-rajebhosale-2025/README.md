@@ -18,10 +18,10 @@ Golgi and RNAScope data and the snMultiome data are not in it.
 | k-means places V321L cells like WT SGCs (Fig S2D) | Reproduced |
 | PCA separates WT GCs from SGCs, not V321L (Fig S2E) | Not reproduced |
 | A WT-trained LDA classifier: 78% on WT, 52% on V321L (Fig S2G) | Not reproduced |
-| V321L centroids close together on the WT SGC side (Fig S2F) | Partially reproduced |
+| V321L centroids close together on the WT SGC side (Fig S2F) | Not reproduced |
 | Soma position, morphology, Golgi and RNAScope (23 claims) | Blocked: data missing |
 | snMultiome data in GEO (19 claims) | Blocked: not runnable |
-| Allen Brain Atlas ISH images (1 claim) | Blocked: other |
+| SGC-enriched genes at the dorsal border of the E18.5 dentate gyrus, Allen ISH images (Fig S9C) | Partially reproduced (read by eye) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

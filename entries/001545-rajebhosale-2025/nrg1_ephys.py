@@ -124,6 +124,10 @@ def load_cell(asset: dict) -> dict:
         voltage_unit=h["acquisition"][acq[0]]["data"].attrs["unit"],
         stim_unit=h["stimulus/presentation"][h["acquisition"][acq[0]].attrs["stimulus_description"]]["data"].attrs["unit"],
         bias_current=float(h["acquisition"][acq[0]]["bias_current"][()]),
+        # amplifier settings as stored in every sweep (sets of distinct values over the sweeps)
+        bias_all=sorted({float(h["acquisition"][n]["bias_current"][()]) for n in acq}),
+        bridge_all=sorted({float(h["acquisition"][n]["bridge_balance"][()]) for n in acq}),
+        capcomp_all=sorted({float(h["acquisition"][n]["capacitance_compensation"][()]) for n in acq}),
         response_start=float(h["acquisition"][acq[0]]["starting_time"][()]),
         stim_start=float(h["stimulus/presentation"][h["acquisition"][acq[0]].attrs["stimulus_description"]]["starting_time"][()]),
     )
@@ -249,6 +253,7 @@ def features(cell: dict) -> dict:
         return out
     rk = spiking[0]
     out["rheobase"] = steps[rk]
+    out["n_spikes_rheobase"] = int(n_peaks[rk])
 
     # first spike at rheobase, ten-fold interpolation (spikeproperties.m)
     data = v[rk, start: stop + 1]
