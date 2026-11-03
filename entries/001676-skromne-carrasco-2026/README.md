@@ -7,10 +7,11 @@ Miniscope sessions of the postsubiculum in ten mice (four weeks in one environme
 of four environments, four weeks of visits in random order, and five weeks with a single visit to one
 environment), and one silicon probe recording in each of four mice.
 
-Of 32 claims, 15 are reproduced, 5 partially reproduced, 7 not reproduced and 5 blocked. The probe
+Of 32 claims, 18 are reproduced, 6 partially reproduced, 3 not reproduced and 5 blocked. The probe
 trials of Fig. 3 cannot be matched to earlier sessions, because each protocol has its own cell
 registration and nothing links them. The probe recordings have no spike waveforms. The decoders across
-all session pairs of Fig. 1k were not run, as they would take about two hours. The outcomes, with
+all session pairs of Fig. 1k were not run, as their 1,883 fits are estimated at 75 minutes, over the
+60 minute limit of a notebook. The outcomes, with
 the reasons and the differences from the paper's method, are in the attempt record
 [`attempts/001676-skromne-carrasco-2026-01.yaml`](../../attempts/001676-skromne-carrasco-2026-01.yaml).
 
@@ -19,12 +20,13 @@ reasoning and the differences from the paper's method.
 
 The paper's code is not public. Several method details are therefore assumptions, stated in the
 notebooks: HD information on the smoothed tuning curve (it gives the paper's numbers of compared
-sessions), unsigned pairwise offsets (they give the paper's shuffle medians) and the drift rate as a
-least-squares slope.
+sessions; raw HD information is shown for every claim), unsigned pairwise offsets (they give the
+paper's shuffle medians), the sign of a change in preferred direction (the earlier session minus the
+later one) and the drift rate as a least-squares slope.
 
 - `reproduce_skromne_carrasco_2026.ipynb`: the data check and every tested claim except the decoders.
-  It takes about 19 minutes, most of it streaming 402 files.
+  It takes about 25 minutes, most of it streaming 402 files.
 - `decoding.ipynb`: the head-direction decoders (Fig. 4e, Extended Data Fig. 8) and the estimate that
-  blocks Fig. 1k. About 32 minutes, 23 of them opening the files.
+  blocks Fig. 1k, each under three variants. About 45 minutes, 23 of them opening the files.
 - `hdstab.py`: loading, tuning curves, the HD cell rule, preferred-direction changes, pairwise
   offsets, circular tests and decoder features. Other notebooks on this dandiset can import it.

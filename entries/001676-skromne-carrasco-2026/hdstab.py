@@ -34,6 +34,9 @@ Where the parameters come from:
   `avg_all`). "Detected" in a session is read as registered by CellReg in it (an assumption).
 - Change in preferred direction: shift at the maximum of the circular cross-correlation of the
   two tuning curves, circular mean over cells (Methods, Change in the preferred tuning).
+  `pd_change(table, a, b)` and `shift_matrix` give the preferred direction in b minus that in a.
+  The Methods do not fix the sign; the notebook says which sign each signed claim uses (the
+  earlier session minus the later one, an assumption).
 - Pairwise offset: shift at the maximum of the cross-correlation of two cells' tuning curves;
   its change is the minimum circular difference between two sessions (Methods, Change in the
   angular offset). Whether the offset is signed (-180 to 180 degrees) or unsigned (0 to 180) is not
@@ -196,6 +199,7 @@ def load_session(asset, decoding=False, masks=False, protocols=None):
     if protocols is not None and d["protocol"] not in protocols:
         d["mouse"] = int(_s(f, "general/subject/description").split()[-1])
         d["k"], d["n"] = [int(x) for x in re.match(r".*session (\d+) of (\d+)", _s(f, "session_description")).groups()]
+        d["start"] = _s(f, "session_start_time")
         d["skipped"] = True
         f.close()
         return d

@@ -76,7 +76,8 @@ outcomes:
     direction in all five example sessions (circular-circular correlation, |r| 0.19 to 0.81, p below
     0.05; 1222 to 1300 bins, 32 to 82 cells). With division by the maximum, 4 of 5 sessions keep
     fewer than 51 bins above the 0.1 threshold, too few for 50 neighbours; the fifth gives r -0.63.
-    Mouse 1's ring is weak (r -0.19).
+    Mouse 1's ring is weak (r -0.19). The p values treat the 0.25 s bins as independent, which they
+    are not, so they overstate the evidence.
   deviations:
   - The test and its counts are the claims file's, not the paper's (which judges the ring by eye).
   - The example session per mouse is the one with the most ROIs whose split-half correlation exceeds
@@ -121,7 +122,9 @@ outcomes:
   notes: Pooled V 75.58 over 85 sessions (paper 75.21 over 84), one-sided p below 0.001. All five
     per-mouse circular means are within the paper's s.d. Under the other three readings the pooled V
     is 62.4 to 80.0, all means hold, and the session count is 75 to 92. The 85 against 84 sessions
-    is outside the count's tolerance of 0; the criterion does not use the count.
+    is outside the count's tolerance of 0; the criterion does not use the count. The five means have
+    the paper's sign; with the sign reversed 4 of 5 are within tolerance and none has the paper's
+    sign, so the outcome does not depend on the sign.
   deviations:
   - Main HD reading as for fig1f-example-stable (assumption).
 - claim: edf4ab-vtest-per-animal
@@ -177,20 +180,24 @@ outcomes:
   - Main HD reading as for fig1f-example-stable (assumption); the outcome changes with it.
   - The 80% threshold is the reader's.
 - claim: edf2-no-registration-confound
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf2-no-registration-confound
-  assumed: true
-  notes: Under the main reading 28 HD cells are valid in both the first and last session (paper 72).
-    Neither absence test is significant (pooled; shift against displacement p 0.096 signed and 0.558
-    absolute, shift against score p 0.778 and 0.804), but displacement against score is not
-    significant either (slope -65.6 um per unit score, p 0.167, 0.50 after Bonferroni), where the
-    paper reports p 0.004. In mouse 4 (8 cells) it is p 0.095. With raw HDI (56 cells) all three
-    match the paper (absence p 0.474 and 0.522; displacement against score p 0.014, 0.042 after
-    Bonferroni), so the outcome rests on the HDI reading.
+  notes: Over all cells, with every CellReg score (the paper's "all cells"), 49 HD cells are valid in
+    the first and last session under the main reading and 108 with raw HDI (paper 72). Pooled over
+    mice, shift against displacement has p 0.074 (signed) and 0.62 (absolute), shift against score p
+    0.98 and 0.38, both not significant, and displacement against score p 0.0003 (slope -34.4 um per
+    unit score), 0.0011 after Bonferroni over the figure's 4 tests. With raw HDI the absence tests
+    give p 0.084 to 0.28 and displacement against score p below 0.0001. For mouse 4 alone (10 or 19
+    cells) displacement against score is not significant (p 0.96 and 0.94), so reading (b) fails.
+    Restricted to cells with score above 0.8 (28 or 56 cells, the analysis before verification),
+    displacement against score is 0.67 and 0.055 after Bonferroni over 4. Changed from not
+    reproduced after verification.
   deviations:
-  - Main HD reading as for fig1f-example-stable (assumption); the outcome changes with it, and raw
-    HDI gives a cell count (56) closer to the paper's 72.
+  - Main HD reading as for fig1f-example-stable; raw HDI gives the same outcome.
+  - All cells are taken as HD cells with any CellReg score, since the paper tests "all cells" and,
+    separately, "cells with CellReg score over 0.8" (Extended Data Fig. 2 legend, as the claims file
+    lists the statistics). Bonferroni over the four tests of the claims file.
   - Centroids are mask-weighted centres of the image masks, at 3.3 um per pixel (grid_spacing); the
     paper does not say how displacement was measured.
 - claim: fig1h-drift-rate
@@ -215,12 +222,14 @@ outcomes:
   notes: With changes relative to the last day (reading a), the variance over all recordings is
     below half the value of a line through the origin fitted to the first five points in 4 of 5 mice
     (mouse 2, 421 against 127, is the exception). Relative to the first day (reading b) it holds in
-    2 of 5. Under raw HDI reading (a) holds in 3 of 5.
+    2 of 5. Under raw HDI reading (a) holds in 3 of 5. The readings differ only in the reference
+    session and in which cells enter each session's change, so the pass rests on noisy session values
+    and is fragile.
   deviations:
   - The test and its threshold are the reader's; the paper shows the curve without a test.
   - Main HD reading as for fig1f-example-stable (assumption).
 - claim: edf4f-change-below-shuffle
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf4f-change-below-shuffle
   measured:
@@ -232,7 +241,9 @@ outcomes:
   notes: Under the main reading 3 of 5 medians are within 10%, but the one-tailed Wilcoxon is not
     significant for mouse 3 (W 30, p 0.079 with the median shuffle; W 38, p 0.106 with the mean).
     Under raw HDI all five tests are significant (p at most 0.001) but only 2 of 5 medians are within
-    10% (12.7, 5.3, 6.4, 6.4, 25.7). No reading meets both parts.
+    10% (12.7, 5.3, 6.4, 6.4, 25.7). No reading meets both parts. The effect is present, significant
+    in 4 of 5 mice under the main reading and in 5 of 5 with raw HDI, so the outcome is partially
+    reproduced (changed from not reproduced after verification).
 - claim: edf4g-pairwise-offset-stable
   outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
@@ -274,16 +285,20 @@ outcomes:
   blocked_by: too_large
   notebook: decoding.ipynb
   notes: The claim's decoders run on every ordered pair of the 97 circular sessions plus each session
-    split in halves, 1,883 XGBoost fits. Fits timed in decoding.ipynb on the same decoder take 3.2 s
-    each, an estimate of 101 minutes, over the 60 minute limit of a notebook. Nothing of the claim
-    was run. The data it needs are in the dataset.
+    split in halves, 1,883 XGBoost fits (1,189 for the pairs up to 10 days apart of the partial
+    reading). The 507 fits of decoding.ipynb, four at a time on the same decoder, take 2.39 s each,
+    an estimate of 75 minutes of fits for all pairs and 47 minutes up to 10 days, plus loading the
+    circular sessions, against the 60 minute limit of a notebook. Nothing of the claim was run. The
+    data it needs are in the dataset.
 - claim: edf4ij-pv-decay
   outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf4ij-pv-decay
   notes: Under both readings the population vector correlation decreases with day difference in 4 of
     5 mice (Spearman rho -0.58, -0.19, -0.55, -0.87 with p below 0.02; mouse 5 rho -0.15, p 0.11,
-    reading a), and its mean at the longest difference stays above 0 (0.09 to 0.86).
+    reading a), and its mean at the longest difference stays above 0 (0.09 to 0.86). With raw HDI it
+    decreases in 5 of 5 under both readings, and the mean at the longest difference of mouse 5 is
+    -0.00 (a) and -0.19 (b).
   deviations:
   - Population vectors use the raw tuning curves of HD cells valid in both sessions, averaged into
     12 bins; the paper does not give the cells or the smoothing.
@@ -335,7 +350,9 @@ outcomes:
     within the paper's s.d., each below all 1,000 shuffled medians (51 to 57). Signed offsets and
     all six explorations give the same outcome (medians 6 to 15). The four files hold 254 PoSub
     units, the paper's n of 254 cells; 99 are HD cells with HDI on the smoothed curve and 118 with
-    raw HDI, against 125 +- 12.5. The medians are lower than the paper's 12 to 27.
+    raw HDI, against 125 +- 12.5. With the 118 raw-HDI cells the medians are 6, 9, 9, 6, also below
+    all shuffles, under both offset readings and both exploration readings. The medians are lower
+    than the paper's 12 to 27.
   deviations:
   - Each file holds two explorations of each environment separated by sleep; the paper describes
     one. The first explorations are the main reading.
@@ -367,10 +384,16 @@ outcomes:
     of 5, W 0, p 0.062 as in the paper, but far from the paper's 0.58 and 0.74. The tendency is
     present and not significant, as the paper says, but no reading gives W 0 with means within
     tolerance. Mixed decoders are at chance (median error 80 to 109 against chance 86 to 91 degrees).
+    With raw HDI the offset change matches fully (single 19.6 against mixed 27.1 degrees, within
+    tolerance, lower in 5 of 5, W 0, p 0.062), but the decoder does not (circular variance 0.51
+    against 0.64, lower in 4 of 5, p 0.125; linear variance lower in 5 of 5 with values far from the
+    paper's). With test cells required only to be registered in the test session, the results are
+    those of the main reading (circular variance 0.53 against 0.66, 4 of 5).
   deviations:
   - The decoder cell rule (HD cells meeting the score, split-half and HDI rule in both sessions),
     normalization by each cell's maximum and population activity as the sum of normalized activity
-    are assumptions; XGBoost uses library defaults.
+    are assumptions; XGBoost uses library defaults. The rule loosened in the test session and raw
+    HDI are shown.
   - Unsigned offsets (assumption, see edf4g).
 - claim: fig2g-environment-classifier
   outcome: reproduced
@@ -382,7 +405,12 @@ outcomes:
   - 0.28
   notes: Mean over 100 random splits 0.64 (s.d. 0.04 over mice) against 0.28 for shuffles, one-sided
     Wilcoxon W 15, p 0.031; a single split gives 0.70 against 0.21, same test. Chance with four
-    environments is 0.25. Features per mouse 496 to 2,775 pairs, 11 to 23% of them finite.
+    environments is 0.25. Features per mouse 496 to 2,775 pairs, 11 to 23% of them finite. With raw
+    HDI 0.59 against 0.26 (single split 0.63 against 0.28), W 15, p 0.031. The criterion is met, but
+    the controls do not show that the classifier reads the correlations. Given only which cell pairs
+    are present in a recording (features set to 1 where present), it reaches 0.70 against 0.28.
+    Trained and tested on different halves of each environment's two-week block, it reaches 0.48
+    against 0.27 (W 15, p 0.031).
   deviations:
   - Cell pairs not both valid in a recording enter as missing values, which XGBoost handles; the
     paper does not say how absent cells enter (assumption).
@@ -396,12 +424,14 @@ outcomes:
   - 2.58
   notes: Rayleigh z 1.28 (p 0.29) circular to square, 0.70 (p 0.52) square to 8-arm maze, 2.58 (p
     0.069) 8-arm maze to circular. The first two are not significant as in the paper; the third is
-    not significant where the paper reports p 0.032, and no z is within 10%. Mouse 2 has 2 recording
+    not significant where the paper reports p 0.032, and no z is within 10%. Raw HDI gives z 1.31 (p
+    0.28), 0.45 (p 0.66) and 2.66 (p 0.063), the same outcome. Mouse 2 has 2 recording
     pairs with cells in common for 8-arm maze to circular, across its Miniscope change.
 - claim: fig2h-coherent-remapping
   outcome: not_reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:fig2h-coherent-remapping
+  assumed: true
   notes: Coherent (median mean vector length over recording pairs above the median shuffle 95th
     percentile) in 10 of 15 mouse and environment pairs, 67% against the criterion's 80%. The five
     failures are mouse 2 (8-arm maze to circular, 0.33 against 0.98 over 2 recording pairs; square
@@ -409,9 +439,12 @@ outcomes:
     to circular, 0.76 against 0.79; square to 8-arm maze, 0.93 against 0.95) and mouse 4 (8-arm maze
     to circular, 0.36 against 0.55). The absolute average remapping exceeds 30
     degrees in 3 to 5 mice for every pair. With the open field pairs (variant), 11 of 14 are
-    coherent.
+    coherent. With raw HDI, which keeps about twice as many cells per recording pair, 12 of 15 are
+    coherent (80%, at the threshold; mouse 3's two failures pass), with remapping above 30 degrees in
+    at least 3 mice for every pair, which meets the criterion. The outcome rests on the HDI reading.
   deviations:
   - The 80% and 30 degree thresholds are the reader's.
+  - Main HD reading as for fig1f-example-stable (assumption); the outcome changes with it.
 - claim: fig3de-probe-memory
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -433,7 +466,7 @@ outcomes:
     probe trial, which need the cell registration across protocols that the dataset does not hold
     (see fig3de-probe-memory).
 - claim: edf9-interference
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf9-interference
   assumed: true
@@ -445,9 +478,14 @@ outcomes:
   notes: V 10.38, 8.91 and 10.56 over 19, 19 and 18 values (paper 20, 20, 18), all with p below 0.01;
     week 3 is outside 10.1 +- 1.01. The pairwise offset drift is 0.68 degrees per week (reading a;
     b -0.11, c 11.70) against 1.6 +- 0.16; per mouse 0.83, 1.25, 3.31, -0.87, -1.14. With six
-    sessions required, the same (V 10.38, 8.57, 10.48; drift 0.61). The reduced-retention comparison
-    needs the 4-week probe value of fig3de-probe-memory, which is blocked; the mean absolute change
-    at week 4 relative to week 1 is 42.2 degrees.
+    sessions required, the same (V 10.38, 8.57, 10.48; drift 0.61). With raw HDI, V 10.24, 8.68,
+    10.71 and drift -0.52. The reduced-retention comparison needs the 4-week probe value of
+    fig3de-probe-memory, which is blocked; the mean absolute change at week 4 relative to week 1 is
+    42.2 degrees. Changes relative to week 1 stay centred on 0 (all V-tests significant), but the
+    drift rate and one V are outside tolerance, and the retention part cannot be tested, so the claim
+    holds in part (changed from not reproduced after verification). The probe week is identified
+    from the dates printed in the notebook; the random protocol starts 3 days after the last
+    two-week session for mice 1 to 4 and 81 days after it for mouse 5.
   deviations:
   - The minimum number of sessions for this figure is not stated; two (as for Fig. 3, the same
     protocol) is the main reading and six is shown; they agree.
@@ -463,7 +501,10 @@ outcomes:
   notes: In both groups the change is smaller than shuffles (one-sided Wilcoxon W 0, p 0.031, with
     the median or the mean shuffle) and the groups do not differ (two-sided W 2, p 0.188). The weekly
     mean 6.2 degrees is within 12.4 +- 10.0; the single mean 21.9 (s.d. 16.0) is outside 6.6 +- 4.1,
-    raised by mouse 8 (48 degrees from 2 cells) and mouse 10 (30 degrees from 9 cells).
+    raised by mouse 8 (48 degrees from 2 cells) and mouse 10 (30 degrees from 9 cells). With raw HDI
+    the tests are the same (W 0, p 0.031 in both groups; group test W 4, p 0.438, the paper's values),
+    the weekly mean is 8.3 (within) and the single mean 12.4 (outside). Under both readings both
+    means would fit if the groups were swapped.
 - claim: fig4e-decoder-single-visit
   outcome: reproduced
   notebook: decoding.ipynb
@@ -475,32 +516,49 @@ outcomes:
   notes: Mean median error weekly 42.5 degrees (s.d. 20.3) and single 48.8 (s.d. 18.5), within
     tolerance; every decoder is below its time-reversed chance (83 to 97 degrees); weekly against
     single, two-sided Wilcoxon W 3, p 0.312. Mouse 8 decodes from 4 and 2 cells (errors 78 and 85).
+    Raw HDI (41.7 and 48.1, W 4, p 0.438) and test cells required only to be registered in the test
+    session (44.0 and 49.4, W 4, p 0.438) give the same outcome, with every decoder below chance.
   deviations:
   - Decoder assumptions as for edf8-same-vs-mixed.
 - claim: edf10c-environment-identity
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf10c-environment-identity
+  assumed: true
   measured:
-  - 0.2
-  - -12.8
+  - -0.2
+  - 12.8
   notes: The two-sided Wilcoxon paired by mouse is not significant (W 3, p 0.312), as in the paper.
-    Circular means are 0.2 degrees (circular, s.d. 15.1) and -12.8 (square, s.d. 19.5); under
-    neither assignment are both within tolerance (square -12.8 against 5.1 +- 8.0, or against 1.6
-    +- 14.1). Mouse 8's square value (-48 degrees) rests on 2 cells.
+    With the change taken as the first visit minus the later one (main sign reading), circular means
+    are -0.2 degrees (circular, s.d. 15.1) and 12.8 (square, s.d. 19.5), within tolerance under
+    either assignment. With the opposite sign (later minus first, the sign before verification)
+    square is -12.8, outside under both assignments. With raw HDI the means are -4.4 and 1.2 (main
+    sign; within under the first assignment) and p 0.625. Mouse 8's square value (48 degrees) rests
+    on 2 cells. Changed from partially reproduced after verification.
+  deviations:
+  - The sign of the change in preferred direction is not stated in the paper. Taken as the earlier
+    session minus the later one (assumption), the convention under which the per-mouse means of
+    Fig. 1g (change of each session relative to the last) have the paper's sign in 5 of 5 mice; here
+    it is the first visit minus the later one. Both signs are shown.
 - claim: edf10b-per-animal-change
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf10b-per-animal-change
+  assumed: true
   measured:
-  - -3.25
-  - 3.07
-  - 12.43
-  - -4.68
-  - 7.71
-  notes: Circular means over the five later sessions of each mouse (both environments pooled); 3 of 5
-    within tolerance (mice 7, 8, 9), where the criterion asks for 4. Mice 6 (-3.25 against 4.7 +-
-    3.4) and 10 (7.71 against -6.2 +- 10.9) are outside.
+  - 3.25
+  - -3.07
+  - -12.43
+  - 4.68
+  - -7.71
+  notes: Circular means over the five later sessions of each mouse (both environments pooled), with
+    the change taken as the first visit minus the later one (main sign reading); all 5 within
+    tolerance and all with the paper's sign. With raw HDI also 5 of 5 (5.27, -4.86, -12.03, 7.31,
+    -8.29). With the opposite sign (later minus first, the sign before verification) 3 of 5 are
+    within tolerance (2 of 5 with raw HDI), where the criterion asks for 4. Changed from not
+    reproduced after verification.
+  deviations:
+  - Sign of the change as for edf10c-environment-identity (assumption); the outcome changes with it.
 findings:
 - kind: format_error
   statement: The tuning_curves table (processing/ophys/tuning_curves) of every imaging file holds one
@@ -537,7 +595,7 @@ findings:
   statement: Questions for the authors on the HD cell rule. Is the HDI computed on the raw or the
     smoothed tuning curve, and is the kernel 12 degrees or 12 bins? Smoothed HDI with a 12 degree
     kernel reproduces the paper's session and pair counts here, but raw HDI gives about twice as
-    many HD cells, and the outcomes of edf2ab-jaccard, edf2-no-registration-confound and
+    many HD cells, and the outcomes of edf2ab-jaccard, fig2h-coherent-remapping and
     edf4c-previous-session change with it. Is "detected in at least six sessions" registered by
     CellReg or HD in those sessions, and which sessions enter the average HDI? With either HDI the
     proportions of Extended Data Fig. 1e are not reproduced (main reading 0.12, 0.40, 0.04, 0.29,
@@ -547,10 +605,277 @@ findings:
     unsigned (0 to 180 degrees)? The paper's shuffle medians (51 to 57) match unsigned offsets
     (expected 52.7), while signed offsets give 90; unsigned was assumed. How is the drift rate per
     week computed? A least-squares slope against day difference was assumed; a line through the
-    origin gives two to three times larger rates.
+    origin gives two to three times larger rates. What is the sign of a change in preferred direction?
+    Taken as the earlier session minus the later one, the paper's signs of Fig. 1g and of Extended
+    Data Fig. 10b are both matched (5 of 5 each), and Extended Data Fig. 10b,c are reproduced; with
+    the opposite sign they are not.
 - kind: methods_unavailable
   statement: Questions for the authors on the decoders. What are the XGBoost hyperparameters, how is
     dF/F normalized, how is population activity summed for the top 50% bins, do cells have to be HD
     cells in the test session, and is the error variance of Extended Data Fig. 8c circular or linear?
     Library defaults, division by the maximum, the sum, HD in both sessions and both variances were
-    used; the circular variance matches the paper's values and the linear one does not.
+    used; the circular variance matches the paper's values and the linear one does not. Requiring
+    test cells only to be registered in the test session gives the same outcomes.
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebooks with the conclusion cells and the summaries removed,
+    the helper module and the claims file, with the paper. The verifier checked the archive for the
+    blocked claims and tested helper functions on synthetic inputs. Its report had no attempt record
+    and gave its own outcome for each claim; 26 of 32 agree with the record as handed over.
+  results:
+  - claim: roi-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Neither reading gives 388 sessions (402 for all mice, 367 for mice 1 to 5; tolerance 0).
+      Under reading (a), min 22, max 291 and mean 102.1 are within tolerance. The Spearman trend is
+      significant in 2 of 5 mice, so "stable" holds.
+    response: No change needed.
+  - claim: edf1e-hd-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: At most 1 of 5 proportions is within tolerance under any reading. Recording counts match
+      exactly; ROI means fail for mice 3 and 5. The main reading keeps very few cells, a likely cause
+      of the edf1e proportions, which are 3 to 10 times too low (problem 2). Choosing the main
+      reading to match the paper's session counts conflicts with the Extended Data Fig. 1e
+      proportions, and cell 10 does not say so (problem 3).
+    response: Outcome kept. The HD cells section now says that the main reading conflicts with the
+      proportions of Extended Data Fig. 1e and with the cell counts of Extended Data Figs. 2 and 7,
+      and prints the median number of HD cells per session under each reading.
+  - claim: edf1h-ring
+    agrees: true
+    outcome: reproduced
+    reason: Under z-score normalization the correlation is significant in 5 of 5 mice, but |r| is
+      only 0.19 for mouse 1. The p value assumes independent 0.25 s bins, which are autocorrelated;
+      mouse 1 has r = -0.19, which is weak evidence of a ring even though it passes the claims
+      file's test.
+    response: Outcome kept. The conclusion and the notes now say that the p values treat
+      autocorrelated bins as independent and that mouse 1's ring is weak.
+  - claim: fig1f-example-stable
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), mouse 2 (n = 18) gives V 17.01, median absolute deviation 4.6 degrees, p below
+      0.001, all within tolerance. Reading (a), mouse 4, fails under every configuration.
+    response: No change needed.
+  - claim: fig1g-all-mice-stable
+    agrees: true
+    outcome: reproduced
+    reason: Pooled V 75.58 with p near 0, and 5 of 5 per-mouse means within tolerance. n is 85, not
+      84; the criterion does not use it. Under the flipped sign fig1g still passes (4 of 5).
+    response: Outcome kept. The notebook now prints the means with the sign reversed (4 of 5 within,
+      none with the paper's sign).
+  - claim: edf4ab-vtest-per-animal
+    agrees: true
+    outcome: reproduced
+    reason: Main reading, 5 of 5 V within 10%, and every V is above its shuffle median. The pooled
+      shuffle median is 30.8 against 18.6, outside tolerance under every configuration.
+    response: No change needed.
+  - claim: edf4c-previous-session
+    agrees: true
+    outcome: reproduced
+    reason: Pooled V 70.00 with p near 0; 4 of 5 per-animal V within tolerance under the main reading.
+      The shuffle median is 26.6 against 21.9.
+    response: No change needed.
+  - claim: edf2ab-jaccard
+    agrees: false
+    outcome: reproduced
+    reason: Under 12deg/raw, reading (a), 5 of 5 mice keep at least 80% of the 1-day index. Under the
+      main reading only 2 of 5 (reading a) or 3 of 5 (reading b) do.
+    response: Outcome kept as not reproduced, resting on the main HD reading (assumed), and the
+      disagreement recorded. The main reading is kept for every HD claim because it gives the paper's
+      numbers of compared sessions and offset values, and the session counts implied by Extended Data
+      Fig. 4f that the verifier computed; choosing raw HDI for this claim alone would pick the reading
+      that passes. The notes and the summary say that raw HDI reproduces it.
+  - claim: edf2-no-registration-confound
+    agrees: false
+    outcome: partially_reproduced
+    reason: Both absence tests are non-significant under every configuration. Displacement against
+      score is significant only under pooled raw HDI with x3 correction (p 0.0416); it would be 0.056
+      with four tests, and the main reading gives 0.50. n is 28 or 56, against 72. The analysis keeps
+      only cells with CellReg score above 0.8, while the paper tests "all cells" (n = 72) and
+      separately "cells with CellReg score over 0.8"; the correction is over 3 tests where the claims
+      file lists 4.
+    response: Rerun over all cells with every CellReg score, Bonferroni over the four tests. Pooled,
+      both absence tests are not significant and displacement against score is significant under
+      both HDI readings (p 0.0011 and below 0.0001 after correction; 49 and 108 cells against 72).
+      Outcome changed from not reproduced to reproduced. The score above 0.8 subset is kept as a
+      variant (0.67 and 0.055 after correction).
+  - claim: fig1h-drift-rate
+    agrees: true
+    outcome: reproduced
+    reason: Main reading, population value, slope reading (a), 6.71 degrees per week against 7.1 +-
+      4.4.
+    response: No change needed.
+  - claim: edf4ef-not-diffusive
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), main configuration, 4 of 5 mice. Fragile, since reading (b) gives 2 of 5. A
+      variance is unchanged by a constant shift, so readings (a) and (b) should agree except for which
+      cells enter each session mean; the pass under (a) rests on noisy session means.
+    response: Outcome kept. The conclusion and notes now say the pass is fragile and why, and give
+      the raw HDI result (3 of 5).
+  - claim: edf4f-change-below-shuffle
+    agrees: false
+    outcome: partially_reproduced
+    reason: No configuration meets both parts. Under the main reading medians are 3 of 5 within
+      tolerance but mouse 3 has p 0.079. Under 12deg/raw all p below 0.05 but medians are 2 of 5.
+    response: Outcome changed from not reproduced to partially reproduced. The effect is present,
+      significant in 4 of 5 mice under the main reading and 5 of 5 with raw HDI, while neither
+      reading meets both parts of the criterion.
+  - claim: edf4g-pairwise-offset-stable
+    agrees: true
+    outcome: reproduced
+    reason: 5 of 5 medians within tolerance and below all shuffled medians, for both signed and
+      unsigned offsets. 25,441 values against 25,901.
+    response: No change needed.
+  - claim: fig1i-offset-drift
+    agrees: true
+    outcome: reproduced
+    reason: 5.32 degrees per week against 4.1 +- 4.8. Wilcoxon p 0.19 and paired t p 0.13, both
+      non-significant.
+    response: No change needed.
+  - claim: fig1k-decoding-across-days
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other, compute time). No decoder output exists. The data are in the archive and
+      the claim is testable. The block is a compute budget, not data size. The estimate is 101 min at
+      3.2 s per fit; the header of cell 0 says 3.7 h. Fits are serial although loading uses 12
+      workers. The partial criterion (pairs up to 10 days apart) needs only a subset of the fits.
+    response: Kept blocked as too_large, which the protocol uses when the estimate is over the notebook
+      limit. The decoders now run four fits at a time (2.39 s per fit over 507 fits), and the
+      estimate is recomputed from them, 75 minutes for all 1,883 fits and 47 minutes for the 1,189
+      fits of the partial reading, plus loading the circular sessions; neither fits the 60 minute
+      limit of a notebook with a margin. The header estimate is corrected to match.
+  - claim: edf4ij-pv-decay
+    agrees: true
+    outcome: reproduced
+    reason: Negative and significant in 4 of 5 mice under both readings; the mean at the longest
+      interval is above 0 in every mouse. Run only under the main reading.
+    response: Outcome kept. Raw HDI added; the decay is significant in 5 of 5 mice, and mouse 5's mean
+      at the longest interval is -0.00 and -0.19.
+  - claim: fig2e-offset-across-environments
+    agrees: true
+    outcome: reproduced
+    reason: Medians within tolerance and below all shuffles. Drift is 2.41 (a) and 2.00 (b) with mouse
+      2 excluded, within 1.9 +- 1.02.
+    response: No change needed.
+  - claim: edf5c-stable-within-environment
+    agrees: true
+    outcome: reproduced
+    reason: All four V-tests are significant. 3 of 4 V within tolerance under the main reading and 4 of
+      4 under raw HDI. The ANOVA is non-significant, and the session counts 45, 39, 44, 43 match
+      exactly.
+    response: No change needed.
+  - claim: edf7-ephys-offsets
+    agrees: true
+    outcome: reproduced
+    reason: Every median (6 to 12 degrees) is below all shuffles, about half the paper's values but
+      within its s.d. There are 254 PoSub units. HD cells are 99 with smoothed HDI and 118 with raw
+      HDI; the offsets are computed with the 99 smoothed-HDI cells when the raw-HDI set (118) matches
+      125.
+    response: Outcome kept. The offsets are now also computed with the 118 raw-HDI cells; medians 6,
+      9, 9, 6, all below every shuffled median.
+  - claim: edf7g-waveforms
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive, the Units table holds only electrode_group, id and spike times,
+      and acquisition has only Position and head-direction.
+    response: No change needed.
+  - claim: edf8-same-vs-mixed
+    agrees: true
+    outcome: partially_reproduced
+    reason: Non-significance holds and single is lower than mixed on average. W = 0 occurs only for
+      linear variance, whose means (1.91, 3.15) are far outside 0.58 and 0.74. Circular variance and
+      offset change have means within tolerance but are lower in only 4 of 5 mice. Test-session cells
+      must pass the HD rule in the test session; the looser reading is not run. Run only under the
+      main reading.
+    response: Outcome kept. Raw HDI and the looser test-session rule added. With raw HDI the offset
+      change is lower in 5 of 5 (W 0, p 0.062) with means within tolerance, but the decoder variance
+      still does not meet the criterion; the looser rule gives the main reading's result.
+  - claim: fig2g-environment-classifier
+    agrees: true
+    outcome: reproduced
+    reason: 0.64 against 0.28 (single split 0.70 against 0.21); W 15, p 0.031. Cells absent from a
+      recording enter as NaN, and 77 to 89% of features are NaN. The pattern of which cells are
+      present follows the session date, and each environment is visited in a two-week block, so the
+      classifier may be decoding time or detection from that pattern. No control keeps the NaN
+      pattern while removing the values.
+    response: Outcome kept, as the criterion is met (also with raw HDI, 0.59 against 0.26). Added the
+      two controls. Presence alone classifies as well (0.70 against 0.28), and a split in time gives
+      0.48 against 0.27. The notes and the summary say the data do not show that the classifier reads
+      the correlations.
+  - claim: fig2i-random-remapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: Circular to square p 0.292 and square to radial maze p 0.517 are non-significant. Radial
+      maze to circular gives p 0.069 (z 2.58) against 0.032. Run only under the main reading.
+    response: Outcome kept. Raw HDI added; it gives the same pattern (p 0.28, 0.66, 0.063).
+  - claim: fig2h-coherent-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: 10 of 15 mouse and environment pairs are coherent (67%, against the 80% threshold). The
+      greater than 30 degree part holds in 3 to 5 mice per pair. Run only under the main reading.
+    response: Outcome kept, now marked as resting on the HDI reading. Raw HDI added; it gives 12 of 15
+      (80%), which meets the criterion.
+  - claim: fig3de-probe-memory
+    agrees: true
+    outcome: blocked
+    reason: Confirmed, each protocol has its own CellReg table, and no table links the last two-week
+      visit to the probe week. From the asset dates, mice 1 to 4 have the probe week as the start of
+      the random protocol, so the data exist but cell identity across the two protocols does not.
+    response: No change needed.
+  - claim: fig3e-mvl-delay
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig3de.
+    response: No change needed.
+  - claim: fig3fg-probe-drift
+    agrees: true
+    outcome: blocked
+    reason: Same reason; the offset changes also need cell identity across the two protocols.
+    response: No change needed.
+  - claim: edf9-interference
+    agrees: false
+    outcome: partially_reproduced
+    reason: All V-tests are significant. V is within tolerance for week 2 and week 4 but not week 3.
+      The drift rate misses 1.6 +- 0.16 under every reading. "Reduced retention" needs the blocked
+      fig3de. "The random protocol's first week is the probe week" is stated without an output. Run
+      only under the main reading.
+    response: Outcome changed from not reproduced to partially reproduced, as the claim holds in part.
+      Added the dates that identify the probe week (3 days after the last two-week session for mice 1
+      to 4, 81 days for mouse 5) and the raw HDI reading, which gives the same result.
+  - claim: fig4d-single-visit-memory
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both one-sided tests give p 0.031 and the group test p 0.188, matching the paper. The
+      single-visit mean is 21.9 against 6.6 +- 4.1, driven by mouse 8, which has 2 cells. With the
+      groups swapped, both means would fit. Run only under the main reading.
+    response: Outcome kept. Raw HDI added; the tests match the paper (group test W 4, p 0.438) and the
+      single mean, 12.4, is still outside tolerance. The swapped-group fit is noted under both readings.
+  - claim: fig4e-decoder-single-visit
+    agrees: true
+    outcome: reproduced
+    reason: 42.5 and 48.8 degrees are within tolerance, the group test p is 0.312, and all 10 decoders
+      are below chance (83 to 97 degrees).
+    response: Outcome kept. Raw HDI and the looser test-session rule added; both give the same outcome.
+  - claim: edf10c-environment-identity
+    agrees: false
+    outcome: reproduced
+    reason: Reproduced under the sign reading not run. As run, square is -12.8, outside tolerance under
+      both assignments by 0.3 degrees. The sign of the change in preferred direction is never run both
+      ways; the Methods do not fix the cross-correlation direction. Negating the printed means puts
+      both within tolerance under the first assignment. The Wilcoxon is non-significant either way.
+    response: Both signs are now printed. The sign is taken as the earlier session minus the later one,
+      the convention under which the paper's Fig. 1g means have its sign in 5 of 5 mice; for this
+      claim it is the first visit minus the later one, and both means are within tolerance. Outcome
+      changed from partially reproduced to reproduced, marked as resting on the sign assumption.
+  - claim: edf10b-per-animal-change
+    agrees: false
+    outcome: reproduced
+    reason: Reproduced under the sign reading not run. As run, 3 of 5 are within tolerance. Negated,
+      the means are 3.25, -3.07, -12.43, 4.68, -7.71 against 4.7, -0.4, -15.5, 5.4, -6.2, all 5 within
+      tolerance with every sign matching.
+    response: Sign reading as for edf10c-environment-identity; 5 of 5 within tolerance under both HDI
+      readings. Outcome changed from not reproduced to reproduced, marked as resting on the sign
+      assumption.
