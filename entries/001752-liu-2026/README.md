@@ -10,10 +10,10 @@ from the table of deposited files in the paper's code, and a link claim checks t
 |---|---|
 | The code's table links the files to their cell types | Partially reproduced |
 | sEPSC frequency lower in VENs | Blocked: the two threshold readings disagree |
-| sIPSC frequency lower in VENs | Not reproduced |
+| sIPSC frequency lower in VENs | Not reproduced (proposed: blocked, the detection measures noise) |
 | mEPSC frequency lower in VENs | Not reproduced |
 | mIPSC frequency lower in VENs | Blocked: the two threshold readings disagree |
-| sEPSC, sIPSC, mEPSC and mIPSC amplitudes do not differ | Reproduced (four claims) |
+| sEPSC, sIPSC, mEPSC and mIPSC amplitudes do not differ | Reproduced (four claims; for sIPSC, proposed: blocked) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
@@ -21,8 +21,12 @@ the differences from the paper's method.
 The paper detected events in miniAnalysis with settings it does not give beyond a 5 pA threshold. A
 check of the detector (peaks of the opposite polarity as a noise null, and synthetic events injected into
 every trace) shows that at 5 pA it is reliable in the files with noise below 2 pA (all mEPSC, most mIPSC,
-about half the sEPSC files) and counts mostly noise in the others, every sIPSC file among them; the
-threshold at each recording's RMS noise counts noise everywhere. The mEPSC labels of the code's file table
+about half the sEPSC files). In the noisier files a large part of what it counts is noise: in the sEPSC
+files with noise of 2 to 4 pA it finds opposite-polarity peaks at about half the rate of the events, and in
+13 of the 15 sIPSC files at about the same rate or more (about half in the other two). The threshold at each
+recording's RMS noise counts noise everywhere. For this reason the final revision proposes to change the
+two sIPSC outcomes to blocked (methods_underspecified), and, for the Patch-seq AP test (fig4ac), from
+partially to not reproduced; a third verification round reviews these proposals. The mEPSC labels of the code's file table
 are the opposite of its analysis sheet's, and the sheet's own values give the paper's result only with the
 sheet's labels. The frequency outcomes should be read with the notes in the attempt record.
 

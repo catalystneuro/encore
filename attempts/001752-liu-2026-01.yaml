@@ -34,7 +34,7 @@ inputs:
   source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
 - what: Outside-out Na+ current recordings (35 patches), for fig4d-sodium-current.
   source: DANDI:001750 version 0.260825.0222, doi 10.48324/dandi.001750/0.260825.0222
-- what: Patch-seq current-clamp recordings (all 462 files), with the code's cell table ephysio/data_ephy/rawdata_ephysio/metaInfo_ephysio_patchSeq.csv
+- what: Patch-seq current-clamp recordings (the 461 of the 462 files that the code's table names), with the code's cell table ephysio/data_ephy/rawdata_ephysio/metaInfo_ephysio_patchSeq.csv
     at the commit above, for fig2d-f-l23-it-tau-width, ven-subtypes-similar-physiology and fig4ac-ap-width-amplitude;
     the table also gives the VEN subtypes and clusters of fig6f-g-ven-subtype-mapping.
   source: DANDI:001746 version 0.260825.0222, doi 10.48324/dandi.001746/0.260825.0222
@@ -57,8 +57,9 @@ outcomes:
     the types agree (19, 15 and 36 of 36). The frequencies measured here correlate with the sheet's for mIPSC (Spearman
     rho 0.73; 0.87 in the 34 files with noise below 2 pA) but not for mEPSC (0.51, p 0.054), sEPSC (0.34) or sIPSC
     (0.19). In the noisier sEPSC and sIPSC files the frequencies are 4.6 to 15 times the sheet's and the detector
-    check finds about as many opposite-polarity peaks as events, so much of the disagreement is in detection; in
-    the 10 sEPSC files with noise below 2 pA the correlation is still weak (rho 0.16).
+    check finds opposite-polarity peaks at half the rate of the events or more (about half in the sEPSC files
+    with noise of 2 to 4 pA, about as many in 13 of the 15 sIPSC files), so much of the disagreement is in detection;
+    in the 10 sEPSC files with noise below 2 pA the correlation is still weak (rho 0.16).
   deviations:
   - A link claim added by this attempt (protocol, author step 1.4); its criterion was written before the analysis.
 - claim: fig5b-sepsc-frequency
@@ -86,6 +87,17 @@ outcomes:
     as the code's Fig. 5 scripts call it.
 - claim: fig5b-sipsc-frequency
   outcome: not_reproduced
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion gives not reproduced, but the measurement it is applied to does not separate events from
+      noise in these files. No sIPSC file has noise below 2 pA; in 13 of the 15 files opposite-polarity peaks are
+      0.87 to 1.54 times as frequent as the events at 5 pA (0.43 and 0.59 in w9b4ds and 1tsbdsc); 44 to 83% of
+      injected events are recovered per file; the 5 pA frequencies are 1.9 to 24 times the code's sheet values;
+      and the RMS reading counts noise in every experiment. The paper gives no detection setting beyond the 5 pA
+      threshold, so no measurement of sIPSC frequency here has a defensible basis (reproduce_liu_2026.ipynb, the
+      cell after the fig5b-sipsc-frequency table). Proposed after the second verification round, whose verifier
+      recommends it.
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig5b-sipsc-frequency
   notes: Under neither threshold reading is the VEN median below the PC median. At 5 pA, VEN 19.9 against PC 15.4
@@ -93,9 +105,10 @@ outcomes:
     PC 9.5 to 10.1 Hz (p = 0.0006 to 0.072). With three times the noise, a variant, VEN 1.88 against PC 2.27 to
     2.55 Hz (p = 0.23 to 0.54). Events are outward, as the files are described as held at +20 mV and their holding
     currents are positive. The detection here largely measures noise in these recordings, so the outcome may be
-    a failure of this attempt. No sIPSC file has noise below 2 pA, opposite-polarity peaks are as frequent as events
-    (subtracting them leaves medians below zero, p = 0.69 to 0.96), injected events are recovered at 63 to 80%,
-    and the 5 pA frequencies are 5 to 15 times the code's sheet values. In the files of at least 5 min VENs are
+    a failure of this attempt. No sIPSC file has noise below 2 pA; in 13 of the 15 files opposite-polarity peaks
+    are 0.87 to 1.54 times as frequent as events, and about half in the other two (subtracting them leaves medians
+    below zero, p = 0.69 to 0.96); injected events are recovered at 44 to 83% per file; and the 5 pA frequencies
+    are 1.9 to 24 times the code's sheet values (median 5.5). In the files of at least 5 min VENs are
     lower (9.9 to 10.6 against 18.5 Hz, 2 or 3 VENs and 4 or 5 PCs, p = 0.11 to 0.38). The code's own sheet values
     give VEN 1.77 against PC 3.25 Hz, p = 0.0093 (not used for the outcome).
   deviations:
@@ -119,7 +132,8 @@ outcomes:
     settle. 7 VENs and 8 PCs are in the dandiset, against 8 and 8.
   deviations:
   - Detector as for fig5b-sepsc-frequency.
-  - One VEN of the paper (sheet name S02C0321) is not in the dandiset.
+  - One cell of the paper's sheet, S02C0321, is not in the dandiset. The sheet calls it a PC; it would be a VEN
+    under the table's labels, which are the opposite of the sheet's for every mEPSC cell.
   - Two-tailed rank-sum p-values are computed as MATLAB's ranksum does by default (exact for these group sizes),
     as the code's Fig. 5 scripts call it.
 - claim: fig5b-mipsc-frequency
@@ -155,13 +169,21 @@ outcomes:
     as the code's Fig. 5 scripts call it.
 - claim: fig5c-sipsc-amplitude
   outcome: reproduced
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The amplitudes come from the same detection as fig5b-sipsc-frequency, which does not separate events
+      from noise in these files (see its proposed change); the amplitudes here are 0.19 to 0.53 times the code's
+      sheet per file. A finding of no difference from a measurement that does not measure the paper's events cannot
+      stand for the paper's, and the paper gives no detection setting that would. Proposed after the second verification
+      round, whose verifier no longer agrees with reproduced.
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig5c-sipsc-amplitude
   measured: 0.094
   notes: At 5 pA, whole recording, the table's labels as they are, VEN 11.8 against PC 14.4 pA, p = 0.094 (fwphyw
     as either cell, 0.072 and 0.094). RMS threshold p = 0.40 to 0.54, first 30 s p = 0.054 to 0.072, three times
     the noise p = 0.34 to 0.40. No sIPSC file has noise below 2 pA and the amplitudes are 0.21 to 0.40 times the
-    code's sheet, so the detection does not measure the paper's amplitudes in these recordings; the sheet's amplitudes
+    code's sheet (median per subject; 0.19 to 0.53 per file), so the detection does not measure the paper's amplitudes in these recordings; the sheet's amplitudes
     do not differ either (37.6 against 35.9 pA, p = 0.69). measured is the p-value.
   deviations:
   - Detector and labels as for fig5b-sipsc-frequency.
@@ -244,7 +266,8 @@ outcomes:
   outcome: not_reproduced
   notebook: elsewhere_liu_2026.ipynb
   output: claim:fig2d-f-l23-it-tau-width
-  notes: From DANDI:001746, all 462 cells read with no errors, features extracted as the Methods define them. L2/3
+  notes: From DANDI:001746, the 461 files the code's table names read with no errors (the table names one file twice,
+    whose second row is dropped, and one file of the dandiset not at all), features extracted as the Methods define them. L2/3
     IT HPCAL1 has the lowest median tau (31.8 ms, n = 30; others 38.2 to 54.1 ms), but no pairwise difference with
     it survives FDR (0.064 to 0.82). Its median AP half-width (2.10 ms) is not the lowest, IT RORB being lower (1.92
     ms); it is narrower than L5 IT FEZF2 and VEN (FDR below 1e-4 each) but not than IT RORB, L5 ET or L6 PC (FDR
@@ -287,6 +310,12 @@ outcomes:
     n that the criterion cites (30, 17, 119, 22, 16, 13).
 - claim: fig4ac-ap-width-amplitude
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: On the cells deposited, neither feature reaches the criterion's p < 0.001; amplitude does not reach p <
+      0.05 (0.073), and with the PCs of the L5 subclasses neither is significant (p = 0.22 and 0.35). Only the direction
+      agrees with the paper, which does not make the effect present in part. Not reproduced on the deposited subset,
+      with the subset in the notes, as the second verification round gives (elsewhere_liu_2026.ipynb, cell claim:fig4ac-ap-width-amplitude).
   notebook: elsewhere_liu_2026.ipynb
   output: claim:fig4ac-ap-width-amplitude
   notes: From DANDI:001746, the 68 VENs and 135 L5 PCs (cell subtype PC_L5, PC_L5ET or PC_5) of the code's table,
@@ -300,17 +329,23 @@ outcomes:
     PCs of the L5 subclasses.
 - claim: fig4d-sodium-current
   outcome: reproduced
+  assumed: true
   notebook: elsewhere_liu_2026.ipynb
   output: claim:fig4d-sodium-current
   notes: From DANDI:001750, streamed. The peak inward current (largest over the steps -60 to 0 mV) is smaller in
     VENs, median 23.0 pA (n = 14), than in PCs, 34.6 pA (n = 21), two-tailed rank-sum p = 0.0023. Reading (b), density,
     gives the same p, as the files hold no capacitance and the Methods give one patch area. The measure follows
-    the code's per-cell max_Na_current (rho 0.97), which gives p = 0.0010.
+    the code's per-cell max_Na_current (rho 0.97), which gives p = 0.0010. Reading (b) cannot be formed as the criterion
+    defines it, as no patch has its own capacitance, so the outcome rests on the assumption that one area for all
+    patches is an acceptable reading (b). The question is for the paper's authors (finding).
   deviations:
   - Sweeps of a step are averaged, the current is referred to 2 to 0.2 ms before the step, smoothed over 0.1 ms,
     and its minimum taken in 0.1 to 3 ms after the onset; these windows are standard choices.
   - Cell types are the code's table metadata_outSideOutSodiumCurrentRec.csv.
-  - Reading (b) uses the Methods' single patch area for all patches, as the files hold no capacitance.
+  - Assumed that reading (b) can use one patch area for all patches, as the files hold no capacitance. The Methods
+    give one approximate value, "the membrane surface area (~5 µm 2 ) of outside-out patches was calculated from
+    the capacitance (~50 fF) assuming a specific membrane capacitance of 1 µF cm −2" (Methods, outside-out recording),
+    and say that similar membrane areas were sampled. With one area, reading (b) gives the p of reading (a).
 - claim: fig4i-peak-index-ais-distance
   outcome: blocked
   blocked_by: not_runnable
@@ -350,7 +385,9 @@ outcomes:
     read). The code's annotation of it (metadata_multiPatch.xlsx), which names 288 of its 301 files, lists 1,416
     tested pairs, within the tolerance of 1,292, and 26 connections (14 excitatory, 12 inhibitory), outside the
     tolerance of 31. Neurons, counted as channels of a session, number 298 where the paper has 377. Per subject
-    the pairs range from 58 to 522, and two of the six subjects have no connection.
+    the pairs range from 58 to 522, and two of the six subjects have no connection. The annotation disagrees with
+    itself in places, 7 of the 18 PC-to-PC connections typed inhibitory and two connections whose projection label
+    names other channels than the row (4 to 1 labelled 4→3, 6 to 3 labelled 8→5).
   deviations:
   - Connections are the code's annotation, as the deposit holds none; they are not detected in the 7.0 GB of recordings.
 - claim: fig5-connectivity-by-type
@@ -480,8 +517,8 @@ findings:
   statement: For the authors. Which miniAnalysis settings (amplitude and area thresholds, baseline and peak windows,
     filtering) detected the Fig. 5 events, and which stretch of each recording was analysed? The Methods give only
     a 5 pA threshold, and with it a standard detector finds 4.6 to 15 times the sheet's sEPSC and sIPSC events in
-    the noisier recordings, about as many as it finds of the opposite polarity; the code's mIPSC sheet counts events
-    over 30 s per cell.
+    the noisier recordings, with opposite-polarity peaks at half that rate or more (about the same rate in 13 of
+    the 15 sIPSC files); the code's mIPSC sheet counts events over 30 s per cell.
 - kind: methods_unavailable
   statement: For the authors. In the code's Patch-seq mapping tables, which rows are the 34 inhibitory neurons and
     which cluster numbering do their predicted clusters follow? This attempt assumed the 33 cells labelled as interneurons.
@@ -514,8 +551,22 @@ findings:
     (VEN_Long or VEN_Short) have cell type PC, INTER or none, and one VEN_Short maps to an inhibitory cluster.
 - kind: other
   statement: In the sIPSC recordings no file has noise below 2 pA, and a standard detector at the Methods' 5 pA
-    threshold finds as many peaks of the opposite polarity as events, so the sIPSC frequencies cannot be measured
-    from these files without the paper's detection settings.
+    threshold finds peaks of the opposite polarity at 0.87 to 1.54 times the rate of events in 13 of the 15 files
+    (about half in the other two), so the sIPSC frequencies cannot be measured from these files without the paper's
+    detection settings.
+- kind: methods_unavailable
+  statement: For the authors. Fig. 4d compares Na+ currents, and the Methods estimate patch areas from capacitance
+    (about 5 um2 from about 50 fF), but DANDI:001750 holds no capacitance per patch. Was the comparison made on the
+    peak current, or on a density with each patch's own area, and where are the capacitances? This attempt assumed
+    one area for all patches.
+- kind: metadata_error
+  statement: In the code's Patch-seq cell table metaInfo_ephysio_patchSeq.csv, one file (obj-1gxrou, subject Mfa220428)
+    is named by two rows, cell n172 as a PC of Mfa220428 and again with no cell type under Mfa180730, and one file
+    of DANDI:001746 (sub-Mfa180730_ses-sess-180730d1_obj-1qsqh8f) is named by no row.
+- kind: metadata_error
+  statement: The code's multi-patch annotation metadata_multiPatch.xlsx types 7 of its 18 PC-to-PC connections as
+    inhibitory, and two connections carry a projection label naming other channels than their row (channels 4 to
+    1 labelled 4→3 in obj-d4b8xx, 6 to 3 labelled 8→5 in obj-1r3cu01).
 verifications:
 - date: '2026-11-03'
   kind: agent
@@ -754,4 +805,227 @@ verifications:
     agrees: true
     outcome: blocked
     reason: ven-firing-rate-variability is methods_underspecified.
+    response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The re-executed notebooks reproduce_liu_2026.ipynb and elsewhere_liu_2026.ipynb in full, with their
+    conclusions and summaries, the README, the claims file and the attempt record. The verifier did not re-run anything.
+  results:
+  - claim: psc-file-labels-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Several parts fail (cells 15, 17, 18, 20).
+    response: No change of outcome. The record's note said the detector check finds about as many opposite-polarity peaks
+      as events in the noisier files; it now says about half in the sEPSC files with noise of 2 to 4 pA and about as
+      many in 13 of the 15 sIPSC files, as the verifier found. The notebook's link result says the same.
+  - claim: fig5b-sepsc-frequency
+    agrees: true
+    outcome: blocked
+    reason: 'Yes, by the criterion. The two readings disagree: at 5 pA p = 0.026, at RMS VENs are higher. Reading (b)
+      is the claims file''s misreading. On 5 pA alone the result would hold, including in the files with noise below
+      2 pA (p = 0.038, 6 VENs against 4 PCs), though only weakly (p = 0.062 after the opposite-polarity rate is subtracted).
+      Reading (b) of the threshold is still in the claims file; the Methods give one value, not a per-recording threshold.
+      The author has sent a question to a reader, but it is not settled.'
+    response: No change. The question to a reader on reading (b) (questions/001752.yaml) stays open; the claim is tested
+      as the claims file has it.
+  - claim: fig5b-sipsc-frequency
+    agrees: false
+    outcome: blocked
+    reason: 'It follows the criterion, but the evidence does not support it. Both readings put VENs higher, so the criterion
+      gives not reproduced. But the record''s own last finding says the sIPSC frequencies cannot be measured from these
+      files without the paper''s detection settings. The record cannot hold both: if the measurement is invalid, the
+      outcome is closer to blocked (methods_underspecified). I recommend blocked (methods_underspecified), or at least
+      that the record reconcile its finding with the outcome.'
+    response: Outcome kept as verified (not_reproduced), as this revision may not change it; a change
+      to blocked (methods_underspecified) is written under proposed for a third round. A new cell after the sIPSC table
+      shows the analysis behind it per file (opposite/forward ratio 0.43 to 1.54, 0.87 or more in 13 of 15; injected
+      events recovered 44 to 83%; frequencies 1.9 to 24 times the sheet's).
+  - claim: fig5b-mepsc-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Detection is sound here: all files have noise below 2 pA and 94% of injected events are recovered. Neither
+      labelling gives a significant difference (p = 0.61). The deviation says One VEN of the paper (sheet name S02C0321);
+      the sheet calls it a PC, as does the record''s own link note. It is a VEN only under the table''s flipped labels.'
+    response: No change of outcome. The deviation now says the sheet calls S02C0321 a PC, which would be a VEN under
+      the table's labels.
+  - claim: fig5b-mipsc-frequency
+    agrees: true
+    outcome: blocked
+    reason: Yes, by the criterion. At 5 pA p = 0.0074, which holds in the files with noise below 2 pA (p = 0.0026). At
+      RMS p = 0.24. The block comes only from reading (b).
+    response: No change; the question to a reader on reading (b) covers this claim.
+  - claim: fig5c-sepsc-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Yes, fragile. The deciding test gives p = 0.24. The RMS, 30 s and 3xRMS variants all give p < 0.05, VENs
+      smaller.
+    response: No change; the notes already say the absence depends on the window and the threshold.
+  - claim: fig5c-sipsc-amplitude
+    agrees: false
+    outcome: blocked
+    reason: No longer. The record says the detection does not measure the paper's amplitudes in these recordings. No
+      file has noise below 2 pA, and the amplitudes here are 0.21 to 0.40 times the sheet's. A claim of absence cannot
+      be reproduced by a measurement the attempt itself calls invalid. I agreed in round 1, but the new detector check
+      changes my view. I recommend blocked (methods_underspecified).
+    response: Outcome kept as verified (reproduced); a change to blocked (methods_underspecified) is written under proposed
+      for a third round, on the same per-file analysis as fig5b-sipsc-frequency (amplitudes 0.19 to 0.53 times the sheet's
+      per file).
+  - claim: fig5c-mepsc-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.61 under both labellings.
+    response: No change.
+  - claim: fig5c-mipsc-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.46.
+    response: No change.
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: scRNA claims, too_large. Reasonable.
+    response: No change.
+  - claim: scrna-78-types
+    agrees: true
+    outcome: blocked
+    reason: scRNA claims, too_large. Reasonable.
+    response: No change.
+  - claim: fig6h-subtype-markers
+    agrees: true
+    outcome: blocked
+    reason: scRNA claims, too_large. Reasonable.
+    response: No change.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: blocked
+    reason: scRNA claims, too_large. Reasonable.
+    response: No change.
+  - claim: scrna-no-sex-difference
+    agrees: true
+    outcome: blocked
+    reason: Blocked by its criterion. Reasonable.
+    response: No change.
+  - claim: patchseq-mapping
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated in the deviations and in cell 8, and it is reasonable: the 33 cells are exactly
+      those the code labels as interneurons (cell 2 crosstab).'
+    response: No change.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: reproduced
+    reason: Agreed.
+    response: No change.
+  - claim: fig2d-f-l23-it-tau-width
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Cell 32 has 464 tau values for 462 cells, which suggests duplicated rows after the merge; it cannot
+      be traced from the output and could shift the fig4ac and VEN-subtype counts by a cell or two.
+    response: No change of outcome. The cause was a file named by two rows of the code's table (cell n172, obj-1gxrou),
+      read twice and merged twice. Each file is now read once and the second row dropped; the duplicated rows and the
+      one dandiset file the table does not name are printed (a finding). 461 cells are read; the numbers of fig2d-f,
+      fig4ac and ven-subtypes-similar-physiology are unchanged.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: blocked
+    reason: Blocked by its criterion. Reasonable.
+    response: No change.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: metadata_insufficient. Reasonable.
+    response: No change.
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: reproduced
+    reason: Agreed.
+    response: No change.
+  - claim: fig4ac-ap-width-amplitude
+    agrees: false
+    outcome: not_reproduced
+    reason: I disagree. On the cells available, neither feature reaches the criterion's p < 0.001. Amplitude does not
+      even reach p < 0.05 (p = 0.073), and with the L5-subclass PCs neither feature is significant (p = 0.22 and 0.35).
+      Partially rests on direction alone. Not reproduced on the deposited subset, with the subset limitation in the notes,
+      would fit the evidence better. Cell 39 says DANDI:001746 holds 68 VENs and 145 L5 PCs; the output, cell 41 and
+      the record give 135.
+    response: Outcome kept as verified (partially_reproduced); a change to not_reproduced is written under proposed for
+      a third round, with the reason. Cell 39 now says 135.
+  - claim: fig4d-sodium-current
+    agrees: true
+    outcome: reproduced
+    reason: This outcome rests on an assumption that is not flagged. The criterion defines reading (b) as current divided
+      by an area taken from each patch's capacitance. The files hold no capacitance, so (b) was replaced by a single
+      constant area. The deviation states this, but the outcome should carry assumed true, or say that reading (b) could
+      not be formed.
+    response: The outcome now carries assumed true. The deviation states the assumption (one area for all patches) and
+      quotes the Methods' single estimate (about 5 um2 from about 50 fF); the notes and the notebook say reading (b)
+      could not be formed as defined; a methods_unavailable finding asks the authors.
+  - claim: fig4i-peak-index-ais-distance
+    agrees: true
+    outcome: blocked
+    reason: Model claims, not_runnable. Reasonable.
+    response: No change.
+  - claim: fig4g-model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Model claims, not_runnable. Reasonable.
+    response: No change.
+  - claim: model-ven-fires-more
+    agrees: true
+    outcome: blocked
+    reason: Model claims, not_runnable. Reasonable.
+    response: No change.
+  - claim: fig4j-eepsp-latency
+    agrees: true
+    outcome: blocked
+    reason: metadata_insufficient. Reasonable.
+    response: No change.
+  - claim: fig4j-eepsp-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Agreed.
+    response: No change.
+  - claim: fig5-connectivity-total
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed. Cell 15 says the first cell reads every file of DANDI:001751; cell 16 reads only the first file
+      of each session (files read 56 of 301). Cell 19 shows inconsistencies the record does not mention: 7 PC-to-PC connections
+      are typed Inh, and two rows'' projection disagrees with their channels (row 368 gives channels 4 to 1 against 4→3,
+      and row 1310 gives 6 to 3 against 8→5).'
+    response: No change of outcome. Cell 15 now says the first file of each session is read. The notebook prints the
+      PC-to-PC connections typed Inh and the rows whose projection label disagrees with their channels; the notes and
+      a metadata_error finding record them.
+  - claim: fig5-connectivity-by-type
+    agrees: true
+    outcome: blocked
+    reason: Now blocked, which is what its criterion says when the deposit has no annotation.
+    response: No change; the annotation inconsistencies are added to its result cell.
+  - claim: fig6-ven-subtype-morphology
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed.
+    response: No change.
+  - claim: fig6f-g-ven-subtype-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading matches both counts, but the qualitative split holds.
+    response: No change.
+  - claim: ven-subtypes-similar-physiology
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Cell 38 says the data do not support it at the paper's n. The resampling draws from the observed
+      groups, so it assumes the observed difference is the true one. That estimates power; it does not show the data
+      contradict the claim. The record's wording, the absence holds here only for lack of power, is fine.
+    response: No change of outcome. Cell 38 now says the absence holds only for lack of power and that the resampling
+      estimates power, not a contradiction of the claim.
+  - claim: fig8a-metabolite-gradient
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed.
+    response: No change.
+  - claim: fig8de-glycolytic-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed.
     response: No change.
