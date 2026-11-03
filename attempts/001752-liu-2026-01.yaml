@@ -1,0 +1,440 @@
+schema_version: 2
+id: 001752-liu-2026-01
+dataset:
+  archive: dandi
+  id: "001752"
+  version: 0.260825.0222
+  doi: 10.48324/dandi.001752/0.260825.0222
+paper: doi:10.1038/s41556-026-02009-4
+date: 2026-11-03
+entry: 001752-liu-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41654220323
+inputs:
+- what: Cell type of each NWB file of the dandiset (ephysio/data_ephy/rawdata_ephysio/metadata_PSC.csv), the
+    labels the Fig. 5 claims use, and the paper's per-cell PSC frequencies and amplitudes
+    (ephysio/data_ephy/sPSCs_Fig7ab.xlsx, ephysio/data_ephy/miniEPSCs_Fig7ab.xlsx), used only to check the
+    link and as the variant mEPSC labelling. From the paper's code.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
+- what: For the claims whose data are elsewhere, the code's per-cell tables (Patch-seq mapping results
+    mappingResults_neurons.csv and results_Ext_240415.csv, phase peak indices PeakIdx_Fig5e.xlsx, eEPSP
+    amplitudes sumData_StimWM.xlsx, the multi-patch connection annotation metadata_multiPatch.xlsx, the
+    sodium-current cell types metadata_outSideOutSodiumCurrentRec.csv, the normalized metabolomics table
+    VEN_Metabolism/Metabolic_data.xlsx) and the cluster numbers in morpho/Fig3f_plotCellTypesAIS_Cmp.m.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
+- what: Outside-out Na+ current recordings (35 patches), for fig4d-sodium-current.
+  source: DANDI:001750 version 0.260825.0222, doi 10.48324/dandi.001750/0.260825.0222
+- what: Patch-seq current-clamp recordings (247 of 462 files, those of the six subclasses and the VENs), with
+    the code's cell table ephysio/data_ephy/rawdata_ephysio/metaInfo_ephysio_patchSeq.csv at the commit above,
+    for fig2d-f-l23-it-tau-width and ven-subtypes-similar-physiology.
+  source: DANDI:001746 version 0.260825.0222, doi 10.48324/dandi.001746/0.260825.0222
+outcomes:
+- claim: psc-file-labels-link
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:psc-file-labels-link
+  notes: All 85 rows of metadata_PSC.csv name a file of the dandiset, and the table's experiment and subject
+    agree with every file's own metadata. Rows per experiment and cell type equal the Fig. 5b legend except
+    mEPSC VENs (7 rows against 8; the sheet's PC S02C0321 has no row and no file). Three parts fail. File
+    fwphyw (sIPSC, Cell_AS011 of session 201126) is named by no row, while 1s3ysck is named twice, as PC
+    20201126s5c11a and as VEN 20201126s5c11b. For mEPSC the sheet's cell type is the opposite of the table's
+    for all 15 matched cells; for the other experiments the types agree (19, 15 and 36 of 36). The
+    frequencies measured here correlate with the sheet's for mIPSC (Spearman rho 0.73) but not for mEPSC
+    (0.51, p 0.054), sEPSC (0.34) or sIPSC (0.19). In the low-noise sEPSC files of Mfa201023 the frequencies
+    are close to the sheet's (median ratio 0.77, amplitude ratio 1.08); in the noisier files of Mfa201126
+    and Mfa201030 they are 4.6 to 15 times the sheet's, so most of the disagreement is in detection, not in
+    which recording is which.
+  deviations:
+  - A link claim added by this attempt (protocol, author step 1.4); its criterion was written before the
+    analysis.
+- claim: fig5b-sepsc-frequency
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5b-sepsc-frequency
+  notes: The threshold readings the criterion names disagree, so the criterion blocks the claim. At 5 pA,
+    VEN 2.06 against PC 9.36 Hz (p = 0.029, 8 VEN and 11 PC entries; 10 distinct PCs p = 0.027). At the
+    recording's RMS noise (thresholds 0.9 to 8.2 pA), VEN 32.1 against PC 23.0 Hz (p = 0.090; 10 PCs
+    p = 0.146), VEN higher. The first 30 s split the same way. With three times the noise, a variant, VEN
+    2.82 against PC 3.57 Hz, p = 0.30. The 5 pA difference rests partly on noise, as 8 of the 11 PC rows
+    come from the noisier subject Mfa201126, where the 5 pA frequencies are 4.6 times the code's sheet;
+    within the low-noise subject Mfa201023 VENs are lower (0.98 against 3.02 Hz, 4 and 3 cells). The reading
+    the paper's text supports best is 5 pA, the number it prints; the criterion still blocks the claim when
+    the readings disagree. The question of the detection settings is for the paper's authors (finding).
+  deviations:
+  - Events are detected with a detector of miniAnalysis's scheme and standard parameters (helper docstring),
+    not with miniAnalysis; the paper gives only the 5 pA threshold.
+  - Cell types are the code's table metadata_PSC.csv; the files carry none.
+  - Whole deposited recordings are analysed (120 to 480 s); 14 of the 18 files are shorter than the 5 min
+    the Methods give as the minimum.
+- claim: fig5b-sipsc-frequency
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5b-sipsc-frequency
+  notes: Under neither threshold reading is the VEN median below the PC median. At 5 pA, VEN 19.9 against PC
+    15.4 Hz (p = 0.34 to 0.40 under the three assignments of file fwphyw). At the RMS noise, VEN 13.0 to 13.6
+    against PC 9.5 to 10.1 Hz (p = 0.0006 to 0.072). With three times the noise, a variant, VEN 1.88 against
+    PC 2.27 to 2.55 Hz (p = 0.23 to 0.54), lower but not significant. Events are outward, as the files are
+    described as held at +20 mV and their holding currents are positive. The 5 pA frequencies are 5 to 15
+    times the code's sheet values and the amplitudes 0.21 to 0.40 times, so the detection here does not
+    measure what the paper measured in these noisy recordings; the outcome may be a failure of this attempt.
+    The code's own sheet values give VEN 1.77 against PC 3.25 Hz (not used for the outcome).
+  deviations:
+  - Detector and labels as for fig5b-sepsc-frequency.
+  - The table gives PC 20201126s5c11a and VEN 20201126s5c11b the same file; three readings are run (the table
+    as it is, and fwphyw as either cell), and all give the same outcome.
+  - The files are held at +20 mV, not at -60 mV as the Methods state.
+- claim: fig5b-mepsc-frequency
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5b-mepsc-frequency
+  notes: With the table's labels, the dataset's, the VEN median is above the PC median under both readings
+    (5 pA, 0.92 against 0.69 Hz, p = 0.61; RMS, 28.4 against 24.9 Hz, p = 0.15), and over the first 30 s.
+    With the code sheet's labels, the variant, the order reverses (0.69 against 0.92 Hz) but is not
+    significant (p = 0.61). The two labellings are opposite for all 15 cells, so the claim turns on which is
+    right, which the dandiset cannot tell. 7 VENs and 8 PCs are in the dandiset, against 8 and 8.
+  deviations:
+  - Detector as for fig5b-sepsc-frequency.
+  - One VEN of the paper (sheet name S02C0321) is not in the dandiset.
+- claim: fig5b-mipsc-frequency
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5b-mipsc-frequency
+  notes: The threshold readings disagree. At 5 pA, VEN 1.23 against PC 2.35 Hz (p = 0.0074, 15 and 21
+    cells); at the RMS noise, 19.0 against 28.9 Hz (p = 0.24). Over the first 30 s at 5 pA, p = 0.075. With
+    three times the noise, a variant, VEN 2.18 against PC 3.68 Hz, p = 0.0005. VENs are lower in both
+    sessions at 5 pA (AS 1.51 against 2.49 Hz, HS 0.90 against 2.04 Hz). The frequencies here correlate with
+    the code's sheet (rho 0.73). As for sEPSC, the 5 pA reading is the one the paper prints, and the
+    criterion blocks the claim when the readings disagree.
+  deviations:
+  - Detector as for fig5b-sepsc-frequency. 22 of the 36 files end in runs of exact zeros, which are cut;
+    22 files are shorter than 5 min after the cut.
+- claim: fig5c-sepsc-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5c-sepsc-amplitude
+  measured: 0.23
+  notes: At 5 pA over the whole recording, VEN 8.20 against PC 8.51 pA (difference -0.31 pA), two-tailed
+    rank-sum p = 0.23 with the 11 PC entries (10 cells, p = 0.24). The variants differ, all with VEN smaller,
+    RMS threshold p = 0.015, first 30 s p = 0.035, three times the noise p = 0.019; the absence holds only
+    under the paper's test as the criterion fixes it. measured is the p-value.
+  deviations:
+  - Detector and labels as for fig5b-sepsc-frequency.
+- claim: fig5c-sipsc-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5c-sipsc-amplitude
+  measured: 0.082
+  notes: At 5 pA, whole recording, the table's labels as they are, VEN 11.8 against PC 14.4 pA, p = 0.082
+    (fwphyw as either cell, 0.072 and 0.094). RMS threshold p = 0.40 to 0.54, first 30 s p = 0.054 to 0.072,
+    three times the noise p = 0.34 to 0.40. The amplitudes are 0.21 to 0.40 times the code's sheet, so the
+    detection does not measure the paper's amplitudes in these recordings. measured is the p-value.
+  deviations:
+  - Detector and labels as for fig5b-sipsc-frequency.
+- claim: fig5c-mepsc-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5c-mepsc-amplitude
+  measured: 0.61
+  notes: VEN 8.55 against PC 7.81 pA at 5 pA, p = 0.61, with the table's labels; the sheet's labels give the
+    same p, and every variant has p of 0.39 or more. measured is the p-value.
+  deviations:
+  - Detector as for fig5b-sepsc-frequency; 7 VENs where the paper has 8.
+- claim: fig5c-mipsc-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig5c-mipsc-amplitude
+  measured: 0.46
+  notes: VEN 9.57 against PC 10.20 pA at 5 pA, p = 0.46; RMS p = 0.70, first 30 s p = 0.46, three times the
+    noise p = 0.35. measured is the p-value.
+  deviations:
+  - Detector as for fig5b-sepsc-frequency.
+- claim: scrna-classes
+  outcome: blocked
+  blocked_by: too_large
+  notes: The cell classes are in the processed scRNA-seq data, one 23 GB gzip-compressed tar on GEO
+    (GSE319557_AIC_scRNA_h5ad.tar.gz); GEO's other file (GSE319557_RAW.tar, 1.6 GB) holds count matrices
+    without labels, and the Zenodo processed data are 11.8 GB of split RAR archives. The tar must be
+    decompressed in sequence and an h5ad member held whole for random access, more than the 15 GB of memory
+    of this runner. Not attempted.
+- claim: scrna-78-types
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the scRNA-seq cluster labels, in the 23 GB GEO archive (see scrna-classes).
+- claim: scrna-no-sex-difference
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The criterion blocks the claim, as the test of Supplementary Fig. 3 was not in the text the claims
+    file was read from. The data are also in the 23 GB GEO archive (too_large, see scrna-classes). The
+    supplement is now under paper/ as PDFs, so a later reader could supply the test.
+- claim: patchseq-mapping
+  outcome: reproduced
+  assumed: true
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:patchseq-mapping
+  measured:
+  - 273
+  - 33
+  - 17
+  - 17
+  notes: From the code's mapping tables. 273 excitatory neurons (results_Ext_240415.csv) in 17 distinct
+    clusters; inhibitory, the 33 cells the code labels as interneurons, in 17 distinct clusters. All four
+    are within tolerance. The other reading of the inhibitory cells, every row of mappingResults_neurons.csv
+    outside the excitatory table, gives 35 neurons in 19 clusters, outside the tolerance of 17 types. No new
+    mapping of the Patch-seq reads was made.
+  deviations:
+  - Tested on the code's mapping results, not on the GEO reads the claim also names (re-mapping needs the
+    23 GB scRNA-seq reference).
+  - Assumed that the inhibitory neurons are those the code labels as interneurons (patchCellTypeIDs 0); the
+    tables do not say which numbering the inhibitory cluster numbers follow. A question for the paper's
+    authors (finding).
+- claim: ven-map-et-ct
+  outcome: reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:ven-map-et-ct
+  measured:
+  - 15
+  - 14
+  notes: In mappingResults_neurons.csv, the file the claim names, 30 cells are VENs, 15 in cluster 16 (L5 ET)
+    and 14 in cluster 8 (L5/6 CT), one in cluster 14; both counts are within tolerance and the VENs do not
+    map to one cluster. In results_Ext_240415.csv the 29 VENs split 14 and 15, as the paper says, by subtype
+    (VEN-Long in cluster 16, VEN-Short in cluster 8).
+  deviations:
+  - Cluster numbers 16 and 8 for L5 ET and L5/6 CT are the code's, from morpho/Fig3f_plotCellTypesAIS_Cmp.m.
+  - Tested on the code's mapping results, not on a new mapping of the GEO reads.
+- claim: fig2d-f-l23-it-tau-width
+  outcome: not_reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig2d-f-l23-it-tau-width
+  notes: From DANDI:001746, 247 cells read with no errors, features extracted as the Methods define them. L2/3
+    IT HPCAL1 has the lowest median tau (31.8 ms, n = 30; others 38.2 to 54.1 ms), but no pairwise difference
+    with it survives FDR (0.064 to 0.82). Its median AP half-width (2.10 ms) is not the lowest, IT RORB being
+    lower (1.92 ms); it is narrower than L5 IT FEZF2 and VEN (FDR 8e-05 each) but not than IT RORB, L5 ET or
+    L6 PC (FDR 0.62 to 0.78). Both readings of the criterion fail on AP width. Some AP detections are
+    implausible (half-widths 0.08 to 12 ms), so the outcome may be a failure of this attempt's extraction.
+  deviations:
+  - Features are this attempt's extraction (AP found by a 0 mV crossing, tau fits outside 0 to 600 ms
+    dropped, 21 sweeps in all), not the paper's PatchElectroLab values.
+  - Subclasses follow the code's Fig. 2d script (ephysio/Fig2D_ephyFeatCmp.m) on the code's cell table, which
+    gives 30, 21, 125, 29, 18 and 14 cells where the legend gives 30, 17, 119, 22, 16 and 13; tau of 1 ms or
+    less is dropped, as the script does.
+  - Benjamini-Hochberg is applied over the 15 pairs of each feature; the family is not stated.
+  - Each file is read into memory in one request (not to disk), as reading sweeps through remfile was about
+    100 times slower.
+- claim: ven-firing-rate-variability
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The criterion blocks the claim, as the measure of spike-timing variability and the values are in
+    Supplementary Tables 1 and 2, not in the text read. The recordings are in DANDI:001746 and could be
+    tested once a reader supplies the measure from the supplement, now under paper/ as PDFs.
+- claim: fig3c-ais-distance-length
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The table the claim names (morpho/dataMorph/AIScmp_PCvsVEN_Fig5c.xlsx) holds AIS length and distance
+    per cell type in four columns, with no slice or animal per cell, so the two-way ANOVA of the criterion
+    (cell type with slice, or with animal) cannot be formed.
+- claim: fig3e-phase-peak-index
+  outcome: reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig3e-phase-peak-index
+  notes: From the code's table PeakIdx_Fig5e.xlsx, with the code's rows. The VEN median, 0.117, is the lowest
+    of the six groups (others 0.223 to 0.338); Kruskal-Wallis H = 42.4, p = 4.9e-08; Dunn's test with
+    Bonferroni correction separates VENs from every PC type (adjusted p from below 1e-05 to 0.001).
+  deviations:
+  - Tested on the code's per-cell indices, not recomputed from DANDI:001746.
+  - The code's group sizes (30, 22, 122, 29, 17, 13, with one empty row in two groups) differ from the
+    Fig. 2 legend's n that the criterion cites (30, 17, 119, 22, 16, 13).
+- claim: fig4ac-ap-width-amplitude
+  outcome: blocked
+  blocked_by: other
+  notes: The 281 VENs and 306 PCs are not in DANDI:001746, which the claim names; its 462 files hold 68 VENs by
+    the code's table, and the paper names no other deposit for these recordings.
+- claim: fig4d-sodium-current
+  outcome: reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig4d-sodium-current
+  notes: From DANDI:001750, streamed. The peak inward current (largest over the steps -60 to 0 mV) is smaller
+    in VENs, median 23.0 pA (n = 14), than in PCs, 34.6 pA (n = 21), two-tailed rank-sum p = 0.0023. Reading
+    (b), density, gives the same p, as the files hold no capacitance and the Methods give one patch area. The
+    measure follows the code's per-cell max_Na_current (rho 0.97), which gives p = 0.0010.
+  deviations:
+  - Sweeps of a step are averaged, the current is referred to 2 to 0.2 ms before the step, smoothed over
+    0.1 ms, and its minimum taken in 0.1 to 3 ms after the onset; these windows are standard choices.
+  - Cell types are the code's table metadata_outSideOutSodiumCurrentRec.csv.
+  - Reading (b) uses the Methods' single patch area for all patches, as the files hold no capacitance.
+- claim: fig4i-peak-index-ais-distance
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The model half of the claim needs the NEURON model, whose hoc scripts the code's README places in
+    'modelling/', a folder not in the repository at the pinned commit (it holds only VEN_modeling/FigPlot
+    plotting scripts). The simulated traces are in the 11.8 GB Zenodo archive.
+- claim: fig4g-model-ais-distance-ap-shape
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs the NEURON model, not in the repository at the pinned commit (see fig4i-peak-index-ais-distance).
+- claim: fig4j-eepsp-latency
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The table the claim names (sumData_StimWM.xlsx) holds eEPSP amplitudes per pair and current but no
+    latencies, and the paper does not say which dandiset holds the raw eEPSP recordings.
+- claim: fig4j-eepsp-amplitude
+  outcome: reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig4j-eepsp-amplitude
+  notes: From the code's table (26 pairs at 0.5, 1 and 2 mA). VEN means are higher at each current (5.01
+    against 3.97, 10.57 against 5.84, 14.54 against 8.69 mV). Two-way ANOVA, cell type p = 0.0034 (the
+    paper's value), stimulation level p = 8e-05. With the interaction (p = 0.29) or pair as a block, cell type
+    stays significant.
+  deviations:
+  - Tested on the code's per-pair amplitudes, not on raw recordings.
+- claim: model-ven-fires-more
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs the NEURON model, not in the repository at the pinned commit (see fig4i-peak-index-ais-distance).
+- claim: fig5-connectivity-total
+  outcome: partially_reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig5-connectivity-total
+  measured:
+  - 1416
+  - 26
+  notes: The code's annotation of DANDI:001751 (metadata_multiPatch.xlsx) lists 1,416 tested pairs, within
+    the tolerance of 1,292, and 26 connections (14 excitatory, 12 inhibitory), outside the tolerance of 31.
+    The neuron count cannot be checked, as neurons are named only by recording channel.
+  deviations:
+  - Connections are the annotation's, not detected in the 7.0 GB of recordings.
+- claim: fig5-connectivity-by-type
+  outcome: partially_reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig5-connectivity-by-type
+  measured:
+  - 18
+  - 0
+  - 1
+  - 1
+  - 2
+  - 4
+  - 0
+  notes: Six of the eight connection counts match (VEN-to-VEN 0, PC-to-VEN 1, PC-to-IN 2, IN-to-PC 4,
+    VEN-to-IN 0, IN-to-VEN 0). PC-to-PC is 18 (paper 24) and VEN-to-PC is 1 (paper 0), a connection
+    annotated as excitatory and excellent from channel 4 to 6 of sub-Mfa190314_ses-190315s2_obj-1e6g6jn. The
+    tested-pair counts differ for every type (PC-to-PC 749 against 503, VEN-to-VEN 59 against 110).
+  deviations:
+  - As for fig5-connectivity-total; GABA in the annotation is read as IN.
+- claim: fig6-ven-subtype-morphology
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The table the claim names (morphFeatTables_PC_VENL_VENS.xlsx) codes cell types as numbers 1, 3, 4 and
+    5 with no key, and holds no basal dendritic field size; the code computes that from ASC reconstructions,
+    which are in the 11.8 GB Zenodo archive or on NeuroMorpho.org.
+- claim: fig6f-g-ven-subtype-mapping
+  outcome: blocked
+  blocked_by: too_large
+  notes: Mapping VEN subtypes to the scRNA-seq clusters and subclusters, and the subcluster COL24A1 POC5,
+    need the 23 GB scRNA-seq archive on GEO (see scrna-classes).
+- claim: fig6h-subtype-markers
+  outcome: blocked
+  blocked_by: too_large
+  notes: Differential expression needs the 23 GB scRNA-seq archive on GEO (see scrna-classes).
+- claim: ven-subtypes-similar-physiology
+  outcome: reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:ven-subtypes-similar-physiology
+  notes: From DANDI:001746, the 34 VENs the code's table names VEN_Long (18) or VEN_Short (16). AP half-width
+    VEN-L 3.33 against VEN-S 2.76 ms, p = 0.042, FDR 0.084; amplitude 88.1 against 91.4 mV, p = 0.10, FDR
+    0.10. Neither is significant at FDR 0.05.
+  deviations:
+  - 34 of the paper's 126 VENs (85 VEN-L, 41 VEN-S); the rest are in no deposit the paper names, so the test
+    has less power.
+  - Features as for fig2d-f-l23-it-tau-width.
+- claim: fig7c-tau-rna-distance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the 10x expression data (the 23 GB archive on GEO, see scrna-classes); tau is available from
+    DANDI:001746 (fig2d-f-l23-it-tau-width), the transcriptomic distances are not.
+- claim: fig8a-metabolite-gradient
+  outcome: partially_reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig8a-metabolite-gradient
+  measured:
+  - 179
+  - 85
+  notes: From the code's normalized table (558 identified metabolites, 6 AIC, 6 PrC and 7 V1 samples),
+    Welch's ANOVA and Games-Howell per metabolite. The gradient holds, about twice as many metabolites
+    differ AIC against V1 as AIC against PrC, but the counts are lower than the paper's under every reading,
+    raw values 179 and 85 (Games-Howell alone) or 175 and 84 (after Welch p < 0.05), log10 values 194 and 98
+    or 190 and 95, against 228 and 108. Only the log10 count against PrC is within tolerance. The table holds
+    558 metabolites where the paper reports 581.
+  deviations:
+  - Tested on the code's normalized table, not on the MetaboLights deposit the claim names.
+  - Whether the Games-Howell test is gated by the Welch ANOVA, and whether values are log-transformed, is
+    not stated; both are run.
+- claim: fig8de-glycolytic-bias
+  outcome: partially_reproduced
+  notebook: elsewhere_liu_2026.ipynb
+  output: claim:fig8de-glycolytic-bias
+  notes: Citrate is higher in AIC than V1 (Games-Howell p = 0.0005) and L-glutamic acid higher (p = 0.0001);
+    2-ketobutyrate is lower (mean 24.3 against 66.5) but not significantly (p = 0.18; log10 p = 0.086). The
+    gene-expression part of the statement is not tested.
+  deviations:
+  - As for fig8a-metabolite-gradient.
+findings:
+- kind: metadata_insufficient
+  statement: The NWB files carry no cell type (VEN or PC), the variable every Fig. 5 comparison needs. It is
+    given only in a table in the paper's code (metadata_PSC.csv); the cell_id in the files is not unique
+    within a session (three pairs share one).
+- kind: metadata_error
+  statement: In the code's table of deposited files, one sIPSC file (obj-1s3ysck) is given to two cells, PC
+    20201126s5c11a and VEN 20201126s5c11b, and the other file of that session's Cell_AS011 (obj-fwphyw) is
+    named by no row.
+- kind: code_mismatch
+  statement: For every mEPSC cell the code's table of deposited files (metadata_PSC.csv) gives the opposite
+    cell type to the code's analysis sheet (miniEPSCs_Fig7ab.xlsx, sheet mEPSC_sum), which the Fig. 5 script
+    reads. With the table's labels VENs have the higher mEPSC frequency; with the sheet's, the lower.
+- kind: data_missing
+  statement: The dandiset holds 15 mEPSC recordings (7 VENs and 8 PCs by the code's table) where the paper
+    reports 8 VENs and 8 PCs; the sheet's cell S02C0321 has no file.
+- kind: paper_inconsistency
+  statement: The Methods state that IPSCs were recorded at -60 mV with a CsCl internal; the spontaneous IPSC
+    files are described as held at +20 mV, hold positive currents of 107 to 979 pA and outward events, and the
+    code names them +20mV.
+- kind: format_error
+  statement: 22 of the 36 mIPSC files end in runs of exact zeros (6,795 to 30,167 samples, up to 30 s),
+    padding that is not data.
+- kind: other
+  statement: 44 of the 84 recordings are shorter than the 5 min the Methods give as the minimum recorded
+    after stabilization (sEPSC 14 of 18, sIPSC 8 of 15, mIPSC 22 of 36 after the padding); and the noise of
+    11 of 15 sIPSC and 2 of 18 sEPSC recordings exceeds the 5 pA the Methods give as the largest RMS noise.
+- kind: methods_unavailable
+  statement: For the authors. Which miniAnalysis settings (amplitude and area thresholds, baseline and peak
+    windows, filtering) detected the Fig. 5 events, and which stretch of each recording was analysed? The
+    Methods give only a 5 pA threshold, and with it a standard detector finds 4.6 to 15 times the sheet's
+    sEPSC and sIPSC events in the noisier recordings; the code's mIPSC sheet counts events over 30 s per cell.
+    The sEPSC and mIPSC frequency claims are blocked because a 5 pA threshold and one at the recording's RMS
+    noise give different outcomes.
+- kind: methods_unavailable
+  statement: For the authors. In the code's Patch-seq mapping tables, which rows are the 34 inhibitory
+    neurons and which cluster numbering do their predicted clusters follow? This attempt assumed the 33 cells
+    labelled as interneurons.
+- kind: code_mismatch
+  statement: The Fig. 8 legend and Results name Welch's ANOVA followed by the Games-Howell test; the code's
+    metabolomics notebook tests the plotted metabolites with Dunn's test (Holm correction), and its normalized
+    table holds 558 identified metabolites where the paper reports 581. With the named tests on that table, 179
+    metabolites differ between AIC and V1 and 85 between AIC and PrC, against 228 and 108.
+- kind: code_mismatch
+  statement: The code's annotation of the multi-patch dandiset (metadata_multiPatch.xlsx) lists 1,416 tested
+    pairs and 26 connections, including one VEN-to-PC connection, where the paper reports 1,292 pairs, 31
+    connections and no VEN-to-PC connection.
+- kind: code_mismatch
+  statement: The code's README places the NEURON model's hoc scripts in a 'modelling/' folder that the
+    repository at commit 44cd8a6 does not hold, so the model results (Fig. 4g-l) cannot be rerun.
