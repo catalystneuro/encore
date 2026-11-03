@@ -21,6 +21,14 @@ Where the parameters come from:
   reading of the paper: no filter is named in the Methods or the code. It is a variant, chosen after
   the readings were run, to see what measure the code table's values could come from; it decides
   nothing.
+- `bessel_hz` in max_inward (a zero-phase 4-pole Bessel low-pass, scipy sosfiltfilt) is also not a
+  reading of the paper, which names no filter. Bessel low-pass filters are what HEKA amplifiers
+  apply (2.9 and 10 kHz are common settings); the cut-offs 2.9, 5 and 10 kHz were fixed before
+  their results were seen, so unlike `smooth` they were not fitted to the code table. A standard
+  choice for a variant that decides nothing.
+- `win_ms` in max_inward overrides the reading's window with 0 to win_ms after onset. It is a
+  non-deciding variant: a Na+ current peaks within a few ms of the step, so a short window keeps
+  noise maxima late in the step out of the measure.
 - Cell types are not in the files; they come from the paper's code table
   metadata_outSideOutSodiumCurrentRec.csv (CELL_TABLE_URL), matched by NWB file name.
 """
@@ -34,7 +42,7 @@ import numpy as np
 import pandas as pd
 import remfile
 import requests
-from scipy import ndimage
+from scipy import ndimage, signal
 
 DANDISET = "001750"
 VERSION = "0.260825.0222"
@@ -110,10 +118,45 @@ def load_patch(asset_id):
                 location=f["general/intracellular_ephys/IntracellularElectrode/location"][()].decode(),
                 session_start=f["session_start_time"][0].decode() if f["session_start_time"].shape else f["session_start_time"][()].decode(),
                 keys_general=",".join(sorted(f["general"].keys())))
+    meta["text"] = file_text(f)
     f.close()
     digest = hashlib.sha1(np.ascontiguousarray(cur[0]).tobytes()).hexdigest()
     return dict(current=cur, command=cmd, sweeps=np.array(sweeps), reps=np.array(reps),
                 info=pd.DataFrame(info), meta=meta, digest=digest)
+
+
+def _txt(v):
+    if isinstance(v, bytes):
+        return v.decode()
+    if isinstance(v, np.ndarray):
+        return ";".join(_txt(x) for x in v.ravel())
+    return str(v)
+
+
+def file_text(f):
+    """Every value and attribute of the file outside the data series and the format specification,
+    as {path: text}, and the attributes of the series themselves (description, comments ...), each
+    distinct value once, so that a search for capacitance or resistance covers the whole file."""
+    out = {}
+
+    def visit(name, obj):
+        if name.startswith(("specifications", "acquisition/", "stimulus/")):
+            return
+        for k, v in obj.attrs.items():
+            if k != "object_id":
+                out[f"{name}@{k}"] = _txt(v)
+        if isinstance(obj, h5py.Dataset):
+            out[name] = _txt(obj[()])
+
+    f.visititems(visit)
+    for grp in ("acquisition", "stimulus/presentation"):
+        for k in f[grp]:
+            for sub in [f[grp][k]] + [f[grp][k][x] for x in f[grp][k]]:
+                for a, v in sub.attrs.items():
+                    if a not in ("object_id", "sweep_number"):
+                        key = f"{grp}/<series>{sub.name[len(f[grp][k].name):]}@{a}"
+                        out.setdefault(key, set()).add(_txt(v))
+    return {k: (";".join(sorted(v)) if isinstance(v, set) else v) for k, v in out.items()}
 
 
 def load_all(keep_reps=False):
@@ -154,15 +197,26 @@ def step_levels(command):
     return np.array(levels), np.array(onsets), np.array(offsets)
 
 
-def max_inward(mean, levels, onset, rate, reading, smooth=1):
+def lowpass(mean, rate, bessel_hz):
+    """Zero-phase 4-pole Bessel low-pass of traces [sweep, sample] (non-deciding variant)."""
+    sos = signal.bessel(4, bessel_hz, fs=rate, output="sos", norm="mag")
+    return signal.sosfiltfilt(sos, mean, axis=1)
+
+
+def max_inward(mean, levels, onset, rate, reading, smooth=1, bessel_hz=None, win_ms=None):
     """Largest peak inward current (absolute value, pA) under one reading (a, b, c), from the
     repetition-averaged traces [sweep, sample]. Returns the value, the step level (mV) and the
-    latency (ms) where it is found. smooth > 1 is the non-deciding variant (module docstring)."""
+    latency (ms) where it is found. smooth > 1, bessel_hz and win_ms are the non-deciding
+    variants (module docstring)."""
     a, b, c = reading
     if smooth > 1:
         mean = ndimage.uniform_filter1d(mean, smooth, axis=1)
+    if bessel_hz:
+        mean = lowpass(mean, rate, bessel_hz)
     pre = int(round(0.002 * rate))          # the cut starts 2 ms before onset (code's examples)
     win = int(round((0.020 if c == "c1" else 0.025) * rate))
+    if win_ms:
+        win = int(round(win_ms / 1e3 * rate))
     use = levels <= 0.5 if b == "b1" else np.ones(len(levels), bool)
     best, lev, lat = 0.0, np.nan, np.nan
     for j in np.flatnonzero(use):
@@ -175,14 +229,27 @@ def max_inward(mean, levels, onset, rate, reading, smooth=1):
     return best, lev, lat
 
 
-def measure_all(patches, smooth=1):
+def iv_curve(mean, levels, onset, rate, reading=("a2", "b1", "c1"), win_ms=None):
+    """Peak inward current (pA, inward positive, 0 when the trace never goes below the baseline)
+    and its latency (ms) at each step, under one reading's baseline and window, as a DataFrame
+    indexed by step level (mV)."""
+    rows = []
+    for j in range(len(levels)):
+        v, _, lat = max_inward(mean[j:j + 1], levels[j:j + 1], onset, rate,
+                               (reading[0], "b2", reading[2]), win_ms=win_ms)
+        rows.append(dict(level=float(levels[j]), peak=v, latency_ms=lat))
+    return pd.DataFrame(rows).set_index("level")
+
+
+def measure_all(patches, smooth=1, bessel_hz=None, win_ms=None):
     """Per patch, the maximal inward current under each reading (columns a1b1c1 ... a2b2c2), with the
     step level and latency of the maximum under the code's example reading a2 b1 c1."""
     rows = []
     for p in patches:
         r = dict(file=p["file"])
         for rd in READINGS:
-            v, lev, lat = max_inward(p["mean"], p["levels"], p["onset"], p["rate"], rd, smooth)
+            v, lev, lat = max_inward(p["mean"], p["levels"], p["onset"], p["rate"], rd, smooth,
+                                     bessel_hz, win_ms)
             r["".join(rd)] = v
             if rd == ("a2", "b1", "c1"):
                 r["level_mV"], r["latency_ms"] = lev, lat

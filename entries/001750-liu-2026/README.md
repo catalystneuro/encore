@@ -4,7 +4,8 @@ Tests the findings of [Liu et al. (2026)](https://doi.org/10.1038/s41556-026-020
 [DANDI:001750](https://dandiarchive.org/dandiset/001750/0.260825.0222), which holds 35 somatic
 outside-out patch recordings of Na+ currents from one macaque (Figure 4d). Cell types come from the
 paper's code table, as the files carry none. Two metabolomics claims are tested on MetaboLights
-MTBLS13927, and the eEPSP amplitude claim on a table in the paper's code repository.
+MTBLS13927, and the eEPSP amplitude, VEN subtype and phase peak index claims on tables in the paper's
+code repository.
 
 | Claim | Outcome |
 |---|---|
@@ -15,8 +16,10 @@ MTBLS13927, and the eEPSP amplitude claim on a table in the paper's code reposit
 | 228 metabolites differ between AIC and V1, 108 between AIC and PrC (MetaboLights) | Not reproduced |
 | Higher citrate and glutamate, lower 2-ketobutyrate in AIC than V1 (MetaboLights) | Partially reproduced |
 | eEPSP amplitudes higher in VENs than PCs (code repository table) | Reproduced |
+| VEN-L and VEN-S have similar AP width, AP amplitude and eEPSP amplitude (code repository tables) | Reproduced |
+| VENs have lower AP phase-plane peak indices than every PC type (code repository table) | Reproduced |
 | AIS distance and length, two-way ANOVA (code repository table) | Blocked: metadata insufficient |
-| 26 claims on other data (other dandisets, GEO, NeuroMorpho, models) | Blocked |
+| 24 claims on other data (other dandisets, GEO, NeuroMorpho, models) | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
