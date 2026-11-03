@@ -1,0 +1,29 @@
+# Questions from attempt 001750-liu-2026-01 (author-revise-1, 2026-11-03) about the claims file
+# claims/001750/10.1038-s41556-026-02009-4.yaml. Each is asked under docs/protocol.md, Author, step 1.6;
+# the attempt tests the claim as the file has it and shows the other reading as a variant.
+dandiset: "001750"
+paper: doi:10.1038/s41556-026-02009-4
+questions:
+- claim: fig4d-sodium-current-lower
+  also: [na-cell-table-link, model-na-ratio]
+  asked: 2026-11-03
+  question: The criterion's readings (a) baseline, (b) steps and (c) window all take the single most
+    negative sample of the repetition-averaged trace, sampled at 100 kHz, with no filter. In 10 of
+    the 35 deposited patches (6 of 14 VENs, 4 of 21 PCs) that sample is a brief biphasic transient
+    about 0.1 ms wide, not a Na+ current, and several maxima fall 5 to 19 ms after the step or at
+    -60 to -65 mV. Does the paper's "peak sodium current" allow a reading in which the trace is
+    low-pass filtered (or the peak taken within the first few ms of the step) before the peak is
+    taken, and should the criterion include such a reading among those it runs?
+  passage: Methods, Electrophysiological recording, "families of Na+ currents in response to a
+    series of depolarizing voltages ranging from -80 to 0 mV (25 ms) with 5-mV stepping were
+    recorded ... Currents were leak subtracted online with PatchMaster (HEKA) software and the data
+    were collected at a 100-kHz sample frequency"; Methods, Computational model, "peak sodium
+    current". The paper names no filter; Fig4d_plotNaCurrent.m reads stored maxima and plots
+    unfiltered example traces.
+  why: Under the criterion's eight readings the VEN median is lower but p < 0.05 only under the
+    two that keep the holding current (a1 b1), so the claim is blocked. With a 2.9 kHz Bessel
+    low-pass, or the window cut to 0 to 3 ms, every baseline-subtracted reading gives p < 0.05 (13
+    of 24 such variants in all, with the filter run once forward as an amplifier's), and 10 of the
+    24 give a VEN to PC ratio within the tolerance of model-na-ratio. These variants were run after the data were seen and decide nothing; if the
+    criterion included a filtered reading, fig4d-sodium-current-lower and model-na-ratio could
+    change outcome.

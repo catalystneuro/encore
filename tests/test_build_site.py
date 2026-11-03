@@ -62,7 +62,10 @@ def broken_links(root: Path) -> list[str]:
                 continue                                   # external
             path, _, fragment = href.partition("#")
             path = path.split("?")[0]
-            target = reach((page.parent / path).resolve() if path else page.resolve())
+            if path.startswith("/"):                       # from the site's root (the 404 page)
+                target = reach((root / path.lstrip("/")).resolve())
+            else:
+                target = reach((page.parent / path).resolve() if path else page.resolve())
             if target is None:
                 broken.append(f"{page.relative_to(root)}: {href}")
             elif fragment and target.suffix == ".html" and fragment not in ids.get(target, set()):
@@ -112,6 +115,29 @@ def test_pages_load_nothing_from_other_sites(built):
     for page in out.rglob("*.html"):
         text = page.read_text()
         assert "<script src=\"http" not in text and "<link rel=\"stylesheet\" href=\"http" not in text
+        assert site.BEACON_SRC not in text   # no analytics token was given
+
+
+def test_page_views_are_counted_only_on_the_published_site():
+    data = {"demo": False, "noindex": False, "analytics": "abc123"}
+    assert 'data-cf-beacon=\'{&quot;token&quot;: &quot;abc123&quot;}\'' in site.beacon(data)
+    assert site.beacon({**data, "analytics": ""}) == ""
+    assert site.beacon({**data, "noindex": True}) == ""
+    assert site.beacon({**data, "demo": True}) == ""
+
+
+def test_crawlers_get_the_sitemap_and_skip_the_previews(built):
+    _, out = built
+    robots = (out / "robots.txt").read_text()
+    assert "Disallow: /pr-preview/" in robots and f"Sitemap: {site.SITE_URL}sitemap.xml" in robots
+    assert site.robots({"demo": False, "noindex": True}) == "User-agent: *\nDisallow: /\n"
+
+
+def test_the_not_found_page_works_at_any_depth_and_is_not_indexed(built):
+    _, out = built
+    text = (out / "404.html").read_text()
+    assert '<meta name="robots" content="noindex">' in text
+    assert 'href="/assets/' in text and 'href="/datasets/"' in text
 
 
 def test_every_claim_has_an_anchor_on_its_dandiset_page(built):
@@ -181,7 +207,7 @@ def test_every_page_declares_the_favicon(built):
         if 'http-equiv="refresh"' in text:      # a redirect from where a page used to be
             continue
         href = re.search(r'<link rel="icon" href="([^"]+)"', text).group(1)
-        assert (page.parent / href).resolve().is_file(), page
+        assert ((out / href.lstrip("/")) if href.startswith("/") else (page.parent / href)).resolve().is_file(), page
 
 
 def test_findings_are_reached_from_the_dandisets_list(built):
