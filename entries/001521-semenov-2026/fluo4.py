@@ -31,7 +31,9 @@ Where the parameters come from:
   traces for the radii in `ROI_VARIANTS` are kept too, to show that the choice does not change
   a result.
 - The cell-free region is every pixel more than `BG_MARGIN` pixels from any detected object;
-  its median per frame is the background (a standard choice).
+  its median per frame is the background (a standard choice). As dim cells that the threshold
+  misses can sit in that region, the `BG_LOW_PERCENTILE` percentile of the same pixels is kept
+  as a variant background, for the main region size only.
 - The end-of-recording value is the mean of the last `END_FRAMES` frames (the claims' criterion,
   "a standard choice"); the peak is the largest value after the pulse.
 """
@@ -60,6 +62,7 @@ MIN_AREA = 400        # pixels; standard choice (a cell of radius 8 um is about 
 ROI_FRACTION = 0.7    # standard choice
 ROI_VARIANTS = (0.5, 1.0)  # other region sizes, to show that the choice does not change a result
 BG_MARGIN = 15        # pixels; standard choice
+BG_LOW_PERCENTILE = 10  # variant background, less affected by dim unsegmented cells
 SMOOTH_SIGMA = 2.0    # pixels, for detection only; standard choice
 END_FRAMES = 10       # claims' criterion
 
@@ -91,6 +94,14 @@ def parse_description(desc: str) -> dict:
     return {"stim_text": stim, "volts": volts, "n_pulses": n_pulses, "gap_mm": gap}
 
 
+def _text(group, key: str) -> str:
+    """A string dataset of an HDF5 group, or "" if absent."""
+    if key not in group:
+        return ""
+    v = group[key][()]
+    return v.decode() if isinstance(v, bytes) else str(v)
+
+
 def read_metadata(url: str) -> dict:
     """Everything a file holds except the image data."""
     with h5py.File(remfile.File(url), "r") as f:
@@ -99,6 +110,8 @@ def read_metadata(url: str) -> dict:
         out = {
             "session_id": f["general/session_id"][()].decode(),
             "subject_id": f["general/subject/subject_id"][()].decode(),
+            "subject_age": _text(f["general/subject"], "age"),
+            "subject_species": _text(f["general/subject"], "species"),
             "session_start": f["session_start_time"][()].decode(),
             "description": f["session_description"][()].decode(),
             "series_description": ts.attrs["description"],
@@ -146,6 +159,7 @@ def cell_traces(stack: np.ndarray, pulse_frame: int, fraction: float = ROI_FRACT
     far = ~ndi.binary_dilation(labels > 0, iterations=BG_MARGIN)
     flat = stack.reshape(stack.shape[0], -1)
     bg = np.median(flat[:, far.ravel()], axis=1)
+    bg_low = np.percentile(flat[:, far.ravel()], BG_LOW_PERCENTILE, axis=1)
     yy, xx = np.mgrid[:pre.shape[0], :pre.shape[1]]
     kept = cells[cells.kept].reset_index(drop=True)
     out = {}
@@ -153,9 +167,10 @@ def cell_traces(stack: np.ndarray, pulse_frame: int, fraction: float = ROI_FRACT
         F = []
         for _, c in kept.iterrows():
             roi = (yy - c.y) ** 2 + (xx - c.x) ** 2 <= (fr * c.radius_px) ** 2
-            F.append(flat[:, roi.ravel()].mean(1) - bg)
-        out[fr] = np.array(F).reshape(len(kept), stack.shape[0])
-    return out, bg, cells, far.mean()
+            F.append(flat[:, roi.ravel()].mean(1))
+        out[fr] = np.array(F).reshape(len(kept), stack.shape[0]) - bg[None]
+    raw_main = out[fraction] + bg[None]
+    return out, bg, cells, far.mean(), raw_main - bg_low[None], bg_low
 
 
 def delta_f(F: np.ndarray, pf: int):
@@ -174,13 +189,15 @@ def process(url: str) -> dict:
     with h5py.File(remfile.File(url), "r") as f:
         stack = f["acquisition/TimeLapseImaging/data"][:].astype(np.float32)
     pf = pulse_frame(meta)
-    Fs, bg, cells, bg_frac = cell_traces(stack, pf, ROI_FRACTION, ROI_VARIANTS)
+    Fs, bg, cells, bg_frac, F_bg_low, bg_low = cell_traces(stack, pf, ROI_FRACTION, ROI_VARIANTS)
     dF, F0 = delta_f(Fs[ROI_FRACTION], pf)
+    dF_bg_low = delta_f(F_bg_low, pf)[0]
     dF_roi = {fr: delta_f(Fs[fr], pf)[0] for fr in ROI_VARIANTS}
     whole = stack.reshape(stack.shape[0], -1).mean(1)
     pre_small = stack[:pf].mean(0).reshape(128, 4, 128, 4).mean((1, 3))
     meta.update({"pre_small": pre_small, "url": url, "pulse_frame": pf, "F0": F0, "dF": dF,
                  "dF_roi": dF_roi, "bg": bg,
+                 "dF_bg_low": dF_bg_low, "bg_low": bg_low,
                  "cells": cells, "bg_fraction": bg_frac, "frame_mean": whole,
                  "raw_min": int(stack.min()), "raw_max": int(stack.max())})
     return meta

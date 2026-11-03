@@ -20,9 +20,9 @@ reasoning and the differences from the paper's method.
 
 The files give generator voltages, not field strengths, so every Fig. 6 claim is run under two readings
 of the conversion; 3.9 V/cm per V, which fits the fields and group sizes of Fig. 6B, is adopted, and the
-outcomes above hold under both. Unpulsed cells lose 12 to 16% of their Fluo-4 signal over a recording
-(the raw cell signal, not the background), where the paper's Fig. 6A sham trace does not decline; this
-decides the "stays elevated" claim. In the train session the same cells
+outcomes above hold under both. Unpulsed cells lose 12 to 16% of their background-corrected Fluo-4
+signal over a recording; the raw cell signal falls by 7.5 to 8.7% while the background stays nearly flat,
+where the paper's Fig. 6A sham trace does not decline. This decides the "stays elevated" claim. In the train session the same cells
 were exposed at up to seven voltages, where the paper says each cell was tested once. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/001521-semenov-2026-01.yaml`](../../attempts/001521-semenov-2026-01.yaml).

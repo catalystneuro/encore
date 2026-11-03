@@ -25,15 +25,16 @@ outcomes:
   notebook: reproduce_semenov_2026.ipynb
   output: claim:fig6a-ca-entry-1000-1200
   notes: Under M1 (1000 and 1200 V/cm at 250 and 300 V) three of the four readings hold at both fields. The
-    end value (last 10 frames) is above the 0 V/cm group by 6.58 and 8.19% (Student's t-test p below 1e-8),
-    and the peak is above zero (2.30 and 5.35%, p below 1e-6) and above the 0 V/cm peak (p below 1e-5); the
+    end value (last 10 frames) is above the 0 V/cm group by 6.58 and 8.19% (Student's t-test p = 4.9e-09
+    and 3.0e-11), and the peak is above zero (2.30 and 5.35%, p = 3.3e-07 and 5.0e-07) and above the 0 V/cm
+    peak (p = 6.1e-06 and 1.9e-08); the
     group means at both fields exceed those at 650 V/cm or less (0 and 150 V, at most -10.26% for the end value
     and 0.55% for the peak). The end value against zero fails, as it is negative at both fields (-5.44 and
     -3.83%), with the sham at -12.02%. Under M2 (300 and 350 V) the same three readings hold. With fields of
     view as the unit, the peak less the same field of view's sham is 2.42% at 250 V (4 fields of view, p =
     0.0004) and 5.02% at 300 V (5, p = 0.0002). The end and peak readings compare later recordings with the
-    sham, which is always recorded first, while the decline of the signal slows with each recording (pre-pulse
-    slope -3.97% per min in the first recording, -0.41 to -1.46% per min in the fifth to seventh). The step
+    sham, which is always recorded first, while the decline of the signal is steepest in the first recording
+    (pre-pulse slope -3.97% per min in the first recording, -0.41 to -1.46% per min in the fifth to seventh). The step
     of dF at the pulse (5 frames after less 5 before), which this does not affect, is above the sham's at 250
     V (0.35 +- 0.17%, p = 0.025) and 300 V (1.78 +- 0.31%, p = 3.2e-07), but not at 150 or 200 V (p = 0.13
     and 0.10); at 250 V it is not above zero on its own (p = 0.058). So the entry at 1000 V/cm under M1 is
@@ -53,7 +54,8 @@ outcomes:
   - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
     of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background;
     the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of
-    0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+    0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile
+    of the cell-free pixels.
   - Every detected cell in every file is used, as the dataset does not say which cells the paper used.
   - The paper names no test for this panel; the claims file's readings (one-sample t-test or Student's t-test
     against 0 V/cm, end value or peak) are all run.
@@ -68,9 +70,10 @@ outcomes:
     background subtraction, while the cell-free background falls by 1.0%, so no choice of background region
     removes it. The paper's Fig. 6A shows the 0 V/cm mean trace rising to about +1% by 300 s, so these recordings
     or the processing behind the figure differ in a way the paper does not describe. Against the 0 V/cm group
-    the end value is higher by 6.6 and 8.2% under M1 (p below 1e-8), and less the same field of view's sham
-    trace it is 6.4 and 8.4% above zero (p below 1e-5), but these comparisons include the slowing of the decline
-    with recording order. The signal stays above that of unpulsed cells to the end of the 5 min, but not above
+    the end value is higher by 6.6 and 8.2% under M1 (p = 4.9e-09 and 3.0e-11), and less the same field of
+    view's sham trace it is 6.4 and 8.4% above zero (p = 7.3e-10 and 4.5e-11), but these comparisons include
+    the change of the decline with recording order. With a background taken as the 10th percentile of the
+    cell-free pixels the sham still falls to -11.3% and the end values stay negative (-5.06 and -3.51%). The signal stays above that of unpulsed cells to the end of the 5 min, but not above
     its own pre-pulse level, which is what the criterion tests. With other region sizes and end windows the
     end values move by less than 1% and stay negative at 250 and 300 V. The question of how the paper's traces
     handle the decline is for the authors (see findings).
@@ -87,7 +90,8 @@ outcomes:
   - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
     of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background;
     the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of
-    0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+    0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile
+    of the cell-free pixels.
   - Every detected cell in every file is used, as the dataset does not say which cells the paper used.
 - claim: fig6a-780-not-significant
   outcome: reproduced
@@ -101,8 +105,11 @@ outcomes:
     the sham peak p = 0.021); both comparisons include the slowing of the decline with recording order. The
     step of dF at the pulse against the 0 V/cm group, which detects 1000 and 1200 V/cm under M1 (p = 0.025
     and 3.2e-07), finds no increase at 780 V/cm under M1 (0.15 +- 0.16%, p = 0.10), and finds one under M2,
-    where 780 V/cm is 250 V (p = 0.025). Whether the criterion's test can stand for the paper's is asked of
-    a reader (questions/001521.yaml).
+    where 780 V/cm is 250 V (p = 0.025). The step is the only reading not confounded by recording order, but
+    it separates 1000 V/cm from the sham only barely (p = 0.025, and p = 0.058 against zero), and the steps
+    at 780 and 1000 V/cm under M1 do not differ (0.15 +- 0.16 and 0.35 +- 0.17%, p = 0.40), so it is weak
+    evidence for the absence at 780 V/cm. Whether the criterion's test can stand for the paper's is asked
+    of a reader (questions/001521.yaml).
   deviations:
   - The files give generator voltages and the paper field strengths, with no conversion in either. Two readings
     are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion),
@@ -116,7 +123,8 @@ outcomes:
   - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
     of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background;
     the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of
-    0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+    0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile
+    of the cell-free pixels.
   - Every detected cell in every file is used, as the dataset does not say which cells the paper used.
 - claim: fig6b-train-threshold
   outcome: not_reproduced
@@ -138,7 +146,13 @@ outcomes:
     and the cells in the M1 groups of the Fig. 6B fields). The figure's group sizes are close to the dataset's
     exposures, so the paper may have counted exposures as cells. Taking only the first train of each field
     of view, 9.1 to 18.2% respond at 200 V and 90.9 to 100% at 250 V (11 cells each). The end values carry
-    the decline of the sham signal (-15.7% in the train session) that the Fig. 6B traces do not show.
+    the decline of the sham signal (-15.7% in the train session) that the Fig. 6B traces do not show. These
+    numbers use the criterion's end window of 10 frames; with 5 frames and a region of 0.5 of the radius the
+    780 V/cm fraction under M1 and the rule above the largest of the lowest field is 27.9%, within tolerance,
+    but the higher fields reach 76.6 and 82.1%, not 90%. With a background taken as the 10th percentile of
+    the cell-free pixels, which dim unsegmented cells affect less (the background falls from 1.81 to 1.21 times
+    the corrected cell signal), the criterion is met in none of 12 combinations of conversion and rule (780
+    V/cm 2.9 to 23.5% under M1, 42.6 to 91.5% under M2; lower higher-field fraction at most 87.2%).
   deviations:
   - The files give generator voltages and the paper field strengths, with no conversion in either. Two readings
     are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion),
@@ -152,7 +166,8 @@ outcomes:
   - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
     of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background;
     the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of
-    0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+    0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile
+    of the cell-free pixels.
   - The cells were tested more than once in the dataset; all exposures are used, and the first exposure of
     each field of view is shown as a variant.
   - Reading (b), above 3 s.d. of the reference group, is run as above its mean plus 3 s.d. and, literally,
@@ -169,7 +184,9 @@ outcomes:
     measured gives the first reading, rule (a) against 0 V/cm under M1, 0 cells. Regions of 0.5 and 1.0 give
     1 cell (2.8%) under the same rule, the other five rules give 0 under M1, and M2 (200 V, 68 exposures) gives
     2 to 17 cells (2.9 to 25.0%). As the tests fail under both conversions and every rule, the outcome does
-    not rest on the choice. The end values carry the decline of the sham signal. In round 1 this claim was
+    not rest on the choice. The end values carry the decline of the sham signal. With a background taken as
+    the 10th percentile of the cell-free pixels the 650 V/cm mean is -7.37% under M1 and -1.54% under M2 (one-sided
+    p = 1.0 and 0.87 for above zero), and the count of 2 cells (5.9%) is met in none of 12 combinations. In round 1 this claim was
     blocked as methods_underspecified; the statement's tests are fully specified and fail, so it is not reproduced.
   deviations:
   - The files give generator voltages and the paper field strengths, with no conversion in either. Two readings
@@ -184,7 +201,8 @@ outcomes:
   - Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region
     of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background;
     the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of
-    0.5 and 1.0 of the radius and end windows of 5 and 20 frames.
+    0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile
+    of the cell-free pixels.
   measured:
   - 0
   - 0.0
@@ -400,9 +418,10 @@ findings:
     cannot be repeated.
 - kind: metadata_error
   statement: The dandiset's description and title describe only single 1-us pulses with recordings of 5 min
-    at 1 frame/s, but 42 of the 73 files are 60-pulse 6 Hz trains recorded for 3 min at 0.5 frame/s. Subjects
-    are fields of view of a cell line, yet each has an age of P1D, and the species is named 'Cricetulus griseus
-    - Cricetulus aureus' for NCBITaxon 10029 (Cricetulus griseus).
+    at 1 frame/s, but 33 of the 73 files are 60-pulse 6 Hz trains recorded for 3 min at 0.5 frame/s (the other
+    9 files of that session are shams). Subjects are fields of view of a cell line, yet each has an age of
+    P1D, and the archive's species summary names two species, 'Cricetulus griseus - Cricetulus aureus', for
+    the one taxon NCBITaxon 10029.
 - kind: methods_unavailable
   statement: Question for the authors. How were generator voltages converted to the field strengths of Fig.
     6, and was the same conversion used for single pulses and trains? 3.9 V/cm per V fits the fields and group
@@ -425,9 +444,10 @@ findings:
     of membrane conductivity, where Section 3.5 states about 2%.
 - kind: other
   statement: Each field of view was recorded first without a pulse and then at escalating voltages, and the
-    decline of the Fluo-4 signal slows with each recording (before the pulse, -3.97% per min in the first recording
-    of the single-pulse session and -0.41 to -1.46% per min in the fifth to seventh; -11.4% and -2.0 to -5.4%
-    per min in the train session). Field strength and recording order therefore go together, and comparisons
+    decline of the Fluo-4 signal is steepest in the first recording (before the pulse, -3.97% per min in the
+    first recording of the single-pulse session and -0.41 to -1.46% per min in the fifth to seventh, slowing
+    with each recording; -11.4% per min in the first recording of the train session and -2.0 to -5.4% per min
+    in later ones, without a steady trend). Field strength and recording order therefore go together, and comparisons
     with the sham, always recorded first, include part of this difference.
 verifications:
 - date: '2026-11-02'
@@ -639,4 +659,181 @@ verifications:
     reason: The archive version holds 73 NWB files in 15 subjects, each one Fluo-4 TimeLapseImaging series;
       there is no pulsed-laser FluoVolt or Di-8-ANEPPS imaging, and the dandiset title and description cover
       only Ca2+ uptake.
+    response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook with the conclusions and summary, the README and this record.
+    Report in transcripts/001521/verifier-2-report.md. In reply to its section 2, the notebook and record
+    now print and cite the p-values that were given as below a bound (4.9e-09 and 3.0e-11 against the sham),
+    the README states the 12 to 16% decline as the background-corrected dF and the raw decline as 7.5 to 8.7%,
+    the summary and data check say the decline is steepest in the first recording and has no steady trend
+    later in the train session, the train result is qualified to the 10-frame window with the 5-frame case
+    (27.9%, higher fields 76.6 and 82.1%) given, the guess about Fig. 5B is removed, the file count is corrected
+    to 33 trains and 9 shams in the train session, and outputs were added for the subject age and species
+    and for the six other dandisets that name the paper (archive metadata). In reply to its section 3, a
+    background taken as the 10th percentile of the cell-free pixels, less affected by dim unsegmented cells,
+    was added; it changes no outcome. No outcome changed and none is proposed.'
+  results:
+  - claim: fig6a-ca-entry-1000-1200
+    agrees: true
+    outcome: reproduced
+    reason: Under M1 three of four readings hold at both fields (end against sham, peak against zero, peak
+      against sham), and the means exceed those at 0 and 150 V; M2 gives the same. The step at the pulse shows
+      the 1000 V/cm entry is small (0.35 +- 0.17%, p = 0.058 against zero). Recording order is confounded
+      with voltage, which weakens every sham-referenced reading; only the step avoids it, and it is marginal
+      at 1000 V/cm. The p-values given as below 1e-8 are printed only as 0.000000.
+    response: Outcome kept. The p-values are now printed in scientific notation and cited (4.9e-09 and 3.0e-11
+      for the end value against the sham; 3.3e-07 and 5.0e-07, 6.1e-06 and 1.9e-08 for the peak). The text
+      on recording order now says the decline is steepest in the first recording, without claiming a steady
+      slowing in the train session.
+  - claim: fig6a-ca-sustained
+    agrees: true
+    outcome: not_reproduced
+    reason: The end values are -5.44 and -3.83% (M1), and +1.24% with p = 0.53 at 350 V (M2). This still rests
+      on the sham decline, which the paper's Fig. 6A does not show; it is correctly framed as a question for
+      the authors. Dim unsegmented cells sit in the cell-free region of several train fields of view.
+    response: Outcome kept. The p-values given as bounds are now printed and cited. A variant background (10th
+      percentile of the cell-free pixels) was added; the single-pulse sham still falls to -11.3% and the end
+      values at 250 and 300 V stay negative (-5.06 and -3.51%).
+  - claim: fig6a-780-not-significant
+    agrees: true
+    outcome: reproduced
+    reason: Formally only, as in round 1. The record now says the test cannot detect an increase and that the
+      outcome carries little information. The cell-32 sentence overstates the step variant's support. It is
+      not the only variant that separates 1000 and 1200 V/cm from the sham, it barely separates 1000 V/cm
+      (p = 0.025 against the sham, 0.058 against zero), and the steps at 780 and 1000 V/cm are not shown to
+      differ; it should be described as the only variant not confounded by recording order.
+    response: Outcome kept. The sentence is replaced; the step is now described as the only variant not confounded
+      by recording order and as weak evidence, the end and peak readings against the sham are named as also
+      separating the higher fields and finding an effect at 780 V/cm, and a test of the step at 250 against
+      200 V was added (p = 0.40). The question to a reader was extended with this.
+  - claim: fig6b-train-threshold
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion is met in 0 of 36 combinations; the 780 V/cm fraction is 2.9 to 22.1% (M1) and 44.7
+      to 78.7% (M2), and the higher-field minimum is at most 79.5%. "Under no reading is the fraction at 780
+      V/cm within 25.2 to 30.8%" holds for the 10-frame window; with 5 frames and region 0.5 it is 27.9%, though
+      the 90% condition fails there (76.6%). The background in the train session is 1.26 times the corrected
+      signal and dim cells sit in the cell-free region, which adds uncertainty to the train fractions.
+    response: Outcome kept. The sentence is now qualified to the 10-frame window and gives the 5-frame case
+      (27.9%, with 76.6% at 230 V and 82.1% at 250 V; 250 V added to the region and window table). The variant
+      background was added; the criterion is met in none of 12 combinations with it.
+  - claim: fig6b-650-weak-but-significant
+    agrees: true
+    outcome: not_reproduced
+    reason: M1 gives -9.17 +- 0.83%, one-sided p = 1 for above zero, and p = 0.20 against 70 V; M2 gives p =
+      0.27 against zero.
+    response: Outcome kept. With the variant background the 650 V/cm mean stays below zero under both conversions
+      and the count of 2 cells (5.9%) is met in none of 12 combinations.
+  - claim: fig5b-conductivity-calibration
+    agrees: true
+    outcome: partially_reproduced
+    reason: 1.33% (outside 2 +- 0.2) and 11.87% (inside 12 +- 1.2), matching its independent derivation. The
+      guess that "~2%" was probably read from Fig. 5B is speculation.
+    response: Outcome kept. The speculative sentence is removed.
+  - claim: fig1-pole-leakage-pattern
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: Outcome kept. The finding that six other dandisets name the paper now has an output; the notebook prints their archive metadata, each listing the paper's DOI as IsPublishedIn.
+  - claim: fig2a-fluovolt-saturation
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig2a-fluovolt-stable-within-set
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig2b-di8-decline-within-set
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig2cd-stable-then-drop
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig2c-1000-within-set-trend
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig3-dye-calibration
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig3-fluovolt-nonlinear
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig4a-fluovolt-maximum
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig4b-di8-maximum
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig4b-first-10-pulses
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig4b-cathodic-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig4c-equator-cosine
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig4d-short-pulses-same-limit
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig5a-gd-extends-anodic
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig5a-gd-cathodic-not-higher
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig5c-gd-reduces-conductivity
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig7a-test-pulse-cosine
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig7b-conditioning-sublinear
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig7b-test-pulse-recovery
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
+    response: No change needed.
+  - claim: fig7c-fast-resealing
+    agrees: true
+    outcome: blocked
+    reason: blocked as data_missing, unchanged from round 1.
     response: No change needed.
