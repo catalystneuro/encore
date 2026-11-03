@@ -47,26 +47,72 @@ outcomes:
   notes: The 800 annotated evaluation frames of Methods 15 and their human annotations are not in the
     dandiset, which holds only the identity-corrected AlphaTracker output of the competition videos.
 - claim: fig1i-hmmglm-decodes-behaviour
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: The labels and raw recordings are there. The 34 labelled files hold 965 trials of 280 bins at
-    20 Hz from 14 mice, against the expected 965 trials, 32 sessions and 13 mice (all within tolerance
-    if a session is a file). The model needs the multi-unit rates of the recording on the clock of the
-    labels, and that offset is in no file (the video_gap the description names). Estimated from the units'
-    responses to port entries, it is clear for 23 of the 34 labelled files; the raw recording itself is
-    offset from the sorted spikes by 5 to 28 s in most mPFC-LH files, and matches them at no offset in
-    3. The paper's HMM-GLM is MATLAB code (Tyelab/HMMGLM), which cannot be installed in the entry's locked
-    environment, and it was not ported in this run. Not run.
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:fig1i-hmmglm-decodes-behaviour
+  measured:
+  - 965
+  - 34
+  - 14
+  notes: On the 512 trials of the 17 files used, the 6-state HMM-GLM AUCs with the one-bin shift are 0.60
+    to 0.83 (median 0.774), all 9 above 0.5 (sign test p = 0.0039), above the GLM (median 0.541, rank-sum
+    p = 0.0003) and the 9 GLMs (median 0.539, p = 0.0003); GLM against 9 GLMs p = 0.627. Without the shift
+    the HMM-GLM median is 0.713 and p = 0.0009 against each. Crossings in either direction give the same
+    outcome (median 0.910). Random folds pass with the shift (p = 0.047) and fail without it (p = 0.233).
+    Rates z-scored per channel put the HMM-GLM below chance (median 0.475), as the code's learning rate
+    (1e-6) is set for counts. Leave-one-mouse-out (10 mice) gives 9 of 9 above 0.5 (p = 0.0039). On the
+    paper's own processed input the ported code gives HMM-GLM AUCs 0.79 to 0.98 against static medians
+    near 0.59 and meets every test. The labelled files hold 965 trials, 34 files and 14 mice (expected
+    965, 32 and 13, within tolerance if a session is a file); the paper's input holds 14 animals too.
+    The SVM is not run and the Kruskal-Wallis across five models is not judged.
+  deviations:
+  - 17 of the 34 labelled files (512 of 965 trials, 10 of 14 mice), those whose recording can be placed
+    on the behaviour clock (clear port-entry offset, within 10 s of the other clear files of that day
+    and cage, scaled spikes matching the recording, labels matching the port entries at r >= 0.3); the
+    offset is in no file. One of the 17 (20191029-chrimson2-2-2v3, 30 trials) peaks 8 s away from its
+    port-entry offset against the paper's processed input.
+  - Input computed from the raw ElectricalSeries as Methods 17 describe it ("applying a common reference
+    average and determining spikes using 4 standard deviations from the mean"; 70 time stamps of 200 ms),
+    with the 600 to 6,000 Hz band of Methods 11; mean and SD per channel over each 14 s trial window (the
+    span is not given; a standard choice).
+  - HMM-GLM as fixed by run_model.m and model_HMMGLM.m (github.com/Tyelab/HMMGLM at 3fc3567), ported line
+    by line to Python (hmmglm.py); its numerical guards are kept, and NaN scores are ignored in the AUC
+    as perfcurve does by default.
+  - Readings of the criterion run one at a time against the main one (negative crossings, counts, AUC
+    with the shift, contiguous folds in session order). They differ in outcome (z-scored rates fail; random
+    folds fail without the shift), so the outcome rests on counts and contiguous folds, which the paper's
+    processed input (uint16 counts per bin) and run_model.m (contiguous blocks) support. An assumption.
+  - Static decoders fitted by maximum likelihood (L-BFGS) with a ridge of 1e-4 on inputs scaled by the
+    training SD; the paper names no solver or regularisation.
+  - Folds in which a label is absent give no AUC for it and are left out of its mean over folds (2 folds
+    for resist).
+  assumed: true
 - claim: ed5j-six-states
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: Depends on fig1i-hmmglm-decodes-behaviour, blocked for the same reasons.
+  outcome: not_reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5j-six-states
+  notes: Held-out log-likelihood per trial (mean over 10 folds, SEM) on the input of fig1i-hmmglm-decodes-behaviour
+    is -154.8 for 1 state, -124.5 (4.4) for 2, then falls slowly to -126.1 (4.3) at 6 and -126.9 (4.2)
+    at 10. Reading (a) selects 2 and reading (b) selects 2. On the paper's input, run for 1, 6 and 10
+    states only, the values are -529.6, -126.5 and -127.6.
+  deviations:
+  - Input, files and code as in fig1i-hmmglm-decodes-behaviour (17 of 34 labelled files, 512 trials).
+  - States 1 to 10, as the criterion reads them; each with its own seed.
 - claim: ed5k-hmmglm-generalizes-across-rank
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: Depends on fig1i-hmmglm-decodes-behaviour, blocked for the same reasons. The labelled files hold
-    487 trials in files of relative dominants and 478 in files of relative subordinates (482 and 478 in
-    the legend).
+  outcome: not_reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5k-hmmglm-generalizes-across-rank
+  notes: Trials of files of relative dominants (299, 7 mice) and subordinates (213, 4 mice). With the
+    shift, dom to sub gives 8 of 9 AUCs above 0.5 (sign test p = 0.039), sub to dom 7 of 9 (p = 0.18;
+    AUCs 0.48 to 0.91), dom 10-fold and sub 10-fold 9 of 9 (p = 0.0039); without the shift sub to dom
+    is again 7 of 9 (p = 0.18). Not every combination passes. On the paper's input (its own rank per trial,
+    487 dom and 478 sub trials, the counts of the 34 labelled files here) both directions give 9 of 9
+    (p = 0.0039), so the difference comes from the input (fewer files and mice, and multi-unit counts
+    that differ from the paper's), not from the code.
+  deviations:
+  - Input, files and code as in fig1i-hmmglm-decodes-behaviour; 512 of the 965 trials (legend 482 dom
+    and 478 sub).
+  - The sub group holds 4 mice, so training on it rests on few animals.
 - claim: ed5b-rank1-wins-most
   outcome: reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
@@ -80,8 +126,8 @@ outcomes:
     12, 15 and 14. Of the 36 competitions whose outcome the labels give (34 from the file's own labels,
     2 from the competitor's), rank 1 won 10 of 11 (90.9%), rank 2 1 of 8 (12.5%), rank 3 4 of 9 (44.4%)
     and rank 4 5 of 8 (62.5%). There are no ties, so both readings agree, and the variants of the trial
-    rule (delivery at 0.49 s, switch as both mice in the window) give the same table. 17 competitions
-    have no labels.
+    rule (delivery at 0.49 s, switch as both mice in the window) give the same table; the switch variant
+    cannot differ, as labels change only on whole seconds. 17 competitions have no labels.
   deviations:
   - 36 of the 53 competitions could be decided; the 10 ephys files and 7 mPFC-LH files have no labels,
     of their own or of their competitor.
@@ -93,47 +139,57 @@ outcomes:
     was delivered 2 seconds after tone onset"); the files give 0.49 s, run as a variant with the same
     result.
 - claim: ed5c-rewards-not-different
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
   output: claim:ed5c-rewards-not-different
-  notes: Rewards (trials won) did not differ by the paired t-test. Over the 34 labelled files dominants
-    won 14.12 and subordinates 12.38 (mean difference 1.74, 95% CI -3.31 to 6.78, p = 0.505); over 20
-    sessions 14.35 and 12.15 (p = 0.498); with delivery at 0.49 s, p = 0.552. The second part of the claim,
-    the correlation of body weight difference with rewards won, could not be tested; the dandiset holds
-    no body weights. The outcome is that of the rewards part.
+  notes: Rewards (trials won) did not differ by the paired t-test. Over 20 sessions (main) dominants won
+    14.35 and subordinates 12.15 (mean difference 2.20, 95% CI -4.04 to 8.44, p = 0.498); over the 34
+    labelled files 14.12 and 12.38 (p = 0.505); with delivery at 0.49 s, p = 0.543. The second part of
+    the claim, the correlation of body weight difference with rewards won, could not be tested; no file
+    holds a body weight (the subject record has age, genotype, sex, species, strain, subject id and description,
+    and no description gives a weight). The rewards part holds and the other is untested.
   deviations:
   - The body weight correlation is not tested (data missing).
-  - Pairs are 34 files or 20 sessions, against the paper's 22 pairs; the paper's other counts (31 and
-    32 sessions, 965 trials in 32 sessions) are closer to files.
+  - Pairs are 20 sessions (main) or 34 files, against the paper's 22 pairs; the files count the two files
+    of 14 sessions as separate pairs, though they are two views of one session.
   - Trial winners as in ed5b-rank1-wins-most, from the Methods passage cited there.
 - claim: ed5d-subordinates-slower-latency
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
   output: claim:ed5d-subordinates-slower-latency
-  notes: In each file's own win trials, the latency from tone onset to the subject's port entry (0 when
-    in the port at onset) is longer for subordinates, median 1.47 against 1.01 s over 189 and 211 trials
-    (rank-sum p = 0.0196, KS p = 0.0036). Taking the first entry after onset for a mouse already in the
-    port gives 2.12 against 1.68 s (p = 0.0204). Readings from tone onset and from delivery differ by
-    a constant and give the same tests. From the hand-scored labels the direction is the same but the
-    rank-sum is not significant (1.55 against 1.17 s, p = 0.206; KS p = 0.027). Over mouse means the rank-sum
-    gives p = 0.055. 87 of 487 win trials have no port entry within 12 s or come from a file without port
-    entries.
+  notes: With each label trial set against the tone of the same index, subordinates enter the port later
+    in their win trials (median 1.47 against 1.01 s, 189 and 211 trials, rank-sum p = 0.0196, KS p = 0.0036;
+    next entry for a mouse already in the port, p = 0.0204). Leaving out the 12 files whose labels and
+    port entries agree at r below 0.3 or not at all gives p = 0.158 (1.40 against 1.28 s, 158 and 171
+    trials). With each file's best tone shift p = 0.0458, and with that shift and without the files below
+    r = 0.3 at it p = 0.375 (1.48 against 1.38 s, 166 and 185 trials; KS p = 0.067). From the hand-scored
+    labels, which need no alignment, p = 0.206 over all win trials and 0.16 over the trials of the main
+    test; over mouse means p = 0.055 (entries) and 0.059 (labels). Subordinates are slower in every reading,
+    but the rank-sum is below 0.05 only in the readings that keep the files whose labels and entries disagree.
   deviations:
-  - 400 win trials with port entries, against the paper's 326 dom and 358 sub trials.
+  - Win trials and their port entries are aligned through the labels; in 18 labelled files the labels
+    hold fewer trials than tones and in several the label trials start at a later tone, which no file
+    records. The outcome takes the reading that sets aside trials whose labels cannot be placed on the
+    port entries (best tone shift, files at r >= 0.3); an assumption, since the paper does not say how
+    its latencies were matched to trials.
+  - 400 win trials with port entries in the main reading (351 in the outcome's reading), against the paper's
+    326 dom and 358 sub trials.
   - How a mouse already at the port at onset is counted is not given; both readings (0, or its next entry)
     are shown and agree.
   - The legend's one-way RM-ANOVA is not judged, as the criterion says.
+  assumed: true
 - claim: ed5e-port-occupancy-not-different
   outcome: reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
   output: claim:ed5e-port-occupancy-not-different
-  notes: Percent of the 10 s tone labelled in the port did not differ by relative rank; dominants 25.19%
-    and subordinates 20.72% over 34 files (mean difference 4.47, 95% CI -4.34 to 13.28, paired t-test
-    p = 0.327), 26.37% and 20.23% over 20 sessions (p = 0.284).
+  notes: Percent of the 10 s tone labelled in the port did not differ by relative rank; dominants 26.37%
+    and subordinates 20.23% over 20 sessions (main; mean difference 6.14, 95% CI -4.79 to 17.08, paired
+    t-test p = 0.284), 25.19% and 20.72% over 34 files (p = 0.327).
   deviations:
   - Occupancy is from the hand-scored position labels (self in port, other in port), not from AlphaTracker
     distance.
-  - 34 files or 20 sessions, against the paper's 31 sessions.
+  - 20 sessions (main) or 34 files, against the paper's 31 sessions; the files count the two views of
+    14 sessions as separate pairs.
 - claim: ed5f-dominants-displace-more
   outcome: reproduced
   notebook: reproduce_padilla_coreano_2022.ipynb
@@ -141,8 +197,7 @@ outcomes:
   notes: Over the 13 sessions where both mice's files are labelled and both pushed, dominants displaced
     the competitor in 91.7% of their pushes and subordinates in 60.2% over the labelled bins (mean difference
     31.5 points, 95% CI 13.5 to 49.6, paired t-test p = 0.0051), and 93.4% against 56.5% during the tone
-    (p = 0.0013). Reading each mouse's pushes from its own file or from its competitor's gives the same
-    numbers.
+    (p = 0.0013).
   deviations:
   - '"Whole competition" is the labelled bins (-2 to +12 s of each trial); the labels do not cover the
     intertrial intervals.'
@@ -474,7 +529,8 @@ findings:
     and labels is in no file, though the dandiset description says a video_gap variable holds it. Estimated
     from the units' responses to port entries it is 4 to 45 s, differing by session (294 s in one file),
     and it cannot be estimated for the 10 ephys files, which have no port entries, or for 12 of the 38
-    files with them. No analysis aligning spikes to the task can rely on the files alone.
+    files with them. An analysis aligning spikes to the task can rely on the files alone only where the
+    port entries give a clear offset (23 of the 34 labelled files).
 - kind: metadata_insufficient
   statement: Every one of the 5,879 Klusta clusters is labelled unsorted, where the paper analyses 998
     manually curated cells. The quality column exists but no cluster carries a curation label, so the
@@ -516,3 +572,461 @@ findings:
   statement: The 34 labelled files hold 965 trials from 14 mice, the size of the paper's HMM-GLM dataset
     (965 trials, 32 sessions, 13 mice), and the 53 files hold the 53 competitions of ED Fig. 5b (12, 11,
     15 and 15 per rank against 12, 12, 15 and 14).
+- kind: selection_undocumented
+  statement: In 18 of the 34 labelled files the labels hold fewer trials than the file has tones, and
+    nothing says which tones were scored. Against the port entries, several files match only when the
+    label trials start at a later tone (20200122-BLA2-1-1v4 at r = 0.76 from the third tone, against -0.02
+    from the first), and in others no start gives a clear match.
+- kind: other
+  statement: The paper's processed HMM-GLM input (Tyelab/HMMGLM) matches the dandiset's labelled trials
+    (for the 512 trials used for the HMM-GLM, median label agreement with the best-matching trial 0.91,
+    against 0.70 for the second best), and against it the spikes of all 34 labelled files peak at one
+    offset, which agrees within 1 s with the port-entry offset in 20 of the 23 files where both are clear.
+    So the missing video_gap can be recovered for the labelled files from the paper's own input; the files
+    alone give it for 23.
+- kind: code_mismatch
+  statement: The paper's processed HMM-GLM input holds 14 animals (trial2animal), where Methods 17 says
+    13 mice; its 965 trials and its rank per trial (487 dom, 478 sub) match the 34 labelled files of the
+    dandiset, where the ED Fig. 5k legend gives 482 dom trials.
+inputs:
+- what: The paper's HMM-GLM code (run_model.m, model_HMMGLM.m), ported to hmmglm.py
+  source: https://github.com/Tyelab/HMMGLM at commit 3fc3567815b9c891402635664a844320136d2fac
+- what: The paper's processed HMM-GLM input (dataset_forHMMGLM_proc.mat), a variant input and a check
+    of the alignment only
+  source: https://github.com/Tyelab/HMMGLM at commit 3fc3567815b9c891402635664a844320136d2fac
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive metadata and tested
+    the helper functions on synthetic label arrays. It gave its own outcome for each claim; it differed
+    from the record on ed5c-rewards-not-different (partially reproduced) and on the three HMM-GLM claims
+    (not attempted, testable in part), and called ed5d-subordinates-slower-latency fragile.
+  results:
+  - claim: fig1b-dominants-more-rewards
+    agrees: true
+    outcome: blocked
+    reason: All 53 NWB files are implanted mice (cohorts ephys, chrimson, BLA). The unimplanted cohort
+      is not in the archive.
+    response: No change needed.
+  - claim: fig1c-port-pushing-displacement
+    agrees: true
+    outcome: blocked
+    reason: All 53 NWB files are implanted mice (cohorts ephys, chrimson, BLA). The unimplanted cohort
+      is not in the archive.
+    response: No change needed.
+  - claim: ed1d-pushing-success
+    agrees: true
+    outcome: blocked
+    reason: All 53 NWB files are implanted mice (cohorts ephys, chrimson, BLA). The unimplanted cohort
+      is not in the archive.
+    response: No change needed.
+  - claim: ed1g-distance-by-outcome-not-rank
+    agrees: true
+    outcome: blocked
+    reason: All 53 NWB files are implanted mice (cohorts ephys, chrimson, BLA). The unimplanted cohort
+      is not in the archive.
+    response: No change needed.
+  - claim: fig1e-alphatracker-precision
+    agrees: true
+    outcome: blocked
+    reason: No annotated evaluation frames. The archive holds only 53 NWB files and 52 mp4 videos.
+    response: No change needed.
+  - claim: fig1i-hmmglm-decodes-behaviour
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked: other (not attempted, testable in part). The notebook''s reason, "not runnable",
+      is not one of the allowed reasons and no cell explains it. The input is present: the raw 32-channel
+      signal in every file, from which the Methods 17 multi-unit rates are derived (sorted units are not
+      needed). The labels match the paper''s 965 trials (487 dom and 478 sub trials, against the expected
+      482 and 478). The behaviour-to-neural offset is estimable in 23 of the 34 labelled files. The 52
+      behaviour videos are never used; the LED in the video is a direct substitute for the missing video_gap
+      (problems 1 and 2).'
+    response: 'Tested. The paper''s HMM-GLM code is ported to hmmglm.py and checked on the paper''s processed
+      input (it reproduces Figure 1i there). Multi-unit counts are computed from the raw signal of the
+      17 labelled files whose offset can be placed (512 trials, 10 mice), with checks against the spikes
+      and against the paper''s input. Outcome reproduced, assumed (counts and contiguous folds). The video
+      LED was not used: it places the tone in the video, which the labels already are on, and does not
+      give the offset between video and logger (said in the notebook).'
+  - claim: ed5j-six-states
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked: other (not attempted, testable in part). The notebook''s reason, "not runnable",
+      is not one of the allowed reasons and no cell explains it. The input is present: the raw 32-channel
+      signal in every file, from which the Methods 17 multi-unit rates are derived (sorted units are not
+      needed). The labels match the paper''s 965 trials (487 dom and 478 sub trials, against the expected
+      482 and 478). The behaviour-to-neural offset is estimable in 23 of the 34 labelled files. The 52
+      behaviour videos are never used; the LED in the video is a direct substitute for the missing video_gap
+      (problems 1 and 2).'
+    response: Tested on the same input as fig1i-hmmglm-decodes-behaviour, 1 to 10 states. Both readings
+      select 2 states; outcome not_reproduced.
+  - claim: ed5k-hmmglm-generalizes-across-rank
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked: other (not attempted, testable in part). The notebook''s reason, "not runnable",
+      is not one of the allowed reasons and no cell explains it. The input is present: the raw 32-channel
+      signal in every file, from which the Methods 17 multi-unit rates are derived (sorted units are not
+      needed). The labels match the paper''s 965 trials (487 dom and 478 sub trials, against the expected
+      482 and 478). The behaviour-to-neural offset is estimable in 23 of the 34 labelled files. The 52
+      behaviour videos are never used; the LED in the video is a direct substitute for the missing video_gap
+      (problems 1 and 2).'
+    response: Tested on the same input as fig1i-hmmglm-decodes-behaviour. Training on subordinates' trials
+      (4 mice) and testing on dominants' gives 7 of 9 labels above chance (sign p = 0.18); outcome not_reproduced.
+      On the paper's input both directions pass, shown as a variant.
+  - claim: ed5b-rank1-wins-most
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: rank 1 won the highest share (90.9%), the same under both tie readings and all variants.
+      Competitions per rank are 12/11/15/15 against 12/12/15/14 expected, all within tolerance. 17 of
+      53 files have no result, but even in the worst case rank 1 (10 of 12, 83.3%) still beats rank 4
+      (12 of 15, 80%). The two switch rules in trial_outcomes give identical counts, because labels change
+      only on whole seconds (problem 8).'
+    response: Outcome kept. The notebook now says that the switch variant cannot differ from the main
+      rule, as labels change only on whole seconds.
+  - claim: ed5c-rewards-not-different
+    agrees: false
+    outcome: partially_reproduced
+    reason: The rewards part is a claim of absence and holds (paired t p = 0.505 over files, 0.498 over
+      sessions; >= 0.05 under every variant). The body-weight correlation was not tested; the asset metadata
+      has no weights. "Body weights are not in the dandiset" is stated without any output; the files'
+      own subject records were not shown (problem 4). Reading (a) double-counts sessions, treating both
+      files of the 14 two-file sessions as separate pairs (problem 6).
+    response: 'Outcome changed to partially_reproduced, as the verifier gives it: one part holds and the
+      other cannot be tested. Added a data-check cell that prints every subject field of all 53 files
+      (age, description, genotype, sex, species, strain, subject_id; no weight) and the file tree of one
+      file per cohort. Sessions (n = 20, p = 0.498) are now the main reading and files a variant.'
+  - claim: ed5d-subordinates-slower-latency
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (fragile). Rank-sum p = 0.0196 from port entries, but label trial j is taken as
+      tone j and files whose entries barely agree with their labels are kept (chrimson1-1-1v2 r = -0.03,
+      BLA2-1-1v4 -0.02, BLA2-4-3v4 0.01, BLA1-3-3v4 0.12, BLA2-3-3v4 0.18). The label-based latency, which
+      needs no such alignment, does not meet the criterion (p = 0.206), and the per-mouse test gives p
+      = 0.055. At p = 0.02 the outcome could flip if these files were excluded (problem 3).
+    response: Ran the three analyses the verifier asked for. Label-based latency on the trials of the
+      main test, p = 0.16. Entry-based latency without the files below r = 0.3, p = 0.158. A scan of tone
+      shifts for files with fewer label trials than tones (new data-check cell) finds later starts in
+      several files; with each file's best shift p = 0.0458, and with that shift and without the files
+      below r = 0.3 p = 0.375. Outcome changed to not_reproduced, assumed, since the effect is significant
+      only when misaligned trials are kept.
+  - claim: ed5e-port-occupancy-not-different
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: paired t p = 0.327 over files, 0.284 over sessions, both >= 0.05. Reading (a) double-counts
+      sessions (problem 6); for claims of absence this works against the claim, so it is conservative.'
+    response: Outcome kept. Sessions are now the main reading (p = 0.284) and files a variant.
+  - claim: ed5f-dominants-displace-more
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34: dom higher. Whole competition p = 0.0051, tone p = 0.0013, n = 13 sessions (the
+      paper has 32 and 31). The "competitor''s view" reads the same bins as the pusher''s view and gives
+      identical numbers (problem 8). "Whole competition" is only the labelled -2 to +12 s of each trial,
+      and n = 13 against the paper''s 32 (problem 9).'
+    response: Outcome kept. Removed the competitor's-view variant, which tested nothing new. The labelled-bins
+      reading of "whole competition" and the 13 sessions were already deviations and stay so.
+  - claim: ed5g-time-displaced-not-different
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: paired t p = 0.359 (tone only, p = 0.512), >= 0.05.'
+    response: No change needed.
+  - claim: fig2a-win-lose-segregated-before-cue
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed6d-alignment-lower-dominants
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig2b-subordinates-longer-trajectories
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig2b-subordinates-larger-variance
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed6c-rate-of-change-dominants-win
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed6b-intermediates-relative-rank
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed6ef-port-entry-trajectories
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed7b-distance-by-trial-type-not-rank
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). There is no port location, the poses do not say
+      which mouse is the subject, and poses are entirely missing in 22 of 43 files. A partial route exists
+      but was not tried: the port location could be estimated from poses during the subject''s port entries
+      in the 21 chrimson files with poses, and the subject identified by the dye pattern in the videos.
+      Without the hand-marked port location the block is defensible (problem 7).'
+    response: 'Block kept. The partial route was not tried: it needs the subject identified in the videos
+      by its dye pattern, which no file records and which reading the videos would have to establish by
+      hand, and a port location estimated from the poses, which is not the paper''s hand-marked one.'
+  - claim: ed7c-distance-correlation-not-rank
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed7de-trajectories-close-far
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed7f-trajectories-without-place-cells
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed7hij-random-halves-no-group-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig2c-svm-decodes-rank-and-outcome
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig2c-predicts-before-trial
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed8bc-outcome-generalizes-dom-to-sub
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed8d-outcome-winner-loser
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed8e-relative-rank-intermediates
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed8fgh-absolute-rank
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The alone part of ed8fgh
+      is also data_missing. The verifier asked for the full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed8ij-alone-vs-competition
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No alone trials: tone tables start at 60 s with the competition
+      schedule, and spike-to-entry offsets are only seconds. These claims would also be blocked by the
+      unit-curation problem.'
+    response: No change needed. The file contents cell shows no alone or epoch table in any cohort.
+  - claim: fig2e-alone-vs-competition-trajectories
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No alone trials: tone tables start at 60 s with the competition
+      schedule, and spike-to-entry offsets are only seconds. These claims would also be blocked by the
+      unit-curation problem.'
+    response: No change needed. The file contents cell shows no alone or epoch table in any cohort.
+  - claim: fig3a-functional-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig3b-win-trials-larger-sub-excitation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig3c-tone-port-entries
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig3d-iti-port-entries
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: ed9b-alone-no-rank-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No alone trials: tone tables start at 60 s with the competition
+      schedule, and spike-to-entry offsets are only seconds. These claims would also be blocked by the
+      unit-curation problem.'
+    response: No change needed. The file contents cell shows no alone or epoch table in any cohort.
+  - claim: ed9cd-self-entry-cells-competition
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: metadata_insufficient (accept). The files hold 5,879 clusters, all labelled "unsorted",
+      against the paper''s 998 curated cells. No rate rule comes near 998. Spike times are wrongly scaled
+      (x1.5) and offset from behaviour by an unknown amount in each session. The verifier asked for the
+      full column list of the units table.'
+    response: Block kept. The data check now prints the units table columns (cluster_id, quality, spike_times)
+      and the quality labels of all 53 files (only "unsorted"). The header table now counts 22 single-unit
+      claims.
+  - claim: fig4a-ex-vivo-latency
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
+      The notebook never shows a file''s contents to back this up (problem 5).'
+    response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
+      intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
+      columns; there is no stimulus, optogenetic or light-pulse series.
+  - claim: fig4b-phototagged-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
+      The notebook never shows a file''s contents to back this up (problem 5).'
+    response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
+      intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
+      columns; there is no stimulus, optogenetic or light-pulse series.
+  - claim: fig4b-lh-stronger-reward-excitation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
+      The notebook never shows a file''s contents to back this up (problem 5).'
+    response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
+      intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
+      columns; there is no stimulus, optogenetic or light-pulse series.
+  - claim: ed10c-lh-responsive-proportions
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
+      The notebook never shows a file''s contents to back this up (problem 5).'
+    response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
+      intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
+      columns; there is no stimulus, optogenetic or light-pulse series.
+  - claim: fig4d-lh-stimulation-dominance
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
+      The notebook never shows a file''s contents to back this up (problem 5).'
+    response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
+      intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
+      columns; there is no stimulus, optogenetic or light-pulse series.
+  - claim: ed10ek-no-other-behaviour-effects
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked: data_missing (accept). No ex vivo data, no light pulses and no ChR2 or eYFP cohort.
+      The notebook never shows a file''s contents to back this up (problem 5).'
+    response: Block kept. Added a data-check cell that lists every group and dataset under acquisition,
+      intervals, processing, stimulus, general, units and analysis of one file per cohort, with table
+      columns; there is no stimulus, optogenetic or light-pulse series.

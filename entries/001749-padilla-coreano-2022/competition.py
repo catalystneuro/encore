@@ -107,12 +107,14 @@ def load_file(a: dict) -> dict:
     f = open_nwb(a["url"])
     meta = parse_name(a["path"])
     desc = f["general/subject/description"][()].decode()
+    subj = {k: (v[()].decode() if isinstance(v[()], bytes) else v[()]) for k, v in f["general/subject"].items()
+            if isinstance(v, h5py.Dataset)}
     m1, m2 = RANK.search(desc), OTHER_RANK.search(desc)
     r = dict(meta, path=a["path"], subject_id=f["general/subject/subject_id"][()].decode(), description=desc,
              session_start=f["session_start_time"][()].decode(),
              pair_in_dataset=f["general/lab_meta_data/session_pairing/pair_in_dataset"][()].decode(),
              rank=int(m1.group(2)), desc_animal=int(m1.group(1)), other_rank=int(m2.group(2)), desc_other=int(m2.group(1)),
-             video=f["acquisition/BehaviorVideo"].attrs["description"])
+             video=f["acquisition/BehaviorVideo"].attrs["description"], subject=subj)
     es = f["acquisition/ElectricalSeries"]
     r["es_shape"] = es["data"].shape
     r["es_rate"] = float(es["starting_time"].attrs["rate"])
@@ -352,6 +354,111 @@ def clock_checks(a: dict, raw_t0: float = 300.0, lags: np.ndarray | None = None)
         sc2 = event_lag_scan(units, cs, lags, w=40)
         out.update(cs_at_pe_lag=float(sc2[j]), cs_p99=float(np.percentile(sc2, 99)))
     return out
+
+
+def tone_shift_scan(r: dict) -> np.ndarray:
+    """Correlation of the "self in port" labels with the port entries, label trial j taken as tone j + k.
+
+    One value per k = 0 .. (tones - label trials). Used to find which tones the label trials of a
+    file belong to when it has fewer label trials than tones.
+    """
+    tb = np.arange(r["labels"].shape[1]) / LABEL_HZ + LABEL_START_S
+    lab = np.isin(r["labels"], SELF_IN).astype(float)
+    s, e = r["pe_start"], r["pe_stop"]
+    out = []
+    for k in range(len(r["cs"]) - len(lab) + 1):
+        t = r["cs"][k:k + len(lab), None] + tb
+        i = np.searchsorted(s, t, side="right") - 1
+        occ = ((i >= 0) & (t < e[np.clip(i, 0, None)])).astype(float)
+        out.append(np.corrcoef(lab.ravel(), occ.ravel())[0, 1] if occ.std() > 0 else np.nan)
+    return np.array(out)
+
+
+# ---------------------------------------------------------------- multi-unit rates (Methods 17)
+
+MUA_BIN_S = 0.2       # Methods 17: 70 time stamps of 200 ms
+MUA_N_BINS = 70
+MUA_SD = 4.0          # Methods 17: "spikes using 4 standard deviations from the mean"
+MUA_PAD_S = 0.5       # filter padding on each side of a window (a standard choice)
+
+
+def mua_trials(a: dict, raw_onsets: np.ndarray, n_sd: float = MUA_SD) -> dict:
+    """Multi-unit counts per channel in 70 bins of 200 ms from -2 s, for each onset (s, recording clock).
+
+    Methods 17: "Multiunit firing rate activity was determined by applying a common reference
+    average and determining spikes using 4 standard deviations from the mean." The signal is
+    band-passed 600 to 6,000 Hz (Methods 11, the recording band), the mean over channels is
+    subtracted (common average reference), and a spike is a crossing of the channel's mean minus
+    (reading a) or mean plus or minus (reading b) 4 SD, the mean and SD taken over the 14 s window
+    of the trial (the paper does not say over what span; a standard choice). Returns counts of
+    shape (trials, 32, 70) for both readings; onsets whose window falls outside the recording give
+    NaN.
+    """
+    f = open_nwb(a["url"])
+    d = f["acquisition/ElectricalSeries/data"]
+    n = d.shape[0]
+    pad = int(MUA_PAD_S * FS)
+    w = int(MUA_BIN_S * FS)
+    L = MUA_N_BINS * w
+    neg = np.full((len(raw_onsets), d.shape[1], MUA_N_BINS), np.nan)
+    both = neg.copy()
+    for j, t in enumerate(raw_onsets):
+        i0 = int(round((t + LABEL_START_S) * FS))
+        if i0 - pad < 0 or i0 + L + pad > n:
+            continue
+        x = d[i0 - pad:i0 + L + pad, :].astype(np.float32)
+        x = sosfiltfilt(BAND, x, axis=0)
+        x -= x.mean(axis=1, keepdims=True)
+        x = x[pad:pad + L]
+        mu, sd = x.mean(0), x.std(0)
+        lo = x < mu - n_sd * sd
+        hi = x > mu + n_sd * sd
+        on_lo = lo[1:] & ~lo[:-1]
+        on_hi = hi[1:] & ~hi[:-1]
+        k = np.arange(1, L) // w
+        for arr, ev in ((neg, on_lo), (both, on_lo | on_hi)):
+            arr[j] = np.array([np.bincount(k[ev[:, ch]], minlength=MUA_N_BINS) for ch in range(x.shape[1])])
+    return {"path": a["path"], "neg": neg, "both": both}
+
+
+def tree(a: dict, groups: tuple = ("acquisition", "intervals", "processing", "stimulus", "general", "units", "analysis")) -> dict:
+    """Every group and dataset under the top-level groups of one file, with dataset shapes, and the
+    column names of each table (from its `colnames` attribute)."""
+    f = open_nwb(a["url"])
+    out = {}
+    def visit(name, obj):
+        if isinstance(obj, h5py.Dataset):
+            out[name] = obj.shape
+        elif "colnames" in obj.attrs:
+            out[name + " (columns)"] = tuple(np.asarray(obj.attrs["colnames"]).astype(str))
+    for g in groups:
+        if g in f:
+            f[g].visititems(lambda n, o, g=g: visit(f"{g}/{n}", o))
+            if "colnames" in f[g].attrs:
+                out[g + " (columns)"] = tuple(np.asarray(f[g].attrs["colnames"]).astype(str))
+    return out
+
+
+def template_lag_scan(spikes: np.ndarray, onsets: np.ndarray, templates: np.ndarray,
+                      lags: np.ndarray | None = None, bw: float = MUA_BIN_S) -> tuple[np.ndarray, np.ndarray]:
+    """Mean over trials of the correlation between all spikes in 70 bins of 200 ms from onset - 2 s + lag
+    and a template per trial (here the paper's multi-unit counts summed over channels), per lag."""
+    if lags is None:
+        lags = np.arange(-300, 300, bw)
+    H = np.histogram(spikes, np.arange(0, spikes.max() + bw, bw))[0].astype(float)
+    W = np.lib.stride_tricks.sliding_window_view(H, MUA_N_BINS)
+    Wz = (W - W.mean(1, keepdims=True)) / (W.std(1, keepdims=True) + 1e-12)
+    score = np.zeros((len(onsets), len(lags)))
+    for j, (t, tpl) in enumerate(zip(onsets, templates)):
+        if tpl.std() == 0:
+            score[j] = np.nan
+            continue
+        z = (tpl - tpl.mean()) / tpl.std()
+        i = np.round((t + LABEL_START_S + lags) / bw).astype(int)
+        ok = (i >= 0) & (i < len(Wz))
+        score[j] = np.nan
+        score[j, ok] = Wz[i[ok]] @ z / MUA_N_BINS
+    return lags, np.nanmean(score, axis=0)
 
 
 def pose_summary(a: dict) -> dict:

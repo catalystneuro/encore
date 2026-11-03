@@ -8,23 +8,35 @@ schedule, port entries, AlphaTracker poses and the nine hand-scored behaviour la
 | Claim | Outcome |
 |---|---|
 | Rank 1 mice win the highest percentage of competitions (ED Fig. 5b) | Reproduced |
-| Dominants and subordinates obtain similar numbers of rewards (ED Fig. 5c; the body weight part is not testable) | Reproduced |
-| Subordinates take longer to pick up the reward in win trials (ED Fig. 5d) | Reproduced |
+| Dominants and subordinates obtain similar numbers of rewards, and body weight difference correlates with rewards won (ED Fig. 5c) | Partially reproduced (rewards part; no body weights in the files) |
+| Subordinates take longer to pick up the reward in win trials (ED Fig. 5d) | Not reproduced |
 | Port occupancy during the tone does not differ by rank (ED Fig. 5e) | Reproduced |
 | Dominants are more successful at displacing subordinates (ED Fig. 5f) | Reproduced |
 | Time displaced does not differ by rank (ED Fig. 5g) | Reproduced |
-| HMM-GLM decoding of behaviour (Figure 1i, ED Fig. 5j-k; three claims) | Blocked: metadata insufficient |
-| Single-unit findings of Figures 2 and 3 and ED Figures 6 to 9 (21 claims), distance to port (ED Fig. 7b) | Blocked: metadata insufficient |
+| A 6-state HMM-GLM decodes behaviour from multi-unit activity better than static models (Figure 1i) | Reproduced, on 17 of the 34 labelled files |
+| Held-out likelihood plateaus at 6 states (ED Fig. 5j) | Not reproduced |
+| The HMM-GLM generalizes across relative rank (ED Fig. 5k) | Not reproduced |
+| Single-unit findings of Figures 2 and 3 and ED Figures 6 to 9 (22 claims), distance to port (ED Fig. 7b) | Blocked: metadata insufficient |
 | Unimplanted cohort, AlphaTracker evaluation, alone sessions, ex vivo, phototagging and optogenetics (14 claims) | Blocked: data missing |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
+and the differences from the paper's method.
 
 The files do not mark which of their 5,879 Klusta clusters are the paper's 998 curated cells, so
 no single-unit finding can be tested. The stored spike times are two thirds of their time in the
 recording, and the offset between the neural recording and the behaviour clock, which the
-description places in a `video_gap` variable, is in no file. The notebook shows both from the data.
-The attempt record, with the reasons and the differences from the paper's method, is
+description places in a `video_gap` variable, is in no file. The notebook shows both from the data,
+estimates the offset from the units' responses to port entries, and checks it against the paper's
+own processed HMM-GLM input. The HMM-GLM claims use the 17 labelled files where the offset can be
+placed. The latency difference of ED Fig. 5d is significant only when trials whose labels and port
+entries disagree are kept. The attempt record, with the reasons and the differences from the
+paper's method, is
 [`attempts/001749-padilla-coreano-2022-01.yaml`](../../attempts/001749-padilla-coreano-2022-01.yaml).
 
-- `reproduce_padilla_coreano_2022.ipynb`: the data check and the behavioural claims. It takes
-  about eight minutes, most of it streaming parts of the raw recordings for the clock checks.
+- `reproduce_padilla_coreano_2022.ipynb`: the data check, the behavioural claims and the HMM-GLM
+  claims. It takes about half an hour: streaming the trial windows of the raw recordings and the
+  clock checks, and the HMM-GLM fits.
 - `competition.py`: loading the files, the trial outcomes, latencies and pushing success from the
-  labels, and the clock checks. Other notebooks on this dandiset can import it.
+  labels, the clock checks and the multi-unit counts. Other notebooks on this dandiset can import it.
+- `hmmglm.py`: the paper's HMM-GLM (github.com/Tyelab/HMMGLM at commit 3fc3567), ported from
+  MATLAB, and the static decoders of Methods 17.
