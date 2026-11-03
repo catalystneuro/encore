@@ -5,31 +5,31 @@ tested on [DANDI:001746](https://dandiarchive.org/dandiset/001746/0.260825.0222)
 current-clamp step recordings of the 462 Patch-seq cells from the macaque anterior insular cortex.
 The files carry no cell types; these come from the cell table in the paper's code repository
 ([RFLiu2021/AIC_proj](https://github.com/RFLiu2021/AIC_proj) at commit 44cd8a6), matched by file
-name.
+name. For Fig. 7c the 10x data come from GEO GSE319557.
 
 | Claim | Outcome |
 |---|---|
-| The recordings are the cells of the code's cell table, and their features match its feature table | Partially reproduced |
+| The recordings are the cells of the code's cell table, and their features match its feature table | Reproduced |
 | The code's morphology table matches the dandiset's cells (link claim) | Reproduced |
 | 462 cells with intrinsic properties from 12 male macaques | Partially reproduced (10 subjects) |
 | 307 typed cells, 273 excitatory in 18 types, 34 inhibitory in 17 types | Partially reproduced |
 | Excitatory cells by subclass | Partially reproduced |
 | The 29 VENs map to L5 ET (14) and L5/6 CT (15) | Reproduced |
 | VEN-L map to L5 ET, VEN-S to L5/6 CT | Partially reproduced |
-| L2/3 IT HPCAL1 neurons have the smallest membrane time constant | Reproduced, on an assumption |
+| L2/3 IT HPCAL1 neurons have the smallest membrane time constant | Reproduced |
 | L2/3 IT HPCAL1 neurons have narrow APs | Partially reproduced |
-| IT RORB and L6 PC have a distinctive input resistance | Partially reproduced, on an assumption |
+| IT RORB and L6 PC have a distinctive input resistance | Partially reproduced |
 | L5 IT FEZF2 have a higher AP threshold and longer latency | Reproduced |
-| VENs have the broadest APs | Not reproduced |
+| VENs have the broadest APs | Partially reproduced |
 | L5 ET have the deepest sag | Blocked: methods underspecified |
 | VENs fire less and more irregularly than PCs | Not reproduced |
-| L5 ET against L5 IT: deeper sag, lower input resistance, higher rate | Reproduced, on an assumption |
-| VENs have the lowest phase peak index; their phase plots are saddle-shaped | Blocked: methods underspecified |
-| VEN-L differ more from L5/6 CT than VEN-S do | Reproduced, on an assumption |
-| Morphology differs on more features than physiology | Reproduced, on an assumption |
+| L5 ET against L5 IT: deeper sag, lower input resistance, higher rate | Partially reproduced |
+| VENs have the lowest phase peak index; their phase plots are saddle-shaped | Partially reproduced |
+| VEN-L differ more from L5/6 CT than VEN-S do | Reproduced |
+| Morphology differs on more features than physiology | Reproduced |
 | Recordings without RNA (Fig. 4a-c, Extended Data Fig. 9c,d, Supplementary Table 8) | Blocked: data missing |
-| Peak index against AIS distance (Fig. 4i) | Blocked: metadata insufficient |
-| Tau distance against transcriptomic distance (Fig. 7) | Blocked: too large |
+| Peak index against AIS distance (Fig. 4i) | Not reproduced |
+| Tau distance against transcriptomic distance (Fig. 7) | Not reproduced |
 | Nine claims on data in other archives | Blocked: other |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -38,8 +38,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001746-liu-2026-01.yaml`](../../attempts/001746-liu-2026-01.yaml).
 
-- `reproduce_liu_2026.ipynb`: the analysis. It reads all 462 files (about 15 GB) and takes about
-  three to five minutes.
+- `reproduce_liu_2026.ipynb`: the analysis. It reads all 462 files (about 15 GB) and streams the
+  first 5 GB of the GEO h5ad archive, and takes about seven minutes.
 - `aic.py`: loading the files, and the electrophysiological features as the Methods define them,
   with the details taken from the paper's package PatchAnaLab 1.0; the docstring says where each
   parameter comes from. Other notebooks on this dandiset can import it.

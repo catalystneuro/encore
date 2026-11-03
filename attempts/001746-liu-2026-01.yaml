@@ -2,7 +2,7 @@ schema_version: 2
 id: 001746-liu-2026-01
 dataset:
   archive: dandi
-  id: "001746"
+  id: '001746'
   version: 0.260825.0222
   doi: 10.48324/dandi.001746/0.260825.0222
 paper: doi:10.1038/s41556-026-02009-4
@@ -20,370 +20,493 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/41622657269
 inputs:
-- what: The cell table metaInfo_ephysio_patchSeq.csv (per file, the subject, cell ID, expert cell
-    type, VEN subtype, mapping rate and predicted transcriptomic cluster), the labels the files lack.
+- what: The 10x excitatory neurons with their clusters and raw counts, Ext.h5ad of GSE319557_AIC_scRNA_h5ad.tar.gz,
+    streamed for fig7c-tau-rna-distance.
+  source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE319557
+- what: The cell table metaInfo_ephysio_patchSeq.csv (per file, the subject, cell ID, expert cell type,
+    VEN subtype, mapping rate and predicted transcriptomic cluster), the labels the files lack.
   source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
-- what: The per-cell feature table Ins_patchseq_ephs.xlsx (reference values for the link claim) and
-    the per-cell phase peak indices PeakIdx_Fig5e.xlsx (reference values for a check that does not
-    decide).
+- what: The per-cell feature table Ins_patchseq_ephs.xlsx (reference values for the link claim, and the
+    values of the 19 features of the FDR family that are defined nowhere) and the per-cell phase peak
+    indices PeakIdx_Fig5e.xlsx (reference values for checks that do not decide).
   source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
-- what: NeuronPeakIdx_summary.mat, the 62 AIS distances and peak indices of Fig. 4i (found
-    unlinkable).
+- what: NeuronPeakIdx_summary.mat, the 62 AIS distances and peak indices of Fig. 4i (found unlinkable
+    to the recordings).
   source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
-- what: The morphological feature table morphFeatMatrix.xlsx (166 cells, 57 features), the
-    morphological side of morph-more-distinct-than-ephys.
+- what: The morphological feature table morphFeatMatrix.xlsx (166 cells, 57 features), the morphological
+    side of morph-more-distinct-than-ephys and the AIS distances of fig4i-peak-index-ais-distance-real.
   source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
-- what: PatchAnaLab 1.0, the paper's MATLAB package (createFeatures.m, anaAP.m, findSpikes.m,
-    tauFit.m, calPhaseHeightIdx.m), read for the feature-extraction details the Methods leave open;
-    its code is not run.
+- what: PatchAnaLab 1.0, the paper's MATLAB package (createFeatures.m, anaAP.m, findSpikes.m, tauFit.m,
+    calPhaseHeightIdx.m), read for the feature-extraction details the Methods leave open; its code is
+    not run.
   source: doi:10.5281/zenodo.19995355
 outcomes:
 - claim: patchseq-cell-table-link
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:patchseq-cell-table-link
-  measured: [462, 461, 0.895, 0.902, 0.989]
-  notes: All 462 rows of the cell table name a file of the dandiset (100%), and every row's cell ID
-    is its file's cell ID. One dandiset file (cell s172, subject Mfa180730) is named by no row; the
-    row of subject Mfa180730 instead names cell n172 and the file of n172 (subject Mfa220428),
-    which its own row also names, so 461 of 462 rows agree on the subject. The files carry no cell
-    type or transcriptomic type to compare. For the 276 cells of Ins_patchseq_ephs.xlsx, computed AP
-    half-width is within 10% of the table for 89.5% of cells, AP amplitude for 90.2% and maximal
-    firing rate for 98.9% (criterion 80%); rheobase (98.9%), latency (98.9%), threshold (90.4%)
-    and the code's first-sweep tau (98.5%) agree as well. The six Fig. 2 groups formed by the
-    code's lists hold 30, 21, 125, 29, 18 and 14 files (the xlsx labels give 30, 22, 122, 29, 17
-    and 13) against the legend's 30, 17, 119, 22, 16 and 13; two cells change group between the
-    xlsx and the cell table. measured gives rows found, rows whose subject agrees, and the three
+  measured:
+  - 462
+  - 461
+  - 0.967
+  - 0.975
+  - 0.989
+  notes: All 462 rows of the cell table name a file of the dandiset (100%), and every row's cell ID is
+    its file's cell ID. One dandiset file (cell s172, subject Mfa180730) is named by no row; row 235 (subject
+    Mfa180730) instead names cell n172 and the file of n172 (subject Mfa220428), which row 110 also names,
+    so 461 of 462 rows agree on the subject. The files carry no cell type or transcriptomic type to compare,
+    and no other annotation (every file's HDF5 tree and string values were searched). For the 276 cells
+    of Ins_patchseq_ephs.xlsx, computed AP half-width is within 10% of the table for 96.7% of cells, AP
+    amplitude for 97.5% and maximal firing rate for 98.9% (criterion 80%); rheobase (98.9%), latency (98.9%),
+    threshold (97.4%) and the code's first-sweep tau (98.5%) agree as well. The six Fig. 2 groups formed
+    by the code's lists hold 30, 21, 125, 29, 18 and 14 files (the xlsx labels give 30, 22, 122, 29, 17
+    and 13) against the legend's 30, 17, 119, 22, 16 and 13; two cells change group between the xlsx and
+    the cell table. Five pairs of files hold the same recording under different cell IDs (findings); each
+    file agrees with its own row. measured gives rows found, rows whose subject agrees, and the three
     fractions.
   deviations:
-  - The criterion fails the link when a label disagrees. One row's subject disagrees, and that row
-    is a second row for a file that has its own row, with no type or cluster, used by no analysis;
-    the outcome is set to partially reproduced, the link holding for 461 of 462 rows. Under the
-    letter of the criterion it would be not reproduced.
-  - AP features are computed on traces low-pass filtered at 1 kHz with the spike detection of
-    PatchAnaLab (createFeatures.m, anaAP.m), as the Methods give no filter or detection rule; the
-    threshold window is the Methods' 20 ms before the peak ("the 20-ms potential trace preceding
-    the AP peak was used to calculate the third derivative", Extraction of electrophysiological
-    features). The code's window (from halfway between onset and peak) is shown and agrees.
+  - 'The criterion fails the link when a label disagrees. One row''s subject disagrees: row 235, a second
+    row for the file of n172, which has its own row, with no type or cluster, used by no analysis. It
+    is read as the table''s row for the file of s172, which is in the dandiset under that subject and
+    which no row names, so the link is taken to hold. Under the letter of the criterion it would be not
+    reproduced.'
+  - AP features are computed on traces low-pass filtered at 1 kHz with the spike detection of PatchAnaLab
+    (createFeatures.m, anaAP.m), as the Methods give no filter or detection rule. AP threshold, the maximal
+    third derivative in the 20 ms before the peak (Methods, "the 20-ms potential trace preceding the AP
+    peak was used to calculate the third derivative"), with the derivative chain of PatchAnaLab computed
+    on the window padded by 2 ms and searched up to the point of maximal dV/dt, so that the filters' edge
+    transients at the peak are not taken for the threshold. Without this, 28 of the 208 HEKA files had
+    their threshold placed at the peak. The code's window (from halfway between onset and peak) is shown
+    and agrees.
 - claim: morph-table-link
   outcome: reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:morph-table-link
-  measured: [166, 163]
-  notes: All 166 rows of morphFeatMatrix.xlsx carry a cell ID that is a file's cell ID in the
-    dandiset, and 163 of the 165 rows with a cluster in both tables agree with the cell table.
-    164 of them are among the 166 cells the cell table marks as traced. The table holds 57
-    morphological features where the Methods count 40.
+  measured:
+  - 166
+  - 163
+  notes: All 166 rows of morphFeatMatrix.xlsx carry a cell ID that is a file's cell ID in the dandiset,
+    and 163 of the 165 rows with a cluster in both tables agree with the cell table. 164 of them are among
+    the 166 cells the cell table marks as traced. The table holds 57 morphological features where the
+    Methods count 40.
 - claim: patchseq-sample
   outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:patchseq-sample
-  measured: [462, 10]
-  notes: 462 files hold a current-clamp step protocol (457 distinct recordings, as five pairs of
-    files are identical), within 462 and its tolerance of 46. They come from 10 subjects, outside 12
-    and its tolerance of 1.2. Every subject is male.
+  measured:
+  - 462
+  - 10
+  notes: 462 files hold a current-clamp step protocol (457 distinct recordings, as five pairs of files
+    are identical), within 462 and its tolerance of 46. They come from 10 subjects, outside 12 and its
+    tolerance of 1.2. Every subject is male.
 - claim: patchseq-mapping
   outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:patchseq-mapping
-  measured: [278, 248, 30, 17, 17]
-  notes: 278 files have a transcriptomic type (307, within tolerance), 248 excitatory (273, within)
-    in 17 types (18, within) and 30 inhibitory (34, outside its tolerance of 3.4) in 17 types (17,
-    within). No typed row has a mapping rate below 30% (lowest 0.40), so the table holds only cells
-    kept after the mapping. With identical recordings counted once, 277 typed and 247 excitatory.
-    Four of five counts hold.
+  measured:
+  - 278
+  - 248
+  - 30
+  - 17
+  - 17
+  notes: 278 files have a transcriptomic type (307, within tolerance), 248 excitatory (273, within) in
+    17 types (18, within) and 30 inhibitory (34, outside its tolerance of 3.4) in 17 types (17, within).
+    No typed row has a mapping rate below 30% (lowest 0.40), so the table holds only cells kept after
+    the mapping. With identical recordings counted once, 277 typed and 247 excitatory. Four of five counts
+    hold.
   deviations:
-  - The mapping is not redone (the criterion takes the table's types); the counts are those of the
-    cell table, the only source of types for the files.
+  - The mapping is not redone (the criterion takes the table's types); the counts are those of the cell
+    table, the only source of types for the files.
 - claim: fig2a-subclass-counts
   outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig2a-subclass-counts
-  measured: [30, 21, 125, 18, 11, 14]
-  notes: Under reading (a), the code's cluster lists with the 29 VENs counted apart, five of the six
-    judged counts are within tolerance, L2/3 IT HPCAL1 30 (33), IT RORB 21 (23), L5 ET 18 (20), L5/6
-    CT 11 (11) and L6 IT with L6b 14 (14, judged together as the criterion says). L5 IT FEZF2 holds
-    125, outside 143 and its tolerance of 14.3. The excitatory cells total 248, not 273. Reading (b)
-    cannot be run, as the files give no subclass. measured follows the criterion's order with L6 IT
-    and L6b as one value.
+  measured:
+  - 30
+  - 21
+  - 125
+  - 18
+  - 11
+  - 14
+  notes: Under reading (a), the code's cluster lists with the 29 VENs counted apart, five of the six judged
+    counts are within tolerance, L2/3 IT HPCAL1 30 (33), IT RORB 21 (23), L5 ET 18 (20), L5/6 CT 11 (11)
+    and L6 IT with L6b 14 (14, judged together as the criterion says). L5 IT FEZF2 holds 125, outside
+    143 and its tolerance of 14.3. The excitatory cells total 248, not 273. Reading (b) cannot be run,
+    as the files give no subclass. measured follows the criterion's order with L6 IT and L6b as one value.
 - claim: ven-map-et-ct
   outcome: reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:ven-map-et-ct
-  measured: [14, 15]
-  notes: The 29 VENs with a transcriptomic type map to Exc FEZF2 DSG2 (14) and Exc FEZF2 COL24A1
-    (15) and to no other cluster. The cell table holds 68 VENs in all.
+  measured:
+  - 14
+  - 15
+  notes: The 29 VENs with a transcriptomic type map to Exc FEZF2 DSG2 (14) and Exc FEZF2 COL24A1 (15)
+    and to no other cluster. The cell table holds 68 VENs in all.
 - claim: fig6f-ven-subtype-mapping
   outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig6f-ven-subtype-mapping
-  measured: [12, 10]
-  notes: Every typed VEN labelled VEN_Long is in Exc FEZF2 DSG2 and every one labelled VEN_Short is
-    in Exc FEZF2 COL24A1; none crosses. The counts are 12 VEN-L (expected 10, outside its tolerance
-    of 1) and 10 VEN-S (11, within). The other VENs of the two clusters carry a PC subtype label
-    (L23_PC 2, PC_L23 1, PC_L5 1) or none (3). The correspondence holds and one count does not.
+  measured:
+  - 12
+  - 10
+  notes: Every typed VEN labelled VEN_Long is in Exc FEZF2 DSG2 and every one labelled VEN_Short is in
+    Exc FEZF2 COL24A1; none crosses. The counts are 12 VEN-L (expected 10, outside its tolerance of 1)
+    and 10 VEN-S (11, within). The other VENs of the two clusters carry a PC subtype label (L23_PC 2,
+    PC_L23 1, PC_L5 1) or none (3). The correspondence holds and one count does not.
   deviations:
   - The subtype spelling VEN_short is read as VEN_Short (one row, which has no transcriptomic type).
 - claim: fig2d-l23it-small-tau
   outcome: reproduced
-  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig2d-l23it-small-tau
-  notes: L2/3 IT HPCAL1 has the lowest median tau of the six groups with the Methods' tau (32.7 ms,
-    next IT RORB 41.0 ms) and with the code's first-sweep tau (24.2 ms). Against the other five
-    pooled (reading a), p = 0.011, FDR 0.023 over the 20 Methods features; over the 39-feature
-    family the FDR lies between 0.011 and 0.051. With the code's tau, p = 0.0003 and the FDR is at
-    most 0.0052 over any 39-feature family. Reading (b) fails for the Methods' tau (VEN p = 0.057,
-    L5 ET 0.46, L6 PC 0.099). In 4 of the 6 subjects with L2/3 IT HPCAL1 cells their median tau is
-    lower than that of the other groups.
+  notes: L2/3 IT HPCAL1 has the lowest median tau of the six groups with the Methods' tau (32.7 ms, next
+    IT RORB 41.0 ms) and with the code's first-sweep tau (24.2 ms). Against the other five pooled (reading
+    a), p = 0.011, FDR 0.034 over the 39-feature family and 0.023 over the 20 Methods features. With the
+    code's tau p = 0.0003 (FDR 0.003); with the median over sweeps in place of the mean p = 0.004 (FDR
+    0.017). Reading (b) fails for the Methods' tau (IT RORB p = 0.019, VEN 0.057, L5 ET 0.46, L6 PC 0.099).
+    In 4 of the 6 subjects with L2/3 IT HPCAL1 cells their median tau is lower than that of the other
+    groups. Within the files of one device the difference is not significant (Axon, 6 against 125 cells,
+    p = 0.47; HEKA, 24 against 82, p = 0.13); tau is longer in the Axon files in every group, in the computed
+    values and in the code's table, and 24 of the 30 L2/3 IT HPCAL1 cells are HEKA files (findings).
   deviations:
-  - Assumption. The claims file sets the FDR family to the 39 features of Ins_patchseq_ephs.xlsx,
-    but 19 of them (phase areas and perimeters, ISI phase ratios, FR, first-ISI and adaptation
-    slopes, amplitude CV and Fano factor, AHP latency and others) are defined neither in the
-    Methods nor in PatchAnaLab, so they cannot be computed from the data. The FDR over 39 features
-    is bounded for the 20 features that can be computed; where the bounds do not decide, the
-    family of the 20 features the Methods name (the claims file's variant) decides. Here the
-    bounds (0.011 to 0.051) do not decide, and the outcome rests on the 20-feature family.
-  - Tau follows the Methods (exponential fit from step onset to the trough, averaged over all
-    hyperpolarizing sweeps; "the τ values across all hyperpolarization traces were averaged"), with
-    the fit segment of createFeatures.m (the first third of the step, 5-sample smoothing). The
-    Methods' tau is 26% longer than the feature table's (median ratio 1.26), which holds the code's
-    first-sweep tau.
+  - Assumption on the FDR family. The claims file sets it to the 39 features of Ins_patchseq_ephs.xlsx,
+    those the Methods define computed as defined there and the others as createFeatures.m computes them.
+    Nineteen of them (phase areas and perimeters, ISI phase ratios, FR, first-ISI and adaptation slopes,
+    amplitude CV and Fano factor, AHP latency and others) are defined neither in the Methods nor in PatchAnaLab,
+    so their values are taken from the code's table by cell ID (234 of the 237 grouped cells are in it)
+    and the FDR is computed over all 39. The 20 features the Methods name are the variant family. Over
+    the 20 Methods features the result is the same, so the outcome does not rest on this choice.
+  - Tau follows the Methods (exponential fit from step onset to the trough, averaged over all hyperpolarizing
+    sweeps; "the τ values across all hyperpolarization traces were averaged"), with the fit segment of
+    createFeatures.m (the first third of the step, 5-sample smoothing). A median of 10 sweeps is fitted
+    per cell (at least 4); the largest over smallest sweep tau has a median of 1.81, and three cells have
+    a mean above 150 ms. The Methods' tau is 26% longer than the feature table's (median ratio 1.26),
+    which holds the code's first-sweep tau.
 - claim: fig2f-l23it-narrow-ap
   outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig2f-l23it-narrow-ap
-  notes: L2/3 IT HPCAL1 APs are narrower than those of the other five pooled (median half-width 2.00
-    against 2.67 ms, p = 0.0004, FDR 0.004 over 20 features and at most 0.008 over 39) and narrower
-    than L5 IT FEZF2 (p = 4.8e-6) and VEN (p = 0.0009), but not than IT RORB (1.92 ms, p = 0.98), L5
-    ET (2.00 ms, p = 0.91) or L6 PC (2.14 ms, p = 0.88). Its median is the second lowest of the six,
-    so the criterion's "lowest" fails while reading (a) is significant; the claims file foresaw this
-    case from the code table. With the code's plot exclusion (1 to 5 ms) the pooled comparison
-    holds (p = 7.8e-5).
+  notes: L2/3 IT HPCAL1 APs are narrower than those of the other five pooled (median half-width 2.08 against
+    2.82 ms, p = 3.0e-5, FDR 0.0006 over 39 features and 0.0003 over 20) and narrower than L5 IT FEZF2
+    (p = 2.9e-7) and VEN (p = 1.6e-5), but not than IT RORB (1.92 ms, p = 0.61), L5 ET (2.22 ms, p = 0.45)
+    or L6 PC (2.34 ms, p = 0.30). Its median is the second lowest of the six, so the criterion's "lowest"
+    fails while reading (a) is significant; the claims file foresaw this case from the code table. With
+    the code's plot exclusion (1 to 5 ms) the pooled comparison holds (p = 6.4e-5). Within the files of
+    one device the difference is not significant (Axon p = 0.37, HEKA p = 0.19); half-width is longer
+    in the Axon files in every group (findings).
+  deviations:
+  - AP threshold, the maximal third derivative in the 20 ms before the peak (Methods, "the 20-ms potential
+    trace preceding the AP peak was used to calculate the third derivative"), with the derivative chain
+    of PatchAnaLab computed on the window padded by 2 ms and searched up to the point of maximal dV/dt,
+    so that the filters' edge transients at the peak are not taken for the threshold. Without this, 28
+    of the 208 HEKA files had their threshold placed at the peak.
 - claim: supp11-rm-itrorb-l6pc
   outcome: partially_reproduced
-  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:supp11-rm-itrorb-l6pc
-  notes: L6 PC neurons have a higher input resistance than the other five pooled (median 354
-    against 166 MOhm, p = 0.00014, FDR 0.003 over 20 features, at most 0.006 over 39; the same with
-    the code's measure). IT RORB neurons have 217 against 166 MOhm, p = 0.023, FDR 0.065 over 20
-    features and between 0.023 and 0.147 over 39; with the code's measure p = 0.0055 and an FDR
-    between 0.0055 and 0.082 over 39. Against each group (reading b) neither group differs from
-    all others. The direction is higher input resistance for both.
+  notes: L6 PC neurons have a higher input resistance than the other five pooled (median 354 against 166
+    MOhm, p = 0.00014, FDR 0.006 over 39 features and 0.003 over 20; the same with the code's measure).
+    IT RORB neurons have 217 against 166 MOhm, p = 0.023, FDR 0.087 over 39 features and 0.065 over 20,
+    not significant; with the code's measure, a variant, p = 0.0055 and FDR 0.037. Against each group
+    (reading b) neither group differs from all others. The direction is higher input resistance for both.
   deviations:
-  - Assumption on the FDR family, as in fig2d-l23it-small-tau. The 39-feature bounds do not decide
-    for IT RORB; under the 20-feature family it is not significant, so one of the two groups holds.
-  - Input resistance as the Methods define it ("the slope of the differences between the RMP and the
-    steady-state membrane potentials, relative to the injected stepped currents", steady state the
-    last 100 ms), over the sweeps below the rheobase sweep without APs, which the Methods do not
-    list; the code's sweeps and window are a variant.
+  - Assumption on the FDR family. The claims file sets it to the 39 features of Ins_patchseq_ephs.xlsx,
+    those the Methods define computed as defined there and the others as createFeatures.m computes them.
+    Nineteen of them (phase areas and perimeters, ISI phase ratios, FR, first-ISI and adaptation slopes,
+    amplitude CV and Fano factor, AHP latency and others) are defined neither in the Methods nor in PatchAnaLab,
+    so their values are taken from the code's table by cell ID (234 of the 237 grouped cells are in it)
+    and the FDR is computed over all 39. The 20 features the Methods name are the variant family. Over
+    the 20 Methods features the result is the same, so the outcome does not rest on this choice.
+  - Input resistance as the Methods define it ("the slope of the differences between the RMP and the steady-state
+    membrane potentials, relative to the injected stepped currents", steady state the last 100 ms), over
+    the sweeps below the rheobase sweep without APs, which the Methods do not list; the code's sweeps
+    and window are a variant.
 - claim: supp11-l5it-threshold-latency
   outcome: reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:supp11-l5it-threshold-latency
-  notes: Against the other five pooled (reading a), L5 IT FEZF2 neurons have a higher AP threshold
-    (median -38.5 against -41.2 mV, p = 0.014) and a longer latency (204.5 against 148.7 ms, p =
-    0.00016), both with FDR below 0.05 under any 39-feature family (bounds 0.045 and 0.0012) and
-    over the 20 features. Against each group (reading b) the threshold is not higher than that of
-    L2/3 IT HPCAL1 (-38.2 mV, p = 0.94) or VEN (p = 0.59), and the latency is not longer than that of
-    IT RORB, VEN, L5 ET or L6 PC with significance.
+  notes: Against the other five pooled (reading a), L5 IT FEZF2 neurons have a higher AP threshold (median
+    -39.1 against -42.3 mV, p = 0.0012, FDR 0.005 over 39 features) and a longer latency (203.7 against
+    148.7 ms, p = 0.00016, FDR 0.0008), both also below 0.05 over the 20 Methods features. Against each
+    group (reading b) the threshold is not higher than that of L2/3 IT HPCAL1 (-38.2 mV, p = 0.82) or
+    VEN (p = 0.24), and the latency is not significantly longer than that of IT RORB, VEN, L5 ET or L6
+    PC.
+  deviations:
+  - AP threshold, the maximal third derivative in the 20 ms before the peak (Methods, "the 20-ms potential
+    trace preceding the AP peak was used to calculate the third derivative"), with the derivative chain
+    of PatchAnaLab computed on the window padded by 2 ms and searched up to the point of maximal dV/dt,
+    so that the filters' edge transients at the peak are not taken for the threshold. Without this, 28
+    of the 208 HEKA files had their threshold placed at the peak.
 - claim: supp11-ven-broad-ap
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:supp11-ven-broad-ap
-  notes: The VEN median half-width (2.90 ms) is not the highest of the six groups; L5 IT FEZF2 has
-    2.92 ms. Against the other five pooled, p = 0.17 (FDR 0.44). VENs are broader than L2/3 IT
-    HPCAL1 (p = 0.0009, FDR 0.009) and than IT RORB, L5 ET and L6 PC with p from 0.006 to 0.022 but
-    FDR above 0.05 over 20 features, and not broader than L5 IT FEZF2 (p = 0.69).
+  notes: The VEN median half-width (3.03 ms) is the highest of the six groups, narrowly above L5 IT FEZF2
+    (2.98 ms). Against the other five pooled, p = 0.035, FDR 0.25 over 39 features (0.23 over 20), not
+    significant. Against each group (reading b) VENs are broader than L2/3 IT HPCAL1, IT RORB, L5 ET and
+    L6 PC (FDR 0.0003 to 0.029 over 39 features) and not than L5 IT FEZF2 (p = 0.92). The median is highest
+    without a significant reading. Before the threshold correction (deviations) the VEN median was 2.90
+    ms against 2.92 for L5 IT FEZF2.
+  deviations:
+  - AP threshold, the maximal third derivative in the 20 ms before the peak (Methods, "the 20-ms potential
+    trace preceding the AP peak was used to calculate the third derivative"), with the derivative chain
+    of PatchAnaLab computed on the window padded by 2 ms and searched up to the point of maximal dV/dt,
+    so that the filters' edge transients at the peak are not taken for the threshold. Without this, 28
+    of the 208 HEKA files had their threshold placed at the peak.
 - claim: supp11-l5et-deep-sag
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_liu_2026.ipynb
   output: claim:supp11-l5et-deep-sag
-  notes: The criterion blocks the claim when the two measure readings disagree, and they do. By sag
-    ratio L5 ET neurons have the deepest sag (median 1.36 against 1.13 for the other five pooled, p =
-    3e-6, FDR below 0.05 under any 39-feature family, as against L2/3 IT HPCAL1, L5 IT FEZF2 and
-    VEN). By sag value (RMP minus the steady state at the largest hyperpolarizing step,
-    as the Methods define it) L5 ET has the smallest value of the six groups (19.6 against 27.7 mV,
-    p = 0.0055), which follows its low input resistance. Open for the paper's authors, which
-    measure "deeper sag" refers to (Results, paragraph 3; the Methods define sag value, sag ratio,
-    sag time and sag area; the code's feature table holds only Sag_Ratio). Sag ratio would give
-    reproduced, sag value not reproduced. The question is recorded under findings.
+  notes: The criterion blocks the claim when the two measure readings disagree, and they do. By sag ratio
+    L5 ET neurons have the deepest sag (median 1.36 against 1.13 for the other five pooled, p = 3e-6,
+    FDR 0.0001 over 39 features, as against L2/3 IT HPCAL1, L5 IT FEZF2 and VEN). By sag value (RMP minus
+    the steady state at the largest hyperpolarizing step, as the Methods define it) L5 ET has the smallest
+    value of the six groups (19.6 against 27.7 mV, p = 0.0055), which follows its low input resistance.
+    On the files whose largest step is -200 pA only, the same holds (sag ratio p = 5e-7, sag value 20.6
+    against 29.2 mV, p = 0.011). Open for the paper's authors, which measure "deeper sag" refers to (Results,
+    paragraph 3; the Methods define sag value, sag ratio, sag time and sag area; the code's feature table
+    holds only Sag_Ratio). Sag ratio would give reproduced, sag value not reproduced. The question is
+    recorded under findings.
+  deviations:
+  - Sag is measured at each file's largest hyperpolarizing step (the Methods' "largest hyperpolarizing
+    step"), -200 pA in most files and -60 to -120 pA in 28 of the 237 grouped cells; the files at -200
+    pA only are a variant.
 - claim: ven-firing-rate-variability
   outcome: not_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:ven-firing-rate-variability
-  notes: VENs have the lowest median maximal firing rate (10.0 Hz, against 13.3 Hz for the five PC
-    groups pooled), but not significantly (p = 0.092, FDR 0.43 over 20 features), nor against the
-    layer 5 PCs pooled (11.7 Hz, p = 0.38); against each PC group it is significant only for L2/3
-    IT HPCAL1 and L5 ET (FDR 0.029 and 0.028). The ISI CV (0.33 against 0.31, p = 0.56) and Fano
-    factor (9.6 against 7.5, p = 0.17) are higher in VENs without significance under any comparison
-    reading. The two variability measures agree, so the claim is not blocked.
+  notes: VENs have the lowest median maximal firing rate (10.0 Hz, against 13.3 Hz for the five PC groups
+    pooled), but not significantly (p = 0.092, FDR 0.30 over 39 features), nor against the layer 5 PCs
+    pooled (11.7 Hz, p = 0.38); against each PC group it is significant only for L2/3 IT HPCAL1 and L5
+    ET (FDR 0.036 and 0.017). The ISI CV (0.33 against 0.31, p = 0.56) and Fano factor (9.6 against 7.5,
+    p = 0.17) are higher in VENs without significance under readings (a) and (c); under (b) only the Fano
+    factor against L2/3 IT HPCAL1 has FDR below 0.05 (0.047). The two variability measures agree, so the
+    claim is not blocked.
   deviations:
-  - The ISI Fano factor is taken as the variance over the mean of the ISIs (ms) of the maximal-rate
-    sweep. PatchAnaLab does not compute it; the code table's values fit this definition (Fano equal
-    to CV squared times the mean ISI) and the computed values are within 10% of them for 86.6% of
-    cells. ISI CV and Fano are not among the 20 Methods features, so their variant FDR is over those
-    20 and the two ISI measures.
+  - The ISI Fano factor is taken as the variance over the mean of the ISIs (ms) of the maximal-rate sweep.
+    PatchAnaLab does not compute it; the code table's values fit this definition (Fano equal to CV squared
+    times the mean ISI) and the computed values are within 10% of them for 86.6% of cells. Both are among
+    the 39 features of the FDR family.
 - claim: l5et-vs-l5it-sag-rm-rate
-  outcome: reproduced
-  assumed: true
+  outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:l5et-vs-l5it-sag-rm-rate
-  notes: Against L5 IT FEZF2, L5 ET neurons have a larger sag ratio (1.36 against 1.13, p = 1.6e-6,
-    significant under any 39-feature family), a lower input resistance (116 against 160 MOhm, p =
-    0.014, FDR 0.026 over 20 features and between 0.014 and 0.054 over 39; the code's measure 117
-    against 174 MOhm, FDR at most 0.030 over 39) and a higher maximal firing rate (15.8 against 11.7
-    Hz, p = 0.0063, FDR at most 0.033 over 39). By sag value L5 ET is lower (19.6 against 27.1 mV, p
-    = 0.015), the reverse of deeper; under that reading two of three hold (partially reproduced).
+  notes: 'Against L5 IT FEZF2, L5 ET neurons have a larger sag ratio (1.36 against 1.13, p = 1.6e-6, FDR
+    6e-5 over 39 features), a lower input resistance (116 against 160 MOhm, p = 0.014, FDR 0.039; the
+    code''s measure 117 against 174 MOhm, FDR 0.020) and a higher maximal firing rate (15.8 against 11.7
+    Hz, p = 0.0063, FDR 0.022). By sag value L5 ET is lower (19.6 against 27.1 mV, p = 0.015), the reverse
+    of deeper. The criterion takes the sag readings of supp11-l5et-deep-sag, sag ratio and sag value,
+    and gives no rule for their disagreement: under the sag ratio all three hold (reproduced), under the
+    sag value two do (partially reproduced). The outcome is the one that holds under both readings.'
   deviations:
-  - Assumption on the sag measure. The criterion takes the sag readings of supp11-l5et-deep-sag
-    (sag ratio and sag value) but gives no rule for their disagreement. Sag ratio is adopted, as
-    the measure of sag depth in the paper's own feature table (Sag_Ratio, the only sag measure
-    there) and the usual measure of sag; sag value, as the Methods define it, is the steady-state
-    deflection. The same question for the authors as in supp11-l5et-deep-sag.
-  - Assumption on the FDR family for the Methods' input resistance, as in fig2d-l23it-small-tau.
+  - Assumption on the FDR family. The claims file sets it to the 39 features of Ins_patchseq_ephs.xlsx,
+    those the Methods define computed as defined there and the others as createFeatures.m computes them.
+    Nineteen of them (phase areas and perimeters, ISI phase ratios, FR, first-ISI and adaptation slopes,
+    amplitude CV and Fano factor, AHP latency and others) are defined neither in the Methods nor in PatchAnaLab,
+    so their values are taken from the code's table by cell ID (234 of the 237 grouped cells are in it)
+    and the FDR is computed over all 39. The 20 features the Methods name are the variant family. Over
+    the 20 Methods features the result is the same, so the outcome does not rest on this choice.
 - claim: fig3e-phase-peak-index
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig3e-phase-peak-index
-  notes: The criterion blocks the claim when the AP readings disagree, and they do. On the first AP
-    of the maximal-rate sweep, the VEN median index is the lowest (0.011; next L2/3 IT HPCAL1
-    0.021), Kruskal-Wallis p = 0.0007, and Dunn's test separates VENs from IT RORB and L6 PC under
-    Bonferroni (p = 0.020 and 0.023) and Sidak, but not from L2/3 IT HPCAL1, L5 IT FEZF2 (p = 0.072)
-    or L5 ET; partially reproduced. On the median over the sweep's APs, the VEN median (0.026) is
-    not the lowest (L2/3 IT HPCAL1 and IT RORB 0.0) and Dunn's test separates no group; not
-    reproduced. The two corrections agree under each reading. The code's hand-read values
-    (PeakIdx_Fig5e.xlsx, 233 cells) give the paper's result, VEN median 0.117 the lowest and Dunn p
-    of 0.001 or less against every PC group under both corrections. The automatic first-AP reading
-    agrees with the hand-read values only loosely (Spearman 0.55, median absolute difference 0.13;
-    the median reading 0.09), so the difference rests on how the peaks are read. With the
-    prominence guard at 0.02 or 0.10 of the maximal dV/dt the first-AP reading separates no group
-    under either correction.
+  notes: The AP readings and the corrections agree. On the first AP of the maximal-rate sweep, the VEN
+    median index is the lowest (0.037; next L2/3 IT HPCAL1 0.083), Kruskal-Wallis p = 0.0016, and Dunn's
+    test separates VENs from L5 ET (Bonferroni p = 0.003, Sidak 0.003) and from no other group (L6 PC
+    0.062, IT RORB 0.29). On the median over the sweep's APs, the VEN median is again the lowest (0.081;
+    next L5 IT FEZF2 0.111), Kruskal-Wallis p = 0.0015, and Dunn's test separates VENs from L5 ET only
+    (p = 0.009 under both). The median is lowest and some groups are separated, under both readings and
+    both corrections. Leaving out the APs whose AIS phase is not resolved (at most 3% of a group's APs)
+    keeps the VEN medians lowest and separates VENs from IT RORB, L5 ET and L6 PC on the first AP. With
+    the prominence guard at 0.02 or 0.10 of the maximal dV/dt (variants) the VEN median is the lowest
+    in three of the four readings (not for the median index at 0.02), and Dunn's test separates VENs from
+    none to two groups (L5 ET, IT RORB). The code's hand-read values (PeakIdx_Fig5e.xlsx, 233 cells) give
+    the paper's result, VEN median 0.117 the lowest and Dunn p of 0.001 or less against every PC group
+    under both corrections; the automatic index agrees with them only loosely (Spearman 0.39 first AP,
+    0.20 median). The index depends on the sampling rate (40 Axon files brought to 25 kHz, median 0.088
+    to 0.168), 17 of the 29 VENs are Axon files, and within one device VENs are not significantly lower
+    than the other groups pooled (Axon p = 0.08, HEKA p = 0.10).
   deviations:
-  - The paper read the AIS and SD peaks by hand (calPhaseHeightIdx.m asks for two clicks on the
-    overlaid phase plots), so the criterion's automatic reading is used. Details it does not fix are
-    standard choices made against noise, stated in the helper; the rising phase starts where dV/dt
-    first exceeds 10% of its maximum, local maxima need a prominence of 5% of the maximum, and with
-    one maximum the AIS value is taken at the lowest local minimum of d2V/dt2 before it (the shoulder
-    of the rise), or the index is 0 when there is none.
-  - The Dunn correction in the code's own statistics sheet of PeakIdx_Fig5e.xlsx is Bonferroni; both
-    of the criterion's corrections are run.
+  - The paper read the AIS and SD peaks by hand (calPhaseHeightIdx.m asks for two clicks on the overlaid
+    phase plots), so the criterion's automatic reading is used, and its outcome differs from the one the
+    code's per-cell values give (partially reproduced against reproduced), which the criterion reports
+    as a deviation. Details it does not fix are standard choices made against noise, stated in the helper;
+    the rising phase starts where dV/dt first exceeds 10% of its maximum, local maxima need a prominence
+    of 5% of the maximum, and with one maximum the AIS value is taken at the lowest local minimum of d2V/dt2
+    before it (the shoulder of the rise). With neither a second maximum nor a shoulder, the AIS value
+    is the lowest dV/dt of the rising phase (Methods, "If there was no clear phase peak, the point with
+    the lowest derivative value was defined as the phase peak"), which makes such an AP the least saddle-like;
+    the criterion leaves this case open, and leaving such APs out does not change the outcome.
+  - AP threshold, the maximal third derivative in the 20 ms before the peak (Methods, "the 20-ms potential
+    trace preceding the AP peak was used to calculate the third derivative"), with the derivative chain
+    of PatchAnaLab computed on the window padded by 2 ms and searched up to the point of maximal dV/dt,
+    so that the filters' edge transients at the peak are not taken for the threshold. Without this, 28
+    of the 208 HEKA files had their threshold placed at the peak. The threshold starts the rising phase
+    of the phase index.
+  - The Dunn correction in the code's own statistics sheet of PeakIdx_Fig5e.xlsx is Bonferroni; both of
+    the criterion's corrections are run.
 - claim: fig3d-saddle-phase-plane
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: partially_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig3d-saddle-phase-plane
-  notes: The criterion makes this claim take the outcome of fig3e-phase-peak-index, which is blocked
-    as methods underspecified. As a description that does not decide, the median fraction of APs of
-    the maximal-rate sweep whose rising phase has two maxima of dV/dt is 0.75 in VENs against 0.40 in
-    the PC groups pooled (p = 0.039).
+  notes: The criterion makes this claim take the outcome of fig3e-phase-peak-index, which is partially
+    reproduced. As a description that does not decide, the median fraction of APs of the maximal-rate
+    sweep whose rising phase has two maxima of dV/dt is 0.80 in VENs against 0.60 in the PC groups pooled
+    (p = 0.34).
 - claim: fig4ac-ven-broader-smaller-ap
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig4ac-ven-broader-smaller-ap
-  measured: [68, 138]
-  notes: The 281 VENs and 306 L5 PCs are additional whole-cell recordings (Methods, Patch-seq
-    recording) that the paper does not say where it deposited. The dandiset holds the 462 Patch-seq
-    cells, among them 68 VENs and 138 cells labelled PC_L5 or PC_L5ET; As a variant that does not decide, on the Patch-seq cells VEN APs
-    are broader (2.96 against 2.60 ms, p = 0.072) and smaller (85.7 against 89.4 mV, p = 0.058)
-    without significance; at the penultimate AP of the maximal-rate sweep 5.04 against 4.40 ms (p =
-    0.094) and 47.6 against 49.1 mV (p = 0.85).
+  measured:
+  - 68
+  - 138
+  notes: The 281 VENs and 306 L5 PCs are additional whole-cell recordings (Methods, Patch-seq recording)
+    that the paper does not say where it deposited. The dandiset holds the 462 Patch-seq cells, among
+    them 68 VENs and 138 cells labelled PC_L5 or PC_L5ET. Its 113 Axon files without a transcriptomic
+    type are rows of the Patch-seq cell table and are described as Patch-seq experiments in every file,
+    and the device follows the recording year, so they are not taken as the recordings without RNA. As
+    a variant that does not decide, on the Patch-seq cells VEN APs are broader (3.08 against 2.70 ms,
+    p = 0.009) and smaller (86.2 against 90.2 mV, p = 0.071), neither with p below 0.001; at the penultimate
+    AP of the maximal-rate sweep 5.10 against 4.72 ms (p = 0.060) and 54.2 against 57.3 mV (p = 0.34).
 - claim: fig4i-peak-index-ais-distance-real
-  outcome: blocked
-  blocked_by: metadata_insufficient
+  outcome: not_reproduced
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig4i-peak-index-ais-distance-real
-  notes: The 62 AIS distances of the paper's code (NeuronPeakIdx_summary.mat) carry no cell IDs.
-    None of their 62 peak indices is among the per-cell values of PeakIdx_Fig5e.xlsx, and none of
-    their 41 nonzero distances is among the AIS distances of morphFeatMatrix.xlsx, so the neurons
-    cannot be matched to recordings; the paper does not say which 62 neurons were used. Measuring
-    the AIS distance from the NeuroMorpho.org reconstructions would still not say which 62 cells
-    form the figure, so it was not tried.
+  notes: 'The 62 AIS distances of the paper''s code (NeuronPeakIdx_summary.mat) carry no cell IDs, and
+    none of their peak indices or nonzero distances is in a per-cell table, so the criterion''s reading
+    is used: the Patch-seq cells with a reconstructed axon origin, those with an AIS distance (axonDist)
+    in morphFeatMatrix.xlsx, 153 cells (106 at 0 um, range to 418 um) where the legend gives 62. With
+    the indices averaged in 10 um bins and a line fitted to the bin means against the left edges (12 bins),
+    the slope is +0.00005 per um (p = 0.92) for the first-AP index and +0.0003 per um (p = 0.62) for the
+    median index; no reading gives a negative slope. The regression on cells (variant) gives p = 0.36
+    and 0.64, and leaving out the cells at 0 um changes nothing. The code''s hand-read indices on the
+    same cells (127 in PeakIdx_Fig5e.xlsx) give a negative slope, -0.0027 per um, p = 0.018 over 7 bins
+    (on cells p = 6e-5), so the difference from the paper rests on the automatic peak reading, as for
+    fig3e-phase-peak-index.'
+  deviations:
+  - The 62 neurons are not identified; the cells with an AIS distance in the code's morphology table (153)
+    are used, as the criterion says. The AIS distance is the code's table value, not measured from the
+    NeuroMorpho.org reconstructions.
+  - The phase peak index is the automatic reading of fig3e-phase-peak-index, with its deviations.
 - claim: ext9cd-ven-subtypes-ap
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_liu_2026.ipynb
   output: claim:ext9cd-ven-subtypes-ap
-  measured: [18, 11]
-  notes: The 85 VEN-L and 41 VEN-S were recorded without RNA (Extended Data Fig. 9 legend) and are
-    not in the dandiset, whose 68 VENs include 18 labelled VEN_Long and 11 VEN_Short. As a variant on
-    the Patch-seq VENs, which does not decide, half-width is 3.30 against 2.90 ms (p = 0.10, FDR 0.20
-    over the two features) and amplitude 84.7 against 86.3 mV (p = 0.98), no difference.
+  measured:
+  - 18
+  - 11
+  notes: The 85 VEN-L and 41 VEN-S were recorded without RNA (Extended Data Fig. 9 legend) and are not
+    in the dandiset, whose 68 VENs include 18 labelled VEN_Long and 11 VEN_Short. As a variant on the
+    Patch-seq VENs, which does not decide, half-width is 3.30 against 2.98 ms (p = 0.37, FDR 0.37 over
+    the two features) and amplitude 84.7 against 86.4 mV (p = 0.36), no difference.
 - claim: supp8-ven-subtypes-similar-features
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_liu_2026.ipynb
   output: claim:supp8-ven-subtypes-similar-features
-  notes: The VEN-L and VEN-S recorded without RNA are not in the dandiset (see
-    ext9cd-ven-subtypes-ap). As variants that do not decide, over the 20 Methods features no
-    feature has FDR below 0.05 for cluster 16 VENs (14) against cluster 8 VENs (15), lowest p 0.052
-    (sag value), nor for VEN_Long (18) against VEN_Short (11), lowest p 0.017 (maximal firing rate,
-    FDR 0.20).
+  notes: The VEN-L and VEN-S recorded without RNA are not in the dandiset (see ext9cd-ven-subtypes-ap).
+    Its VEN-typed files without a transcriptomic type are Patch-seq rows of the cell table (see fig4ac-ven-broader-smaller-ap).
+    As variants that do not decide, no feature has FDR below 0.05 over the 39 features or the 20 Methods
+    features for cluster 16 VENs (14) against cluster 8 VENs (15), lowest p 0.0017 (FR_slope, FDR 0.068
+    over 39), nor for VEN_Long (18) against VEN_Short (11), lowest p 0.013 (FR_slope, FDR 0.20). Some
+    VEN-typed cells carry a PC subtype label (PC_L5 4, L23_PC 3, PC_L6 1, PC_L23 1), and five VEN_Short
+    labels sit on cells not typed VEN.
 - claim: supp9-venl-more-distinct-from-ct
   outcome: reproduced
-  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:supp9-venl-more-distinct-from-ct
-  measured: [1, 0]
-  notes: Against the 11 L5/6 CT PCs (cluster 8 PC; legend 10), VEN-L (14, cluster 16 VENs) differ in 1
-    of the 20 Methods features at FDR below 0.05 (maximal firing rate, 8.3 against 18.3 Hz) and VEN-S
-    (15, cluster 8 VENs) in none. The median FDR over features is 0.46 against 0.83. Over the
-    39-feature family VEN-L have at least 4 significant features and VEN-S at least 0, with upper
-    bounds of 28 and 21, which does not decide.
+  measured:
+  - 6
+  - 0
+  notes: Against the 10 L5/6 CT PCs (cluster 8 PC; legend 10), VEN-L (14, cluster 16 VENs) differ in 6
+    of the 39 features at FDR below 0.05 (maximal firing rate and spike count, 8.3 against 17.5 Hz; ISI
+    Fano factor and CV; FR_slope; firstISI_slope) and VEN-S (15, cluster 8 VENs) in none. The median FDR
+    over features is 0.26 against 0.90. Over the 20 Methods features the counts are 1 and 0. The cluster
+    8 PC n175 is left out, as its file holds the same recording as B289, an L5 ET cell (findings); with
+    it kept the counts are 12 and 0.
   deviations:
-  - Assumption on the FDR family, as in fig2d-l23it-small-tau; the 20-feature family decides.
+  - Assumption on the FDR family. The claims file sets it to the 39 features of Ins_patchseq_ephs.xlsx,
+    those the Methods define computed as defined there and the others as createFeatures.m computes them.
+    Nineteen of them (phase areas and perimeters, ISI phase ratios, FR, first-ISI and adaptation slopes,
+    amplitude CV and Fano factor, AHP latency and others) are defined neither in the Methods nor in PatchAnaLab,
+    so their values are taken from the code's table by cell ID (234 of the 237 grouped cells are in it)
+    and the FDR is computed over all 39. The 20 features the Methods name are the variant family. Over
+    the 20 Methods features the result is the same, by a margin of one feature (1 against 0), so the outcome
+    does not rest on this choice.
+  - The duplicate recording n175 is left out of the L5/6 CT group, which then holds the legend's 10 cells.
 - claim: morph-more-distinct-than-ephys
   outcome: reproduced
-  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:morph-more-distinct-than-ephys
-  measured: [445, 106]
-  notes: Over the 21 comparisons (each group against the other five and each pair), 445 of 1,185
-    morphological tests have FDR below 0.05 (fraction 0.376), against 106 of 420 physiological tests
-    over the 20 Methods features (0.252); morphology exceeds physiology under both the count and the
-    fraction. Over the 39-feature physiological family the count lies between 77 and 550 and the
-    fraction between 0.094 and 0.672, which does not decide. The morphology cells per group (26, 16,
-    53, 21, 11, 13) are close to the Fig. 2h legend (25, 16, 54, 18, 11, 13).
+  measured:
+  - 445
+  - 120
+  notes: Over the 21 comparisons (each group against the other five and each pair), 445 of 1,185 morphological
+    tests have FDR below 0.05 (fraction 0.376), against 120 of 420 physiological tests over the 20 Methods
+    features (0.286); morphology exceeds physiology under both the count and the fraction. Over the 39-feature
+    physiological family the count is 150 of 819 (0.183), the same result. Over 500 random sets of 40
+    of the 57 morphological features the count runs from 255 to 372 and the fraction from 0.308 to 0.443,
+    above the physiological values in every set. The morphology cells per group (26, 16, 53, 21, 11, 13)
+    are close to the Fig. 2h legend (25, 16, 54, 18, 11, 13).
   deviations:
-  - The morphological features are the 57 of the paper's code table morphFeatMatrix.xlsx, not
-    computed from the NeuroMorpho.org reconstructions; the Methods' 40 features are not listed, so
-    all 57 are used. They are matched to the recordings by cell ID (morph-table-link).
-  - Assumption on the physiological FDR family, as in fig2d-l23it-small-tau.
+  - The morphological features are the 57 of the paper's code table morphFeatMatrix.xlsx, not computed
+    from the NeuroMorpho.org reconstructions; the Methods count 40 features ("In total, we calculated
+    40 morphological features") without listing them, so all 57 are used, and random sets of 40 are a
+    variant. They are matched to the recordings by cell ID (morph-table-link).
+  - AP threshold, the maximal third derivative in the 20 ms before the peak (Methods, "the 20-ms potential
+    trace preceding the AP peak was used to calculate the third derivative"), with the derivative chain
+    of PatchAnaLab computed on the window padded by 2 ms and searched up to the point of maximal dV/dt,
+    so that the filters' edge transients at the peak are not taken for the threshold. Without this, 28
+    of the 208 HEKA files had their threshold placed at the peak.
 - claim: fig7c-tau-rna-distance
-  outcome: blocked
-  blocked_by: too_large
-  notes: The transcriptomic side needs the 10x counts with their cluster labels. GEO GSE319557 holds
-    the raw count matrices (GSE319557_RAW.tar, 1.5 GB) without labels and the labelled h5ad files only
-    as one gzip-compressed tar of 23 GB (GSE319557_AIC_scRNA_h5ad.tar.gz), which cannot be read in
-    part and has to be streamed whole within the notebook limit; the processed data on Zenodo
-    (doi:10.5281/zenodo.18814764) are six RAR parts of 11.8 GB. Not attempted.
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig7c-tau-rna-distance
+  measured:
+  - 0.105
+  notes: The 10x excitatory neurons are Ext.h5ad of GEO GSE319557 (21,733 cells in 20 leiden clusters,
+    numbered as the cell table's predictCluster, with raw UMI counts), streamed from the archive's tar.gz
+    (3.4 GB member, about 2 minutes). Over the 66 pairs of the 12 clusters of the criterion, the distance
+    of mean Methods tau correlates with the transcriptomic distance (1 minus the Pearson r of the clusters'
+    mean log2(x + 1) counts over the 500 most variable genes) with r = 0.105 (p = 0.40), outside 0.53
+    and its tolerance of 0.053 and not significant. With the code's first-sweep tau, a variant, r = 0.36
+    (p = 0.003); with the median over sweeps r = 0.08. The maximal firing rate gives r = 0.07. With the
+    500 genes of highest variance of log2(x + 1) in place of dispersion, r = -0.04 for the Methods' tau
+    and 0.21 for the code's. Clusters 1 and 4 hold 4 and 5 Patch-seq cells. The code's variant, log mean
+    Patch-seq counts, needs the Patch-seq counts, which are not on this dandiset, and is not run.
+  deviations:
+  - Assumption on the genes. The Methods take "the 500 most-variable genes" without saying how they are
+    ranked; the 500 of highest normalized dispersion in the file's own highly-variable-gene ranking (var/dispersions_norm)
+    are used, and the 500 of highest variance of log2(x + 1) are a variant. Both give r far below 0.53,
+    so the outcome does not rest on this choice.
+  - The 10x cluster labels differ in their first marker from the cell table's for four clusters (4 Exc
+    OPRK1 SMYD1 against Exc FEZF2 SMYD1; 9, 11 and 14 Exc FEZF2 against Exc RORB), with the same second
+    marker; the clusters are matched by number.
 - claim: scrna-classes
   outcome: blocked
   blocked_by: other
-  notes: Data elsewhere (GEO GSE319557, Zenodo). The criterion tests it in full under the claims
-    file of DANDI:001750; this dandiset holds none of its data, and this attempt on 001746 does not
-    test it.
+  notes: Data elsewhere (GEO GSE319557, Zenodo). The criterion tests it in full under the claims file
+    of DANDI:001750; this dandiset holds none of its data, and this attempt on 001746 does not test it.
 - claim: ext1d-ven-soma-density
   outcome: blocked
   blocked_by: other
-  notes: Data elsewhere (the article's Source Data for Extended Data Fig. 1). The text states no
-    result for the soma size and density comparison, and the supplement files given with the paper
-    hold images, not the source data. Not tested in this attempt on 001746.
+  notes: Data elsewhere (the article's Source Data for Extended Data Fig. 1). The text states no result
+    for the soma size and density comparison, and the supplement files given with the paper hold images,
+    not the source data. Not tested in this attempt on 001746.
 - claim: fig3c-ais-distance-length
   outcome: blocked
   blocked_by: other
-  notes: Data elsewhere (AIScmp_PCvsVEN_Fig5c.xlsx of the paper's code). The criterion tests it in
-    full under the claims file of DANDI:001750, with the readings named there; not tested in this
-    attempt on 001746.
+  notes: Data elsewhere (AIScmp_PCvsVEN_Fig5c.xlsx of the paper's code). The criterion tests it in full
+    under the claims file of DANDI:001750, with the readings named there; not tested in this attempt on
+    001746.
 - claim: fig4d-sodium-current-lower
   outcome: blocked
   blocked_by: other
-  notes: Data in DANDI:001750 (sodium currents). The criterion tests it under that dandiset's claims
-    file; not tested in this attempt on 001746.
+  notes: Data in DANDI:001750 (sodium currents). The criterion tests it under that dandiset's claims file;
+    not tested in this attempt on 001746.
 - claim: model-ais-distance-ap-shape
   outcome: blocked
   blocked_by: other
@@ -392,13 +515,13 @@ outcomes:
 - claim: fig4j-eepsp-ven-larger
   outcome: blocked
   blocked_by: other
-  notes: Data elsewhere (sumData_StimWM.xlsx of the paper's code). The criterion tests it under the
-    claims file of DANDI:001750; not tested in this attempt on 001746.
+  notes: Data elsewhere (sumData_StimWM.xlsx of the paper's code). The criterion tests it under the claims
+    file of DANDI:001750; not tested in this attempt on 001746.
 - claim: fig5-psc-and-connectivity
   outcome: blocked
   blocked_by: other
-  notes: Data in DANDI:001752 (postsynaptic currents) and DANDI:001751 (multi-patch). The criterion
-    tests it under those dandisets' claims files; not tested in this attempt on 001746.
+  notes: Data in DANDI:001752 (postsynaptic currents) and DANDI:001751 (multi-patch). The criterion tests
+    it under those dandisets' claims files; not tested in this attempt on 001746.
 - claim: fig6-ven-subtype-morphology-markers
   outcome: blocked
   blocked_by: other
@@ -407,60 +530,359 @@ outcomes:
 - claim: fig8-metabolomics
   outcome: blocked
   blocked_by: other
-  notes: Data in MetaboLights MTBLS13927. The criterion tests it under the claims file of
-    DANDI:001750; not tested in this attempt on 001746.
+  notes: Data in MetaboLights MTBLS13927. The criterion tests it under the claims file of DANDI:001750;
+    not tested in this attempt on 001746.
 findings:
 - kind: metadata_insufficient
-  statement: The files carry no cell type, VEN subtype or transcriptomic type, although the
-    dandiset's description says the recordings are annotated with transcriptomic cell types. These
-    labels exist only in the paper's code repository (metaInfo_ephysio_patchSeq.csv), matched by
-    file name.
+  statement: The files carry no cell type, VEN subtype or transcriptomic type, although the dandiset's
+    description says the recordings are annotated with transcriptomic cell types. These labels exist only
+    in the paper's code repository (metaInfo_ephysio_patchSeq.csv), matched by file name.
 - kind: metadata_error
-  statement: Five pairs of files hold identical voltage data in every sweep under different cell
-    IDs, four of them under different subjects (s640 and n5, B722 and B726, s653 and n29, s485 and
-    s676, B289 and n175). In the pair B289 and n175 the cell table gives the two cells different
-    transcriptomic clusters (16 and 8). The dandiset holds 457 distinct recordings in 462 files.
+  statement: Five pairs of files hold identical voltage data in every sweep under different cell IDs,
+    four of them under different subjects (s640 and n5, B722 and B726, s653 and n29, s485 and s676, B289
+    and n175). In the pair B289 and n175 the cell table gives the two cells different transcriptomic clusters
+    (16 and 8). The dandiset holds 457 distinct recordings in 462 files.
 - kind: code_mismatch
-  statement: The cell table metaInfo_ephysio_patchSeq.csv names the file of cell n172 (subject
-    Mfa220428) on two rows, the second with subject Mfa180730, and names no row for the file of cell
-    s172 (subject Mfa180730), which is in the dandiset.
+  statement: The cell table metaInfo_ephysio_patchSeq.csv names the file of cell n172 (subject Mfa220428)
+    on two rows, the second with subject Mfa180730, and names no row for the file of cell s172 (subject
+    Mfa180730), which is in the dandiset.
 - kind: data_missing
-  statement: The dandiset holds 10 subjects, where the paper says the Patch-seq experiments used 12
-    animals, and it holds only the Patch-seq cells. The additional whole-cell recordings without RNA
-    (281 VENs and 306 L5 PCs of Fig. 4a-c, 85 VEN-L and 41 VEN-S of Extended Data Fig. 9c,d and
-    Supplementary Table 8) are not in it, and the paper does not say where they are.
+  statement: The dandiset holds 10 subjects, where the paper says the Patch-seq experiments used 12 animals,
+    and it holds only the Patch-seq cells. The additional whole-cell recordings without RNA (281 VENs
+    and 306 L5 PCs of Fig. 4a-c, 85 VEN-L and 41 VEN-S of Extended Data Fig. 9c,d and Supplementary Table
+    8) are not in it, and the paper does not say where they are.
 - kind: metadata_error
-  statement: Every file has the same session start time (2018-01-01 01:00 +08:00), a placeholder.
-    Two session IDs carry the date of another subject (sess_180920d2 under Mfa181204, sess_220419d1HS
-    under Mfa220428).
+  statement: Every file has the same session start time (2018-01-01 01:00 +08:00), a placeholder. Two
+    session IDs carry the date of another subject (sess_180920d2 under Mfa181204, sess_220419d1HS under
+    Mfa220428).
 - kind: metadata_error
-  statement: The stimulus series are stated in amperes but hold pA (values -200 to 1,480 in steps of
-    20), and their starting time is NaN. Four files whose device is AXON recording system are sampled
-    at 25 kHz like the HEKA files, and one HEKA file at 50 kHz.
+  statement: The stimulus series are stated in amperes but hold pA (values -200 to 1,480 in steps of 20),
+    and their starting time is NaN. Four files whose device is AXON recording system are sampled at 25
+    kHz like the HEKA files, and one HEKA file at 50 kHz.
 - kind: identifier_missing
-  statement: The 62 AIS distances and peak indices of Fig. 4i (NeuronPeakIdx_summary.mat in the
-    paper's code) carry no cell IDs, and their values match none of the per-cell tables that have
-    IDs, so they cannot be linked to the recordings.
+  statement: The 62 AIS distances and peak indices of Fig. 4i (NeuronPeakIdx_summary.mat in the paper's
+    code) carry no cell IDs, and their values match none of the per-cell tables that have IDs, so they
+    cannot be linked to the recordings. The code's morphology table gives an AIS distance for 153 Patch-seq
+    cells, so it does not say which 62 were used either.
 - kind: code_mismatch
-  statement: The paper's feature table holds the first-sweep tau of createFeatures.m, where the
-    Methods average tau over all hyperpolarizing sweeps; the Methods' tau computed from the files is
-    26% longer (median ratio). The Fig. 2 groups formed by the code from its tables hold 30, 22, 122,
-    29, 17 and 13 cells where the legend gives 30, 17, 119, 22, 16 and 13.
+  statement: The paper's feature table holds the first-sweep tau of createFeatures.m, where the Methods
+    average tau over all hyperpolarizing sweeps; the Methods' tau computed from the files is 26% longer
+    (median ratio). The Fig. 2 groups formed by the code from its tables hold 30, 22, 122, 29, 17 and
+    13 cells where the legend gives 30, 17, 119, 22, 16 and 13.
 - kind: methods_unavailable
-  statement: Question for the paper's authors. Which measure does "a deeper sag in L5 ET neurons"
-    use? The Methods define sag value (RMP minus steady state at the largest hyperpolarizing step),
-    sag ratio, sag time and sag area, and the feature table holds Sag_Ratio. On the deposited
-    recordings L5 ET has the largest sag ratio and the smallest sag value of the six groups, so the
-    claim holds under one and fails under the other.
+  statement: Question for the paper's authors. Which measure does "a deeper sag in L5 ET neurons" use?
+    The Methods define sag value (RMP minus steady state at the largest hyperpolarizing step), sag ratio,
+    sag time and sag area, and the feature table holds Sag_Ratio. On the deposited recordings L5 ET has
+    the largest sag ratio and the smallest sag value of the six groups, so the claim holds under one and
+    fails under the other.
 - kind: methods_unavailable
   statement: Question for the paper's authors. How are 19 of the 39 features of Ins_patchseq_ephs.xlsx
-    computed (for example ISI_phaseT_ratio, firstSpikePhaseArea, FR_slope, amp_FanoFactor,
-    AHP_latency)? They are defined neither in the Methods nor in PatchAnaLab 1.0, and they enter the
-    Benjamini-Hochberg family of every comparison of Supplementary Table 2, so the FDR values cannot
-    be recomputed from the data.
+    computed (for example ISI_phaseT_ratio, firstSpikePhaseArea, FR_slope, amp_FanoFactor, AHP_latency)?
+    They are defined neither in the Methods nor in PatchAnaLab 1.0, and they enter the Benjamini-Hochberg
+    family of every comparison of Supplementary Table 2, so the FDR values cannot be recomputed from the
+    recordings alone (this attempt takes their values from the table).
 - kind: methods_unavailable
-  statement: Question for the paper's authors. The phase peak indices were read by clicking two
-    points on the overlaid phase plots of the maximal-rate sweep (calPhaseHeightIdx.m). Which APs
-    were read, and how was the AIS peak placed when there was no separate maximum? An automatic
-    reading (first AP, or median over APs) gives different outcomes for Fig. 3e and agrees with the
-    hand-read values only loosely (Spearman 0.55).
+  statement: Question for the paper's authors. The phase peak indices were read by clicking two points
+    on the overlaid phase plots of the maximal-rate sweep (calPhaseHeightIdx.m). Which APs were read,
+    and how was the AIS peak placed when there was no separate maximum? An automatic reading agrees with
+    the hand-read values only loosely (Spearman 0.39 on the first AP) and gives a weaker Fig. 3e result
+    and no Fig. 4i slope, where the hand-read values give both.
+- kind: other
+  statement: The Methods put the Patch-seq recordings on a HEKA amplifier and the recordings without RNA
+    on a MultiClamp 700B, but 139 files with a transcriptomic type have the device AXON recording system;
+    the device follows the recording year (mostly Axon for the 2018 subjects, HEKA for 2022). AP half-width
+    and tau are longer in the Axon files in every group, in the computed values and in the paper's feature
+    table (half-width 3.13 against 2.08 ms, tau 41 against 26 ms), and bringing Axon files to the HEKA
+    sampling rate does not change them, so the recording conditions differ between the two sets. The groups
+    are unevenly spread over them (L5 IT FEZF2 93 of 125 Axon files, L2/3 IT HPCAL1 6 of 30), and the
+    narrow APs and short tau of L2/3 IT HPCAL1 are not significant within either set.
+- kind: code_mismatch
+  statement: The 10x cluster labels of GEO GSE319557 (Ext.h5ad) differ in their first marker from those
+    of the cell table metaInfo_ephysio_patchSeq.csv for clusters 4, 9, 11 and 14 (for example Exc OPRK1
+    SMYD1 against Exc FEZF2 SMYD1, Exc FEZF2 NRG1 against Exc RORB NRG1); the cluster numbers and second
+    markers agree.
+verifications:
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper's full text. The verifier tested aic.phase_index
+    on synthetic APs and checked the 39-feature FDR bound against brute force and aic.bh against scipy.
+    Report in transcripts/001746/verifier-1-report.md.
+  results:
+  - claim: patchseq-cell-table-link
+    agrees: false
+    outcome: reproduced
+    reason: 'All 462 rows find a file. Cell IDs agree 462/462 and subjects 461/462. Within 10% of the
+      xlsx: half-width 89.5%, amplitude 90.2%, rate 98.9%. The one subject mismatch is row 235 (n172,
+      Mfa180730), which repeats row 110''s file name; the one file no row names (s172, Mfa180730) is almost
+      certainly the file it meant. By the letter "labels disagree" fails on that row. Five pairs of byte-identical
+      recordings carry different cell IDs, subjects and labels; the data-integrity question is noted but
+      not carried into the link claim. Not checked whether the NWB files hold cell-type annotations outside
+      the fields read_nwb reads.'
+    response: 'Outcome changed to reproduced, with row 235 read as the table''s row for s172 and the letter
+      of the criterion stated in the deviations. The AP threshold search was corrected (the filters''
+      edge transient at the AP peak had been taken for the threshold in 28 HEKA files), which moved the
+      AP measures. Agreement is now 96.7%, 97.5% and 98.9%. Every file''s HDF5 object tree and string
+      values were searched: there is no annotation beyond the fields read. The duplicate pairs are named
+      in the notes.'
+  - claim: morph-table-link
+    agrees: true
+    outcome: reproduced
+    reason: 166/166 rows match a file; clusters agree 163/165 = 98.8%.
+    response: No change.
+  - claim: patchseq-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: 462 neurons (457 distinct recordings), within tolerance. 10 subjects against 12 ± 1.2 fails;
+      all male.
+    response: No change.
+  - claim: patchseq-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: 278/307, 248/273, 17/18 and 17/17 are within tolerance. Inhibitory 30 against 34 ± 3.4 is
+      not. The 30% mapping-rate filter removes nothing (minimum 0.40).
+    response: No change.
+  - claim: fig2a-subclass-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of the 6 judged counts are within tolerance (L6 IT and L6b judged together, 14/14). L5 IT
+      FEZF2 is 125 against 143 ± 14.3.
+    response: No change.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: reproduced
+    reason: 14 VENs in DSG2 and 15 in COL24A1, none in other clusters.
+    response: No change.
+  - claim: fig6f-ven-subtype-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'No VEN-L is in COL24A1 and no VEN-S in DSG2, and VEN-S is 10 (11 ± 1.1). VEN-L is 12 against
+      10 ± 1, outside tolerance. Table inconsistencies left unremarked: some VEN-typed cells carry PC
+      subtypes (PC_L5, L23_PC), and 5 VEN_Short labels sit on non-VEN rows.'
+    response: No change of outcome. The PC subtype labels on VEN-typed cells and the VEN_Short labels
+      on other cells are stated in the notes of supp8-ven-subtypes-similar-features and in the notebook.
+  - claim: fig2d-l23it-small-tau
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced (marginal). Methods tau median is lowest (32.7 ms). Against the pooled five, p
+      = 0.0106: q = 0.023 in the 20-feature family, and between 0.0106 and 0.0514 in the deciding 39-feature
+      family. The upper end is reached only if none of the 19 features not computed has p < 0.0106. tau_methods
+      averages every hyperpolarizing sweep''s fit with no quality filter; outliers like 217 ms enter the
+      mean. Device is never crossed with group; L2/3 IT cells come mostly from 2022 subjects.'
+    response: 'The 19 features defined nowhere now take the code''s table values, so the FDR over the
+      39 features is computed exactly and no comparison is undecided. Here FDR 0.034. Per-cell fit counts,
+      the spread of tau across sweeps and the cells above 150 ms are shown; the median over sweeps gives
+      FDR 0.017. A device crosstab was added: tau is longer in the Axon files in every group and in the
+      code''s own table, not from the sampling rate, and within one device the L2/3 IT HPCAL1 difference
+      is not significant; this is in the notes and findings. Outcome unchanged.'
+  - claim: fig2f-l23it-narrow-ap
+    agrees: true
+    outcome: partially_reproduced
+    reason: Significantly narrower than the pooled five (q ≤ 0.008), but the median ranks 2nd (IT RORB
+      1.92 ms against 2.00), and under reading (b) it is not significant against IT RORB, L5 ET or L6
+      PC. The criterion's partial clause requires the lowest median, so this is a judgement the claims
+      file anticipates. Whether fs-dependent measures (half-width resolution) are confounded with group
+      through the recording era was left open.
+    response: No change of outcome. The AP threshold search was corrected (the filters' edge transient
+      at the AP peak had been taken for the threshold in 28 HEKA files), which moved the AP measures.
+      The median is now 2.08 against 1.92 ms for IT RORB, still second. Decimating Axon files to 25 kHz
+      leaves half-width unchanged; half-width is longer in the Axon files in every group, and within one
+      device the difference is not significant (notes).
+  - claim: supp11-rm-itrorb-l6pc
+    agrees: true
+    outcome: partially_reproduced
+    reason: L6 PC is higher than the pooled five (q ≤ 0.006). IT RORB against the pooled five has q =
+      0.065 in the 20-feature family (between 0.023 and 0.147 in the 39-feature family), and both groups
+      fail reading (b).
+    response: The 19 features defined nowhere now take the code's table values, so the FDR over the 39
+      features is computed exactly and no comparison is undecided. IT RORB has FDR 0.087, not significant.
+      Outcome unchanged.
+  - claim: supp11-l5it-threshold-latency
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): threshold −38.5 against −41.2 mV (q ≤ 0.045) and latency 204 against 149 ms
+      (q ≤ 0.0012).'
+    response: No change of outcome. The AP threshold search was corrected (the filters' edge transient
+      at the AP peak had been taken for the threshold in 28 HEKA files), which moved the AP measures.
+      Threshold -39.1 against -42.3 mV, FDR 0.005; latency FDR 0.0008.
+  - claim: supp11-ven-broad-ap
+    agrees: true
+    outcome: not_reproduced
+    reason: The highest median is L5 IT FEZF2 (2.92 ms) against VEN 2.90; VEN against the pooled five
+      p = 0.17.
+    response: Outcome changed to partially reproduced. The AP threshold search was corrected (the filters'
+      edge transient at the AP peak had been taken for the threshold in 28 HEKA files), which moved the
+      AP measures. The VEN median is now 3.03 ms, the highest, narrowly above L5 IT FEZF2 (2.98), and
+      no reading is significant, which the criterion calls partially reproduced.
+  - claim: supp11-l5et-deep-sag
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified). Sag ratio is highest in L5 ET and significant. Sag value
+      is lowest in L5 ET (19.6 mV) and significant the other way, so the measure readings disagree as
+      the criterion foresees. Sag and sag value are taken at the largest hyperpolarizing step, which is
+      −80 to −120 pA in 28 grouped cells, so step size is mixed into sag value and sag ratio.
+    response: No change of outcome. A variant on the files whose largest step is -200 pA was added; the
+      readings disagree there too.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: not_reproduced
+    reason: Firing rate is not lower under (a) (p = 0.09), (b) (ns against L5 IT FEZF2) or (c) (p = 0.38).
+      No variability measure is significant under any reading.
+    response: No change of outcome. With the exact 39-feature FDR one comparison under (b), the Fano factor
+      against L2/3 IT HPCAL1, has FDR 0.047; the notes say so.
+  - claim: l5et-vs-l5it-sag-rm-rate
+    agrees: false
+    outcome: partially_reproduced
+    reason: Firing rate higher (q ≤ 0.033) and sag ratio deeper (q ≤ 6e-5). Input resistance is lower,
+      with q = 0.026 in the 20-feature family but up to 0.054 in the 39-feature family. Sag value goes
+      the opposite way.
+    response: 'Outcome changed to partially reproduced. The 19 features defined nowhere now take the code''s
+      table values, so the FDR over the 39 features is computed exactly and no comparison is undecided.
+      Input resistance has FDR 0.039, so all three hold under the sag ratio; under the sag value two hold.
+      The adopted sag ratio reading was dropped: the outcome is the one that holds under both of the criterion''s
+      sag readings.'
+  - claim: fig3e-phase-peak-index
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (methods_underspecified). VEN median is lowest only under the first-AP reading, not
+      under the median-over-APs reading; Dunn separates VENs from only 2 of 5 groups. aic.phase_index
+      returns 0 when no AIS peak or shoulder is found: on synthetic APs a monophasic AP scores 0.0, a
+      biphasic AP 0.27 and a shoulder AP 0.42, so the APs least like a saddle get the index of the most
+      saddle-like. The Methods'' "point with the lowest derivative value" does not support 0. This rule
+      produces the 0.0 medians of L2/3 IT and IT RORB under the median reading, which is why that reading
+      fails. It invalidates the automatic index. Its agreement with the hand-read values is poor (Spearman
+      0.55 first AP, 0.09 median). The code''s hand-read values would reproduce it (all Dunn p ≤ 0.001),
+      which is a deviation from the automatic reading.'
+    response: Outcome changed to partially reproduced. With no AIS peak or shoulder the AIS value is now
+      the lowest dV/dt of the rising phase (the Methods' passage), so such an AP is the least saddle-like
+      (synthetic monophasic AP 0.81), with a variant that leaves such APs out and the per-group fraction
+      of such APs shown. Most 0.0 values came from thresholds placed at the AP peak (The AP threshold
+      search was corrected), now corrected; such APs are at most 3% of a group's. Under both AP readings
+      and both corrections the VEN median is now the lowest and Dunn's test separates VENs from L5 ET
+      only. The automatic index still agrees loosely with the hand-read values (Spearman 0.39 and 0.20),
+      which the notes report as the criterion asks; the index also depends on the sampling rate, shown
+      by decimation.
+  - claim: fig3d-saddle-phase-plane
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified). Takes the outcome of fig3e.
+    response: Outcome changed to partially reproduced, following fig3e-phase-peak-index.
+  - claim: fig4ac-ven-broader-smaller-ap
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). The archive holds 462 files, all rows of the Patch-seq table, with
+      only 68 VENs and 138 L5 PCs. The Patch-seq variant is not significant. 253 files are labelled Axon,
+      and the Methods put non-RNA recordings on MultiClamp/pClamp and Patch-seq on HEKA; device is never
+      crossed with typed/untyped status, which leaves open whether part of the dataset is the non-RNA
+      recordings.
+    response: 'No change of outcome. The device crosstab by year and typed status was added: the device
+      follows the recording year, both devices hold typed and untyped files, and every file is described
+      as a Patch-seq experiment, so the untyped Axon files are not taken as the recordings without RNA.
+      With the corrected threshold the variant half-width difference has p = 0.009, still above the criterion''s
+      0.001.'
+  - claim: fig4i-peak-index-ais-distance-real
+    agrees: false
+    outcome: blocked
+    reason: 'I''d give methods_underspecified, inherited from fig3e. The notebook''s reason, metadata_insufficient,
+      is weak: the criterion already takes the 62 as the Patch-seq cells with a reconstructed axon origin,
+      and morphFeatMatrix.xlsx has axonDist by cell ID for 166 matched cells. Not run; the criterion names
+      a reading the dataset plus morphFeatMatrix axonDist allows.'
+    response: The regression was run as the criterion reads it, on the 153 Patch-seq cells with an axonDist
+      in morphFeatMatrix.xlsx. Neither automatic reading gives a negative slope (p = 0.92 and 0.62), so
+      the outcome is not reproduced, not blocked; fig3e-phase-peak-index is no longer blocked. The code's
+      hand-read indices on the same cells give a negative slope (p = 0.018), which the notes report.
+  - claim: ext9cd-ven-subtypes-ap
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (data_missing). The dataset has 18 VEN_Long and about 12 VEN_Short VENs, far fewer
+      than 85 and 41. Variant: no difference.'
+    response: No change.
+  - claim: supp8-ven-subtypes-similar-features
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Part of the subtype-labelled VENs lack a transcriptomic type and may
+      be non-RNA recordings; this was not separated.
+    response: No change of outcome. The device and typed-status crosstab shows the untyped files are rows
+      of the Patch-seq table on both devices; the notes say so.
+  - claim: supp9-venl-more-distinct-from-ct
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced (weak). 20-feature family: 1 feature against 0. 39-feature family: at least 4
+      against at least 0. Median q 0.46 against 0.83. The 1-against-0 margin is fragile. n175 (cluster
+      8 PC, the same recording as B289, L5 ET) stays in the L5/6 CT group (n = 11; the legend gives 10).'
+    response: No change of outcome. n175 is left out of the L5/6 CT group (10 cells, as the legend). The
+      19 features defined nowhere now take the code's table values, so the FDR over the 39 features is
+      computed exactly and no comparison is undecided. The counts are 6 against 0 over the 39 features
+      and 1 against 0 over 20; with n175 kept, 12 against 0.
+  - claim: morph-more-distinct-than-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Count 445 against 106, fraction 0.376 against 0.252 against the Methods' 20 features, the
+      family this claim's criterion names. The morphology family is 57 columns, not 40, an unstated choice.
+      The fraction reading is barely affected.
+    response: No change of outcome. The 57-feature choice is stated in the deviations, and 500 random
+      sets of 40 features were added (count 255 to 372, fraction 0.308 to 0.443, above physiology in every
+      set). With the corrected threshold physiology has 120 of 420 (0.286).
+  - claim: fig7c-tau-rna-distance
+    agrees: false
+    outcome: blocked
+    reason: Blocked (data elsewhere). The archive's metadata lists only current-clamp series, so the RNA
+      side is not on this dandiset. The notebook has no cell for this claim and no evidence for "too_large".
+    response: 'The claim is now tested. Ext.h5ad, the 10x excitatory neurons with their clusters, is streamed
+      from the GEO archive (3.4 GB, about 2 minutes), so the claim is neither too large nor blocked. r
+      = 0.105 with the Methods'' tau against 0.53: not reproduced. A notebook cell shows the computation.'
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: ext1d-ven-soma-density
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: fig4d-sodium-current-lower
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: fig4j-eepsp-ven-larger
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: fig5-psc-and-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: fig6-ven-subtype-morphology-markers
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.
+  - claim: fig8-metabolomics
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
+      001751 and 001752 exist separately.
+    response: No change.

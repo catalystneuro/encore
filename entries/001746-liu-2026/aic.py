@@ -27,7 +27,8 @@ A = an assumption, said why; X = a standard choice for a detail that does not ch
   samples above it inside the step, its peak the run's maximum.
 - AP threshold, the sample of maximal third derivative in the 20 ms before the peak (M); the
   derivative chain is C's (5-sample smoothing, then 1 kHz filtering of the 2nd and 3rd
-  derivatives). C instead starts the window halfway between step onset and the first peak
+  derivatives), computed on the window padded by 2 ms and searched up to the maximal dV/dt, so
+  that filter edge transients at the peak are not taken for the threshold (X). C instead starts the window halfway between step onset and the first peak
   (`threshold_window="code"`). Amplitude, peak minus threshold (M). Half-width, the time
   between the rising and the falling crossing of half the threshold-to-peak height (M; the
   falling crossing is the first one after the peak, X). Rise time, threshold to peak (M); decay
@@ -43,6 +44,8 @@ A = an assumption, said why; X = a standard choice for a detail that does not ch
   first third of the step (C); sag ratio (trough - RMP)/(steady state - RMP) (M); sag value
   RMP - steady state (M); sag time and sag area between the two crossings of the steady state
   (M).
+- Sag measures at the largest hyperpolarizing step of the file, -200 pA in most files and -60 to
+  -120 pA in the others (`sag_step_pA`).
 - Tau, fit of a exp(-t/tau) + C from step onset to the minimum of the first third of the step,
   5-sample smoothing (C); averaged over all hyperpolarizing sweeps (M; S panel f). C takes the
   first sweep only, bounded to 10 to 100 ms (`tau_code`). Fits with tau at a bound or failing are
@@ -59,8 +62,11 @@ A = an assumption, said why; X = a standard choice for a detail that does not ch
   on the APs of the maximal-rate sweep (C). On each AP's rising phase (threshold to peak), Pais is
   the first local maximum and Psd the largest maximum after it; with one maximum only, the point
   before it where d2V/dt2 has its lowest local minimum (the shoulder of the rise) stands for
-  the missing AIS peak; with no shoulder the index is 0 (the claim's criterion,
-  reading M's "the point with the lowest derivative value"). Local maxima count when their
+  the missing AIS peak (the claim's criterion). With neither (the AIS phase not resolved), the AIS
+  "peak" is the point of the rising phase with the lowest dV/dt (M, "If there was no clear phase
+  peak, the point with the lowest derivative value was defined as the phase peak"; A, as the
+  criterion leaves this case open), which is where the rising phase starts, so the index is near
+  (1 - 0.1)/(1 + 0.1) = 0.82; the variant `_x` leaves such APs out. Local maxima count when their
   prominence is at least `PROMINENCE_FRAC` of the AP's maximal dV/dt (X, against noise; the
   notebook shows 0.02 and 0.10). The rising phase starts where dV/dt first
   exceeds 10% of its maximum (X, so that noise at threshold is not read as the AIS peak).
@@ -91,6 +97,11 @@ FEATURE_XLSX = f"{CODE_RAW}/ephysio/data_ephy/Ins_patchseq_ephs.xlsx"
 PEAKIDX_XLSX = f"{CODE_RAW}/ephysio/data_ephy/PeakIdx_Fig5e.xlsx"
 AIS_MAT = f"{CODE_RAW}/ephysio/data_ephy/NeuronPeakIdx_summary.mat"
 MORPH_XLSX = f"{CODE_RAW}/morpho/dataMorph/morphFeatMatrix.xlsx"
+
+# The 10x excitatory neurons with their clusters (GEO GSE319557, member Ext.h5ad of the h5ad archive).
+GEO_H5AD_TAR = ("https://ftp.ncbi.nlm.nih.gov/geo/series/GSE319nnn/GSE319557/suppl/"
+                "GSE319557_AIC_scRNA_h5ad.tar.gz")
+GEO_MEMBER = "AIC_scRNA_h5ad/Ext.h5ad"
 
 STEP_S = 0.6                 # M, 600 ms steps
 PRE_SPIKE_OFFSET_MV = 30.0   # C, anaAP.m height = max(smoothed) + 30
@@ -161,7 +172,24 @@ def read_nwb(asset_id):
     sti = sorted(f["stimulus/presentation"])
     s0 = f["acquisition"][acq[0]]
     dec = lambda x: x.decode() if isinstance(x, bytes) else str(x)
+    # every object path (digits replaced by #) and every string value or attribute outside the
+    # sweeps and the format specifications, to look for annotations outside the fields read below
+    paths, strings = set(), []
+    def visit(name, obj):
+        paths.add("".join("#" if ch.isdigit() else ch for ch in name))
+        if name.startswith("specifications") or "Series" in name:
+            return
+        vals = list(obj.attrs.values())
+        if isinstance(obj, h5py.Dataset) and obj.dtype.kind in "OSU" and obj.size <= 1000:
+            vals += list(np.atleast_1d(obj[()]))
+        for v in vals:
+            for x in np.atleast_1d(v):
+                if isinstance(x, (bytes, str)):
+                    strings.append((name, x.decode(errors="replace") if isinstance(x, bytes) else x))
+    f.visititems(visit)
     out = {
+        "h5_paths": paths,
+        "h5_strings": strings,
         "V": np.stack([f["acquisition"][k]["data"][:] * f["acquisition"][k]["data"].attrs.get("conversion", 1.0)
                        for k in acq]),
         "I": np.stack([f["stimulus/presentation"][k]["data"][:] for k in sti]),
@@ -235,14 +263,24 @@ def detect_spikes(v, fs, on, off):
 
 
 def ap_threshold(v, fs, start, peak):
-    """Sample of maximal third derivative in v[start:peak] (M; derivative chain of C)."""
-    seg = smooth(v[start:peak + 1], 5)
-    if len(seg) < 40:
+    """Sample of maximal third derivative in v[start:peak] (M; derivative chain of C).
+
+    The derivatives are computed on the window padded by 2 ms on each side, and the maximum is
+    sought from the window's start to the point of maximal dV/dt, where the threshold must lie, so
+    that neither the zero-phase filters' edge transients at the AP peak, where the window ends,
+    nor the curvature near the peak can be taken for the threshold (X).
+    """
+    if peak + 1 - start < 40:
         return start
+    pad = int(0.002 * fs)
+    lo, hi = max(start - pad, 0), min(peak + 1 + pad, len(v))
+    seg = smooth(v[lo:hi], 5)
     dd = np.diff(seg)
     ddd = lowpass(np.diff(dd), fs, 1000, 2)
     dddd = lowpass(np.diff(ddd), fs, 1000, 2)
-    return start + int(np.argmax(dddd))
+    a, b = start - lo, peak - lo  # dddd[i] belongs to sample lo + i (as in the unpadded chain)
+    b = a + max(int(np.argmax(dd[a:b])), 1)  # up to the maximal rise
+    return start + int(np.argmax(dddd[a:b]))
 
 
 def ap_measures(v, fs, peaks, k, on, off, window="methods"):
@@ -324,21 +362,26 @@ def phase_index(vraw, fs, thr_idx, peak_idx, prominence_frac=PROMINENCE_FRAC):
         return np.nan, False
     g = int(np.argmax(dvdt))
     gmax = dvdt[g]
+    if gmax <= 0:  # no rise in the raw trace between threshold and peak
+        return np.nan, "failed"
     start = int(np.flatnonzero(dvdt >= TAKEOFF_FRAC * gmax)[0])
     rising = dvdt[start:]
     pk, _ = find_peaks(rising, prominence=prominence_frac * gmax if prominence_frac > 0 else None)
     if len(pk) >= 2:
-        return (rising[pk[1:]].max() - rising[pk[0]]) / (rising[pk[1:]].max() + rising[pk[0]]), True
+        return (rising[pk[1:]].max() - rising[pk[0]]) / (rising[pk[1:]].max() + rising[pk[0]]), "two"
     g = g - start
-    if g < 3:
-        return 0.0, False
-    d2 = np.diff(rising[: g + 1])
-    mins, _ = find_peaks(-d2)  # interior local minima of d2V/dt2: the shoulder of the rise
-    if len(mins) == 0:
-        return 0.0, False
-    j = int(mins[np.argmin(d2[mins])]) + 1
-    p_ais = rising[j]
-    return (gmax - p_ais) / (gmax + p_ais), False
+    mins = np.array([], int)
+    if g >= 3:
+        d2 = np.diff(rising[: g + 1])
+        mins, _ = find_peaks(-d2)  # interior local minima of d2V/dt2: the shoulder of the rise
+    if len(mins):
+        j = int(mins[np.argmin(d2[mins])]) + 1
+        p_ais = rising[j]
+        return (gmax - p_ais) / (gmax + p_ais), "shoulder"
+    # No AIS peak and no shoulder: the AIS phase is not resolved. Its "peak" is the point with the
+    # lowest derivative value (M), the lowest dV/dt of the rising phase.
+    p_ais = rising[: g + 1].min()
+    return (gmax - p_ais) / (gmax + p_ais), "none"
 
 
 # ----------------------------------------------------------------------------- features
@@ -379,6 +422,11 @@ def cell_features(rec):
     taus = [fit_tau(V[s], fs, on, off) for s in hyp]
     out["tau_methods"] = float(np.nanmean(taus)) if np.isfinite(taus).any() else np.nan
     out["tau_n_fits"] = int(np.isfinite(taus).sum())
+    out["tau_n_sweeps"] = len(hyp)
+    out["tau_sweep_median"] = float(np.nanmedian(taus)) if np.isfinite(taus).any() else np.nan
+    out["tau_sweep_min"] = float(np.nanmin(taus)) if np.isfinite(taus).any() else np.nan
+    out["tau_sweep_max"] = float(np.nanmax(taus)) if np.isfinite(taus).any() else np.nan
+    out["sag_step_pA"] = float(amps.min())
     out["tau_code"] = fit_tau(V[0], fs, on, off, bounds=(10.0, 100.0))
     s0 = int(np.argmin(amps))
     first = smooth(V[s0, on:off], 5)
@@ -421,7 +469,8 @@ def cell_features(rec):
             "threshold_code", "amplitude_code", "half_width_code", "half_width_raw",
             "amplitude_raw", "phase_idx_first", "phase_idx_median", "phase_two_peaks_frac",
             "phase_idx_first_p2", "phase_idx_median_p2", "phase_idx_first_p10",
-            "phase_idx_median_p10", "penult_half_width", "penult_amplitude", "max_sweep"]
+            "phase_idx_median_p10", "phase_none_frac", "phase_first_kind", "phase_idx_first_x",
+            "phase_idx_median_x", "penult_half_width", "penult_amplitude", "max_sweep"]
     for k in keys:
         out.setdefault(k, np.nan)
     if not len(spk):
@@ -463,14 +512,21 @@ def cell_features(rec):
         vals, twos = [], []
         for k in range(len(pm)):
             ti = allm[k]["thr_idx"]
-            val, two = phase_index(Vraw[ms], fs, ti, pm[k], frac)
+            val, kind = phase_index(Vraw[ms], fs, ti, pm[k], frac)
             vals.append(val)
-            twos.append(two)
+            twos.append(kind)
         vals = np.array(vals)
+        twos = np.array(twos)
         out["phase_idx_first" + suf] = vals[0]
         out["phase_idx_median" + suf] = float(np.nanmedian(vals)) if np.isfinite(vals).any() else np.nan
         if suf == "":
-            out["phase_two_peaks_frac"] = float(np.mean(twos))
+            out["phase_two_peaks_frac"] = float(np.mean(twos == "two"))
+            out["phase_none_frac"] = float(np.mean(twos == "none"))
+            out["phase_first_kind"] = twos[0]
+            # variant: APs whose AIS phase is not resolved are left out
+            res = vals[twos != "none"]
+            out["phase_idx_first_x"] = vals[0] if twos[0] != "none" else np.nan
+            out["phase_idx_median_x"] = float(np.median(res)) if len(res) else np.nan
     return out
 
 
@@ -484,6 +540,8 @@ def load_one(asset):
                                 "identifier", "subject_id", "sex", "species", "session_id",
                                 "session_start"]}
     meta["n_samples"] = rec["V"].shape[1]
+    meta["h5_paths"] = frozenset(rec["h5_paths"])
+    meta["h5_strings"] = tuple(rec["h5_strings"])
     meta["sweep_numbers_ok"] = rec["sweep_numbers"] == list(range(1, len(rec["V"]) + 1))
     on, off = step_indices(rec["I"])
     meta["current_steps"] = tuple(np.round(rec["I"][:, (on + off) // 2], 3))
@@ -500,6 +558,56 @@ def load_all(assets, workers=8):
     with ThreadPoolExecutor(workers) as ex:
         rows = list(ex.map(load_one, assets))
     return pd.DataFrame(rows)
+
+
+# ----------------------------------------------------------------------------- 10x data
+
+
+def geo_member(url=GEO_H5AD_TAR, member=GEO_MEMBER):
+    """One member of the GEO tar.gz, streamed into memory; the stream stops after it (no disk)."""
+    import tarfile
+    r = requests.get(url, stream=True, timeout=300)
+    r.raise_for_status()
+    r.raw.decode_content = False
+    with tarfile.open(fileobj=r.raw, mode="r|gz") as tf:
+        for m in tf:
+            if m.name == member:
+                return io.BytesIO(tf.extractfile(m).read())
+    raise KeyError(member)
+
+
+def ext_cluster_means(buf, n_genes=500):
+    """Per leiden cluster, the mean log2(x + 1) UMI count of the 500 most variable genes.
+
+    Counts are layers/RawCounts of Ext.h5ad (integers). Genes, the 500 of highest normalized
+    dispersion (var/dispersions_norm, the file's own highly-variable-gene ranking, X); the variant
+    takes the 500 of highest variance of log2(x + 1) over all cells.
+    """
+    from scipy.sparse import csr_matrix
+    f = h5py.File(buf, "r")
+    dec = lambda a: np.array([x.decode() if isinstance(x, bytes) else x for x in a])
+    obs = f["obs"]
+    clusters = dec(obs["leiden"]["categories"][:])[obs["leiden"]["codes"][:]].astype(int)
+    labels = dec(obs["cluster_labels"]["categories"][:])[obs["cluster_labels"]["codes"][:]]
+    X = f["layers"]["RawCounts"]["X"]
+    shape = tuple(X.attrs["shape"])
+    m = csr_matrix((X["data"][:], X["indices"][:], X["indptr"][:]), shape=shape)
+    genes = dec(f["var"]["_index"][:])
+    disp = f["var"]["dispersions_norm"][:]
+    f.close()
+    m.data = np.log2(m.data + 1.0)
+    mean = np.asarray(m.mean(axis=0)).ravel()
+    sq = m.copy()
+    sq.data **= 2
+    var = np.asarray(sq.mean(axis=0)).ravel() - mean ** 2
+    out = {}
+    for name, score in [("dispersion", disp), ("variance", var)]:
+        g = np.argsort(-np.nan_to_num(score, nan=-np.inf))[:n_genes]
+        sub = m[:, g].tocsc()
+        means = {c: np.asarray(sub[clusters == c].mean(axis=0)).ravel() for c in np.unique(clusters)}
+        out[name] = pd.DataFrame(means, index=genes[g]).T
+    lab = pd.Series(labels, index=clusters).groupby(level=0).first()
+    return out, lab, pd.Series(clusters).value_counts().sort_index()
 
 
 # ----------------------------------------------------------------------------- statistics
