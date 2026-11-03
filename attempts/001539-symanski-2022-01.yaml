@@ -181,8 +181,9 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_symanski_2022.ipynb
   output: claim:fig2de-correct-incorrect-no-difference
-  notes: The rank-sum test (legend) finds no difference in any of 24 comparisons (smallest p = 0.65).
-    The signed-rank test (Results) finds none under reading A (smallest p = 0.12) and one under reading
+  notes: The rank-sum test (legend) finds no difference in any of 24 comparisons (smallest p = 0.249,
+    reading A, beta coherence CA1-OB). The signed-rank test (Results) finds none under reading A (smallest
+    p = 0.105, the same comparison) and one under reading
     B (PFC beta power, p = 0.023). The criterion blocks the claim when the two tests differ. Over 20 other
     subsampling seeds the signed-rank test finds at least one difference in 7 (A) and 13 (B), the rank-sum
     test in none. Question for the authors (findings), which test, and how many subsamples.
@@ -260,8 +261,9 @@ outcomes:
   - 122
   - 156
   assumed: true
-  notes: The dandiset holds 915 CA1 and 508 PFC units, the paper's active units (934 and 508), not its
-    1,309 and 717; the criterion's note that the totals compare what was deposited is read as comparing
+  notes: The dandiset holds 915 CA1 and 508 PFC units, close to the paper's active units (934 and 508),
+    not its 1,309 and 717; not every deposited unit is active (53 have fewer than 100 spikes in the task
+    epochs). The criterion's note that the totals compare what was deposited is read as comparing
     these with the active counts. Active by the two readings CA1 871 and 876, PFC 493 and 494 (within
     tolerance). By the main rate-only rule (9.5 Hz) pyramidal cells CA1 750 and 755, PFC 429 and 430 (within),
     interneurons CA1 121 (expected 121) and PFC 64 (expected 44 +/- 4); by the 7 Hz rule interneurons
@@ -396,7 +398,18 @@ outcomes:
     band of 3.38 to 3.90); with the global (max-over-bins) band 5 to 32 pairs per type are kept and no
     type is skewed (p >= 0.33). Pair counts tested 130, 410, 176 and 458 (9.5 Hz) against the paper's
     significant 87, 283, 111 and 224. Question for the authors (findings), the window and the significance
-    band.
+    band. The rate rule changes the outcome (by the 7 Hz rule every reading gives not reproduced, by the
+    9.5 Hz rule the readings disagree), so the main cause is the missing spike width; the change of cause
+    is proposed below.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The outcome depends on the interneuron rule. By the 7 Hz rule every window and threshold
+      reading gives not reproduced (no pair type skewed, smallest p 0.219); by the 9.5 Hz rule the readings
+      disagree (window b int-int p = 0.042 and 0.046, window a p >= 0.71). Neither rate-only rule is the
+      Methods' rule (rate over 7 Hz and width under 0.3 ms), and the files hold no spike widths, so the
+      claim is blocked for missing data in the first place; the window and band questions remain (methods
+      underspecified, a second reason). Notebook, "Proposed changes of outcome".
   deviations:
   - Assumption. The files hold no waveforms or spike widths, so the Methods' rule (rate over 7 Hz and
     width under 0.3 ms) cannot be applied and its width part is missing data. Interneurons are defined
@@ -470,7 +483,15 @@ outcomes:
     RR p = 0.0017; CA1 interneurons p = 9.5e-5, 3.3e-7; PFC interneuron RR p = 2.2e-4; PFC pyramidal beta
     p = 0.86, RR p = 0.94; PFC interneuron beta p = 0.054 and 0.051 (paper p > 0.05), close to the threshold.
     By the 7 Hz rule PFC interneuron beta p = 0.0063 and 0.0070, seven of eight, partial. The outcome
-    rests on the rate-only rule.
+    rests on the rate-only rule; a change to blocked (data missing) is proposed below.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The two rate-only interneuron rules give different outcomes (9.5 Hz, all eight tests hold;
+      7 Hz, seven of eight, PFC interneuron beta p = 0.0063 and 0.0070). The claims file follows the
+      Methods and names the code's 9.5 Hz as a variant; the Methods' rule needs spike widths, which the
+      files lack, and nothing in the paper prefers one rate-only rule. The outcome therefore rests on
+      the missing width. Notebook, "Proposed changes of outcome".
   deviations:
   - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
     'zero-phase IIR filter' (Local field potential) without an order.
@@ -488,7 +509,15 @@ outcomes:
     p = 8.3e-19 and 3.0e-7); CA1 or PFC LFP 179 against 85 and 73 against 25 (p = 3.0e-19 and 3.1e-8).
     Pyramidal Rayleigh Z RR against beta, main rule (9.5 Hz), CA1 13.2 against 0.99 (p = 4.0e-21), PFC
     1.04 against 0.81 (p = 0.037). By the 7 Hz rule PFC 0.89 against 0.77 (p = 0.091), which fails. The
-    outcome rests on the rate-only rule.
+    outcome rests on the rate-only rule; a change to blocked (data missing) is proposed below.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The two rate-only interneuron rules give different outcomes (9.5 Hz, PFC pyramidal Rayleigh
+      Z RR against beta p = 0.037 and every part holds; 7 Hz, p = 0.091 and the claim is not reproduced).
+      The claims file follows the Methods and names the code's 9.5 Hz as a variant; the Methods' rule
+      needs spike widths, which the files lack, and nothing in the paper prefers one rate-only rule. The
+      outcome therefore rests on the missing width. Notebook, "Proposed changes of outcome".
   deviations:
   - Assumption. The band-pass is a Butterworth of order 2 applied forward and backward; the Methods say
     'zero-phase IIR filter' (Local field potential) without an order.
@@ -640,8 +669,8 @@ outcomes:
   notes: The alignments differ once the randomness of folds and shuffles is taken into account. Main rule
     (9.5 Hz), main seed, reading a (exit-aligned) CA1 from 0.1 s and PFC from 0.3 s before exit, reading
     b (onset-aligned) 0.12 and 0.22 s, all within tolerance. Over four other seeds reading a stays within
-    tolerance (CA1 0.0 to 0.2 s, PFC 0.3 to 0.4 s, 4 of 4), reading b gives PFC 0.12 s (outside) on 3
-    of 4, partial on most seeds. The 7 Hz rule gives 0.1 and 0.3 s (a), 0.12 and 0.32 s (b). With at least
+    tolerance (CA1 0.0 to 0.2 s, PFC 0.3 to 0.4 s, 4 of 4), reading b is partial on all 4, PFC at
+    0.12 s (outside) on 3 and, on seed 621, CA1 at 0.22 s (outside 0.1 +/- 0.1). The 7 Hz rule gives 0.1 and 0.3 s (a), 0.12 and 0.32 s (b). With at least
     4 cells per session, a 0.0 and 0.3 s, b 0.12 and 0.22 s. Question for the authors (findings), the
     window alignment and any minimum ensemble size.
   deviations:
@@ -849,7 +878,8 @@ findings:
   statement: The files hold no spike waveforms or widths (needed for the paper's cell-type rule), no nasal
     thermocouple signal, no air-only sessions and no sleep epochs; an inventory of every object in the
     38 files finds none of them. Three claims cannot be tested, and every claim that separates pyramidal
-    cells from interneurons rests on a rate-only rule, which decides the outcome of two claims.
+    cells from interneurons rests on a rate-only rule. The two rate-only rules (the Methods' 7 Hz alone and the code's 9.5 Hz)
+    give different outcomes for three claims (fig5gh-phase-preference, fig5-rr-more-than-beta, fig4d-ccg-lags).
 - kind: other
   statement: The acquisition ElectricalSeries is a copy of the processed LFP in every file (equal on the
     stretch checked), which doubles the dandiset to 95 GB; the LFP is stored as uncompressed, unchunked
@@ -1220,4 +1250,294 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: 'The CA1 ensemble peaks at bin 0: 4.01 Hz within 20 cm vs 1.15 Hz beyond (cell 122).'
+    response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, run 41588389283; same harness, separate context,
+    did not write the notebook)
+  reviewed: The full executed notebook of the author-revise-1 run (commit 0c3e9326), with its conclusions and
+    summary, the attempt record, the README, the helper module and the claims file.
+  results:
+  - claim: fig1b-performance
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig1c-sampling-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig1d-turn-direction
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes. That includes the 4 that changed to not_reproduced at my round-1
+      request (fig1d, fig2s2d, fig3-choice-selective-fraction, fig7b).
+    response: No change.
+  - claim: fig1s1e-sniff-rate
+    agrees: true
+    outcome: blocked
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig1s1f-air-performance
+    agrees: true
+    outcome: blocked
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2d-beta-power-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2d-rr-power-no-increase
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2e-beta-coherence-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2e-rr-coherence-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2e-beta-coherence-odor-vs-reward
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2e-rr-coherence-odor-vs-reward
+    agrees: true
+    outcome: blocked
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2d-power-odor-vs-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2de-correct-incorrect-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the outcome is unchanged. Cell 53 and the record''s notes, ''rank-sum ... smallest p =
+      0.65'': the smallest rank-sum p is 0.249 (reading A, beta coherence CA1-OB; cell 50). ''signed-rank ...
+      under reading A (smallest p = 0.12)'': the smallest is 0.105 (same row).'
+    response: Corrected in the notebook's conclusion and the record's notes (0.249 and 0.105, reading A, beta
+      coherence CA1-OB), checked against the re-run.
+  - claim: fig2g-air-beta-coherence
+    agrees: true
+    outcome: blocked
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2f-swr-odor-vs-reward
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2s1f-rr-beta-coupling
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig2s2d-phase-offsets
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes. That includes the 4 that changed to not_reproduced at my round-1
+      request (fig1d, fig2s2d, fig3-choice-selective-fraction, fig7b).
+    response: No change.
+  - claim: fig2s1e-run-theta-shift
+    agrees: true
+    outcome: blocked
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. In the Summary, cell 71 and the record's unit-counts notes, 'the dandiset holds the active
+      units only' overstates the data. 53 units have fewer than 100 spikes in the task epochs (cells 7 and
+      70). The files hold 915 CA1 units against the paper's 934 active. The record's finding ('close to the
+      paper's active units') is the accurate wording.
+    response: No change of outcome. The conclusion, the summary and the notes now say the deposited units are
+      close to the paper's active units and that 53 have fewer than 100 spikes in the task epochs.
+  - claim: fig3-choice-selective-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes. That includes the 4 that changed to not_reproduced at my round-1
+      request (fig1d, fig2s2d, fig3-choice-selective-fraction, fig7b).
+    response: No change.
+  - claim: fig3ij-si-anticorrelated
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Cell 75, ''the Methods'' reading of the selection (... interneuron above 9.5 Hz ...)'':
+      9.5 Hz is the code''s variant, not the Methods'' rule.'
+    response: No change of outcome. The text now calls it the main reading of the selection, with the 9.5 Hz
+      threshold named as the code's rate-only rule, assumed because the files hold no widths.
+  - claim: fig3s1e-nonselective-si
+    agrees: true
+    outcome: blocked
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig3s1c-odor-vs-reward-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig4c-interneuron-si
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig4d-ccg-lags
+    agrees: false
+    outcome: blocked
+    reason: Disagrees with the stated cause. The window readings disagree only under the 9.5 Hz variant. At
+      7 Hz, every window and threshold reading gives not_reproduced; the smallest p is 0.22, so the interneuron
+      pairs are never skewed (cell 90). The rate rule decides this outcome too, so the cause should be data_missing
+      (spike width). Even at 9.5 Hz, the interneuron skew (p = 0.046 and 0.042) comes from pointwise thresholds
+      that keep 127 to 130 of 130 pairs; with the global band, no type is skewed.
+    response: Agreed. The outcome stays blocked (methods_underspecified) as round 2 allows no change, and a
+      change of cause to blocked (data_missing) is proposed for round 3, with the analysis in the notebook's
+      new section 'Proposed changes of outcome' (7 Hz smallest p 0.219, 9.5 Hz window b 0.042). The record's
+      data_missing finding and the summary now say the rate rule changes this outcome.
+  - claim: fig5c-local-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig5d-cross-region-beta
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 43 of the 47 outcomes. That includes ... the change of fig5d to partially_reproduced.
+    response: No change.
+  - claim: fig5gh-phase-preference
+    agrees: false
+    outcome: blocked
+    reason: 'Disagrees. It became reproduced only because the main interneuron rule changed from 7 Hz to 9.5
+      Hz. The claims file''s opening comment names 9.5 Hz (F7/ParsePyrIN.m) as a variant; it says the Methods
+      are followed and the code''s choices are variants. The Methods'' rule is rate over 7 Hz plus spike width
+      under 0.3 ms, and the width is missing from the files. At 7 Hz, fig5gh holds 7 of 8 tests (partial):
+      PFC interneuron beta p = 0.0063 and 0.0070 (cell 102). Neither rate-only rule is the paper''s rule, and
+      the two disagree; the outcome rests on the missing width, so the claim should be blocked (data_missing),
+      not scored on a variant the author picked.'
+    response: Agreed. The outcome stays reproduced as round 2 allows no change, and blocked (data_missing)
+      is proposed for round 3, with the analysis in the notebook's new section 'Proposed changes of outcome'
+      (8 of 8 tests at 9.5 Hz, 7 of 8 at 7 Hz).
+  - claim: fig5-rr-more-than-beta
+    agrees: false
+    outcome: blocked
+    reason: 'Disagrees. It became reproduced only because the main interneuron rule changed from 7 Hz to 9.5
+      Hz, which the claims file names as a variant; the Methods'' rule needs the spike width, missing from
+      the files. At 7 Hz fig5-rr fails: PFC Rayleigh Z p = 0.091 (cell 105). Neither rate-only rule is the
+      paper''s rule, and the two disagree; the outcome rests on the missing width, so the claim should be blocked
+      (data_missing).'
+    response: Agreed. The outcome stays reproduced as round 2 allows no change, and blocked (data_missing)
+      is proposed for round 3, with the analysis in the notebook's new section 'Proposed changes of outcome'
+      (PFC Rayleigh Z p = 0.037 at 9.5 Hz, 0.091 at 7 Hz).
+  - claim: fig5s1de-beta-rr-overlap
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig5s1fh-selective-and-locked
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig5e-beta-mvl-correct-incorrect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (reproduced by the criterion's method). The record now shows the effect is not supported
+      once selection is controlled for. This is correctly reported, but readers of the README see only 'reproduced'.
+    response: No change of outcome. The README and the notebook's summary now say that fig5e and fig5s2 are
+      reproduced by the criterion's method only and that the split-half control does not support them.
+  - claim: fig5f-rr-mvl-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. fig5f-rr-mvl-no-difference is reproduced at 9.5 Hz with p = 0.0502. Its p is under 0.05
+      in 4 of 10 other bootstrap seeds (cell 120), so the outcome hangs on the seed. The notes say this.
+    response: No change.
+  - claim: fig5s2-ca1-int-pfc-beta-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (reproduced by the criterion's method). The record now shows the effect is not supported
+      once selection is controlled for. This is correctly reported, but readers of the README see only 'reproduced'.
+    response: No change of outcome. The README and the notebook's summary now say that fig5e and fig5s2 are
+      reproduced by the criterion's method only and that the split-half control does not support them.
+  - claim: fig6d-discrimination-time
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig6c-even-odd-control
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig6e-glm-choice-prediction
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. Cell 137 and the record''s notes, ''partial on most seeds'': reading b is partial on all
+      4 other seeds; on seed 621, CA1 is at 0.22 s, outside tolerance (cell 136). The Summary''s ''The GLM''s
+      earliest times move by one window between random seeds'': they move by two (reading a, CA1 pyramidal,
+      0.0 to 0.2 s, cell 136; PFC with interneurons, reading b, 0.22 to 0.42 s, cells 140-141).'
+    response: No change of outcome. The conclusion and the notes now say reading b is partial on all 4 other
+      seeds (PFC at 0.12 s on 3, CA1 at 0.22 s on seed 621); the summary says the times move by up to two windows,
+      with both examples.
+  - claim: fig6e-glm-with-interneurons
+    agrees: true
+    outcome: blocked
+    reason: Conditional. With the main seed, neither alignment meets the criterion (cell 142). If protocol
+      step 1.5 really blocks a claim that depends on a blocked claim, blocked is correct as a procedure. I
+      cannot see the protocol to check. The record states the disagreement fairly.
+    response: No change. Author step 1.5 of docs/protocol.md ends 'A claim that depends on a blocked claim
+      is blocked for the same reason.', and the claims file lists fig6e-glm-choice-prediction under this claim's
+      depends_on, so the condition the verifier set holds; the round-1 disagreement stays recorded.
+  - claim: fig7-spatial-field-counts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7b-odor-active-more-fields
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes. That includes the 4 that changed to not_reproduced at my round-1
+      request (fig1d, fig2s2d, fig3-choice-selective-fraction, fig7b).
+    response: No change.
+  - claim: fig7s1b-odor-active-higher-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7c-field-properties-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7s1e-trajectory-selective-odor-active
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7d-trajectory-choice-unrelated
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7e-odor-decoder-first-quintile
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7f-spatial-decoder-all-quintiles
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
+    response: No change.
+  - claim: fig7s1f-ensemble-rate-near-port
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 43 of the 47 outcomes.
     response: No change.

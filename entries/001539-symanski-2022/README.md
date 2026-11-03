@@ -16,6 +16,15 @@ trial times.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
+Most outcomes rest on stated assumptions about methods the paper leaves open; the record marks them
+and its deviations say which. fig5e-beta-mvl-correct-incorrect and fig5s2-ca1-int-pfc-beta-accuracy
+are reproduced by the criterion's method only: a split-half control, which decides locking and
+measures it on different trials, does not support them. After the second verification round three
+changes are proposed for a third: fig5gh-phase-preference and fig5-rr-more-than-beta from
+reproduced, and fig4d-ccg-lags from methods underspecified, to blocked for missing data, because
+their outcome differs between the two rate-only interneuron rules and the Methods' rule needs the
+spike widths the files lack.
+
 The files hold no odor identity, chosen well or spike waveforms: the odor and the choice are read
 from the rewarded well and the position, and interneurons are defined by firing rate alone (over 9.5 Hz, the paper code's rate-only rule;
 the Methods' 7 Hz is shown beside it). The
