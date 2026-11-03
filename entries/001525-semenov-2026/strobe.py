@@ -19,7 +19,9 @@ Where the parameters come from:
   MetaMorph; here it is found automatically (`find_cells`, `trace`): at each angle the cell's
   outer edge is the steepest outward fall of intensity along the ray, the membrane is the
   intensity peak within 8 pixels inside it (`EDGE_WINDOW_PX`), smoothed over angle, and F at that
-  angle is the mean over 6 radial pixels centred on it (`TRACE_WIDTH_PX`). The first round's
+  angle is the mean over 6 radial pixels centred on it (`TRACE_WIDTH_PX`). The 8-pixel window
+  is the author's choice; windows of 4 to 12 pixels (`EDGE_WINDOW_VARIANTS`) are kept as variants
+  ('dF_w4' and so on), so that the results' dependence on it can be seen. The first round's
   trace, the plain intensity peak along the ray, fell on bright dye inside some cells (c5, c9)
   and is kept as a variant ('dF_peak'). This is the author's implementation of the Methods'
   trace; the windows and the smoothing are standard choices.
@@ -64,6 +66,7 @@ TRACE_WIDTH_PX = 6
 DARK_FRACTION = 0.9
 BG_ANNULUS = (1.6, 2.2)
 EDGE_WINDOW_PX = 8
+EDGE_WINDOW_VARIANTS = (4, 6, 10, 12)
 
 # Eq. (2) parameters, Methods 2.3
 LAMBDA_I = 0.4
@@ -184,12 +187,13 @@ def outer_edge(img: np.ndarray, cx: float, cy: float, r0: float) -> np.ndarray:
     return rr[edge]
 
 
-def trace(img: np.ndarray, cx: float, cy: float, r0: float, method: str = "edge"):
+def trace(img: np.ndarray, cx: float, cy: float, r0: float, method: str = "edge",
+          window: float = EDGE_WINDOW_PX):
     """Membrane radius per degree, smoothed over angle.
 
     'edge' (main): along each ray the cell's outer edge is the steepest outward fall of intensity
     within 0.6 to 1.35 times the object's equivalent radius, and the membrane is the intensity peak
-    within 8 pixels inside that edge. 'peak' (the first round's trace, a variant): the peak of
+    within `window` pixels (8, `EDGE_WINDOW_PX`) inside that edge. 'peak' (the first round's trace, a variant): the peak of
     intensity along the ray within 0.7 to 1.35 times the radius, which can fall on bright dye inside
     the cell. The windows and smoothing are standard choices."""
     ang = np.deg2rad(np.arange(N_POINTS) + 0.5)
@@ -200,7 +204,7 @@ def trace(img: np.ndarray, cx: float, cy: float, r0: float, method: str = "edge"
         rpk = rr[np.argmax(prof, axis=1)]
     else:
         rr, prof, edge = _edge_profiles(sm, cx, cy, r0, ang)
-        lo = np.maximum(edge - int(EDGE_WINDOW_PX / 0.5), 0)    # radii are in 0.5-pixel steps
+        lo = np.maximum(edge - int(window / 0.5), 0)    # radii are in 0.5-pixel steps
         rpk = np.array([rr[lo[i] + np.argmax(prof[i, lo[i]:edge[i] + 1])] for i in range(N_POINTS)])
     rpk = ndimage.median_filter(rpk, size=15, mode="wrap")
     rpk = ndimage.uniform_filter1d(rpk, size=9, mode="wrap")
@@ -234,9 +238,10 @@ def image_profiles(x: np.ndarray, near: tuple[float, float]) -> dict:
     cx, cy, r0 = pick_cell(b_all, near)
     ang, rpk = trace(b_all, cx, cy, r0, "edge")
     _, rpk_peak = trace(b_all, cx, cy, r0, "peak")
+    rpk_w = {w: trace(b_all, cx, cy, r0, "edge", w)[1] for w in EDGE_WINDOW_VARIANTS}
     out = dict(cx=cx, cy=cy, r0=r0, r_membrane=float(np.mean(rpk)), n_dark=int(dark.sum()),
                dark_idx=np.flatnonzero(dark).tolist(), frame_mean=x.mean(axis=(1, 2)), rpk=rpk,
-               rpk_peak=rpk_peak)
+               rpk_peak=rpk_peak, rpk_w=rpk_w, edge=outer_edge(b_all, cx, cy, r0))
     # per-frame trace intensity, for the clock check, and per-frame annulus background, for the
     # baseline trend
     out["frame_trace"] = np.array([sample_trace(f, cx, cy, ang, rpk) for f in x])
@@ -250,7 +255,7 @@ def image_profiles(x: np.ndarray, near: tuple[float, float]) -> dict:
     out["crop"], out["crop_origin"] = b_all[y0:int(cy) + h, x0:int(cx) + h].copy(), (x0, y0)
     for drop in (False, True):
         b, p = collapse(x, drop)
-        for name, rr_ in (("dF", rpk), ("dF_peak", rpk_peak)):
+        for name, rr_ in [("dF", rpk), ("dF_peak", rpk_peak)] + [(f"dF_w{w}", rpk_w[w]) for w in EDGE_WINDOW_VARIANTS]:
             fb, fp = sample_trace(b, cx, cy, ang, rr_), sample_trace(p, cx, cy, ang, rr_)
             for bg in (False, True):
                 bb = annulus_background(b, cx, cy, r0) if bg else 0.0
