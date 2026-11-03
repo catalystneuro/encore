@@ -12,7 +12,14 @@ follow the Methods (Extraction of electrophysiological features): tau from an ex
 stimulation onset to the bottom of the sag, averaged over the hyperpolarizing sweeps; the first AP of the
 rheobase sweep, its threshold at the largest third derivative in the 20 ms before the peak, its amplitude
 from threshold to peak and its half-width at half that amplitude. Finding an AP by a crossing of 0 mV and
-dropping tau fits outside 0 to 600 ms (TAU_MAX_MS) are standard choices, not the paper's.
+dropping tau fits outside 0 to 600 ms (TAU_MAX_MS) are standard choices, not the paper's. The largest third
+derivative is sought on the rising phase, from 20 ms before the peak to the largest first derivative: the
+Methods' window, limited so that a noisy third derivative near the peak or on the falling phase cannot be
+taken as the threshold (a standard guard; the first run searched the whole window, which put thresholds up
+to +65 mV, and its values are kept as a variant).
+
+The metabolomics table of MetaboLights MTBLS13927 is read from the study's first metadata revision
+(METADATA_REVISIONS/MTBLS13927_01), a fixed copy. DANDI:001751 (multi-patch) is read for its metadata only.
 """
 from __future__ import annotations
 
@@ -203,10 +210,11 @@ def _tau_ms(v: np.ndarray, rate: float, on: int, off: int) -> float:
         return np.nan
 
 
-def first_ap(v: np.ndarray, rate: float, on: int, off: int) -> dict | None:
+def first_ap(v: np.ndarray, rate: float, on: int, off: int, rising_only: bool = True) -> dict | None:
     """The first AP during the step (an upward crossing of 0 mV, a standard choice), with the Methods'
     threshold (largest third derivative in the 20 ms before the peak), amplitude (peak minus threshold) and
-    half-width (time between the rising and decaying crossings of half the amplitude)."""
+    half-width (time between the rising and decaying crossings of half the amplitude). With rising_only, the
+    third derivative is sought only up to the largest first derivative (see the module docstring)."""
     seg = v[on:off]
     up = np.flatnonzero((seg[:-1] < 0) & (seg[1:] >= 0))
     if len(up) == 0:
@@ -214,7 +222,8 @@ def first_ap(v: np.ndarray, rate: float, on: int, off: int) -> dict | None:
     i0 = on + up[0]
     pk = i0 + int(np.argmax(v[i0: i0 + int(0.002 * rate)]))
     w0 = max(on, pk - int(0.020 * rate))
-    d3 = np.diff(v[w0: pk + 1], 3)
+    end = w0 + int(np.argmax(np.diff(v[w0: pk + 1]))) + 1 if rising_only and pk > w0 else pk
+    d3 = np.diff(v[w0: end + 1], 3)
     if len(d3) == 0:
         return None
     thr_i = w0 + int(np.argmax(d3)) + 1
@@ -266,6 +275,8 @@ def patchseq_features(asset: dict) -> dict:
             ap = first_ap(v, rate, on, off)
             if ap is not None:
                 out.update(rheobase_pA=a, **ap)
+                ap0 = first_ap(v, rate, on, off, rising_only=False) or {}
+                out.update({f"{k}_v0": x for k, x in ap0.items()})
                 break
     return out
 
@@ -278,3 +289,57 @@ def patchseq_all(asset_list: list[dict], workers: int = 8) -> list[dict]:
             return dict(file=a["path"].split("/")[-1], error=repr(e)[:200])
     with ThreadPoolExecutor(workers) as ex:
         return list(ex.map(safe, asset_list))
+
+
+# --- Metabolomics, MetaboLights MTBLS13927 (fig8a-metabolite-gradient, fig8de-glycolytic-bias) ------------------
+MTBLS = "MTBLS13927"
+MTBLS_REVISION = "MTBLS13927_01"
+MTBLS_MAF = (f"https://ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/{MTBLS}/METADATA_REVISIONS/"
+             f"{MTBLS_REVISION}/m_MTBLS13927_LC-MS_alternating_hilic_metabolite_profiling_v2_maf.tsv")
+
+
+def metabolights_maf() -> pd.DataFrame:
+    """The study's metabolite assignment file: one row per identified metabolite, one column per sample."""
+    with urllib.request.urlopen(MTBLS_MAF, timeout=120) as r:
+        return pd.read_csv(io.BytesIO(r.read()), sep="\t")
+
+
+# --- Multi-patch recordings, DANDI:001751 (fig5-connectivity-total, fig5-connectivity-by-type) --------------------
+MULTI_DANDISET = "001751"
+MULTI_VERSION = "0.260825.0222"
+
+
+def multi_assets() -> list[dict]:
+    out, url = [], f"{API}/dandisets/{MULTI_DANDISET}/versions/{MULTI_VERSION}/assets/?page_size=400"
+    while url:
+        with urllib.request.urlopen(url, timeout=120) as r:
+            page = json.loads(r.read())
+        out += page["results"]
+        url = page.get("next")
+    return out
+
+
+def multi_file_contents(asset: dict) -> dict:
+    """Stream one multi-patch file and list what it holds apart from the traces: the groups other than
+    acquisition and stimulus that have content, the entries of general/intracellular_ephys that are not
+    electrodes (where icephys tables would be), and the fields of its first electrode. Reads names only, not
+    the traces' attributes, so that it stays fast."""
+    url = f"{API}/assets/{asset['asset_id']}/download/"
+    out = dict(file=asset["path"].split("/")[-1])
+    with h5py.File(remfile.File(url), "r") as h:
+        out["n_series"] = len(h["acquisition"])
+        out["nonempty_groups"] = sorted(g for g in ("analysis", "processing", "intervals", "scratch") if g in h and len(h[g]) > 0)
+        e = h["general/intracellular_ephys"]
+        names = list(e.keys())
+        out["non_electrode_entries"] = sorted(k for k in names if not k.startswith("Elec_"))
+        out["n_electrodes"] = sum(k.startswith("Elec_") for k in names)
+        ex = {}
+        el = [k for k in names if k.startswith("Elec_")]
+        for f in (e[el[0]] if el else []):
+            o = e[el[0]].get(f, getlink=False)
+            if isinstance(o, h5py.Dataset):
+                v = o[()]
+                ex[f] = v.decode() if isinstance(v, bytes) else str(v)
+        out["example_electrode"] = ex
+        out["session_description"] = h["session_description"][()].decode()
+    return out

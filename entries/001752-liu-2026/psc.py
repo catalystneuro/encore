@@ -26,6 +26,10 @@ Where each parameter comes from:
   (ARTIFACT_PA) are counted as artefacts (unclamped spikes or pulses) and left out of the frequency and
   the amplitude. The noise of a recording, for reading (b), is the robust standard deviation (1.4826
   times the median absolute deviation) of the trace referred to its running median.
+- Group test: the two-tailed Wilcoxon rank-sum test as MATLAB's ranksum computes it by default (ranksum), the
+  function the code's Fig. 5 scripts call (claims file, criteria of the Fig. 5 claims).
+- Detector check, deciding nothing: peaks of the opposite polarity as a noise null, and synthetic events
+  (inject_events, recovered) added to the real traces. Their rate, amplitudes and shape are standard choices.
 """
 from __future__ import annotations
 
@@ -257,3 +261,49 @@ def decay_time_ms(x: np.ndarray, rate: float, sign: int, peaks: np.ndarray, ampl
     after = avg[10:]
     below = np.flatnonzero(after < 0.37 * after[0])
     return float(below[0] * 1000.0 / rate) if len(below) else np.nan
+
+
+def ranksum(x, y) -> tuple[float, float, str]:
+    """Two-tailed Wilcoxon rank-sum test as MATLAB's ranksum computes it by default, the function the code's
+    Fig5ab_ana_sPSC.m and Fig5ab_ana_mPSC.m call: the exact distribution when min(nx, ny) < 10 and
+    nx + ny < 20, otherwise the normal approximation with continuity and tie corrections (MATLAB
+    documentation of ranksum, 'method'). Returns U, p and the method used."""
+    from scipy import stats
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    exact = min(len(x), len(y)) < 10 and len(x) + len(y) < 20
+    method = "exact" if exact else "asymptotic"
+    t = stats.mannwhitneyu(x, y, alternative="two-sided", method=method, use_continuity=True)
+    return float(t.statistic), float(t.pvalue), method
+
+
+# Synthetic events for the positive control (a check of the detector, not a parameter of the analysis):
+# a difference of exponentials with 1 ms rise and the decay of the experiment's average event (data check),
+# amplitudes log-normal around INJECT_MEDIAN_PA, Poisson times at INJECT_RATE_HZ. Standard choices.
+INJECT_RATE_HZ = 2.0
+INJECT_MEDIAN_PA = 10.0
+INJECT_SIGMA = 0.4
+INJECT_RISE_MS = 1.0
+
+
+def inject_events(x: np.ndarray, rate: float, sign: int, decay_ms: float, rng: np.random.Generator):
+    """Add synthetic events to a real trace; return the new trace, the event times (samples) and amplitudes."""
+    n = rng.poisson(INJECT_RATE_HZ * len(x) / rate)
+    times = np.sort(rng.integers(int(0.05 * rate), len(x) - int(0.2 * rate), n))
+    amps = INJECT_MEDIAN_PA * np.exp(INJECT_SIGMA * rng.standard_normal(n))
+    t = np.arange(int(0.2 * rate)) / rate * 1000.0
+    k = np.exp(-t / decay_ms) - np.exp(-t / INJECT_RISE_MS)
+    k /= k.max()
+    y = x.astype(float).copy()
+    kick = np.zeros(len(x))
+    np.add.at(kick, times, amps)
+    y += sign * signal.fftconvolve(kick, k)[: len(x)]
+    return y, times + int(np.argmax(k)), amps
+
+
+def recovered(peaks: np.ndarray, times: np.ndarray, tol: int) -> np.ndarray:
+    """For each injected event, whether a detected peak lies within tol samples of its peak."""
+    if len(peaks) == 0:
+        return np.zeros(len(times), bool)
+    j = np.clip(np.searchsorted(peaks, times), 1, len(peaks) - 1)
+    d = np.minimum(np.abs(peaks[j] - times), np.abs(peaks[j - 1] - times))
+    return d <= tol

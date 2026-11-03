@@ -18,13 +18,17 @@ from the table of deposited files in the paper's code, and a link claim checks t
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
 
-The paper detected events in miniAnalysis with settings it does not give beyond a 5 pA threshold. The
-detector used here finds 4.6 to 15 times the events of the code's per-cell sheets in the noisier sEPSC
-and sIPSC recordings, and the mEPSC labels of the code's file table are the opposite of its analysis
-sheet's, so the frequency outcomes should be read with the notes in the attempt record.
+The paper detected events in miniAnalysis with settings it does not give beyond a 5 pA threshold. A
+check of the detector (peaks of the opposite polarity as a noise null, and synthetic events injected into
+every trace) shows that at 5 pA it is reliable in the files with noise below 2 pA (all mEPSC, most mIPSC,
+about half the sEPSC files) and counts mostly noise in the others, every sIPSC file among them; the
+threshold at each recording's RMS noise counts noise everywhere. The mEPSC labels of the code's file table
+are the opposite of its analysis sheet's, and the sheet's own values give the paper's result only with the
+sheet's labels. The frequency outcomes should be read with the notes in the attempt record.
 
 A second notebook, `elsewhere_liu_2026.ipynb`, tests claims whose data are elsewhere, on the code's
-per-cell tables, on DANDI:001750 (Na+ currents) and on DANDI:001746 (Patch-seq electrophysiology); they
-are counted apart from the dataset. The claims on the scRNA-seq atlas and the NEURON model are blocked.
+per-cell tables, on DANDI:001750 (Na+ currents), on DANDI:001746 (Patch-seq electrophysiology), on the
+metadata of DANDI:001751 (multi-patch) and on MetaboLights MTBLS13927; they are counted apart from the
+dataset. The claims on the scRNA-seq atlas and the NEURON model are blocked.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001752-liu-2026-01.yaml`](../../attempts/001752-liu-2026-01.yaml).
