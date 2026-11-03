@@ -114,7 +114,8 @@ outcomes:
   - Constant parameters fitted by maximum likelihood on the training sessions, as in fig2g-fq-variable-best;
     rates in 0 to 1, inverse temperature in 0 to 50 (standard bounds).
 - claim: neuron-counts
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:neuron-counts
   measured:
@@ -131,50 +132,30 @@ outcomes:
     the duplicate check (90 removed), 233, 204, 142; the PAN rule then gives 183, 147, 119 (DMS outside
     10%). Condition 4 read as any bin below 1 Hz leaves 47, 57, 21. The deposited PANs flag gives 204,
     112, 138 (VS outside 10%), and the flagged units that pass the computable exclusions 160, 97, 99 (DLS
-    and VS outside). The verifier would block the claim as data_missing; the disagreement is recorded
-    under verifications. Asked in round 2, the counts without the duplicate check, which are upper limits
+    and VS outside). Asked in round 2, the counts without the duplicate check, which are upper limits
     of the paper's counts under each reading of condition 4 since the missing conditions can only remove
     units, are under (4i) 265, 224, 169 units and 213, 163, 143 rule PANs, none below the lower end of
     its tolerance (234, 160.2, 161.1; 171, 94.5, 107.1), and under (4ii) 49, 62, 22 units and 2, 7, 4
-    PANs, all far below. So no count is shown to miss under reading (4i), and the change to blocked is
-    proposed.
+    PANs, all far below. So no count is shown to miss under reading (4i), and the claim cannot be decided
+    from the dandiset. As tested, the computed counts gave not_reproduced; the change to blocked
+    (data_missing) was proposed after round 2 and agreed in round 3.
   deviations:
   - Exclusion conditions 1, 2 and 5 need waveforms or histology and are not applied; the PETH-similarity
     part of the duplicate rule is not defined and is not applied.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Found in reply to round 2, with the output the verifier asked for (the upper limits
-      printed under claim:neuron-counts). Without the duplicate check, conditions (3) and (4i) leave
-      265, 224 and 169 units and 213, 163 and 143 rule PANs, none below the lower end of its
-      tolerance (234, 160.2, 161.1; 171, 94.5, 107.1). Conditions (1), (2) and (5) and the PETH-similarity
-      part of the duplicate rule can only remove units, and they need waveforms or
-      histology that the dandiset does not hold, so under reading (4i) they could bring every count
-      into tolerance and the claim cannot be decided from the dandiset. Under reading (4ii) every
-      count misses (49, 62, 22 units), but that reading leaves far fewer units than the paper''s
-      stable counts, so it is unlikely to be the paper''s. This is the verifier''s outcome. By
-      Author step 1.5 the claims that depend on it, directly or through other claims, are blocked
-      for the same reason; the change is proposed on each of them that is not already blocked, and
-      those already blocked (methods_underspecified) stay blocked.'
 - claim: fig4b-vs-phase1
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig4b-vs-phase1
   measured:
   - 0.681
   notes: Holds in all 48 readings (unit set, O3, O2, activation reading, O4). VS 0.638 to 0.765 of PANs
     activated in Phase 1, DLS 0.451 to 0.552 (chi-square p 0.020 or less), DMS 0.330 to 0.497 (p 0.0015
-    or less). By rat, VS proportions 0.44 to 0.80 on the deposited PANs (one rat has no VS PANs).
+    or less). By rat, VS proportions 0.44 to 0.80 on the deposited PANs (one rat has no VS PANs). Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
     rule after the computable exclusions (183, 147, 119); see neuron-counts.'
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig4b-dms-phase5
   outcome: blocked
   blocked_by: methods_underspecified
@@ -236,14 +217,15 @@ outcomes:
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
 - claim: fig5e-action-info-rises-dls
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig5e-action-info-rises-dls
   notes: In all 8 readings DMS is above its threshold in all 15 Phase 3 bins and VS in 14 or 15; DLS is
     above it in 14 to 17 of the 27 bins of Phases 1 and 2. Above threshold DLS grows from 0.003 to 0.060
     bits/s across Phase 3, DMS stays within 0.003 to 0.015 and VS within 0.002 to 0.012. With the threshold
     from labels permuted within blocks DMS is still above it in all 15 Phase 3 bins and VS in 14 or 15,
-    and the bins above it before the cue fall to 8 to 10 (DLS), 3 to 4 (DMS) and 0 to 2 (VS).
+    and the bins above it before the cue fall to 8 to 10 (DLS), 3 to 4 (DMS) and 0 to 2 (VS). Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave not_reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -253,20 +235,15 @@ outcomes:
     it should be a reading of O1 is asked of a reader. Levels are quartiles of the trial counts; the random
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig5e-action-info-cue-offset-dls
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig5e-action-info-cue-offset-dls
   notes: In the 100 ms before E3 DLS exceeds VS in every reading (p 0.0011 or less), but DLS against DMS
     gives p 0.060 to 0.31 under O1 (a) and (b) on the two unit sets, so all 8 readings fail. The Panzeri-Treves
     variant gives p = 0.047 and 0.039 on the deposited PANs (DLS 0.066, DMS 0.014 bits/s) and 0.098 and
-    0.072 on the Methods-rule set. Whether that correction should be a reading is asked of a reader.
+    0.072 on the Methods-rule set. Whether that correction should be a reading is asked of a reader. Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave not_reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -276,20 +253,15 @@ outcomes:
     it should be a reading of O1 is asked of a reader. Levels are quartiles of the trial counts; the random
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig5e-action-info-center-exit
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig5e-action-info-center-exit
   notes: All 8 readings hold. In the 100 ms before E4 DMS 0.216 to 0.230, DLS 0.113 to 0.122, VS 0.015
     to 0.025 bits/s on the deposited PANs (0.159 to 0.172, 0.110 to 0.120, 0.022 to 0.032 on the Methods-rule
     set); DMS against VS p 0.0005 or less, DLS against VS p 0.0008 or less, DMS against DLS p 0.13 to
-    0.99 (paper 0.16).
+    0.99 (paper 0.16). Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -299,19 +271,14 @@ outcomes:
     it should be a reading of O1 is asked of a reader. Levels are quartiles of the trial counts; the random
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig5d-action-info-phase5-dms
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig5d-action-info-phase5-dms
   notes: 'All 16 readings hold. Phase 5 mean: DMS 0.46 to 0.53, DLS 0.30 to 0.33, VS 0.10 to 0.12 bits/s;
     at the DMS peak bin (4.95 s) 0.56 to 0.68, 0.26 to 0.28 and 0.09 to 0.12. DMS against DLS p 0.0003
-    or less, against VS p < 1e-5, DLS against VS p 0.0024 or less.'
+    or less, against VS p < 1e-5, DLS against VS p 0.0024 or less. Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave reproduced.'
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -321,14 +288,9 @@ outcomes:
     it should be a reading of O1 is asked of a reader. Levels are quartiles of the trial counts; the random
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig5g-reward-info
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig5g-reward-info
   notes: 'Part 1 fails in every reading: each region''s average first passes its threshold in Phase 1
@@ -340,7 +302,7 @@ outcomes:
     to 0.45; over Phases 6 and 7 DLS against VS p 0.125 to 0.48; on the Methods-rule set DLS against DMS
     at the peak p 0.054 to 0.082. Part 2 holds in 4 of 24 rows, so if part 1 held the claim would be blocked.
     Whether part 1 means the first crossing over the whole trial or the start of the sustained rise is
-    asked of a reader (questions/001642.yaml).'
+    asked of a reader (questions/001642.yaml). Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave not_reproduced.'
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -350,12 +312,6 @@ outcomes:
     it should be a reading of O1 is asked of a reader. Levels are quartiles of the trial counts; the random
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig6-event-coding-proportions
   outcome: blocked
   blocked_by: methods_underspecified
@@ -374,25 +330,18 @@ outcomes:
   - The legend does not say whether the windows are on the EASH axis or in real time; both are run.
   - Extinction trials excluded or included (O3), both run.
 - claim: fig6-above-chance
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig6-above-chance
   notes: All 120 binomial tests per unit set (regions, events, trial sets, both axes) give p < 0.01 against
     0.01; the smallest proportion is 0.094 (13 of 138 VS PANs, AC, free-choice trials, real-time window,
-    p = 1.8e-9).
+    p = 1.8e-9). Blocked after round 3, since it depends directly on fig6-event-coding-proportions, which is blocked (methods_underspecified), and through the unit sets on neuron-counts, which is blocked (data_missing); both reasons apply, and data_missing is recorded. As tested, the criterion gave reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
     rule after the computable exclusions (183, 147, 119); see neuron-counts.'
   - Chance is 0.01, as the criterion reads it.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts through fig6-event-coding-proportions, whose change to blocked
-      (data_missing) is proposed; by Author step 1.5 a claim that depends on a blocked claim is
-      blocked for the same reason. The result as tested stays in the notes. It also depends on
-      fig6-event-coding-proportions, which is already blocked (methods_underspecified), so by the
-      same step it should already have been blocked; that was not applied before.'
 - claim: fig6bc-similar-fixed-free
   outcome: blocked
   blocked_by: methods_underspecified
@@ -464,14 +413,15 @@ outcomes:
   - The fig2g-fq-variable-best claim, whose model supplies QL and QR, is not reproduced; the values are
     those of the FQ model as fitted here.
 - claim: fig8f-state-value-vs
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig8f-state-value-vs
   notes: No reading holds (0 of 16). VS has the largest state-value proportion in every phase in 12 of
     16 readings and exceeds DLS and DMS before E1 with free-choice trials (p = 0.0002 and 0.029 deposited;
     0.0001 and 0.0008 Methods-rule), but after E3 (first half of Phase 4) VS is never above DMS with p
     < 0.05 (p 0.053 to 0.76), and with all choice trials the Phase 1 test against DMS fails too (p = 0.10
-    and 0.059).
+    and 0.059). Blocked after round 3, since it depends directly on fig8a-d-action-reward-coding, which is blocked (methods_underspecified), and through the unit sets on neuron-counts, which is blocked (data_missing); both reasons apply, and data_missing is recorded. As tested, the criterion gave not_reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -484,23 +434,15 @@ outcomes:
     those of the FQ model as fitted here.
   - The FQ model that supplies QL and QR rests on the assumptions of fig2g-fq-variable-best (model equations
     as O8 gives them, initial values, bounds, particle-filter priors and the drift-SD grid, which the
-    paper leaves open), so this outcome rests on them too.
-  assumed: true
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts through fig8a-d-action-reward-coding, whose change to blocked
-      (data_missing) is proposed; by Author step 1.5 a claim that depends on a blocked claim is
-      blocked for the same reason. The result as tested stays in the notes. It also depends on
-      fig8a-d-action-reward-coding, which is already blocked (methods_underspecified), so by the
-      same step it should already have been blocked; that was not applied before.'
+    paper leaves open), so the result as tested rests on them too.
 - claim: no-policy-coding
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:no-policy-coding
   notes: In all 16 readings no region and window gives p < 0.01 for policy coding; the largest proportion
     is 0.011 to 0.036 and the smallest binomial p 0.017. The chance level 0.01 for a joint event is asked
-    of a reader.
+    of a reader. Blocked after round 3, since it depends directly on fig8a-d-action-reward-coding, which is blocked (methods_underspecified), and through the unit sets on neuron-counts, which is blocked (data_missing); both reasons apply, and data_missing is recorded. As tested, the criterion gave reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -513,18 +455,10 @@ outcomes:
     those of the FQ model as fitted here.
   - The FQ model that supplies QL and QR rests on the assumptions of fig2g-fq-variable-best (model equations
     as O8 gives them, initial values, bounds, particle-filter priors and the drift-SD grid, which the
-    paper leaves open), so this outcome rests on them too.
-  assumed: true
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts through fig8a-d-action-reward-coding, whose change to blocked
-      (data_missing) is proposed; by Author step 1.5 a claim that depends on a blocked claim is
-      blocked for the same reason. The result as tested stays in the notes. It also depends on
-      fig8a-d-action-reward-coding, which is already blocked (methods_underspecified), so by the
-      same step it should already have been blocked; that was not applied before.'
+    paper leaves open), so the result as tested rests on them too.
 - claim: fig9-temporal-order-all-blocks
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig9-temporal-order-all-blocks
   notes: Part 1 fails in all 8 readings (12 rows with the Panzeri-Treves variant). Pooled, all three regions
@@ -532,7 +466,7 @@ outcomes:
     fixed blocks on the deposited PANs show the order (DLS 4.10 s, DMS 4.40 to 4.50, VS 5.05 to 5.10)
     but double fixed blocks do not (all in Phase 3, 3.20 to 3.95 s). In free-choice blocks the order DLS,
     DMS, VS holds in 6 of 12 rows. With permutations within blocks the double fixed blocks still show
-    all three rises in Phase 3 (2.85 to 3.15 s).
+    all three rises in Phase 3 (2.85 to 3.15 s). Blocked after round 3, since it depends on neuron-counts, which is blocked (data_missing). As tested, the criterion gave not_reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -543,12 +477,6 @@ outcomes:
     events of the threshold are permutations of the real labels (a standard choice), and permutations
     within blocks are shown as a variant.
   - Blocks with fewer than 20 choice trials give all of theirs.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts, whose change to blocked (data_missing) is proposed; by Author
-      step 1.5 a claim that depends on a blocked claim is blocked for the same reason. The result as
-      tested stays in the notes.'
 - claim: fig9-dms-never-above-dls
   outcome: blocked
   blocked_by: methods_underspecified
@@ -569,7 +497,8 @@ outcomes:
     within blocks are shown as a variant.
   - Blocks with fewer than 20 choice trials give all of theirs.
 - claim: fig10a-dls-fixed-above-free
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig10a-dls-fixed-above-free
   notes: No reading holds (0 of 32). Per block, the first crossings come in the order SF or DF (0.50 s),
@@ -579,7 +508,7 @@ outcomes:
     O1 b with the Wilcoxon test (and once with the Mann-Whitney test on the Methods-rule set), and in
     the Panzeri-Treves variant with the Wilcoxon test, which decides nothing; under O1
     a the E3 window gives Wilcoxon p = 0.27. The order by sustained rise, a variant, fails in 8 of 12
-    rows.
+    rows. Blocked after round 3, since it depends on fig9-temporal-order-all-blocks and through it on neuron-counts, which is blocked (data_missing). As tested, the criterion gave not_reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -592,19 +521,14 @@ outcomes:
   - '''500 ms before cue presentation'' is read as the window ending at E3, as the criterion says; the
     window ending at E2 is shown.'
   - The order uses the first crossing of the threshold, as the criterion says; the sustained rise is shown.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts through fig9-temporal-order-all-blocks, whose change to
-      blocked (data_missing) is proposed; by Author step 1.5 a claim that depends on a blocked claim
-      is blocked for the same reason. The result as tested stays in the notes.'
 - claim: fig10b-dms-fixed-above-free
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_ito_2015.ipynb
   output: claim:fig10b-dms-fixed-above-free
   notes: No reading holds (0 of 32). At the window ending at E4 fixed exceeds free with the Wilcoxon test
     in most readings (pooled, O1 a, 0.078 against 0.047 bits/s, p = 0.0013); at the window ending at E3
-    no reading gives p < 0.05 (smallest Wilcoxon p 0.055; Mann-Whitney p 0.135 or more).
+    no reading gives p < 0.05 (smallest Wilcoxon p 0.055; Mann-Whitney p 0.135 or more). Blocked after round 3, since it depends on fig9-temporal-order-all-blocks and through it on neuron-counts, which is blocked (data_missing). As tested, the criterion gave not_reproduced.
   deviations:
   - 'The neural analyses are run on two unit sets, each a reading of the unit selection: the 454 units
     the dandiset flags as PANs in DLS, DMS and VS (204, 112, 138) and the set rebuilt from the Methods''
@@ -616,12 +540,6 @@ outcomes:
     within blocks are shown as a variant.
   - '''500 ms before cue presentation'' is read as the window ending at E3, as the criterion says; the
     window ending at E2 is shown.'
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: 'Depends on neuron-counts through fig9-temporal-order-all-blocks, whose change to
-      blocked (data_missing) is proposed; by Author step 1.5 a claim that depends on a blocked claim
-      is blocked for the same reason. The result as tested stays in the notes.'
 - claim: fig10c-vs-no-fixed-free-difference
   outcome: blocked
   blocked_by: methods_underspecified
@@ -1247,3 +1165,123 @@ verifications:
       0.18 and 0.76 with all)'; with the last 20 trials the printed values are 0.937 at E3 and 0.868
       at E4, so that pair should read 0.94 and 0.87. The record's range, 0.18 to 0.94, is correct.
     response: Corrected to 0.94 and 0.87 in cell 102.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The 13 proposed changes of outcome of the revision after round 2 (neuron-counts and
+    the 12 claims that depend on it, all to blocked, data_missing) and the analysis behind them in the
+    executed notebook, with the attempt record and the claims file. Report in transcripts/001642/verifier-3-report.md.
+    The verifier found no dependent claim missed and no new claims-file reading to report.
+  results:
+  - claim: neuron-counts
+    agrees: true
+    outcome: blocked
+    reason: The numbers in cell 30 come from the units table and the spike times. With condition (3),
+      reading (4i) and no duplicate check, 265 / 224 / 169 units and 213 / 163 / 143 rule PANs remain.
+      None of these is below the lower end of its tolerance (234 / 160.2 / 161.1; 171 / 94.5 / 107.1).
+      These are upper limits of the paper's counts, because the conditions that cannot be applied, (1),
+      (2), (5) and the PETH-similarity part of the duplicate rule, can only remove units. The files hold
+      no waveforms or recording sites (cell 31), so the claim cannot be decided from the dandiset. Reading
+      (4ii) misses everywhere (49 / 62 / 22 units; 2 / 7 / 4 PANs); the claims file does not name it,
+      and even if it were counted as a reading, the readings would disagree, so the claim would still
+      be blocked and not not_reproduced. This decision does not rest on a choice made to reach the result.
+    response: 'Applied: blocked (data_missing). The notes, the notebook''s conclusion and summary and
+      the README now give this outcome; the counts as tested stay in the notes.'
+  - claim: fig4b-vs-phase1
+    agrees: true
+    outcome: blocked
+    reason: '`depends_on: [neuron-counts]` in the claims file. The analysis (cells 35 to 37) runs only
+      on the two unit sets built in cell 33 from cell 30, neither of which can be the paper''s set.'
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig5e-action-info-rises-dls
+    agrees: true
+    outcome: blocked
+    reason: Depends directly on neuron-counts. Same unit sets (cells 51 to 52).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig5e-action-info-cue-offset-dls
+    agrees: true
+    outcome: blocked
+    reason: Depends directly on neuron-counts (cells 54 to 55).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig5e-action-info-center-exit
+    agrees: true
+    outcome: blocked
+    reason: Depends directly on neuron-counts (cells 57 to 58).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig5d-action-info-phase5-dms
+    agrees: true
+    outcome: blocked
+    reason: Depends directly on neuron-counts (cells 60 to 61).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig5g-reward-info
+    agrees: true
+    outcome: blocked
+    reason: Depends directly on neuron-counts (cells 63 to 64). The claims-file reading of part (1) reported
+      in round 2 is still with a reader.
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig6-above-chance
+    agrees: true
+    outcome: blocked
+    reason: 'The claims file has `depends_on: [fig6-event-coding-proportions]`, and that claim is already
+      blocked (methods_underspecified) and has no proposed change (cells 69 to 70). The author is right
+      that this claim should already have been blocked; the verifier missed this in rounds 1 and 2. The
+      proposal''s reason says a change to blocked (data_missing) is proposed on fig6-event-coding-proportions,
+      but none is. If ''blocked for the same reason'' means the reason of the direct parent, this would
+      be methods_underspecified; its chain also reaches neuron-counts, so data_missing is defensible too.
+      Either the record should give both reasons, or the parents should also be marked as reaching data_missing
+      through neuron-counts.'
+    response: 'Applied: blocked (data_missing), the proposed outcome. The notes, the conclusion in the
+      notebook and the summary now give both reasons, the direct parent''s methods_underspecified and
+      data_missing through neuron-counts, and no longer say a change is proposed on the parent. The result
+      as tested stays in the notes.'
+  - claim: fig8f-state-value-vs
+    agrees: true
+    outcome: blocked
+    reason: 'The claims file has `depends_on: [fig8a-d-action-reward-coding]`, which is already blocked
+      (methods_underspecified) and has no proposed change, though the reason says one is proposed (cells
+      74, 81 to 82). It should already have been blocked; the verifier missed this earlier. If ''blocked
+      for the same reason'' means the reason of the direct parent, this would be methods_underspecified;
+      its chain also reaches neuron-counts, so data_missing is defensible too. Either the record should
+      give both reasons, or the parents should also be marked as reaching data_missing through neuron-counts.'
+    response: 'Applied: blocked (data_missing), the proposed outcome. The notes, the conclusion in the
+      notebook and the summary now give both reasons, the direct parent''s methods_underspecified and
+      data_missing through neuron-counts, and no longer say a change is proposed on the parent. The result
+      as tested stays in the notes.'
+  - claim: no-policy-coding
+    agrees: true
+    outcome: blocked
+    reason: Same parent and the same misstatement as fig8f-state-value-vs (cells 83 to 84). It should
+      already have been blocked; the verifier missed this earlier. If 'blocked for the same reason' means
+      the reason of the direct parent, this would be methods_underspecified; its chain also reaches neuron-counts,
+      so data_missing is defensible too. Either the record should give both reasons, or the parents should
+      also be marked as reaching data_missing through neuron-counts.
+    response: 'Applied: blocked (data_missing), the proposed outcome. The notes, the conclusion in the
+      notebook and the summary now give both reasons, the direct parent''s methods_underspecified and
+      data_missing through neuron-counts, and no longer say a change is proposed on the parent. The result
+      as tested stays in the notes.'
+  - claim: fig9-temporal-order-all-blocks
+    agrees: true
+    outcome: blocked
+    reason: Depends directly on neuron-counts (cells 86 to 88).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig10a-dls-fixed-above-free
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig9-temporal-order-all-blocks, which is proposed blocked (data_missing) (cells
+      93 to 94).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
+  - claim: fig10b-dms-fixed-above-free
+    agrees: true
+    outcome: blocked
+    reason: Depends on fig9-temporal-order-all-blocks, which is proposed blocked (data_missing) (cells
+      95 to 96).
+    response: 'Applied: blocked (data_missing). The notes and the notebook''s conclusion give the result
+      as tested.'
