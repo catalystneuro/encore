@@ -835,6 +835,20 @@ def head_tags(data: dict, title: str, path: str, description: str, structured: d
     return "\n".join(tags)
 
 
+# Page views are counted by Cloudflare Web Analytics: no cookies and nothing that identifies a visitor, so no
+# consent banner. Its script is the one thing the site loads from another site, and only in a build given the
+# site's token (--analytics; the publish workflow passes the CF_ANALYTICS_TOKEN repository variable), so that
+# previews, demo builds and local builds count nothing.
+BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
+
+
+def beacon(data: dict) -> str:
+    token = data.get("analytics")
+    if not token or data["demo"] or data.get("noindex"):
+        return ""
+    return f"<script defer src=\"{BEACON_SRC}\" data-cf-beacon='{e(json.dumps({'token': token}))}'></script>"
+
+
 def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "", path: str = "",
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
@@ -875,7 +889,7 @@ the data in the dataset, with the methods available. A failure to reproduce may 
 a judgement of the paper.</footer>
 </div>
 {THEME_JS}
-{scripts}
+{scripts}{beacon(data)}
 </body></html>
 '''
 
@@ -2013,6 +2027,8 @@ def build(data: dict, output: Path) -> None:
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     (output / "sitemap.xml").write_text(sitemap(data))
+    (output / "robots.txt").write_text(robots(data))
+    (output / "404.html").write_text(page_not_found(data))
 
 
 def redirect_page(target: str, root: str) -> str:
@@ -2023,6 +2039,25 @@ def redirect_page(target: str, root: str) -> str:
             f'<meta http-equiv="refresh" content="0; url={url}">'
             f'<script>location.replace("{url}"+location.search+location.hash)</script></head>'
             f'<body><p>This page moved to <a href="{url}">{e(target)}</a>.</p></body></html>\n')
+
+
+def robots(data: dict) -> str:
+    """Crawlers: everything but the pull-request previews (also on gh-pages, under pr-preview/), and the sitemap.
+    A demo or preview build lets nothing be crawled."""
+    if data["demo"] or data.get("noindex"):
+        return "User-agent: *\nDisallow: /\n"
+    return f"User-agent: *\nDisallow: /pr-preview/\n\nSitemap: {SITE_URL}sitemap.xml\n"
+
+
+def page_not_found(data: dict) -> str:
+    """The page GitHub Pages shows for any address that has no page. It can be shown at any depth, so its links
+    start from the site's root, and it is kept out of search results."""
+    body = f'''<header class="page">
+  <h1>Page not found</h1>
+  <p class="lede">There is no page at this address. It may have moved: the dataset pages are listed on the
+  <a href="/datasets/">datasets page</a>, and the <a href="/">overview</a> has where every attempt stands.</p>
+</header>'''
+    return shell(dict(data, noindex=True), f"Page not found · {SITE_NAME}", "/", "", body, path="404.html")
 
 
 def sitemap(data: dict) -> str:
@@ -2048,12 +2083,16 @@ def main() -> int:
                         help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
+    parser.add_argument("--analytics", metavar="TOKEN", default="",
+                        help="the Cloudflare Web Analytics token of the published site, to count page views; "
+                             "for the publish workflow only")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     data = collect(args.output / "notebooks")
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    data["analytics"] = args.analytics
     if args.queue and args.queue.is_file():
         data["queue"] = json.loads(args.queue.read_text())
     if args.issues and args.issues.is_file():
