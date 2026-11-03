@@ -50,7 +50,8 @@ outcomes:
     test over the pooled cell estimates removes none. A serpentine layout gives 1.848 and 1.589 per cell. The criterion
     takes the claim as reproduced under one reading; (b) matches under every pairing and both layouts tested. The
     outcome depends on the layout. Over 2000 random layouts, (a) per cell is within tolerance in 18% and (b) in
-    43%, and over the smoothest 5% of them in 29% and 65%. A bootstrap over the 117 cell estimates gives a 95% interval
+    43%, and over the smoothest 5% of them in 29% and 65%; that 5% is still much rougher than any layout in rows
+    (summed roughness at least 22.4, against 13 for row by row and 13.8 for serpentine). A bootstrap over the 117 cell estimates gives a 95% interval
     of 1.310 to 1.777 for (b), half-width 0.234, close to the paper's 0.21; resampling rats gives half-widths of
     0.313 for (b) and 0.522 for (a). The spread between rats is wider than the paper's 0.21, with rat means 0.810
     to 3.052 mV/mm (SD 0.730). In 4 rats 14 of the 208 channels change their artifact by more than half between
@@ -81,8 +82,9 @@ outcomes:
     at each end.
   - The stored values are read as volts, not scaled by the files' conversion factor of 1e-6, which would give fields
     near 1.8e-6 mV/mm.
-  - The field is computed from the stored 16-channel stream, which is neither low-passed at 300 Hz nor notch-filtered
-    (Methods 2.3 describe the LFP stream as both); at 40 Hz this makes no difference to the artifact.
+  - The field is computed from the stored 16-channel stream, which is not low-passed at 300 Hz and in 8 of 13 rats
+    not notch-filtered at 60 Hz (Methods 2.3 describe the LFP stream as both); at 40 Hz this makes no difference
+    to the artifact.
 - claim: fem-depth-falloff
   outcome: blocked
   blocked_by: data_missing
@@ -120,7 +122,7 @@ outcomes:
     that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are
     stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login. The claim
     also has a 20-minute part, which has data (the 20-minute files carry spikes) but depends on units-20min, blocked
-    as too large (loading and sorting the 13 rats takes about 98 minutes at the speed measured on one full rat).
+    as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit).
   notebook: reproduce_bellvila_2026.ipynb
   output: sanity
 - claim: baseline-ppc
@@ -130,7 +132,7 @@ outcomes:
     that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are
     stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login. The claim
     also has a 20-minute part, which has data (the 20-minute files carry spikes) but depends on units-20min, blocked
-    as too large (loading and sorting the 13 rats takes about 98 minutes at the speed measured on one full rat).
+    as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit).
   notebook: reproduce_bellvila_2026.ipynb
   output: sanity
 - claim: table1-any-change
@@ -362,16 +364,19 @@ outcomes:
   notes: 'The 20-minute files hold a 16-channel stream at 12207 Hz that carries spikes (negative 500 to 3000 Hz
     peaks with troughs of 50 to 180 uV, up to 44 per second on one channel), but no sorted units. One rat (sub-2023-04-28)
     was sorted over its whole window, 20 min of baseline, the 20 min of stimulation and the 9.3 min after offset
-    that its first series holds (49.3 min): streaming, filtering and removing the artifact took 65 s and SpyKING
-    CIRCUS 2 (spikeinterface 0.103.0) 391 s, 9.2 s per minute of recording. Scaled to the windows of the 13 rats
-    (45.6 to 50 min), loading and sorting take about 98 minutes, beyond the 60-minute limit of a notebook, before
-    the permutation tests, the phase extraction and the LFP analyses. Two runs made while preparing gave 98 and
-    100 minutes. The earlier estimate, extrapolated from 5 and 15 minutes, varied from 52 to 126 minutes between
-    machines; the full-window timing replaces it. The comb filter brings the 40 Hz-locked part of the multi-unit
+    that its first series holds (49.3 min). In the executed notebook of this record, streaming, filtering and
+    removing the artifact took 89 s and SpyKING CIRCUS 2 (spikeinterface 0.103.0, printed) 302 s, 7.9 s per minute
+    of recording. Scaled to the windows of the 13 rats (45.6 to 50 min), loading and sorting take about 85 minutes,
+    25 over the 60-minute limit of a notebook; with the 5 minutes the rest of the notebook took before this point,
+    90 minutes, before the permutation tests, the phase extraction and the LFP analyses. The time depends on the
+    machine and varies between runs: the notebook handed to round 2 printed 68 minutes (6.4 s per minute), and
+    the two runs of this revision 83 and 85. The block holds in every run, by a margin of 8 to 25 minutes for the
+    sorting alone, which a faster machine could narrow. The comb filter brings the 40 Hz-locked part of the multi-unit
     band from 11 to 22 uV peak to peak to 0.8 to 1.6 uV, near the 0.4 to 2.0 uV of the baseline. The rat sorted
-    gives 26 units (a median of 1.5 per channel), all passing the 0.25 Hz rule, against the paper''s medians of
-    44 per rat and 4 per channel; one rat does not test the claim. SpyKING CIRCUS 1, which the paper used, installs
-    (1.1.0) but its mpi4py finds no MPI library here, so it is also not runnable.'
+    gives 25 units (a median of 1 per channel), all passing the 0.25 Hz rule, against the paper''s medians of
+    44 per rat and 4 per channel (24 to 27 units in the runs so far); one rat does not test the claim. SpyKING
+    CIRCUS 1, which the paper used, was tried while preparing and needs an MPI library that is not available here;
+    it is not in the locked environment, so the notebook does not show this.'
   deviations:
   - The timing uses SpyKING CIRCUS 2 in place of SpyKING CIRCUS 1, with the paper's band (500 to 3000 Hz, Methods
     2.3) and detection threshold (6, Methods 2.6), the sorter's whitening and default settings otherwise, on one
@@ -382,8 +387,8 @@ outcomes:
 - claim: 20min-during-percentages
   outcome: blocked
   blocked_by: too_large
-  notes: Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 98 minutes at
-    the speed measured on one full rat). The stimulation waveform used for spike phases is not stored either; the
+  notes: Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at
+    the speed measured on one full rat in this run, over the 60-minute limit). The stimulation waveform used for spike phases is not stored either; the
     40 Hz artifact in the stream could stand in for it. In four rats the first series holds less than 10 minutes
     after offset (5.6 to 9.3).
   notebook: reproduce_bellvila_2026.ipynb
@@ -391,8 +396,8 @@ outcomes:
 - claim: 20min-post-percentages
   outcome: blocked
   blocked_by: too_large
-  notes: Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 98 minutes at
-    the speed measured on one full rat). The stimulation waveform used for spike phases is not stored either; the
+  notes: Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at
+    the speed measured on one full rat in this run, over the 60-minute limit). The stimulation waveform used for spike phases is not stored either; the
     40 Hz artifact in the stream could stand in for it. In four rats the first series holds less than 10 minutes
     after offset (5.6 to 9.3).
   notebook: reproduce_bellvila_2026.ipynb
@@ -400,8 +405,8 @@ outcomes:
 - claim: 20min-magnitudes
   outcome: blocked
   blocked_by: too_large
-  notes: Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 98 minutes at
-    the speed measured on one full rat). The stimulation waveform used for spike phases is not stored either; the
+  notes: Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at
+    the speed measured on one full rat in this run, over the 60-minute limit). The stimulation waveform used for spike phases is not stored either; the
     40 Hz artifact in the stream could stand in for it. In four rats the first series holds less than 10 minutes
     after offset (5.6 to 9.3).
   notebook: reproduce_bellvila_2026.ipynb
@@ -412,8 +417,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: power-reduced-entrainment-channels
@@ -422,8 +427,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: power-excited-channels
@@ -432,8 +437,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: power-suppressed-channels
@@ -442,8 +447,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: pac-entrained-channels
@@ -452,8 +457,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: pac-reduced-entrainment-channels
@@ -462,8 +467,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: pac-excited-channels
@@ -472,8 +477,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 - claim: pac-suppressed-channels
@@ -482,8 +487,8 @@ outcomes:
   notes: The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation,
     so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before
     onset and after offset are in the files, so the power and modulation index could be computed once the neurons
-    are sorted. The stored stream is not notch-filtered at 60, 120 and 180 Hz (Methods 2.3), so the power analysis
-    would need those notches applied first.
+    are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not
+    notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.
   notebook: reproduce_bellvila_2026.ipynb
   output: claim:units-20min
 findings:
@@ -494,8 +499,8 @@ findings:
     3 to 10) can be tested.
 - kind: data_missing
   statement: No file holds sorted units, although the paper's results rest on SpyKING CIRCUS output. For the 20-minute
-    paradigm the recordings could be sorted again, but at about 7.5 minutes per rat here, about 98 minutes for the
-    13; the published spike times would make the 20-minute findings testable.
+    paradigm the recordings could be sorted again, but at about 6.5 minutes per rat in this run, about 85 minutes for the
+    13 (68 to 85 in the runs so far); the published spike times would make the 20-minute findings testable.
 - kind: data_missing
   statement: The sham recording (one F344 nTg female rat, 80 minutes under propofol) is not in the dandiset.
 - kind: metadata_error
@@ -505,7 +510,9 @@ findings:
     times too small.
 - kind: metadata_insufficient
   statement: The 20-minute stream (channels 'aw_ 1' to 'aw_ 16', 12207 Hz) matches neither stream of Methods 2.3.
-    It has the LFP's rate but is neither low-passed at 300 Hz nor notch-filtered at 60 Hz, and it carries spikes.
+    It has the LFP's rate but is not low-passed at 300 Hz, and it carries spikes. In 8 of 13 rats the 60 Hz line
+    stands 10 to 1099 times above its neighbours, so these are not notch-filtered; in the other five the ratio is
+    1.0 to 9.6 (no line at all in sub-2023-05-04 and sub-2023-05-05), so a notch cannot be ruled out there.
     The files and the dandiset description do not say which TDT stream it is or how it was filtered; the description
     gives 24 kHz for all data.
 - kind: metadata_insufficient
@@ -735,11 +742,12 @@ verifications:
       alone, or a subset of rats, could have been run. A timed sort of one full rat over the 50-minute window would
       show whether it fits.'
     response: 'Replaced the extrapolation with a timed sort of one rat over its whole 50-minute window (20 min baseline,
-      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter: 65 s to load and 391
-      s to sort, 9.2 s per minute, about 98 minutes for the 13 cropped windows (98 and 100 in two preparing runs),
-      against the 60-minute limit. The 52 minutes came from a run on another machine; the author''s runs gave 113
+      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter. The executed notebook
+      handed to round 2 printed 72 s to load and 243 s to sort, 6.4 s per minute, about 68 minutes for the 13 cropped
+      windows, against the 60-minute limit (this response first gave 65 s, 391 s, 9.2 s and 98 minutes from runs
+      made while preparing; corrected in round 2). The 52 minutes came from a run on another machine; the author''s runs gave 113
       to 126. units-20min is a pooled count over 13 rats, so one rat or a subset does not test it; the rat sorted
-      gives 26 units, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
+      gave 27 units in that notebook, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
       is kept, the protocol''s reason for a computation over the notebook limit.'
   - claim: 20min-during-percentages
     agrees: true
@@ -752,11 +760,12 @@ verifications:
       alone, or a subset of rats, could have been run. A timed sort of one full rat over the 50-minute window would
       show whether it fits.'
     response: 'Replaced the extrapolation with a timed sort of one rat over its whole 50-minute window (20 min baseline,
-      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter: 65 s to load and 391
-      s to sort, 9.2 s per minute, about 98 minutes for the 13 cropped windows (98 and 100 in two preparing runs),
-      against the 60-minute limit. The 52 minutes came from a run on another machine; the author''s runs gave 113
+      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter. The executed notebook
+      handed to round 2 printed 72 s to load and 243 s to sort, 6.4 s per minute, about 68 minutes for the 13 cropped
+      windows, against the 60-minute limit (this response first gave 65 s, 391 s, 9.2 s and 98 minutes from runs
+      made while preparing; corrected in round 2). The 52 minutes came from a run on another machine; the author''s runs gave 113
       to 126. units-20min is a pooled count over 13 rats, so one rat or a subset does not test it; the rat sorted
-      gives 26 units, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
+      gave 27 units in that notebook, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
       is kept, the protocol''s reason for a computation over the notebook limit.'
   - claim: 20min-post-percentages
     agrees: true
@@ -769,11 +778,12 @@ verifications:
       alone, or a subset of rats, could have been run. A timed sort of one full rat over the 50-minute window would
       show whether it fits.'
     response: 'Replaced the extrapolation with a timed sort of one rat over its whole 50-minute window (20 min baseline,
-      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter: 65 s to load and 391
-      s to sort, 9.2 s per minute, about 98 minutes for the 13 cropped windows (98 and 100 in two preparing runs),
-      against the 60-minute limit. The 52 minutes came from a run on another machine; the author''s runs gave 113
+      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter. The executed notebook
+      handed to round 2 printed 72 s to load and 243 s to sort, 6.4 s per minute, about 68 minutes for the 13 cropped
+      windows, against the 60-minute limit (this response first gave 65 s, 391 s, 9.2 s and 98 minutes from runs
+      made while preparing; corrected in round 2). The 52 minutes came from a run on another machine; the author''s runs gave 113
       to 126. units-20min is a pooled count over 13 rats, so one rat or a subset does not test it; the rat sorted
-      gives 26 units, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
+      gave 27 units in that notebook, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
       is kept, the protocol''s reason for a computation over the notebook limit.'
   - claim: 20min-magnitudes
     agrees: true
@@ -786,11 +796,12 @@ verifications:
       alone, or a subset of rats, could have been run. A timed sort of one full rat over the 50-minute window would
       show whether it fits.'
     response: 'Replaced the extrapolation with a timed sort of one rat over its whole 50-minute window (20 min baseline,
-      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter: 65 s to load and 391
-      s to sort, 9.2 s per minute, about 98 minutes for the 13 cropped windows (98 and 100 in two preparing runs),
-      against the 60-minute limit. The 52 minutes came from a run on another machine; the author''s runs gave 113
+      20 min stimulation, up to 10 min after), with the artifact removed by a comb filter. The executed notebook
+      handed to round 2 printed 72 s to load and 243 s to sort, 6.4 s per minute, about 68 minutes for the 13 cropped
+      windows, against the 60-minute limit (this response first gave 65 s, 391 s, 9.2 s and 98 minutes from runs
+      made while preparing; corrected in round 2). The 52 minutes came from a run on another machine; the author''s runs gave 113
       to 126. units-20min is a pooled count over 13 rats, so one rat or a subset does not test it; the rat sorted
-      gives 26 units, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
+      gave 27 units in that notebook, all passing the 0.25 Hz rule, shown as evidence that the files hold sortable spikes. too_large
       is kept, the protocol''s reason for a computation over the notebook limit.'
   - claim: power-entrained-channels
     agrees: true
@@ -860,3 +871,234 @@ verifications:
     reason: 'Blocked, data_missing: the archive holds 22 assets, 9 one-minute and 13 twenty-minute files; there
       is no F344 sham recording.'
     response: No change needed.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run, the helper module, the claims file and
+    this record, with the paper. Report in transcripts/001678/verifier-2-report.md.
+  results:
+  - claim: efield-20min-median
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed, reproduced with assumed: true. Cell 21 gives 1.834 (a) and 1.525 (b) per 2x2 cell under the row-by-row layout, both within 1.44 to 1.86; reading (b) passes under all three pairings and both layouts, and reading (ii) gives 3.698, outside. The assumption, the 4x4 layout row by row, is stated in the first deviation and is reasonable: in cell 20 the share of random layouts as smooth as row by row is 0 to 0.0135 per rat, and serpentine, a transpose or a mirror would give the same outcome. The smoothest 5% of random layouts still have a roughness score of at least 22.4, against 13 for row by row and 13.8 for serpentine, so their 29% and 65% describe layouts much rougher than any row-structured one and understate the support for the outcome.'
+    response: 'Outcome kept. The roughness comparison of the smoothest 5% is added to the Result cell and to the notes. Numbers unchanged on re-running.'
+  - claim: efield-1min-medians
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: units-1min
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: baseline-fr
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5). The notes state about 98 minutes for sorting the 20-minute parts, while the notebook prints 68.'
+    response: 'Outcome kept. The notes now give the sorting time printed in the executed notebook of this record (about 85 minutes) and say it is over the limit.'
+  - claim: baseline-ppc
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5). The notes state about 98 minutes for sorting the 20-minute parts, while the notebook prints 68.'
+    response: 'Outcome kept. The notes now give the sorting time printed in the executed notebook of this record (about 85 minutes) and say it is over the limit.'
+  - claim: table1-any-change
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fr-change-more-common-than-timing
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fr-change-mostly-negative
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: ppc-change-mostly-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: table2-magnitudes
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fr-change-within-2hz
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig4-distributions
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: lmer-ppc-increase-interaction
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: lmer-ppc-decrease-amplitude
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: lmer-fr-increase-no-dependence
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: lmer-fr-decrease
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig6a-ppc-frequency-400ua
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig6b-ppc-amplitude-5-40hz
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig6d-entrained-share-40hz
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig7-ppc-decrease-regressions
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig8a-excited-fr-frequency-100ua
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig8b-excited-fr-amplitude-5hz
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig8c-excited-share-frequency-200ua
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig9a-suppressed-fr-frequency
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig9b-suppressed-fr-amplitude-5hz
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig9cd-suppressed-share-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fig10a-all-fr-frequency
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: lfp-1min-no-change
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: sham-no-fr-change
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: sham-lfp-baseline
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed, blocked as data_missing: the only channel in the 1-minute files is S1r 1, the stimulation command (cells 3 and 5).'
+    response: 'No change needed.'
+  - claim: fem-depth-falloff
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed that it is blocked. The record keeps data_missing, citing the protocol''s rule for an outside input that is not public, and records the verifier''s label of other, which the verifier accepts. The corrected reason is right.'
+    response: 'No change needed.'
+  - claim: fem-lognormal-fits
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed that it is blocked. The record keeps data_missing, citing the protocol''s rule for an outside input that is not public, and records the verifier''s label of other, which the verifier accepts.'
+    response: 'No change needed.'
+  - claim: fem-ellipsoid-axes
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed that it is blocked. The record keeps data_missing, citing the protocol''s rule for an outside input that is not public, and records the verifier''s label of other, which the verifier accepts.'
+    response: 'No change needed.'
+  - claim: units-20min
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook.'
+  - claim: 20min-during-percentages
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook.'
+  - claim: 20min-post-percentages
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook.'
+  - claim: 20min-magnitudes
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook.'
+  - claim: power-entrained-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: power-reduced-entrainment-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: power-excited-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: power-suppressed-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: pac-entrained-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: pac-reduced-entrainment-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: pac-excited-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'
+  - claim: pac-suppressed-channels
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome, not with the reason as written. Cell 15 prints an estimate of 68 min against the 60-minute limit, after 11 min already run, so the block holds on the printed numbers, but the margin is small and the machine-to-machine spread the author reports (52 to 126 min) is larger. The argument that the count is pooled over 13 rats, so one rat or a subset cannot test it, is reasonable. Cell 16, the Summary, the README and the record give 98 min, 9.2 s per minute, 65 s + 391 s and 26 units, where the notebook prints 68 min, 6.4 s per minute, 72 s + 243 s and 27 units; the reason should say the block is narrow and depends on the machine. The record finding that the stream is not notch-filtered at 60 Hz is unsupported for at least sub-2023-05-04 and sub-2023-05-05, where cell 8 prints line ratios of 1.000 and 1.041.'
+    response: 'Outcome kept. Cell 16, the Summary and the README no longer state fixed timings; cell 15 prints the time, the estimate, whether it exceeds the limit and by how much, and the total with the rest of the notebook. The record now gives this run''s numbers (89 s + 302 s, 7.9 s per minute, about 85 minutes, 90 with the rest of the notebook, 25 units all passing) and says the time depends on the machine: 68 minutes in the round-2 notebook, 83 and 85 in this revision''s two runs, so the block holds by 8 to 25 minutes for the sorting alone. The unverifiable 52 to 126 minutes history is removed from the notebook; the spikeinterface version is now printed; the SpyKING CIRCUS 1 statement now says it was tried while preparing and is not shown in the notebook. The notch statement now says 8 of 13 rats show a 60 Hz line 10 to 1099 times its neighbours, and that a notch cannot be ruled out in the other five (cell 8 now prints the count); the same correction is made in cell 9, the finding and the efield deviation.'

@@ -7,7 +7,8 @@ alternating current stimulation of rat sensorimotor cortex, against
 The 1-minute files hold only the stimulation command, one series per trial, and no recording, so
 the paper's parameter exploration cannot be tested. The 20-minute files hold a 16-channel stream
 at 12207 Hz that carries the LFP and spikes, but no sorted units; loading and sorting the 13 rats
-takes about 98 minutes at the speed measured on one full rat, beyond the notebook limit. The sham recording is not in the
+takes longer than the 60-minute notebook limit at the speed measured on one full rat (68 to 85 minutes in
+the runs so far, depending on the machine). The sham recording is not in the
 dandiset.
 
 | Claim | Outcome |
