@@ -67,9 +67,11 @@ A = an assumption, said why; X = a standard choice for a detail that does not ch
   peak, the point with the lowest derivative value was defined as the phase peak"; A, as the
   criterion leaves this case open), which is where the rising phase starts, so the index is near
   (1 - 0.1)/(1 + 0.1) = 0.82; the variant `_x` leaves such APs out. Local maxima count when their
-  prominence is at least `PROMINENCE_FRAC` of the AP's maximal dV/dt (X, against noise; the
-  notebook shows 0.02 and 0.10). The rising phase starts where dV/dt first
-  exceeds 10% of its maximum (X, so that noise at threshold is not read as the AIS peak).
+  prominence is at least `PROMINENCE_FRAC` of the AP's maximal dV/dt (A, against noise; the
+  notebook shows 0.02 and 0.10, and 0.02 changes the outcome). The rising phase starts where dV/dt
+  first exceeds 10% of its maximum (A, so that noise at threshold is not read as the AIS peak). The
+  shoulder rule is the criterion's; at the noise of the files it places the AIS value next to the
+  dV/dt maximum (the notebook's noise test), so the index rests on these choices (A).
 """
 
 from __future__ import annotations
@@ -107,8 +109,8 @@ STEP_S = 0.6                 # M, 600 ms steps
 PRE_SPIKE_OFFSET_MV = 30.0   # C, anaAP.m height = max(smoothed) + 30
 THRESH_WINDOW_MS = 20.0      # M, 20 ms before the peak
 STEADY_MS = 100.0            # M, last 100 ms of the step
-PROMINENCE_FRAC = 0.05       # X, see docstring
-TAKEOFF_FRAC = 0.10          # X, see phase_index
+PROMINENCE_FRAC = 0.05       # A, see docstring
+TAKEOFF_FRAC = 0.10          # A, see phase_index
 
 # Subclasses by predicted cluster number (calFDR_ephsio.m and the claims file's opening comment).
 CLUSTERS = {
@@ -349,26 +351,35 @@ def rebound_value(v, fs, off, rmp):
 # ----------------------------------------------------------------------------- phase peak index
 
 
-def phase_index(vraw, fs, thr_idx, peak_idx, prominence_frac=PROMINENCE_FRAC):
+def phase_index(vraw, fs, thr_idx, peak_idx, prominence_frac=PROMINENCE_FRAC, detail=False):
     """Automatic phase peak index of one AP; also says whether there were two maxima.
 
     The rising phase is taken from where dV/dt first exceeds `TAKEOFF_FRAC` of its maximum (X,
-    so that noise at threshold is not read as a peak) to the AP peak.
+    so that noise at threshold is not read as a peak) to the AP peak. With `detail`, also the
+    time of the AIS value before the dV/dt maximum (ms) and the AIS value over the maximum.
     """
+    val, kind, info = _phase_index(vraw, fs, thr_idx, peak_idx, prominence_frac)
+    return (val, kind, info) if detail else (val, kind)
+
+
+def _phase_index(vraw, fs, thr_idx, peak_idx, prominence_frac):
     lo = max(thr_idx - 2, 1)
     seg = vraw[lo - 1:peak_idx + 2]
     dvdt = smooth(np.diff(seg) * fs / 1000.0, 5)  # mV/ms
+    nan_info = {"ais_lead_ms": np.nan, "ais_over_max": np.nan}
     if len(dvdt) < 5:
-        return np.nan, False
+        return np.nan, False, nan_info
     g = int(np.argmax(dvdt))
     gmax = dvdt[g]
     if gmax <= 0:  # no rise in the raw trace between threshold and peak
-        return np.nan, "failed"
+        return np.nan, "failed", nan_info
     start = int(np.flatnonzero(dvdt >= TAKEOFF_FRAC * gmax)[0])
     rising = dvdt[start:]
     pk, _ = find_peaks(rising, prominence=prominence_frac * gmax if prominence_frac > 0 else None)
     if len(pk) >= 2:
-        return (rising[pk[1:]].max() - rising[pk[0]]) / (rising[pk[1:]].max() + rising[pk[0]]), "two"
+        sd = int(pk[1:][np.argmax(rising[pk[1:]])])
+        info = {"ais_lead_ms": (sd - pk[0]) / fs * 1000, "ais_over_max": rising[pk[0]] / rising[sd]}
+        return (rising[sd] - rising[pk[0]]) / (rising[sd] + rising[pk[0]]), "two", info
     g = g - start
     mins = np.array([], int)
     if g >= 3:
@@ -377,11 +388,14 @@ def phase_index(vraw, fs, thr_idx, peak_idx, prominence_frac=PROMINENCE_FRAC):
     if len(mins):
         j = int(mins[np.argmin(d2[mins])]) + 1
         p_ais = rising[j]
-        return (gmax - p_ais) / (gmax + p_ais), "shoulder"
+        info = {"ais_lead_ms": (g - j) / fs * 1000, "ais_over_max": p_ais / gmax}
+        return (gmax - p_ais) / (gmax + p_ais), "shoulder", info
     # No AIS peak and no shoulder: the AIS phase is not resolved. Its "peak" is the point with the
     # lowest derivative value (M), the lowest dV/dt of the rising phase.
-    p_ais = rising[: g + 1].min()
-    return (gmax - p_ais) / (gmax + p_ais), "none"
+    j = int(np.argmin(rising[: g + 1]))
+    p_ais = rising[j]
+    info = {"ais_lead_ms": (g - j) / fs * 1000, "ais_over_max": p_ais / gmax}
+    return (gmax - p_ais) / (gmax + p_ais), "none", info
 
 
 # ----------------------------------------------------------------------------- features
@@ -470,7 +484,8 @@ def cell_features(rec):
             "amplitude_raw", "phase_idx_first", "phase_idx_median", "phase_two_peaks_frac",
             "phase_idx_first_p2", "phase_idx_median_p2", "phase_idx_first_p10",
             "phase_idx_median_p10", "phase_none_frac", "phase_first_kind", "phase_idx_first_x",
-            "phase_idx_median_x", "penult_half_width", "penult_amplitude", "max_sweep"]
+            "phase_idx_median_x", "penult_half_width", "penult_amplitude", "max_sweep",
+            "noise_mV", "phase_first_ais_lead_ms", "phase_first_ais_over_max"]
     for k in keys:
         out.setdefault(k, np.nan)
     if not len(spk):
@@ -488,6 +503,9 @@ def cell_features(rec):
     out["AHP"] = float(V[rh, pk[0]:end].min() - m["threshold"])
     ms = int(np.argmax(counts))
     out["max_sweep"] = ms
+    # white-noise level of the raw trace before the step on the maximal-rate sweep (mV), from the
+    # sample-to-sample differences, the noise that enters the derivatives of the phase index
+    out["noise_mV"] = float(np.std(np.diff(Vraw[ms, 100:on])) / np.sqrt(2))
     pm = peaks[ms]
     if len(pm) >= 3:
         isi = np.diff(pm) / fs * 1000
@@ -527,6 +545,9 @@ def cell_features(rec):
             res = vals[twos != "none"]
             out["phase_idx_first_x"] = vals[0] if twos[0] != "none" else np.nan
             out["phase_idx_median_x"] = float(np.median(res)) if len(res) else np.nan
+            _, _, info = phase_index(Vraw[ms], fs, allm[0]["thr_idx"], pm[0], frac, detail=True)
+            out["phase_first_ais_lead_ms"] = info["ais_lead_ms"]
+            out["phase_first_ais_over_max"] = info["ais_over_max"]
     return out
 
 
@@ -564,24 +585,37 @@ def load_all(assets, workers=8):
 
 
 def geo_member(url=GEO_H5AD_TAR, member=GEO_MEMBER):
-    """One member of the GEO tar.gz, streamed into memory; the stream stops after it (no disk)."""
+    """One member of the GEO tar.gz, streamed into memory, and the compressed bytes read; the
+    stream stops after it (no disk)."""
     import tarfile
     r = requests.get(url, stream=True, timeout=300)
     r.raise_for_status()
     r.raw.decode_content = False
-    with tarfile.open(fileobj=r.raw, mode="r|gz") as tf:
+
+    class Counted:  # counts the compressed bytes read from the archive
+        n = 0
+
+        def read(self, size=-1):
+            b = r.raw.read(size)
+            Counted.n += len(b)
+            return b
+
+    with tarfile.open(fileobj=Counted(), mode="r|gz") as tf:
         for m in tf:
             if m.name == member:
-                return io.BytesIO(tf.extractfile(m).read())
+                buf = io.BytesIO(tf.extractfile(m).read())
+                r.close()
+                return buf, Counted.n
     raise KeyError(member)
 
 
 def ext_cluster_means(buf, n_genes=500):
     """Per leiden cluster, the mean log2(x + 1) UMI count of the 500 most variable genes.
 
-    Counts are layers/RawCounts of Ext.h5ad (integers). Genes, the 500 of highest normalized
-    dispersion (var/dispersions_norm, the file's own highly-variable-gene ranking, X); the variant
-    takes the 500 of highest variance of log2(x + 1) over all cells.
+    Counts are layers/RawCounts of Ext.h5ad (integers). Genes, the 500 that the Methods' selection
+    of "the 500 most-variable genes" picks (`paper_gene_selection`, M); the variants take the 500 of
+    highest normalized dispersion (var/dispersions_norm, the file's own highly-variable-gene ranking)
+    and the 500 of highest variance of log2(x + 1) over all cells.
     """
     from scipy.sparse import csr_matrix
     f = h5py.File(buf, "r")
@@ -595,19 +629,46 @@ def ext_cluster_means(buf, n_genes=500):
     genes = dec(f["var"]["_index"][:])
     disp = f["var"]["dispersions_norm"][:]
     f.close()
+    paper = paper_gene_selection(m, n_genes)
     m.data = np.log2(m.data + 1.0)
     mean = np.asarray(m.mean(axis=0)).ravel()
     sq = m.copy()
     sq.data **= 2
     var = np.asarray(sq.mean(axis=0)).ravel() - mean ** 2
     out = {}
-    for name, score in [("dispersion", disp), ("variance", var)]:
+    for name, score in [("dispersion", disp), ("variance", var), ("paper", paper)]:
         g = np.argsort(-np.nan_to_num(score, nan=-np.inf))[:n_genes]
         sub = m[:, g].tocsc()
         means = {c: np.asarray(sub[clusters == c].mean(axis=0)).ravel() for c in np.unique(clusters)}
         out[name] = pd.DataFrame(means, index=genes[g]).T
     lab = pd.Series(labels, index=clusters).groupby(level=0).first()
     return out, lab, pd.Series(clusters).value_counts().sort_index()
+
+
+def paper_gene_selection(m, n_genes=500, c_min=32, at_least=10, decay=1.5, y_offset=0.002):
+    """A score whose n_genes largest values are the genes of the Methods' selection (M).
+
+    Methods, Transcriptomic mapping: genes "that had counts of at least 32 (Cmin = 32) in fewer
+    than 10 cells were excluded first"; mu is the mean log2(x + 1) of the counts above 32 and tau
+    the fraction of counts at or below 32; "Using a binary search, the value b of this offset was
+    determined to produce the desired number of genes satisfying tau > exp(-1.5 x mu + b) + 0.002".
+    The score is tau - exp(-1.5 mu + b) - 0.002 at the b found, so the selected genes score
+    above 0; NaN for excluded genes. `m` holds raw counts (cells by genes, CSR).
+    """
+    n_cells, n_g = m.shape
+    ge = np.bincount(m.indices[m.data >= c_min], minlength=n_g)
+    big = m.data > c_min
+    n_big = np.bincount(m.indices[big], minlength=n_g)
+    s_big = np.bincount(m.indices[big], weights=np.log2(m.data[big] + 1.0), minlength=n_g)
+    keep = (ge >= at_least) & (n_big > 0)
+    mu = np.where(keep, s_big / np.maximum(n_big, 1), np.nan)
+    tau = np.where(keep, 1.0 - n_big / n_cells, np.nan)
+    count = lambda b: int(np.nansum(tau > np.exp(-decay * mu + b) + y_offset))
+    lo, hi = -50.0, 50.0
+    for _ in range(100):  # the largest b that still selects n_genes or more
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if count(mid) >= n_genes else (lo, mid)
+    return tau - np.exp(-decay * mu + lo) - y_offset
 
 
 # ----------------------------------------------------------------------------- statistics

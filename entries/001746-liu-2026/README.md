@@ -24,13 +24,18 @@ name. For Fig. 7c the 10x data come from GEO GSE319557.
 | L5 ET have the deepest sag | Blocked: methods underspecified |
 | VENs fire less and more irregularly than PCs | Not reproduced |
 | L5 ET against L5 IT: deeper sag, lower input resistance, higher rate | Partially reproduced |
-| VENs have the lowest phase peak index; their phase plots are saddle-shaped | Partially reproduced |
+| VENs have the lowest phase peak index; their phase plots are saddle-shaped | Partially reproduced (change to blocked proposed) |
 | VEN-L differ more from L5/6 CT than VEN-S do | Reproduced |
 | Morphology differs on more features than physiology | Reproduced |
 | Recordings without RNA (Fig. 4a-c, Extended Data Fig. 9c,d, Supplementary Table 8) | Blocked: data missing |
-| Peak index against AIS distance (Fig. 4i) | Not reproduced |
+| Peak index against AIS distance (Fig. 4i) | Not reproduced (change to blocked proposed) |
 | Tau distance against transcriptomic distance (Fig. 7) | Not reproduced |
 | Nine claims on data in other archives | Blocked: other |
+
+After the second verification, a change of the three phase peak index claims to blocked (methods
+underspecified) is proposed and awaits a third round: the automatic index, which stands in for the
+peaks the paper placed by hand, reads the AIS value next to the SD peak at the noise level of these
+recordings, so it does not measure the saddle shape.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -39,7 +44,8 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/001746-liu-2026-01.yaml`](../../attempts/001746-liu-2026-01.yaml).
 
 - `reproduce_liu_2026.ipynb`: the analysis. It reads all 462 files (about 15 GB) and streams the
-  first 5 GB of the GEO h5ad archive, and takes about seven minutes.
+  first 4.4 GB of the GEO h5ad archive. In the last run it took 6.5 minutes, of which reading the
+  files took 4 and the GEO stream 1; the stream's time depends on the GEO server.
 - `aic.py`: loading the files, and the electrophysiological features as the Methods define them,
   with the details taken from the paper's package PatchAnaLab 1.0; the docstring says where each
   parameter comes from. Other notebooks on this dandiset can import it.

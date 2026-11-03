@@ -43,6 +43,7 @@ inputs:
 outcomes:
 - claim: patchseq-cell-table-link
   outcome: reproduced
+  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:patchseq-cell-table-link
   measured:
@@ -65,11 +66,12 @@ outcomes:
     file agrees with its own row. measured gives rows found, rows whose subject agrees, and the three
     fractions.
   deviations:
-  - 'The criterion fails the link when a label disagrees. One row''s subject disagrees: row 235, a second
-    row for the file of n172, which has its own row, with no type or cluster, used by no analysis. It
-    is read as the table''s row for the file of s172, which is in the dandiset under that subject and
-    which no row names, so the link is taken to hold. Under the letter of the criterion it would be not
-    reproduced.'
+  - 'Assumption on row 235. The criterion fails the link when a label disagrees. One row''s subject disagrees:
+    row 235, a second row for the file of n172, which has its own row, with no type or cluster, used by
+    no analysis. It is read as the table''s row for the file of s172, which is in the dandiset under that
+    subject and which no row names, so the link is taken to hold; the outcome rests on this reading.
+    Under the letter of the criterion it would be not reproduced. The question is put to the paper''s
+    authors under findings.'
   - AP features are computed on traces low-pass filtered at 1 kHz with the spike detection of PatchAnaLab
     (createFeatures.m, anaAP.m), as the Methods give no filter or detection rule. AP threshold, the maximal
     third derivative in the 20 ms before the peak (Methods, "the 20-ms potential trace preceding the AP
@@ -290,6 +292,7 @@ outcomes:
     the 39 features of the FDR family.
 - claim: l5et-vs-l5it-sag-rm-rate
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:l5et-vs-l5it-sag-rm-rate
   notes: 'Against L5 IT FEZF2, L5 ET neurons have a larger sag ratio (1.36 against 1.13, p = 1.6e-6, FDR
@@ -298,8 +301,16 @@ outcomes:
     Hz, p = 0.0063, FDR 0.022). By sag value L5 ET is lower (19.6 against 27.1 mV, p = 0.015), the reverse
     of deeper. The criterion takes the sag readings of supp11-l5et-deep-sag, sag ratio and sag value,
     and gives no rule for their disagreement: under the sag ratio all three hold (reproduced), under the
-    sag value two do (partially reproduced). The outcome is the one that holds under both readings.'
+    sag value two do (partially reproduced). The outcome is taken as the one that holds under both readings,
+    an assumption (deviations). If the criterion''s "sag readings as in supp11-l5et-deep-sag" also carries
+    that claim''s rule, blocked when the readings disagree, the claim would be blocked as methods_underspecified.'
   deviations:
+  - Assumption on the rule for disagreeing sag readings. The criterion takes the sag readings of supp11-l5et-deep-sag
+    and its own outcome rule (reproduced when all three differ, partially reproduced when two do), and
+    says nothing of the case where the readings give different outcomes. The outcome that holds under
+    both readings, two of three, is taken, as it is the one the data give whichever measure the paper
+    meant; the other reading of the criterion, that it inherits the block of supp11-l5et-deep-sag, would
+    give blocked. Which sag measure the paper uses is asked of its authors under findings.
   - Assumption on the FDR family. The claims file sets it to the 39 features of Ins_patchseq_ephs.xlsx,
     those the Methods define computed as defined there and the others as createFeatures.m computes them.
     Nineteen of them (phase areas and perimeters, ISI phase ratios, FR, first-ISI and adaptation slopes,
@@ -309,35 +320,53 @@ outcomes:
     the 20 Methods features the result is the same, so the outcome does not rest on this choice.
 - claim: fig3e-phase-peak-index
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig3e-phase-peak-index
-  notes: The AP readings and the corrections agree. On the first AP of the maximal-rate sweep, the VEN
-    median index is the lowest (0.037; next L2/3 IT HPCAL1 0.083), Kruskal-Wallis p = 0.0016, and Dunn's
-    test separates VENs from L5 ET (Bonferroni p = 0.003, Sidak 0.003) and from no other group (L6 PC
-    0.062, IT RORB 0.29). On the median over the sweep's APs, the VEN median is again the lowest (0.081;
-    next L5 IT FEZF2 0.111), Kruskal-Wallis p = 0.0015, and Dunn's test separates VENs from L5 ET only
-    (p = 0.009 under both). The median is lowest and some groups are separated, under both readings and
-    both corrections. Leaving out the APs whose AIS phase is not resolved (at most 3% of a group's APs)
-    keeps the VEN medians lowest and separates VENs from IT RORB, L5 ET and L6 PC on the first AP. With
-    the prominence guard at 0.02 or 0.10 of the maximal dV/dt (variants) the VEN median is the lowest
-    in three of the four readings (not for the median index at 0.02), and Dunn's test separates VENs from
-    none to two groups (L5 ET, IT RORB). The code's hand-read values (PeakIdx_Fig5e.xlsx, 233 cells) give
-    the paper's result, VEN median 0.117 the lowest and Dunn p of 0.001 or less against every PC group
-    under both corrections; the automatic index agrees with them only loosely (Spearman 0.39 first AP,
-    0.20 median). The index depends on the sampling rate (40 Axon files brought to 25 kHz, median 0.088
-    to 0.168), 17 of the 29 VENs are Axon files, and within one device VENs are not significantly lower
-    than the other groups pooled (Axon p = 0.08, HEKA p = 0.10).
+  notes: Under the criterion's automatic reading, on the first AP of the maximal-rate sweep the VEN median
+    index is the lowest (0.037; next L2/3 IT HPCAL1 0.083), Kruskal-Wallis p = 0.0016, and Dunn's test
+    separates VENs from L5 ET (Bonferroni p = 0.003, Sidak 0.003) and from no other group (L6 PC 0.062,
+    IT RORB 0.29). On the median over the sweep's APs, the VEN median is again the lowest (0.081; next
+    L5 IT FEZF2 0.111), Kruskal-Wallis p = 0.0015, and Dunn's test separates VENs from L5 ET only (p =
+    0.009 under both). The median is lowest and some groups are separated, under both readings and both
+    corrections. APs whose AIS phase is not resolved are on average 3% or less of a group's APs, but
+    they are the first AP of 5 of 30 L2/3 IT HPCAL1 cells, 3 of 125 L5 IT FEZF2, 3 of 29 VEN and 3 of
+    18 L5 ET; leaving them out keeps the VEN medians lowest (0.030 and 0.081) and separates VENs on the
+    first AP from IT RORB, L5 ET and L6 PC instead of L5 ET alone. The outcome rests on the prominence
+    guard of 0.05 of the maximal dV/dt. At 0.02 the median-AP reading no longer gives VENs the lowest
+    median (0.200 against 0.173 for L5 IT FEZF2) and on the first AP Dunn's test separates no group (lowest
+    p 0.053, L5 ET), which would not be partially reproduced; at 0.10 the VEN median is the lowest under
+    both readings and VENs are separated from L5 ET (first AP) and from IT RORB (median). The shoulder
+    branch of the reading, which reads 195 of the 237 first APs, does not measure the shoulder at the
+    noise of these recordings. On synthetic APs a slow-rising AP without an AIS phase scores 0.81 without
+    noise and a median 0.003 to 0.011 with Gaussian noise of 0.02 to 0.05 mV at 50 kHz (below 0.1 in 76%
+    to 98% of trials), and an AP with a shoulder falls from 0.21 to 0.018 at 0.05 mV; the white noise
+    before the step is 0.023 mV (median) in the 50 kHz Axon files and 0.30 mV in the 25 kHz HEKA files.
+    In the recorded first APs read through this branch the index rises with the time between the AIS
+    value and the dV/dt maximum (Spearman 0.75); in VENs the AIS value lies a median 0.16 ms before the
+    maximum at 0.92 of it, and at 0.9 or more of it in 55% of VEN cells against 8% to 38% in the PC groups.
+    On the 28 first APs with two resolved maxima the groups do not differ (Kruskal-Wallis p = 0.54). The
+    code's hand-read values (PeakIdx_Fig5e.xlsx, 233 cells) give the paper's result, VEN median 0.117
+    the lowest and Dunn p of 0.001 or less against every PC group under both corrections; the automatic
+    index agrees with them only loosely (Spearman 0.39 first AP, 0.20 median). The index depends on the
+    sampling rate (40 Axon files brought to 25 kHz, median 0.088 to 0.168), 17 of the 29 VENs are Axon
+    files, and within one device VENs are not significantly lower than the other groups pooled (Axon p
+    = 0.08, HEKA p = 0.10). A change to blocked is proposed (proposed).
   deviations:
   - The paper read the AIS and SD peaks by hand (calPhaseHeightIdx.m asks for two clicks on the overlaid
     phase plots), so the criterion's automatic reading is used, and its outcome differs from the one the
     code's per-cell values give (partially reproduced against reproduced), which the criterion reports
-    as a deviation. Details it does not fix are standard choices made against noise, stated in the helper;
-    the rising phase starts where dV/dt first exceeds 10% of its maximum, local maxima need a prominence
-    of 5% of the maximum, and with one maximum the AIS value is taken at the lowest local minimum of d2V/dt2
-    before it (the shoulder of the rise). With neither a second maximum nor a shoulder, the AIS value
+    as a deviation.
+  - Assumption on the details of the automatic reading the criterion does not fix, stated in the helper.
+    The rising phase starts where dV/dt first exceeds 10% of its maximum; local maxima need a prominence
+    of 5% of the maximum; with one maximum the AIS value is taken at the lowest local minimum of d2V/dt2
+    before it (the shoulder of the rise); with neither a second maximum nor a shoulder, the AIS value
     is the lowest dV/dt of the rising phase (Methods, "If there was no clear phase peak, the point with
-    the lowest derivative value was defined as the phase peak"), which makes such an AP the least saddle-like;
-    the criterion leaves this case open, and leaving such APs out does not change the outcome.
+    the lowest derivative value was defined as the phase peak"), which makes such an AP the least saddle-like.
+    These were chosen against noise and are not the paper's; the outcome rests on them, as the prominence
+    guard at 0.02 gives another outcome and the shoulder branch is set by the noise (notes). Leaving out
+    the APs with neither a second maximum nor a shoulder does not change the outcome, though it changes
+    the first-AP Dunn result.
   - AP threshold, the maximal third derivative in the 20 ms before the peak (Methods, "the 20-ms potential
     trace preceding the AP peak was used to calculate the third derivative"), with the derivative chain
     of PatchAnaLab computed on the window padded by 2 ms and searched up to the point of maximal dV/dt,
@@ -346,14 +375,36 @@ outcomes:
     of the phase index.
   - The Dunn correction in the code's own statistics sheet of PeakIdx_Fig5e.xlsx is Bonferroni; both of
     the criterion's corrections are run.
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The automatic index that stands in for the hand-placed peaks does not measure the saddle shape
+      on these recordings. Its shoulder branch, which reads 195 of the 237 first APs, places the AIS value
+      next to the dV/dt maximum at the noise level of the files (synthetic APs without an AIS phase score
+      a median 0.003 to 0.011 at 0.02 to 0.05 mV of noise, where the files have 0.023 mV at 50 kHz and
+      0.30 mV at 25 kHz), so an AP gets the most saddle-like index whether or not it has a saddle. On
+      the first APs with two resolved maxima, where the branch does not enter, the groups do not differ
+      (p = 0.54), and the outcome also changes with the prominence guard (at 0.02 it would not be partially
+      reproduced). The paper placed the peaks by hand and gives no rule for an automatic reading, so no
+      choice has a defensible basis. Analysis in the notebook, cells tagged claim:fig3e-phase-peak-index.
 - claim: fig3d-saddle-phase-plane
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig3d-saddle-phase-plane
   notes: The criterion makes this claim take the outcome of fig3e-phase-peak-index, which is partially
     reproduced. As a description that does not decide, the median fraction of APs of the maximal-rate
     sweep whose rising phase has two maxima of dV/dt is 0.80 in VENs against 0.60 in the PC groups pooled
-    (p = 0.34).
+    (p = 0.34). The change proposed for fig3e-phase-peak-index applies to this claim too.
+  deviations:
+  - The outcome is that of fig3e-phase-peak-index and rests on the same assumption on the automatic reading
+    of the phase peak index (see that claim).
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion makes this claim take the outcome of fig3e-phase-peak-index, for which a change
+      to blocked (methods_underspecified) is proposed, as its automatic index does not measure the saddle
+      shape at the noise level of these recordings.
 - claim: fig4ac-ven-broader-smaller-ap
   outcome: blocked
   blocked_by: data_missing
@@ -365,13 +416,14 @@ outcomes:
   notes: The 281 VENs and 306 L5 PCs are additional whole-cell recordings (Methods, Patch-seq recording)
     that the paper does not say where it deposited. The dandiset holds the 462 Patch-seq cells, among
     them 68 VENs and 138 cells labelled PC_L5 or PC_L5ET. Its 113 Axon files without a transcriptomic
-    type are rows of the Patch-seq cell table and are described as Patch-seq experiments in every file,
-    and the device follows the recording year, so they are not taken as the recordings without RNA. As
+    type are rows of the Patch-seq cell table, every file's experiment description is "Patch-seq experiment
+    of cell atlas investigation of the macaque anterior insular cortex,", and the device follows the recording year, so they are not taken as the recordings without RNA. As
     a variant that does not decide, on the Patch-seq cells VEN APs are broader (3.08 against 2.70 ms,
     p = 0.009) and smaller (86.2 against 90.2 mV, p = 0.071), neither with p below 0.001; at the penultimate
     AP of the maximal-rate sweep 5.10 against 4.72 ms (p = 0.060) and 54.2 against 57.3 mV (p = 0.34).
 - claim: fig4i-peak-index-ais-distance-real
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig4i-peak-index-ais-distance-real
   notes: 'The 62 AIS distances of the paper''s code (NeuronPeakIdx_summary.mat) carry no cell IDs, and
@@ -384,12 +436,22 @@ outcomes:
     and 0.64, and leaving out the cells at 0 um changes nothing. The code''s hand-read indices on the
     same cells (127 in PeakIdx_Fig5e.xlsx) give a negative slope, -0.0027 per um, p = 0.018 over 7 bins
     (on cells p = 6e-5), so the difference from the paper rests on the automatic peak reading, as for
-    fig3e-phase-peak-index.'
+    fig3e-phase-peak-index. That reading does not measure the saddle shape at the noise of these recordings
+    (fig3e-phase-peak-index), and a change to blocked is proposed (proposed).'
   deviations:
   - The 62 neurons are not identified; the cells with an AIS distance in the code's morphology table (153)
     are used, as the criterion says. The AIS distance is the code's table value, not measured from the
     NeuroMorpho.org reconstructions.
-  - The phase peak index is the automatic reading of fig3e-phase-peak-index, with its deviations.
+  - The phase peak index is the automatic reading of fig3e-phase-peak-index, with its deviations, and
+    the outcome rests on the same assumption on that reading.
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The claim uses the automatic phase peak index of fig3e-phase-peak-index (depends_on), for which
+      a change to blocked (methods_underspecified) is proposed, as its shoulder branch places the AIS value
+      next to the SD peak at the noise level of these recordings and so does not measure the saddle shape.
+      A claim that depends on a blocked claim is blocked for the same reason. The hand-read indices give
+      a negative slope (p = 0.018), which the notes report and which does not decide.
 - claim: ext9cd-ven-subtypes-ap
   outcome: blocked
   blocked_by: data_missing
@@ -466,22 +528,30 @@ outcomes:
   notebook: reproduce_liu_2026.ipynb
   output: claim:fig7c-tau-rna-distance
   measured:
-  - 0.105
+  - 0.053
   notes: The 10x excitatory neurons are Ext.h5ad of GEO GSE319557 (21,733 cells in 20 leiden clusters,
     numbered as the cell table's predictCluster, with raw UMI counts), streamed from the archive's tar.gz
-    (3.4 GB member, about 2 minutes). Over the 66 pairs of the 12 clusters of the criterion, the distance
-    of mean Methods tau correlates with the transcriptomic distance (1 minus the Pearson r of the clusters'
-    mean log2(x + 1) counts over the 500 most variable genes) with r = 0.105 (p = 0.40), outside 0.53
-    and its tolerance of 0.053 and not significant. With the code's first-sweep tau, a variant, r = 0.36
-    (p = 0.003); with the median over sweeps r = 0.08. The maximal firing rate gives r = 0.07. With the
-    500 genes of highest variance of log2(x + 1) in place of dispersion, r = -0.04 for the Methods' tau
-    and 0.21 for the code's. Clusters 1 and 4 hold 4 and 5 Patch-seq cells. The code's variant, log mean
-    Patch-seq counts, needs the Patch-seq counts, which are not on this dandiset, and is not run.
+    (a 3.43 GB member, after 4.42 GB of the 24.69 GB archive). Over the 66 pairs of the 12 clusters of
+    the criterion, the distance of mean Methods tau correlates with the transcriptomic distance (1 minus
+    the Pearson r of the clusters' mean log2(x + 1) counts over the 500 genes of the Methods' gene selection)
+    with r = 0.053 (p = 0.67), outside 0.53 and its tolerance of 0.053 and not significant. With the 500
+    genes of highest normalized dispersion r = 0.105 (p = 0.40), and with the 500 of highest variance
+    of log2(x + 1) r = -0.04. With the code's first-sweep tau, a variant, r = 0.32 (p = 0.010) with the
+    Methods' genes and 0.36 (p = 0.003) with dispersion; with the median over sweeps r = -0.06 to 0.08.
+    The maximal firing rate gives r = 0.00 to 0.11. Clusters 1 and 4 hold 4 and 5 Patch-seq cells, fewer
+    than the criterion's "more than five", though its list includes them; this is asked of a reader (questions/001746.yaml).
+    The code's variant, log mean Patch-seq counts, needs the Patch-seq counts, which are not on this dandiset,
+    and is not run.
   deviations:
-  - Assumption on the genes. The Methods take "the 500 most-variable genes" without saying how they are
-    ranked; the 500 of highest normalized dispersion in the file's own highly-variable-gene ranking (var/dispersions_norm)
-    are used, and the 500 of highest variance of log2(x + 1) are a variant. Both give r far below 0.53,
-    so the outcome does not rest on this choice.
+  - 'The genes. The Variability analysis takes "the 500 most-variable genes" and the Methods give one selection
+    for them, in Transcriptomic mapping ("The highly variable genes used here were selected using the same
+    method as that in the previous publication"; genes with counts of at least 32 in fewer than 10 cells
+    excluded, then the offset b found by binary search so that 500 genes satisfy tau > exp(-1.5 x mu
+    + b) + 0.002). That selection is applied to the 10x counts (aic.paper_gene_selection), with mu read
+    as the mean log2(x + 1) of the counts above 32. The 500 of highest normalized dispersion (var/dispersions_norm)
+    and of highest variance of log2(x + 1) are variants. All give r far below 0.53, so the outcome does
+    not rest on this choice. An earlier run used the dispersion genes as its main reading and said the
+    Methods did not fix the ranking.'
   - The 10x cluster labels differ in their first marker from the cell table's for four clusters (4 Exc
     OPRK1 SMYD1 against Exc FEZF2 SMYD1; 9, 11 and 14 Exc FEZF2 against Exc RORB), with the same second
     marker; the clusters are matched by number.
@@ -545,7 +615,8 @@ findings:
 - kind: code_mismatch
   statement: The cell table metaInfo_ephysio_patchSeq.csv names the file of cell n172 (subject Mfa220428)
     on two rows, the second with subject Mfa180730, and names no row for the file of cell s172 (subject
-    Mfa180730), which is in the dandiset.
+    Mfa180730), which is in the dandiset. Question for the paper's authors. Is row 235 the row of s172?
+    This attempt reads it so.
 - kind: data_missing
   statement: The dandiset holds 10 subjects, where the paper says the Patch-seq experiments used 12 animals,
     and it holds only the Patch-seq cells. The additional whole-cell recordings without RNA (281 VENs
@@ -574,7 +645,8 @@ findings:
     The Methods define sag value (RMP minus steady state at the largest hyperpolarizing step), sag ratio,
     sag time and sag area, and the feature table holds Sag_Ratio. On the deposited recordings L5 ET has
     the largest sag ratio and the smallest sag value of the six groups, so the claim holds under one and
-    fails under the other.
+    fails under the other. The same question decides whether L5 ET has a deeper sag than L5 IT (Discussion,
+    paragraph 1), larger by sag ratio and smaller by sag value.
 - kind: methods_unavailable
   statement: Question for the paper's authors. How are 19 of the 39 features of Ins_patchseq_ephs.xlsx
     computed (for example ISI_phaseT_ratio, firstSpikePhaseArea, FR_slope, amp_FanoFactor, AHP_latency)?
@@ -586,7 +658,9 @@ findings:
     on the overlaid phase plots of the maximal-rate sweep (calPhaseHeightIdx.m). Which APs were read,
     and how was the AIS peak placed when there was no separate maximum? An automatic reading agrees with
     the hand-read values only loosely (Spearman 0.39 on the first AP) and gives a weaker Fig. 3e result
-    and no Fig. 4i slope, where the hand-read values give both.
+    and no Fig. 4i slope, where the hand-read values give both. Most first APs have one maximum of dV/dt,
+    and at the noise of the deposited files an automatic shoulder rule places the AIS value next to the
+    SD peak, so a rule the authors used to place it would be needed to repeat the index.
 - kind: other
   statement: The Methods put the Patch-seq recordings on a HEKA amplifier and the recordings without RNA
     on a MultiClamp 700B, but 139 files with a transcriptomic type have the device AXON recording system;
@@ -758,7 +832,7 @@ verifications:
       the lowest dV/dt of the rising phase (the Methods' passage), so such an AP is the least saddle-like
       (synthetic monophasic AP 0.81), with a variant that leaves such APs out and the per-group fraction
       of such APs shown. Most 0.0 values came from thresholds placed at the AP peak (The AP threshold
-      search was corrected), now corrected; such APs are at most 3% of a group's. Under both AP readings
+      search was corrected), now corrected; such APs are on average at most 3% of a group's APs, and the first AP of up to 5 of a group's cells (corrected in round 2). Under both AP readings
       and both corrections the VEN median is now the lowest and Dunn's test separates VENs from L5 ET
       only. The automatic index still agrees loosely with the hand-read values (Spearman 0.39 and 0.20),
       which the notes report as the criterion asks; the index also depends on the sampling rate, shown
@@ -885,4 +959,224 @@ verifications:
     outcome: blocked
     reason: Blocked (other). This dandiset holds only current-clamp series (archive metadata). DANDI:001750,
       001751 and 001752 exist separately.
+    response: No change.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revision after round 1, the helper module, the attempt record
+    and the claims file, with the paper's full text. The verifier tested the shoulder branch of aic.phase_index
+    on synthetic APs with added noise. Report in transcripts/001746/verifier-2-report.md.
+  results:
+  - claim: patchseq-cell-table-link
+    agrees: true
+    outcome: reproduced
+    reason: 462/462 rows found, cell IDs 462/462, subjects 461/462. Half-width 96.7%, amplitude 97.5% and
+      rate 98.9% within 10%. The outcome rests on reading row 235 as the row for s172. That choice is stated
+      and reasonable, but it is not flagged `assumed true`.
+    response: The outcome is now marked assumed, with the deviation labelled as an assumption and the question
+      for the paper's authors added to the finding on row 235.
+  - claim: morph-table-link
+    agrees: true
+    outcome: reproduced
+    reason: 166/166 rows found; clusters agree 163/165.
+    response: No change.
+  - claim: patchseq-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: 10 subjects, not 12.
+    response: No change of outcome. A stray bold marker at the end of the result paragraph was removed.
+  - claim: patchseq-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: 30 inhibitory against 34 ± 3.4.
+    response: No change of outcome. A stray bold marker at the end of the result paragraph was removed.
+  - claim: fig2a-subclass-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: L5 IT FEZF2 is 125 against 143 ± 14.3.
+    response: No change of outcome. A stray bold marker at the end of the result paragraph was removed.
+  - claim: ven-map-et-ct
+    agrees: true
+    outcome: reproduced
+    reason: 14 and 15.
+    response: No change of outcome. A stray bold marker at the end of the result paragraph was removed.
+  - claim: fig6f-ven-subtype-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: 12 VEN-L against 10 ± 1.
+    response: No change of outcome. A stray bold marker at the end of the result paragraph was removed.
+  - claim: fig2d-l23it-small-tau
+    agrees: true
+    outcome: reproduced
+    reason: q39 = 0.034 and q_F20 = 0.023. Within one device the difference is not significant (p = 0.47
+      and 0.13). This is reported and does not enter the criterion. Device and recording era are confounded
+      with group (interpretation only).
+    response: No change. The device confound stays in the notes and findings.
+  - claim: fig2f-l23it-narrow-ap
+    agrees: true
+    outcome: partially_reproduced
+    reason: Its median ranks 2nd (2.08 against 1.92 ms for IT RORB), while reading (a) is significant.
+      Device and recording era are confounded with group (interpretation only).
+    response: No change. The device confound stays in the notes and findings.
+  - claim: supp11-rm-itrorb-l6pc
+    agrees: true
+    outcome: partially_reproduced
+    reason: IT RORB has q39 = 0.087; L6 PC has q39 = 0.006.
+    response: No change.
+  - claim: supp11-l5it-threshold-latency
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): q39 = 0.005 and 0.0008.'
+    response: No change.
+  - claim: supp11-ven-broad-ap
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, but fragile. VEN 3.03 ms against 2.98 ms for L5 IT FEZF2. A 0.05 ms margin that changed
+      sign with the threshold fix.
+    response: No change; the notes already give both medians and the values before the threshold correction.
+  - claim: supp11-l5et-deep-sag
+    agrees: true
+    outcome: blocked
+    reason: The readings disagree, also at −200 pA only.
+    response: No change.
+  - claim: ven-firing-rate-variability
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (not reproduced).
+    response: No change.
+  - claim: l5et-vs-l5it-sag-rm-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: With a caveat. All three hold under sag ratio; two hold under sag value. "The outcome that holds
+      under both readings" is not a rule in the criterion. The criterion's "sag readings as in supp11-l5et-deep-sag"
+      could also be read as inheriting that claim's "blocked when they disagree" rule. The outcome rests
+      on this choice, which is not flagged `assumed true`.
+    response: The outcome is now marked assumed, with a deviation that states the assumption and the other
+      reading of the criterion (blocked); the notebook and the notes say so, and the finding asking which
+      sag measure the paper uses now names this claim.
+  - claim: fig3e-phase-peak-index
+    agrees: false
+    outcome: blocked
+    reason: 'I''d keep blocked (methods_underspecified). The shoulder branch of aic.phase_index, which handles
+      195 of 237 first APs, takes the lowest interior local minimum of d2V/dt2 anywhere before the dV/dt
+      maximum. With noise, such minima occur just before the peak, where Pais ≈ Psd, so the index comes
+      out near 0. A synthetic monophasic AP at 50 kHz scores 0.81 without noise and median 0.70, 0.010
+      and 0.008 with noise of 0.02, 0.05 and 0.1 mV; the synthetic shoulder AP falls from 0.21 to 0.011
+      at 0.05 mV. Slower rises are hit more; at 25 kHz the effect is much smaller. So an AP with no AIS
+      phase, if broad and slow-rising like a VEN''s, can get the most saddle-like index without any saddle.
+      The automatic index cannot support the partial result. The outcome also rests on the unflagged 5%
+      prominence guard: at 0.02 the median-AP reading no longer gives VENs the lowest median (0.200 against
+      0.173 for L5 IT FEZF2), and on the first AP Dunn separates no group (L5 ET 0.0545). The "at most
+      3%" figure is the mean over all APs; on the first AP the unresolved case covers 5 of 30 L2/3 IT HPCAL1,
+      3 of 18 L5 ET and 3 of 29 VEN cells, and leaving it out changes the first-AP Dunn result (3 groups
+      instead of 1). The criterion''s "lowest d2V/dt2" misreads the Methods'' "lowest derivative value",
+      and its Psd does not require Psd > Pais, which allows negative indices.'
+    response: 'Outcome kept, as round 2 may not change it; a change to blocked (methods_underspecified)
+      is proposed under `proposed`. The notebook now shows the shoulder branch under noise on synthetic
+      APs (a slow AP without an AIS phase scores a median 0.003 to 0.011 at 0.02 to 0.05 mV and 50 kHz),
+      the white noise of the files (0.023 mV in the 50 kHz Axon files, 0.30 mV in the 25 kHz HEKA files),
+      where the branch places the AIS value in the recorded APs (in 55% of VEN cells at 0.9 or more of
+      the maximum), and the index on the first APs with two resolved maxima (no group difference, p =
+      0.54). The outcome is marked assumed, the reading''s details and the prominence guard are stated
+      as an assumption, and the notes give the effect of the 0.02 guard. The 3% sentence and the effect
+      of leaving out unresolved APs on the Dunn result are corrected. The two points on the criterion
+      are put to a reader in questions/001746.yaml.'
+  - claim: fig3d-saddle-phase-plane
+    agrees: false
+    outcome: blocked
+    reason: It takes fig3e's outcome.
+    response: Outcome kept; a change to blocked (methods_underspecified) is proposed with fig3e-phase-peak-index,
+      and the outcome is marked assumed as it rests on the same reading.
+  - claim: fig4ac-ven-broader-smaller-ap
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). The untyped files "are described as Patch-seq experiments in every file",
+      but cell 10 prints only that experiment_description has one distinct value, not what that value is.
+    response: No change of outcome. The notebook now prints the value of every description field; the experiment
+      description of every file is "Patch-seq experiment of cell atlas investigation of the macaque anterior
+      insular cortex,", and the notes quote it.
+  - claim: fig4i-peak-index-ais-distance-real
+    agrees: false
+    outcome: blocked
+    reason: Blocked, inherited from fig3e. It uses the same automatic index. The hand-read indices give
+      a negative slope, p = 0.018.
+    response: Outcome kept; a change to blocked (methods_underspecified), inherited from fig3e-phase-peak-index,
+      is proposed, and the outcome is marked assumed as it rests on the same reading.
+  - claim: ext9cd-ven-subtypes-ap
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing).
+    response: No change.
+  - claim: supp8-ven-subtypes-similar-features
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing).
+    response: No change.
+  - claim: supp9-venl-more-distinct-from-ct
+    agrees: true
+    outcome: reproduced
+    reason: 6 against 0 over 39 features, 1 against 0 over 20.
+    response: No change.
+  - claim: morph-more-distinct-than-ephys
+    agrees: true
+    outcome: reproduced
+    reason: 445 against 120 tests; fraction 0.376 against 0.286. Every random 40-feature set is above physiology
+      too.
+    response: No change of outcome. A stray bold marker at the end of the morph-table-link result paragraph
+      was removed.
+  - claim: fig7c-tau-rna-distance
+    agrees: true
+    outcome: not_reproduced
+    reason: r = 0.105, p = 0.40. The claims file's rule ("more than five mapped Patch-seq neurons") contradicts
+      its own cluster list, which includes clusters 1 and 4 with 4 and 5 cells. "The first 5 GB of the
+      GEO archive" is not printed; only the 3.43 GB member is.
+    response: 'No change of outcome. The cluster rule is put to a reader in questions/001746.yaml. The notebook
+      now prints the archive size (24.69 GB) and the compressed bytes read (4.42 GB), and the text says
+      so; the run time in the README and the notebook''s opening cell now gives the printed times. The main gene set is now the selection the Methods give for "the 500 most-variable genes" (Transcriptomic
+      mapping), which gives r = 0.053 (p = 0.67); the dispersion genes (r = 0.105) and the variance genes
+      are variants. The deviation that said the Methods do not fix the ranking is corrected.'
+  - claim: scrna-classes
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: ext1d-ven-soma-density
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: fig3c-ais-distance-length
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: fig4d-sodium-current-lower
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: model-ais-distance-ap-shape
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: fig4j-eepsp-ven-larger
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: fig5-psc-and-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: fig6-ven-subtype-morphology-markers
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
+    response: No change.
+  - claim: fig8-metabolomics
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other), data elsewhere.
     response: No change.
