@@ -14,8 +14,9 @@ Where each parameter comes from:
 - Low-firing rule (largest per-distance mean wall rate and mean baseline rate
   both below 1 Hz): claims file opening comment (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
 - Responsiveness: one-tailed signed-rank of each pass's wall rate against its
-  own baseline, per distance, p < 0.05 uncorrected (Methods, main reading) or
-  BH-FDR over the nine distances per direction (code, variant): claims file.
+  own baseline, per distance, with BH-FDR over the nine distances per
+  direction, q < 0.05 (code, main reading), or p < 0.05 uncorrected (variant):
+  claims file, as amended after questions/001687.yaml.
 - Tuning: two-tailed signed-rank over all 36 distance pairs, BH-FDR, any
   q < 0.05; the k-th pass at one distance paired with the k-th at the other
   (claims file; code). Where distance bins hold unequal numbers of passes,
@@ -208,8 +209,9 @@ def classify(u, window="wall", resp_window=None, alpha=0.05):
 
     window: the window whose rate is the wall response for tuning and map tests;
     resp_window: the window used for responsiveness (default: same as window).
-    Returns a dict with the classification under the Methods' uncorrected
-    responsiveness test ('m_') and the code's BH-FDR variant ('c_')."""
+    Returns a dict with the classification under the code's BH-FDR
+    responsiveness test ('c_', the claims file's main reading) and the
+    uncorrected p < 0.05 variant ('m_')."""
     resp_window = resp_window or window
     base = u["rates"]["base"]
     wr = u["rates"][resp_window]
