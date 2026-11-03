@@ -41,7 +41,7 @@ outcomes:
   output: claim:fig1f-transition-rate-wt-higher
   notes: WT rats make more transitions (1.98 against 1.49 per minute at 100%, 3.02 against 2.47 at 50%). Reading
     A finds the genotype effect in both contingencies and both rate readings (p below 0.0001 to 0.00055, df 1,378
-    and 1,630 as in the paper), also with raw sequences (p 0.00006 to 0.027); reading B with rat as subject does
+    and 1,630 as in the paper), also with raw sequences (p from below 0.00001 to 0.027); reading B with rat as subject does
     not (p 0.07 to 0.42).
   deviations:
   - The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates;
@@ -61,8 +61,9 @@ outcomes:
   notes: Under reading (b), one point per rat and session with the pair's matches, per minute, WT slope 0.818 and
     R2 0.795, Fmr1 slope 0.649 and R2 0.684, both p below 0.0001; both slopes and the WT R2 are within tolerance,
     the Fmr1 R2 is not (tolerance 0.396 to 0.484). WT has the steeper slope and better fit, as claimed. Readings
-    (a) and (c) give slopes 0.39 to 0.47. With the raw sequences the fits are much weaker (shown while preparing,
-    not in the notebook), so the outcome rests on the cleaning. Measured values are reading (b), per minute.
+    (a) and (c) give slopes 0.39 to 0.47. With the raw sequences the fits are much weaker (readings (a) and (b),
+    slopes 0.027 to 0.068, R2 0.028 to 0.121), so the outcome rests on the cleaning. Measured values are reading
+    (b), per minute.
   deviations:
   - Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are
     formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart
@@ -81,7 +82,10 @@ outcomes:
     matches agree with the dataset's counts overall (r = 0.994 over 560 sessions) but find more matches in first
     100% sessions (12 against 3 for FXM101-FXM110, 7 against 1 for FXM201-FXM202). With the observed performance
     taken from the dataset's matches and the null from the rebuilt rule, reading (a) gives 5 of 5 WT and 4 of 5
-    Fmr1 pairs under both shifted-rat readings (XFN1-XFN3 still fails late, p 0.061 and 0.086), still partial.
+    Fmr1 pairs under both shifted-rat readings (XFN1-XFN3 still fails late, p 0.061 and 0.086), still partial. This
+    variant does not test the early part, since in 5 of the 10 first 100% sessions the dataset holds 1 to 3 matches where
+    the rebuilt rule, which also gives the null, finds 3 to 12, so p is 1.000 and the pair is at chance early by
+    construction.
   deviations:
   - The dataset's matches cannot be recomputed under a time shift; matches are rebuilt from the pokes (overlapping
     visits at corresponding wells with a hold tolerance chosen as the one that best fits the dataset's match counts,
@@ -99,7 +103,9 @@ outcomes:
   output: claim:fig1i-performance-wt-higher
   notes: Performance is higher in WT pairs (53.9 against 46.4% at 100%, 64.2 against 58.5% at 50%). Reading A finds
     the genotype effect in both contingencies (p = 0.015 and 0.001); reading B does not (p = 0.40 and 0.43). With
-    raw sequences reading A finds it at 100% only (p = 0.016; 50% p = 0.097).
+    raw sequences reading A finds it at 100% only (p = 0.016; 50% p = 0.097) and reading B in neither (p = 0.41
+    and 0.69), so both ANOVA readings fail at 50% and agree, which would give not_reproduced. The blocked outcome
+    rests on the crosstalk removal (deviation); the schema does not allow assumed on a blocked outcome.
   deviations:
   - The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates;
     both readings were run (claims file, opening comment) and they disagree.
@@ -115,7 +121,8 @@ outcomes:
     p 0.12 to 0.27) and Fmr1 real accuracy does not exceed its shuffled accuracy under any reading (p 0.24 to 0.79).
     At 50% WT exceeds Fmr1 only under reading (b, p2) (U = 81, p = 0.021). WT real exceeds shuffled in 11 of 12
     readings; at 50% Fmr1 does under readings (a) and (b) (p 0.007 to 0.031). Pooled accuracies at 100% (reading
-    b) are 0.34 to 0.62 in Fmr1 and 0.40 to 0.71 in WT rats.
+    b) are 0.34 to 0.62 in Fmr1 and 0.40 to 0.71 in WT rats. Reading (a) reads positions; in the aligned sessions
+    only (4 rats per genotype, pooled) no comparison is significant (p 0.20 to 0.89).
   deviations:
   - The null uses the class a one-hot multinomial logistic regression predicts for each partner well, taken as the
     most frequent next well in the training folds, with stratified folds that assign each class's samples in turn;
@@ -245,10 +252,15 @@ outcomes:
     (15.4 against 6.3 s, A p = 0.39) only because of one session: FXM101-FXM110 session 15 has a mean lag of 803
     s (largest 1,378 s), its other sessions 2 to 9 s. With the four pair sessions that have a lag over 100 s removed,
     reading (b) gives WT shorter in both contingencies (4.7 against 6.3 s at 100%, A p = 0.0026, B p = 0.015), so
-    the two arrival readings disagree and the criterion blocks the claim. In the 189 pair sessions where head and
-    pokes agree (2 pairs per genotype), reading (b) gives WT shorter at 50% (A p = 0.0033, B p = 0.34) and not at
-    100% (A p = 0.59). The WT lag falls over the 100% sessions by pokes (-1.0 s per session, p = 0.00015) and not
-    by head position (p = 0.59). Head-position arrivals exist for 14,853 of 20,162 matches.'
+    the two arrival readings disagree and the criterion blocks the claim. The blocked outcome rests on that removal;
+    the 100 s threshold was chosen after seeing session 15, and by pokes session mean lags reach 184.5 s and 208.6
+    s. With the per-session median lag, which needs no removal, reading (b) still fails at 100% (13.7 against 4.5
+    s, A p = 0.39, B p = 0.42); the median by pokes gives WT shorter under reading A in both contingencies (p = 0.033
+    and below 0.0001) and not under reading B (p = 0.15 and 0.14). In the 189 pair sessions where head and pokes
+    agree (2 pairs per genotype), reading (b) gives WT shorter at 50% (A p = 0.0033, B p = 0.34) and not at 100%
+    (A p = 0.59), and reading (a) gives A p = 0.0009 at 50% and 0.47 at 100%. The WT lag falls over the 100% sessions
+    by pokes (-1.0 s per session, p = 0.00015) and not by head position (p = 0.59). Head-position arrivals exist
+    for 14,853 of 20,162 matches.'
   deviations:
   - Arrival lag is not defined in the Methods; the two readings of the claims file were run.
   - The head-position reading uses well centres taken as the median head position at the rat's pokes in that session.
@@ -256,10 +268,22 @@ outcomes:
     (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108
     and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and
     take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant.'
-  - 'Pair sessions with a head-position lag over 100 s (4 of 560) are removed in reading (b), an assumption: a match
-    needs both rats at the wells together, and such lags come from runs of tracked positions near a well lasting
-    tens of minutes. Without the removal reading (b) fails at 100% (A p = 0.39); both are shown.'
+  - 'Pair sessions with a head-position lag over 100 s (4 of 560) are removed in reading (b), an assumption chosen
+    after seeing FXM101-FXM110 session 15 (mean lag 803 s); such lags come from runs of tracked positions near a
+    well lasting tens of minutes. It is not a physical bound, since by pokes session mean lags reach 208.6 s. Without
+    the removal reading (b) fails at 100% (A p = 0.39); both are shown, with the per-session median as a reading
+    that needs no removal.'
   blocked_by: methods_underspecified
+  proposed:
+    outcome: not_reproduced
+    reason: The block exists only because four pair sessions are removed by a 100 s threshold chosen after seeing
+      the outlier session, and the stated justification (no plausible wait for a joint poke is that long) does not
+      hold, since poke-based session means reach 184.5 s and 208.6 s. With every session, as the claims file measures
+      the lag (mean per pair and session), reading (a) fails at 50% (A p = 0.43, B p = 0.73) and reading (b) fails
+      at 100% (A p = 0.39, B p = 0.46), so the readings agree that the claim fails. The per-session median, the
+      reading the round-2 verifier suggested to avoid an exclusion, also fails at 100% under reading (b) (A p = 0.39).
+      Preferring the pokes, as fig4d-dwell-time does because positions disagree with pokes in 6 of 10 pairs, gives
+      the same outcome. Analysis in the fig4b cell of the notebook.
 - claim: fig4c-departure-lag-wt-shorter
   outcome: blocked
   notebook: reproduce_shukla_2026.ipynb
@@ -268,17 +292,28 @@ outcomes:
     sessions; B p = 0.56, 0.81, 0.85). Reading (b), by head position, with the four pair sessions that have a lag
     over 100 s removed, gives WT shorter in both contingencies under reading A (4.1 against 9.3 s at 100%, p = 0.0007;
     4.7 against 8.0 s at 50%, p below 0.0001), not under reading B (p = 0.19 and 0.084). Without the removal reading
-    (b) fails at 100% (A p = 0.67). The arrival readings disagree, and the criterion blocks the claim. In aligned
-    sessions only, 50% A p = 0.0004 and 100% A p = 0.60.
+    (b) fails at 100% (A p = 0.67, B p = 0.84). The departure readings disagree, and the criterion blocks the claim.
+    The blocked outcome rests on the removal, chosen after seeing one session (fig4b). With the per-session median
+    lag, which needs no removal, reading (b) fails at 100% (A p = 0.69); the median by pokes gives WT shorter under
+    reading A (p = 0.011 at 100%, 0.033 and 0.029 at 50%) and not under reading B (p = 0.25 to 0.37). In aligned
+    sessions only, reading (b) gives 50% A p = 0.0004 and 100% A p = 0.60, and reading (a) 100% A p = 0.39 and
+    50% A p = 0.76.
   deviations:
   - Departure lag is not defined in the Methods; the two readings of the claims file were run.
   - 'The 40 px radius is taken in each video''s own pixels, measured per file by regressing the processed head position
     (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108
     and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and
     take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant.'
-  - Pair sessions with a head-position lag over 100 s removed in reading (b), as in fig4b (assumption); both versions
-    shown.
+  - Pair sessions with a head-position lag over 100 s removed in reading (b), as in fig4b (an assumption chosen after
+    seeing the outlier session); both versions shown, with the per-session median as a reading that needs no removal.
   blocked_by: methods_underspecified
+  proposed:
+    outcome: not_reproduced
+    reason: As for fig4b-arrival-lag-wt-shorter, the block exists only because of the four sessions removed by a
+      threshold chosen after seeing the outlier. With every session, as the claims file measures the lag, reading
+      (a) finds no genotype effect in either contingency (A p = 0.17, 0.64 and 0.71; B p = 0.56 to 0.85) and reading
+      (b) fails at 100% (A p = 0.67, B p = 0.84), so the readings agree that the claim fails. The per-session median
+      gives the same for reading (b) at 100% (A p = 0.69). Analysis in the fig4c cell of the notebook.
 - claim: fig4d-dwell-time
   outcome: reproduced
   notebook: reproduce_shukla_2026.ipynb
@@ -289,7 +324,10 @@ outcomes:
     and WT at 50% (5.54 against 5.37 s, p = 0.45), so the readings disagree at 50%. Reading (a) is adopted; in the
     aligned sessions reading (b) agrees with it (Fmr1 6.95 against 6.53 s and 6.62 against 6.56 s, A p = 0.15 and
     0.97), and with 6.4 cm for every rat Fmr1 is higher in both (5.25 against 5.04 s; 5.35 against 5.34 s). The
-    Results sentence of a longer Fmr1 dwell holds as a difference of means only.
+    Results sentence of a longer Fmr1 dwell holds as a difference of means only. The criteria of fig4b and fig4c
+    block a claim when the readings disagree, so neither reading is preferred there; this criterion has no such
+    clause, so a reading is adopted. The same preference for the pokes gives not_reproduced for fig4b and fig4c,
+    the change proposed there.
   deviations:
   - Dwell readings (a) first to last poke and (b) runs of head within 40 px of a well were both run.
   - 'The 40 px radius is taken in each video''s own pixels, measured per file by regressing the processed head position
@@ -308,8 +346,9 @@ outcomes:
     any reading (p 0.29 to 0.45; 0.35 with 6.4 cm for every rat); at 100% it is significant only when returns to
     the same well are not counted (p = 0.023 and 0.030). The rest holds: WT coefficients exceed Fmr1 in every reading
     and contingency and at lags -1 to +1 s (frame sampling, returns counted, 0.078 against 0.057 at 100%, 0.085
-    against 0.070 at 50%), and the genotype x lag interaction is significant in every reading and contingency (p
-    0.0002 to 0.026 at 100%, below 0.0001 at 50%). At 100% the WT near-zero mean (0.078) is above the WT mean shuffled
+    against 0.070 at 50%), and the genotype x lag interaction is significant in every reading over all sessions
+    and both contingencies (p 0.0002 to 0.026 at 100%, below 0.0001 at 50%; in aligned sessions only p = 0.17 at
+    100%). At 100% the WT near-zero mean (0.078) is above the WT mean shuffled
     coefficient (0.066), the Fmr1 mean (0.057) close to its own (0.055). In aligned sessions only the genotype effect
     is not significant (p = 0.82 and 0.87).'
   deviations:
@@ -428,8 +467,12 @@ outcomes:
     in quartile 4 in both genotypes; Holm-corrected tests put quartile 1 below quartiles 2, 3 and 4 (p = 0.00007,
     0.0006, 0.0006). Mutual gaze has no quartile effect (F(3,54) = 1.26, p = 0.30). Genotype and interactions are
     not significant (p = 0.22 and 0.58; mutual 0.78 and 0.95). 16,119 trials; 3,984 shorter than 0.5 s dropped.
-    The head positions agree poorly with the pokes in 6 of 10 pairs (findings); this was not checked for the gaze
-    measures.
+    The head positions agree poorly with the pokes in 6 of 10 pairs (findings). In the aligned sessions only (2
+    pairs per genotype, 8 rats, 4,964 trials) the follower-only quartile effect holds (F(3,18) = 19.4, p = 0.00001;
+    Holm p = 0.005, 0.001 and 0.005 for quartile 1 against 2, 3 and 4), but quartile 3 is highest in WT rats (0.147
+    against 0.140 in quartile 4) and mutual gaze has a quartile effect (F(3,18) = 10.1, p = 0.0004, Greenhouse-Geisser
+    p = 0.007), so two parts of the criterion fail there. The criterion's reading is all analysed sessions; the outcome
+    is kept on it and rests on the positions of the six pairs that disagree with the pokes.
   deviations:
   - Asynchronous trials are built from poke visits (both rats at noncorresponding wells, the first to leave is the
     follower, the trial ends at its last poke); an assumption from the Methods' description, which gives no operational
@@ -447,7 +490,8 @@ outcomes:
   - 0.194
   notes: At 100% the late Fmr1 minus WT contrast is negative for follower-only gaze (-0.565 as a fraction, p = 0.11;
     -0.127 z-scored, p = 0.14) and small for mutual gaze (0.194, p = 0.73; 0.031, p = 0.72). Early and mid follower-only
-    contrasts are not significant (p 0.07 to 0.77). Measured values are thirds of 7 sessions, fractions.
+    contrasts are not significant (p 0.07 to 0.77). In the aligned sessions only the late contrasts are not significant
+    either (follower-only -0.92, p = 0.097; mutual 1.79, p = 0.29). Measured values are thirds of 7 sessions, fractions.
   deviations:
   - GLMM fitted by variational Bayes (statsmodels BinomialBayesMixedGLM), random intercepts for rat and session;
     glmmTMB is not in the environment. Each contrast is one coefficient, so no Tukey adjustment applies.
@@ -464,7 +508,8 @@ outcomes:
   notes: At 50% the early follower-only contrast is positive and significant (0.477 and 0.495 as fractions, p =
     0.016 and 0.017; 0.111 and 0.115 z-scored, p = 0.029 and 0.030), but the mid and late contrasts are negative
     under every reading (-0.06 to -0.43). The early mutual-gaze contrast is significant under the 11-12-12 blocks
-    (p = 0.003). Measured values are blocks of 12, 12 and 11 sessions, fractions.
+    (p = 0.003). In the aligned sessions only no follower-only contrast is significant (p 0.17 to 0.96). Measured
+    values are blocks of 12, 12 and 11 sessions, fractions.
   deviations:
   - As fig7g.
   assumed: true
@@ -584,6 +629,11 @@ findings:
   statement: Questions for the authors on the reinforcement learning model (Figure 6). What were the learning rate,
     discount factor, timesteps per episode, number of runs, state encoding and the definition of coordination efficiency?
     Without them the simulation cannot be repeated.
+- kind: methods_unavailable
+  statement: Question for the authors on session numbering. Were the sensory-deprived sessions given session numbers
+    of the 50% contingency? Low-performance sessions sit between normal ones in the same pairs, also inside the
+    first 35 50% sessions this attempt analyses (one at 10.0% among the last 9 analysed 50% sessions of FXM105-FXM107,
+    whose median is 39.4%). If such sessions are among the first 35, they enter every 50% result for those pairs.
 - kind: metadata_error
   statement: The camera device gives 0.0016 m per pixel in every file, but the processed positions of rats FXM105,
     FXM107, FXM108 and FXM109 were converted at 0.0025 m per pixel (regression of the processed head position on
@@ -843,3 +893,239 @@ verifications:
       regression with rat-clustered standard errors as a check; the shifted null gives positive betas of 0.50 to
       0.75. Blocked (other) as it depends on fig8b. A Laplace GLMM in lme4 or glmmTMB was not run, as R is not in
       the environment.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run (commit d3b752d0), the helper module,
+    the entry README, the claims file, the attempt record and the round-1 report. Report in transcripts/001845/verifier-2-report.md.
+    Two general points were also corrected, the Summary sentence on the clock check (it used every 7th session)
+    and the run time in the README and cell 0 (the verifier's run printed 12.4 min).
+  results:
+  - claim: fig1e-match-rate-wt-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig1f-transition-rate-wt-higher
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Cell 14 and the notes say "raw ... p 0.00006 to 0.027", but cell 13 prints
+      0.00000 for trans_raw_r1 at 100% (F = 27.1), so the low end is below 0.00001. Trivial.'
+    response: Corrected to "from below 0.00001 to 0.027" in cell 14 and the notes.
+  - claim: fig1g-match-transition-regression
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome and the assumption. The notes say "With the raw sequences the fits are much
+      weaker (shown while preparing, not in the notebook)"; no output shows this.'
+    response: The regressions with the raw sequences are now printed in the fig1g cell (readings (a) and (b), slopes
+      0.027 to 0.068, R2 0.028 to 0.121); the notes and the result cell quote them.
+  - claim: fig1h-above-chance-late
+    agrees: true
+    outcome: partially_reproduced
+    reason: The variant added in round 1 (dataset matches observed, rebuilt-rule null) is biased for the early sessions
+      and does not support "5 of 5 WT ... at chance early". In 6 of 10 first 100% sessions p_dataset_obs = 1.000;
+      a count of 1 to 3 dataset matches is compared with a null from a rule that finds 5 to 12, so "at chance" holds
+      by construction. The numbers are quoted correctly, and the outcome is partial either way.
+    response: Cell 23 and the notes now say the variant does not test the early part and why. In the printed table
+      p_dataset_obs is 1.000 in 5 of the 10 first 100% sessions (ER1-ER2, FXM101-FXM110, FXM102-FXM103, FXM201-FXM202,
+      FXM205-FXM206; 1 to 3 dataset matches against 3 to 12 rebuilt), which is the count given. Outcome unchanged.
+  - claim: fig1i-performance-wt-higher
+    agrees: true
+    outcome: blocked
+    reason: 'The outcome depends on dropping crosstalk pokes, but it is not marked assumed. Cell 19 with raw sequences:
+      reading A at 50% gives p = 0.097 and reading B fails in both contingencies, so both ANOVA readings fail the
+      claim and agree, and the outcome would be not_reproduced. Its round-1 point 6 ("fig1i is blocked under either
+      version") was wrong. Mark it assumed, or report not_reproduced under raw sequences as the alternative.'
+    response: The attempt schema does not allow assumed on a blocked outcome, so the alternative is reported. Cell
+      20 and the notes now say the blocked outcome rests on the crosstalk removal and that with the raw sequences
+      both ANOVA readings fail at 50% (A p = 0.097, B p = 0.41 and 0.69), which would give not_reproduced. The removal
+      is kept, as the verifier found the marked crosstalk assumptions reasonable; outcome unchanged and no change proposed.
+  - claim: fig1j-partner-location-predicts-choice
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome and the assumption. Reading (a) rests on head positions, which disagree with
+      pokes in 6 of 10 pairs, and was not checked on the aligned data.
+    response: Added reading (a), pooled per rat, in the aligned sessions only (4 rats per genotype); no comparison
+      is significant (p 0.20 to 0.89), so the outcome holds there too.
+  - claim: figs1-mixed-pairs-impaired
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2b-opaque-barrier-lowers-performance
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with metadata_insufficient. A question for the authors: cell 101 shows a 10.0% session among
+      FXM105-FXM107''s last 9 analysed 50% sessions. The unlabelled low sessions (0 to 25%) sit between normal ones
+      in the same pairs. If SD sessions were numbered as 50% sessions, some could be inside the first 35 and would
+      affect every 50% result for those pairs. The files cannot settle this.'
+    response: Added as a question for the authors in the findings, and as a sentence in the fig2b result cell.
+  - claim: fig2c-opaque-barrier-mixed-pairs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2e-visual-cue-learning-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2f-cue-latency-wt-shorter
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig3c-triplets-by-contingency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome and the assumption.
+    response: No change.
+  - claim: fig3d-entropy-wt-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome and the assumption.
+    response: No change.
+  - claim: fig3e-exploration-efficiency-wt-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: The record has assumed true, but the Summary table (cell 104) does not mark it "(assumption)".
+    response: The Summary table now marks it.
+  - claim: fig3g-virtual-agent-performance-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig3h-virtual-agent-efficiency-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs2-jaccard-similarity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome and the assumption.
+    response: No change.
+  - claim: fig4b-arrival-lag-wt-shorter
+    agrees: true
+    outcome: blocked
+    reason: 'The outcome exists only because four pair sessions with a lag over 100 s are removed (cell 42). Without
+      the removal, reading (b) fails at 100% (A p = 0.39), both readings fail, and the outcome is not_reproduced.
+      The 100 s threshold was chosen after seeing the outlier, and the per-video radius is an assumption too; the
+      outcome should carry assumed. Blocking is defensible as a sensitivity result, but it is fragile. The reason
+      fig4d gives for preferring reading (a) applies equally here. Cell 43 calls the four lags "longer than any plausible
+      wait for a joint poke", but cell 40 shows poke-based session-mean lags up to 184.5 s and 208.6 s. A reading
+      that needs no exclusion, such as the per-session median lag, would show whether reading (b) passes at 100%
+      without dropping sessions.'
+    response: Outcome kept as blocked, as round 2 may not change it, and a change to not_reproduced is proposed with
+      the reason under proposed. Added the per-session median lag for both readings; reading (b) still fails at 100%
+      (A p = 0.39), so the block rests on the removal alone. Removed the "plausible wait" sentence and said the threshold
+      was chosen after seeing the outlier. Added reading (a) in the aligned sessions. The schema does not allow assumed
+      on a blocked outcome; the deviation and notes state the dependence. The fig4d notes now say why the readings
+      are treated differently.
+  - claim: fig4c-departure-lag-wt-shorter
+    agrees: true
+    outcome: blocked
+    reason: As for fig4b, the outcome exists only because the four pair sessions with a lag over 100 s are removed;
+      without the removal reading (b) fails at 100% (A p = 0.67), both readings fail, and the outcome is not_reproduced.
+      The threshold was chosen after the fact; the outcome should carry assumed. Blocking is defensible but fragile.
+    response: Outcome kept as blocked and a change to not_reproduced proposed, as for fig4b. The per-session median
+      for reading (b) also fails at 100% (A p = 0.69); reading (a) in the aligned sessions is added.
+  - claim: fig4d-dwell-time
+    agrees: true
+    outcome: reproduced
+    reason: fig4d adopts the poke reading (a) because head positions disagree with pokes in 6 of 10 pairs; fig4b and
+      fig4c treat head reading (b) as equally valid and block when it disagrees. Each follows its own criterion literally
+      (only the 4b and 4c criteria have a blocking clause), but the reason given for preferring (a) applies equally
+      to fig4b and fig4c. The record should say why the position measure is trusted for one and not the others.
+    response: The notes and cell 49 now say that the fig4b and fig4c criteria block on any disagreement, so no reading
+      is preferred there, while this criterion has no such clause; with the same preference for pokes fig4b and
+      fig4c are not_reproduced, the change proposed for them.
+  - claim: fig4eg-cross-correlation-wt-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 54 and the notes say "the genotype x lag interaction is significant ... at 100% under every reading
+      (p 0.0002 to 0.026)". Cell 53 gives p_int = 0.169 for fy_aligned at 100%. It should read "every reading over
+      all sessions".'
+    response: Corrected in cell 54 and the notes, with the aligned p = 0.17.
+  - claim: fig4h-peak-lag-distribution
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome and the assumption.
+    response: No change.
+  - claim: fig4i-peak-correlation-wt-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5d-leading-near-half
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5e-leading-difference-50
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs3-leadership-history
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig6-marl-partner-aware
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome; round-1 point 9 acceptable as it stands.
+    response: No change.
+  - claim: fig7b-fmr1-more-asynchronous-matches
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome and the assumption.
+    response: No change.
+  - claim: fig7c-trial-duration-vs-performance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig7e-gaze-final-quartile
+    agrees: true
+    outcome: reproduced
+    reason: The outcome rests on head positions that disagree with pokes in 6 of 10 pairs, and was not checked on
+      the aligned data; the record says so. The output that would settle it is the quartile ANOVA restricted to the
+      4 aligned pairs (8 rats).
+    response: 'Added the quartile ANOVA in the aligned sessions (8 rats, 4,964 trials). The follower-only quartile
+      effect holds (p = 0.00001) and the Holm tests put quartile 1 below 2, 3 and 4, but quartile 3 is highest in
+      WT rats and mutual gaze has a quartile effect (p = 0.0004), so two parts of the criterion fail there. The
+      outcome is kept and no change is proposed: the criterion''s reading is all analysed sessions, and the subset
+      has 8 of the 20 rats. The notes and cell 93 report the aligned result and that the outcome rests on the positions
+      of the six other pairs.'
+  - claim: fig7g-gaze-100-late
+    agrees: true
+    outcome: not_reproduced
+    reason: Variational Bayes GLMMs still not checked by Laplace fitting, acceptable as the estimates are far from
+      the claimed direction either way. Like fig7e it rests on positions that disagree with pokes and was not checked
+      on the aligned data, with less at stake.
+    response: Added the GLMM in the aligned sessions; the late contrasts are not significant (follower-only -0.92,
+      p = 0.097; mutual 1.79, p = 0.29), so the outcome holds there too. Laplace fit not run (no R in the environment).
+  - claim: fig7h-gaze-50-fmr1-follower
+    agrees: true
+    outcome: not_reproduced
+    reason: As for fig7g.
+    response: Added the GLMM in the aligned sessions; no follower-only contrast is significant (p 0.17 to 0.96), so
+      the outcome holds there too.
+  - claim: fig8b-partner-history-cooperation
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The null in cell 78 shows the Methods rule biases the test toward the claimed effect (10 of 10
+      rats in every group).
+    response: No change.
+  - claim: fig8d-fmr1-longer-delta-t
+    agrees: true
+    outcome: blocked
+    reason: Agrees. fig8d is blocked through depends_on in the claims file, which replaces its round-1 "reproduced".
+    response: No change.
+  - claim: fig8e-glmm-partner-cooperation
+    agrees: true
+    outcome: blocked
+    reason: Agrees; fig8e now has a maximum-likelihood check with errors clustered by rat.
+    response: No change.
