@@ -1,0 +1,518 @@
+schema_version: 2
+id: 001749-padilla-coreano-2022-01
+dataset:
+  archive: dandi
+  id: 001749
+  version: 0.260311.1727
+  doi: 10.48324/dandi.001749/0.260311.1727
+paper: doi:10.1038/s41586-022-04507-5
+date: '2026-11-03'
+entry: 001749-padilla-coreano-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41631912115
+outcomes:
+- claim: fig1b-dominants-more-rewards
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The unimplanted validation cohort (8 mice, 12 dyads) is not in the dandiset; every file is an
+    implanted mouse wearing a logger. No other public deposit of it is named by the paper.
+- claim: fig1c-port-pushing-displacement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The unimplanted validation cohort (8 mice, 12 dyads) is not in the dandiset; every file is an
+    implanted mouse wearing a logger. No other public deposit of it is named by the paper.
+- claim: ed1d-pushing-success
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The unimplanted validation cohort (8 mice, 12 dyads) is not in the dandiset; every file is an
+    implanted mouse wearing a logger. No other public deposit of it is named by the paper.
+- claim: ed1g-distance-by-outcome-not-rank
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The unimplanted validation cohort (8 mice, 12 dyads) is not in the dandiset; every file is an
+    implanted mouse wearing a logger. No other public deposit of it is named by the paper. It would also
+    need the human-marked port location, which no file holds.
+- claim: fig1e-alphatracker-precision
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 800 annotated evaluation frames of Methods 15 and their human annotations are not in the
+    dandiset, which holds only the identity-corrected AlphaTracker output of the competition videos.
+- claim: fig1i-hmmglm-decodes-behaviour
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The labels and raw recordings are there. The 34 labelled files hold 965 trials of 280 bins at
+    20 Hz from 14 mice, against the expected 965 trials, 32 sessions and 13 mice (all within tolerance
+    if a session is a file). The model needs the multi-unit rates of the recording on the clock of the
+    labels, and that offset is in no file (the video_gap the description names). Estimated from the units'
+    responses to port entries, it is clear for 23 of the 34 labelled files; the raw recording itself is
+    offset from the sorted spikes by 5 to 28 s in most mPFC-LH files, and matches them at no offset in
+    3. The paper's HMM-GLM is MATLAB code (Tyelab/HMMGLM), which cannot be installed in the entry's locked
+    environment, and it was not ported in this run. Not run.
+- claim: ed5j-six-states
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig1i-hmmglm-decodes-behaviour, blocked for the same reasons.
+- claim: ed5k-hmmglm-generalizes-across-rank
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig1i-hmmglm-decodes-behaviour, blocked for the same reasons. The labelled files hold
+    487 trials in files of relative dominants and 478 in files of relative subordinates (482 and 478 in
+    the legend).
+- claim: ed5b-rank1-wins-most
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5b-rank1-wins-most
+  measured:
+  - 12
+  - 11
+  - 15
+  - 15
+  notes: Competitions per own rank over the 53 files are 12, 11, 15 and 15, all within tolerance of 12,
+    12, 15 and 14. Of the 36 competitions whose outcome the labels give (34 from the file's own labels,
+    2 from the competitor's), rank 1 won 10 of 11 (90.9%), rank 2 1 of 8 (12.5%), rank 3 4 of 9 (44.4%)
+    and rank 4 5 of 8 (62.5%). There are no ties, so both readings agree, and the variants of the trial
+    rule (delivery at 0.49 s, switch as both mice in the window) give the same table. 17 competitions
+    have no labels.
+  deviations:
+  - 36 of the 53 competitions could be decided; the 10 ephys files and 7 mPFC-LH files have no labels,
+    of their own or of their competitor.
+  - Trial winners come from the hand-scored labels with the rule of the Methods (Reward competition behavioral
+    analysis); the occupant over 1.5 to 3 s is the mouse with more in-port bins, and a switch is a window
+    whose first and last occupied bins belong to different mice. The other switch reading gives the same
+    outcomes.
+  - Reward delivery is taken at 2 s after tone onset from Methods 5 ("A 10uL reward of vanilla Ensure
+    was delivered 2 seconds after tone onset"); the files give 0.49 s, run as a variant with the same
+    result.
+- claim: ed5c-rewards-not-different
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5c-rewards-not-different
+  notes: Rewards (trials won) did not differ by the paired t-test. Over the 34 labelled files dominants
+    won 14.12 and subordinates 12.38 (mean difference 1.74, 95% CI -3.31 to 6.78, p = 0.505); over 20
+    sessions 14.35 and 12.15 (p = 0.498); with delivery at 0.49 s, p = 0.552. The second part of the claim,
+    the correlation of body weight difference with rewards won, could not be tested; the dandiset holds
+    no body weights. The outcome is that of the rewards part.
+  deviations:
+  - The body weight correlation is not tested (data missing).
+  - Pairs are 34 files or 20 sessions, against the paper's 22 pairs; the paper's other counts (31 and
+    32 sessions, 965 trials in 32 sessions) are closer to files.
+  - Trial winners as in ed5b-rank1-wins-most, from the Methods passage cited there.
+- claim: ed5d-subordinates-slower-latency
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5d-subordinates-slower-latency
+  notes: In each file's own win trials, the latency from tone onset to the subject's port entry (0 when
+    in the port at onset) is longer for subordinates, median 1.47 against 1.01 s over 189 and 211 trials
+    (rank-sum p = 0.0196, KS p = 0.0036). Taking the first entry after onset for a mouse already in the
+    port gives 2.12 against 1.68 s (p = 0.0204). Readings from tone onset and from delivery differ by
+    a constant and give the same tests. From the hand-scored labels the direction is the same but the
+    rank-sum is not significant (1.55 against 1.17 s, p = 0.206; KS p = 0.027). Over mouse means the rank-sum
+    gives p = 0.055. 87 of 487 win trials have no port entry within 12 s or come from a file without port
+    entries.
+  deviations:
+  - 400 win trials with port entries, against the paper's 326 dom and 358 sub trials.
+  - How a mouse already at the port at onset is counted is not given; both readings (0, or its next entry)
+    are shown and agree.
+  - The legend's one-way RM-ANOVA is not judged, as the criterion says.
+- claim: ed5e-port-occupancy-not-different
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5e-port-occupancy-not-different
+  notes: Percent of the 10 s tone labelled in the port did not differ by relative rank; dominants 25.19%
+    and subordinates 20.72% over 34 files (mean difference 4.47, 95% CI -4.34 to 13.28, paired t-test
+    p = 0.327), 26.37% and 20.23% over 20 sessions (p = 0.284).
+  deviations:
+  - Occupancy is from the hand-scored position labels (self in port, other in port), not from AlphaTracker
+    distance.
+  - 34 files or 20 sessions, against the paper's 31 sessions.
+- claim: ed5f-dominants-displace-more
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5f-dominants-displace-more
+  notes: Over the 13 sessions where both mice's files are labelled and both pushed, dominants displaced
+    the competitor in 91.7% of their pushes and subordinates in 60.2% over the labelled bins (mean difference
+    31.5 points, 95% CI 13.5 to 49.6, paired t-test p = 0.0051), and 93.4% against 56.5% during the tone
+    (p = 0.0013). Reading each mouse's pushes from its own file or from its competitor's gives the same
+    numbers.
+  deviations:
+  - '"Whole competition" is the labelled bins (-2 to +12 s of each trial); the labels do not cover the
+    intertrial intervals.'
+  - A push's outcome is in the competitor's file only, so the test uses 13 sessions with both files, against
+    the paper's 32 and 31.
+  - Pushing success as the Methods define it ("percent of pushing that resulted in displacing competitor");
+    a push is a run of push bins, successful when the competitor's file labels any of its bins displaced.
+- claim: ed5g-time-displaced-not-different
+  outcome: reproduced
+  notebook: reproduce_padilla_coreano_2022.ipynb
+  output: claim:ed5g-time-displaced-not-different
+  notes: Time labelled displaced did not differ by relative rank over the 14 sessions with both files;
+    dominants 3.21 s and subordinates 3.93 s (mean difference -0.71 s, 95% CI -2.19 to 0.76, paired t-test
+    p = 0.359); during the tone 2.71 against 3.14 s (p = 0.512); unpaired over all 34 files 3.47 against
+    4.41 s (Welch p = 0.43).
+  deviations:
+  - 14 sessions, against the paper's 31; time is over the labelled bins only.
+- claim: fig2a-win-lose-segregated-before-cue
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed6d-alignment-lower-dominants
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: fig2b-subordinates-longer-trajectories
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries. Of the expected counts, the files hold 20 mice (expected 20) and 3,016 and 2,863 clusters
+    in dominants'' and subordinates'' files (expected 507 and 490 cells); the 53 files form 33 competition
+    sessions (expected 27).'
+- claim: fig2b-subordinates-larger-variance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed6c-rate-of-change-dominants-win
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed6b-intermediates-relative-rank
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed6ef-port-entry-trajectories
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed7b-distance-by-trial-type-not-rank
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Distance to the port needs the human-marked port location, which no file holds, and the subject's
+    pose; the poses are given for Mouse1 and Mouse2 with nothing saying which is the file's subject, and
+    in all 22 mPFC-BLA files every pose value is missing. The 10 ephys files have no poses.
+- claim: ed7c-distance-correlation-not-rank
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries. Distance to the port cannot be computed either (see ed7b-distance-by-trial-type-not-rank).'
+- claim: ed7de-trajectories-close-far
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries. Distance to the port cannot be computed either (see ed7b-distance-by-trial-type-not-rank).'
+- claim: ed7f-trajectories-without-place-cells
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries. Distance to the port cannot be computed either (see ed7b-distance-by-trial-type-not-rank).'
+- claim: ed7hij-random-halves-no-group-effect
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: fig2c-svm-decodes-rank-and-outcome
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: fig2c-predicts-before-trial
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed8bc-outcome-generalizes-dom-to-sub
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed8d-outcome-winner-loser
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed8e-relative-rank-intermediates
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed8fgh-absolute-rank
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries. The alone part also needs alone sessions, which are not in the dandiset.'
+- claim: ed8ij-alone-vs-competition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds an alone session; every one of the 53 subject descriptions says the mouse is in
+    competition with a cagemate, and every file has the competition tone schedule. The claim would also
+    need the paper's curated cells (see fig2b-subordinates-longer-trajectories).
+- claim: fig2e-alone-vs-competition-trajectories
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds an alone session; every one of the 53 subject descriptions says the mouse is in
+    competition with a cagemate, and every file has the competition tone schedule. The claim would also
+    need the paper's curated cells.
+- claim: fig3a-functional-clusters
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries. The 5,879 clusters against the expected 913 clustered cells show the gap.'
+- claim: fig3b-win-trials-larger-sub-excitation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: fig3c-tone-port-entries
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: fig3d-iti-port-entries
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: ed9b-alone-no-rank-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds an alone session; every one of the 53 subject descriptions says the mouse is in
+    competition with a cagemate, and every file has the competition tone schedule.
+- claim: ed9cd-self-entry-cells-competition
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The units tables hold 5,879 Klusta clusters, every one labelled unsorted, where the paper analyses
+    998 manually curated cells (913 kept for clustering); no curation label is filled in, and no rule
+    on firing rate comes near 998 (5,232 clusters at or above 0.05 Hz, 2,075 above 1 Hz). The paper''s
+    cells cannot be selected. The clocks add to this: the stored spike times are two thirds of their time
+    in the recording, and the offset between the spikes and the tone and port-entry times (the video_gap
+    the description names) is in no file; the data put it at 4 to 45 s in 25 of the 26 files where it
+    can be estimated, and it cannot be estimated for the 10 ephys files or 12 of the 38 files with port
+    entries.'
+- claim: fig4a-ex-vivo-latency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The ex vivo patch-clamp recordings of the separate cohort of 6 mice are not in the dandiset,
+    which holds only the in vivo logger recordings.
+- claim: fig4b-phototagged-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Phototagging needs the times of the red light pulses delivered after the session; no file holds
+    them (no stimulus series, no interval table and no digital channel beyond the 32 recording channels),
+    and no unit carries a tag. The paper's mPFC-LH and mPFC-BLA mice are in the dandiset (7 and 8 mice,
+    against 12 and 8 implanted).
+- claim: fig4b-lh-stronger-reward-excitation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4b-phototagged-counts; it also needs alone sessions, which are not in the dandiset.
+- claim: ed10c-lh-responsive-proportions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4b-phototagged-counts; it also needs alone sessions.
+- claim: fig4d-lh-stimulation-dominance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The optogenetic experiments (ChR2 and eYFP mice, light-on and light-off sessions) are not in
+    the dandiset.
+- claim: ed10ek-no-other-behaviour-effects
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The optogenetic experiments and the behavioural assays of ED Fig. 10e-k (feeding, three-chamber,
+    open field, place preference, effort T-maze) are not in the dandiset.
+findings:
+- kind: format_error
+  statement: The spike_times of every units table are two thirds of the time of the same spikes in the
+    ElectricalSeries. Multiplied by 1.5 they line up with threshold crossings of the recording (cross-correlation
+    peaks of 14 to 95 SD in 50 of 53 files, none above 7 SD unscaled), and the last spike of every file
+    falls at 0.63 to 0.68 of the recording length. The times look divided by 30 kHz where the logger samples
+    at 20 kHz.
+- kind: other
+  statement: In 18 of the 21 mPFC-LH files and one ephys file the rescaled spike times match the ElectricalSeries
+    only after an offset of 5 to 28 s, and in 3 mPFC-LH files (20191025-chrimson2-3-1v3, 20191029-chrimson1-1-1v2,
+    20191029-chrimson1-2-1v2) at no offset within 60 s, so in those files the sorted spikes and the raw
+    recording do not share a start.
+- kind: metadata_insufficient
+  statement: The offset between the neural recording and the behaviour clock of the tone times, port entries
+    and labels is in no file, though the dandiset description says a video_gap variable holds it. Estimated
+    from the units' responses to port entries it is 4 to 45 s, differing by session (294 s in one file),
+    and it cannot be estimated for the 10 ephys files, which have no port entries, or for 12 of the 38
+    files with them. No analysis aligning spikes to the task can rely on the files alone.
+- kind: metadata_insufficient
+  statement: Every one of the 5,879 Klusta clusters is labelled unsorted, where the paper analyses 998
+    manually curated cells. The quality column exists but no cluster carries a curation label, so the
+    paper's cells cannot be told from multi-unit and noise clusters, and none of the single-unit findings
+    can be tested.
+- kind: data_missing
+  statement: The dandiset holds no alone sessions, no phototagging light pulses, no optogenetic experiments,
+    no unimplanted cohort, no ex vivo recordings, no AlphaTracker evaluation frames, no body weights and
+    no port location.
+- kind: data_missing
+  statement: The 10 ephys files hold no port entries, labels or poses, and in all 22 mPFC-BLA files every
+    pose value is missing; 17 of the 53 competitions have no labels of either mouse.
+- kind: metadata_insufficient
+  statement: Poses are given for Mouse1 and Mouse2 with nothing saying which is the file's subject, and
+    without the nose that the Methods say was tracked (ears, tail base and logger only).
+- kind: metadata_error
+  statement: Reward deliveries are 0.49 s after tone onset in every file, where the Methods give 2 s.
+    The tone times are the program's schedule, the same in all files of a cohort (all 53 share the first
+    17 onsets), not times recorded per session; in 7 of the 10 ephys files the last tones fall after the
+    end of the neural recording.
+- kind: metadata_error
+  statement: pair_in_dataset is 'not included' in all 53 files, but for 20 sessions the competitor's file
+    is in the dandiset.
+- kind: metadata_error
+  statement: sub-20200121-BLA2-1-1v2 has a session start of 2020-01-22 13:30, while its labels mirror
+    those of its competitor's file in the 2020-01-21 13:15 session; the subject description of sub-20200123-BLA1-3-2v3
+    names mouse 2 against mouse 3, where the file name says mouse 3 against mouse 2 (its ranks are those
+    of the file name's mice).
+- kind: other
+  statement: The ElectricalSeries of sub-20191025-chrimson2-3-1v3 is the same signal as that of sub-20191029-chrimson2-3-1v3
+    (identical samples at three points, same length), while their units differ and the 20191025 file's
+    units match its recording at no offset; the 20191025 file most likely carries the 20191029 recording
+    in place of its own.
+- kind: other
+  statement: Where both mice of a session are labelled, one file's labels are the other's seen from the
+    competitor (self and other in port swapped, a push opposite displaced or resist), in every bin for
+    most sessions; in 20200121-BLA2-3v4 and 20200122-BLA1-3v4 only 76% and 68% of position bins agree.
+- kind: other
+  statement: The 34 labelled files hold 965 trials from 14 mice, the size of the paper's HMM-GLM dataset
+    (965 trials, 32 sessions, 13 mice), and the 53 files hold the 53 competitions of ED Fig. 5b (12, 11,
+    15 and 15 per rank against 12, 12, 15 and 14).
