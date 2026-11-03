@@ -1,0 +1,328 @@
+schema_version: 2
+id: 001750-liu-2026-01
+dataset:
+  archive: dandi
+  id: "001750"
+  version: 0.260825.0222
+  doi: 10.48324/dandi.001750/0.260825.0222
+paper: doi:10.1038/s41556-026-02009-4
+date: 2026-11-03
+entry: 001750-liu-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41643032774
+inputs:
+- what: Cell type (VEN or PC) and maximal Na+ current of each of the 35 patches, with the NWB file
+    name that links them to the dandiset, from the paper's code table
+    ephysio/data_ephy/rawdata_ephysio/metadata_outSideOutSodiumCurrentRec.csv.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
+- what: Metabolite assignment file (558 metabolites, 19 samples of AIC, PrC and V1) and the sample
+    table of MetaboLights study MTBLS13927, metadata revision MTBLS13927_01, used for
+    fig8a-metabolite-gradient and fig8de-glycolytic-bias.
+  source: https://ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS13927/METADATA_REVISIONS/MTBLS13927_01/
+- what: Per-pair eEPSP amplitudes of VENs and PCs at three stimulation levels
+    (ephysio/data_ephy/sumData_StimWM.xlsx), used for fig4j-eepsp-amplitude, and per-cell AIS
+    length and distance (morpho/dataMorph/AIScmp_PCvsVEN_Fig5c.xlsx), read for
+    fig3c-ais-distance-length.
+  source: https://github.com/RFLiu2021/AIC_proj at commit 44cd8a6dfbb1f1ce363d73742e4f3652086b0f9d
+outcomes:
+- claim: na-cell-table-link
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:na-cell-table-link
+  notes: All 35 files match the 35 rows of the code table by file name, and every table cell ID
+    agrees with the file's electrode cell_id in session and cell number (35 of 35). The dataset
+    carries no cell type, so none can disagree with the table (14 VEN, 21 PC). Under the
+    criterion's eight readings at most 2 of 35 computed maxima are within 10% of the table, short
+    of the 28 required. The as-recorded readings (a1) are a median 4.15 to 4.61 times the table,
+    because the traces keep holding currents of tens of pA. The baseline-subtracted readings (a2)
+    are a median 1.32 to 1.40 times the table, Spearman 0.47 to 0.68, and a2b1c1 agrees best. A
+    variant that is not a reading of the paper, a 0.75 ms moving average before the peak, gives 26
+    of 35 within 10% (median ratio 1.006, Spearman 0.982). So the table's values are consistent
+    with a filtered peak of these recordings. The variant was found after the readings were run
+    and does not decide.
+  deviations:
+  - The link's value comparison used the eight readings of fig4d-sodium-current-lower, as the
+    criterion says. The smoothing variant is the attempt's own and decides nothing.
+- claim: fig4d-sodium-current-lower
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig4d-sodium-current-lower
+  notes: The counts are 14 VEN and 21 PC, as stated. The VEN median is lower under all eight
+    readings, but significance differs between them. Rank-sum p is 0.045 (a1b1c1) and 0.025
+    (a1b1c2), and 0.077 to 0.29 under the six others, so by the criterion the claim is blocked.
+    Under the code's example reading (a2 b1 c1), VEN 30.4 against PC 38.1 pA, p = 0.10. By session
+    under that reading, VEN is lower in HS (15.9 against 40.3 pA, 7 and 11 cells) and not in AS
+    (40.7 against 36.2 pA, 7 and 10 cells). The paper's code table gives 14.9 against 29.3 pA,
+    p = 0.001, and the non-deciding smoothed variant 16.0 against 29.9 pA, p = 0.0008. The
+    t-test variant gives p = 0.013 to 0.96 over the readings. Current density cannot be computed,
+    as no capacitance is stored. Question for the paper's authors (finding methods_unavailable)
+    is how the maximal current was measured from the traces. It asks which baseline was used,
+    whether the traces were filtered or the peak fitted, and over which steps and window. The
+    readings that subtract no baseline find the effect, and the code's own baseline subtraction
+    does not, unless the trace is smoothed.
+  deviations:
+  - Cell types come from the paper's code table through na-cell-table-link, as the files carry
+    none.
+  - Repetitions were averaged before the peak was taken (criterion). The baseline window of
+    reading a2 is 18.0 to 19.0 ms, the first 100 samples of a cut starting 2 ms before the onset
+    at 100 kHz, as in Fig4d_plotNaCurrent.m.
+- claim: model-na-ratio
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:model-na-ratio
+  notes: Depends on fig4d-sodium-current-lower, which is blocked. The ratios were computed for
+    every reading of the measure. They are 0.68 to 0.99, and in tolerance (0.619 to 0.756) under
+    some summary only for the four as-recorded readings (a1). The baseline-subtracted readings give
+    0.79 to 0.99. The code table's values give 0.58 (mean) and 0.51 (median), and the smoothed
+    variant 0.58 and 0.54, none in tolerance. The Extended Data Fig. 7c legend says the
+    conductance range was also set from previous publications, so 55 pS/um2 may not be the
+    recorded ratio alone.
+- claim: na-patch-capacitance
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:na-patch-capacitance
+  notes: No VoltageClampSeries in any file holds a capacitance, compensation or series resistance
+    value (only data, electrode, gain and starting_time), and the asset metadata names none. The
+    traces are leak subtracted online, so capacitive transients that could give an estimate are
+    removed. The paper's code table holds no capacitance either.
+- claim: fig8a-metabolite-gradient
+  outcome: not_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig8a-metabolite-gradient
+  measured:
+  - 175
+  - 84
+  notes: On the deposited values, Welch's ANOVA at P < 0.05 followed by Games-Howell at P < 0.05
+    gives 175 metabolites for AIC against V1 (expected 205.2 to 250.8) and 84 for AIC against PrC
+    (expected 97.2 to 118.8). Games-Howell alone gives 179 and 85. On log2 values the counts are
+    190 and 95 (194 and 98 without the ANOVA gate), also outside tolerance. The direction holds
+    under every variant, with about twice as many differences against V1 as against PrC. The
+    deposited table holds 558 metabolites against the 581 the Results report, which may account
+    for part of the shortfall. The samples are 6 AIC, 6 PrC and 7 V1, as the Fig. 8 legend gives.
+  deviations:
+  - The Methods name no transform of the peak areas. The deposited values are used, and log2
+    values are a variant; both fall short.
+  - The words "followed by" are read as the pair counted when Welch's ANOVA gives P < 0.05; the pair test
+    alone is shown and also falls short. Games-Howell was computed with the studentized range
+    for three groups and Welch degrees of freedom.
+- claim: fig8de-glycolytic-bias
+  outcome: partially_reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig8de-glycolytic-bias
+  notes: Citric acid is higher in AIC than in V1 (ratio 1.37, Games-Howell p = 0.00046) and
+    L-glutamic acid too (ratio 1.35, p = 0.0001). 2-Ketobutyric acid is lower (ratio 0.37) but
+    not significantly (Games-Howell p = 0.18, Welch's ANOVA p = 0.17; on log2 values p = 0.086).
+    Two of the three parts hold. A second entry named "Glutamic acid glutamate" is higher (1.18)
+    without significance (p = 0.15).
+  deviations:
+  - Metabolites were found by name in the deposited table; citrate is "Citric acid", glutamate
+    "L-Glutamic acid", 2-ketobutyrate "2-Ketobutyric acid". The paper does not say which table
+    entries it plotted.
+- claim: fig4j-eepsp-amplitude
+  outcome: reproduced
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig4j-eepsp-amplitude
+  notes: In the 26 VEN-PC pairs of sumData_StimWM.xlsx the VEN amplitudes are higher at each of the
+    three stimulation levels (means 0.0067, 0.0133 and 0.0193 against 0.0036, 0.0066 and 0.0128,
+    unit not stated) and in 21 of 26 pairs. Cell type effect, ordinary two-way ANOVA F = 7.62,
+    p = 0.0065, and repeated-measures ANOVA with the pair as subject F = 8.72, p = 0.0068 (paper
+    P = 0.0034). Stimulation level, p = 5.3e-05 and 1.6e-08. The table holds amplitudes already
+    measured by the authors, so this checks the statistics, not the selection of monosynaptic
+    eEPSPs.
+  deviations:
+  - Tested on the paper's per-pair amplitude table, as the claims file names it, not on raw
+    recordings, whose dandiset the paper does not name. Levels are taken by their order within
+    each pair, as 9 rows give no stimulation value.
+- claim: fig3c-ais-distance-length
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_liu_2026.ipynb
+  output: claim:fig3c-ais-distance-length
+  notes: AIScmp_PCvsVEN_Fig5c.xlsx holds AIS length and distance per cell by type (500 PC and 120
+    VEN values) with no slice or animal, so neither reading of the two-way ANOVA can be formed.
+    Its counts differ from the legend's 430 PCs and 108 VENs. As a description that decides
+    nothing, the VEN median distance is 15.85 against 3.95 um for PCs, and length 24.33 against
+    29.13 um (rank-sum p = 3.1e-42 and 2.3e-16), the directions the claim states.
+- claim: model-sd-na-density
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The repository at commit 44cd8a6 holds, under VEN_modeling, only MATLAB plotting scripts
+    (FigPlot) and a note that the data are on Zenodo; the simulation code and model files are not
+    in it. The processed data, Zenodo doi:10.5281/zenodo.18814764, are six parts of a RAR archive
+    (about 11.8 GB), which cannot be read without downloading all parts to disk. No simulation was
+    run.
+- claim: fig4i-peak-index-ais-distance
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs the VEN model simulations and the real neurons' phase peak index and AIS distance.
+    The model code is not in the repository (see model-sd-na-density), and the simulation
+    outputs are only in the multi-part RAR archive on Zenodo. The real-neuron values would come
+    from DANDI:001746 and the morphologies, not attempted here.
+- claim: fig4g-model-ais-distance-ap-shape
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Model simulations; the model code is not in the repository and its outputs are in the
+    multi-part RAR archive on Zenodo (see model-sd-na-density).
+- claim: model-ven-fires-more
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Model simulations; the model code is not in the repository and its outputs are in the
+    multi-part RAR archive on Zenodo (see model-sd-na-density).
+- claim: ext7d-ais-length-no-effect
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Model simulations; the model code is not in the repository and its outputs are in the
+    multi-part RAR archive on Zenodo (see model-sd-na-density).
+- claim: fig5d-connectivity-totals
+  outcome: blocked
+  blocked_by: other
+  notes: The criterion assigns the test to the claims file of DANDI:001751 (multi-patch
+    recordings, 301 files, about 7 GB, version 0.260825.0222). It was not repeated in this
+    attempt, which had five hours for 34 claims; the data are public there.
+- claim: fig5-ven-sparse-connectivity
+  outcome: blocked
+  blocked_by: other
+  notes: As fig5d-connectivity-totals; the criterion assigns the test to the claims file of
+    DANDI:001751, and it was not repeated here.
+- claim: fig5b-psc-frequency
+  outcome: blocked
+  blocked_by: other
+  notes: The criterion assigns the test to the claims file of DANDI:001752 (84 files, about 0.18
+    GB). Event detection on those recordings was not attempted in this run's time.
+- claim: fig5c-psc-amplitude
+  outcome: blocked
+  blocked_by: other
+  notes: Uses the events of fig5b-psc-frequency on DANDI:001752, not attempted in this run's time.
+- claim: scrna-classes
+  outcome: blocked
+  blocked_by: too_large
+  notes: GEO GSE319557 holds FASTQ reads of 122,663 cells; aligning and clustering them is beyond
+    the runner and the notebook's 60 minutes. The processed data on Zenodo
+    (doi:10.5281/zenodo.18814764) are a multi-part RAR archive of about 11.8 GB that cannot be
+    streamed.
+- claim: scrna-78-types
+  outcome: blocked
+  blocked_by: too_large
+  notes: As scrna-classes; the cluster labels are in the processed data on Zenodo, a multi-part RAR
+    archive of about 11.8 GB.
+- claim: patchseq-mapping
+  outcome: blocked
+  blocked_by: too_large
+  notes: Mapping needs the Patch-seq reads (GEO GSE319369) and the 10x reference (scrna-classes).
+    The repository's mapping outputs (patchSeqMappingTo10X/data/mappingRes) give clusters as
+    numbers without names, and no table there gives the 33 inhibitory types, so they cannot
+    stand in for the mapping.
+- claim: ven-map-et-ct
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the Patch-seq mapping (see patchseq-mapping).
+- claim: fig6f-g-ven-subtype-mapping
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the Patch-seq mapping and the 10x subclustering (see patchseq-mapping,
+    scrna-classes).
+- claim: fig6h-subtype-markers
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the 10x expression data and the VEN subtype labels (see scrna-classes).
+- claim: fig7c-tau-rna-distance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the 10x expression data and the Patch-seq electrophysiology of DANDI:001746 with the
+    type mapping (see scrna-classes, patchseq-mapping).
+- claim: ven-firing-rate-variability
+  outcome: blocked
+  blocked_by: too_large
+  notes: DANDI:001746 (462 files, about 14.7 GB, version 0.260825.0222). Streaming 001750's 0.33 GB
+    took about 2 minutes here, so 001746 would take over an hour to stream before any analysis,
+    more than this run had left with its other claims. The criterion also notes that the measure
+    of spike-timing variability is in Supplementary Tables 1 and 2.
+- claim: fig3e-phase-peak-index
+  outcome: blocked
+  blocked_by: too_large
+  notes: DANDI:001746, with the cell types from the Patch-seq mapping; see
+    ven-firing-rate-variability.
+- claim: fig4ac-ap-width-amplitude
+  outcome: blocked
+  blocked_by: too_large
+  notes: The claims file points to DANDI:001746, though the paper does not say which dandiset holds
+    these 587 recordings; see ven-firing-rate-variability.
+- claim: ven-subtypes-similar-physiology
+  outcome: blocked
+  blocked_by: too_large
+  notes: DANDI:001746 with VEN subtype labels; see ven-firing-rate-variability.
+- claim: fig2df-l23-it-tau-width
+  outcome: blocked
+  blocked_by: too_large
+  notes: DANDI:001746 with the transcriptomic subclasses from GSE319369; see
+    ven-firing-rate-variability and patchseq-mapping.
+- claim: fig3ab-ven-axon-from-basal-dendrite
+  outcome: blocked
+  blocked_by: other
+  notes: The morphologies are public on NeuroMorpho.org (doi:10.13021/y4be-0p18). Reading and
+    tracing the axon origin of each reconstruction was not attempted in this run's time.
+- claim: fig6-ven-subtype-morphology
+  outcome: blocked
+  blocked_by: other
+  notes: NeuroMorpho.org morphologies (doi:10.13021/y4be-0p18), not attempted in this run's time.
+- claim: ext7i-basal-dendrite-diameter
+  outcome: blocked
+  blocked_by: other
+  notes: NeuroMorpho.org morphologies (doi:10.13021/y4be-0p18), not attempted in this run's time.
+- claim: fig3f-ais-distance-types
+  outcome: blocked
+  blocked_by: other
+  notes: Needs AIS distances of the Patch-seq neurons with their subclasses (NeuroMorpho.org and the
+    Patch-seq mapping), not attempted in this run's time.
+- claim: fig4j-eepsp-latency
+  outcome: blocked
+  blocked_by: other
+  notes: The table the claims file names (sumData_StimWM.xlsx) holds eEPSP amplitudes and no
+    latencies, and the paper does not say which dandiset holds the raw recordings. No latency
+    could be measured.
+findings:
+- kind: metadata_insufficient
+  statement: The files carry no cell type, so VENs and PCs cannot be told apart from the dandiset.
+    Types come only from the paper's code table metadata_outSideOutSodiumCurrentRec.csv, which
+    names each NWB file; the file names and electrode cell IDs agree with it for all 35 patches.
+- kind: data_missing
+  statement: No file holds the patch capacitance, series resistance or compensation values, so the
+    patch size the Methods report (about 50 fF, 5 um2) and current densities cannot be computed.
+- kind: methods_unavailable
+  statement: How the maximal Na+ current was measured from the traces is not stated in the paper or
+    its code. Plain peaks of the repetition-averaged traces, with or without a pre-step baseline,
+    do not match the code table (at most 2 of 35 within 10%), and the VEN against PC difference is
+    significant only without baseline subtraction. A peak after 0.5 to 1 ms smoothing matches the
+    table closely. Question for the authors, which baseline, filter or fit, steps and window gave
+    the maximal currents of Fig. 4d?
+- kind: metadata_error
+  statement: Every file gives the session start time 2018-01-01 01:00, while the session ids and
+    the code table's cell IDs date the recordings to 6 December 2022. The series starting_time
+    values (0 to 3 s) carry no order.
+- kind: other
+  statement: The traces keep holding currents of -131 to +92 pA before the step although the
+    Methods say they were leak subtracted online, so a baseline must be removed before a peak is
+    taken. One file (cell HS018, a VEN) has a positive holding current and noise near 57 pA SD.
+    Files hold 28 or 34 steps (to +55 or +85 mV) and 1 to 10 repetitions, where the Methods
+    describe steps to 0 mV.
+- kind: other
+  statement: The MetaboLights metabolite table of MTBLS13927 holds 558 identified metabolites, where
+    the Results report 581, and one AIC sample is named A1C-1-Q. The Welch and Games-Howell counts
+    on it fall short of the reported 228 and 108.
+- kind: other
+  statement: In the paper's code repository, AIScmp_PCvsVEN_Fig5c.xlsx has 500 PC and 120 VEN values
+    where the Fig. 3c legend gives 430 and 108, and no slice or animal column for its two-way
+    ANOVA. sumData_StimWM.xlsx gives stimulation values 0.5, 1 and 2 labelled mA where the Methods
+    give 0.05 to 0.2 mA, and no unit for the amplitudes.
