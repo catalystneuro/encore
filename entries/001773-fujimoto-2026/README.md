@@ -9,7 +9,7 @@ No images are in it.
 | Claims | Outcome |
 |---|---|
 | DWI, histology, EM and behavior of the stimulated monkeys N and T (9 claims) | Reproduced |
-| Connectome patterns and per-ROI counts, DBS group and nonsurgical controls (3 claims) | Reproduced (the counts rest on the test of the paper's script) |
+| Connectome patterns and per-ROI counts, DBS group and nonsurgical controls (3 claims) | Reproduced |
 | Fig. 4c network sorting | Blocked: the connectome ROIs have no names |
 | Seed connectivity of the SCC, ROIs and networks, N and T (10 claims) | Reproduced |
 | Voxelwise maps of the nonsurgical controls and of monkey D (2 claims) | Blocked: data missing |

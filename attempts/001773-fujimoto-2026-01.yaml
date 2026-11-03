@@ -148,38 +148,34 @@ outcomes:
     have no names, and the cortical block is taken from the Fig. 4 script (first 54 ROIs).
 - claim: fig4b-roi-changes-counts
   outcome: reproduced
-  assumed: true
   notebook: reproduce_fujimoto_2026.ipynb
   output: claim:fig4b-roi-changes-counts
   measured:
   - 69
   - 44
-  notes: The paper's Fig. 4 script tests each ROI with `ranksum` of its off-diagonal changes against
-    a vector of zeros, significant at P < 0.05/nrois, with nrois = 123. Computed as MATLAB's
-    ranksum (tie and continuity corrected), this gives 69 ROIs for the DBS group (41 of 54
-    cortical, 28 of 69 subcortical) and 44 for the controls, the reported counts, with or without
-    the diagonal. The largest P counted is 3.88e-04 in both groups, the largest value listed in
-    Supplementary Tables 1 and 2 (3.9e-4), which the text's threshold (0.01/122 = 8.2e-05) would
-    exclude. None of the readings the criterion names puts both counts in tolerance (62.1 to 75.9
-    and 39.6 to 48.4). Pre against post rank-sum gives 10 to 44 (DBS) and 4 to 15 (controls);
-    signed-rank of the changes 60 to 85 and 27 to 49; both over the thresholds 0.01/122 and 0.01
-    uncorrected and with or without the diagonal. The script's test at the text's threshold gives
-    62 and 36. The outcome rests on taking the test and threshold from the script, which a question
-    to a reader asks about (questions/001773.yaml).
+  notes: Under the amended criterion, the paper's Fig. 4 script's test (rank-sum of each ROI's 122
+    off-diagonal changes against 122 zeros, significant at P < 0.05/123), computed as MATLAB's
+    ranksum (tie and continuity corrected), gives 69 ROIs for the DBS group (41 of 54 cortical, 28
+    of 69 subcortical) and 44 for the controls, the reported counts, with or without the diagonal.
+    The largest P counted is 3.88e-04 in both groups, the largest value listed in Supplementary
+    Tables 1 and 2 (3.9e-4). Of the variants, the same test at the Methods' threshold 0.01/123
+    gives 62 and 36, the pre against post rank-sum 10 to 44 (DBS) and 4 to 15 (controls), and the
+    signed-rank of the changes 60 to 85 and 27 to 49. What the answer changed. The earlier
+    criterion named only the pre against post rank-sum and the signed-rank, at 0.01/122 or 0.01,
+    none of which puts both counts in tolerance, so the outcome rested on an assumption that the
+    script's test and threshold are the paper's (reproduced, assumed). The reader's answer of
+    2026-11-03 (questions/001773.yaml) made the script's test and threshold the criterion and
+    changed the statement's 122 ROIs to 123. The outcome stays reproduced, the counts are the same,
+    and it no longer rests on an assumption.
   deviations:
-  - Assumption. The per-ROI test and threshold are those of the paper's Fig. 4 script in the
-    dandiset (rank-sum of the changes against zeros, P < 0.05/123). The Methods and the Fig. 4b
-    legend say "Rank-sum test ... (P < 0.01 with Bonferroni correction)" and "changes ... from
-    zero"; the script and the paper's Supplementary Tables 1 and 2 agree with each other and
-    not with the 0.01 of the text. The readings the criterion names were all run and none
-    matches.
   - The matrices have 123 ROIs, so each ROI has 122 values, the n of the legend; the threshold
-    uses 123 as the script does (0.01/122 is also shown).
+    uses 123 as the script and the amended criterion do (0.01/122 is also shown).
 - claim: fig4c-network-sorted-reduction
   outcome: blocked
   blocked_by: methods_underspecified
   notes: The criterion blocks the claim without an assignment of the connectome's ROIs to
-    networks. The dandiset's connectomes (123 x 123) have no ROI names, the Fig. 4 script reads the
+    networks. The reader's answer of 2026-11-03 changed the criterion's 122 ROIs to 123, the
+    number the deposited connectomes have; this does not change the block. The dandiset's connectomes (123 x 123) have no ROI names, the Fig. 4 script reads the
     names from atlas key files that are not deposited (CHARM_key_4.txt, SARM_key_4.txt,
     reorder_rois.txt), and neither the script nor the paper assigns ROIs to the networks of Fig. 4c.
     The deposited circular plot sheet holds the 54 x 54 cortical block of each group's difference
