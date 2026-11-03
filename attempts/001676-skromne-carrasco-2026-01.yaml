@@ -72,6 +72,7 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf1h-ring
+  assumed: true
   notes: With z-scored activity the angle around the Isomap embedding is correlated with head
     direction in all five example sessions (circular-circular correlation, |r| 0.19 to 0.81, p below
     0.05; 1222 to 1300 bins, 32 to 82 cells). With division by the maximum, 4 of 5 sessions keep
@@ -82,8 +83,9 @@ outcomes:
   - The test and its counts are the claims file's, not the paper's (which judges the ring by eye).
   - The example session per mouse is the one with the most ROIs whose split-half correlation exceeds
     0.8, a standard choice; the paper does not name its sessions.
-  - Normalization is read as z-scoring; division by the maximum leaves too few bins with the
-    paper's 0.1 threshold.
+  - Normalization is read as z-scoring (assumption); division by the maximum leaves too few bins
+    with the paper's 0.1 threshold.
+  - Cells are chosen with HDI on the smoothed curve only; raw HDI was not run for this claim.
 - claim: fig1f-example-stable
   outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
@@ -183,19 +185,23 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_skromne_carrasco_2026.ipynb
   output: claim:edf2-no-registration-confound
-  notes: Over all cells, with every CellReg score (the paper's "all cells"), 49 HD cells are valid in
-    the first and last session under the main reading and 108 with raw HDI (paper 72). Pooled over
+  assumed: true
+  notes: Over all cells, with every valid CellReg score (the paper's "all cells"), 49 HD cells are
+    valid in the first and last session under the main reading and 106 with raw HDI (paper 72); two
+    raw-HDI cells with a CellReg score below 0 (-0.096, -0.01) are dropped. Pooled over
     mice, shift against displacement has p 0.074 (signed) and 0.62 (absolute), shift against score p
     0.98 and 0.38, both not significant, and displacement against score p 0.0003 (slope -34.4 um per
     unit score), 0.0011 after Bonferroni over the figure's 4 tests. With raw HDI the absence tests
-    give p 0.084 to 0.28 and displacement against score p below 0.0001. For mouse 4 alone (10 or 19
+    give p 0.084 to 0.24 and displacement against score p below 0.0001. For mouse 4 alone (10 or 19
     cells) displacement against score is not significant (p 0.96 and 0.94), so reading (b) fails.
     Restricted to cells with score above 0.8 (28 or 56 cells, the analysis before verification),
-    displacement against score is 0.67 and 0.055 after Bonferroni over 4. Changed from not
-    reproduced after verification.
+    displacement against score is 0.67 and 0.055 after Bonferroni over 4, so under that reading of
+    "all cells" the claim would not reproduce; the outcome rests on the all-scores reading. Changed
+    from not reproduced after verification.
   deviations:
   - Main HD reading as for fig1f-example-stable; raw HDI gives the same outcome.
-  - All cells are taken as HD cells with any CellReg score, since the paper tests "all cells" and,
+  - All cells are taken as HD cells with any valid CellReg score (0 or above; scores below 0 are not
+    CellReg confidence scores and are dropped), since the paper tests "all cells" and,
     separately, "cells with CellReg score over 0.8" (Extended Data Fig. 2 legend, as the claims file
     lists the statistics). Bonferroni over the four tests of the claims file.
   - Centroids are mask-weighted centres of the image masks, at 3.3 um per pixel (grid_spacing); the
@@ -286,9 +292,10 @@ outcomes:
   notebook: decoding.ipynb
   notes: The claim's decoders run on every ordered pair of the 97 circular sessions plus each session
     split in halves, 1,883 XGBoost fits (1,189 for the pairs up to 10 days apart of the partial
-    reading). The 507 fits of decoding.ipynb, four at a time on the same decoder, take 2.39 s each,
-    an estimate of 75 minutes of fits for all pairs and 47 minutes up to 10 days, plus loading the
-    circular sessions, against the 60 minute limit of a notebook. Nothing of the claim was run. The
+    reading). The 507 fits of decoding.ipynb, four at a time on the same decoder (the runner has four
+    cores), take 2.56 s each, an estimate of 80 minutes of fits for all pairs and 51 minutes up to
+    10 days, plus loading the 97 circular sessions (the 227 sessions of decoding.ipynb took 1125 s),
+    against the 60 minute limit of a notebook. Nothing of the claim was run. The
     data it needs are in the dataset.
 - claim: edf4ij-pv-decay
   outcome: reproduced
@@ -298,8 +305,10 @@ outcomes:
     5 mice (Spearman rho -0.58, -0.19, -0.55, -0.87 with p below 0.02; mouse 5 rho -0.15, p 0.11,
     reading a), and its mean at the longest difference stays above 0 (0.09 to 0.86). With raw HDI it
     decreases in 5 of 5 under both readings, and the mean at the longest difference of mouse 5 is
-    -0.00 (a) and -0.19 (b).
+    -0.00 (a) and -0.19 (b), so the outcome rests on the main HD reading.
   deviations:
+  - Main HD reading as for fig1f-example-stable (assumption); with raw HDI the mean at the longest
+    difference is above 0 in 4 of 5 mice.
   - Population vectors use the raw tuning curves of HD cells valid in both sessions, averaged into
     12 bins; the paper does not give the cells or the smoothing.
 - claim: fig2e-offset-across-environments
@@ -410,7 +419,9 @@ outcomes:
     the controls do not show that the classifier reads the correlations. Given only which cell pairs
     are present in a recording (features set to 1 where present), it reaches 0.70 against 0.28.
     Trained and tested on different halves of each environment's two-week block, it reaches 0.48
-    against 0.27 (W 15, p 0.031).
+    against 0.27 (W 15, p 0.031). With the correlations permuted among the pairs present in each
+    recording (presence pattern kept), it reaches 0.59 against 0.64 for the data (lower in 5 of 5
+    mice, W 15, p 0.031), so the correlations add a little to the presence pattern.
   deviations:
   - Cell pairs not both valid in a recording enter as missing values, which XGBoost handles; the
     paper does not say how absent cells enter (assumption).
@@ -588,6 +599,10 @@ findings:
   statement: Each electrophysiology file holds two explorations of each of the three environments,
     separated by sleep, where the paper describes one. The files hold 347 units, 254 of them on
     PoSub shanks (the paper's n of 254 cells) and the rest in cortex or CA1.
+- kind: other
+  statement: The CellReg scores (scratch/Cell registration scores) include values below 0, 102 of
+    5,190 rows over all protocols and mice, down to -1.24, which a CellReg confidence score (0 to 1)
+    cannot take. The files do not describe the score.
 - kind: metadata_error
   statement: The dandiset's related publication and each file's related_publications point to the
     bioRxiv preprint (10.1101/2024.06.13.598909), not the Nature article.
@@ -595,8 +610,10 @@ findings:
   statement: Questions for the authors on the HD cell rule. Is the HDI computed on the raw or the
     smoothed tuning curve, and is the kernel 12 degrees or 12 bins? Smoothed HDI with a 12 degree
     kernel reproduces the paper's session and pair counts here, but raw HDI gives about twice as
-    many HD cells, and the outcomes of edf2ab-jaccard, fig2h-coherent-remapping and
-    edf4c-previous-session change with it. Is "detected in at least six sessions" registered by
+    many HD cells, the outcomes of edf2ab-jaccard, fig2h-coherent-remapping and
+    edf4c-previous-session change with it, and part of fig1f-example-stable (no mouse with 18
+    sessions matches) and of edf4ij-pv-decay (mouse 5's mean at the longest interval is 0 or below)
+    fails with it. Is "detected in at least six sessions" registered by
     CellReg or HD in those sessions, and which sessions enter the average HDI? With either HDI the
     proportions of Extended Data Fig. 1e are not reproduced (main reading 0.12, 0.40, 0.04, 0.29,
     0.07).
@@ -879,3 +896,217 @@ verifications:
     response: Sign reading as for edf10c-environment-identity; 5 of 5 within tolerance under both HDI
       readings. Outcome changed from not reproduced to reproduced, marked as resting on the sign
       assumption.
+- date: '2026-11-03'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the round-1 revision, with conclusions and summaries,
+    the attempt record, the helper module and the claims file, with the paper. The verifier agreed with
+    all 32 outcomes and found no place where the claims file misreads the paper. It also reported that
+    the README run time (25 minutes, against 40.7 printed) and main cell 2 (16 minutes, against 1992 s
+    printed) were stale; both now refer to the printed times or to recent runs.
+  results:
+  - claim: roi-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf1e-hd-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf1h-ring
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Summary lists edf1h as resting on the normalization reading but the record has
+      no assumed flag. Main cell 10 says every claim that rests on HD cells is also run with raw HDI,
+      while edf1h (cell 58) uses smoothed HDI only; this does not bear on an outcome.
+    response: assumed set to true, with the z-score reading stated as an assumption in the deviations.
+      Cell 10 and the README now say that every HD cell claim except edf1h-ring is run with raw HDI, and
+      a deviation says the cells are chosen with smoothed HDI only.
+  - claim: fig1f-example-stable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Main cell 98 says raw HDI changes the outcome of edf2ab-jaccard, fig2h-coherent-remapping
+      and edf4c-previous-session, and omits fig1f, where under raw HDI no mouse with 18 sessions matches
+      (cells 21 and 22). The methods_unavailable finding has the same omission.
+    response: The Summary prose and the methods_unavailable finding now say that raw HDI fails part of
+      fig1f-example-stable.
+  - claim: fig1g-all-mice-stable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf4ab-vtest-per-animal
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf4c-previous-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf2ab-jaccard
+    agrees: true
+    outcome: not_reproduced
+    reason: In round 1 the verifier had it as reproduced. It now accepts the record's position, that one
+      HDI reading applied to every claim is reasonable, and the record states that the outcome rests on
+      it.
+    response: No change needed.
+  - claim: edf2-no-registration-confound
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Pooled over all CellReg scores with Bonferroni x4, both absence tests are non-significant
+      and displacement against score gives p 0.0011. The outcome rests on reading "all cells" as every
+      CellReg score; with score > 0.8 only, displacement against score is 0.67 and 0.055, so the claim
+      would not reproduce. The record does not set assumed, and the Summary says "no (both HDI readings
+      agree)". Under raw HDI the minimum score is -0.10, not a valid CellReg score, and may feed the raw-HDI
+      regression. The n is 49 or 108 against the paper's 72.
+    response: assumed set to true; the notes, the conclusion and the Summary say the outcome rests on
+      the all-scores reading and that with score > 0.8 only it is not reproduced. Cells with a CellReg
+      score below 0 are now dropped (two under raw HDI, -0.096 and -0.01; none under the main reading),
+      and the data check prints the scores below 0 of every CellReg table (102 of 5,190 rows), added as
+      a finding. Raw HDI now has 106 cells, absence p 0.084 to 0.24 and displacement against score p below
+      0.0001; the main reading is unchanged.
+  - claim: fig1h-drift-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf4ef-not-diffusive
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf4f-change-below-shuffle
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf4g-pairwise-offset-stable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Main cell 98 says unsigned pairwise offsets are the only reading whose shuffle medians
+      (39 to 57 degrees) match the paper's 51 to 57; for edf4g, mice 3 and 1 give 39 and 48 (cell 49),
+      below the paper's 51 to 54.
+    response: The Summary now says the unsigned shuffle medians (39 to 57 degrees here) are close to the
+      paper's 51 to 57, while signed offsets give 72 to 90.
+  - claim: fig1i-offset-drift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig1k-decoding-across-days
+    agrees: true
+    outcome: blocked
+    reason: Blocked as too_large is defensible on the printed numbers, 51 min of fits for the partial
+      reading plus roughly 9 min to load 97 sessions, against a 60 min limit. Fits run 4 at a time, while
+      loading uses 12 workers. The stated figures "2.39 s each, an estimate of 75 minutes ... and 47 minutes"
+      are stale; decoding cell 12 prints 2.57 s per fit, 81 min and 51 min. The conclusion stands, since
+      both are over the limit.
+    response: The figures in the record, README, main cells 0 and 98 and decoding cell 13 now match this
+      run's output (2.56 s per fit, 80 minutes for all pairs, 51 for the partial reading), with the loading
+      time of decoding.ipynb given. The runner has four cores, so four fits at a time use all of them;
+      loading is limited by streaming, not by the cores.
+  - claim: edf4ij-pv-decay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the main reading. The claims file requires the mean at the longest interval to
+      stay above 0; under raw HDI mouse 5 gives -0.00 and -0.19 (cell 55), so the outcome rests on the
+      HDI reading, and cell 56 says that part holds in 4 of 5 there. The record does not set assumed,
+      and the Summary says "no". Main cell 98 omits edf4ij from the claims raw HDI changes.
+    response: assumed set to true, with the HDI reading stated in the deviations; the conclusion, the
+      Summary row and prose and the methods_unavailable finding now say that raw HDI fails the longest-interval
+      part for mouse 5.
+  - claim: fig2e-offset-across-environments
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf5c-stable-within-environment
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf7-ephys-offsets
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Main cell 96 says "The medians are about half the paper's (18, 12, 27, 15)"; the medians
+      6, 6, 9 and 6 are one third to one half of those values.
+    response: The sentence now says one third to one half.
+  - claim: edf7g-waveforms
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf8-same-vs-mixed
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig2g-environment-classifier
+    agrees: true
+    outcome: reproduced
+    reason: The criterion is met. Cell-pair presence alone reaches 0.70 against 0.28 (cell 77). The shuffle
+      permutes all features, so it also destroys the presence pattern, and "more accurate than shuffles"
+      is met by presence alone. The record's statement that the data do not show that the classifier reads
+      correlations is accurate. A shuffle that keeps the presence pattern and permutes only the values
+      was not run; it would show whether the correlations carry environment information at all. This bears
+      on how the claim is read, not on the criterion.
+    response: 'Added control (iii), which permutes the correlations among the pairs present in each recording:
+      0.59 against 0.64 for the data, lower in 5 of 5 mice (W 15, p 0.031). The conclusion, the Summary
+      and the notes now say the correlations add a little to the presence pattern. Outcome kept.'
+  - claim: fig2i-random-remapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig2h-coherent-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig3de-probe-memory
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig3e-mvl-delay
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig3fg-probe-drift
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf9-interference
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. edf9 is flagged assumed, but the Summary says "no".
+    response: The Summary row now names the assumptions (unsigned offsets, a minimum of two sessions,
+      weeks from the protocol's start).
+  - claim: fig4d-single-visit-memory
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: fig4e-decoder-single-visit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 32 stated outcomes; no further comment on this claim.
+    response: No change needed.
+  - claim: edf10c-environment-identity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The sign convention is now justified independently from Fig. 1g, 5 of 5 signs matching
+      as computed and 0 of 5 reversed (cell 24); it is reasonable.
+    response: No change needed.
+  - claim: edf10b-per-animal-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The sign convention is now justified independently from Fig. 1g, 5 of 5 signs matching
+      as computed and 0 of 5 reversed (cell 24); it is reasonable.
+    response: No change needed.
