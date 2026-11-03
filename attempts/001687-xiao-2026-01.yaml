@@ -1,0 +1,720 @@
+schema_version: 2
+id: 001687-xiao-2026-01
+dataset:
+  archive: dandi
+  id: 001687
+  version: 0.260821.2126
+  doi: 10.48324/dandi.001687/0.260821.2126
+paper: doi:10.1016/j.neuron.2026.05.027
+date: '2026-11-03'
+entry: 001687-xiao-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41602915149
+inputs:
+- what: 'The paper''s PrV circuit model (PrV_simulation: simulate_prv.py, analysis.py, plot_figures.py),
+    run for fig6-model-telc-loses-map.'
+  source: https://github.com/wanglab-neuro/2026_Xiao-Severson_Peri-head-distance at commit b1a9f3c (archived
+    as doi:10.5281/zenodo.20330279)
+outcomes:
+- claim: figs1f-angle-awake-vs-anesthetized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no tracked whisker kinematics and no anesthetized or single-row sessions:
+    the 67 processed files are awake full-array silicon-probe sessions, and the raw files hold untracked
+    behaviour video of those sessions (57 mp4 files, 1,706 GB). Looked in the dandiset''s asset list and
+    metadata, every processed file''s session description and one raw file''s contents. The paper names
+    no other archive for the video data.'
+- claim: figs1j-curvature-awake-vs-anesthetized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no tracked whisker kinematics and no anesthetized or single-row sessions:
+    the 67 processed files are awake full-array silicon-probe sessions, and the raw files hold untracked
+    behaviour video of those sessions (57 mp4 files, 1,706 GB). Looked in the dandiset''s asset list and
+    metadata, every processed file''s session description and one raw file''s contents. The paper names
+    no other archive for the video data.'
+- claim: figs1d-bending-larger-closer
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no tracked whisker kinematics and no anesthetized or single-row sessions:
+    the 67 processed files are awake full-array silicon-probe sessions, and the raw files hold untracked
+    behaviour video of those sessions (57 mp4 files, 1,706 GB). Looked in the dandiset''s asset list and
+    metadata, every processed file''s session description and one raw file''s contents. The paper names
+    no other archive for the video data.'
+- claim: figs2-tungsten-responsiveness
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No tungsten recording is in the dandiset: all 67 processed files are Kilosort-sorted silicon-probe
+    sessions (units table description, probe in the subject description) and no file names tungsten or
+    MClust. Looked in the asset list and every file''s metadata.'
+- claim: figs2-tungsten-tuning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No tungsten recording is in the dandiset: all 67 processed files are Kilosort-sorted silicon-probe
+    sessions (units table description, probe in the subject description) and no file names tungsten or
+    MClust. Looked in the asset list and every file''s metadata. Depends on figs2-tungsten-responsiveness.'
+- claim: si-unit-yield
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:si-unit-yield
+  measured:
+  - 1160
+  - 36
+  notes: The deposit holds all 1,358 sorted units from 36 mice. 1,188 are not low-firing (the same 170
+    low-firing units as the deposit's low_firing column), and 1,160 of these have ISI false alarms at
+    most 2%, within 114.1 of 1,141; all 36 mice keep at least one unit. The SNR criterion would remove
+    at most 19 more if the paper's count is exact; it cannot be applied here.
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+- claim: fig2-wall-responsive-counts
+  outcome: not_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig2-wall-responsive-counts
+  measured:
+  - 1061
+  - 751
+  - 657
+  - 347
+  notes: Under the Methods' uncorrected one-tailed tests (p < 0.05 at any of nine distances, each direction)
+    1,061 of 1,160 units are responsive, 751 activated, 657 suppressed and 347 both, all outside tolerance.
+    The code's variant (BH-FDR across the nine distances) gives 782, 541, 337 and 96, all within tolerance,
+    and reproduces the deposit's own labels unit for unit except for about 40 units that the deposit excludes
+    (23 of them fail the ISI criterion). The claims file's main reading for responsiveness is the Methods'
+    uncorrected test; a question to a reader asks whether the code's BH-FDR test, which gives the paper's
+    counts, should be the main reading (questions/001687.yaml).
+  deviations: &id001
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+- claim: fig2-distance-tuned-counts
+  outcome: not_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig2-distance-tuned-counts
+  measured:
+  - 658
+  - 568
+  - 375
+  - 285
+  notes: Under the Methods' reading 658 responsive units are tuned (within tolerance of 656), 568 activated
+    and tuned, 375 suppressed and tuned and 285 both, the last three outside tolerance. Under the code's
+    variant 600 are tuned, 478 activated, 214 suppressed (within tolerance) and 92 both (outside 29 +/-
+    2.9). The variant's 600 tuned and 182 untuned are consistent with the Figure 2F counts (768 - 177
+    = 591 tuned), not with the text's 656. The claims file's main reading for responsiveness is the Methods'
+    uncorrected test; a question to a reader asks whether the code's BH-FDR test, which gives the paper's
+    counts, should be the main reading (questions/001687.yaml).
+  deviations: *id001
+- claim: fig2f-tuning-categories
+  outcome: not_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig2f-tuning-categories
+  measured:
+  - 303
+  - 168
+  - 97
+  - 90
+  - 403
+  notes: Under the Methods' reading the five counts are 303 proximity, 168 map, 97 ambiguous, 90 suppressed-only
+    and 403 untuned, all outside tolerance under both readings of the last two, so the claim is not even
+    partially reproduced. Under the code's variant they are 271, 120, 87, 122 and 182, all within tolerance
+    of the Figure 2F values (reading a; reading b fails on 184 and 112), with a proximity to map ratio
+    of 2.26. The deposit's own labels give 267, 118, 87, 119 and 177. The claims file's main reading for
+    responsiveness is the Methods' uncorrected test; a question to a reader asks whether the code's BH-FDR
+    test, which gives the paper's counts, should be the main reading (questions/001687.yaml).
+  deviations: *id001
+- claim: figs4a-baseline-activated-lower
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4a-baseline-activated-lower
+  measured:
+  - 5.62
+  - 6.71
+  notes: 'Methods'' reading: 568 activated units 5.62 +/- 0.600 sp/s against 403 untuned units 6.71 +/-
+    0.671 sp/s, two-tailed K-S p = 1.81e-07, both means within tolerance. Code''s variant: 478 against
+    182 units, 5.40 against 6.97 sp/s, p = 2.90e-07. Activated units come from all 36 mice (35 under the
+    variant).'
+  deviations: *id001
+- claim: figs4a-baseline-suppressed-similar
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4a-baseline-suppressed-similar
+  measured:
+  - 6.71
+  notes: 'Methods'' reading: 375 suppressed units 6.71 sp/s against 403 untuned units 6.71 sp/s, K-S p
+    = 0.0944, so no difference at 0.05 (difference -0.00 sp/s). Code''s variant: 214 against 182 units,
+    7.25 against 6.97 sp/s (difference +0.29), p = 0.643.'
+  deviations: *id001
+- claim: figs4b-activated-increase-suppressed-decrease
+  outcome: partially_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4b-activated-increase-suppressed-decrease
+  measured:
+  - 15.35
+  - 5.6
+  - 4.61
+  - 6.72
+  notes: 'Both one-tailed K-S tests hold under both baseline readings and both classifications (activated
+    p at most 6.2e-37, suppressed p at most 2.3e-08). Methods'' reading, baseline at the same distance
+    (a): activated 15.35 against 5.60 sp/s, suppressed 4.61 against 6.72 sp/s; all-pass baseline (b) 5.62
+    and 6.71 sp/s. The activated baseline is outside 6.36 +/- 0.704 under both readings; the other three
+    means are within tolerance. The code''s variant also leaves the activated baseline out (5.36 or 5.40
+    sp/s). The paper''s 6.36 sp/s differs from its 5.46 sp/s for the same population (figs4a-baseline-activated-lower),
+    which the data match.'
+  deviations: *id001
+- claim: figs4c-untuned-no-change
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4c-untuned-no-change
+  measured:
+  - 6.41
+  notes: 'Methods'' reading: 403 untuned units, baseline 6.71 and wall 6.41 sp/s (difference -0.30), two-tailed
+    K-S p = 0.645; the wall mean is within tolerance of 6.32. Code''s variant: 182 units, 6.97 and 6.36
+    sp/s, p = 0.484.'
+  deviations: *id001
+- claim: fig2de-preferred-distances-span
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig2de-preferred-distances-span
+  notes: 'Methods'' reading: 303 of 568 activated units (53%) prefer 7 mm and 110 of 375 suppressed units
+    (29%) have their trough there, the most frequent distance in each; every distance from 9 to 23 mm
+    has at least 15 activated and 18 suppressed units. Code''s variant: 57% and 37%, all eight distances
+    covered.'
+  deviations: *id001
+- claim: figs4ef-crossvalidated-stability
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4ef-crossvalidated-stability
+  notes: 'Methods'' reading, median over 100 splits: activated units keep their preferred distance in
+    0.678 of cases against 0.457 for suppressed units (fraction reading), Spearman 0.827 against 0.779
+    (correlation reading); suppressed units with a first-half trough at 7 mm keep it in 0.870 of cases
+    against 0.294 for troughs at 9 mm or more. Under the code''s variant the fraction reading holds (0.724
+    against 0.507) but the correlation reading does not (0.815 against 0.831).'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The split draws floor(n/2) of the equalized repetitions, the same for all distances of a unit (code);
+    seeds fixed, a standard choice.
+- claim: figs4j-ventral-location
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4j-ventral-location
+  notes: 'Of 1,082 Poly2 units passing the criteria (the paper''s legend gives 1,050), 1,075 have at least
+    20 spikes in the sampled chunks. Methods'' reading: median depth 400 um for 978 responsive and 525
+    um for 97 unresponsive units (rank-sum p = 1.38e-07), proximity and map medians 300 and 300 um; fraction
+    responsive 0.955 in 0-400 um against 0.872 in 400-800 um, fraction proximity or map 0.577 against
+    0.26. Code''s variant: 720 responsive (paper 703), medians 350 against 525 um, proximity 275 and map
+    250 um, fractions 0.834 against 0.534 and 0.517 against 0.184. Both readings agree under both classifications.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The processed files hold no waveforms or peak channels. The mean waveform is computed from the raw
+    voltage over the spikes in 16 storage chunks (5.2 s each) spread evenly over each session's wall passes,
+    after a 300-6000 Hz band-pass (a standard spike band), not over all spikes (Methods, Unit Depth Along
+    Silicon Probe, take the mean waveform without saying over which spikes). Depth is the electrodes table's
+    rel_y of the peak channel (site 1, the tip, at 0 um; 775 um at the top). Poly2 is taken from the raw
+    files' electrode group.
+- claim: figs4l-temporal-windows-map
+  outcome: partially_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs4l-temporal-windows-map
+  measured:
+  - 182
+  - 109
+  - 96
+  notes: 'The order sustained > onset > offset holds under both readings and both classifications. Methods''
+    reading: map units 182, 109 and 96 with responsiveness kept from the full period (a), 182, 104 and
+    84 with all tests rerun in each window (b), all outside tolerance of 122, 83 and 34. Code''s variant:
+    133, 90 and 68 (a) and 130, 86 and 42 (b), the sustained and onset counts within tolerance and the
+    offset count not.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - Under reading (b) map units are counted among all 1,160 units; 181, 103 and 84 of them (Methods) are
+    also responsive over the full period.
+- claim: fig3a-decoding-above-controls
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig3a-decoding-above-controls
+  notes: 'Under both classifications and both cross-validations the map, proximity, combined and suppressed-only
+    groups exceed the shuffled group (10.99 to 11.26%) and the untuned group (15.25 to 16.55%); every
+    one of the 32 pairs has rank-sum p = 1.83e-04 (complete separation of 10 against 10). Methods'' classification,
+    10-fold: map 63.09, proximity 46.13, combined 55.29, suppressed-only 29.62%.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The decoders are written in Python from the Methods and Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m;
+    the Neural Decoding Toolbox (MATLAB) is not run. As in the toolbox's standard use by the code, features
+    are z-scored with the training set and each time bin is trained and tested on itself.
+  - For the Methods' 10-fold cross-validation the 135 pseudo-trials (15 per distance) are split at random
+    into 10 folds stratified by distance, as the Methods do not say how 15 trials per distance form 10
+    folds; the code's 15 splits are run too.
+  - A group with fewer than 118 units is used whole in each subsample (suppressed-only under the Methods'
+    classification, 90 units). The shuffled group permutes each unit's passes across distances in every
+    resample; the code permutes them once per subsample.
+- claim: fig3-overall-decoding-accuracy
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig3-overall-decoding-accuracy
+  measured:
+  - 64.63
+  - 55.39
+  - 48.71
+  - 29.8
+  - 15.57
+  - 11.26
+  notes: 'Methods'' classification: the order map > combined > proximity > suppressed-only > untuned >
+    shuffled holds under all four readings. All six values are within tolerance with window (i) 3-11 s
+    and the code''s 15 splits (64.63, 55.39, 48.71, 29.80, 15.57, 11.26%) and with window (ii) and 10-fold
+    (69.97, 60.70, 48.98, 30.73, 14.23, 10.95%). With (i) and 10-fold the map value, 63.09%, is below
+    the lower bound 64.38%. The matching map value 64.63% is close to that bound; the SD over subsamples
+    is 1.15 points. Code''s classification, (i) and 10-fold: 70.44, 60.90, 48.37, 33.69, 16.38, 11.04%,
+    all within tolerance.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The decoders are written in Python from the Methods and Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m;
+    the Neural Decoding Toolbox (MATLAB) is not run. As in the toolbox's standard use by the code, features
+    are z-scored with the training set and each time bin is trained and tested on itself.
+  - For the Methods' 10-fold cross-validation the 135 pseudo-trials (15 per distance) are split at random
+    into 10 folds stratified by distance, as the Methods do not say how 15 trials per distance form 10
+    folds; the code's 15 splits are run too.
+  - A group with fewer than 118 units is used whole in each subsample (suppressed-only under the Methods'
+    classification, 90 units). The shuffled group permutes each unit's passes across distances in every
+    resample; the code permutes them once per subsample.
+- claim: fig3c-decoding-by-distance
+  outcome: partially_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig3c-decoding-by-distance
+  measured:
+  - 94.4
+  - 91.7
+  - 78.6
+  - 72.2
+  - 29.1
+  notes: 'Methods'' classification, 10-fold: at 7 and 9 mm the combined (94.4, 76.9%) and proximity (91.7,
+    75.8%) groups exceed the map group (78.6, 75.2%); at each of 11 to 23 mm the map group is best and
+    BH-corrected rank-sum q < 0.05 against proximity and against combined at all seven (15 splits the
+    same). Two of five values are out of tolerance, map at 15 mm (72.2% against 82.5 +/- 8.25) and proximity
+    at 15 mm (29.1% against 36.29 +/- 3.63); 15 splits give 74.1 and 31.8%, also out. Under the code''s
+    classification (a) fails and four of five values are within tolerance.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The decoders are written in Python from the Methods and Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m;
+    the Neural Decoding Toolbox (MATLAB) is not run. As in the toolbox's standard use by the code, features
+    are z-scored with the training set and each time bin is trained and tested on itself.
+  - For the Methods' 10-fold cross-validation the 135 pseudo-trials (15 per distance) are split at random
+    into 10 folds stratified by distance, as the Methods do not say how 15 trials per distance form 10
+    folds; the code's 15 splits are run too.
+  - A group with fewer than 118 units is used whole in each subsample (suppressed-only under the Methods'
+    classification, 90 units). The shuffled group permutes each unit's passes across distances in every
+    resample; the code permutes them once per subsample.
+- claim: fig3c-decoding-error
+  outcome: partially_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig3c-decoding-error
+  measured:
+  - 1.017
+  - 1.062
+  - 1.14
+  - 1.92
+  notes: 'Methods'' classification: proximity, map and combined errors are below 1 mm at 7 and 9 mm under
+    both cross-validations. With 15 splits only the map group is below 1 mm at 13 and 15 mm (0.934, 0.993
+    mm); with 10-fold it is not (1.017, 1.062 mm). The mean map error (1.140 and 1.085 mm) is outside
+    0.86 +/- 0.086 and only the proximity mean (1.920 and 1.774 mm) is within tolerance. The criterion
+    gives no partial rule; the pattern holds under one reading with larger errors, so it is recorded as
+    partially reproduced. Code''s classification: every condition holds and all four values are within
+    tolerance (10-fold 0.737, 0.830, 0.894, 1.822 mm).'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The decoders are written in Python from the Methods and Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m;
+    the Neural Decoding Toolbox (MATLAB) is not run. As in the toolbox's standard use by the code, features
+    are z-scored with the training set and each time bin is trained and tested on itself.
+  - For the Methods' 10-fold cross-validation the 135 pseudo-trials (15 per distance) are split at random
+    into 10 folds stratified by distance, as the Methods do not say how 15 trials per distance form 10
+    folds; the code's 15 splits are run too.
+  - A group with fewer than 118 units is used whole in each subsample (suppressed-only under the Methods'
+    classification, 90 units). The shuffled group permutes each unit's passes across distances in every
+    resample; the code permutes them once per subsample.
+- claim: figs5c-single-neuron-decoders
+  outcome: partially_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs5c-single-neuron-decoders
+  measured:
+  - 63.68
+  - 60.03
+  - 29.87
+  - 18.46
+  notes: 'Methods'' classification (168 map, 303 proximity units): proximity beats map at 7 mm (63.68
+    against 60.03%) and map beats proximity at 11 to 17 mm, every single-neuron group is below its population
+    decoder, but BH q is 0.2623 at 7 mm and 0.7226 at 11 mm, and map at 15 mm (29.87%) is outside 34.72
+    +/- 4.463. Code''s classification (120 map, 271 proximity): every condition holds, q = 0.0158 at 7
+    mm and at most 0.0412 at 11 to 17 mm, values 65.68, 59.2, 35.28 and 19.57%, all within tolerance.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - 'Leave-two-out holds out the same two pass indices at every distance, over all pairs of the equalized
+    passes (Methods: ''two trials per condition were held out ... repeated exhaustively across held-out
+    pairs'').'
+- claim: figs5de-svm-robust
+  outcome: partially_reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:figs5de-svm-robust
+  measured:
+  - 63.73
+  - 57.22
+  - 49.0
+  - 29.74
+  notes: 'Under every reading run the SVM''s map group has the highest overall accuracy, the proximity
+    and combined groups beat the map group at 7 mm, and the map group is highest at each of 13 to 23 mm.
+    Methods'' classification, 10-fold: map 63.73, combined 57.22, proximity 49.00, suppressed-only 29.74%;
+    map and suppressed-only are below tolerance (15 splits 64.55 and 29.81%). Code''s classification,
+    15 splits: 71.11, 61.25, 51.46, 34.04%, three within tolerance and combined above. The criterion gives
+    no partial rule; the ranking holds and the values do not, so it is recorded as partially reproduced.'
+  deviations:
+  - The SNR criterion (Methods, Isolation of Single Unit Activity) is not applied, as the processed files
+    hold no waveforms; units are the 1,160 that pass the ISI criterion (at most 2% of intervals under
+    0.8 ms) and are not low-firing.
+  - Distance bins pool every pass inside each 2-mm bin (Methods, Wall Distance Tuning Curve Calculation,
+    'uniformly binning distance measurements into nine 2-mm-wide bins'); in the two 1-mm-step sessions
+    (20221212_sp_session_2, 20221213_sp_session_2) the deposit's tuning curves use one distance per bin.
+  - Paired signed-rank tests truncate each distance bin to the smallest number of passes across bins,
+    in time order, taken from the code, which truncates 20221213_sp_session_2 to 17 and 20230131_sp_session_2
+    to 19 repetitions (Fig2DEF_Pop_Heatmap_Hist_Pie.m).
+  - Signed-rank p-values follow MATLAB signrank (zeros dropped, exact for up to 15 non-zero differences,
+    else the normal approximation with continuity correction), a standard choice matching the paper's
+    software.
+  - The decoders are written in Python from the Methods and Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m;
+    the Neural Decoding Toolbox (MATLAB) is not run. As in the toolbox's standard use by the code, features
+    are z-scored with the training set and each time bin is trained and tested on itself.
+  - For the Methods' 10-fold cross-validation the 135 pseudo-trials (15 per distance) are split at random
+    into 10 folds stratified by distance, as the Methods do not say how 15 trials per distance form 10
+    folds; the code's 15 splits are run too.
+  - A group with fewer than 118 units is used whole in each subsample (suppressed-only under the Methods'
+    classification, 90 units). The shuffled group permutes each unit's passes across distances in every
+    resample; the code permutes them once per subsample.
+  - scikit-learn SVC (LIBSVM, linear kernel, C = 1, one-versus-one) stands in for the toolbox's libsvm_CL.
+    To fit the time limit it is run on every third 150-ms window (non-overlapping windows from 3.0 to
+    10.95 s); on the MCC decoder this changes the overall accuracies by at most 0.22 points. The code's
+    classification is run with 15 splits only.
+- claim: fig4-cut-baseline-unchanged
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig4-cut-baseline-unchanged
+  notes: 'The 195 units from 18 mice with stable waveforms before and after cutting (Methods, Isolation
+    of Single Unit Activity; Results, PrV map tuning can persist, paragraph 2) cannot be identified: the
+    deposit has no stability flag, no waveforms in the processed files and no list of the 18 mice; its
+    25 cutting sessions hold 445 units from 25 mice (384 passing the ISI and firing criteria). The processed
+    files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
+    with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
+    stability from the raw voltage of 25 sessions was not attempted. On all 384 units, split at the longest
+    gap between raw passes, baseline falls from 6.41 to 4.74 sp/s (signed-rank p = 1.41e-14; 362 wall-responsive
+    units under the Methods'' reading, p = 9.78e-14); this set may include the units the paper dropped,
+    so it does not decide the claim.'
+- claim: fig4b-cut-wall-firing-reduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig4b-cut-wall-firing-reduced
+  notes: 'The 195 units from 18 mice with stable waveforms before and after cutting (Methods, Isolation
+    of Single Unit Activity; Results, PrV map tuning can persist, paragraph 2) cannot be identified: the
+    deposit has no stability flag, no waveforms in the processed files and no list of the 18 mice; its
+    25 cutting sessions hold 445 units from 25 mice (384 passing the ISI and firing criteria). The processed
+    files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
+    with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
+    stability from the raw voltage of 25 sessions was not attempted. On the 198 activated, tuned units
+    of all cutting sessions (Methods'' reading), mean wall firing over all passes falls from 9.78 to 6.17
+    sp/s (p = 5.86e-18), 56 units below 1 sp/s after the cut; code''s reading 175 units, 10.32 to 6.43
+    sp/s. The code''s reading (median over distances) needs post-cut distances.'
+- claim: fig4b-cut-per-unit-changes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig4b-cut-per-unit-changes
+  notes: 'The 195 units from 18 mice with stable waveforms before and after cutting (Methods, Isolation
+    of Single Unit Activity; Results, PrV map tuning can persist, paragraph 2) cannot be identified: the
+    deposit has no stability flag, no waveforms in the processed files and no list of the 18 mice; its
+    25 cutting sessions hold 445 units from 25 mice (384 passing the ISI and firing criteria). The processed
+    files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
+    with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
+    stability from the raw voltage of 25 sessions was not attempted. On those 198 units 160 change with
+    uncorrected p < 0.05 (128 down, 23 up), 159 with BH-FDR and 134 with Bonferroni 0.05/(2n) (116 down,
+    14 up), against 66, 52 and 14 of 86 in the paper.'
+- claim: fig4c-map-units-after-cut
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The 195 units from 18 mice with stable waveforms before and after cutting (Methods, Isolation
+    of Single Unit Activity; Results, PrV map tuning can persist, paragraph 2) cannot be identified: the
+    deposit has no stability flag, no waveforms in the processed files and no list of the 18 mice; its
+    25 cutting sessions hold 445 units from 25 mice (384 passing the ISI and firing criteria). The processed
+    files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
+    with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
+    stability from the raw voltage of 25 sessions was not attempted. These claims also need the wall distance
+    of each post-cut pass, which the dataset does not record.'
+- claim: fig4jk-proximity-units-after-cut
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The 195 units from 18 mice with stable waveforms before and after cutting (Methods, Isolation
+    of Single Unit Activity; Results, PrV map tuning can persist, paragraph 2) cannot be identified: the
+    deposit has no stability flag, no waveforms in the processed files and no list of the 18 mice; its
+    25 cutting sessions hold 445 units from 25 mice (384 passing the ISI and firing criteria). The processed
+    files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
+    with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
+    stability from the raw voltage of 25 sessions was not attempted. These claims also need the wall distance
+    of each post-cut pass, which the dataset does not record.'
+- claim: figs5fg-cut-decoding
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The 195 units from 18 mice with stable waveforms before and after cutting (Methods, Isolation
+    of Single Unit Activity; Results, PrV map tuning can persist, paragraph 2) cannot be identified: the
+    deposit has no stability flag, no waveforms in the processed files and no list of the 18 mice; its
+    25 cutting sessions hold 445 units from 25 mice (384 passing the ISI and firing criteria). The processed
+    files hold only the full-array passes; the post-cut passes are in the raw files'' wall_pass_epochs
+    with no wall distance, and the raw wall-actuator line does not encode distance. Recomputing waveform
+    stability from the raw voltage of 25 sessions was not attempted. These claims also need the wall distance
+    of each post-cut pass, which the dataset does not record. Depends on fig4c-map-units-after-cut and
+    fig4jk-proximity-units-after-cut.'
+- claim: figs6-opto-local-inhibition-gain
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No GtACR (vGat-Cre) optogenetic session is in the dandiset: all subjects are C57, no file names
+    a laser, GtACR or vGat, and trial_condition is empty in every file. Looked in the asset list and every
+    file''s metadata; the paper names no other archive.'
+- claim: figs6i-telc-kinematics-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data. The whisker kinematics are also absent (no tracked whiskers).'
+- claim: telc-unit-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: fig5d-telc-preferred-closer
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: fig5e-telc-category-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: fig5e-telc-untuned-ambiguous-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: figs6j-telc-untuned-higher-firing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: figs6k-telc-tuned-baseline-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: figs6k-telc-tuned-wall-higher
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: figs6l-telc-increase-at-close-distances
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data.'
+- claim: fig6-model-telc-loses-map
+  outcome: reproduced
+  notebook: reproduce_xiao_2026.ipynb
+  output: claim:fig6-model-telc-loses-map
+  measured:
+  - 1225
+  - 593
+  - 631
+  notes: 'simulate_prv.py at commit b1a9f3c with its defaults and --telc (seed 42): 1,225 model neurons;
+    control 399 proximity, 194 map, 128 suppressed, 504 untuned, 593 distance-tuned; with long-range inhibition
+    halved 526 proximity, 105 map, 84 suppressed, 510 untuned, 631 tuned. Both tuned counts are within
+    tolerance of 590 and 636; the map share of tuned neurons falls from 32.7% to 16.6% and the proximity
+    share rises from 67.3% to 83.4%.'
+  deviations:
+  - The categories are the code's analysis.py (proximity when left-peaked, map when it has a peak of prominence
+    0.1 and is not left-peaked, suppressed when the maximum is at most 0.1), which the criterion says
+    is run as only it gives the figure's numbers; the counts the code prints are reported. Plotting is
+    replaced by a capture of the curves and counts the code would plot.
+- claim: fig6ghi-tuning-shape-telc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No SpVi-TeLC mouse is in the dandiset: all 36 subjects are C57 wild type and no file names TeLC
+    or vGat-Cre, although the dandiset''s description names long-range internuclear inhibition among its
+    perturbations. Looked in the asset list and every file''s metadata; the paper names no other archive
+    for these data. Depends on fig5d-telc-preferred-closer; the model part is reported, not judged, in
+    the criterion.'
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the wild-type silicon-probe recordings (67 sessions, 36 C57 mice,
+    1,358 units). The tungsten recordings, the SpVi-TeLC and GtACR mice, the anesthetized and single-row
+    video sessions and all tracked whisker kinematics of the paper are absent, so 16 of the 41 claims
+    cannot be tested here. The dandiset's description names local and long-range inhibition perturbations,
+    which are not in it.
+- kind: metadata_insufficient
+  statement: In the 25 whisker-cutting sessions the processed files hold only the full-array passes, and
+    trial_condition is empty in every file. The post-cut passes are listed only in the raw files' wall_pass_epochs,
+    with no wall distance; the trial log holds the pre-cut sequence only, and the raw wall-actuator line,
+    described as the only raw record of wall distance, takes the same two levels at every distance.
+- kind: selection_undocumented
+  statement: 'The paper''s whisker-cutting population (195 units with stable waveforms from 18 mice) cannot
+    be identified: the deposit has 25 cutting sessions from 25 mice with 445 units, no waveform-stability
+    flag and no list of the sessions used.'
+- kind: metadata_insufficient
+  statement: The processed files carry no isolation metrics (SNR, ISI false-alarm rate), no 'acceptable'
+    flag and no waveforms or peak channels, so the paper's unit criteria (1,141 of 1,358) and unit depths
+    can be recomputed only in part, or from the raw voltage. The deposit's wall_responsive labels already
+    exclude units that fail isolation (no labelled-responsive unit has ISI false alarms above 2%), without
+    saying so.
+- kind: metadata_error
+  statement: 'In 20230711_sp_session_1 and 20230608_sp_session_1 the full-array trials table (200 passes
+    each) runs past the longest gap between raw passes, in which the session notes place the cutting (49:18-57:15
+    and 51-62 min): its trials match raw passes 21 to 220 and 51 to 250, so 20 and 50 of the passes used
+    for the full-array tuning were recorded after the cut, if the notes are right. The deposit''s alignment
+    of distances to passes is otherwise consistent: realigning to raw passes 1 to 200 abolishes the tuning.'
+- kind: code_mismatch
+  statement: The Methods give the responsiveness test as one-tailed signed-rank tests at p < 0.05 per
+    distance without correction, while Fig2DEF_Pop_Heatmap_Hist_Pie.m corrects the nine p-values of each
+    direction with BH-FDR. The paper's counts (768 responsive, Figure 2F) and the deposit's per-unit labels
+    follow the corrected test; the uncorrected test marks 1,061 of 1,160 units responsive.
+- kind: other
+  statement: In the two 1-mm-step sessions (20221212_sp_session_2, 20221213_sp_session_2; 38 units) the
+    deposit's stored tuning curves use one of the two distances in each 2-mm bin, while the Methods bin
+    all distance measurements into 2-mm bins. For the other 65 sessions the stored curves equal the rates
+    computed from the spike times, except for one unit in each of 10 sessions.
+- kind: code_mismatch
+  statement: In Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m at commit b1a9f3c, the branch that builds
+    the combined 'map + proximity' subsamples draws 36 map and 82 proximity units but does not update
+    rand_unit_names, which selects the saved units, so as published it would save the previous population's
+    units, not the drawn mixture. The paper's combined-group results load files of another run date, and
+    the mixture drawn here gives values close to the paper's (55.29 to 62.64% against 58.55%).
+- kind: paper_inconsistency
+  statement: The text gives 656 distance-tuned units (472 activated + 213 suppressed - 29 both), while
+    Figure 2F's 177 untuned units of 768 imply 591. With the code's test the data give 600 tuned and 182
+    untuned units, consistent with Figure 2F, and 92 units both activated and suppressed among tuned units,
+    against 29 in the text.
