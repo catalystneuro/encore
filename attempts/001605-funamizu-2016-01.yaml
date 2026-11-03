@@ -128,9 +128,10 @@ outcomes:
   blocked_by: data_missing
   notes: >-
     The muscimol and PBS sessions of three further mice are not in the dandiset, which holds 94 imaging sessions
-    of the 8 imaging mice only (all files have imaging data and an imaging-plane description). The paper's data
-    page, https://groups.oist.jp/ncu/data, was fetched (HTTP 200); its text names no file for this paper. No other
-    deposit was found.
+    of the 8 imaging mice only (all files have imaging data and an imaging-plane description). While preparing the
+    entry, outside the notebook, the paper's data page https://groups.oist.jp/ncu/data was fetched and its text
+    named no file for this paper; this check is not shown in the notebook and supplies no number. No other deposit
+    was found.
 - claim: fig1e-muscimol-variance
   outcome: blocked
   blocked_by: data_missing
@@ -157,7 +158,8 @@ outcomes:
   notes: >-
     The sound-mapping trials recorded before each imaging session (120 presentations of 200 ms) are not in the files.
     Every file starts at its first task trial, and the trial frames sum to the series length in all 94 files; sound_on_off
-    and speaker_on_matrix are on in exactly 150 frames, the first frame of each trial. In all 94 files every row
+    and any speaker of stimulus/presentation/speaker_on_matrix (12 speakers) are on in exactly 150 frames, the first
+    frame of each trial (both printed in the data check for all 94 files). In all 94 files every row
     of speaker_presentations starts at a trial start (largest distance 0 s) and lasts one frame (0.03236 s); there
     are 150 distinct start times per file and 6 to 26 rows per trial start, one per speaker listed, which gives
     the 1,085 to 1,240 rows. Not found elsewhere (see fig1d-muscimol-correlation).
@@ -255,8 +257,9 @@ outcomes:
   notes: >-
     The regression fits up to three Gaussian bases with free widths, for 11 variable sets and four initial values,
     to every frame of 150 trials. In the notebook one three-basis nonlinear least-squares fit on the 19,586 decoder
-    frames of a median session took 0.66 s, so 44 fits for each of the 4,529 goal-distance neurons (O1 a) need about 36.6 h per reading and 146 h over the four readings of O6, beyond the notebook limit of 60 min. Not run; the
-    data are in the files.
+    frames of a median session took 0.54 s, so 44 fits for each of the 4,529 goal-distance neurons (O1 a) need about
+    29.7 h per reading and 118.9 h over the four readings of O6 on one thread, and 29.7 h over the notebook's 4
+    workers, beyond the notebook limit of 60 min. Not run; the data are in the files.
 - claim: supp6-distance-not-sound
   outcome: partially_reproduced
   notebook: reproduce_funamizu_2016.ipynb
@@ -285,7 +288,7 @@ outcomes:
   notes: >-
     The readings disagree, and the criterion directs a block. Widths are fitted continuously (grid then bounded
     optimizer). With frames O6 a, PPC and PM differ in the width s in all three layers (P 3e-12 to 0.024) and in
-    b1 in layers 3 and 5 under every classification reading. With frames O6 b and O1 a the widths do not differ
+    b1 in layers 3 and 5 under every classification reading (P 2e-11 to 0.016), and in layer 2 under O1 b (P = 0.014). With frames O6 b and O1 a the widths do not differ
     (P 0.083 to 0.21), while b1 differs in all three layers (P 4e-10 to 0.0085); under O1 b with frames O6 b the
     width differs in layer 5 (P = 0.0052). Open for the authors which coefficient the comparison used and over which
     frames the fits ran (finding below).
@@ -439,7 +442,9 @@ outcomes:
     1 no-sound zone 8.4-0 cm, where the median slope is 0. There the MAP is 0 cm, the lower end of the decoded range,
     in 51.6% of frames, and constant over the zone in 18 to 29% of trials per group, nearly all at 0 cm (76 to 99%),
     against 2.5 to 3.7% of trials in the other intermittent 1 zones. The zero slopes come from the decoder placing
-    the mouse at the goal before the zone ends, not from the 0.84 cm grid.
+    the mouse at the goal before the zone ends, not from the 0.84 cm grid. The decoded range, 67.2 to 0 cm, is the
+    claims file's O8 (Fig. 4b legend, "actual goal distances from 67 to 0 cm"); a decoder whose range extends past
+    the goal was not tried, and the failure may depend on that range (see the last finding).
   deviations:
   - >-
     Frames within 33 cm of the start, which always have sound, are left out of zones that are silent in their condition.
@@ -500,9 +505,13 @@ outcomes:
   notebook: reproduce_funamizu_2016.ipynb
   output: claim:svm-correlations
   notes: >-
-    Leave-one-trial-out training of recorded and shuffled SVMs. In the notebook one linear multiclass SVM on 12,383
-    continuous frames of a median session took 0.23 s, so the 9,596 folds of 91 sessions for two decoders take about
-    1.2 h for reading (a) alone, beyond the notebook limit of 60 min. Not run; the data are in the files.
+    Leave-one-trial-out training of recorded and shuffled SVMs. In the notebook, on the session of median goal-distance
+    neuron count (37 neurons, 13,664 continuous frames), one linear multiclass SVM (reading a) took 0.53 s and one
+    linear SVM regression (reading b) 0.01 s, so the 9,596 folds of 91 sessions for two decoders take 2.83 h and
+    0.06 h on one thread under one classification reading. Over the notebook's 4 workers and the 4 classification
+    readings of O1 and O3 (as for the decoder claims) that is about 173 min, and under O1 a O3 a alone 43 min. The
+    notebook had run 23 min when the estimate was made, leaving 37 min of its limit of 60, so neither the whole
+    claim nor one classification reading of it fits. Not run; the data are in the files.
 findings:
 - kind: data_missing
   statement: >-
@@ -709,7 +718,7 @@ verifications:
     response: >-
       Kept blocked as too_large: the protocol (Author, step 3, Develop on a subset, and Time) gives too_large for
       a computation whose estimate is over the notebook limit, which is the case here. The estimate is now made
-      in the notebook on a real session (0.66 s per three-basis fit, about 36.6 h per reading of O6, 146 h for the four), where before it was timed outside the notebook. The disagreement on the blocking reason is recorded.
+      in the notebook on a real session (that run printed 0.50 s per three-basis fit, 27.6 h per reading of O6, 110.4 h for the four; the figures first written here, 0.66 s, 36.6 h and 146 h, did not match the print and were corrected in round 2), where before it was timed outside the notebook. The disagreement on the blocking reason is recorded.
   - claim: supp6-distance-not-sound
     agrees: true
     outcome: partially_reproduced
@@ -876,4 +885,283 @@ verifications:
       and the claim is testable (B8).
     response: >-
       Kept blocked as too_large, for the reason given under fig3b-distance-over-time. The estimate is now made in
-      the notebook on a real session (0.23 s per SVM fit, about 1.2 h for reading a alone).
+      the notebook on a real session (that run printed 0.24 s per SVM fit and 1.3 h for reading a alone; the figures first written here, 0.23 s and 1.2 h, were corrected in round 2).
+- date: '2026-11-03'
+  kind: agent
+  by: >-
+    Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    The full executed notebook of the first revision, with its conclusions and summary, the helper module, the claims
+    file and the attempt record, with the paper under paper/. Round 2 report transcripts/001605/verifier-2-report.md.
+    It agreed with 38 of the 40 outcomes. In reply the second revision corrected the sentences it quoted, added the
+    outputs it asked for (speaker_on_matrix in the data check, the SVM and regression estimates over 4 workers, for
+    reading b and for every classification reading, against the time the notebook has left), and added its supp9
+    group question to questions/001605.yaml. No outcome changed and none is proposed.
+  results:
+  - claim: session-counts
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: behaviour-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: lick-goal-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      B11 partly resolved. The form of the lick frequency is now printed, and the 'change' onset is justified.
+      lick-goal-correlation is still a near-miss under an approximation the data force, r is 0.218 and 0.227 against
+      the 0.232 bound.
+    response: >-
+      No change. The files hold no lick times, so the onset cannot be taken more directly; the near-miss is stated
+      in the notes.
+  - claim: fig1c-licking-without-sound
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: supp1-licking-speed
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The notebook quotes Supp. Fig. 1 panel titles that name only zone (b). These titles are drawn in the figure
+      image, not in the paper text, and the verifier still could not render the PDF to check them. Whether supp1
+      would be reproduced turns on them, and the question is with a reader (B2).
+    response: >-
+      No change. The question is in questions/001605.yaml, with the titles quoted as read from the rendered page.
+  - claim: fig1d-muscimol-correlation
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the block. The record's note that the paper's data page was fetched (HTTP 200) and names no file
+      is shown by no notebook output, so it cannot be verified.
+    response: >-
+      No change of outcome. The note now says the page was checked while preparing the entry, outside the notebook,
+      and that the check supplies no number.
+  - claim: fig1e-muscimol-variance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the block for data_missing.
+    response: No change.
+  - claim: fig1fg-muscimol-no-sound-licking
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the block for data_missing.
+    response: No change.
+  - claim: supp2d-muscimol-overrun
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the block for data_missing.
+    response: No change.
+  - claim: muscimol-locomotion
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the block for data_missing.
+    response: No change.
+  - claim: sound-responsive-layer3
+    agrees: true
+    outcome: blocked
+    reason: >-
+      B7 resolved, the speaker_presentations structure and the frame sums are printed for all 94 files. But the
+      note and the metadata_error finding say sound_on_off and speaker_on_matrix are on in exactly 150 frames, and
+      the notebook never reads speaker_on_matrix; only the sound_on_off half is printed (cell 6).
+    response: >-
+      No change of outcome. The helper now reads stimulus/presentation/speaker_on_matrix in every file, and the data
+      check prints its shape (frames by 12 speakers) and that any speaker is on in 150 frames per file, all at a
+      trial's first frame, in all 94 files.
+  - claim: neuron-classes
+    agrees: true
+    outcome: not_reproduced
+    reason: B5 resolved, a k-means-per-session variant is shown and changes no outcome.
+    response: No change.
+  - claim: fig2d-task-relevant-proportions
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig2d-goal-distance-ppc-more
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig2d-after-vs-before
+    agrees: true
+    outcome: blocked
+    reason: B1 resolved, the assumptions are withdrawn and the claim blocked as methods_underspecified.
+    response: No change.
+  - claim: fig2d-layer-distance-preference
+    agrees: true
+    outcome: blocked
+    reason: B1 resolved, the assumptions are withdrawn and the claim blocked as methods_underspecified.
+    response: No change.
+  - claim: fig3b-distance-over-time
+    agrees: false
+    outcome: blocked
+    reason: >-
+      Agrees it was not run; the record cites a protocol rule (estimated compute over the notebook limit) the
+      verifier cannot see. The estimates quoted in the text are not the ones the notebook printed (cell 119 and
+      cell 0 say 0.66 s, 36.6 h and 146 h; cell 118 printed 0.50 s, 27.6 h and 110.4 h). For fig3b the block holds
+      even in parallel, 27.6 h over 4 workers is about 7 h.
+    response: >-
+      Kept blocked as too_large (docs/protocol.md, Author, step 3, "Develop on a subset", which the verifier did not
+      have). The estimate now also prints the time over the notebook's 4 workers, and every quoted number was
+      rewritten from this run's print, 0.54 s per fit, 29.7 h per reading of O6, 118.9 h for the four on one thread,
+      29.7 h over 4 workers. The numbers given in reply to round 1 are corrected to what that run printed.
+  - claim: supp6-distance-not-sound
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: tuning-similar-ppc-pm
+    agrees: true
+    outcome: blocked
+    reason: >-
+      B6 resolved, widths are now refined with a bounded optimizer, and the claim is still blocked, under O1 a with
+      frames O6 b width P is 0.083 to 0.21. Cell 109 says the width is profiled over a grid "in place of an optimizer"
+      and does not mention the bounded refinement, which contradicts the code but not any number.
+    response: >-
+      No change of outcome. Cell 109 now describes the bounded refinement. Cell 116 and the note now also say that b1
+      differs in layer 2 under O1 b with frames O6 a (P = 0.014), which the earlier wording left out.
+  - claim: fig3c-continuous-ramp
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig3c-ppc-ramp-without-sound
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: supp8a-pm-no-sound
+    agrees: true
+    outcome: blocked
+    reason: B1 and B5 resolved, the assumptions are withdrawn and a per-session k-means variant is shown.
+    response: No change.
+  - claim: supp8b-slopes-lower-without-sound
+    agrees: true
+    outcome: blocked
+    reason: B1 and B5 resolved, the assumptions are withdrawn and a per-session k-means variant is shown.
+    response: No change.
+  - claim: supp8c-ppc-steeper-than-pm
+    agrees: true
+    outcome: blocked
+    reason: B1 and B5 resolved, the assumptions are withdrawn and a per-session k-means variant is shown.
+    response: No change.
+  - claim: supp9-preserved-representation
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      A possible misreading of the claims file, group reading (b). In cell 60 the group sizes under reading (a)
+      match Supp. Fig. 9a much more closely (summed share difference 0.63, against 3.09 for (b)), so the paper's
+      groups look like equal quarters. The outcome is unaffected, since reading (a) is the one that fails.
+    response: >-
+      No change, the claim is tested as the claims file has it. Asked of a reader in questions/001605.yaml whether
+      reading (b) should be dropped.
+  - claim: fig4-above-chance
+    agrees: true
+    outcome: blocked
+    reason: >-
+      A possible misreading of the claims file, chance reading (b). A decoder trained on distance traces permuted
+      across trials still decodes distance, because every trace still falls toward the goal; it is not a chance
+      level. fig4-above-chance would be reproduced under the flat-prior chance (reading a) alone; the question is
+      with a reader (B3).
+    response: No change. The question is already in questions/001605.yaml.
+  - claim: fig4c-ppc-lower-error
+    agrees: true
+    outcome: blocked
+    reason: B4 resolved, NaN trials are dropped; layers 3 and 5 now print 83% and 94%.
+    response: No change.
+  - claim: fig4d-map-near-goal
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Cell 74 and the record's note say "8 to 11 of 16 bins differ overall"; cell 73 prints 9 to 11.
+    response: >-
+      No change. In this run cell 73 prints 9, 8, 9, 8, 11, 11, 11 and 11 of 16 for the eight classification and
+      shift readings with 4.2 cm bins (8 under O1 a with shift 0.1), so "8 to 11" matches the print and is kept.
+  - claim: fig4e-ppc-lower-uncertainty
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: supp11-sound-reduces-error
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      B9 resolved, zone reading (a) now drops the always-sound frames, and PPC still passes 3 of 3.
+    response: No change.
+  - claim: fig5a-map-follows-continuous
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig5a-map-decreases-without-sound
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      B10 residual. The claim turns on the MAP being held at 0 cm, the lower end of the decoded range, in 51.6% of
+      frames and 18 to 29% of trials in intermittent 1 at 8.4 to 0 cm. The 0.84-cm grid is ruled out as the cause,
+      but the 67 to 0 cm range is the claims file's O8, and a decoder whose range extends past the goal was not
+      tried. The failure may come from that choice and not from the data.
+    response: >-
+      No change, and none proposed. The range is the claims file's O8, which follows the Fig. 4b legend ("actual
+      goal distances from 67 to 0 cm"), so the claim is tested as the file has it. A decoder with a range past the
+      goal would need training frames past the goal, which the paper's decoder of goal distance does not describe,
+      and is an analysis not run here; it waits for a new attempt. The note now says the failure may depend on the
+      range, as the last finding does.
+  - claim: fig5b-map-slope-lower-without-sound
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig5-layer3-steeper-than-layer2
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      B10 residual, as for fig5a-map-decreases-without-sound, the outcome turns on the MAP being held at 0 cm, and
+      a decoder whose range extends past the goal was not tried.
+    response: No change, for the reason given under fig5a-map-decreases-without-sound.
+  - claim: supp13-map-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig5cd-uncertainty-updating
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: fig5c-uncertainty-decreases-with-sound
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: lognormal-decoder-better
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the claims-file criterion.
+    response: No change.
+  - claim: svm-correlations
+    agrees: false
+    outcome: blocked
+    reason: >-
+      Agrees it was not run. The printed estimate is 1.3 h for reading (a), on one thread; the notebook already runs
+      4 worker processes, which would bring this to about 20 min, under the 60-minute limit. Reading (b) has no
+      estimate. So the too_large block is not shown. The quoted timings (0.23 s, 1.2 h) do not match the printed
+      ones (0.24 s, 1.3 h).
+    response: >-
+      Kept blocked as too_large. The estimate now times the SVM on the session of median goal-distance neuron count
+      (37 neurons; the session timed before had 13, which understated the cost), times reading (b) too, and divides
+      by the 4 workers. It counts the 4 classification readings of O1 and O3 that the decoder claims are run under,
+      and compares with the time left. This run printed 0.53 s per SVM (a) and 0.01 s per regression (b), 2.83 h and
+      0.06 h on one thread under one classification reading, about 173 min over 4 workers for all readings and 43
+      min for O1 a O3 a alone, with 23 min of the notebook's 60 already used. Neither the whole claim nor one
+      classification reading fits.

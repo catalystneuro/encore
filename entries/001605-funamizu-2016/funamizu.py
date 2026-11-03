@@ -172,7 +172,10 @@ def _file_checks(f, t0, nfr, T, rew_t):
              ("VirtualMovement/move_scan", "Licking/lick_rate", "Sound/sound_on_off", "Speed/speed_x")}
     ophys = f["processing/ophys/DfOverF/dF_over_F"]
     rates["dF_over_F"] = float(ophys["starting_time"].attrs["rate"]) if "starting_time" in ophys else float("nan")
-    return dict(speaker_start_to_trial_start_max_s=float(near.max()),
+    spk = f["stimulus/presentation/speaker_on_matrix/data"][:] != 0         # frames x speakers (verifier round 2)
+    spk_on = np.flatnonzero(spk.any(1))
+    return dict(speaker_matrix_shape=tuple(int(v) for v in spk.shape), speaker_matrix_on_frames=int(len(spk_on)),
+                speaker_matrix_on_at_trial_start=int(np.isin(spk_on, np.r_[0, np.cumsum(nfr)[:-1]]).sum()),speaker_start_to_trial_start_max_s=float(near.max()),
                 speaker_durations_s=sorted(set(np.round(et - st, 5).tolist())),
                 speaker_unique_starts=int(len(np.unique(st))),
                 speaker_rows_per_trial=(int(per_trial.min()), int(per_trial.max())),
