@@ -626,6 +626,13 @@ def unisave(gene: str) -> tuple[str, list[tuple[str, int, int, str]], str]:
     return seq, feats, t.splitlines()[0]
 
 
+def unisave_dates(gene: str) -> list[tuple[int, str, str]]:
+    """Version, UniProt release and release date of the pinned entry version and the one after it."""
+    acc, ver = UNISAVE[gene]
+    d = _get(f"https://rest.uniprot.org/unisave/{acc}?format=json&versions={ver},{ver + 1}").json()
+    return sorted((r["entryVersion"], r["firstRelease"], r["firstReleaseDate"]) for r in d["results"])
+
+
 def interpro(acc: str) -> tuple[pd.DataFrame, dict]:
     """InterPro member-database domain locations of a UniProt entry, with the releases."""
     d = _get(f"https://www.ebi.ac.uk/interpro/api/entry/all/protein/uniprot/{acc}?page_size=100").json()

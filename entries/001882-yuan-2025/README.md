@@ -17,7 +17,7 @@ images exist only as the annotated panels of Figures 2 and 3.
 | ProtParam values of IMPG1 (Table 4) | Partially reproduced |
 | gnomAD frequencies | Reproduced |
 | Pathogenicity scores (Table 2) | Not reproduced |
-| Stability (Table 3): MuPRO and I-Mutant 2.0 run, I-Mutant gives stabilizing values | Not reproduced (15 of 25 values not computed) |
+| Stability (Table 3): MuPRO and I-Mutant 2.0 run from sequence, I-Mutant gives stabilizing values | Not reproduced, resting on the sequence reading (15 of 25 values not computed) |
 | p.Asp423Glu is novel (no ClinVar entry) | Not reproduced |
 | All Caucasian; normal EOG of M73; other gene variants | Blocked: data missing |
 | Residue contacts (Figure 4) | Blocked: data missing, the structural models are not deposited (two claims) |
@@ -26,11 +26,16 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The phenotype claims were read by the author on the deposited figure panels, which are the paper's
-own figures, so they test the text against the published images, not against independent data. The
+own figures, so they test the text against the published images, not against independent data. In
+the same way the spreadsheet looks like the authors' source for Table 1, so the Table 1 claims show
+that the deposit agrees with the paper, not independent evidence. The
 in silico claims use pinned or versioned outside services (Ensembl VEP, dbNSFP, CADD, gnomAD, ClinVar,
 UniProt, InterPro) and the FATHMM-MKL, MuPRO and I-Mutant 2.0 web servers, which have no version.
 Whether an autofluorescence lesion is bright is decided, as an assumption, against discs of the
-background fundus of the same panel; the M73 claims rest on it. The attempt record, with the
+perimacular ring of the same panel; m73-f57-similar-lesions rests on it (m73-vmd-phenotype is
+partial under every reading). iMutant is run from sequence, as the claims file says, though the
+paper does not say which I-Mutant 2.0 mode it used; the Table 3 outcome rests on that reading, and
+the question is put to a reader in [`questions/001882.yaml`](../../questions/001882.yaml). The attempt record, with the
 reasons and the differences from the paper's method, is [`attempts/001882-yuan-2025-01.yaml`](../../attempts/001882-yuan-2025-01.yaml).
 
 - `reproduce_yuan_2025.ipynb`: the analysis. It takes 10 to 20 minutes, most of it waiting for
