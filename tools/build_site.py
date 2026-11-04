@@ -1069,8 +1069,9 @@ def progress_panel(data: dict) -> str:
       <div class="chart" id="progress-line"></div></div>
     <div class="panel"><h2 id="progress-day-title">Datasets attempted, new each day</h2>
       <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
-      <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
+      <div class="chart" id="progress-outcomes"></div></div>
   </div>
+  <div id="progress-legend" class="progress-legend"></div>
   <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
     <div class="scroll"><table><thead><tr><th>Date</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
   </details>
