@@ -75,7 +75,8 @@ outcomes:
   notes: Per-animal thresholds (11.8 to 14.5 a.u.) give median onsets of 119.0 ms in Mouse 1, 133.0 ms over all hit trials
     and 128.0 ms in the late phase, all within tolerance; early 144.0 ms (n = 1307) against late 128.0 ms (n = 2897),
     p = 6.09e-32, r = -0.23 (paper n 1305 and 2922, r = -0.22). The pooled threshold gives 118.0, 134.0 and 129.0 ms
-    and p = 1.94e-29. No onset is found in 568 of 4772 hit trials.
+    and p = 1.94e-29. The 568 of 4772 hit trials with no onset are the 568 with no stored wheel trace; every hit trial
+    with a trace has an onset.
   deviations:
   - The paper takes the response threshold from hit and miss trials; the dataset's miss trials have no response time
     except 98, so the threshold is taken from hit trials, with those 98 added as a variant (same thresholds).
@@ -92,8 +93,10 @@ outcomes:
     asks 5). Over all 55 sessions, 999 units (732, 260) and 585 modulated (405, 177), 3 of 6. With the Methods filters
     alone the counts are the same. With the trough-to-peak rule on the stored mean waveform, 577 pyramidal and 218 interneurons,
     334 and 154 modulated. Every unit is marked accepted. Reading (b) cannot be formed, as no unit identity across sessions
-    is stored. The trough-to-peak histogram has a dip at 0.45 to 0.50 ms (22 units between 59 and 44), bimodal about
-    0.45 ms.
+    is stored. The outcome rests on the counts, 4 of 6 outside their tolerance where the criterion asks 5 inside. The
+    trough-to-peak histogram in 0.05 ms bins alternates (59, 22, 44 at 0.40 to 0.55 ms), but at 30 kHz a bin holds one
+    or two possible values, and per value the counts are 29.5, 22 and 22, so the dip comes from the binning; no bimodality
+    is judged.
   deviations:
   - Cell type is the stored cell_type, which the files describe as the putative cell type from t2p classification; Mouse
     6 spells it 'Pyramidal Cell' and 'Narrow Interneuron', read as the same labels. By the trough-to-peak of the stored
@@ -202,9 +205,13 @@ outcomes:
     0.199 m/s. At 4 uA both velocities are below 0.18 m/s, so no reading has all three inside 0.18 to 0.297. Jitter shows
     no slope (binned p = 0.148, 0.33, 0.377; unbinned 0.79, 0.819, 0.143). Check of the mapping: the stimulation contacts
     lie at 0 to 520 um depth, 12 of 17 between 150 and 420 um (Methods 200 to 400 um), and the fraction of modulated
-    responses falls from 0.711 at 60 to 120 um to 0.390 beyond 960 um. With the electrode table''s rel_y (round 1, variant)
-    the contacts lie at -156 to 1559 um, the modulated fraction does not fall with distance, and no latency slope is
-    significant (p 0.294 to 0.962).'
+    responses, pooled over mice, falls from 0.711 at 60 to 120 um to 0.390 beyond 960 um; the check is not clean, as
+    the 0 to 60 um bin is the lowest (0.315) and per mouse the fall reverses in Mouse 5 (0.31 within 240 um, 0.48 beyond
+    960 um) and Mouse 6 (0.08 and 0.88, not in the fit), while Mouse 5 looks local under the electrode-table mapping
+    (0.68 and 0.56). Without Mouse 5 the 4 uA velocity is 0.179 m/s from binned means and medians, still below 0.18;
+    leaving out one mouse at a time it is 0.146 to 0.189 m/s, and 0.18 or more under both aggregations only without
+    Mouse 1 (0.189 and 0.180). With the electrode table''s rel_y (round 1, variant) the contacts lie at -156 to 1559 um,
+    the modulated fraction does not fall with distance, and no latency slope is significant (p 0.294 to 0.962).'
   deviations:
   - 'Distance follows the paper''s code (processing/batch_process/postprocessing/longitudinal_data_utils.py, add_data_to_df
     and correct_df_unit_location; python/fig_s4/generate_figure.py; XieLuanLab/icms-activation-plasticity at d1922d1):
@@ -352,13 +359,19 @@ outcomes:
     taken 10 ms apart from the train onset, as the files store train onsets only (every 70-pulse train lasts 700.00 ms).'
 - claim: figs9-coupling-window-and-control
   outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs9-coupling-window-and-control
   notes: 'The 120 ms part: NPL coupling exceeds PL early (0.751 against -0.520, FDR p = 1.12e-14, r = 0.35) and late
     (0.420 against -0.349, FDR p = 1.04e-15, r = 0.26). The control part at 5 uA, with the code''s population of all
     units and segments from the first to the last pulse of each trial (s1, p1): PL and NPL coupling do not differ early
-    (2.56 against 3.96, n 47 and 93, FDR p = 0.394) or late (2.98 against 4.69, n 33 and 242, FDR p = 0.394); paper n
-    49/64 and 25/128, FDR p = 0.48. With modulated units as the population, FDR p = 0.895 and 0.63. With burst segments
+    (2.03 against 1.56, n 45 and 48, FDR p = 0.431) or late (2.46 against 1.58, n 31 and 90, FDR p = 0.134); paper n
+    49/64 and 25/128, FDR p = 0.48. With modulated units as the population, FDR p = 0.99 in both phases. With burst segments
     (s2) the early difference is significant with all units (FDR p = 0.00428, n 41 and 18) and not with modulated units
-    (0.173). The outcome rests on the trial segments, whose n match the paper''s more closely.'
+    (0.173). The outcome rests on the trial segments: the criterion says the full train, the dataset''s trials table
+    has one row per trial of 3 bursts (as many rows as such trials in 14 of the 15 files with stimulation, n_pulses
+    30 in most), and the s1 n are closer to the paper''s in both phases (45/48 and 31/90 against 41/18 and 28/46). The
+    previous revision numbered trials by the stored trial_index, which restarts in each block, and so joined trials
+    of different blocks into one segment; the s1 numbers reviewed in round 2 came from those segments.'
   assumed: true
   deviations:
   - 'Control units follow the paper''s control code (processing/control/postprocessing/create_session_responses.py and
@@ -372,7 +385,8 @@ outcomes:
   - 'Control coupling follows processing/pop_coupling/pop_coupling_control.py: per channel and current, segments from
     the first to the last pulse of each row of the code''s trial table concatenated, population of every unit with a
     response at that condition, 50-spike minimum. The trial table is not public; its rows are taken as trials (3 bursts),
-    an assumption, and bursts are shown as the other reading.'
+    an assumption, and bursts are shown as the other reading. Trials are numbered from burst_index_in_trial in time
+    order, as the stored trial_index restarts in each recording block.'
   - 'Pulse-locking follows the paper''s code (processing/batch_process/postprocessing/responses_v2/pulse_locked_response_metrics.py,
     called from responses_v3/stim_condition_response.py, XieLuanLab/icms-activation-plasticity at d1922d1): 500 draws
     of 20% of the pulses without replacement, two points inserted at 1.5 ms, and a null of 100 uniform placements of
@@ -440,7 +454,7 @@ outcomes:
   blocked_by: metadata_insufficient
   notes: 'The density half cannot be formed: the control survey files hold ROI masks and binary activation per channel
     and current, with contact positions in um, but no voxel size or plane spacing (the imaging plane has no grid_spacing;
-    136 planes), and 2 to 9 of the 32 contact positions are at the origin with no stated mapping from Ripple channel
+    its description gives 51 to 171 planes), and 2 to 9 of the 32 contact positions are at the origin with no stated mapping from Ripple channel
     to contact index. The count half was run on the stored activation calls (all activated ROIs, as the 800 um limit
     cannot be applied): at 5 uA the count falls from a median of 10 early to 2 late, channel x session p = 0.0146 (late
     weeks 2 and 3) and 0.00573 (weeks 2 to 4), channel x week medians p = 0.0816 and 0.0261 (n 63 early, 43 to 67 late;
@@ -449,66 +463,84 @@ outcomes:
 - claim: fig3b-tracking-counts
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3df-stable-cells-amplitude-duration-onset
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3i-more-high-intensity-week4
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3j-high-intensity-subgroup-increase
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3j-weekly-divergence
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3lm-deconvolved-spikes-subgroup
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3n-newly-recruited-weaker
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig3n-enhanced-vs-week0
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: figs6-first-five-frames
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so on in Mouse 1;
-    the ROI description says they are a separate segmentation), the files carry no identity of an ROI across sessions,
-    and no mean or reference images are stored (reference_images is empty), so the PatchWarp alignment and mask matching
-    of the Methods cannot be repeated. Every Fig. 3 and fig. S6 claim rests on tracked neurons.
+  notes: The planar ROIs are segmented in each session (385, 172, 388, 359, 697, 329, 543 and 443 ROIs in Mouse 1), their
+    roi_id_source is the row index 0 to N-1 in every session, so the files carry no identity of an ROI across sessions,
+    and no mean or reference images are stored (reference_images is empty in every planar and volumetric segmentation),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. The ROI description says only that
+    the planar ROIs are a separate segmentation from the volumetric one. Every Fig. 3 and fig. S6 claim rests on tracked
+    neurons.
 - claim: fig4d-waveform-separation
   outcome: blocked
   blocked_by: data_missing
@@ -521,12 +553,20 @@ outcomes:
     and no labels of tracked units.
 - claim: figs7-control-no-change
   outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs7-control-no-change
   notes: 'Reading (a), 5 uA (the code''s current): 111 modulated control responses in 14 sessions of 4 mice, PL 32 early
     and 19 late, NPL 27 and 33 (paper 29/12 and 30/29). PL modulation p = 0.946 (r = -0.01), NPL modulation p = 0.122
     (r = 0.23), PL time to maximum p = 0.112 (r = 0.25), NPL time to maximum p = 0.399 (r = 0.13), PL peak spike probability
     p = 0.182 (r = -0.23); none is significant. Reading (b), all currents pooled (n 59/73 PL, 74/103 NPL, further from
     the paper''s), gives NPL modulation p = 0.00809 and PL time to maximum p = 0.0352. The criterion judges under the
-    reading whose n is closest to the paper''s, (a).'
+    reading whose n is closest to the paper''s, (a). The bursts of a trial start 0.5 s apart, so the 700 ms baseline holds
+    an earlier burst for 5863 of 8795 bursts. With every burst''s baseline taken from the 700 ms before its trial''s first
+    burst (variant, same PL labels), NPL modulation rises (0.334 to 0.988, p = 0.0059, r = 0.43, n 29 and 28) and the
+    other four tests give p = 0.744, 0.957, 0.44 and 0.07. The absence of a change in NPL modulation therefore holds with
+    the code''s baseline and not with a baseline free of stimulation; the claim of absence is judged on the code''s test
+    as followed, and the variant is reported. PL time to maximum rises here (5 to 55 ms, r = 0.25), where the paper reports
+    r = -0.39.'
   assumed: true
   deviations:
   - 'Control units follow the paper''s control code (processing/control/postprocessing/create_session_responses.py and
@@ -538,6 +578,9 @@ outcomes:
     in the repository: the 20 ms window comes from the code''s docstring, the 1.5 and 0.5 ms blanking is the behavioural
     one, and time to maximum is taken over the burst. These are assumptions.'
   - The controls were stimulated at 2, 5, 7 and 10 uA, so reading (b) pools all four currents.
+  - The 700 ms baseline before each burst holds the previous burst for the second and third burst of a trial (5863 of
+    8795 bursts). A baseline from the 700 ms before the trial's first burst is run as a variant; whether the code's missing
+    timing file sets another baseline is asked of the authors (findings).
 findings:
 - kind: metadata_insufficient
   statement: The behavioural files give no position of the stimulation contacts in the volumetric imaging volume (the
@@ -554,7 +597,7 @@ findings:
     units.
 - kind: paper_inconsistency
   statement: The Methods say the control animals had similar stimulation parameters to the behavioural group, but the
-    control files describe and hold 3 bursts of 10 biphasic pulses at 50 Hz per trial (200 ms bursts 0.5 s apart), where
+    control files describe and hold 3 bursts of 10 biphasic pulses at 50 Hz per trial (200 ms bursts starting 0.5 s apart), where
     the behavioural trains are 70 pulses at 100 Hz over 700 ms.
 - kind: metadata_insufficient
   statement: The control survey imaging gives no voxel size or plane spacing, and 2 to 9 of its 32 stimulation contact
@@ -581,7 +624,8 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors (fig. 6D). What bin width and smoothing were used for the hit and miss PSTHs, and
     was the divergence onset the first significant cluster or the last? With 10 or 5 ms bins and no smoothing, PL responses
-    show significant clusters in both phases and the early NPL onset is about 105 ms.
+    show significant clusters in both phases and the early NPL onset (first cluster) is 75 ms with 10 ms bins and 87.5
+    ms with 5 ms bins.
 - kind: methods_unavailable
   statement: Question for the authors (fig. S5, E to H). Were the modulated set and the PL labels recomputed in the 120
     ms window or kept from the 700 ms analysis? Kept, the NPL modulation does not change; recomputed, it rises at all
@@ -589,17 +633,23 @@ findings:
 - kind: metadata_error
   statement: stim_channel and the electrode table's channel_name are both described as Ripple channel numbers, but they
     are not the same numbering. The paper's code places stimulation channel c at (32 - c) x 60 um on the probe; with
-    that the contacts lie at 0 to 520 um depth and the fraction of modulated units falls with distance from them, while
-    taking the electrode table's rel_y for channel_name = c puts them at -156 to 1559 um, some outside the electrode
-    table, and shows no fall-off. The mapping from stim_channel to a contact position is not stated in the files.
+    that the contacts lie at 0 to 520 um depth and, pooled over mice, the fraction of modulated units falls with distance
+    from them (not in Mice 5 and 6, nor in the nearest 60 um), while taking the electrode table's rel_y for channel_name
+    = c puts them at -156 to 1559 um, some outside the electrode table, and shows no fall-off pooled. The mapping from stim_channel to a contact position is not stated in the files.
 - kind: metadata_insufficient
   statement: No per-pulse stimulation times are stored; the trains have onsets and offsets only (every behavioural train
     lasts 700.00 ms), so pulse-locked analyses must place the pulses at their nominal 10 ms (20 ms in the controls) spacing.
 - kind: methods_unavailable
   statement: Question for the authors (fig. S7, fig. S9C). The control code reads control_timing_params.json and condensed_trials.csv,
     which are not in the repository. Were the pulse window 20 ms and the blanking 1.5 and 0.5 ms, and was time to maximum
-    taken over the burst? Is a row of condensed_trials.csv a trial of 3 bursts or one burst? With trial rows the control
-    PL and NPL coupling do not differ (FDR p = 0.394); with burst rows they differ early (FDR p = 0.00428).
+    taken over the burst, and was the baseline the 700 ms before each burst, which holds the previous burst? With a baseline
+    before each trial's first burst, control NPL modulation rises (p = 0.0059). Is a row of condensed_trials.csv a trial
+    of 3 bursts or one burst? With trial rows the control PL and NPL coupling do not differ (FDR p = 0.431 and 0.134);
+    with burst rows they differ early (FDR p = 0.00428).
+- kind: metadata_error
+  statement: In the control files the trials table's trial_index is described as the trial index within the session,
+    but it restarts in each recording block (rep_num), so the same index names up to several trials of a session, and
+    the electrical_stimulation table's trial_index, which refers to it, cannot tell them apart without the block.
 verifications:
 - date: '2026-11-04'
   kind: agent
@@ -892,3 +942,275 @@ verifications:
       them at 5 uA (python/fig_s7); that is followed, and all five tests give P >= 0.05 with n near the paper's, so the
       outcome changes to reproduced, resting on the assumptions about the missing timing file. The mismatch with 'similar
       stimulation parameters' stays a finding.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run, with its conclusions and summary, the helper
+    module, the claims file and this record, with the paper. Report in transcripts/001868/verifier-2-report.md.
+  results:
+  - claim: fig2a-threshold-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, no assumption involved: early 5.39 uA, late 3.88 uA, p = 5.32e-06.'
+    response: No change needed.
+  - claim: fig2a-steepest-decline-early
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated and reasonable. It is the claims file's own reading of the figure. The MLE reversal
+      is disclosed.
+    response: No change needed.
+  - claim: figs1e-response-times-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: figs5c-wheel-onset-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, no assumption involved. The notes say "No onset is found in 568 of 4772 hit trials"; cell 18 shows
+      that these 568 trials have no wheel trace at all.'
+    response: The notebook now prints that the 568 hit trials with no onset are the 568 with no stored wheel trace, and
+      the conclusion and notes say so.
+  - claim: fig4-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced: 2 of 6 counts are within tolerance. The record moves it to not_reproduced because "the criterion
+      has no partial clause", yet uses partial for figs3c, fig5e, figs4b and fig5h; the outcome stands on substance (4
+      of 6 counts outside), but the stated reason should change. The sentence that the trough-to-peak histogram dips
+      at 0.45 to 0.50 ms and is bimodal is not supported: at 30 kHz that bin holds one possible value and the bins either
+      side two each, so per value the counts are 29.5, 22 and 22 and the dip comes from the binning.'
+    response: The notes now rest the outcome on the counts (4 of 6 outside their tolerance where the criterion asks 5 inside).
+      The notebook prints the possible values per bin and the counts per value, and the bimodality sentence is replaced
+      by the per-value counts; no bimodality is judged.
+  - claim: figs3b-modulation-increase-all
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: figs3c-latency-all
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'A distinct part of the claim holds and another fails: the 5 uA fall holds; 4 uA is also significant (p = 0.0465).
+      The verifier withdraws its round-1 not_reproduced, to be consistent with its fig5e judgment.'
+    response: No change needed.
+  - claim: figs3d-modulation-stable-at-threshold
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, no assumption involved: reading (a) gives p = 0.16.'
+    response: No change needed.
+  - claim: fig4g-modulated-count-mouse1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: fig4ij-pyramidal-modulation-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: fig4ij-interneurons-little-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: fig5d-pulse-locking-stable-across-currents
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced: 0.792, and 0.774 to 0.793 under three other seeds, all below 0.80.'
+    response: No change needed.
+  - claim: fig5e-pyramidal-fraction-pl
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The effect holds (p = 7.7e-10); the NPL fraction is 0.553 against an upper bound of 0.548.'
+    response: No change needed.
+  - claim: figs4b-pl-latency-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Latency rises at every current; the velocity at 4 uA is 0.161 to 0.169 m/s, below 0.18. The statement that
+      the mapping is supported because the fraction of modulated responses falls with distance holds pooled from 60 to
+      120 um outward, but the 0 to 60 um bin is the lowest (0.315), and per mouse it reverses in Mouse 5 (0.31 near, 0.48
+      far) and Mouse 6 (0.08 near, 0.88 far). Mouse 5 is in the fit, and under the electrode-table mapping its pattern
+      looks local (0.68 near, 0.56 far). Whether the 4 uA velocity misses its range may depend on Mouse 5''s distances.'
+    response: The notebook now prints the modulated fraction by distance for each mouse, the fits without Mouse 5, and
+      the velocities leaving out one mouse at a time. Without Mouse 5 the 4 uA velocity is 0.179 m/s from binned means
+      and medians, still below 0.18; leaving out any one mouse it is 0.146 to 0.189 m/s, reaching 0.18 under both aggregations
+      only without Mouse 1. The conclusion, notes and the stim_channel finding now say the mapping check holds pooled but
+      not in the nearest bin nor in Mice 5 and 6. Outcome kept.
+  - claim: fig5fg-pl-modulation-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Time to maximum now falls at 6 uA, p = 0.041.'
+    response: No change needed.
+  - claim: figs4de-npl-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Smallest p is 0.0824.'
+    response: No change needed.
+  - claim: fig5h-pl-spike-probability-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: '6 uA holds; 5 uA gives p = 0.0613 at the fixed seed, and 0.0197 to 0.0485 under the other seeds.'
+    response: No change needed.
+  - claim: figs5-restricted-window-consistent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, under the "keep" reading.
+    response: No change needed.
+  - claim: fig6c-kl-divergence
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced. Remaining, not bearing on a conclusion: under reading k2 the week-4 PL KL median is 0.859,
+      against 0.008 to 0.066 in the other weeks; it is unexplained; both readings fail on PL either way.'
+    response: Not investigated in this revision, as it does not bear on the outcome; both readings fail on PL.
+  - claim: fig6d-npl-hit-miss-divergence
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced. The finding says "the early NPL onset is about 105 ms"; cell 70 gives 75 ms with 10 ms bins
+      and 87.5 ms with 5 ms bins. Round-1 point 9 is still unexplained: with 5 ms bins the late PL clusters flip sign almost
+      every bin, at the pulse period, which points to a pulse-timing effect, not a hit-miss difference. The outcome holds
+      anyway, because large one-sign PL clusters remain (405 to 505 ms and 645 to 685 ms).'
+    response: The finding now gives 75 ms (10 ms bins) and 87.5 ms (5 ms bins). The sign alternation was not investigated
+      further; as the verifier says, the outcome does not depend on it.
+  - claim: fig6f-population-coupling
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: figs9a-coupling-700ms
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, no assumption involved.
+    response: No change needed.
+  - claim: figs9-coupling-window-and-control
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated, but its justification is weak. The outcome depends on choosing trial segments (s1)
+      over burst segments (s2); under s2 the early test gives p = 0.00428. "Whose n match the paper''s more closely" holds
+      only in ratio; in absolute numbers s2 is closer (s1 47/93 and 33/242, s2 41/18 and 28/46, paper 49/64 and 25/128).
+      The criterion''s "the full train" does favour s1. The outcome has no notebook/output fields.'
+    response: 'Checking the trial segments showed that the stored trial_index restarts in each recording block, so the
+      s1 segments had joined trials of different blocks. Trials are now numbered from burst_index_in_trial in time order
+      (icms.control_trial_ids). With this, s1 gives n 45/48 and 31/90, closer to the paper''s than s2 in absolute numbers
+      in both phases, and FDR p = 0.431 and 0.134, so the outcome is unchanged; s2 is unchanged (0.00428). The reason for
+      s1 is now the criterion''s "full train", the dataset''s trials table (one row per trial of 3 bursts) and the n. The
+      notebook and output fields are added, and the restarting trial_index is recorded as a finding.'
+  - claim: fig2c-count-increase-fixed-current
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with all 19 blocked claims. Statements in the blocked notes that no notebook cell prints: the volumetric
+      voxel_mask.'
+    response: A data-check cell now prints, for every behavioural imaging file, the ROI counts, the segmentation descriptions
+      and columns (voxel_mask in the volumetric segmentation) and the stored reference images.
+  - claim: fig2b-example-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: figs2ab-density-peak-200um
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: fig2e-density-200um-increase
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: figs2de-behaviour-increase-comparison
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: fig2g-stable-at-threshold
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: fig2e-radius-increase
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: figs2de-control-stable
+    agrees: true
+    outcome: blocked
+    reason: 'For figs2de-control-stable, density still cannot be formed. "136 planes" is a statement no notebook cell prints.'
+    response: The control data check now prints the number of planes in each survey description (51 to 171), and the
+      notes give that range.
+  - claim: fig3b-tracking-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with all 19 blocked claims. Statements no notebook cell prints: the per-session planar ROI counts (385,
+      172, ...), the "separate segmentation" description, and "reference_images is empty" (also cited in the fig3b response).
+      The planar reference_images check is not shown in the notebook.'
+    response: 'The new data-check cell prints the planar ROI counts per session, the segmentation description, that roi_id_source
+      is the row index 0 to N-1 in every session, and that no reference images are stored in any planar or volumetric
+      segmentation. The description says only that the planar ROIs are a separate segmentation from the volumetric one,
+      so the notes now say that, and rest the missing identity on roi_id_source.'
+  - claim: fig3df-stable-cells-amplitude-duration-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig3i-more-high-intensity-week4
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig3j-high-intensity-subgroup-increase
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig3j-weekly-divergence
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig3lm-deconvolved-spikes-subgroup
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig3n-newly-recruited-weaker
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig3n-enhanced-vs-week0
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: figs6-first-five-frames
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: Notes corrected as for fig3b-tracking-counts.
+  - claim: fig4d-waveform-separation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: figs8-tracked-units
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 19 blocked claims.
+    response: No change needed.
+  - claim: figs7-control-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated. The verifier agrees with the outcome, with a caveat that bears on it: the baseline
+      is the 700 ms before each 200 ms burst, and bursts are 300 ms apart, so for bursts 2 and 3 that baseline contains
+      the previous burst. This is a claim of absence, and a baseline that contains stimulation lowers the test''s power;
+      control z medians are 0.32 to 1.88, against 2.6 to 5 in the trained mice. The record does not say that the baseline
+      contains stimulation. PL time to maximum moves the opposite way to the paper''s: r = +0.25 here (5 to 55 ms), against
+      -0.39. The outcome has no notebook/output fields; "200 ms bursts 0.5 s apart" is a statement no notebook cell prints.'
+    response: 'The notebook now prints the burst and trial spacing of every control file and the count of bursts whose
+      baseline holds an earlier burst (5863 of 8795), and runs a variant with every baseline taken before the trial''s
+      first burst, with the same PL labels. Under it NPL modulation rises (p = 0.0059, r = 0.43) and the other four tests
+      stay above 0.05. The outcome is kept: the claim of absence is judged on the paper''s test, here the code''s 700 ms
+      baseline as followed, and the protocol shows the cleaner test as a variant; the notes, the deviations and the conclusion
+      now say that the absence of a change in NPL modulation holds only with the code''s baseline, give the opposite direction
+      of PL time to maximum, and the question to the authors asks which baseline their timing file sets. The notebook
+      and output fields are added.'

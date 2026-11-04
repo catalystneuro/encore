@@ -616,7 +616,18 @@ def load_control_ephys(asset):
     return s
 
 
-def control_responses(sessions, rng_seed=40, currents=(5.0,)):
+def control_trial_ids(st):
+    """A session-wide trial number for each burst row of a control stimulation table. The stored
+    trial_index restarts in each recording block (the trials table's rep_num), so the same index
+    names several trials; a trial is taken as the bursts from one burst_index_in_trial 0 to the
+    next, in time order (the bursts of a trial are 0.5 s apart, trials 10 s apart)."""
+    order = np.argsort(st["start_time"], kind="stable")
+    ids = np.empty(len(order), dtype=int)
+    ids[order] = np.cumsum(st["burst_index_in_trial"][order] == 0) - 1
+    return ids
+
+
+def control_responses(sessions, rng_seed=40, currents=(5.0,), baseline="burst"):
     """Responses of control units, following the paper's control pipeline (processing/control/
     postprocessing/create_session_responses.py and process_control_responses.py at d1922d1), which
     reuses the behavioural response classes with a 20 ms pulse window:
@@ -632,7 +643,12 @@ def control_responses(sessions, rng_seed=40, currents=(5.0,)):
       code searches 0 to 700 ms of a raster that holds spikes after the burst only for the last burst
       of a trial, an assumption);
     - pulse-locking by `pulse_locking` with 20 ms windows over the 10 pulses of each burst.
-    Pulses are taken at burst onset + k x 20 ms (50 Hz, table description)."""
+    Pulses are taken at burst onset + k x 20 ms (50 Hz, table description).
+
+    The bursts of a trial start 0.5 s apart, so for the second and third burst the 700 ms baseline
+    holds the burst before it. `baseline="trial"` is a variant that takes every burst's baseline
+    from the 700 ms before the first burst of its trial (the trials are 10 s apart), so that no
+    baseline holds stimulation; it does not change the pulse-locking draws."""
     rng = np.random.default_rng(rng_seed)
     rows = []
     for si, s in enumerate(sessions):
@@ -643,7 +659,13 @@ def control_responses(sessions, rng_seed=40, currents=(5.0,)):
                 if currents is not None and cur not in currents:
                     continue
                 m = keep & (st["stim_channel"] == c) & (st["current_uA"] == cur)
-                starts = np.sort(st["start_time"][m])
+                order = np.argsort(st["start_time"][m])
+                starts = st["start_time"][m][order]
+                base_starts = starts
+                if baseline == "trial":
+                    tri = control_trial_ids(st)[m][order]
+                    first = {k: starts[tri == k].min() for k in np.unique(tri)}
+                    base_starts = np.array([first[k] for k in tri])
                 npul = int(np.median(st["pulse_count"][m]))
                 ipi = CONTROL_PULSE_WIN_MS / 1000.0
                 pulses = pulse_starts(starts, npul, ipi)
@@ -654,7 +676,7 @@ def control_responses(sessions, rng_seed=40, currents=(5.0,)):
                     cc = (np.arange(nb) + 0.5) * PL_BIN_MS
                     valid = (cc >= PL_POST_BLANK_MS) & (cc <= CONTROL_PULSE_WIN_MS - PL_PRE_BLANK_MS)
                     sc = (M * valid).reshape(len(starts), npul, nb).sum((1, 2))
-                    pc = counts_in(spk, starts, -CONTROL_PRE_S, -PL_PRE_BLANK_MS / 1000.0)
+                    pc = counts_in(spk, base_starts, -CONTROL_PRE_S, -PL_PRE_BLANK_MS / 1000.0)
                     pre_dur = CONTROL_PRE_S - PL_PRE_BLANK_MS / 1000.0
                     srate, prate = sc.sum() / (stim_dur * len(starts)), pc.sum() / (pre_dur * len(starts))
                     sd = np.std(pc / pre_dur)
@@ -698,3 +720,33 @@ def coupling_on_segments(spikes, segments, rng, min_spikes=50, n_shift=200):
         med = np.median(np.abs([pop[(idx + k) % len(v)].mean() for k in sh]))
         out[u] = c0 / med if med > 0 else np.nan
     return out
+
+
+# ------------------------------------------------------------------------- imaging (metadata)
+def imaging_metadata(asset):
+    """What a behavioural file holds for imaging: ROI counts, the segmentation descriptions, whether
+    reference images are stored, the volumetric mask layout, and whether any ROI or plane carries a
+    position of the stimulation contacts. Metadata and shapes only, no traces."""
+    f = open_asset(asset["asset_id"])
+    o = "processing/ophys"
+    d = {"file": asset["path"].split("/")[1], "subject": f["general/subject/subject_id"][()].decode(),
+         "date": f["session_start_time"][()].decode()[:10]}
+    for kind in ["Planar", "Volumetric"]:
+        k = f"{o}/ImageSegmentation_{kind}/PlaneSegmentation_{kind}"
+        if k not in f:
+            d[f"{kind}_rois"] = 0
+            continue
+        g = f[k]
+        d[f"{kind}_rois"] = len(g["id"])
+        d[f"{kind}_description"] = str(g.attrs.get("description", ""))
+        d[f"{kind}_columns"] = ",".join(str(c) for c in g.attrs["colnames"])
+        d[f"{kind}_reference_images"] = len(g["reference_images"]) if "reference_images" in g else None
+        rid = g["roi_id_source"][()]
+        d[f"{kind}_roi_id_is_row_index"] = bool(np.array_equal(rid, np.arange(len(rid))))
+        if "voxel_mask" in g:
+            z = g["voxel_mask"]["z"]
+            d[f"{kind}_mask_planes"] = int(z.max()) + 1
+    d["imaging_planes"] = sorted(k for k in f["general/optophysiology"])
+    d["ophys_entries"] = sorted(k for k in f[o]) if o in f else []
+    f.close()
+    return d

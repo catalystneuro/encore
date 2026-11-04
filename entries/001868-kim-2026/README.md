@@ -40,7 +40,8 @@ The behavioural files hold no position of the stimulation site in the imaging vo
 activation calls, and their planar ROIs carry no identity across sessions, so none of the imaging
 findings can be tested. The control files use a stimulation protocol (3 bursts of 10 pulses at
 50 Hz) other than the 700 ms, 100 Hz trains the paper's methods are defined on; the control claims
-follow the paper's own control code. Where the paper is silent, method details come from the code
+follow the paper's own control code; with a baseline free of stimulation, in place of the code's
+700 ms baseline that holds the previous burst, the control NPL modulation rises (a variant). Where the paper is silent, method details come from the code
 the paper links, cited in the notebook. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/001868-kim-2026-01.yaml`](../../attempts/001868-kim-2026-01.yaml).
