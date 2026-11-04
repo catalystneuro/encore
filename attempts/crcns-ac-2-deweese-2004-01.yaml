@@ -1,0 +1,537 @@
+schema_version: 2
+id: crcns-ac-2-deweese-2004-01
+dataset:
+  archive: crcns
+  id: ac-2
+  version: unversioned
+  doi: 10.6080/K0G44N6R
+paper: doi:10.1152/jn.00197.2004
+date: '2026-11-04'
+entry: crcns-ac-2-deweese-2004
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41890702016
+outcomes:
+- claim: fig2-stereotyped-shape
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig2-stereotyped-shape
+  measured:
+  - 26.5
+  - 41.5
+  - 1.19
+  - 18.12
+  notes: In 022801md01b (20 trials per tone) the 32 mean responses peak 26.5 to 41.5 ms after onset with
+    heights 1.19 to 18.12 mV, within the widened ranges, under both peak windows. Normalized and aligned
+    on their peaks they correlate with their average with median r 0.991 (minimum 0.933), above 0.9. The
+    mean response to each neuron's largest tone peaks within 50 ms of onset in 19 of 33 neurons (20.75
+    to 115.5 ms, median 45.25), so the all-neurons part fails under the claims file's 50 ms bound.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - The alignment window is 100 ms placed around each peak as the culling window sits around the median
+    latency, with edge values where it runs off the trace (a plotting choice).
+- claim: fig3a-reliable-neuron
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig3a-reliable-neuron
+  measured:
+  - 0.229
+  - 0.876
+  - 26
+  notes: The neuron with the lowest <q>tones is 022801md01b, 0.876 mV over 26 tones, 20 repetitions; q
+    is 0.229 mV for 31,118 Hz (reading a) and 0.648 mV for 34,448 Hz (reading b). The same neuron and
+    values under both spike rules and both peak windows; with the variance over N 0.832 and 0.217 mV.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+- claim: fig3b-total-variability-distribution
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig3b-total-variability-distribution
+  measured:
+  - 7
+  - 18
+  notes: <q>tones ranges 0.88 to 11.21 mV. 18 neurons lie between 4 and 12 mV. Between 1 and 2 mV strictly
+    there are 6, outside 7 +- 0.7; under the criterion's second reading (q < 2 mV) there are 7, so both
+    counts hold under that reading. With the -20 mV spike rule the counts are 6 (7) and 16, which would
+    give partially reproduced.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - The low count matches under the criterion's second reading, q < 2 mV.
+  assumed: true
+- claim: total-variability-population
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:total-variability-population
+  measured: 4.58
+  notes: <q>neurons = 4.58 +- 0.47 mV (SE, n = 33). With the -20 mV spike rule 4.05 mV (outside 4.1 to
+    5.1); with the peak in the culling window 4.22, with the variance over N 4.29.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  assumed: true
+- claim: lfp-culling-reduction
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:lfp-culling-reduction
+  measured:
+  - 4.8
+  - 3.19
+  notes: 29 neurons carry the LFP flag. <q> is 4.80 +- 0.52 mV before and 3.19 +- 0.43 mV after LFP-based
+    culling (a 33% fall). Every reading of details 2, 4 and 5 keeps both within tolerance; with the -20
+    mV spike rule 4.25 (outside) and 3.02 mV.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  assumed: true
+- claim: fig5b-residual-lfp-psp-correlation
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig5b-residual-lfp-psp-correlation
+  notes: Over 396 included tones of 29 neurons, after LFP-based culling, PSP height correlates positively
+    with the LFP scale factor in 81% of tones and with p < 0.05 in 32% (5% expected by chance); with the
+    LFP peak height 75% and 26%. The Figure 5 neuron (020701md01b, 63 repetitions) has two tones with
+    60 trials left, 31,118 and 5,527 Hz, r = 0.70 and 0.65. Both spike rules give the same.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - The Figure 5 neuron is the one with 63 repetitions; two of its tones have 60 trials left.
+- claim: fig7a-lfp-culling-estimation
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig7a-lfp-culling-estimation
+  measured:
+  - 2.68
+  - 26
+  - 80.1
+  notes: <q LFP-culled&estimation> = 2.68 +- 0.32 mV over 29 neurons; reduced in 26 of 29; the average
+    reduction is 44.1% by reading (a) and 40.2% by reading (b), so the 40% holds under (b); the largest
+    reduction is 80.1% (030301md03b), outside 71 +- 7.1. In the four neurons below 1.5 mV total, reductions
+    of 8.5 to 49.6% (shown, not scored). With the -20 mV spike rule the value is 2.53 mV (outside), 28
+    reduced, largest 72.4%, which would give not reproduced.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  assumed: true
+- claim: psp-culling-reduction
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:psp-culling-reduction
+  measured:
+  - 2.19
+  - 30
+  notes: <q PSP-culled> = 2.19 +- 0.31 mV over 33 neurons, but 30 of 33 are at or below 3.3 mV (3.38,
+    3.60 and 10.98 mV above), outside 32 +- 1. The peak in the culling window (31) or the variance over
+    N (32) brings the count within tolerance; the -20 mV spike rule gives 2.29 mV and 29. The outcome
+    is the same under both spike rules.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  assumed: false
+- claim: fig4c-psp-culling-can-increase
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig4c-psp-culling-can-increase
+  measured:
+  - 32
+  - 16
+  notes: 'PSP-based culling lowers <q>tones in 32 of 33 neurons (021401md02 rises, 5.19 to 10.98 mV, one
+    tone left). q rises for at least one tone in 16 of 33 neurons, outside 18 +- 1.8; 17 with the -20
+    mV spike rule (within, which would give reproduced), 20 without the negative scale factor rule. The
+    Figure 4 neuron is not identified: 11 tones in 8 neurons fit the Figure 4B legend, and none has 0.47
+    and 0.57 mV at 9,188 Hz; the closest 9,188-Hz pair is 0.470 to 0.502 mV (030301md03b).'
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  assumed: true
+- claim: fig7b-private-best-estimate
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig7b-private-best-estimate
+  measured:
+  - 1.51
+  - 28
+  - 87.8
+  notes: <q PSP-culled,LFP-culled&estimation> = 1.51 +- 0.21 mV over 28 neurons; the largest reduction
+    from total variability is 87.8%. Every reading gives 1.39 to 1.75 mV and 28 neurons. Values are 0.30
+    to 2.85 mV except 110900md05 (5.94 mV, two tones); SD 1.09 mV against 2.85 mV for total variability.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+- claim: culling-controls
+  outcome: not_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:culling-controls
+  measured:
+  - 3.819
+  - 3.737
+  - 2.988
+  - 2.95
+  - 24.1
+  - 37.8
+  notes: 'Random culling matched to both cullings gives 2.988 mV (2.98 +- 0.02) and the second control
+    2.95 +- 0.32 mV over 28 neurons (2.9 +- 0.3), but random culling matched to LFP-based culling gives
+    3.82 mV over the 29 LFP neurons (3.80 over 33), not 4.5 +- 0.1: removing 38% of trials at random drops
+    tones below 10 trials. Matched to PSP-based culling 3.737 mV over 33 (3.86 over 29), against 3.67
+    +- 0.02, a miss of more than three SEs. PSP-based culling removes 24.1% of trials (pooled; 19.2% mean
+    of neurons), outside 29 +- 2.9, and LFP-based culling 37.8%. The -20 mV spike rule gives 3.47 mV for
+    the LFP-matched control.'
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  - The both-matched control removes as many trials as the union of the two cullings, as the criterion
+    reads it.
+- claim: fig7d-large-responses
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig7d-large-responses
+  measured:
+  - 2.92
+  - 19
+  - 1.62
+  - 1.38
+  notes: For tones with a mean PSP of at least 15 mV, total <q> = 2.92 +- 0.36 mV over 19 neurons, the
+    LFP-based bound 1.62 +- 0.23 and the best estimate 1.38 +- 0.21 mV, both from 14 neurons, not the
+    paper's 16 (15 and 16 with the criteria applied after culling, 1.80 and 1.51 mV). The -20 mV spike
+    rule gives 2.51 mV total, also within.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+- claim: large-responses-controls
+  outcome: not_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:large-responses-controls
+  measured:
+  - 2.43
+  - 2.4
+  notes: For tones of at least 15 mV, random culling matched to both cullings gives 2.43 mV (SE over 20
+    simulations 0.03) and the second control 2.40 +- 0.39 mV over 14 neurons, against 3.20 +- 0.05 and
+    3.2 +- 0.5. The two agree with each other and lie above the 1.38 mV best estimate, as the paper argues,
+    but both values are outside tolerance (2.07 and 2.04 mV with the -20 mV spike rule).
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+- claim: cv-large-responses
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:cv-large-responses
+  measured:
+  - 0.371
+  - 0.734
+  - 0.259
+  - 0.385
+  notes: Total CV 0.371 +- 0.027 (19 neurons, at least 15 mV) and 0.734 +- 0.042 (33, all tones), matching
+    0.37 and 0.73. Private CV 0.259 +- 0.021 (14) and 0.385 +- 0.031 (28), just outside 0.27 +- 0.01 and
+    0.41 +- 0.02. The large responses' private CV is significantly lower by Student's t-test (p = 0.0085)
+    and the paired test (p < 0.0001). The criterion's reproduced outcome needs all four values; two miss
+    by 0.001 and 0.005 beyond tolerance, so the claim holds in part. The criterion defines no outcome
+    for a value outside tolerance with the test holding; partially reproduced is used.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  - Private CV is the square root of the corrected residual variance over the mean, per tone, averaged
+    as q is.
+- claim: lfp-cv-not-different
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:lfp-cv-not-different
+  measured:
+  - 0.61
+  - 0.57
+  notes: Ranking the 29 LFP neurons by total <q>tones, the LFP height CV is 0.61 +- 0.05 (14 more variable)
+    and 0.57 +- 0.06 (15 less variable); Student's t = 0.43, p = 0.674, difference 0.035. The less variable
+    group is below the paper's 0.74 +- 0.09. Scale factor CV 0.89 and 0.77 (p = 0.350). The paper's slight
+    opposite trend is not seen.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - LFP height is the signed extreme of the LFP in the 10-ms window around the mean LFP's largest deflection
+    in the culling window.
+- claim: anesthesia-comparison
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:anesthesia-comparison
+  measured:
+  - 3.69
+  - 6.15
+  - 4.99
+  - 0.98
+  - 1.24
+  - 2.06
+  notes: Total <q> 3.69 +- 0.70 (pentobarbital, 13), 6.15 +- 2.81 (with diazepam, 3), 4.99 +- 0.58 mV
+    (urethane, 17); ANOVA p = 0.251, Kruskal-Wallis p = 0.354. Private 0.98 +- 0.13 (12), 1.24 +- 0.34
+    (3), 2.06 +- 0.37 mV (13), the paper's group sizes; pentobarbital against urethane differ (t-test
+    p = 0.014, Mann-Whitney p = 0.0036). The pentobarbital private value is 0.02 mV below its tolerance.
+    With the -20 mV spike rule it is 1.02 (within) but the urethane total, 4.29, falls outside, so the
+    outcome is the same under both rules.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Open details as the claims file's header lists them; main readings 1a (peak searched over the whole
+    trace after onset), 2a, 3 (N - 1), 4a, 5a, 7 (per neuron, 20 shuffles); the others shown.
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+  assumed: false
+- claim: fig8-spontaneous-veto
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:fig8-spontaneous-veto
+  measured:
+  - -0.155
+  - -0.193
+  - 29
+  notes: Under readings (a) size as maximum minus minimum and (b) one correlation over all trials with
+    heights normalized by the tone mean, the mean correlation is -0.155 +- 0.028 for the LFP (29) and
+    -0.193 +- 0.031 for the whole cell (33), negative in 29 of 33 neurons. Readings (b, b) also hold (-0.149,
+    -0.210, 28). Under (a, a) the LFP mean -0.168 is outside its tolerance. All eight combinations with
+    either spike rule give negative means (-0.149 to -0.169 LFP, -0.184 to -0.238 whole cell). 257 trials
+    whose window overlaps the prepulse are left out.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - The 100 ms before each tone is cut from the sweeps; trials whose window overlaps the prepulse are
+    left out.
+  - The combination of readings that matches is (a) for the size and (b) for the correlation; (b, b) also
+    matches.
+- claim: overfitting-correction-example
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:overfitting-correction-example
+  measured:
+  - 0.759
+  - 0.746
+  - 0.525
+  - 0.538
+  notes: In 020701md01b after both cullings <q>tones = 0.759 mV, shuffled estimation 0.746, estimation
+    0.525 uncorrected and 0.538 corrected; all within 10% of 0.76, 0.74, 0.55 and 0.57. The overfitting
+    share is 0.013 mV against 0.02. The same with the -20 mV spike rule and the per-tone correction.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+- claim: private-shared-ranges
+  outcome: partially_reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:private-shared-ranges
+  notes: 'Shared (total minus private) ranges from -0.84 to 9.25 mV (total over all included tones) or
+    0.10 to 5.30 mV (total over the tones kept for the private estimate), within -1 to 11, and its SD
+    (2.71 or 1.32 mV) exceeds the private SD (1.09). Only 18 of 28 private values (64%) lie in 0.9 to
+    3.3 mV, short of 80%: nine are below 0.9 (0.30 to 0.89) and one above (5.94).'
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Heights are measured once on the full ensemble and not re-measured after culling, and with both cullings
+    each is decided on the full ensemble (choices made here; the Methods do not say).
+- claim: quantal-comparison
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:quantal-comparison
+  measured: 14
+  notes: 14 of 33 neurons have an included tone with q within a factor of 2 of 0.38 mV, under both readings
+    of the factor of 2; 15 with 0.39 mV (also within 14 +- 1.4). The -20 mV spike rule gives 15 and 16.
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+- claim: mepsp-size
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:mepsp-size
+  notes: 'Every reading was run. Over the six TTX recordings the mean mEPSP size is 0.168 to 0.174 mV
+    with template matching at 3 to 5 SE (CV 0.66 to 0.75) and 0.338 to 0.476 mV with the derivative detector
+    at 3 to 5 robust SDs (CV 0.43 to 0.47), against 0.39 +- 0.08 mV and CV 0.36 +- 0.03. The derivative
+    detector at 4 SDs gives a mean in tolerance (0.412 mV) but no setting gives the CV. Template matching
+    finds 15 to 28 events per s in four recordings, likely noise. The paper gives no detector, threshold
+    or measure of size, and the result moves across the tolerance with them, so no choice has a defensible
+    basis. Question for the paper''s authors: how were mEPSPs detected and sized (detector, threshold,
+    filtering, baseline), and which sweeps of each TTX recording were used?'
+  deviations:
+  - Sweeps are first_trial to last_trial of each TTX recording's cell_specific_parameters.m, without their
+    first 0.3 s; 030401md02h is divided by its documented gain of 4.
+- claim: recording-properties
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:recording-properties
+  measured:
+  - 18.12
+  - 10
+  - 63
+  - -70.0
+  - 65.1
+  notes: Repetitions 18.12 +- 1.93 (SE), 10 to 63. Rest potential from the 15-ms baselines corrected by
+    -12 mV, median -70.0, range -58.4 to -92.0 mV; from the sweeps outside the prepulse, -68.6 and -55.3
+    to -87.9. Input resistance from the prepulse is 58 to 438 MOhm (median 138) as measured, outside the
+    range; minus the recorded access resistance it is 19.1 to 140.6 MOhm (median 65.1), as in the paper
+    (19 to 141, median 64).
+  deviations:
+  - Input resistance is the steady-state prepulse response (last 20% of the step, against the 5 ms before
+    it) divided by the step current, minus the recorded access resistance. The Methods say there was no
+    on-line series resistance compensation, so the step response includes the access resistance; the paper
+    does not say it was subtracted. This is an assumption; without it the claim is not reproduced.
+  - The prepulse height is read as a current in pA, as the docs table says for 110900md05, not the mV
+    the documentation states.
+  - Rest potential corrected by -12 mV (the paper), with the documentation's 10 mV shown.
+  assumed: true
+- claim: access-resistance-depth-no-effect
+  outcome: reproduced
+  notebook: reproduce_deweese_2004.ipynb
+  output: claim:access-resistance-depth-no-effect
+  measured:
+  - 4.88
+  - 4.27
+  - 60
+  notes: Median access resistance 60 MOhm (10 to 320). <q> 4.88 +- 0.71 mV for the 17 at or above the
+    median and 4.27 +- 0.63 mV for the 16 below, both within the tolerances of 4.2 +- 0.7 and 4.9 +- 0.7
+    (the values fit the paper's numbers better the other way round). Access resistance, Pearson r = 0.087
+    (p = 0.631), Spearman 0.155 (p = 0.390); depth over 25 neurons with a recorded depth, r = -0.273 (p
+    = 0.187), rho = -0.338 (p = 0.098). With the -20 mV spike rule the Spearman correlation with depth
+    is significant (rho = -0.438, p = 0.028).
+  deviations:
+  - Trials are each neuron's stable epoch, cycles first_cycle to last_cycle of the data set's cell_specific_parameters.m;
+    the paper requires 10 consecutive stable repetitions, and these epochs give its repetition counts
+    (mean 18.1, 10 to 63).
+  - Spike trials are found with the data set's per-neuron spikethresh above the trace's baseline, an assumption
+    (the paper gives no rule; the claims file's -20 mV rule is shown as a reading).
+  - Depth is missing for 8 of 33 neurons.
+  assumed: true
+findings:
+- kind: metadata_error
+  statement: Anesthetized_cell_info.txt gives a junction potential of about 10 mV and says the true potentials
+    are about 10 mV more depolarized than the recorded values. The paper corrects by 12 mV in the other
+    direction (more hyperpolarized), and only that correction gives the paper's rest potentials (median
+    -70.0 mV, -58.4 to -92.0) from the recorded baselines; the documented direction gives -33 to -66 mV.
+- kind: selection_undocumented
+  statement: Each anesthetized neuron's cell_specific_parameters.m gives first_cycle, last_cycle, spikethresh
+    and sweeps_to_include_in_bumps_anl, which the documentation does not describe for these neurons. The
+    cycles give the paper's stable epochs (repetitions 10 to 63, mean 18.1) and spikethresh its spike
+    removal (with them the paper's population values follow), so they carry the paper's trial selection.
+- kind: metadata_error
+  statement: The documentation calls the prepulse height a voltage ("height (negative mV)"); the values
+    (100 and 200) are currents in pA, as the cell table's note for 110900md05 (-200 pA to -100 pA) and
+    the input resistances they give show.
+- kind: data_missing
+  statement: Sutter_diag_depth is missing (empty or NaN) for 8 of the 33 anesthetized neurons, so the
+    paper's depth range and its depth comparison can be checked on 25.
+- kind: other
+  statement: The TTX recording 030401md02h, after the documented division by 4, sits near +2.6 mV (1st
+    to 99th percentile -5.0 to 6.1 mV), which is not a membrane potential; the other TTX recordings sit
+    at -54 to -71 mV. Its offset or gain may be wrong.
+- kind: methods_unavailable
+  statement: 'The paper does not say how spike trials were found. The claims file''s -20 mV rule and the
+    data set''s per-neuron spikethresh give different results (mean total variability 4.05 against 4.58
+    mV); spikethresh was assumed. Question for the authors: were spikes removed with spikethresh, as a
+    height above the 15-ms baseline?'
+- kind: methods_unavailable
+  statement: 'The paper does not say whether input resistance had the access resistance subtracted; only
+    with it subtracted do the prepulse responses give the paper''s 19 to 141 MOhm (median 64). Question
+    for the authors: was input resistance the step response minus the access resistance, and over which
+    part of the step?'
+- kind: methods_unavailable
+  statement: 'The paper gives no method for detecting and sizing mEPSPs, and the mean size moves from
+    0.17 to 0.48 mV with the detector and threshold. Question for the authors: which detector, threshold,
+    filter and baseline were used, and which sweeps?'
+- kind: methods_unavailable
+  statement: 'Several details of the variability procedures are not given and move counts near their tolerances:
+    the window searched for the mean PSP''s peak, the span of the culling threshold''s peak-to-trough
+    height, whether the negative scale factor rule applies to PSP-based culling, whether the tone criteria
+    use the mean before or after culling, whether heights are re-measured after culling, and how the two
+    cullings are combined. Question for the authors: how was each set?'
