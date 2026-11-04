@@ -13,6 +13,6 @@ Cajal-Retzius cells behind the paper's main findings are not in it.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-hc-9-quattrocolo-2013-01.yaml`](../../attempts/crcns-hc-9-quattrocolo-2013-01.yaml).
 
-- `reproduce_quattrocolo_2013.ipynb`: the analysis. It takes under a minute.
+- `reproduce_quattrocolo_2013.ipynb`: the analysis. It runs in about 10 s; its last code cell prints the run time.
 - `hc9.py`: streaming the ATF files from the zip in the CRCNS bucket, the step table, and the sag
   measures. Other notebooks on this data set can import it.
