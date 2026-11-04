@@ -19,6 +19,12 @@ Sources of every parameter:
   PRESTIM_STABILITY_EPOCH = 500 ms ending at the stimulus), because the Methods
   say the features were computed with IPFX (Methods, Patch-seq recordings, last
   sentence) and these are IPFX's QC measures of the same names.
+- Bias current for the +-100 pA part: the current applied, from the MIES lab notebook
+  in each file (I-Clamp Holding Enable and Level, `_labnotebook_holding`): the NWB
+  bias_current where holding is on (it then equals the holding level), 0 pA where
+  holding is off, as no current is then injected (`applied_bias`). The Methods say a
+  bias current was injected "to maintain that initial resting membrane potential"
+  (Methods, Patch-seq recordings); the notebook's Autobias Vcom is that target.
 - Input resistance for the 15% rule: IPFX's `input_resistance` over the
   hyperpolarizing subthreshold long squares (stimulus amplitude in (-100, 0) pA),
   as IPFX's LongSquareAnalysis computes it. Which sweeps it is taken from, before
@@ -37,7 +43,9 @@ Sources of every parameter:
   qc_features.measure_seal, measure_input_resistance and
   measure_initial_access_resistance on the last cell-attached (EXTPCllATT) and
   last break-in (EXTPBREAKN) voltage-clamp sweeps, as IPFX's
-  qc_feature_extractor does.
+  qc_feature_extractor does. measure_seal averages the resistance of the sweep's
+  test pulses; the median over the pulses is reported beside it (`_seal_per_pulse`),
+  a standard robust alternative, as one pulse can make the mean negative.
 """
 
 from __future__ import annotations
@@ -243,6 +251,24 @@ def _ipfx_spike_count(t, v, i, start, end):
         return -1
 
 
+def _seal_per_pulse(cmd_mv, cur_pa, rate):
+    """The resistance of each test pulse of a cell-attached sweep, with IPFX's windows
+    (get_r_from_stable_pulse_response: the mean over 1 ms before the pulse and 1 ms
+    before its end). IPFX's measure_seal returns their mean, which a single pulse with
+    a near-zero current step can drive negative; the median is shown beside it."""
+    from ipfx.qc_features import get_square_pulse_idx
+    up, down = get_square_pulse_idx(cmd_mv * 1e-3)
+    one_ms = int(0.001 * rate)
+    r = []
+    for a, b in zip(up, down):
+        dv = cmd_mv[b - 1 - one_ms:b - 1].mean() - cmd_mv[a - 1 - one_ms:a - 1].mean()
+        di = cur_pa[b - 1 - one_ms:b - 1].mean() - cur_pa[a - 1 - one_ms:a - 1].mean()
+        r.append(dv / di if di != 0 else np.nan)   # mV / pA = GOhm
+    r = np.asarray(r, float)
+    return {"seal_median_gohm": float(np.nanmedian(r)) if len(r) else np.nan,
+            "seal_n_pulses": len(r), "seal_n_negative": int((r < 0).sum())}
+
+
 def _vc_resistances(h, kind):
     """IPFX measures on the last voltage-clamp sweep of a stimulus set."""
     from ipfx import qc_features as qcf
@@ -266,12 +292,48 @@ def _vc_resistances(h, kind):
     try:
         if kind == "EXTPCllATT":
             out["seal_gohm"] = qcf.measure_seal(cmd, cur, t)
+            out.update(_seal_per_pulse(cmd, cur, rate))
         else:
             out["breakin_rin_mohm"] = qcf.measure_input_resistance(cmd, cur, t)
             out["access_mohm"] = qcf.measure_initial_access_resistance(cmd, cur, t)
     except Exception as e:  # recorded, not hidden
         out["error"] = repr(e)
     return out
+
+
+LABNOTEBOOK_KEYS = {"I-Clamp Holding Enable": "holding_enable", "I-Clamp Holding Level": "holding_level_pa",
+                    "Autobias": "autobias", "Autobias Vcom": "autobias_vcom_mv"}
+
+
+def _labnotebook_holding(h) -> pd.DataFrame:
+    """The amplifier's holding settings per sweep, from the MIES lab notebook.
+
+    For each sweep, the last data-acquisition entry (EntrySourceType 0) of headstage 0
+    for "I-Clamp Holding Enable" (1 on, 0 off), "I-Clamp Holding Level" (pA, the bias
+    current the MultiClamp applies), "Autobias" and "Autobias Vcom" (the membrane
+    potential autobias holds, mV). These say whether the NWB bias_current value was
+    applied (verifier's round-1 report, problem 1)."""
+    devs = list(h["general/labnotebook"]) if "general/labnotebook" in h else []
+    if not devs:
+        return pd.DataFrame()
+    g = h[f"general/labnotebook/{devs[0]}"]
+    names = [_txt(x) for x in g["numericalKeys"][0]]
+    cols = [names.index(k) for k in ("SweepNum", "EntrySourceType") + tuple(LABNOTEBOOK_KEYS) if k in names]
+    vals = g["numericalValues"][:, sorted(cols), :]
+    pos = {names[c]: j for j, c in enumerate(sorted(cols))}
+    sweep = np.nanmax(np.where(np.isfinite(vals[:, pos["SweepNum"], :]), vals[:, pos["SweepNum"], :], -1), axis=1)
+    src = np.nanmax(np.where(np.isfinite(vals[:, pos["EntrySourceType"], :]), vals[:, pos["EntrySourceType"], :], -1), axis=1)
+    rows = {}
+    for sn in np.unique(sweep[(sweep >= 0) & (src == 0)]).astype(int):
+        sel = vals[(sweep == sn) & (src == 0)]
+        row = {}
+        for k, short in LABNOTEBOOK_KEYS.items():
+            if k in pos:
+                col = sel[:, pos[k], 0]
+                col = col[np.isfinite(col)]
+                row[short] = float(col[-1]) if len(col) else np.nan
+        rows[sn] = row
+    return pd.DataFrame.from_dict(rows, orient="index")
 
 
 def extract_cell(asset_id: str) -> dict:
@@ -346,7 +408,12 @@ def extract_cell(asset_id: str) -> dict:
                     row["n_spikes_ipfx"] = _ipfx_spike_count(t, seg_v, seg_i, st, en)
                     subthresh[sn] = (t, seg_v, seg_i, st, en)
         rows.append(row)
-    out["sweeps"] = pd.DataFrame(rows).sort_values("sweep_number").reset_index(drop=True)
+    sweeps = pd.DataFrame(rows).sort_values("sweep_number").reset_index(drop=True)
+    lab = _labnotebook_holding(h)
+    if len(lab):
+        sweeps = sweeps.join(lab, on="sweep_number")
+    sweeps["bias_applied_pa"] = applied_bias(sweeps)
+    out["sweeps"] = sweeps
     out["spikes"] = spikes
     out["subthresh"] = subthresh
     out["rheo_digest"] = digest
@@ -357,9 +424,23 @@ def extract_cell(asset_id: str) -> dict:
 
 
 # ----------------------------------------------------------------------------- measures
+def applied_bias(sw: pd.DataFrame) -> pd.Series:
+    """The bias current applied in each sweep (pA).
+
+    The NWB bias_current value where the lab notebook has I-Clamp holding on (it then
+    equals the notebook's I-Clamp Holding Level); 0 pA where holding is off, as no bias
+    current is then injected; such sweeps carry no bias_current value in the NWB file.
+    Where the notebook has no entry, the NWB value."""
+    b = sw.bias_current_pa.copy()
+    if "holding_enable" in sw:
+        b = b.where(sw.holding_enable != 0, 0.0)
+        b = b.fillna(sw.holding_level_pa.where(sw.holding_enable == 1))
+    return b
+
+
 def noise_bias_pass(sw: pd.DataFrame) -> pd.Series:
     """Parts (2) and (3) of the Methods' sweep rule."""
-    return ((sw.bias_current_pa.abs() <= BIAS_MAX_PA)
+    return ((sw.bias_applied_pa.abs() <= BIAS_MAX_PA)
             & (sw.pre_noise_mv < PRE_NOISE_MAX_MV)
             & (sw.slow_noise_mv < SLOW_NOISE_MAX_MV))
 
