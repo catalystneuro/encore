@@ -30,12 +30,14 @@ Where the parameters come from:
 - q = variance / mean of the heights (`ddof=1`, open detail 3; `ddof=0` is the variant).
 - Tone criteria: at least 10 trials and mean height above 3 mV (Methods, LFP-based culling and
   PSP-based culling procedures, paragraph 2).
-- Spikes (open detail 6): the claims file names a standard threshold, a trace that reaches above
-  -20 mV (recorded value, `r + rbaseline`, `spike_rule="abs"`). The data set gives each neuron its
-  own threshold, `spikethresh` in cell_specific_parameters.m ("height of threshold (mV) above
+- Spikes (open detail 6): the claims file names a standard threshold, "a fast rise to above
+  -20 mV" (`spike_rule="claims"`): the trace, corrected by the paper's 12 mV junction potential
+  (`r + rbaseline - 12`), exceeds -20 mV and its largest rise between samples exceeds 10 mV/ms
+  (`SPIKE_DVDT`, a standard choice for the "fast rise"). The data set gives each neuron its own
+  threshold, `spikethresh` in cell_specific_parameters.m ("height of threshold (mV) above
   BASELINE/REST for spike detection/removal", as the TTX cells' copies of the file describe it),
-  applied here to `r` (`spike_rule="cell"`). The two readings change the results, so both are
-  run; `"cell"`, the authors' own parameter, is adopted as an assumption.
+  applied here to `r` (`spike_rule="cell"`). Both readings are run; `"cell"`, the authors' own
+  parameter, is adopted as an assumption.
 - Culling (`cull`): Methods, LFP-based culling: scale factor f = (x, y)/(x, x) over the 100-ms
   window beginning 15 ms before onset, rms error to f x, threshold 0.35 times the
   peak-to-trough height of the tone's mean response (span: open detail 2, `span="culling"` or
@@ -43,14 +45,20 @@ Where the parameters come from:
   The mean trace is over the trials that enter the culling (those without spikes).
 - Heights are measured once, on the full ensemble, and are not re-measured after culling (a
   choice made here: the Methods say q is "recalculated", not that the heights are).
-- When both cullings are applied, each is decided on the full ensemble and a trial is kept when
-  neither removes it (a choice made here; it is the reading the claims file takes for the random
-  "both" control, the union of the trials the two cullings remove).
+- When both cullings are applied, PSP-based culling comes first and LFP-based culling is then
+  run on the trials it keeps, its mean LFP and threshold recomputed over them
+  (`combine="sequential"`): the Figure 6 legend says "we repeat the above procedure after first
+  performing the PSP-based culling procedure", and the Figure 7B legend "PSP-based culling
+  followed by the LFP-based culling and estimation procedures". The variant
+  `combine="intersection"` decides each culling on the full ensemble and keeps a trial when
+  neither removes it.
 - Estimation (`estimate_q`): Methods, LFP-based estimation procedure: linear regression of PSP
   height on the LFP scale factor over the trials left, residual sum of squares over N - 1, divided
   by the mean height. Overfitting correction: the same with heights shuffled against scale
   factors; the mean reduction over `N_SHUFFLES` shuffles (20, a standard choice; claims file,
-  open detail 7) is added back, per neuron (main) or per tone (variant).
+  open detail 7) is added back. Added back per neuron or per tone, the tone average is the same
+  (the mean of est + raw - shuf over tones equals mean(est) + mean(raw) - mean(shuf)), so detail
+  7's per-tone reading needs no separate run.
 """
 
 from __future__ import annotations
@@ -90,7 +98,9 @@ MIN_MEAN = 3.0                 # mV
 LARGE_MEAN = 15.0              # mV, "mean responses of >= 15 mV"
 CULL_THRESHOLD = 0.35
 N_SHUFFLES = 20
-SPIKE_ABS_MV = -20.0
+SPIKE_ABS_MV = -20.0           # claims file, open detail 6, after the junction potential correction
+JUNCTION_MV = 12.0             # Methods: "the liquid junction potential, which we calculated to be 12 mV"
+SPIKE_DVDT = 10.0              # mV/ms, the "fast rise" of detail 6 (standard choice)
 # Tone frequencies (Hz) in order of presentation: read from Anesthetized_cell_info.txt by `load()`.
 TONE_ORDER = np.array([], int)
 ANESTHETIC = {"P": "pentobarbital", "P_with_Diaz": "pentobarbital and diazepam", "U": "urethane"}
@@ -279,10 +289,17 @@ def stable(neuron: dict) -> np.ndarray:
     return (neuron["cycle"] >= p["first_cycle"]) & (neuron["cycle"] <= p["last_cycle"])
 
 
-def spikes(neuron: dict, rule: str = "abs") -> np.ndarray:
-    """Trials with a spike: `abs`, recorded value above -20 mV; `cell`, r above the cell's spikethresh."""
-    if rule == "abs":
-        return (neuron["r"] + neuron["rbaseline"][:, None]).max(1) > SPIKE_ABS_MV
+def max_rise(traces: np.ndarray) -> np.ndarray:
+    """Largest rise between consecutive samples of each trace, in mV/ms."""
+    return np.diff(traces, axis=1).max(1) * FS / 1000
+
+
+def spikes(neuron: dict, rule: str = "claims") -> np.ndarray:
+    """Trials with a spike: `claims`, a rise faster than SPIKE_DVDT and the corrected potential above
+    -20 mV; `cell`, r above the cell's spikethresh."""
+    if rule == "claims":
+        corrected = neuron["r"] + neuron["rbaseline"][:, None] - JUNCTION_MV
+        return (corrected.max(1) > SPIKE_ABS_MV) & (max_rise(neuron["r"]) > SPIKE_DVDT)
     return neuron["r"].max(1) > neuron["params"]["spikethresh"]
 
 
@@ -351,7 +368,7 @@ def shuffled_estimate_q(h: np.ndarray, s: np.ndarray, rng: np.random.Generator, 
 
 # Main readings. spike_rule "cell" is an assumption (see the module docstring and the notebook).
 DEFAULTS = {"peak_window": "after_onset", "span": "culling", "psp_negative": True,
-            "spike_rule": "cell", "ddof": 1}
+            "spike_rule": "cell", "ddof": 1, "combine": "sequential"}
 
 
 def analyse_neuron(neuron: dict, rng: np.random.Generator, with_lfp: bool = True, **options) -> list[dict]:
@@ -385,10 +402,19 @@ def analyse_neuron(neuron: dict, rng: np.random.Generator, with_lfp: bool = True
             row["lfp_h"] = lfp_heights(lf, "culling")
             row["keep_psp"], row["keep_lfp"] = keep_psp, keep_lfp
             row.update(_stage("lfp", h, keep_lfp, o["ddof"]))
-            both = keep_psp & keep_lfp
+            # Scale factors for the estimation after both cullings: against the mean LFP of the
+            # PSP-culled trials when LFP-based culling follows PSP-based culling.
+            both, s_both = keep_psp & keep_lfp, s
+            if o["combine"] == "sequential":
+                both, s_both = keep_psp.copy(), np.full(len(s), np.nan)
+                if keep_psp.sum() >= 2:
+                    both[keep_psp], s_both[keep_psp] = cull(lf[keep_psp], o["span"], True)
+                else:
+                    both[:] = False
+            row["keep_both"] = both
             row.update(_stage("both", h, both, o["ddof"]))
-            for stage, keep in (("lfp", keep_lfp), ("both", both)):
-                hk, sk = h[keep], s[keep]
+            for stage, keep, sc in (("lfp", keep_lfp, s), ("both", both, s_both)):
+                hk, sk = h[keep], sc[keep]
                 if keep.sum() >= 3:
                     row[f"q_{stage}_est"] = estimate_q(hk, sk, o["ddof"])
                     row[f"q_{stage}_shuf"] = shuffled_estimate_q(hk, sk, rng, ddof=o["ddof"])
@@ -422,8 +448,7 @@ def included(row: dict, stage: str | None = None, criteria: str = "before", min_
     return m > min_mean
 
 
-def neuron_summary(rows: list[dict], criteria: str = "before", min_mean: float = MIN_MEAN,
-                   per_tone_correction: bool = False) -> dict:
+def neuron_summary(rows: list[dict], criteria: str = "before", min_mean: float = MIN_MEAN) -> dict:
     """Tone averages <q>tones for each stage of one neuron, with the overfitting correction."""
     out = {}
     tot = [r for r in rows if included(r, None, criteria, min_mean)]
@@ -444,7 +469,7 @@ def neuron_summary(rows: list[dict], criteria: str = "before", min_mean: float =
         raw = np.array([r[f"q_{stage}"] for r in inc])
         out[f"q_{stage}_est_uncorrected"] = est.mean()
         out[f"q_{stage}_shuf"] = shuf.mean()
-        corr = (raw - shuf) if per_tone_correction else (raw.mean() - shuf.mean())
+        corr = raw.mean() - shuf.mean()
         out[f"q_{stage}_est"] = float(np.mean(est + corr))
         # CV after estimation: sqrt(corrected residual variance) / mean, per tone.
         means = np.array([r[f"mean_{stage}"] for r in inc])
@@ -464,13 +489,12 @@ def population(neurons: dict, seed: int, **options) -> dict:
             for i, (name, n) in enumerate(neurons.items())}
 
 
-def summarise(per_tone: dict, neurons: dict, criteria: str = "before", min_mean: float = MIN_MEAN,
-              per_tone_correction: bool = False):
+def summarise(per_tone: dict, neurons: dict, criteria: str = "before", min_mean: float = MIN_MEAN):
     """One row per neuron of `neuron_summary`, with the anesthetic and the LFP flag."""
     import pandas as pd
     rows = []
     for name, tones in per_tone.items():
-        s = neuron_summary(tones, criteria, min_mean, per_tone_correction)
+        s = neuron_summary(tones, criteria, min_mean)
         s.update(neuron=name, lfp=has_lfp(neurons[name]), anesthetic=neurons[name]["info"]["which_anesthetic"])
         rows.append(s)
     return pd.DataFrame(rows).set_index("neuron")
@@ -490,16 +514,34 @@ TEMPLATE_RISE_MS, TEMPLATE_DECAY_MS, TEMPLATE_LEN_MS = 0.5, 5.0, 20.0
 
 
 def _smooth(x: np.ndarray, fs: float) -> np.ndarray:
+    """Boxcar of MINI_SMOOTH_MS, with the sweep's end values repeated past its ends."""
     w = max(int(round(MINI_SMOOTH_MS * fs / 1000)), 1)
-    return np.convolve(x, np.ones(w) / w, mode="same")
+    padded = np.pad(x, (w // 2, w - 1 - w // 2), mode="edge")
+    return np.convolve(padded, np.ones(w) / w, mode="valid")
 
 
-def _amplitudes(xs: np.ndarray, onsets: np.ndarray, fs: float) -> np.ndarray:
+def noise_sd(d: np.ndarray, rule: str = "clipped") -> float:
+    """Noise SD of a derivative: `clipped`, the SD after removing values beyond 3 SD until none are
+    left (the traces are digitized in 0.049-mV steps, so most differences are 0 and a median-based
+    estimate can collapse); `mad`, the median absolute deviation / 0.6745."""
+    if rule == "mad":
+        return float(np.median(np.abs(d - np.median(d))) / 0.6745)
+    x = d
+    for _ in range(50):
+        sd, m = x.std(), x.mean()
+        kept = x[np.abs(x - m) <= 3 * sd]
+        if len(kept) == len(x):
+            break
+        x = kept
+    return float(x.std())
+
+
+def _amplitudes(xs: np.ndarray, onsets: np.ndarray, fs: float) -> tuple[np.ndarray, np.ndarray]:
+    """Peak in MINI_PEAK_MS after each onset minus the mean of MINI_BASE_MS before it; (onsets, sizes)."""
     b = int(MINI_BASE_MS * fs / 1000)
     p = int(MINI_PEAK_MS * fs / 1000)
-    ok = (onsets >= b) & (onsets + p < len(xs))
-    onsets = onsets[ok]
-    return np.array([xs[o:o + p].max() - xs[o - b:o].mean() for o in onsets])
+    onsets = onsets[(onsets >= b) & (onsets + p < len(xs))]
+    return onsets, np.array([xs[o:o + p].max() - xs[o - b:o].mean() for o in onsets])
 
 
 def _dead_time(idx: np.ndarray, score: np.ndarray, fs: float) -> np.ndarray:
@@ -515,19 +557,21 @@ def _dead_time(idx: np.ndarray, score: np.ndarray, fs: float) -> np.ndarray:
     return np.array(keep, int)
 
 
-def minis_derivative(x: np.ndarray, fs: float, k: float) -> np.ndarray:
-    """Amplitudes of events whose smoothed derivative crosses k robust SDs (median absolute deviation / 0.6745)."""
+def minis_derivative(x: np.ndarray, fs: float, k: float, noise: str = "clipped") -> dict:
+    """Events whose smoothed derivative crosses k noise SDs (`noise_sd`): onsets, sizes, the SD."""
     xs = _smooth(x, fs)
     d = np.diff(xs)
-    sd = np.median(np.abs(d - np.median(d))) / 0.6745
+    sd = noise_sd(d, noise)
     above = d > k * sd
     onsets = np.flatnonzero(above[1:] & ~above[:-1]) + 1
     onsets = _dead_time(onsets, d, fs)
-    return _amplitudes(xs, onsets, fs)
+    onsets, amps = _amplitudes(xs, onsets, fs)
+    return {"onsets": onsets, "size": amps, "noise_sd": sd}
 
 
-def minis_template(x: np.ndarray, fs: float, k: float) -> np.ndarray:
-    """Clements and Bekkers (1997) template matching: scale / standard error of the fit above k."""
+def minis_template(x: np.ndarray, fs: float, k: float) -> dict:
+    """Clements and Bekkers (1997) template matching: events where the fitted scale over its
+    standard error exceeds k. Sizes as peak minus local baseline, and the fitted template scale."""
     from scipy.signal import fftconvolve
     m = int(TEMPLATE_LEN_MS * fs / 1000)
     t = np.arange(m) / fs * 1000
@@ -549,13 +593,20 @@ def minis_template(x: np.ndarray, fs: float, k: float) -> np.ndarray:
     onsets = _dead_time(starts, crit, fs)
     dead = int(MINI_DEAD_MS * fs / 1000)
     onsets = np.array([o + int(np.argmax(crit[o:o + dead])) for o in onsets if o + dead <= len(crit)], int)
-    return _amplitudes(xs, onsets, fs)
+    onsets, amps = _amplitudes(xs, onsets, fs)
+    return {"onsets": onsets, "size": amps, "scale": scale[onsets]}
 
 
-def mini_sweeps(rec: dict) -> list[np.ndarray]:
+def mini_sweeps(rec: dict, order: str = "numeric") -> dict[int, np.ndarray]:
     """The sweeps of a TTX recording in its stable epoch (first_trial..last_trial of its
-    cell_specific_parameters.m, read as ep_<trial - 1>), without their first MINI_SKIP_S."""
+    cell_specific_parameters.m), without their first MINI_SKIP_S, keyed by file number. Which file
+    is trial k is not documented: `numeric`, ep_<k - 1>; `dir`, the k-th file in the name order
+    that the documentation's Matlab code (dir('ep_*.ibw')) reads them in; `all`, every sweep."""
     p = rec["params"]
-    fs = 1.0 / rec["dx"]
-    skip = int(MINI_SKIP_S * fs)
-    return [v[skip:].astype(float) for k, v in rec["ep"].items() if p["first_trial"] - 1 <= k <= p["last_trial"] - 1]
+    skip = int(MINI_SKIP_S / rec["dx"])
+    files = sorted(rec["ep"])
+    if order == "dir":
+        files = sorted(files, key=lambda k: f"ep_{k}.ibw")
+    if order != "all":
+        files = files[int(p["first_trial"]) - 1:int(p["last_trial"])]
+    return {k: rec["ep"][k][skip:].astype(float) for k in files}
