@@ -1,0 +1,95 @@
+# Questions from attempt 001687-xiao-2026-01 (author run, 2026-11-03) about
+# claims/001687/10.1016-j.neuron.2026.05.027.yaml, asked under docs/protocol.md, Author, step 1.6. The
+# claims were tested as the file has them.
+dataset: DANDI:001687
+paper: doi:10.1016/j.neuron.2026.05.027
+questions:
+- claim: fig2-wall-responsive-counts
+  asked: 2026-11-03
+  question: Should the main reading of the responsiveness test be the BH-FDR-corrected test across
+    the nine distances, with the uncorrected test as the variant? The claims file makes the Methods'
+    "p < 0.05" the main reading and judges fig2-wall-responsive-counts, fig2-distance-tuned-counts,
+    fig2f-tuning-categories, figs4l-temporal-windows-map and every claim that classifies "as in the
+    opening comment" on it. The paper's own counts (768, 532, 333, 97 and the Figure 2F categories)
+    are the counts the corrected test gives, so the expected values of these claims come from the
+    corrected test; the same paragraph of the Methods names BH-FDR for the tuning test, and the
+    deposit's per-unit labels follow the corrected test. The question also applies to the other
+    claims whose populations come from this classification (figs4a-baseline-activated-lower to
+    figs5de-svm-robust, figs4j-ventral-location).
+  passage: To determine responsiveness to wall stimulation, one-tailed Wilcoxon signed-rank tests ( p <
+    0.05) were performed comparing baseline firing rate (−4.5–0 s) to activity during the wall pass
+    period (3–11 s), evaluated separately at each wall distance (Methods, Data Analyses, Characterizing
+    Wall Distance Tuning), against Fig2DEF_Pop_Heatmap_Hist_Pie.m, which applies mafdr BHFDR to the
+    nine p-values of each direction before comparing them with alpha.
+  why: Under the uncorrected test 1,061 of 1,160 units are responsive (paper 768), and fig2-wall-responsive-counts,
+    fig2-distance-tuned-counts and fig2f-tuning-categories are not reproduced, figs4l-temporal-windows-map,
+    fig3c-decoding-by-distance, fig3c-decoding-error, figs5c-single-neuron-decoders and figs5de-svm-robust
+    are partially reproduced. Under the corrected test the counts are 782, 541, 337 and 96, the
+    Figure 2F counts are 271, 120, 87, 122 and 182, and fig2-wall-responsive-counts, fig2f-tuning-categories,
+    fig3c-decoding-error and figs5c-single-neuron-decoders would be reproduced. The notebook shows
+    every claim under both readings.
+  answered: 2026-11-03
+  answer: >-
+    Changed. The Methods give the responsiveness test as "one-tailed Wilcoxon signed-rank tests
+    ( p < 0.05) ... evaluated separately at each wall distance" and name no correction, but they
+    do not say the test is uncorrected either; the next sentence writes "p < 0.05, corrected for
+    multiple comparisons using the Benjamini-Hochberg false discovery rate method" for adjusted
+    values, so "p < 0.05" alone leaves the correction open. Fig2DEF_Pop_Heatmap_Hist_Pie.m, the
+    script that makes the Figure 2D-F counts the claims expect, applies mafdr BHFDR to the nine
+    p-values of each direction. Under protocol step 2 the code settles what the Methods leave
+    open, so the earlier reading of a disagreement was wrong. The opening comment now makes the
+    BH-FDR test (q < 0.05 across the distances) the main reading and the uncorrected test the
+    variant; the criteria of figs2-tungsten-responsiveness, fig2-wall-responsive-counts,
+    fig2-distance-tuned-counts and telc-unit-yield say so, and every claim that classifies as in
+    the opening comment (fig2f-tuning-categories, figs4l-temporal-windows-map, the decoding and
+    Figure S4 and S5 claims) follows it. Expected values are unchanged; they are the paper's.
+    The evidence from the deposit's counts and labels was not used.
+- claim: fig2-distance-tuned-counts
+  asked: 2026-11-03
+  question: Should the expected values of this claim allow for Figure 2F, which contradicts the text's
+    656 tuned and 29 both? The claim takes 656 distance-tuned units and 29 units both activated and
+    suppressed from the Results text. Figure 2F, which the claims file uses for fig2f-tuning-categories,
+    counts 266 proximity, 118 map, 88 ambiguous and 119 suppressed-only units, so 266 + 118 + 88 = 472
+    activated and tuned and 472 + 119 = 591 tuned units (768 - 177 untuned); with 213 suppressed and
+    tuned, 213 - 119 = 94 tuned units are both activated and suppressed. The criterion has no reading
+    for these values, so the claim fails on a count the paper gives two ways. Raised by the round-1
+    verifier (point B2).
+  passage: Across the full wall-contact period (8 s), we identified 656 out of the 768 (85.4%) wall-responsive
+    units that were significantly tuned to wall distance ... A small subset of units (29/656; 4.4%)
+    exhibited both (Results, PrV contains both proximity and map codes, paragraph 4), against We identified
+    266 proximity units (34.6%) and 118 map units (15.4%) out of the 768 wall-responsive units ... An
+    additional 88 units (11.5%) ... 119 ... suppressed-only (paragraph 7; Figure 2F).
+  why: Under the BH-FDR reading the data give 600 tuned, 478 activated and tuned, 214 suppressed and tuned
+    and 92 both. 600 and 92 are close to the 591 and 94 that Figure 2F implies, and 92 is outside 29 +/-
+    2.9, so the claim is not reproduced on the text's values alone. With the Figure 2F values as a reading
+    all four counts would be within tolerance and the claim would be reproduced.
+- claim: fig4b-cut-wall-firing-reduced
+  asked: 2026-11-03
+  question: Should the tolerance of the full-array mean wall rate be 2.986 sp/s? The criterion says "The
+    full-array spread is printed as 1.338 in the text and 2.986 in the Figure 4B legend; the larger is
+    used as the tolerance", but the expected value "mean wall rate, full array" (11.58) carries tolerance
+    1.338. Raised by the round-2 verifier.
+  passage: firing rates of wall-activated, distance-tuned units (activated population; n = 86) during
+    wall-passing periods were significantly reduced ... (full array 11.58 ± 1.338 vs. single whisker 8.18
+    ± 2.602 sp/s, p = 4.43 × 10 −8 ; Figure 4B ) (Results, PrV map tuning can persist, paragraph 2), against
+    Population mean firing rates 11.58 ± 2.986 sp/s (full array) vs. 8.18 ± 2.602 sp/s (single whisker)
+    (Figure 4B legend).
+  why: The claim is blocked here, as the paper's stable units cannot be identified, so the tolerance does
+    not change its outcome now. Of the five BH-FDR subsets tried, two have a full-array mean within 11.58
+    +/- 1.338 (10.32 and 12.70 sp/s) and four within 11.58 +/- 2.986 (all but 14.91 sp/s); the 79-unit
+    subset, the only one whose unit count is within 86 +/- 8.6, is within under both. A later attempt that
+    can identify the units would be judged on this tolerance.
+- claim: fig6-model-telc-loses-map
+  asked: 2026-11-03
+  question: Should the classification of the model neurons be the code's 99-point fine grid, not the nine
+    bins the criterion names? The criterion takes the classification "as in the Methods (untuned when max
+    - min < 0.1 over nine bins ...)". The code classifies the curves twice in each condition, on the nine
+    bins and on the 99 sampled points used for the heatmaps, and the paper's 590 and 636 tuned neurons equal
+    the fine-grid counts exactly (362 + 228 and 476 + 160), while the nine-bin counts are 593 and 631. Raised
+    by the round-2 verifier.
+  passage: We sampled 99 uniformly spaced points corresponding to wall-distance presentations. To evaluate
+    tuning curves, we averaged simulated activity into nine discrete distance bins [0, …, 8]. All neurons
+    with flat tuning curves (max – min < 0.1) were considered untuned (Methods, Computational Simulation of Brainstem Circuitry).
+  why: Both grids meet the criterion (tuned counts within tolerance, map share falling from 32.7 to 16.6%
+    on nine bins and from 38.6 to 25.2% on the fine grid), so the outcome does not depend on it; the measured
+    values recorded would be 590 and 636 under the fine grid.
