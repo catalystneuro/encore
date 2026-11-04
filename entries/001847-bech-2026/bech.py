@@ -395,7 +395,9 @@ def _dlc_one(args):
             ts = b["jaw_y/timestamps"][:]
             tsw = b["whisker_base_x/timestamps"][:]
             # some sessions have timestamps and data of different lengths; both are cut to the shorter
-            n_j = min(len(ts), b["jaw_y"]["data"].shape[0]); n_w = min(len(tsw), b["whisker_base_x"]["data"].shape[0])
+            lengths = {"jaw_timestamps": len(ts), "jaw_data": b["jaw_y"]["data"].shape[0],
+                       "whisker_timestamps": len(tsw), "whisker_data": b["whisker_base_x"]["data"].shape[0]}
+            n_j = min(len(ts), lengths["jaw_data"]); n_w = min(len(tsw), lengths["whisker_data"])
             ts, tsw = ts[:n_j], tsw[:n_w]
             rj = lambda k: b[k]["data"][:n_j]
             rw = lambda k: b[k]["data"][:n_w]
@@ -452,7 +454,7 @@ def _dlc_one(args):
             J = np.full((len(st), len(offs)), np.nan, np.float32)
             J[ok] = jaw_f[i0[ok, None] + offs[None, :]]
             signal.alarm(0)
-            return session_id, dict(frac=frac, rate=fr, rate_whisker=frw, pre=pre, jaw_t=offs / fr, jaw_traces=J)
+            return session_id, dict(frac=frac, rate=fr, rate_whisker=frw, pre=pre, jaw_t=offs / fr, jaw_traces=J, lengths=lengths)
         except Exception as e:
             signal.alarm(0)
             err = repr(e)

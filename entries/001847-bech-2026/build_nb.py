@@ -49,11 +49,12 @@ used as labels (`with_labels`) and their link is tested in `session-list-link`.
 | fig3h-rsc-first-context-discrimination | tested, ROI part on the grid ROI traces and pixel part on windowed reads of the ΔF/F0 stack |
 | fig4c, fig4d, fig4e, fig4fg, supp4d | tested on the grid ROI traces |
 | fig1k-model-accuracy, fig1k-context-strongest-feature, fig1l-shap-whisker-trial-in-block | tested (the code's XGBoost model rebuilt) |
-| fig4b (3 claims) | blocked, too_large (pixel stack); a variant on the grid ROI traces is shown |
+| fig4b (3 claims) | blocked, too_large (the pixel analysis was not run in this attempt); a variant on the grid ROI traces is shown |
 | supp3c-rsc-projects-to-wm | blocked, data_missing |
 """)
 
 code("""
+import time; T0_NB = time.time()  # notebook start, for the run-time estimate of fig4b
 import numpy as np, pandas as pd, matplotlib.pyplot as plt
 from scipy import stats
 import bech
@@ -858,7 +859,7 @@ for base in [50, 250]:
     v = {H[('roi', base, s)] for s in (0.02, 0.03)} | {H[('pixel', True, base, s)] for s in (0.02, 0.03)}
     print(f'baseline {base} ms, ROI and smoothed pixel versions, both exclusion readings:', v)
 """, tags=["claim:fig3h-rsc-first-context-discrimination"])
-md("**Result: reproduced, resting on an assumption.** With the 50 ms baseline, which the Methods for Figure 3H take from Figure 3F, RSC is the earliest area in both the ROI ranking and the smoothed pixel version, under both exclusion readings, with no tie. With the 250 ms baseline RSC is first in the ROI ranking but ties with wM1 in the pixel version (50 ms), which counts as partially reproduced; the unsmoothed pixel variant at 250 ms puts wM1 and tjS1 first.")
+md("**Result: reproduced, resting on an assumption.** With the 50 ms baseline, which the Methods for Figure 3H take from Figure 3F, RSC is the earliest area in both the ROI ranking and the smoothed pixel version, under both exclusion readings, with no tie. With the 250 ms baseline RSC is first in the ROI ranking but ties with wM1 in the pixel version (50 ms), which counts as partially reproduced; the unsmoothed pixel variant at 250 ms puts wM1 and tjS1 first. The criterion asks for the outcome every baseline gives, otherwise methods_underspecified, and the claims file names both the 50 and 250 ms baselines; since they disagree, the criterion gives blocked (methods_underspecified). The verified outcome is kept, and the change to blocked is proposed for a third verification round.")
 
 md("""
 ### fig3-gcamp-consistent-controls-flat
@@ -990,6 +991,10 @@ DLC = bech.load_dlc(A[A.session_id.isin(FACE)], n=8)
 bad = {k: v['error'] for k, v in DLC.items() if 'error' in v}
 print('sessions', len(DLC), 'mice', len({k.split('_')[0] for k in DLC}), '| failed to load:', bad)
 ok = {k: v for k, v in DLC.items() if 'error' not in v}
+LEN = pd.DataFrame({k: v['lengths'] for k, v in ok.items()}).T
+LEN_BAD = LEN[(LEN.jaw_timestamps != LEN.jaw_data) | (LEN.whisker_timestamps != LEN.whisker_data)]
+print('sessions whose DLC timestamps and data differ in length (both cut to the shorter):', len(LEN_BAD), 'of', len(LEN))
+print(LEN_BAD.to_string())
 print('video rate (Hz):', pd.Series({k: round(v['rate']) for k, v in ok.items()}).value_counts().to_dict())
 frac = pd.DataFrame({k: v['frac'] for k, v in ok.items()}).T
 print('fraction of points passing the likelihood filter, by body part:'); print(frac.describe().round(3).to_string())
@@ -1371,8 +1376,20 @@ for rsc in ['RSC', 'RSC_2']:
     full = rt and all(all(v) for v in others.values())
     part = rt and all(sum(v) >= 2 for v in others.values())
     print(rsc, '-> reproduced' if full else ('-> partially' if part else '-> not'), '| RSC and tjS1 closer to lick in both:', rt, '| others closer to no lick:', others)
+# variant, not deciding (asked of a reader): where each trajectory lies along the control lick to no-lick
+# direction, the least-squares coefficient of (site - lick) on (no lick - lick) over 0 to 140 ms (0 at the
+# lick trajectory, 1 at no-lick), and its distance from the lick trajectory as a multiple of the control
+# lick to no-lick distance (root mean square)
+for ctx in (0, 1):
+    L1, L0 = ctrl_pc3[(ctx, 'whisker_trial', 1)][post], ctrl_pc3[(ctx, 'whisker_trial', 0)][post]
+    ax = L0 - L1; sep = np.sqrt(np.mean(ax ** 2))
+    out = {}
+    for s in ['wS1', 'wS2', 'wM1', 'wM2', 'ALM', 'RSC', 'RSC_2', 'tjS1']:
+        tr_ = np.mean(list(STIM[(s, ctx)].values()), 0)[post]
+        out[s] = (round(float(np.sum((tr_ - L1) * ax) / np.sum(ax ** 2)), 2), round(float(np.sqrt(np.mean((tr_ - L1) ** 2)) / sep), 1))
+    print(f'variant, {"W+" if ctx else "W-"}: control lick to no-lick RMS distance {sep:.2f}; per site (coefficient toward no-lick, distance from lick in units of it):', out)
 """, tags=["claim:fig4d-trajectories-follow-lick"])
-md("**Result: not reproduced.** RSC (-1.5, 0.5) is closer to no-lick in W-, and wS1, wS2, wM1/2 and ALM are not closer to no-lick in W-.")
+md("**Result: not reproduced.** RSC (-1.5, 0.5) is closer to no-lick in W-, and wS1, wS2, wM1/2 and ALM are not closer to no-lick in W-. In the variant along the lick to no-lick direction (not deciding), the trajectories of wS1, wS2, wM1, wM2 and ALM lie 3.8 to 6.9 times the control lick to no-lick distance from the lick trajectory, against 0.4 and 1.1 for RSC, but on the side away from no-lick in W- (coefficients -3.09 to -0.39) and for wM1, wM2 and ALM in W+; only wS1 and wS2 in W+ lie toward no-lick (1.17 and 0.59). So they move away from control-lick, but not toward no-lick, by either measure.")
 
 md("""
 ### fig4e-rsc-tjs1-smaller-angle
@@ -1410,7 +1427,7 @@ for variant in [False, True]:
         n = int(bool(res[(rsc, 0)])) + int(bool(res[(rsc, 1)]))
         print('  ', rsc, {('W+' if c else 'W-'): res[(rsc, c)] for c in (0, 1)}, '->', 'reproduced' if n == 2 else ('partially' if n == 1 else 'not'))
 """, tags=["claim:fig4e-rsc-tjs1-smaller-angle"])
-md("**Result: partially reproduced.** RSC and tjS1 have the smallest angles in W+; in W- the RSC (-1.5, 0.5) angle is above those of wM1, wM2 and ALM.")
+md("**Result: partially reproduced.** In W+ the angles of RSC and tjS1 are below those of wS1, wS2, wM1, wM2 and ALM, the sites the criterion compares them with (A1 and RSC (-0.5, 0.5), which it does not compare, are lower still); in W- the RSC (-1.5, 0.5) angle is above those of wM1, wM2 and ALM.")
 
 md("""
 ### fig4fg-angle-predicts-lick-change
@@ -1434,9 +1451,11 @@ md("""
 ## Pre-stimulus correlations (Figure 4A-B), a variant on the grid ROI traces
 
 The three fig4b claims are blocked: the criterion uses seed-to-pixel correlation maps of the ΔF/F0 stack
-in the 2 s before every trial, masked by a block-shuffle null. The reads alone are estimated below from the
-rate measured for the pixel part of fig3h; with the rest of this notebook they do not fit the
-notebook limit of 60 minutes. As a variant
+in the 2 s before every trial, masked by a block-shuffle null. That analysis was not run in this attempt.
+The reads alone are estimated below from the rate measured for the pixel part of fig3h, with the time
+this notebook has taken up to that cell; together they do not fit the notebook limit of 60 minutes.
+In a separate notebook the reads alone would take about half of that limit, before the block shuffles;
+such a notebook was not built in this attempt. As a variant
 that does not decide the outcome, the zero-lag Pearson correlations between the grid ROI traces of the
 seven seeds (1 mm circles at the seed sites) in the 2 s before each trial start are computed, whisker
 trials, correct (W+ hits, W- misses) and incorrect (W+ misses, W- hits), averaged per session, then per
@@ -1449,8 +1468,12 @@ SEEDS = ['wS1', 'wS2', 'wM1', 'RSC', 'ALM', 'tjM1', 'tjS1']
 PAIRS = [('ALM', 'tjM1'), ('ALM', 'tjS1'), ('tjM1', 'tjS1'), ('wM1', 'ALM'), ('wM1', 'tjM1'), ('wS1', 'wS2'), ('wS2', 'wM1')]
 PC = bech.load_precorr(A[A.session_id.isin(JR)], [bech.SITES[s] for s in SEEDS], n=8)
 n_all = int(T[T.session_id.isin(JR)].shape[0]); gb = n_all * 200 * 125 * 160 * 8 / 1e9
+t_read = gb / (GB_PIX / t_pix) / 60
 print(f'seed-to-pixel maps would need 200 frames for each of the {n_all} trials of the jRGECO1a sessions, {gb:.0f} GB; '
-      f'at the rate of the fig3h pixel reads, {gb / (GB_PIX / t_pix) / 60:.0f} min of reading')
+      f'at the rate of the fig3h pixel reads, {t_read:.0f} min of reading')
+t_nb = (time.time() - T0_NB) / 60
+print(f'this notebook has run {t_nb:.0f} min up to here; with the reads, {t_nb + t_read:.0f} min, against the 60 min notebook limit; '
+      f'the reads alone take {t_read / 60 * 100:.0f}% of the limit of a separate notebook, before the 1,000 block shuffles per seed and pixel')
 print('sessions failed', [k for k, v in PC.items() if isinstance(v, str)])
 rows = []
 for sid, C in PC.items():
@@ -1474,7 +1497,7 @@ for oc in ['correct', 'incorrect']:
         print(f'   {a}-{b}: W- {wm.mean():.3f}, W+ {wp.mean():.3f}, W- minus W+ {dd.mean():+.3f}, paired d {dd.mean() / dd.std(ddof=1):+.2f}, t {tt.statistic:.2f}, p x7 {min(1, 7 * tt.pvalue):.3f}')
 print('W+ incorrect minus W+ correct:', {f'{a}-{b}': round(float((Mm.xs(f'{a}-{b}', level='pair')[('incorrect', 1)] - Mm.xs(f'{a}-{b}', level='pair')[('correct', 1)]).mean()), 3) for a, b in PAIRS})
 """, tags=["claim:fig4b-wminus-higher-correlation-correct"])
-md("**Result: blocked (too_large).** The pixel analysis the criterion needs was not run. In the ROI-trace variant, before correct trials W- is higher than W+ for 5 of the 7 pairs (paired d' at or above 0.8 for 4 of them) and lower for wM1-ALM and wM1-tjM1, and no pair passes the corrected t-test; before incorrect trials no pair has a W- minus W+ d' of 0.8 or more.")
+md("**Result: blocked (too_large).** The pixel analysis the criterion needs was not run in this attempt: the reads it needs, estimated above, do not fit this notebook's limit with the rest of the notebook. In the ROI-trace variant, before correct trials W- is higher than W+ for 5 of the 7 pairs (paired d' at or above 0.8 for 4 of them) and lower for wM1-ALM and wM1-tjM1, and no pair passes the corrected t-test; before incorrect trials no pair has a W- minus W+ d' of 0.8 or more.")
 
 
 md("""
@@ -1497,10 +1520,10 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 | fig3c-jaw-onset | reproduced, resting on the Methods' correct whisker trials (assumption) |
 | fig3e-auditory-similar-across-contexts | partially reproduced (similar, A1 first; the order of the others not found) |
 | fig3f-whisker-divergence-after-50ms | reproduced |
-| fig3h-rsc-first-context-discrimination | reproduced, resting on the 50 ms baseline (assumption); a tie in the pixel version with the 250 ms baseline |
+| fig3h-rsc-first-context-discrimination | reproduced, resting on the 50 ms baseline (assumption); a tie in the pixel version with the 250 ms baseline, so a change to blocked (methods_underspecified) is proposed |
 | fig3-gcamp-consistent-controls-flat | partially reproduced (GCaMP6f holds; control mice also show W+ vs W- differences) |
 | supp3c-rsc-projects-to-wm | blocked, data_missing |
-| fig4b (3 claims) | blocked, too_large (pixel stack); an ROI-trace variant is shown |
+| fig4b (3 claims) | blocked, too_large (the pixel analysis was not run in this attempt; its reads do not fit the notebook limit with the rest of the notebook); an ROI-trace variant is shown |
 | fig4c-inhibition-propagates-forward, supp4d-photoactivation-control, fig4fg-angle-predicts-lick-change | reproduced |
 | fig4d-trajectories-follow-lick | not reproduced |
 | fig4e-rsc-tjs1-smaller-angle | partially reproduced (W+ only at RSC (-1.5, 0.5); both contexts at (-0.5, 0.5)) |
@@ -1515,7 +1538,7 @@ What was found about the dataset: the subject genotype is "WT" for every mouse b
 which mice carry VGAT-ChR2, jRGECO1a, GCaMP6f, tdTomato or GFP; session type and day (Context Off, muscimol
 or Ringer, baseline or injection) are not recorded in a usable form; the DLC series carry the unit
 "seconds" and a `conversion` of 1/28 or 1/24 that does not turn them into the units of the paper (the
-whisker angle is stored in degrees, the pupil area in square pixels); three files have no context epochs;
+whisker angle is stored in degrees, the pupil area in square pixels); three files have no context epochs; in some files the DLC timestamps and data differ in length;
 lick_time minus the stimulus time is about 100 ms longer than the paper's spout-contact times; the Context
 Off sessions still label their trials pink and brown noise. The printed outputs above give the numbers.
 """)
