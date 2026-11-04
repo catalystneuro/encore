@@ -24,14 +24,18 @@ Where the parameters come from (claims file, opening comment, and the paper's Me
   of C_s below 5 ms, bounded on its right by a minimum below 1.25 / cutoff that differs from
   the maximum by more than the sum of their error bars, Delta = sigma / sqrt(N). The readings
   of the open details (1) to (3) of the claims file are arguments: `peak` "a" (first local
-  maximum for tau > 0) or "b" (largest value in 0 < tau < 5 ms); `minimum` "a" (first local
-  minimum after the peak that differs significantly from the maximum) or "b" (lowest value
+  maximum for tau > 0), "b" (largest value in 0 < tau < 5 ms) or "c" (below); `minimum` "a"
+  (first local minimum after the peak that differs significantly from the maximum) or "b" (lowest value
   between the peak and 1.25 / cutoff, required to differ significantly); `nmode` "a" (N the
   number of product terms at each tau) or "b" (N the number of trials), as the claims file
   gives them, and "c" (sigma the SD over trials of each trial's time-averaged C_s, N the number
   of trials), a third reading of "C_s (tau) can be interpreted as an average ... The error bar
   Delta of an average estimated from N samples reads Delta = sigma / sqrt(N)" (paragraph 6),
-  added here because C_s is the trial average of per-trial averages.
+  added here because C_s is the trial average of per-trial averages. `peak` "c" is reading (a)
+  with the refractory plateau left out: at lags below the shortest ISI C_s has no spike pairs
+  and is flat, and edge effects there make spurious local maxima, so the search for the first
+  local maximum starts at the first lag where C_s exceeds its value at the first lag by more
+  than the sum of their error bars (added after verification, round 1).
 - Bursts (`bursts_of_trial`): consecutive spikes whose ISIs are within the domain of the first
   peak, 0 to the position of the minimum (paragraph 7); a burst is dated by its first spike.
 """
@@ -255,8 +259,14 @@ def burst_limit(trials, cutoff, peak="a", minimum="a", nmode="a", dt=DT):
     lim_i = int(np.floor(MIN_FACTOR / cutoff / dt + 1e-9))
     pk_i = int(np.floor(PEAK_MAX / dt + 1e-9))
     # The peak, excluding tau = 0 (the self term).
-    if peak == "a":
-        cand = [i for i in range(1, min(pk_i, len(c) - 2) + 1) if c[i] > c[i - 1] and c[i] >= c[i + 1]]
+    if peak in ("a", "c"):
+        start = 1
+        if peak == "c":
+            above = [i for i in range(2, min(pk_i, len(c) - 2) + 1) if c[i] - c[1] > err[i] + err[1]]
+            if not above:
+                return 0.0, info
+            start = above[0]
+        cand = [i for i in range(start, min(pk_i, len(c) - 2) + 1) if c[i] > c[i - 1] and c[i] >= c[i + 1]]
         if not cand:
             return 0.0, info
         ip = cand[0]
@@ -329,12 +339,26 @@ def burst_rates(trials, limit, bin_s, t0=T0, t1=T1):
     """r_n(t): trial-averaged rate of n-burst onsets in bins of `bin_s` over [t0, t1), Hz,
     as a dict n -> array."""
     tr, on, n = bursts(trials, limit, t0, t1)
+    return rates_of(on, n, len(trials), bin_s, t0, t1)
+
+
+def rates_of(on, n, n_trials, bin_s, t0=T0, t1=T1):
+    """r_n(t) from burst onsets and sizes pooled over `n_trials` trials, as in `burst_rates`."""
     nb = int(round((t1 - t0) / bin_s))
     k = np.minimum(((on - t0) / bin_s).astype(int), nb - 1)
     out = {}
     for m in np.unique(n):
-        out[int(m)] = np.bincount(k[n == m], minlength=nb) / (len(trials) * bin_s)
+        out[int(m)] = np.bincount(k[n == m], minlength=nb) / (n_trials * bin_s)
     return out
+
+
+def circular_shift(tr, on, n_trials, rng, t0=T0, t1=T1):
+    """Burst onsets with each trial shifted by its own random offset, wrapped within [t0, t1).
+    Each trial keeps its bursts and their spacing but loses their locking to the stimulus, so
+    the information computed from the result is the bias of the plug-in estimate (a baseline
+    added after the first verification; the paper does not use one)."""
+    off = rng.uniform(0, t1 - t0, n_trials)
+    return t0 + (on - t0 + off[tr]) % (t1 - t0)
 
 
 def information(rates, T=T1 - T0):

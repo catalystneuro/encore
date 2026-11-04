@@ -11,8 +11,8 @@ stimulus files. The cells' thresholds, which the paper's model needs, are not in
 | Kept sessions per stimulus protocol (Table 1) | Not reproduced |
 | Firing rate 113 Hz, not different across protocols | Reproduced |
 | Mean threshold 58 dB | Blocked: data missing |
-| Bursting sessions per protocol (Table 1) | Not reproduced |
-| Percentage of isolated spikes per protocol (Table 1) | Partially reproduced |
+| Bursting sessions per protocol (Table 1) | Partially reproduced |
+| Percentage of isolated spikes per protocol (Table 1) | Not reproduced |
 | Highest and average n per protocol (Table 1) | Not reproduced |
 | Isolated spikes least likely at 12 dB and 100 Hz (Figure 5) | Reproduced |
 | Shape of the correlation function across stimuli (Figure 3) | Reproduced |
@@ -37,13 +37,14 @@ stimulus files. The cells' thresholds, which the paper's model needs, are not in
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The paper's selection rule keeps 115 sessions in the data set where the paper kept 86, so the
-counts of sessions differ from the paper's; and the Methods leave open details of burst
-identification, for which the notebook shows every reading. The attempt record, with the reasons
-and the differences from the paper's method, is
+The paper's stated selection rule keeps 115 sessions in the data set where the paper kept 86.
+Leaving out also the sessions with fewer than 98 trials and those sorted off-line keeps 89, close
+to the paper's counts per protocol; the notebook uses that population and shows the 115 beside
+it. The Methods leave open details of burst identification, for which the notebook shows every
+reading. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-ia-1-eyherabide-2008-01.yaml`](../../attempts/crcns-ia-1-eyherabide-2008-01.yaml).
 
-- `reproduce_eyherabide_2008.ipynb`: the analysis. It takes about five minutes.
+- `reproduce_eyherabide_2008.ipynb`: the analysis. It takes about nine minutes.
 - `ia1.py`: streaming the zip from the CRCNS bucket, parsing spike and stimulus files, burst
   identification, information measures, the direct method with NSB entropies, and
   burst-triggered averages. Other notebooks on this data set can import it.
