@@ -20,6 +20,15 @@ Where the parameters come from:
 - FAF lesion centres (`FAF_LESIONS`) are the points the yellow arrows of Figure 3 mark, read off
   the figure by the author; the lesion disc radius and the surrounding annulus
   (`FAF_RADII`) are a standard choice, and the notebook shows the contrast at several radii.
+  The arrow pixels are left out of every FAF measure (`overlay_mask`). The background discs
+  (`NULL_RADIUS`, `NULL_N`) that decide whether a lesion is brighter than the fundus are an
+  assumption (the paper graded by inspection and gives no criterion); the notebook shows four
+  other readings beside the one adopted.
+- `arrow_boxes` and `ARROW_COLOURS` only find the arrows for the full-resolution crops; display
+  only, they cannot change a result.
+- MuPRO and I-Mutant 2.0 are the web servers Methods 2.4 names, run from sequence as the claims
+  file says (I-Mutant at its default 25 C and pH 7); the FATHMM-MKL web server is the FATHMM site
+  of Methods 2.2. None has a version that can be pinned.
 - Outside tools and data follow the claims file: SIFT and PolyPhen-2 (HumVar) through the Ensembl
   VEP REST service on the MANE Select transcripts (the claims file's transcript reading); PolyPhen-2
   HumDiv, FATHMM and MutationTaster scores from dbNSFP through MyVariant.info (version printed); CADD
@@ -176,6 +185,21 @@ def load_docx():
     return paragraphs, tables, len(d.inline_shapes)
 
 
+def docx_images() -> list[tuple[str, np.ndarray]]:
+    """The images embedded in the source document, decoded in memory: (part name, RGB array)."""
+    import docx
+    d = docx.Document(io.BytesIO(read_bytes(DOCX_PATH)))
+    out = []
+    for s in d.inline_shapes:
+        part = d.part.related_parts[s._inline.graphic.graphicData.pic.blipFill.blip.embed]
+        if "tif" in part.content_type:
+            a = tifffile.TiffFile(io.BytesIO(part.blob)).pages[0].asarray()
+        else:
+            a = {"image/png": imagecodecs.png_decode, "image/jpeg": imagecodecs.jpeg8_decode}[part.content_type](part.blob)
+        out.append((part.partname, a[..., :3] if a.ndim == 3 else a))
+    return out
+
+
 def first_number(text: str) -> float | None:
     m = re.search(r"-?\d+(?:\.\d+)?", text.replace("−", "-"))
     return float(m.group()) if m else None
@@ -213,26 +237,90 @@ FAF_LESIONS = {"M75 OD": (1072, 7586), "M75 OS": (2588, 7676), "M73 OD": (7738, 
                "M34 OD": (14454, 7598), "M34 OS": (16074, 7676)}
 FAF_RADII = (16, 32, 48)          # lesion disc radii, full-resolution pixels
 SURROUND = (80, 140)              # annulus around the lesion centre, full-resolution pixels
+MACULA = (24, 48)                 # inner annulus: the macula next to the lesion
+NULL_RADIUS, NULL_N = 110, 36     # background discs: centres on a circle of this radius
+
+
+def overlay_mask(win: np.ndarray) -> np.ndarray:
+    """Pixels of the yellow arrows (and yellow labels) drawn on the figure: red and green high,
+    blue low. Grey FAF pixels have equal channels, so no image pixel is caught."""
+    w = win.astype(int)
+    return (w[..., 0] > 180) & (w[..., 1] > 180) & (w[..., 2] < 120)
 
 
 def faf_measures(img: np.ndarray, centre: tuple[int, int]) -> dict:
     """Lesion measures on an FAF panel, relative to the median grey level of the annulus around it.
 
-    `mean_r<R>`: mean in a disc of radius R (above 1 brighter than the surrounding fundus);
-    `p95_r16`: 95th percentile within 16 pixels, which picks up small bright (hyper-
-    autofluorescent) foci; `hypo_area`: pixels within 100 of the centre darker than 0.85 of the
-    surround. The normal macula is darker than its surround on FAF (macular pigment), so a
-    mean below 1 alone does not show a lesion."""
+    Arrow pixels are left out of every measure (`overlay_mask`). `mean_r<R>`: mean in a disc of
+    radius R (above 1 brighter than the surrounding fundus); `p95_r16` and `max_r16`: 95th
+    percentile and maximum within 16 pixels, which pick up small bright (hyper-autofluorescent)
+    foci; `p95_mac`: the same 95th percentile against the median of the macula next to the lesion
+    (`MACULA`); `hypo_area`: pixels within 100 of the centre darker than 0.85 of the surround.
+
+    Reference for a bright focus: `NULL_N` discs of radius 16 centred `NULL_RADIUS` pixels from the
+    lesion, on the background fundus of the same panel, skipping any disc that touches an arrow.
+    `null_p95_q95` and `null_max_q95` are the 95th percentiles over those discs of the same two
+    statistics, and `frac_null_p95`, `frac_null_max` the fraction of discs at least as bright as
+    the lesion. The normal macula is darker than its surround on FAF (macular pigment), so a mean
+    below 1 alone does not show a lesion. The radii are a standard choice, not the paper's."""
     r, c = centre
-    h = SURROUND[1]
-    win = img[r - h:r + h + 1, c - h:c + h + 1].mean(axis=2)
+    h = NULL_RADIUS + 30
+    raw = img[r - h:r + h + 1, c - h:c + h + 1]
+    win = raw.mean(axis=2)
+    ok = ~overlay_mask(raw)
     yy, xx = np.mgrid[-h:h + 1, -h:h + 1]
     d = np.hypot(yy, xx)
-    sur = float(np.median(win[(d >= SURROUND[0]) & (d <= SURROUND[1])]))
-    out = {f"mean_r{R}": float(win[d <= R].mean() / sur) for R in FAF_RADII}
-    out["p95_r16"] = float(np.percentile(win[d <= 16], 95) / sur)
-    out["hypo_area"] = int(((win < 0.85 * sur) & (d <= 100)).sum())
+    sur = float(np.median(win[(d >= SURROUND[0]) & (d <= SURROUND[1]) & ok]))
+    mac = float(np.median(win[(d >= MACULA[0]) & (d <= MACULA[1]) & ok]))
+    out = {f"mean_r{R}": float(win[(d <= R) & ok].mean() / sur) for R in FAF_RADII}
+    les = win[(d <= 16) & ok]
+    out["p95_r16"] = float(np.percentile(les, 95) / sur)
+    out["max_r16"] = float(les.max() / sur)
+    out["p95_mac"] = float(np.percentile(les, 95) / mac)
+    out["hypo_area"] = int(((win < 0.85 * sur) & (d <= 100) & ok).sum())
+    null = []
+    for t in np.linspace(0, 2 * np.pi, NULL_N, endpoint=False):
+        m = np.hypot(yy - NULL_RADIUS * np.sin(t), xx - NULL_RADIUS * np.cos(t)) <= 16
+        if (m & ~ok).any():
+            continue
+        null.append((np.percentile(win[m], 95) / sur, win[m].max() / sur))
+    null = np.array(null)
+    out.update(n_null=len(null), null_p95_q95=float(np.quantile(null[:, 0], 0.95)),
+               null_max_q95=float(np.quantile(null[:, 1], 0.95)),
+               frac_null_p95=float((null[:, 0] >= out["p95_r16"]).mean()),
+               frac_null_max=float((null[:, 1] >= out["max_r16"]).mean()))
+    out["arrow_px_in_ring"] = int((~ok & (d >= SURROUND[0]) & (d <= SURROUND[1])).sum())
     out["surround"] = sur
+    return out
+
+
+# Arrow colours of each figure and modality, read off the figures (yellow, blue, magenta, red).
+ARROW_COLOURS = {(2, "FF"): ("yellow",), (2, "GVF"): ("red",), (3, "FF"): ("blue",)}
+ARROW_DEFAULT = ("yellow", "magenta", "blue")
+
+
+def arrow_boxes(p: np.ndarray, figure: int, modality: str, min_px: int = 300,
+                margin: int = 200) -> list[tuple[int, int, int, int]]:
+    """Boxes (row0, row1, col0, col1) around each arrow of a panel, widened by `margin` pixels on
+    every side and clipped to the panel, for full-resolution crops of what the arrows point at.
+    The colours looked for are `ARROW_COLOURS` (yellow is not looked for on the colour photographs
+    of Figure 3, whose fundus has yellow areas). A standard choice for display only."""
+    from scipy import ndimage
+    w = p.astype(int)
+    r, g, b = w[..., 0], w[..., 1], w[..., 2]
+    masks = dict(yellow=overlay_mask(p), magenta=(r > 180) & (g < 90) & (b > 90),
+                 blue=(r < 60) & (g > 130) & (g < 210) & (b > 200), red=(r > 150) & (g < 60) & (b < 60))
+    mask = np.zeros(p.shape[:2], bool)
+    for c in ARROW_COLOURS.get((figure, modality), ARROW_DEFAULT):
+        mask |= masks[c]
+    lab, n = ndimage.label(mask)
+    out = []
+    for i, sl in enumerate(ndimage.find_objects(lab), start=1):
+        h, wd = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        if h > 400 or wd > 400 or (lab[sl] == i).sum() < min_px:
+            continue                                                       # a panel frame or a speck
+        out.append((max(sl[0].start - margin, 0), min(sl[0].stop + margin, p.shape[0]),
+                    max(sl[1].start - margin, 0), min(sl[1].stop + margin, p.shape[1])))
     return out
 
 
@@ -332,29 +420,102 @@ def cadd(chrom: str, pos: int, alt: str, build: str, version: str) -> tuple[floa
 
 def dbnsfp(chrom: str, pos: int, ref: str, alt: str) -> dict:
     """dbNSFP scores of a GRCh38 variant through MyVariant.info: SIFT, PolyPhen-2 HumDiv and HumVar,
-    FATHMM, FATHMM-MKL and FATHMM-XF coding scores, MutationTaster and CADD."""
-    fields = ",".join(f"dbnsfp.{f}" for f in ("sift.score", "polyphen2", "fathmm.score", "fathmm-mkl.coding_score",
-                                               "fathmm-xf.coding_score", "mutationtaster.score",
-                                               "mutationtaster.pred", "cadd.phred"))
+    FATHMM, FATHMM-MKL and FATHMM-XF coding scores, MutationTaster and CADD.
+
+    dbNSFP gives some scores once per transcript (SIFT, FATHMM) and MutationTaster once per model,
+    and MyVariant.info drops the missing entries of these lists, so a list cannot always be lined
+    up with the transcript list. Every value is kept, as a list, with the transcript list beside
+    it; `mane_index` is the place of the MANE Select transcript in that list."""
+    fields = ",".join(f"dbnsfp.{f}" for f in ("ensembl.transcriptid", "sift.score", "polyphen2", "fathmm.score",
+                                               "fathmm-mkl.coding_score", "fathmm-xf.coding_score",
+                                               "mutationtaster.score", "mutationtaster.pred",
+                                               "mutationtaster.model", "cadd.phred"))
     d = _get(f"{MYVARIANT}/variant/chr{chrom}:g.{pos}{ref}>{alt}",
              params={"assembly": "hg38", "fields": fields}).json().get("dbnsfp", {})
 
-    def first(v):
-        return v[0] if isinstance(v, list) else v
+    def lst(v):
+        return None if v is None else (v if isinstance(v, list) else [v])
     pp = d.get("polyphen2") or {}
-    return dict(sift=first((d.get("sift") or {}).get("score")),
+    tx = lst((d.get("ensembl") or {}).get("transcriptid")) or []
+    mane = [t for t in tx if t in ("ENST00000369950", "ENST00000193391")]
+    return dict(transcripts=tx, mane_index=tx.index(mane[0]) if mane else None,
+                sift=lst((d.get("sift") or {}).get("score")),
                 polyphen_hdiv=(pp.get("hdiv") or {}).get("score"), polyphen_hvar=(pp.get("hvar") or {}).get("score"),
-                fathmm=first((d.get("fathmm") or {}).get("score")),
+                fathmm=lst((d.get("fathmm") or {}).get("score")),
                 fathmm_mkl=(d.get("fathmm-mkl") or {}).get("coding_score"),
                 fathmm_xf=(d.get("fathmm-xf") or {}).get("coding_score"),
-                mutationtaster=first((d.get("mutationtaster") or {}).get("score")),
-                mutationtaster_pred=first((d.get("mutationtaster") or {}).get("pred")),
+                mutationtaster=lst((d.get("mutationtaster") or {}).get("score")),
+                mutationtaster_model=lst((d.get("mutationtaster") or {}).get("model")),
+                mutationtaster_pred=lst((d.get("mutationtaster") or {}).get("pred")),
                 cadd=(d.get("cadd") or {}).get("phred"))
 
 
 def dbnsfp_version() -> dict:
     m = _get(f"{MYVARIANT}/metadata").json()
     return dict(build=m.get("build_version"), dbnsfp=m["src"]["dbnsfp"]["version"])
+
+
+FATHMM_MKL = "http://fathmm.biocompute.org.uk"
+
+
+def fathmm_mkl(variants: list[tuple[str, int, str, str]]) -> pd.DataFrame:
+    """FATHMM-MKL web server (the FATHMM site of Methods 2.2), GRCh37 positions, forward strand:
+    coding and non-coding scores and feature groups of each (chromosome, position, ref, alt)."""
+    batch = "\n".join(f"{c},{p},{r},{a}" for c, p, r, a in variants)
+    page = _post(f"{FATHMM_MKL}/cgi-bin/submitMKL.cgi", files={"batch": (None, batch)}).text
+    session = re.search(r"session=([\w-]+)", page).group(1)
+    for _ in range(30):
+        time.sleep(10)
+        html = _get(f"{FATHMM_MKL}/cgi-bin/results.cgi", params={"session": session}).text
+        cells = [re.sub(r"<[^>]+>|\s+", " ", x).strip() for x in re.findall(r"<td[^>]*>(.*?)</td>", html, flags=re.S)]
+        rows = [cells[i:i + 7] for i in range(0, len(cells) - 6) if re.fullmatch(r"\d+|X|Y", cells[i])
+                and cells[i + 1].isdigit() and "/" in cells[i + 2]]
+        if len(rows) >= len(variants):
+            return pd.DataFrame([dict(chrom=r[0], pos37=int(r[1]), alleles=r[2], noncoding=float(r[3]),
+                                      noncoding_groups=r[4], coding=float(r[5]), coding_groups=r[6]) for r in rows])
+    raise RuntimeError("FATHMM-MKL did not answer")
+
+
+def mutationtaster2021_status() -> dict:
+    """What the MutationTaster2021 API (the documented URL, with its own example variant) answers."""
+    url = "https://www.genecascade.org/MT2021/MT_API102.cgi?variants=21:33039603A%3EC"
+    r = requests.get(url, timeout=120, allow_redirects=False)
+    return dict(url=url, status=r.status_code, location=r.headers.get("Location"))
+
+
+MUPRO = "https://mupro.proteomics.ics.uci.edu/cgi-bin/predict.pl"
+IMUTANT = "https://folding.biofold.org/cgi-bin/i-mutant2.0.cgi"
+
+
+def mupro(seq: str, pos: int, wt: str, mut: str) -> dict:
+    """MuPRO web server, sequence only, its recommended output (SVM value and sign of the change)."""
+    assert seq[pos - 1] == wt
+    html = _post(MUPRO, files={"input_name": (None, "q"), "position": (None, str(pos)), "org_aa": (None, wt),
+                               "rep_aa": (None, mut), "input_text": (None, seq)}).text
+    txt = re.sub(r"<[^>]+>", " ", html)
+    m = re.search(r"delta G =\s*(-?[\d.]+)\s*\((\w+) stability\)", txt)
+    return dict(ddg=float(m.group(1)), effect=m.group(2))
+
+
+def imutant(seq: str, pos: int, mut: str, mode: str) -> dict:
+    """I-Mutant 2.0 web server from sequence, at its default 25 C and pH 7. `mode` 'ddg' gives the
+    regression DDG (kcal/mol; DDG<0 decrease stability, as the server prints), 'sddg' the sign
+    classifier (Increase or Decrease, with its reliability index 0 to 10)."""
+    page = _post(IMUTANT, data={"proteina": seq, "posizione": str(pos), "newres": mut, "temp": "25", "ph": "7",
+                                "pred": mode, "email": "", "submit": "Submit"}).text
+    url = re.search(r"https://folding\.biofold\.org/i-mutant//www-data/output/Mut\d+/output\.html", page).group()
+    for _ in range(40):
+        time.sleep(10)
+        txt = re.sub(r"<[^>]+>", " ", requests.get(url, timeout=60).text)
+        if mode == "ddg":
+            m = re.search(rf"\b{pos}\s+([A-Z])\s+{mut}\s+(-?[\d.]+)\s+7\.0\s+25", txt)
+            if m:
+                return dict(wt=m.group(1), ddg=float(m.group(2)))
+        else:
+            m = re.search(rf"\b{pos}\s+([A-Z])\s+{mut}\s+(Increase|Decrease)\s+(\d+)\s+7\.0\s+25", txt)
+            if m:
+                return dict(wt=m.group(1), sign=m.group(2), ri=int(m.group(3)))
+    raise RuntimeError("I-Mutant did not answer")
 
 
 GNOMAD = "https://gnomad.broadinstitute.org/api"
@@ -386,8 +547,34 @@ def gnomad(variant_id: str, dataset: str) -> dict:
             for p in parts if var.get(p)}
 
 
-CLINVAR = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2024/clinvar_{}.vcf.gz"
+CLINVAR_ARCHIVE = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/{}/clinvar_{}.vcf.gz"
 CLINVAR_NOV_2024 = ("20241103", "20241111", "20241120", "20241126")
+
+
+def clinvar_releases(year: int) -> list[str]:
+    """Dates of the ClinVar GRCh38 VCF releases archived for a year."""
+    html = _get(f"https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/{year}/").text
+    dates = sorted(set(re.findall(r"clinvar_(\d{8})\.vcf\.gz\"", html)))
+    _CLINVAR_DIR.update({d: str(year) for d in dates})
+    return dates
+
+
+_CLINVAR_DIR = {}      # release date -> archive folder, where the two differ (releases late in December)
+
+
+def clinvar_url(release: str) -> str:
+    return CLINVAR_ARCHIVE.format(_CLINVAR_DIR.get(release, release[:4]), release)
+
+
+def clinvar_summary(vcv: str) -> dict:
+    """ClinVar's current summary of a variation (NCBI E-utilities esummary): title, classification,
+    its last evaluation date, review status and conditions."""
+    d = _get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi",
+             params={"db": "clinvar", "id": vcv, "retmode": "json"}).json()["result"][vcv]
+    g = d["germline_classification"]
+    return dict(accession=d["accession_version"], title=d["title"], classification=g["description"],
+                last_evaluated=g["last_evaluated"], review_status=g["review_status"],
+                conditions=[t["trait_name"] for t in g["trait_set"]], submissions=d["supporting_submissions"]["scv"])
 
 
 def clinvar_records(release: str, chrom: str, pos: int) -> list[dict]:
@@ -400,7 +587,7 @@ def clinvar_records(release: str, chrom: str, pos: int) -> list[dict]:
     with tempfile.TemporaryDirectory() as tmp:     # htslib saves the remote index in the working directory
         os.chdir(tmp)
         try:
-            lines = list(pysam.TabixFile(CLINVAR.format(release)).fetch(chrom, pos - 1, pos))
+            lines = list(pysam.TabixFile(clinvar_url(release)).fetch(chrom, pos - 1, pos))
         finally:
             os.chdir(here)
     out = []
@@ -409,12 +596,13 @@ def clinvar_records(release: str, chrom: str, pos: int) -> list[dict]:
         info = dict(kv.split("=", 1) for kv in f[7].split(";") if "=" in kv)
         out.append(dict(release=release, pos=int(f[1]), vcv=f[2], ref=f[3], alt=f[4],
                         clnsig=info.get("CLNSIG"), mc=info.get("MC"), gene=info.get("GENEINFO"),
-                        rs=info.get("RS")))
+                        rs=info.get("RS"), clnhgvs=info.get("CLNHGVS"), clndn=info.get("CLNDN"),
+                        clnrevstat=info.get("CLNREVSTAT")))
     return out
 
 
 def clinvar_md5(release: str) -> str:
-    return _get(CLINVAR.format(release) + ".md5").text.split()[0]
+    return _get(clinvar_url(release) + ".md5").text.split()[0]
 
 
 # UniProt entry versions current in November 2024 (UniSave), when ProtParam was run (23 November).
