@@ -161,21 +161,23 @@ def fit_cumulative_gaussian(currents, n_hit, n_tot):
     return {"mu": mu, "sigma": sig, "guess": g, "lapse": l, "x50": x50}
 
 
-PSIGNIFIT_GRID = {"threshold": 25, "width": 25, "lambda": 12, "gamma": 12, "eta": 12}
-
-
-def fit_psignifit(currents, n_hit, n_tot):
+def fit_psignifit(currents, n_hit, n_tot, grid_steps=None):
     """psignifit 4 (Python port of the MATLAB toolbox the paper's code calls), sigmoid 'norm',
-    experiment type yes/no, so guess and lapse are free (claims fig2a-threshold-decrease). The
-    threshold is psignifit's default, the stimulus at 50% of the unscaled sigmoid. The grid is
-    coarser than psignifit's default (25 steps for threshold and width, 12 for the others), a
-    standard choice of numerical precision made to keep the notebook fast."""
+    experiment type yes/no, so guess and lapse are free (claims fig2a-threshold-decrease), at
+    psignifit's default grid unless `grid_steps` is given. Returns the two thresholds the fit
+    defines: `ps_x50`, the current at which the fitted (scaled) function reaches 0.5, which is
+    what the paper's code takes (processing/dataloader.py, get_block_detection_threshold:
+    ps.getThreshold(result, 0.5), whose default is the scaled function) and what the claim's
+    criterion names ("the current at 50% detection of the fitted function"); and
+    `ps_threshold`, psignifit's own threshold parameter, the midpoint of the unscaled sigmoid."""
     import psignifit as ps
     data = np.column_stack([currents, n_hit, n_tot]).astype(float)
-    r = ps.psignifit(data, sigmoid="norm", experiment_type="yes/no", grid_steps=PSIGNIFIT_GRID)
+    kw = {} if grid_steps is None else {"grid_steps": grid_steps}
+    r = ps.psignifit(data, sigmoid="norm", experiment_type="yes/no", **kw)
     e = r.parameter_estimate
-    return {"ps_threshold": float(e["threshold"]), "ps_width": float(e["width"]),
-            "ps_guess": float(e["gamma"]), "ps_lapse": float(e["lambda"])}
+    x50 = float(r.threshold(0.5, unscaled=False, return_ci=False))
+    return {"ps_x50": x50 if np.isfinite(x50) else np.nan, "ps_threshold": float(e["threshold"]),
+            "ps_width": float(e["width"]), "ps_guess": float(e["gamma"]), "ps_lapse": float(e["lambda"])}
 
 
 def block_data(s):
@@ -270,59 +272,91 @@ def time_to_max(spk, starts, window=TRAIN_S, bin_s=0.010, sigma_s=0.020):
     return (np.argmax(sm) + 0.5) * bin_s * 1000.0  # ms, bin centre
 
 
-PL_BIN_S = 0.0005   # 0.5 ms bins in each 10 ms interpulse interval (Methods)
-PL_NBIN = 20
-PL_KEEP = np.arange(3, 19)  # first 1.5 ms and last 0.5 ms blanked (Methods)
+PL_BIN_MS = 0.5         # 0.5 ms bins in each interpulse interval (Methods)
+PL_POST_BLANK_MS = 1.5  # first 1.5 ms after each pulse blanked (Methods)
+PL_PRE_BLANK_MS = 0.5   # last 0.5 ms before the next pulse blanked (Methods)
 
 
-def pulse_matrix(spk, starts, n_pulses=70):
-    """Spikes per 0.5 ms bin for every pulse of every train: shape (trains * pulses, 20)."""
-    M = np.zeros((len(starts) * n_pulses, PL_NBIN), np.int32)
-    for i, t in enumerate(starts):
-        a, b = np.searchsorted(spk, [t, t + n_pulses * IPI_S])
-        if b <= a:
-            continue
-        d = spk[a:b] - t
-        p = np.floor(d / IPI_S).astype(int)
-        ph = np.floor((d - p * IPI_S) / PL_BIN_S).astype(int)
-        ok = (p >= 0) & (p < n_pulses) & (ph >= 0) & (ph < PL_NBIN)
-        np.add.at(M, (i * n_pulses + p[ok], ph[ok]), 1)
+def pulse_starts(train_starts, n_pulses=70, ipi_s=IPI_S):
+    """Onset of every pulse, from the train onsets and the nominal interpulse interval. The files
+    give train onsets only; the trains are 70 pulses at 100 Hz (table description), so pulse k is
+    taken at onset + k x 10 ms (assumption; checked against the stored train durations in the
+    notebook)."""
+    t = np.asarray(train_starts, float)
+    return (t[:, None] + np.arange(n_pulses)[None, :] * ipi_s).ravel()
+
+
+def pulse_matrix(spk, pulses, win_ms=10.0):
+    """Spikes per 0.5 ms bin in the `win_ms` after each pulse: shape (pulses, win_ms / 0.5)."""
+    nb = int(round(win_ms / PL_BIN_MS))
+    M = np.zeros((len(pulses), nb), np.int32)
+    lo = np.searchsorted(spk, pulses)
+    hi = np.searchsorted(spk, pulses + win_ms / 1000.0)
+    for i in np.flatnonzero(hi > lo):
+        b = np.floor((spk[lo[i]:hi[i]] - pulses[i]) * 1000.0 / PL_BIN_MS).astype(int)
+        b = b[(b >= 0) & (b < nb)]
+        np.add.at(M[i], b, 1)
     return M
 
 
-def _pli(curve):
-    c = curve[PL_KEEP]
-    j = int(np.argmax(c))
-    lo, hi = max(j - 1, 0), min(j + 2, len(c))
-    return c[lo:hi].mean() - np.median(c), j
+def _pli_code(v):
+    """PLI of the code's calculate_pulse_locked_index: mean of the 3 values around the peak (the
+    first or last 3 at an edge) minus the median, over the unblanked values `v`."""
+    j = int(np.argmax(v))
+    if j == 0:
+        top = v[0:3]
+    elif j == len(v) - 1:
+        top = v[-3:]
+    else:
+        top = v[j - 1:j + 2]
+    return float(np.mean(top) - np.median(v))
 
 
-def pulse_locking(M, rng, n_boot=500, frac=0.2, n_surr=100):
-    """Pulse-locking index and PL call (claims, common method, from the code's
-    pulse_locked_response_metrics.py): spike probability per bin is spikes per bin over pulses;
-    PLI is the mean of the 3 bins around the peak minus the median of the unblanked bins, on the
-    mean curve of 500 bootstrap draws of 20% of the pulses; PL when PLI exceeds the 99th
-    percentile of 100 surrogates that place the same number of spikes uniformly at random in the
-    unblanked window. Latency is the mean, over draws, of the time of the peak bin; jitter is the
-    variance of those times (ms^2)."""
+def pulse_locking(M, rng, win_ms=10.0, n_boot=500, frac=0.2, n_null=100):
+    """Pulse-locking as the paper's code computes it (processing/batch_process/postprocessing/
+    responses_v2/pulse_locked_response_metrics.py at d1922d1, called from responses_v3/
+    stim_condition_response.py; claims, common method). `M` is the pulse matrix of one response.
+
+    - Spike probability: spikes per 0.5 ms bin over the pulses drawn, bins centred before 1.5 ms or
+      after win - 0.5 ms set to 0, and two points inserted at 1.5 ms (a 0 and a copy of the first
+      unblanked bin), as get_spike_prob_distribution does.
+    - 500 draws of 20% of the pulses without replacement (get_bootstrapped_metrics); the PLI is
+      taken on their mean curve over the values centred from 1.5 to win - 0.5 ms (which include
+      the two inserted points); latency is the mean over draws of the bin centre of the curve's
+      maximum and jitter the variance of those times (ms^2).
+    - Null (get_null_distribution): 100 times, the spikes of one draw of 20% of the pulses are
+      placed uniformly at random from 1.5 to win - 0.5 ms and divided by the number of pulses
+      drawn; PL when the PLI exceeds the 99th percentile of the null PLIs."""
+    nb = M.shape[1]
+    c = (np.arange(nb) + 0.5) * PL_BIN_MS
+    valid = (c >= PL_POST_BLANK_MS) & (c <= nb * PL_BIN_MS - PL_PRE_BLANK_MS)
+    Mv = M * valid
     n = M.shape[0]
-    k = max(int(round(frac * n)), 1)
-    draws = rng.integers(0, n, size=(n_boot, k))
-    curves = np.stack([M[d].mean(0) for d in draws])
+    k = max(int(n * frac), 1)
+    i3 = int(np.searchsorted(c, PL_POST_BLANK_MS))
+    cf = np.concatenate([c[:i3], [PL_POST_BLANK_MS, PL_POST_BLANK_MS], c[i3:]])
+    vf = (cf >= PL_POST_BLANK_MS) & (cf <= nb * PL_BIN_MS - PL_PRE_BLANK_MS)
+    sel = np.zeros((n_boot, n), np.float32)
+    for i in range(n_boot):
+        sel[i, rng.choice(n, k, replace=False)] = 1.0
+    probs = (sel @ Mv.astype(np.float32)) / k
+    curves = np.concatenate([probs[:, :i3], np.zeros((n_boot, 1)), probs[:, i3:i3 + 1], probs[:, i3:]], axis=1)
+    lat = cf[np.argmax(curves, axis=1)]
     mean_curve = curves.mean(0)
-    pli, _ = _pli(mean_curve)
-    peaks = np.array([np.argmax(c[PL_KEEP]) for c in curves])
-    peak_t = (PL_KEEP[peaks] + 0.5) * PL_BIN_S * 1000.0
-    total = int(M[:, PL_KEEP].sum())
-    surr = np.empty(n_surr)
-    for i in range(n_surr):
-        h = np.bincount(rng.integers(0, len(PL_KEEP), size=total), minlength=len(PL_KEEP)) / n
-        full = np.zeros(PL_NBIN)
-        full[PL_KEEP] = h
-        surr[i] = _pli(full)[0]
-    return {"pli": pli, "pl": bool(total > 0 and pli > np.percentile(surr, 99)),
-            "peak_prob": float(mean_curve[PL_KEEP].max()),
-            "latency_ms": float(peak_t.mean()), "jitter_ms2": float(peak_t.var())}
+    pli = _pli_code(mean_curve[vf])
+    nvalid = int(valid.sum())
+    first = int(np.flatnonzero(valid)[0])
+    null = np.empty(n_null)
+    for i in range(n_null):
+        ns = int(Mv[rng.choice(n, k, replace=False)].sum())
+        h = np.zeros(nb)
+        h[first:first + nvalid] = np.bincount(rng.integers(0, nvalid, ns), minlength=nvalid) / k
+        null[i] = _pli_code(h[valid])
+    peak_bin = int(np.argmax(mean_curve[vf]))
+    return {"pli": pli, "pl": bool(pli > np.percentile(null, 99)),
+            "peak_prob": float(mean_curve.max()), "latency_ms": float(lat.mean()),
+            "jitter_ms2": float(lat.var()), "peak_ms": float(cf[vf][peak_bin]),
+            "n_pl_spikes": int(Mv.sum())}
 
 
 def response_table(sessions, rng_seed=0, currents=None, window=TRAIN_S, tmax_bin=0.010,
@@ -376,7 +410,7 @@ def add_pulse_locking(rows, sessions, rng_seed=1):
         s = sessions[r["si"]]
         tr = ephys_trains(s)
         m = (tr["stim_channel"] == r["channel"]) & (tr["current_uA"] == r["current"])
-        M = pulse_matrix(s["spikes"][r["unit"]], np.sort(tr["start_time"][m]))
+        M = pulse_matrix(s["spikes"][r["unit"]], pulse_starts(np.sort(tr["start_time"][m])))
         r.update(pulse_locking(M, rng))
 
 
@@ -557,3 +591,110 @@ def cluster_test(H, M, rng, n_perm=1000, alpha=0.05):
         null[i] = max([abs(c[2]) for c in cs], default=0.0)
     res = [{"start_bin": a, "end_bin": b, "mass": m, "p": float((null >= abs(m)).mean())} for a, b, m in obs]
     return res, t
+
+
+# ------------------------------------------------------------------------------------- control animals
+CONTROL_PULSE_WIN_MS = 20.0  # 50 Hz bursts: 20 ms pulse window (code processing/control/postprocessing/
+                             # create_session_responses.py docstring: "50 Hz stim (20ms pulse window)")
+CONTROL_PRE_S = 0.7          # baseline before each train (code: analyze_stimulus_train_response with the
+                             # 700 ms pre-stim window of WindowConfig, called by the responses_v2 classes
+                             # the control pipeline reuses)
+
+
+def load_control_ephys(asset):
+    """One control electrophysiology session: units and the burst table (one row per burst)."""
+    f = open_asset(asset["asset_id"])
+    s = {"path": asset["path"], "subject": f["general/subject/subject_id"][()].decode(),
+         "date": f["session_start_time"][()].decode()[:10]}
+    u = f["units"]
+    st = u["spike_times"][()]
+    idx = u["spike_times_index"][()]
+    s["spikes"] = np.split(st, idx[:-1])
+    s["stim"] = _table(f["intervals/electrical_stimulation"])
+    s["ephys_end"] = float(st.max()) if len(st) else 0.0
+    f.close()
+    return s
+
+
+def control_responses(sessions, rng_seed=40, currents=(5.0,)):
+    """Responses of control units, following the paper's control pipeline (processing/control/
+    postprocessing/create_session_responses.py and process_control_responses.py at d1922d1), which
+    reuses the behavioural response classes with a 20 ms pulse window:
+
+    - a train is one burst (the code groups pulses into trains at gaps above 3 pulse windows, 60 ms,
+      and the bursts are 300 ms apart), so the paired t test and z-score are over bursts;
+    - stimulation spikes are those from the first pulse to 20 ms after the last, outside the
+      blanked 1.5 ms after and 0.5 ms before each pulse; the baseline is the 700 ms before the first
+      pulse (code: analyze_stimulus_train_response); paired t test on the per-burst counts; z-score =
+      (stimulation rate - baseline rate) / STD (ddof 0) of the per-burst baseline rates;
+    - baseline_too_slow when the baseline rate is below 0.5 Hz; num_spikes is the number of
+      unblanked pulse-window spikes; time to maximum as `time_to_max` over the burst (200 ms; the
+      code searches 0 to 700 ms of a raster that holds spikes after the burst only for the last burst
+      of a trial, an assumption);
+    - pulse-locking by `pulse_locking` with 20 ms windows over the 10 pulses of each burst.
+    Pulses are taken at burst onset + k x 20 ms (50 Hz, table description)."""
+    rng = np.random.default_rng(rng_seed)
+    rows = []
+    for si, s in enumerate(sessions):
+        st = s["stim"]
+        keep = st["stop_time"] < s["ephys_end"]
+        for c in np.unique(st["stim_channel"][keep]):
+            for cur in np.unique(st["current_uA"][keep & (st["stim_channel"] == c)]):
+                if currents is not None and cur not in currents:
+                    continue
+                m = keep & (st["stim_channel"] == c) & (st["current_uA"] == cur)
+                starts = np.sort(st["start_time"][m])
+                npul = int(np.median(st["pulse_count"][m]))
+                ipi = CONTROL_PULSE_WIN_MS / 1000.0
+                pulses = pulse_starts(starts, npul, ipi)
+                stim_dur = (npul - 1) * ipi + ipi + PL_PRE_BLANK_MS / 1000.0
+                for ui, spk in enumerate(s["spikes"]):
+                    M = pulse_matrix(spk, pulses, CONTROL_PULSE_WIN_MS)
+                    nb = M.shape[1]
+                    cc = (np.arange(nb) + 0.5) * PL_BIN_MS
+                    valid = (cc >= PL_POST_BLANK_MS) & (cc <= CONTROL_PULSE_WIN_MS - PL_PRE_BLANK_MS)
+                    sc = (M * valid).reshape(len(starts), npul, nb).sum((1, 2))
+                    pc = counts_in(spk, starts, -CONTROL_PRE_S, -PL_PRE_BLANK_MS / 1000.0)
+                    pre_dur = CONTROL_PRE_S - PL_PRE_BLANK_MS / 1000.0
+                    srate, prate = sc.sum() / (stim_dur * len(starts)), pc.sum() / (pre_dur * len(starts))
+                    sd = np.std(pc / pre_dur)
+                    z = (srate - prate) / sd if sd > 0 else np.nan
+                    p = stats.ttest_rel(sc, pc).pvalue if len(sc) > 1 and np.any(sc != pc) else np.nan
+                    row = {"si": si, "subject": s["subject"], "date": s["date"], "week": s["week"],
+                           "phase": s["phase"], "unit": ui, "channel": int(c), "current": float(cur),
+                           "num_trials": len(starts), "num_spikes": int(sc.sum()), "base_rate": prate,
+                           "z": z, "p": p, "tmax_ms": time_to_max(spk, starts, 0.2, 0.010, 0.020)}
+                    row.update(pulse_locking(M, rng, win_ms=CONTROL_PULSE_WIN_MS))
+                    rows.append(row)
+    return rows
+
+
+def coupling_on_segments(spikes, segments, rng, min_spikes=50, n_shift=200):
+    """Population coupling of each unit in `spikes` (dict unit -> spike times) to the summed rate
+    of the other units, on spikes inside `segments` (list of (start, stop) in s) concatenated, with
+    the method of `population_coupling` (1 ms bins, Gaussian sigma 10 ms, mean-centred, zero-lag
+    value over the median absolute value of 200 circular shifts; code pop_coupling_control.py)."""
+    lens = [int(round((b - a) * 1000)) for a, b in segments]
+    off = np.concatenate([[0], np.cumsum(lens)])
+    B = {}
+    for u, spk in spikes.items():
+        v = np.zeros(off[-1])
+        for (a, b), o, L in zip(segments, off[:-1], lens):
+            i, j = np.searchsorted(spk, [a, b])
+            k = np.floor((spk[i:j] - a) * 1000).astype(int)
+            k = k[(k >= 0) & (k < L)]
+            np.add.at(v, o + k, 1)
+        B[u] = v
+    out = {}
+    for u, v in B.items():
+        if v.sum() < min_spikes or len(B) < 2:
+            continue
+        pop = sum(B[q] for q in B if q != u) * 1000.0
+        pop = gaussian_filter1d(pop, 10.0)
+        pop = pop - pop.mean()
+        idx = np.repeat(np.arange(len(v)), v.astype(int))
+        c0 = pop[idx].mean()
+        sh = rng.integers(1, len(v), size=n_shift)
+        med = np.median(np.abs([pop[(idx + k) % len(v)].mean() for k in sh]))
+        out[u] = c0 / med if med > 0 else np.nan
+    return out
