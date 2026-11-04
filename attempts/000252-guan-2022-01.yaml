@@ -1,0 +1,278 @@
+schema_version: 2
+id: 000252-guan-2022-01
+dataset:
+  archive: dandi
+  id: "000252"
+  version: 0.230408.2207
+  doi: 10.48324/dandi.000252/0.230408.2207
+paper: doi:10.1101/2022.12.07.22283227
+date: 2026-11-04
+entry: 000252-guan-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41825254986
+outcomes:
+- claim: tenfinger-recording-counts
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:tenfinger-recording-counts
+  measured:
+  - 10
+  - 2
+  - 100
+  - 111.4
+  - 159.5
+  - 129.5
+  notes: The dandiset has 10 sessions of participant N and 2 of J, each of 100 trials (10 per
+    condition). Before the 0.5 Hz exclusion N-PPC has 111.4 units per session (102 to 119), J-PPC
+    159.5 (159 to 160) and J-MC 129.5 (120 to 139); the J-MC maximum of 139 is above the paper's
+    130 but inside the 10% widening of that bound (143). After the exclusion the means are 94.3
+    and 93.0 for N-PPC under O1 (a) and (b), outside tolerance, and 157.5 or 156.0 for J-PPC and
+    126.0 or 125.0 for J-MC. The paper's counts are those before the exclusion.
+  deviations:
+  - The counts that match are those before the 0.5 Hz exclusion, which the Methods (Feature
+    Extraction) say applies to all analyses; the criterion names this count among its readings.
+- claim: tenfinger-pooled-npcc-neurons
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:tenfinger-pooled-npcc-neurons
+  measured: 1114
+  notes: 1114 N-PPC units over the 10 sessions before the exclusion (paper 1111), 943 under O1 (a)
+    and 930 under O1 (b), both outside tolerance.
+  deviations:
+  - As for tenfinger-recording-counts, the matching count is the one before the exclusion.
+- claim: tenfinger-discriminative-fraction
+  outcome: not_reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:tenfinger-discriminative-fraction
+  measured:
+  - 47.8
+  - 38.1
+  - 65.1
+  notes: One-way ANOVA of Go-window rates across the ten conditions, Benjamini-Hochberg over the
+    neurons of each array pooled over sessions. Under O1 (a) 47.8% of 943 N-PPC, 38.1% of 315 J-PPC
+    and 65.1% of 252 J-MC neurons have q below 0.05; under O1 (b) 48.9%, 38.1% and 65.6%; before
+    the exclusion 40.4%, 37.6% and 63.7%. All are below the lower tolerance bounds (59.4%, 51.3%,
+    70.2%). As variants, uncorrected p below 0.05 gives at most 56.1%, 46.5% and 68.8%, FDR per
+    session gives no more, and the Delay, Cue and ITI windows give fewer (0 to 49%). Ten-finger
+    decoding on the same rates matches the paper, so the gap is in the single-neuron test, not in
+    the data's information.
+  deviations:
+  - The Go window is used, as claims-file O11 says the text supports no other.
+  - Units with the same rate in every trial (5 N-PPC and 2 J-MC before the exclusion, none after it)
+    have no ANOVA p; they are counted in the FDR's m and as not discriminative.
+- claim: tenfinger-decoding-accuracy
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:tenfinger-decoding-accuracy
+  measured:
+  - 72.2
+  - 69.5
+  - 78.5
+  notes: Diagonal LDA per session, stratified 8-fold, predictions pooled over sessions. Under O1 (a)
+    and O2 (a), 72.2% (N-PPC, 1000 trials), 69.5% (J-PPC, 200) and 78.5% (J-MC, 200); over all
+    readings of O1 (including no exclusion) and O2 the values are 71.4 to 73.0%, 68.0 to 70.0% and
+    78.0 to 78.5%, and single seeds of O2 (b) 69.9 to 73.6%, 66.0 to 72.5% and 76.5 to 80.0%, all
+    within tolerance. Chance is 10%; with shuffled labels per-session accuracies are 0.07 to 0.17.
+  deviations:
+  - The variance floor of the diagonal LDA (1e-9 of the largest variance, as scikit-learn's
+    GaussianNB) is a standard choice that only prevents division by zero.
+- claim: tenfinger-error-structure
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:tenfinger-error-structure
+  measured:
+  - 76.6
+  - 72.1
+  - 62.8
+  notes: Under O1 (a) and O2 (a), 213 of 278 N-PPC errors (119 adjacent, 94 matching), 44 of 61 J-PPC
+    errors and 27 of 43 J-MC errors are adjacent or matching; over all readings the shares are 73.9
+    to 76.6%, 66.2 to 72.1% and 62.8 to 65.3%, within tolerance of 76%, 66% and 68%.
+- claim: fig8b-matching-closer
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:fig8b-matching-closer
+  measured:
+  - 1.42
+  - 3.06
+  - 0.22
+  notes: Under O4 (a), with each partition's precision scaled to that of the partition mean, the
+    non-matching minus matching difference is 1.42 (BCa 95% CI 1.19 to 1.64) in N-PPC, 3.06 (1.73
+    to 4.13) in J-MC and 0.22 (-0.10 to 0.67) in J-PPC for O1 (a) and O3 (a); over O1 and O3 the
+    values are 1.42 to 1.71, 2.99 to 3.38 and 0.19 to 0.22, all within tolerance, with N-PPC and J-MC
+    CIs above 0 and the J-PPC CI including 0 (also by the percentile CI, in all 18 readings). Under
+    O4 (b), and the unscaled variant O4 (a1), the sign pattern is the same but the values are about
+    a fifth as large (N-PPC 0.28 to 0.36, J-MC 0.51 to 0.68), outside tolerance, which would be
+    partially reproduced. One N-PPC unit with zero residual variance in a partition is dropped.
+  deviations:
+  - Assumed that the per-partition noise passed to rsatoolbox is the precision of the partition
+    mean, the single-trial precision times the 5 trials per condition in each partition. The
+    Methods say the toolbox (ref 57) incorporates the noise covariances of both folds, which is its
+    list-of-noises branch, and the toolbox's calc_rdm_crossnobis documents that this list must hold
+    the precision of the mean of each fold. The paper does not say how it computed the noise, and
+    the scaling changes the values about fivefold; the unscaled result is shown.
+  - Units with zero residual variance in a partition make the noise covariance singular and are
+    left out of that session's distance (one N-PPC unit); a standard choice.
+- claim: fig8a-npcc-index-distinct
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:fig8a-npcc-index-distinct
+  notes: In the N-PPC distances averaged over 10 sessions, under every reading of O1, O3 and O4, the
+    index-middle and index-ring distances exceed the middle-ring distance in both hands (O1 a, O3 a,
+    O4 a, right 2.16 and 2.96 against 0.62, left 1.30 and 2.23 against 0.57). In single sessions the
+    pattern holds in both hands in 7 to 10 of 10 sessions. The outcome does not depend on the
+    noise scaling assumed for fig8b-matching-closer, as all readings agree.
+  deviations:
+  - The MDS of the figure is drawn by classical MDS of the clipped squared distances and aligned by
+    Generalized Procrustes with scaling; it is shown only and does not decide the outcome.
+- claim: fig8e-hand-ccgp
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:fig8e-hand-ccgp
+  notes: In N-PPC (943 neurons under O1 a), J-PPC (315) and J-MC (252), under every reading of O1, O6
+    and O7, no one of 1001 shuffles reaches the hand CCGP (p = 1/1002). Hand CCGP is 0.970 to 0.990
+    in N-PPC and J-PPC and 0.860 to 0.870 in J-MC, against shuffle means near 0.50, and at least
+    0.913 of the hand accuracy on the same pseudo-population, so close by both O9 (a) and (b).
+  deviations:
+  - The shuffle permutes the ten condition labels across pseudo-trials and recomputes CCGP; the
+    paper says only that labels were shuffled 1001 times. For O6 (b) each shuffle uses a new random
+    matching of trials.
+  - Standard accuracy is computed on the same pseudo-population (assumption, see
+    jppc-finger-ccgp-low); the per-session variant does not change this outcome, as hand CCGP is
+    above 0.9 of either.
+- claim: fig8e-finger-ccgp
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:fig8e-finger-ccgp
+  notes: In N-PPC and J-MC, under every reading, no shuffle reaches the finger-type CCGP (p =
+    1/1002). N-PPC CCGP is 0.918 to 0.954, at least 0.925 of its standard accuracy. J-MC CCGP is
+    0.735 to 0.790, 0.770 to 0.823 of the within-hand accuracy (O8 a) and 0.775 to 0.857 of the
+    accuracy over both hands (O8 b). Closeness holds for both arrays under O9 (b), a ratio above
+    0.55, and fails for J-MC under the 0.9 margin of O9 (a). The criterion asks for one reading, so
+    the claim is reproduced; under O9 (a) it would be partially reproduced.
+  deviations:
+  - As for fig8e-hand-ccgp, the shuffle scheme and the population of the standard accuracy are
+    choices the paper does not state.
+- claim: jppc-finger-ccgp-low
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:jppc-finger-ccgp-low
+  measured:
+  - 38.0
+  - 85.0
+  notes: J-PPC finger-type CCGP is 0.290 to 0.380 over the readings (shuffle mean 0.20), far below
+    the within-hand accuracy on the pseudo-population (0.828 to 0.890). The permutation p is below
+    0.001 in one of eight readings (O1 b, O6 a, linear SVM, p = 1/1002, CCGP 0.380, within-hand
+    0.850) and 0.002 to 0.038 in the others, so the paper's p below 0.001 holds only in that
+    reading. There the CCGP is within tolerance of 36% and the within-hand accuracy is outside the
+    tolerance of 65%, with CCGP below 0.9 of it, which the criterion calls partially reproduced. In
+    the per-session variant of standard accuracy J-PPC within-hand accuracy is 0.690 (LDA) and
+    0.685 (SVM), within tolerance, and the same reading would be reproduced.
+  deviations:
+  - Assumed that the standard (within-hand) accuracy is computed on the same pseudo-population as
+    CCGP, since the Methods (Compositionality of finger representations) call it an upper bound on
+    CCGP, which holds only for the same neurons. The Methods' offline classification trains a
+    separate classifier per session, and that reading, shown as a variant, gives values near the
+    paper's 65% and would change the outcome to reproduced.
+  - The shuffle scheme of the permutation test is not stated; condition labels are permuted across
+    pseudo-trials. The J-PPC p-values lie near the 0.001 bound, so the scheme can matter.
+- claim: figs11-jppc-lower-matched-size
+  outcome: reproduced
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:figs11-jppc-lower-matched-size
+  notes: With 100 random subsets per size, at 50, 100, 150, 200 and 250 neurons and under every
+    reading of O6 and O7 (O1 a), the mean J-PPC finger-type CCGP (0.254 to 0.325) is below the
+    means of N-PPC (0.472 to 0.854) and J-MC (0.559 to 0.788) at the same size.
+  deviations:
+  - Run under O1 (a) only, as the pooled J-MC population (252) sets the largest size; O1 (b) changes
+    the populations by at most 13 neurons.
+- claim: fig4c-contra-discriminative
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the alternating-cues task with No-Go (N 4 sessions, J 3). All 12 files of the
+    dandiset are the ten-finger task, with conditions Rt to Lp and no No-Go; the dandiset's
+    metadata and the paper's Data Availability name no other source.
+- claim: fig4e-plan-vs-move
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).
+- claim: fig5a-contra-decoding
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).
+- claim: fig5bcd-npcc-data-requirements
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).
+- claim: fig5e-planning-decoding
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).
+- claim: fig6-online-bmi
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the online BMI sessions with the decoded class of each trial. The dandiset has none.
+    Its metadata says it continues DANDI:000147, which by its description holds participant N's
+    BMI reaction-time sessions of ref 46 (10 files, with in-session classified finger); the claims
+    file does not name it as a source of this paper's data and it holds nothing of participant J,
+    so it was not used. J's BMI sessions are not public anywhere the paper names.
+- claim: figs6-single-array-retrospective
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs J's BMI run-blocks with threshold crossings or sorted units; not in the dandiset nor
+    in DANDI:000147, which holds participant N only.
+- claim: figs7-left-hand-bmi
+  outcome: blocked
+  blocked_by: data_missing
+  notes: J's left-hand BMI sessions are not in the dandiset (see fig6-online-bmi).
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the ten-finger press task (10 sessions of N, 2 of J). The
+    alternating-cues task (Figures 1, 4 and 5, Supplementary Figures 2 to 5) and the online BMI
+    sessions of J (Figure 6b, Supplementary Figures 6 and 7) are not in it, though the paper's Data
+    Availability names only this dandiset. N's BMI sessions of ref 46 appear to be in DANDI:000147.
+- kind: format_error
+  statement: In 1509 of 1692 units the spike times are not stored in increasing time order, which
+    NWB expects. Counts in windows are unaffected once sorted, as this attempt does.
+- kind: metadata_insufficient
+  statement: The files name the participants P1 (the paper's N) and N1 (the paper's J); no mapping
+    to the paper's labels is given, and N1 is not participant N. The mapping follows from the sex
+    and electrode locations.
+- kind: metadata_insufficient
+  statement: The trial columns Run, TrialNumber, cue_on_time, cue_off_time and go_on_time have no
+    description. The Delay screen onset, which defines the paper's Delay window, is implied only by
+    cue_off_time.
+- kind: other
+  statement: The per-session unit counts the paper reports match the units in the files before
+    the 0.5 Hz exclusion that the Methods apply to all analyses; the J-MC session of 2019-02-12 has
+    139 units against the paper's stated maximum of 130.
+- kind: methods_unavailable
+  statement: For the authors. How was the noise precision passed to rsatoolbox for the
+    cross-validated Mahalanobis distance (Methods, Neural distance between fingers)? With two
+    partitions and each partition's single-trial precision the differences are about a fifth of the
+    paper's (N-PPC 0.28 against 1.56); with the precision of the partition mean, as the toolbox
+    documents for a list of noises, they match (1.42). This attempt assumed the latter.
+- kind: methods_unavailable
+  statement: For the authors. Was the standard (within-condition) accuracy compared with CCGP
+    computed on the pseudo-population or per session (Methods, Compositionality of finger
+    representations)? For J-PPC within-hand accuracy is 0.83 to 0.89 on the pseudo-population and
+    0.69 per session, against the paper's 65%. This attempt assumed the pseudo-population.
+- kind: methods_unavailable
+  statement: For the authors. What did the 1001 label shuffles of the CCGP permutation test permute,
+    and how were trials of different sessions matched in the pseudo-population? With condition
+    labels permuted across pseudo-trials, J-PPC finger-type CCGP has p from 0.001 to 0.038 over the
+    readings, against the paper's p below 0.001.
+- kind: methods_unavailable
+  statement: For the authors. With the Methods' one-way ANOVA on Go-window rates and FDR over pooled
+    neurons, 48%, 38% and 65% of N-PPC, J-PPC and J-MC neurons are discriminative in the ten-finger
+    task, against 66%, 57% and 78%. Which window, exclusion and correction gave the paper's values?
