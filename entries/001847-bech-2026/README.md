@@ -20,10 +20,10 @@ orofacial tracking, optogenetic grid inactivation, muscimol and widefield imagin
 | Jaw onset 108 ms | Reproduced, resting on an assumption (the Methods' correct whisker trials) |
 | Auditory activity similar across contexts, with an order of areas | Partially reproduced |
 | Whisker activity diverges after 50 ms in RSC and wM1/2 | Reproduced |
-| RSC first to discriminate contexts, in pixels and ROIs | Reproduced, resting on an assumption (the 50 ms baseline); a change to blocked (methods underspecified) is proposed, since the 250 ms baseline gives a tie |
+| RSC first to discriminate contexts, in pixels and ROIs | Blocked, methods underspecified (reproduced with the 50 ms baseline; the 250 ms baseline gives a tie in the pixel version; asked of the authors) |
 | GCaMP6f consistent, controls flat | Partially reproduced |
 | RSC axon tracing | Blocked, data missing |
-| Seed correlations (Figure 4A-B) | Blocked, too large (3 claims; the pixel analysis was not run in this attempt, and a change of the reason to other is proposed; a variant on the ROI traces is shown) |
+| Seed correlations (Figure 4A-B) | Blocked, other (3 claims; the seed-to-pixel analysis was not run in this attempt; a variant on the ROI traces is shown) |
 | Inhibition effects on cortex, photoactivation control, angle predicts lick change | Reproduced (3 claims) |
 | PC3 trajectories follow lick or no-lick | Not reproduced |
 | Smaller angles for RSC and tjS1 | Partially reproduced |

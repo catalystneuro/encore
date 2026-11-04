@@ -49,7 +49,7 @@ used as labels (`with_labels`) and their link is tested in `session-list-link`.
 | fig3h-rsc-first-context-discrimination | tested, ROI part on the grid ROI traces and pixel part on windowed reads of the ΔF/F0 stack |
 | fig4c, fig4d, fig4e, fig4fg, supp4d | tested on the grid ROI traces |
 | fig1k-model-accuracy, fig1k-context-strongest-feature, fig1l-shap-whisker-trial-in-block | tested (the code's XGBoost model rebuilt) |
-| fig4b (3 claims) | blocked, too_large (the pixel analysis was not run in this attempt); a variant on the grid ROI traces is shown |
+| fig4b (3 claims) | blocked, other (the seed-to-pixel analysis was not run in this attempt); a variant on the grid ROI traces is shown |
 | supp3c-rsc-projects-to-wm | blocked, data_missing |
 """)
 
@@ -799,7 +799,8 @@ baseline-subtracted per trial, averaged per session, then per mouse; d' per pixe
 each ROI the earliest crossing among the pixels of its 1 mm circle (the file's grid masks,
 `grid_areas/brain_grid_area_segmentation`), with the code's Gaussian smoothing of sigma 1 pixel on the
 mouse-average images and without it as a variant. The Methods for Figure 3H define d' as that "shown in
-Figure 3F bottom row", whose Methods (Figures 3E&F) subtract the 50 ms baseline.
+Figure 3F bottom row", whose Methods (Figures 3E&F) subtract the 50 ms baseline, while the Methods'
+Computation of ΔF/F0 give 250 ms for Figures 3 and 4.
 """)
 code("""
 def first_cross(t, dfun, start):
@@ -859,7 +860,7 @@ for base in [50, 250]:
     v = {H[('roi', base, s)] for s in (0.02, 0.03)} | {H[('pixel', True, base, s)] for s in (0.02, 0.03)}
     print(f'baseline {base} ms, ROI and smoothed pixel versions, both exclusion readings:', v)
 """, tags=["claim:fig3h-rsc-first-context-discrimination"])
-md("**Result: reproduced, resting on an assumption.** With the 50 ms baseline, which the Methods for Figure 3H take from Figure 3F, RSC is the earliest area in both the ROI ranking and the smoothed pixel version, under both exclusion readings, with no tie. With the 250 ms baseline RSC is first in the ROI ranking but ties with wM1 in the pixel version (50 ms), which counts as partially reproduced; the unsmoothed pixel variant at 250 ms puts wM1 and tjS1 first. The criterion asks for the outcome every baseline gives, otherwise methods_underspecified, and the claims file names both the 50 and 250 ms baselines; since they disagree, the criterion gives blocked (methods_underspecified). The verified outcome is kept, and the change to blocked is proposed for a third verification round.")
+md("**Result: blocked (methods_underspecified).** With the 50 ms baseline, which the Methods for Figure 3H take from Figure 3F, RSC is the earliest area in both the ROI ranking and the smoothed pixel version, under both exclusion readings, with no tie. With the 250 ms baseline RSC is first in the ROI ranking but ties with wM1 in the pixel version (50 ms), which counts as partially reproduced; the unsmoothed pixel variant at 250 ms puts wM1 and tjS1 first. The criterion asks for the outcome every baseline gives, otherwise methods_underspecified, and the claims file names both the 50 and 250 ms baselines; since they disagree, the criterion gives blocked (methods_underspecified). The paper states both baselines, so which one Figure 3H uses is a question for the authors.")
 
 md("""
 ### fig3-gcamp-consistent-controls-flat
@@ -1454,8 +1455,8 @@ The three fig4b claims are blocked: the criterion uses seed-to-pixel correlation
 in the 2 s before every trial, masked by a block-shuffle null. That analysis was not run in this attempt.
 The reads alone are estimated below from the rate measured for the pixel part of fig3h, with the time
 this notebook has taken up to that cell; together they do not fit the notebook limit of 60 minutes.
-In a separate notebook the reads alone would take about half of that limit, before the block shuffles;
-such a notebook was not built in this attempt. As a variant
+In a separate notebook the reads alone would fit within that limit (the share is printed below; the read
+rate varies between runs), before the block shuffles; such a notebook was not built in this attempt. As a variant
 that does not decide the outcome, the zero-lag Pearson correlations between the grid ROI traces of the
 seven seeds (1 mm circles at the seed sites) in the 2 s before each trial start are computed, whisker
 trials, correct (W+ hits, W- misses) and incorrect (W+ misses, W- hits), averaged per session, then per
@@ -1497,7 +1498,7 @@ for oc in ['correct', 'incorrect']:
         print(f'   {a}-{b}: W- {wm.mean():.3f}, W+ {wp.mean():.3f}, W- minus W+ {dd.mean():+.3f}, paired d {dd.mean() / dd.std(ddof=1):+.2f}, t {tt.statistic:.2f}, p x7 {min(1, 7 * tt.pvalue):.3f}')
 print('W+ incorrect minus W+ correct:', {f'{a}-{b}': round(float((Mm.xs(f'{a}-{b}', level='pair')[('incorrect', 1)] - Mm.xs(f'{a}-{b}', level='pair')[('correct', 1)]).mean()), 3) for a, b in PAIRS})
 """, tags=["claim:fig4b-wminus-higher-correlation-correct"])
-md("**Result: blocked (too_large).** The pixel analysis the criterion needs was not run in this attempt: the reads it needs, estimated above, do not fit this notebook's limit with the rest of the notebook. In the ROI-trace variant, before correct trials W- is higher than W+ for 5 of the 7 pairs (paired d' at or above 0.8 for 4 of them) and lower for wM1-ALM and wM1-tjM1, and no pair passes the corrected t-test; before incorrect trials no pair has a W- minus W+ d' of 0.8 or more.")
+md("**Result: blocked (other).** The seed-to-pixel analysis the criterion needs was not run in this attempt. Its reads, estimated above, do not fit this notebook with the rest of the notebook, but in a separate notebook they would fit within the limit, so the data are not shown to be too large; that notebook was not built. In the ROI-trace variant, before correct trials W- is higher than W+ for 5 of the 7 pairs (paired d' at or above 0.8 for 4 of them) and lower for wM1-ALM and wM1-tjM1, and no pair passes the corrected t-test; before incorrect trials no pair has a W- minus W+ d' of 0.8 or more.")
 
 
 md("""
@@ -1520,10 +1521,10 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 | fig3c-jaw-onset | reproduced, resting on the Methods' correct whisker trials (assumption) |
 | fig3e-auditory-similar-across-contexts | partially reproduced (similar, A1 first; the order of the others not found) |
 | fig3f-whisker-divergence-after-50ms | reproduced |
-| fig3h-rsc-first-context-discrimination | reproduced, resting on the 50 ms baseline (assumption); a tie in the pixel version with the 250 ms baseline, so a change to blocked (methods_underspecified) is proposed |
+| fig3h-rsc-first-context-discrimination | blocked, methods_underspecified (reproduced with the 50 ms baseline; a tie in the pixel version with the 250 ms baseline) |
 | fig3-gcamp-consistent-controls-flat | partially reproduced (GCaMP6f holds; control mice also show W+ vs W- differences) |
 | supp3c-rsc-projects-to-wm | blocked, data_missing |
-| fig4b (3 claims) | blocked, too_large (the pixel analysis was not run in this attempt; its reads do not fit the notebook limit with the rest of the notebook); an ROI-trace variant is shown |
+| fig4b (3 claims) | blocked, other (the seed-to-pixel analysis was not run in this attempt); an ROI-trace variant is shown |
 | fig4c-inhibition-propagates-forward, supp4d-photoactivation-control, fig4fg-angle-predicts-lick-change | reproduced |
 | fig4d-trajectories-follow-lick | not reproduced |
 | fig4e-rsc-tjs1-smaller-angle | partially reproduced (W+ only at RSC (-1.5, 0.5); both contexts at (-0.5, 0.5)) |
