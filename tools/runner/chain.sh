@@ -18,7 +18,9 @@
 # branch already merged into main belongs to an earlier attempt and is deleted first, so the attempt
 # starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session or weekly limit is retried after
 # 30 minutes from where it started; one that fails on the network or the machine (a dropped connection, a runner
-# shut down, no log) is retried twice after 5 minutes; any other failure stops the chain.
+# shut down, no log) is retried twice after 5 minutes; one that fails because GitHub itself is failing (its git
+# refusing the paper store's deploy key, or answering 5xx, as in the incident of 2026-11-04) is retried every 15
+# minutes for up to 6 hours (OUTAGE_TRIES); any other failure stops the chain.
 #
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
@@ -114,7 +116,8 @@ reset_branch(){ local start=$1
   else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
   [ "$(remote_branch)" = "$start" ]; }
 
-run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct out
+GITHUB_DOWN='git@github\.com: Permission denied \(publickey\)|remote: fatal error in commit_refs|remote rejected.*\((Internal Server Error|failure)\)|github\.com.*(returned error: 50[0-4]|HTTP 50[0-4]|Internal Server Error|Service Unavailable|Bad Gateway)'
+run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acct out
   while true; do
     fetch; start=$(remote_branch)
     read -r id st <<<"$(run_of "$role")"
@@ -159,6 +162,29 @@ run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct out
       reset_branch "$start" || { last_why="could not reset attempt/$d after the usage limit"; log "STOPPED: $last_why"; return 1; }
       log "$role hit a usage limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
+    fi
+    # GitHub failing, not the run: on 2026-11-04 its git refused the paper store's deploy key, unchanged, and
+    # answered pushes with 500s for hours. Every run then fails in its first minutes, before the agent starts.
+    # When only the commit job failed, the agent's work is in the run's artifact: that job is run again, and the
+    # chain waits for the same run, rather than running the agent again.
+    # Only GitHub's own errors count, never an error the agent met on another service, so that a failed agent is
+    # not run again for hours.
+    if echo "$runlog" | grep -qE "$GITHUB_DOWN" \
+       && [ $outage -lt "${OUTAGE_TRIES:-24}" ]; then
+      outage=$((outage+1))
+      if ! echo "$runlog" | cut -f1 | grep -qvx commit; then
+        log "$role: its commit failed because GitHub is failing (run $id); its commit job again in 15 minutes, retry $outage"
+        sleep 900
+        until gh run rerun "$id" --failed >/dev/null 2>&1; do
+          outage=$((outage+1))
+          [ $outage -lt "${OUTAGE_TRIES:-24}" ] || { last_why="could not run the commit job of run $id again"; log "STOPPED: $last_why"; return 1; }
+          sleep 900
+        done
+        sleep 20; continue   # the same run, queued again: waited for at the top of the loop
+      fi
+      reset_branch "$start" || { last_why="could not reset attempt/$d after GitHub failed"; log "STOPPED: $last_why"; return 1; }
+      log "$role failed because GitHub is failing (run $id); branch reset, retry $outage in 15 minutes"
+      sleep 900; continue
     fi
     # A failure of the network or of the machine, not of the agent: a connection dropped or timed out, the runner
     # was shut down, or the run left no log. Tried twice more; an agent that ran out of time is not.
