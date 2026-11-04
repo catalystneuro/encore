@@ -33,8 +33,8 @@
       swatch: function (k) { return '<span class="swatch ' + P.outcomes[k].css + '" aria-hidden="true"></span>'; } };
     // Datasets by archive: a categorical colour per archive (--archive-<slot>), fixed by the archive, not its rank.
     if (m === "datasets" && archives.length > 1) return {
-      keys: archives.map(function (a) { return "archive:" + a.key; }), by: "by archive",
-      label: function (k) { var a = archiveOf(k); return a ? "on " + a.label : k; },
+      keys: archives.map(function (a) { return "archive:" + a.key; }), by: "by archive", heading: "Archive:",
+      label: function (k) { var a = archiveOf(k); return a ? a.label : k; },
       paint: function (node, k) { node.setAttribute("style", "fill:var(--archive-" + archiveOf(k).slot + ");stroke:var(--surface);stroke-width:1"); },
       swatch: function (k) { return '<span class="swatch" style="background:var(--archive-' + archiveOf(k).slot + ')" aria-hidden="true"></span>'; } };
     if (m === "attempts" && protocols.length) return {
@@ -221,6 +221,7 @@
     var totals = {};
     keys.forEach(function (k) { totals[k] = rows.reduce(function (s, r) { return s + r[k]; }, 0); });
     document.getElementById("progress-legend").innerHTML = !stacked ? "" : '<ul class="legend compact">' +
+      (S.heading ? '<li class="legend-head">' + S.heading + "</li>" : "") +
       keys.filter(function (k) { return totals[k]; }).map(function (k) {
         return "<li>" + S.swatch(k) + "<strong>" + totals[k].toLocaleString() + "</strong> " + S.label(k) + "</li>";
       }).join("") + "</ul>";
