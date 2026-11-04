@@ -1,0 +1,488 @@
+schema_version: 2
+id: 001868-kim-2026-01
+dataset:
+  archive: dandi
+  id: "001868"
+  version: 0.260715.2016
+  doi: 10.48324/dandi.001868/0.260715.2016
+paper: doi:10.1126/sciadv.aef0343
+date: '2026-11-03'
+entry: 001868-kim-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41739365872
+outcomes:
+- claim: fig2a-threshold-decrease
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig2a-threshold-decrease
+  measured:
+  - 5.41
+  - 3.84
+  - 46
+  - 89
+  notes: psignifit thresholds (mean of block thresholds per channel and session, weeks 0 to 4, six mice)
+    have medians of 5.41 uA early (n = 46) and 3.84 uA late (n = 89), both within tolerance, and late
+    is lower (two-sided Mann-Whitney p = 5.43e-06, r = 0.39; paper p = 7.68e-6, r = 0.40). The early n
+    is within 43 +- 4; the late n of 89 is one above 80 +- 8, an expected value the criterion does not
+    judge. The bounded maximum likelihood fit gives 5.36 and 3.68 uA (late outside tolerance, p = 8.51e-07).
+    Without Mouse 6, 5.21 and 3.94 uA (p = 7.04e-05). Every mouse is lower late.
+  deviations:
+  - Thresholds are refitted with psignifit 4.3 (Python), sigmoid norm, yes/no, on a grid of 25 steps for
+    threshold and width and 12 for guess, lapse and eta, coarser than psignifit's default; this is a standard
+    choice of numerical precision. The paper's code calls the MATLAB toolbox. The dataset stores no thresholds.
+  - Blocks are the 100-trial groups of the volumetric trials; the planar fifth block is left out as the
+    Methods count four blocks (Methods, Analysis of behavioral data). 38 channel-sessions have two blocks
+    and 4 have one or three.
+  - Mouse 6 (ICMS83) has no catch trials in its files, so its fits have no 0 uA point.
+- claim: fig2a-steepest-decline-early
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig2a-steepest-decline-early
+  notes: Median psignifit threshold per week is 6.409, 4.637, 3.785, 4.324 and 3.827 uA for weeks 0 to
+    4. The fall from week 0 to 1 (1.772 uA) is larger than each later change (largest 0.853 uA). With
+    the maximum likelihood fit the margin is narrow, 1.232 against 1.220 uA.
+  deviations:
+  - The criterion's reading of Fig. 2A (week medians) is the claims file's assumption.
+  assumed: true
+- claim: figs1e-response-times-decrease
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs1e-response-times-decrease
+  notes: Median over mice of the per-mouse median hit response time at 4 to 6 uA is 274.9 ms in week 0,
+    199.2 in week 1 and 193.9 over the late phase; 93% of the fall (75.7 of 81.0 ms) is between weeks
+    0 and 1. From the train onset, 265.4 and 186.8 ms (93%). Variant, hit trials early against late, 190.1
+    against 173.8 ms, p = 7.19e-17, r = -0.14.
+  deviations:
+  - The dataset's response_time is from trial start, which precedes the train onset by 5.5 to 37 ms in
+    most sessions, 0 in Mouse 6 and 56 to 85 ms in ICMS101 2023-10-27; the time from train onset is shown
+    as a variant and gives the same result.
+  - Currents 4 to 6 uA, as the common method of the claims file fixes.
+- claim: figs5c-wheel-onset-decrease
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs5c-wheel-onset-decrease
+  notes: Per-animal thresholds (11.8 to 14.5 a.u.) give median onsets of 119.0 ms in Mouse 1, 133.0 ms
+    over all hit trials and 128.0 ms in the late phase, all within tolerance; early 144.0 ms (n = 1307)
+    against late 128.0 ms (n = 2897), p = 6.09e-32, r = -0.23 (paper n 1305 and 2922, r = -0.22). The
+    pooled threshold gives 118.0, 134.0 and 129.0 ms and p = 1.94e-29. No onset is found in 568 of 4772
+    hit trials.
+  deviations:
+  - The paper takes the response threshold from hit and miss trials; the dataset's miss trials have no
+    response time except 98, so the threshold is taken from hit trials, with those 98 added as a variant
+    (same thresholds).
+  - The stored wheel_position_processed is already low-passed at 20 Hz forward and backward (its description),
+    so no filter is applied again.
+  - Onset is measured from the train onset of the electrical_stimulation table.
+- claim: fig4-unit-counts
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig4-unit-counts
+  notes: Weeks 0 to 4, reading (a) unit-sessions, 795 units (584 pyramidal, 204 interneurons, 7 unknown),
+    488 modulated (339 pyramidal, 146 interneurons). The modulated total and the modulated pyramidal count
+    are within tolerance; the totals of all, pyramidal and interneuron units and the modulated interneurons
+    are below it (2 of 6, the criterion asks 5). Over all 55 sessions, 999 units (732, 260) and 585 modulated
+    (405, 177), 3 of 6. With the Methods filters alone the counts are the same. Reading (b) cannot be
+    formed, as no unit identity across sessions is stored. The trough-to-peak histogram has a dip at 0.45
+    to 0.50 ms (22 units between 59 and 44), bimodal about 0.45 ms.
+  deviations:
+  - Cell type is the stored cell_type; Mouse 6 spells it 'Pyramidal Cell' and 'Narrow Interneuron', read
+    as the same labels. By the trough-to-peak of the stored single-channel mean waveform, 72 units change
+    class.
+- claim: figs3b-modulation-increase-all
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs3b-modulation-increase-all
+  notes: z rises at 4 uA (2.706 to 3.765, n = 191 and 738, p = 9.57e-05, r = 0.18), 5 uA (3.399 to 3.875,
+    n = 284 and 498, p = 0.00656, r = 0.12) and 6 uA (3.559 to 4.570, n = 300 and 256, p = 0.000404, r
+    = 0.17); the paper's n are 189/729, 283/489, 303/250. The Methods filters alone give p = 0.00032,
+    0.00853, 0.00055. Mice 2 and 5 have lower medians late.
+- claim: figs3c-latency-all
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs3c-latency-all
+  notes: Time to maximum falls at 5 uA (80 to 45 ms, p = 0.00522, r = -0.12) and not significantly at
+    6 uA (105 to 75 ms, p = 0.168), but also falls at 4 uA (75 to 55 ms, p = 0.0465, r = -0.09; paper
+    p = 0.18), so the absence at 4 uA does not hold.
+- claim: figs3d-modulation-stable-at-threshold
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs3d-modulation-stable-at-threshold
+  notes: Reading (a), channel-session medians at the current nearest the psignifit session threshold,
+    early 3.92 (n = 42) against late 3.46 (n = 87), p = 0.241, r = -0.13. Reading (b), every response
+    at that current, p = 0.612. With the maximum likelihood x50 threshold, p = 0.659. The n are twice
+    the paper's 21 and 34; the criterion names (a) as the reading whose n matches, and it does not match
+    here.
+- claim: fig4g-modulated-count-mouse1
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig4g-modulated-count-mouse1
+  notes: Mouse 1 at 4 uA, modulated responses per channel and session, early median 12 (n = 8) against
+    late 14 (n = 21), one-sided p = 0.0443, r = 0.42, as in the paper (n 8 and 21, p = 0.044, r = 0.42).
+    All six mice, p = 0.0728, not significant, as the paper says. Mice 5 and 6 alone give p = 0.00232
+    and 0.0165.
+- claim: fig4ij-pyramidal-modulation-increase
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig4ij-pyramidal-modulation-increase
+  notes: Pyramidal z rises at 4, 5 and 6 uA (p = 4.79e-05, 0.000587, 0.000878; r = 0.23, 0.18, 0.20) and
+    time to maximum falls at 5 uA (65 to 25 ms, p = 0.000329, r = -0.18) and 6 uA (85 to 35 ms, p = 0.025,
+    r = -0.13). It also falls at 4 uA (p = 0.0208), where the paper reports p = 0.32. The code's one-sided
+    tests halve these p.
+- claim: fig4ij-interneurons-little-change
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig4ij-interneurons-little-change
+  notes: Interneuron z does not change (p = 0.331, 0.884, 0.0885; r = 0.08, -0.01, 0.15; n 55/221, 90/158,
+    90/76 against the paper's 69/254, 113/180, 122/86). Time to maximum changes only at 6 uA (130 to 190
+    ms, p = 0.0335, r = 0.19; paper p = 0.010, r = 0.21) and not at 4 or 5 uA (p = 0.929, 0.361).
+- claim: fig5d-pulse-locking-stable-across-currents
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig5d-pulse-locking-stable-across-currents
+  measured:
+  - 0.842
+  - 740
+  notes: 740 unit-channel pairs with modulated responses at two or more of 4 to 6 uA; 529 all PL, 94 all
+    NPL, 57 NPL to PL, 47 PL to NPL, 13 mixed; fraction keeping identity 0.842 (0.814 to 0.961 by mouse).
+- claim: fig5e-pyramidal-fraction-pl
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig5e-pyramidal-fraction-pl
+  measured:
+  - 0.747
+  - 0.536
+  notes: Pyramidal fraction 0.747 of 375 PL units and 0.536 of 110 NPL units, Fisher exact p = 4.93e-05,
+    odds ratio 2.55; 3 PL units of unknown type left out. With trough-to-peak cell types, 0.714 and 0.582,
+    p = 0.0103.
+- claim: figs4b-pl-latency-distance
+  outcome: not_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs4b-pl-latency-distance
+  notes: Over 120 to 840 um the PL latency slope is -0.00108 ms/um at 4 uA on binned means (p = 0.0202)
+    and -0.00128 on binned medians (p = 0.00278), and near zero at 5 uA (p = 0.955, 0.598) and 6 uA (p
+    = 0.708, 0.879); no positive slope, so no velocity. Jitter shows no slope (binned p = 0.917, 0.925,
+    0.688; unbinned 0.564, 0.51, 0.985). 39 of 1806 PL responses have a stimulation contact missing from
+    the electrode table. The fraction of modulated responses does not fall with distance (0.406 within
+    100 um, 0.363 at 100 to 200, 0.524 at 400 to 800 um), so the outputs cannot confirm that the stored
+    stim_channel numbers and the electrode table's channel_name refer to the same contacts; the result
+    rests on that match.
+  deviations:
+  - Distance is |unit_y_um - rel_y| of the stimulation contact found by stim_channel = channel_name; the
+    files do not say that the two numberings are the same (both are described as Ripple channel numbers).
+- claim: fig5fg-pl-modulation-increase
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig5fg-pl-modulation-increase
+  notes: PL z rises at 4, 5 and 6 uA (p = 0.000361, 0.00168, 2.61e-05; r = 0.18, 0.15, 0.24). PL time
+    to maximum falls at 5 uA (75 to 35 ms, p = 0.00455, r = -0.13) but not significantly at 6 uA (95 to
+    55 ms, p = 0.0798). PL n are 159/587, 226/402, 238/194 against the paper's 136/469, 188/285, 179/135,
+    so this attempt calls more responses PL (1806 of 2267 modulated responses at 4 to 6 uA).
+  deviations:
+  - The PLI is computed on the mean curve of the bootstrap draws and the surrogates on their plain curves,
+    from the claims file's reading of the code; the more liberal PL call may come from a difference here
+    that the paper does not settle.
+- claim: figs4de-npl-no-change
+  outcome: not_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs4de-npl-no-change
+  notes: NPL z rises at 4 uA (2.526 to 3.340, n = 32 and 151, p = 0.0416, r = 0.23); at 5 and 6 uA p =
+    0.822 and 0.847. Time to maximum p = 0.164, 0.991, 0.887. The NPL n are below the paper's (53/260
+    at 4 uA), since fewer responses are called NPL here (see fig5fg).
+- claim: fig5h-pl-spike-probability-increase
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig5h-pl-spike-probability-increase
+  notes: PL peak spike probability rises at 6 uA (0.036 to 0.044, p = 0.0359, r = 0.12) but not at 5 uA
+    (0.036 to 0.039, p = 0.861); 4 uA p = 0.905, as the paper reports no change there.
+- claim: figs5-restricted-window-consistent
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs5-restricted-window-consistent
+  notes: Reading keep (700 ms modulated set and labels, 120 ms z), PL z rises at 4, 5, 6 uA (p = 0.00222,
+    0.000301, 0.000849), NPL z does not change (p = 0.0689, 0.563, 0.592), PL time to maximum falls at
+    4 and 5 uA (p = 0.0244, 0.0183) and not at 6 (p = 0.908), NPL time to maximum does not change (p =
+    0.697, 0.271, 0.895), all as the paper reports. Reading recompute (modulated and PL from the 120 ms
+    window), PL z rises (p = 0.000473, 5.09e-05, 0.00205) but NPL z rises too (p = 0.0132, 0.00291, 0.0187).
+    The criterion counts a match under one reading.
+  deviations:
+  - The paper does not say whether labels are recomputed in the 120 ms window; both readings are run and
+    only one matches.
+- claim: fig6c-kl-divergence
+  outcome: not_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig6c-kl-divergence
+  notes: Reading k1, median KL early against late, PL 0.0400 to 0.0356 (FDR p = 1.09e-43, r = -0.23) and
+    NPL 0.3616 to 0.3321 (FDR p = 0.0218); both fall. NPL exceeds PL in both phases (FDR p = 0, r = 1.00).
+    Reading k2, PL 0.0503 to 0.0354 (FDR p = 4.01e-87), NPL 0.2582 to 0.2437 (FDR p = 0.176), NPL above
+    PL in both phases. Per week, NPL KL peaks in week 2 (1.0831 under k1) and is lowest in week 4 (0.1953).
+  deviations:
+  - Trials are pooled over the modulated responses of a week and label; a constant of 1e-10 is added to
+    empty histogram bins, a standard choice.
+- claim: fig6d-npl-hit-miss-divergence
+  outcome: not_reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig6d-npl-hit-miss-divergence
+  measured:
+  - 105.0
+  - 55.0
+  notes: PL responses diverge between hit and miss; with 10 ms bins, significant clusters from 95 ms early
+    (529 rows) and from 5 ms late (1051 rows). NPL onsets with 10 ms bins are 105 ms early (130 rows)
+    and 55 ms late (281 rows) for the first cluster (o1), 615 and 55 ms for the last (o2); with 5 ms bins
+    102.5 and 27.5 ms (o1). The early NPL onset is outside 65 +- 10 ms under every reading; late is earlier
+    than early under all of them.
+  deviations:
+  - The PSTH bin width and smoothing are not in the paper or its code (claims); 10 and 5 ms bins without
+    smoothing are run, and both fail on the PL part.
+  - Labels are permuted by swapping a response's hit and miss rows, a standard choice for paired rows;
+    the code's scheme is not in the claims file.
+- claim: fig6f-population-coupling
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:fig6f-population-coupling
+  notes: PL coupling rises (median 0.271 to 0.688, n = 621 and 1178, FDR p = 0.00158, r = 0.09), NPL does
+    not change (1.681 to 1.509, n = 152 and 309, FDR p = 0.49), and NPL exceeds PL early (FDR p = 3.39e-12,
+    r = 0.37) and late (FDR p = 2.92e-12, r = 0.26). Paper n are 494/899 PL and 263/553 NPL. NPL is above
+    PL in every mouse.
+  deviations:
+  - Only the zero-lag value of the spike-triggered population rate is computed, which is the coupling
+    the Methods define; the +-100 ms window does not enter it.
+- claim: figs9a-coupling-700ms
+  outcome: reproduced
+  notebook: reproduce_kim_2026.ipynb
+  output: claim:figs9a-coupling-700ms
+  notes: Reading (a), without Mouse 6, PL rises (0.180 to 0.728, n = 567 and 1038, FDR p = 1.95e-05),
+    NPL does not change (FDR p = 0.475), PL below NPL early (FDR p = 1.26e-12) and late (FDR p = 9.07e-11).
+    Reading (b), population of PL units only, gives the same (FDR p = 0.00105, 0.193, 3.48e-13, 3.54e-11).
+    The legend's PL n are 446 and 763.
+- claim: figs9-coupling-window-and-control
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The 120 ms part was run. NPL coupling exceeds PL early (0.752 against -0.323, FDR p = 2.04e-07,
+    r = 0.28) and late (0.653 against -0.233, FDR p = 1.27e-12, r = 0.28), as the paper reports. The control
+    part cannot be run as the paper describes. The control files stimulate in 3 bursts of 10 pulses at
+    50 Hz per trial (200 ms bursts), not 700 ms trains at 100 Hz, and their units have no cell type; the
+    paper says the controls had similar stimulation parameters and gives no method for this protocol (which
+    window, how PL is called with 20 ms interpulse intervals). Units are in 14 sessions of 4 control mice.
+- claim: fig2c-count-increase-fixed-current
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The behavioural files hold the volumetric ROI masks (voxel_mask in pixel and plane indices) and
+    per-ROI dF/F, but no position of the stimulation contacts in the imaging volume (the electrode table
+    gives only positions along the probe, rel_y), no activation calls, and no voxel-level responses, which
+    the activation rule (at least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from
+    the stimulation site, and the paper's counts within 800 um, cannot be formed.
+- claim: fig2b-example-counts
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The behavioural files hold the volumetric ROI masks (voxel_mask in pixel and plane indices) and
+    per-ROI dF/F, but no position of the stimulation contacts in the imaging volume (the electrode table
+    gives only positions along the probe, rel_y), no activation calls, and no voxel-level responses, which
+    the activation rule (at least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from
+    the stimulation site, and the paper's counts within 800 um, cannot be formed.
+- claim: figs2ab-density-peak-200um
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The behavioural files hold the volumetric ROI masks (voxel_mask in pixel and plane indices) and
+    per-ROI dF/F, but no position of the stimulation contacts in the imaging volume (the electrode table
+    gives only positions along the probe, rel_y), no activation calls, and no voxel-level responses, which
+    the activation rule (at least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from
+    the stimulation site, and the paper's counts within 800 um, cannot be formed.
+- claim: fig2e-density-200um-increase
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The behavioural files hold the volumetric ROI masks (voxel_mask in pixel and plane indices) and
+    per-ROI dF/F, but no position of the stimulation contacts in the imaging volume (the electrode table
+    gives only positions along the probe, rel_y), no activation calls, and no voxel-level responses, which
+    the activation rule (at least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from
+    the stimulation site, and the paper's counts within 800 um, cannot be formed.
+- claim: figs2de-behaviour-increase-comparison
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The behavioural files hold the volumetric ROI masks (voxel_mask in pixel and plane indices) and
+    per-ROI dF/F, but no position of the stimulation contacts in the imaging volume (the electrode table
+    gives only positions along the probe, rel_y), no activation calls, and no voxel-level responses, which
+    the activation rule (at least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from
+    the stimulation site, and the paper's counts within 800 um, cannot be formed.
+- claim: fig2g-stable-at-threshold
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The behavioural files hold the volumetric ROI masks (voxel_mask in pixel and plane indices) and
+    per-ROI dF/F, but no position of the stimulation contacts in the imaging volume (the electrode table
+    gives only positions along the probe, rel_y), no activation calls, and no voxel-level responses, which
+    the activation rule (at least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from
+    the stimulation site, and the paper's counts within 800 um, cannot be formed.
+- claim: fig2e-radius-increase
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig2e-density-200um-increase, blocked for the same reason. The behavioural files hold
+    the volumetric ROI masks (voxel_mask in pixel and plane indices) and per-ROI dF/F, but no position
+    of the stimulation contacts in the imaging volume (the electrode table gives only positions along
+    the probe, rel_y), no activation calls, and no voxel-level responses, which the activation rule (at
+    least 50% of an ROI's voxels above 2 x baseline STD) needs. Distances from the stimulation site, and
+    the paper's counts within 800 um, cannot be formed.
+- claim: figs2de-control-stable
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The control survey files hold ROI masks and binary activation per channel and current, with contact
+    positions in um, but no voxel size or plane spacing (the imaging plane has no grid_spacing; 136 planes),
+    and 2 to 9 of the 32 contact positions are at the origin with no stated mapping from Ripple channel
+    to contact index, so distances and densities within 200 um cannot be formed. The claim needs both
+    density and counts. The files hold 24 control imaging sessions where the paper reports 18.
+- claim: fig3b-tracking-counts
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3df-stable-cells-amplitude-duration-onset
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3i-more-high-intensity-week4
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3j-high-intensity-subgroup-increase
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3j-weekly-divergence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3lm-deconvolved-spikes-subgroup
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3n-newly-recruited-weaker
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig3n-enhanced-vs-week0
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: figs6-first-five-frames
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The planar ROIs are segmented separately in each session (385, 172, 388, 359, 697 ROIs and so
+    on in Mouse 1; the ROI description says they are a separate segmentation), the files carry no identity
+    of an ROI across sessions, and no mean or reference images are stored (reference_images is empty),
+    so the PatchWarp alignment and mask matching of the Methods cannot be repeated. Every Fig. 3 and fig.
+    S6 claim rests on tracked neurons.
+- claim: fig4d-waveform-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The units table holds one mean waveform per unit (90 samples on one channel); there are no waveforms
+    of spikes in and out of stimulation and no multi-channel waveforms for the PCA.
+- claim: figs8-tracked-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: UnitMatch needs each unit's multi-channel template; the files hold one single-channel mean waveform
+    per unit and no labels of tracked units.
+- claim: figs7-control-no-change
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The control files stimulate with 3 bursts of 10 pulses at 50 Hz per trial (200 ms each), not
+    the 700 ms, 100 Hz trains the paper's modulation, time to maximum and pulse-locking measures are defined
+    on, and the paper gives no method for this protocol while saying the controls had similar stimulation
+    parameters. Units are in 14 sessions of 4 control mice (the legend gives 4 animals, 15 sessions).
+findings:
+- kind: metadata_insufficient
+  statement: The behavioural files give no position of the stimulation contacts in the volumetric imaging
+    volume (the electrode table gives positions along the probe only) and no activation calls, and they
+    hold per-ROI dF/F, not the voxel-level responses the activation rule uses. The paper's counts, densities
+    and radii of activated neurons (Fig. 2B to 2G, fig. S2) cannot be formed.
+- kind: identifier_missing
+  statement: Planar ROIs are segmented separately in each session and carry no identity across sessions,
+    and no mean or reference images are stored for alignment, so the neurons tracked across weeks in Fig.
+    3 and fig. S6 cannot be found.
+- kind: data_missing
+  statement: Each unit has one mean waveform of 90 samples on one channel. Waveforms of spikes in and
+    out of stimulation (Fig. 4D) and the multi-channel templates UnitMatch needs (fig. S8) are not in
+    the files, nor are labels of the tracked units.
+- kind: paper_inconsistency
+  statement: The Methods say the control animals had similar stimulation parameters to the behavioural
+    group, but the control files describe and hold 3 bursts of 10 biphasic pulses at 50 Hz per trial (200
+    ms bursts 0.5 s apart), where the behavioural trains are 70 pulses at 100 Hz over 700 ms.
+- kind: metadata_insufficient
+  statement: The control survey imaging gives no voxel size or plane spacing, and 2 to 9 of its 32 stimulation
+    contact positions sit at the origin with no stated mapping from Ripple channel number to contact index,
+    so distances of ROIs from the stimulation site cannot be formed.
+- kind: other
+  statement: The files hold 795 unit-sessions in the 46 sessions of weeks 0 to 4 (999 over all 55 behavioural
+    sessions), where the paper reports 973 units; 24 control imaging sessions where the paper reports
+    18; and units in 14 sessions of 4 control mice where fig. S7 reports 4 animals and 15 sessions.
+- kind: metadata_insufficient
+  statement: The trials table gives no response time for miss trials except 98, so the movement-onset
+    threshold of fig. S5 (25th percentile over hit and miss trials) cannot be formed as stated; and response_time
+    is measured from trial start, which precedes the train onset by 0 to 85 ms depending on the session
+    (56 to 85 ms in ICMS101 2023-10-27).
+- kind: data_missing
+  statement: Mouse 6 (ICMS83) has no catch trials in its files (currents 2 to 10 uA only), though the
+    Methods give each block 10 catch trials; its thresholds cannot use the false-alarm point.
+- kind: metadata_error
+  statement: The electrical_stimulation tables describe 700 ms, 70-pulse trains, but in sessions with
+    planar imaging they also hold 37 to 90 trains of up to 242 pulses lasting seconds, after the end of
+    the electrophysiology recording.
+- kind: metadata_error
+  statement: Cell types are spelled 'Pyramidal Cell', 'Narrow Interneuron' and 'unknown' in ICMS83 and
+    'pyramidal' and 'interneuron' elsewhere; and the stored type disagrees with the 0.45 ms trough-to-peak
+    rule applied to the stored mean waveform for 72 units (29 interneurons at 0.45 ms or more, 43 pyramidal
+    below).
+- kind: metadata_insufficient
+  statement: stim_channel (Ripple stimulation channel number) and the electrode table's channel_name (Ripple
+    channel number) are not stated to be the same numbering, and with them taken as the same, the fraction
+    of modulated responses does not fall with distance from the stimulation contact, so the distances
+    of fig. S4 cannot be confirmed.
+- kind: methods_unavailable
+  statement: Question for the authors (fig. 6D). What bin width and smoothing were used for the hit and
+    miss PSTHs, and was the divergence onset the first significant cluster or the last? With 10 or 5 ms
+    bins and no smoothing, PL responses show significant clusters in both phases and the early NPL onset
+    is about 105 ms.
+- kind: methods_unavailable
+  statement: Question for the authors (fig. S5, E to H). Were the modulated set and the PL labels recomputed
+    in the 120 ms window or kept from the 700 ms analysis? Kept, the NPL modulation does not change; recomputed,
+    it rises at all three currents.
+- kind: methods_unavailable
+  statement: Question for the authors (fig. S7, fig. S9C). How were modulation, time to maximum and pulse-locking
+    computed for the control animals, whose files hold 3 bursts of 10 pulses at 50 Hz per trial?
