@@ -220,7 +220,7 @@
     document.getElementById("progress-day-note").textContent = DAY_NOTES[m] || "";
     var totals = {};
     keys.forEach(function (k) { totals[k] = rows.reduce(function (s, r) { return s + r[k]; }, 0); });
-    document.getElementById("progress-legend").innerHTML = !stacked ? "" : '<ul class="legend compact" style="margin-top:8px">' +
+    document.getElementById("progress-legend").innerHTML = !stacked ? "" : '<ul class="legend compact">' +
       keys.filter(function (k) { return totals[k]; }).map(function (k) {
         return "<li>" + S.swatch(k) + "<strong>" + totals[k].toLocaleString() + "</strong> " + S.label(k) + "</li>";
       }).join("") + "</ul>";
