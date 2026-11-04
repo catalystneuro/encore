@@ -11,7 +11,7 @@ stimulus files. The cells' thresholds, which the paper's model needs, are not in
 | Kept sessions per stimulus protocol (Table 1) | Not reproduced |
 | Firing rate 113 Hz, not different across protocols | Reproduced |
 | Mean threshold 58 dB | Blocked: data missing |
-| Bursting sessions per protocol (Table 1) | Partially reproduced |
+| Bursting sessions per protocol (Table 1) | Partially reproduced; not reproduced proposed |
 | Percentage of isolated spikes per protocol (Table 1) | Not reproduced |
 | Highest and average n per protocol (Table 1) | Not reproduced |
 | Isolated spikes least likely at 12 dB and 100 Hz (Figure 5) | Reproduced |
@@ -39,8 +39,9 @@ reasoning and the differences from the paper's method.
 
 The paper's stated selection rule keeps 115 sessions in the data set where the paper kept 86.
 Leaving out also the sessions with fewer than 98 trials and those sorted off-line keeps 89, close
-to the paper's counts per protocol; the notebook uses that population and shows the 115 beside
-it. The Methods leave open details of burst identification, for which the notebook shows every
+to the paper's counts per protocol. That population was chosen in part from those counts, so it is
+only a variant for the claims on them; for the other claims the notebook uses it and shows the 115
+beside it. The Methods leave open details of burst identification, for which the notebook shows every
 reading. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-ia-1-eyherabide-2008-01.yaml`](../../attempts/crcns-ia-1-eyherabide-2008-01.yaml).
 

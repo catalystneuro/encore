@@ -41,7 +41,8 @@ outcomes:
     range from 69 (outside 98 +/- 9.8) to 503 and average 160.3, and the mean trial-to-trial SD of the
     rate is 6.48 Hz (within 6 +/- 0.6). Selection (c), which also leaves out the 9 sessions under 98 trials
     and the off-line sorted sessions, keeps 89 sessions with 98 to 503 trials (mean 168.7) and a mean
-    SD of 6.00 Hz, every value within tolerance; it is not a reading of the criterion, which defines the
+    SD of 6.00 Hz, within tolerance, but they come from 29 cells on 18 dates, outside 37 +/- 3.7 and
+    23 +/- 2.3 (the 37 cells and 23 dates hold over all seven-protocol sessions); it is not a reading of the criterion, which defines the
     selection by the rate conditions, and its fewest trials are 98 by construction, so it does not decide
     this outcome. The trial blocks were checked: late spikes (up to 2.76 s) occur only in off-line sorted
     sessions, in the pause, no block restarts its times or holds twice the usual spike count, and the
@@ -87,7 +88,7 @@ outcomes:
     with the off-line sorted sessions also left out the kept sessions per protocol (47, 6, 7, 7, 8, 7,
     7) and the bursting sessions per protocol come close to Table 1; the off-line exclusion has no passage
     in the paper behind it. The 115 sessions of selection (a), the first round's population, are shown
-    beside it.
+    beside it. The outcome is the same under every population shown, so it does not rest on this assumption.
 - claim: threshold-population
   outcome: blocked
   blocked_by: data_missing
@@ -108,6 +109,13 @@ outcomes:
   - 7
   - 3
   - 0
+  proposed:
+    outcome: not_reproduced
+    reason: Selection (c) leaves out the off-line sorted sessions, which no passage of the paper supports,
+      and was chosen in part because the kept and bursting sessions per protocol then come close to Table
+      1, so it cannot decide this claim, as it does not decide table1-sessions-per-protocol. Under the
+      selections the criterion supports, (a) and (b), at most 2 of 7 counts are within tolerance under
+      any burst reading (output claim:table1-bursting-sessions). The second verifier gave this outcome.
   notes: 'Under the main burst reading the sessions of selection (c) with bursts of n > 1 are 40/47, 1/6,
     7/7, 6/7, 7/8, 3/7 and 0/7 against 40/43, 0/6, 7/7, 6/7, 7/8, 3/7 and 0/8: six of seven counts equal
     the paper''s, and one 3 dB session bursts where the paper has none. The plateau-excluded first maximum
@@ -122,7 +130,8 @@ outcomes:
     with the off-line sorted sessions also left out the kept sessions per protocol (47, 6, 7, 7, 8, 7,
     7) and the bursting sessions per protocol come close to Table 1; the off-line exclusion has no passage
     in the paper behind it. The 115 sessions of selection (a), the first round's population, are shown
-    beside it.
+    beside it. For this claim selection (c) was chosen in part from the expected counts, so it is a variant
+    and the change of outcome under `proposed` follows the selections the criterion supports.
   - Burst identification takes the first peak as the largest value of C_s below 5 ms (peak reading b),
     the first local minimum after it that differs significantly from it (minimum reading a), and the error
     bar with sigma the SD of the product terms of Eq. 1 and N their number (reading a). Assumed because
@@ -158,7 +167,7 @@ outcomes:
     with the off-line sorted sessions also left out the kept sessions per protocol (47, 6, 7, 7, 8, 7,
     7) and the bursting sessions per protocol come close to Table 1; the off-line exclusion has no passage
     in the paper behind it. The 115 sessions of selection (a), the first round's population, are shown
-    beside it.
+    beside it. The outcome is the same under every population shown, so it does not rest on this assumption.
   - Burst identification takes the first peak as the largest value of C_s below 5 ms (peak reading b),
     the first local minimum after it that differs significantly from it (minimum reading a), and the error
     bar with sigma the SD of the product terms of Eq. 1 and N their number (reading a). Assumed because
@@ -204,7 +213,7 @@ outcomes:
     with the off-line sorted sessions also left out the kept sessions per protocol (47, 6, 7, 7, 8, 7,
     7) and the bursting sessions per protocol come close to Table 1; the off-line exclusion has no passage
     in the paper behind it. The 115 sessions of selection (a), the first round's population, are shown
-    beside it.
+    beside it. The outcome is the same under every population shown, so it does not rest on this assumption.
   - Burst identification takes the first peak as the largest value of C_s below 5 ms (peak reading b),
     the first local minimum after it that differs significantly from it (minimum reading a), and the error
     bar with sigma the SD of the product terms of Eq. 1 and N their number (reading a). Assumed because
@@ -338,8 +347,10 @@ outcomes:
     Over the 84 of selection (a): 2.14, 1.85, 1.71 and 1.48, 83 and 82 significant. A baseline with each
     trial''s burst onsets shifted at random gives a mean slope of 2.59 bits (0.1 ms bins) and 2.23 (0.4
     ms), above the data''s; the data''s slope exceeds its shifted copy in 3 of 64 sessions (9 with 0.4
-    ms bins). The rise of I_n(1) with n under the criterion''s plug-in formula is accounted for by the
-    estimator''s bias for rare events; the criterion fixes the formula, so the outcome rests on it.'
+    ms bins). A shifted train has lost its stimulus locking, so its plug-in bias is at least that of the
+    data; the comparison shows that the estimator''s bias for rare events is of the order of the rise of
+    I_n(1) with n, not that the whole rise is bias. The criterion fixes the formula, so the outcome rests
+    on it.'
   deviations:
   - The kept sessions are the 89 of the 116 seven-protocol sessions with a trial-to-trial rate SD below
     35 Hz, at least 98 trials and spikes detected on-line (selection c), not the paper's 86, whose selection
@@ -535,7 +546,11 @@ outcomes:
   notebook: reproduce_eyherabide_2008.ipynb
   output: claim:fig8-latency-decreases
   notes: With the central maximum searched before the onset, mean tau_n is 5.80, 4.23, 3.32 and 2.67 ms
-    for n = 1 to 4 over the 53 sessions of selection (c) (reading b), with no negative tau_n; 51 of 53
+    for n = 1 to 4 over the 53 sessions of selection (c) (reading b). No tau_n is negative, by construction, as the search
+    ends at 0 ms; in 13 of the 53 sessions 17 values sit on that edge (1, 5 and 11 for n = 2, 3, 4), and
+    the mean tau_4 includes them. Without the values on the edge the means are 5.80, 4.32, 3.67 and 3.37
+    ms; over the 40 sessions with none on the edge 5.77, 4.33, 3.77 and 3.40 ms; of the 48 sessions with
+    tau_1 to tau_3 off the edge, 32 have tau_1 > tau_2 > tau_3. 51 of 53
     have tau_4 < tau_1 (Wilcoxon p = 4.5e-9) but only 20 of 53 decrease at every step (reading a, not
     a majority). Searched over the whole window, as in the first round, 5.80, 4.22, 3.14 and -0.50 ms,
     with a negative tau_n in 33 sessions. With at least 20 or 50 bursts of each n the means fall from
@@ -678,8 +693,8 @@ outcomes:
   assumed: true
   notebook: reproduce_eyherabide_2008.ipynb
   output: claim:fig9c-population-nbta
-  notes: Selection (c) holds 7 bursting protocol-5 sessions with bursts of n = 1 to 3, the paper's seven
-    cells. Their population-average central peak is 3.13, 7.03 and 8.46 dB above the mean stimulus for
+  notes: Selection (c) holds 7 bursting protocol-5 sessions with bursts of n = 1 to 3, from 7 distinct cells
+    (rows of singlecells.txt; 03-04-23-aa and 03-04-23-ah are different cells), the paper's seven cells. Their population-average central peak is 3.13, 7.03 and 8.46 dB above the mean stimulus for
     n = 1, 2, 3, with half-height widths 5.00, 5.50 and 7.35 ms (12.55, 13.60, 17.80 ms between minima)
     and SD across sessions 0.54, 0.83 and 1.51 dB at the peak. Both searches for the maximum give these
     values; the 10 sessions of selection (a) give 3.22, 7.11 and 8.60 dB.
@@ -816,7 +831,7 @@ findings:
     in Eq. 15. (5) What separates a peak of C_s for the multi-modal and single-peaked shapes of Figure
     3. (6) Whether the maximum of the nBTA that gives tau_n was searched before burst onset, and how many
     bursts of each n a session needed. (7) Whether I_n(1) was corrected for the bias of the plug-in estimate,
-    which here accounts for its rise with n.
+    whose bias here is of the order of its rise with n.
 - kind: paper_inconsistency
   statement: The paper counts bursting sessions three ways, 63 with n > 1 in Table 1, 59 bursting cells
     for Figure 7B and 58 bursting sessions for Figure 8, without saying why.
@@ -975,7 +990,7 @@ verifications:
       central_peak is called without search, so the maximum is taken over -25 to +15 ms. Problem 3: at
       least two bursts of each n is the author''s own threshold, not stated as an assumption; it shifts
       the central-peak counts. Problem 7: the ANOVAs treat every segment-by-frequency value as independent
-      and reject in every session.'
+      and reject in every session (problem 7 does not affect a conclusion).'
     response: No change of outcome. The maximum is now searched before the onset (main) and over the whole
       window; the minimum of two bursts is stated as an assumption and 20 and 50 are shown. Over selection
       (c), 64 bursting sessions, 53 with n = 1 to 4, all pass the ANOVA; the time-domain count is 38 (42
@@ -1046,4 +1061,189 @@ verifications:
     outcome: blocked
     reason: It depends on model-matches-classification, which is blocked because s_TH is not in the data
       set.
+    response: No change.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2 (verifier-2), the full executed notebook of the first revision with its conclusions and
+    summary, the README, the helper module, the attempt record and the claims file, with the paper under
+    paper/.
+  results:
+  - claim: data-sessions-and-trials
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Both assumptions (one animal per date; 122 as recorded) are stated and reasonable. Cell 11
+      and the notes say selection (c) keeps 89 sessions with every value within tolerance, but cell 10
+      prints 29 cells and 18 dates for kept (c), against 37 +/- 3.7 and 23 +/- 2.3; the claim holds only
+      if cells and animals are counted over all sessions, and the text should say so.'
+    response: Cell 11, the notes and the Summary now give the 29 cells and 18 dates of selection (c), outside
+      tolerance, and say that the 37 cells and 23 dates hold over all seven-protocol sessions.
+  - claim: table1-sessions-per-protocol
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; the record does not credit selection (c) for this claim, as it was
+      chosen in part from these counts.
+    response: No change.
+  - claim: firing-rate-uniform
+    agrees: true
+    outcome: reproduced
+    reason: 'It carries an "Assumed because" selection deviation but no assumed flag; the outcome holds
+      under every population, so no flag is needed, but the wording is inconsistent. The Summary says
+      selection (c) is the population from table1-bursting-sessions on, but cell 17 and the record already
+      use it as the main population for firing-rate-uniform.'
+    response: The deviation now says that the outcome is the same under every population shown and does
+      not rest on the assumption. The Summary says selection (c) is the main population from firing-rate-uniform
+      on, and only a variant for the claims on Table 1's counts.
+  - claim: threshold-population
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: table1-bursting-sessions
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Under selection (c) 6 of 7 counts are within tolerance, but selection (c) drops off-line sorted
+      sessions, which nothing in the paper supports, and cell 7 says the exclusion is taken because with
+      it the kept and bursting sessions per protocol come close to Table 1, so the selection was tuned
+      on this claim''s own expected values. The record does not credit (c) for table1-sessions-per-protocol
+      or data-sessions-and-trials, yet credits it here, which is inconsistent. Under every selection the
+      criterion supports (a: 2 of 7; b: 2 of 7) the outcome is not reproduced; selection (c) should be
+      shown as a variant.'
+    response: The outcome is kept as partially reproduced, as round 2 may not change it, and the change
+      to not reproduced is recorded under `proposed` for a third round, with the verifier's reasoning,
+      which the author accepts. Cell 7, the conclusion cell, the Summary and the README now treat selection
+      (c) as a variant for this claim, table1-sessions-per-protocol and data-sessions-and-trials, and lead
+      with the counts of selections (a) and (b).
+  - claim: table1-isolated-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: It carries an "Assumed because" selection deviation but no assumed flag; the outcome holds under
+      every population, so no flag is needed, but the wording is inconsistent.
+    response: The deviation now says that the outcome is the same under every population shown and does
+      not rest on the assumption.
+  - claim: table1-burst-length
+    agrees: true
+    outcome: not_reproduced
+    reason: It carries an "Assumed because" selection deviation but no assumed flag; the outcome holds under
+      every population, so no flag is needed, but the wording is inconsistent.
+    response: The deviation now says that the outcome is the same under every population shown and does
+      not rest on the assumption.
+  - claim: fig5-burst-probability-vs-stimulus
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Selection (c) as a population for the downstream claims is a reasonable
+      sensitivity choice, and almost every downstream outcome is the same under selection (a).
+    response: No change.
+  - claim: fig3-correlation-shape
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (prominence 0.2) is stated and reasonable.
+    response: No change.
+  - claim: method-correlation-error
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (tau = 0 left out of the span) is stated and reasonable.
+    response: No change.
+  - claim: model-matches-classification
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig6-bursts-less-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig7ab-information-per-burst-increases
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'This follows the criterion''s plug-in formula, as stated. But cell 46, the notes and the Summary
+      say the rise of I_n(1) with n is accounted for by, or is, estimator bias. A train whose onsets are
+      shifted has lost its stimulus locking, its rate is spread over more bins, so its plug-in bias is
+      at least that of the locked data; a shifted slope above the data slope (2.59 against 2.22; data
+      higher in 3 of 64) shows that the bias is as large as the rise, not that the whole rise is bias.
+      "Is of the order of the bias" is what cells 45 and 54 support.'
+    response: Cell 46, the notes, the Summary and the methods_unavailable finding now say that the bias
+      of the estimate is of the order of the rise, and give the reason the shifted baseline's bias is at
+      least that of the data.
+  - claim: fig7cd-occurrence-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig7ef-jitter-independent-of-n
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (event reading b) is stated and reasonable.
+    response: No change.
+  - claim: fig7gh-information-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; cell 55's "a large part of these rates is estimator bias" is acceptable.
+    response: No change.
+  - claim: direct-method-comparison
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig8-nbta-differ
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Under this claim the record quotes round-1 problem 7 without the label
+      that it does not affect a conclusion.
+    response: The label is added to the round-1 reason.
+  - claim: fig8-latency-decreases
+    agrees: true
+    outcome: reproduced
+    reason: 'This rests on reading (b) and on searching for the maximum before onset, both stated. "No
+      negative tau_n" holds by construction, because the search ends at 0; in 13 of the 53 sessions, 17
+      tau_n values sit exactly on the 0 ms edge, and the mean tau_4 of 2.67 ms includes them. The mean
+      still decreases under both searches, so the outcome stands, but the record should say this. A count
+      of sessions with tau_1 > tau_2 > tau_3 among unclipped values would settle how much of the decrease
+      the clipping forces.'
+    response: 'The fig8-latency cell now prints the values on the edge (17 in 13 sessions; 1, 5 and 11
+      for n = 2, 3, 4), the means without them (5.80, 4.32, 3.67, 3.37 ms), the means over the 40 sessions
+      with none on the edge (5.77, 4.33, 3.77, 3.40 ms) and the count asked for: of the 48 sessions with
+      tau_1 to tau_3 off the edge, 32 have tau_1 > tau_2 > tau_3. The conclusion and notes say that no
+      negative tau_n holds by construction. The outcome is unchanged.'
+  - claim: fig8e-sigma-minimum
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: sigma-n-below-sta-sigma
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; round-1 point 4 (size bias of sigma_n) is resolved by the size-matched
+      control and per-n ratios.
+    response: No change.
+  - claim: fig9-nbta-not-concatenated-1bta
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (mean subtracted in Eq. 15) is stated and reasonable.
+    response: No change.
+  - claim: fig9c-population-nbta
+    agrees: true
+    outcome: reproduced
+    reason: Cell 78 and the notes call the 7 bursting protocol-5 sessions the paper's seven cells, but the
+      notebook does not show that the 7 sessions come from 7 distinct cells; 03-04-23-aa and 03-04-23-ah
+      are on the same date.
+    response: The fig9c cell now prints the cell (row of singlecells.txt) of each session; the 7 sessions
+      of selection (c) come from 7 distinct cells (the 10 of selection (a) from 8). The conclusion and
+      notes say so.
+  - claim: fig10-burst-n-vs-height
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; the record's note that the flag differs in 2 sessions, one each way,
+      matches the side-by-side table in cell 80.
+    response: No change.
+  - claim: firing-rate-no-effect-on-limit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: model-reproduces-coding-trends
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
     response: No change.
