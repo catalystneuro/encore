@@ -16,7 +16,7 @@
   var state = { subset: "all", metric: "datasets" };
   var root = document.querySelector(".progress");
   var line = document.getElementById("progress-line"), cols = document.getElementById("progress-outcomes");
-  var outcomeKeys = Object.keys(P.outcomes), protocols = P.protocols || [];
+  var outcomeKeys = Object.keys(P.outcomes), protocols = P.protocols || [], archives = P.archives || [];
   // Two measures are stacked: claims by outcome, and attempts by the protocol version they followed, shaded in
   // the bar colour from light (the oldest version) to dark (the newest), with attempts that recorded none in gray.
   function protocolFill(v) {
@@ -25,13 +25,20 @@
     var share = known.length > 1 ? 30 + 70 * i / (known.length - 1) : 100;
     return "color-mix(in srgb, var(--bar) " + share.toFixed(0) + "%, var(--surface))";
   }
+  function archiveOf(k) { return archives.filter(function (a) { return "archive:" + a.key === k; })[0]; }
   function stackOf(m) {
     if (m === "claims") return {
       keys: outcomeKeys, label: function (k) { return P.outcomes[k].label.toLowerCase(); },
       paint: function (node, k) { node.setAttribute("class", "seg-" + P.outcomes[k].css); },
       swatch: function (k) { return '<span class="swatch ' + P.outcomes[k].css + '" aria-hidden="true"></span>'; } };
+    // Datasets by archive: a categorical colour per archive (--archive-<slot>), fixed by the archive, not its rank.
+    if (m === "datasets" && archives.length > 1) return {
+      keys: archives.map(function (a) { return "archive:" + a.key; }), by: "by archive",
+      label: function (k) { var a = archiveOf(k); return a ? "on " + a.label : k; },
+      paint: function (node, k) { node.setAttribute("style", "fill:var(--archive-" + archiveOf(k).slot + ");stroke:var(--surface);stroke-width:1"); },
+      swatch: function (k) { return '<span class="swatch" style="background:var(--archive-' + archiveOf(k).slot + ')" aria-hidden="true"></span>'; } };
     if (m === "attempts" && protocols.length) return {
-      keys: protocols.map(function (v) { return "protocol:" + v; }),
+      keys: protocols.map(function (v) { return "protocol:" + v; }), by: "by protocol version",
       label: function (k) { var v = k.slice(9); return v === "not recorded" ? "protocol not recorded" : "protocol " + v; },
       // A thin line of the surface between versions, as their shades are close.
       paint: function (node, k) { node.setAttribute("style", "fill:" + protocolFill(k.slice(9)) + ";stroke:var(--surface);stroke-width:1"); },
@@ -39,7 +46,7 @@
     return null;
   }
   var DAY_NOTES = {
-    datasets: "Each dataset on the date of its first attempt.",
+    datasets: "Each dataset on the date of its first attempt, coloured by the archive it is in.",
     papers: "Each paper on the date of its first attempt.",
     attempts: "Each attempt on its own date, shaded by the protocol version it followed (the strongest colour is the newest).",
     claims: "Claims that rest on the dataset, on the date of their attempt.",
@@ -207,7 +214,7 @@
     f.svg.addEventListener("mouseleave", function () { f.tip.hidden = true; });
     f.svg.setAttribute("role", "img");
     var title = m === "claims" ? "Outcomes of claims tested, by day"
-      : stacked ? P.metrics[m] + " by protocol version, new each day" : P.metrics[m] + ", new each day";
+      : stacked ? P.metrics[m] + " " + S.by + ", new each day" : P.metrics[m] + ", new each day";
     f.svg.setAttribute("aria-label", title);
     document.getElementById("progress-day-title").textContent = title;
     document.getElementById("progress-day-note").textContent = DAY_NOTES[m] || "";
