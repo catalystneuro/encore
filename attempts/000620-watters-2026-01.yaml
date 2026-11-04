@@ -1,0 +1,396 @@
+schema_version: 2
+id: 000620-watters-2026-01
+dataset:
+  archive: dandi
+  id: '000620'
+  version: 0.261019.2000
+  doi: 10.48324/dandi.000620/0.261019.2000
+paper: doi:10.64898/2026.01.27.702062
+date: '2026-11-04'
+entry: 000620-watters-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41886879686
+inputs:
+- what: Method details cited in the notebooks and wm.py (correctness radius, response location, AUC p-value, firing-rate
+    windows, noise-correlation variants, decoder models and configs, synthetic datasets, the code's Ring session
+    list) from the paper's code; no data or fitted results from it are used.
+  source: https://github.com/jazlab/multi_object_memory_2025 at commit 6e4b333b78cd4461e6373a42378535e8fd392cdb
+outcomes:
+- claim: fig1b-performance-load
+  outcome: reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig1b-performance-load
+  notes: Under both readings and both radii the fraction correct falls from 1 to 2 to 3 objects in both monkeys
+    and the 2- and 3-object fractions are above 1/2 and 1/3. Reading (a), Triangle trials on the triangle, code
+    radius, gives P 0.953, 0.930, 0.692 and E 0.928, 0.759, 0.561, equal to the values the paper's notebook printed;
+    with the Methods radius P 0.901, 0.887, 0.661 and E 0.903, 0.749, 0.555. Reading (b), Triangle and Ring pooled,
+    code radius, P 0.958, 0.911, 0.692 and E 0.939, 0.757, 0.561. The smallest margin above chance is 0.222 (E,
+    3 objects, Methods radius). The paper gives no test.
+  deviations:
+  - Physiology sessions only (24 Triangle, 22 Ring); the behaviour-only session Perle 2022-06-08 and the 2-object-only
+    session Perle 2022-06-06 are left out, as the Fig. 1b legend says all physiology sessions.
+- claim: fig1c-reaction-times
+  outcome: reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig1c-reaction-times
+  notes: Reaction times of trials at or above 180 ms have interquartile ranges of 52.0 ms (P) and 69.8 ms (E) under
+    reading (a) and 50.6 and 73.1 ms under reading (b), with medians of 230.0, 268.5, 227.4 and 273.4 ms. Before
+    the cut, 1.7% (P) and 0.4% (E) of reading (a) trials are under 180 ms. Incorrect trials are faster than correct
+    ones in both monkeys (medians P 220.7 against 232.2 ms, E 260.7 against 272.4 ms, reading (a)). The cue phase
+    lasts 250 ms in the data, not 180 ms, and 47.9% of completed trials have a reaction time under 250 ms.
+  deviations:
+  - Reaction time is response_time minus cue onset, as the code computes it; response_time reads as saccade onset
+    (the closed-loop response time is 134 ms later at the median), which the paper's legend calls onset of the response
+    saccade.
+- claim: ext1-misbinding-errors
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext1-misbinding-errors
+  notes: With the code's radius (0.2 arena widths), errors at a non-target object's vertex are 92.3% (E, 2 objects),
+    99.4% (E, 3), 84.5% (P, 2) and 96.5% (P, 3) of errors, the largest class in each, so both readings hold. With
+    the Methods radius (2.4 degrees, 0.1 arena widths) both readings hold for E at 2 and 3 objects (86.5%, 96.7%)
+    and P at 3 (82.0%), and fail for P at 2 objects, where 207 errors are at the non-target vertex and 249 at no
+    vertex (44.9%). The outcome depends on the radius; the code's is adopted (see deviations). The question is put
+    to the paper's authors (findings).
+  deviations:
+  - 'Assumed the correctness radius of 0.2 arena widths (4.8 degrees), the code''s (load_triangle_data.py, correct_threshold
+    0.2, also used for response_location), where the Methods (Feedback phase) say 2.4 degrees. Reason: in the data
+    every completed trial with a closed-loop error under 0.2 arena widths was rewarded (49,185 trials) and none
+    at 0.2 or more (12,469 trials), so 0.2 is the radius the task used to score responses, and the code that made
+    Extended Data Fig. 1 assigns responses to vertices with it. The Methods radius is shown and gives a different
+    outcome for Monkey P with 2 objects.'
+  - Errors at the target vertex but outside the radius cannot occur here, since the vertex radius equals the correctness
+    radius; responses at no vertex and at an empty vertex are counted apart.
+- claim: triangle-unit-counts
+  outcome: reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:triangle-unit-counts
+  measured:
+  - 4688
+  - 2937
+  - 1751
+  - 10
+  - 14
+  notes: Reading (a), good and multi-units with delay-phase mean rate above 1 Hz over their completed stable trials,
+    gives 4,688 units (2,937 DMFC, 1,751 FEF) from 10 Perle and 14 Elgar sessions, exactly the paper's numbers.
+    Reading (b), also stable on at least 500 trials, gives 4,473 (2,857, 1,616), within tolerance. Reading (c),
+    good units only, gives 1,563 (1,110, 453) and does not match. Of all 4,899 sorted Triangle units, 4,688 pass
+    reading (a).
+  deviations:
+  - DMFC is probe s0 and FEF the V-probes, from the claims file and the code; the dandiset's electrodes tables give
+    no location.
+- claim: ring-unit-counts
+  outcome: reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ring-unit-counts
+  measured:
+  - 3052
+  - 1712
+  - 1340
+  - 10
+  - 12
+  notes: Reading (a) gives 3,052 units (1,712 DMFC, 1,340 FEF) from 10 Perle and 12 Elgar Ring sessions, against
+    3,051, 1,712 and 1,339. Reading (b) gives 2,936 (1,655, 1,281), within tolerance; reading (c) 1,123 and does
+    not match. The Ring sessions are Perle 2022-06-07 and 06-09 to 06-19 (10) and Elgar 2022-09-06 to 09-20 (12);
+    the code's model comparison lists 20, without Elgar 2022-09-18 and 09-19 (2,862 units under reading (a)). Adding
+    Perle 2022-06-06 would give 3,121 units from 11 Perle sessions.
+  deviations:
+  - Perle 2022-06-06, which has spike sorting but only 2-object trials, is not counted as a Ring session; the Ring
+    design has 1- and 2-object trials (Methods, Behavioral Task).
+- claim: ext2-stimulus-delay-activity
+  outcome: reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext2-stimulus-delay-activity
+  notes: 'Panel a, Triangle units above 1 Hz, stimulus against delay mean rate: Pearson r 0.898 (P, 1,536 units)
+    and 0.971 (E, 3,152), Spearman 0.894 and 0.963, p below 1e-300; 97.5% (P) and 99.1% (E) of units are above 1
+    Hz in the stimulus phase. Panel b, normalised 1-object rates per unit and vertex, stimulus against delay: Pearson
+    0.600 (P DMFC), 0.488 (P FEF), 0.398 (E DMFC), 0.440 (E FEF), Spearman 0.371 to 0.545, all p below 1e-89; all
+    four plots pass both readings.'
+  deviations:
+  - The stimulus phase is stimulus onset to delay onset, as the code computes it; it lasts 1.000 s at the median
+    (0.9997 to 1.4167 s).
+- claim: fig2b-selectivity-range
+  outcome: partially_reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig2b-selectivity-range
+  notes: 'Position AUCs meet the rule in both monkeys under both p-value methods (lowest decile 0.538 to 0.574,
+    highest decile 0.706 to 0.897). Identity AUCs do not: their highest decile is 0.654 (E) and 0.700 (P) with the
+    Methods p-value, 0.681 (E) and 0.715 (P) with the code''s, so only P under the code''s p passes. Significant
+    and non-significant units are present everywhere (Methods p, P 955 and 581, E 1,156 and 1,996). Identity AUCs
+    reach 0.969 (P) and 1.000 (E). With the 500-trial rule no conclusion changes. The deciles are the claims file''s
+    reading of a wide range.'
+  deviations:
+  - AUCs are not cross-validated; the Fig. 2b legend calls them cross-validated but neither the Methods nor the
+    code says how (claims file, T6).
+  - AUC by ranks with ties as half; the code's trapezoid on value-sorted labels orders ties arbitrarily.
+  - The code's p-value (auc.py) resamples labels with replacement in the value-sorted order, a null of 5,000 draws,
+    where the Methods shuffle 1,000 times; both are run. Counts of units entering the models under the code's p-value
+    run above the counts its selectivity notebook printed for Elgar, for reasons not found.
+- claim: fig5ab-ring-behavior
+  outcome: reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig5ab-ring-behavior
+  notes: 'Completed Ring trials, all conditions: 2-object fraction correct P 0.903 and E 0.756 (code radius), P
+    0.786 and E 0.721 (Methods radius), above 1/2; 1-object P 0.960 and E 0.945 (code radius). Without the left/right
+    trials (1,525 of 29,299, 5.2%) P 0.899 and E 0.749. Ring against Triangle interquartile range of reaction time,
+    ratio 0.935 (P, 48.6 against 52.0 ms) and 1.098 (E, 76.6 against 69.8 ms).'
+  deviations:
+  - The Triangle reference for reaction-time variability is reading (a) of fig1c-reaction-times (Triangle trials
+    on the triangle, trials at or above 180 ms).
+- claim: fig5cd-ring-tuning
+  outcome: partially_reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig5cd-ring-tuning
+  notes: 'Variety of receptive fields holds: units with significant position AUC have preferred angles in all three
+    sectors in each area of each monkey (Methods p, fewest 48 in a cell; code p, fewest 72). The AUC part judged
+    as fig2b fails: the highest decile of identity AUC is 0.611 (E), 0.630 (P) and 0.623 pooled with the Methods
+    p (0.638, 0.653, 0.646 with the code''s), and Elgar''s position AUCs reach a highest decile of only 0.658 (0.674);
+    Perle''s position AUCs (0.796) and the pooled ones (0.740) pass.'
+  deviations:
+  - The preferred angle is the peak of the mean of the 100 bootstrapped tuning curves; the Methods describe the
+    curves, not how a preference is read from them.
+  - AUCs are not cross-validated, as for fig2b-selectivity-range.
+- claim: fig2d-signal-noise-triangle
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig2d-signal-noise-triangle
+  notes: 'The criterion''s two methods give different outcomes, which it settles as methods_underspecified. Main
+    method (Methods, Noise Correlations), 55,766 P and 328,273 E pairs: lowest bin P -0.0041 (95% interval -0.0071
+    to -0.0011), E -0.0230 (-0.0244 to -0.0216); highest bin P 0.0574 (0.0545 to 0.0602), E 0.0490 (0.0475 to 0.0504),
+    so it reproduces the claim in both monkeys. Code variant (run_compute_triangle.py): P lowest -0.0189 (-0.0292
+    to -0.0085), highest 0.0769; E lowest bin (124 rows) 0.0245 (-0.0296 to 0.0786), highest 0.1412 (0.0975 to 0.1849),
+    so only the rise holds for E (partially reproduced). Per session, signal and noise correlation correlate positively
+    in all 24 sessions (Pearson 0.100 to 0.442). The question of which signal correlation the figure uses is put
+    to the paper''s authors (findings).'
+  deviations:
+  - 'Code variant vectorised: the within-condition shuffle permutes trials for all units at once and each pair''s
+    shared trials are taken after it, where the code keeps the pair''s shared trials first and then shuffles.'
+  - Intervals are normal 95% intervals of the mean, a standard choice; the paper's plots use seaborn's bootstrap
+    interval.
+- claim: fig5e-signal-noise-ring
+  outcome: partially_reproduced
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig5e-signal-noise-ring
+  notes: 'Ordered pairs of Ring units above 1 Hz with at least 50 shared 1-object and 200 2-object trials, 294,992
+    P and 154,174 E. Both readings agree. P (s = 0.8): highest bin 0.1728 (0.1098 to 0.2359) against lowest -0.1083
+    (-0.1424 to -0.0742) under reading (a), 0.1620 against -0.0629 under (b); pooled the same. E (s = 0.3): highest
+    0.0238 (0.0151 to 0.0324) against lowest 0.0174 (0.0077 to 0.0271) under (a), 0.0229 against 0.0192 under (b),
+    overlapping, so the criterion fails for E. The E means rise over the middle bins (0.0145 to 0.0214, reading
+    (a)), and the across-pair Pearson correlation of signal and noise is 0.017 (E) and 0.061 (P).'
+  deviations:
+  - Units above 1 Hz (T5); the code's run_compute_ring.py takes every unit of its selectivity table.
+  - Neighbours within each pair's shared trials are taken from one distance sort per session; ties among equidistant
+    trials are broken by trial order, which can differ from the code's argsort.
+  - Methods reading (a) uses the 10 nearest neighbours without the trial itself, as the code does for reading (b).
+- claim: ext3ab-decoding
+  outcome: partially_reproduced
+  notebook: decoding_watters_2026.ipynb
+  output: claim:ext3ab-decoding
+  notes: 'Sessions Perle 2022-06-01, 2022-05-31 and 2022-06-04, the three with the most units entering the models,
+    as in the code. Panel a, delay phase: position 99.2%, 95.7% and 82.5% against shuffled 33.8%, 33.3% and 32.1%,
+    above control in all ten splits and by more than two standard deviations in each session; identity 50.0%, 46.2%
+    and 30.0% against 37.5%, 32.4% and 30.8%, above control under neither reading in any session. The stimulus phase
+    gives the same pattern. Panel b: the absent location 78.5% to 99.7%, above the legend''s 66% in every session
+    and phase; the absent identity 32.4% to 43.6%, below it. Position holds and identity does not.'
+  deviations:
+  - The decoders are models.py's LinearModel1Object written in numpy (wm.train_linear) with the configs' settings
+    (panel a SGD lr 0.01, panel b Adam lr 0.001, L1 0.003, batch 512, 10,000 steps), batched over splits; torch's
+    random streams are not reproduced.
+  - Units entering the models are selected with the Methods' AUC p-value; this picks the same sessions as the code's
+    scripts name. Ten seeds as the legend says, where run_1_triangle.py lists twenty.
+  - The code's filters (dataset.py, units with 50 trials, trials with 5 units, then greedy removal to a fully observed
+    matrix) leave 105 to 121 1-object trials and, for 2022-06-04, 20 units.
+- claim: ext3c-decoder-orthogonality
+  outcome: not_reproduced
+  notebook: decoding_watters_2026.ipynb
+  output: claim:ext3c-decoder-orthogonality
+  notes: 'Median angles between corresponding columns of the two decoders, over sessions, ten seeds and columns.
+    Receptive Field data 91.9 and 91.6 degrees (Triangle delay, stimulus) and 96.4 and 96.7 (Ring), within 10 degrees
+    of the Orthogonal data (91.0, 90.7, 92.5, 95.0). Ring neural data 88.8 and 93.3. Triangle neural data 106.7
+    (delay) and 106.5 (stimulus), outside 75 to 105 and 15.7 and 15.8 degrees from the Orthogonal data, so neither
+    reading holds overall. The part of the statement about data without slots holds: the Receptive Field decoders
+    come out near orthogonal in both datasets.'
+  deviations:
+  - LinearModel2Objects written in numpy (wm.train_linear_2obj), Adam lr 0.001, L1 0.003, batch 512, 10,000 steps
+    (config_2_triangle.py, config_2_ring.py); synthetic datasets as dataset.py with numpy's generator.
+  - Ring sessions Perle 2022-06-09, 06-10 and 06-11, ranked by units entering the models with the Methods p-value,
+    the sessions run_2_ring.py names. The code's filters leave 20 units in Triangle 2022-06-04 and 44 in Ring 2022-06-09.
+- claim: fig4a-gain-best-triangle
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig4a-gain-best-triangle
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs the kappa sweep (11 values, two splits,
+    10,000 steps) and ten splits for 3 models on 24 sessions, 23,040,000 steps or about 231 days, far over the 60-minute
+    notebook limit and the run's 5 hours. The estimate is a lower bound (no Slot assignment losses, evaluation or
+    data pipeline). No fit was started.
+- claim: ext6-gain-best-areas
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext6-gain-best-areas
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs 3 restrictions x 3 models on 8 sessions,
+    23,040,000 steps or about 231 days, far over the 60-minute notebook limit and the run's 5 hours. The estimate
+    is a lower bound (no Slot assignment losses, evaluation or data pipeline). No fit was started.
+- claim: ext5-general-slot
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext5-general-slot
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs the General Slot model on 24 sessions,
+    7,680,000 steps or about 77 days, far over the 60-minute notebook limit and the run's 5 hours. The estimate
+    is a lower bound (no Slot assignment losses, evaluation or data pipeline). No fit was started.
+- claim: fig4b-identifiability
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig4b-identifiability
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs refits on synthetic data from 10 sessions,
+    21,600,000 steps or about 216 days, after the fits of fig4a that generate the data, far over the 60-minute notebook
+    limit and the run's 5 hours. The estimate is a lower bound (no Slot assignment losses, evaluation or data pipeline).
+    No fit was started.
+- claim: nslots-two-best
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:nslots-two-best
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs 4 slot counts x 2 splits on 4 sessions
+    per monkey and dataset, 1,280,000 steps or about 13 days, far over the 60-minute notebook limit and the run's
+    5 hours. The estimate is a lower bound (no Slot assignment losses, evaluation or data pipeline). No fit was
+    started.
+- claim: ext11-kappa-tuning
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext11-kappa-tuning
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs the kappa sweeps of fig4a, part of its
+    23,040,000 steps (about 231 days), far over the 60-minute notebook limit and the run's 5 hours. The estimate
+    is a lower bound (no Slot assignment losses, evaluation or data pipeline). No fit was started.
+- claim: ext7-gains-distributed
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext7-gains-distributed
+  notes: Needs the gains or attention of fitted models, from fig4a-gain-best-triangle, which is blocked as too large
+    (one fit of 10,000 steps takes about 2.4 h here; the Triangle comparison about 231 days, the Ring one about
+    212 days). No fit was started.
+- claim: fig4c-gain-performance-triangle
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig4c-gain-performance-triangle
+  notes: Needs the gains or attention of fitted models, from fig4a-gain-best-triangle, which is blocked as too large
+    (one fit of 10,000 steps takes about 2.4 h here; the Triangle comparison about 231 days, the Ring one about
+    212 days). No fit was started.
+- claim: fig4d-gain-rt-triangle
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig4d-gain-rt-triangle
+  notes: Needs the gains or attention of fitted models, from fig4a-gain-best-triangle, which is blocked as too large
+    (one fit of 10,000 steps takes about 2.4 h here; the Triangle comparison about 231 days, the Ring one about
+    212 days). No fit was started.
+- claim: ext8-slot-switching-behavior
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:ext8-slot-switching-behavior
+  notes: Needs the gains or attention of fitted models, from fig4c-gain-performance-triangle and fig4d-gain-rt-triangle,
+    which is blocked as too large (one fit of 10,000 steps takes about 2.4 h here; the Triangle comparison about
+    231 days, the Ring one about 212 days). No fit was started.
+- claim: fig5f-gain-best-ring
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig5f-gain-best-ring
+  notes: Needs the paper's encoding models fitted (T7). One gradient step at the paper's sizes (MLPs 512-1024-512,
+    batch 4,096 samples of up to 3 objects, 59 modeled units, the median of a Triangle session) takes about 0.87
+    s here, so one fit of 10,000 steps takes about 2.4 h; this claim needs 3 models on 22 Ring sessions, 21,120,000
+    steps or about 212 days, far over the 60-minute notebook limit and the run's 5 hours. The estimate is a lower
+    bound (no Slot assignment losses, evaluation or data pipeline). No fit was started.
+- claim: fig5g-gain-performance-ring
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig5g-gain-performance-ring
+  notes: Needs the gains or attention of fitted models, from fig5f-gain-best-ring, which is blocked as too large
+    (one fit of 10,000 steps takes about 2.4 h here; the Triangle comparison about 231 days, the Ring one about
+    212 days). No fit was started.
+- claim: fig5h-gain-rt-ring
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_watters_2026.ipynb
+  output: claim:fig5h-gain-rt-ring
+  notes: Needs the gains or attention of fitted models, from fig5f-gain-best-ring, which is blocked as too large
+    (one fit of 10,000 steps takes about 2.4 h here; the Triangle comparison about 231 days, the Ring one about
+    212 days). No fit was started.
+findings:
+- kind: code_mismatch
+  statement: 'The Methods (Feedback phase) say a response was correct within 2.4 degrees (0.1 arena widths) of the
+    target; the paper''s code scores correctness at 0.2 arena widths (4.8 degrees), and the data agree with the
+    code: every completed trial with a closed-loop response error under 0.2 arena widths was rewarded (49,185) and
+    none at 0.2 or more (12,469).'
+- kind: paper_inconsistency
+  statement: The Methods say the cue phase lasted 180 ms and the Fig. 1c legend counts saccades earlier than 180
+    ms after cue onset as broken fixation; in the trials tables the response phase begins 250 ms after cue onset
+    (0.2498 to 0.3167 s), 47.9% of completed trials have a response time under 250 ms, and 1.1% are under 180 ms
+    yet are not marked as broken fixation.
+- kind: metadata_insufficient
+  statement: The trials column response_time is described as the response time from high-resolution eye tracking,
+    without saying which event it marks; it precedes closed_loop_response_time by 134 ms at the median and in some
+    completed trials precedes cue onset (earliest 12.5 ms before), so it reads as saccade onset.
+- kind: metadata_insufficient
+  statement: The electrodes tables of all spikesorting files give location 'unknown'; the brain area of each probe
+    (s0 in DMFC, vprobe0 and vprobe1 in FEF) is stated only in the paper's code and the claims, not in the dandiset.
+- kind: selection_undocumented
+  statement: The dandiset holds two Perle sessions the paper does not count, 2022-06-06 (spike sorting, 2,378 trials,
+    all with 2 objects, 77 units) and 2022-06-08 (behaviour only, 1,517 trials); neither the dandiset nor the paper
+    says what they are. The paper's 22 Ring sessions include Elgar 2022-09-18 and 2022-09-19, which the code's Ring
+    model comparison leaves out.
+- kind: paper_inconsistency
+  statement: 'The paper''s counts of ''well-isolated neurons'' (4,688 Triangle, 3,051 Ring) are recovered only with
+    multi-units included: 1,563 of the 4,688 Triangle units and 1,123 of the Ring units are labelled good (single
+    units), the rest mua. The counts also do not apply the Methods'' rule of at least 500 stable trials (4,473 with
+    it).'
+- kind: code_mismatch
+  statement: The AUC p-value of the code (phys_processing/selectivity/auc.py) draws labels with replacement in value-sorted
+    order 5,000 times, a resampled null, where the Methods shuffle labels 1,000 times; under the code's p-value
+    more units pass the modeling threshold than under the Methods' (for Elgar 2022-08-20, 172 against 98).
+- kind: methods_unavailable
+  statement: 'Question for the authors, fig2d-signal-noise-triangle: Fig. 2d''s signal correlation is defined in
+    the Methods as the correlation of the 9 1-object condition means, while figures/figure_2/noise_correlations/run_compute_triangle.py
+    computes it per pair of 1-object conditions with shuffled trials. Which one does the figure show? With the Methods''
+    definition the lowest bin is negative in both monkeys (P -0.0041, E -0.0230); with the code''s, Monkey E''s
+    lowest bin holds 124 rows and is 0.0245 (interval -0.0296 to 0.0786).'
+- kind: methods_unavailable
+  statement: 'Question for the authors, ext1-misbinding-errors and correctness in general: is a response assigned
+    to an object, and counted correct, within 2.4 degrees (Methods) or 4.8 degrees (code, and the reward in the
+    data)? With 2.4 degrees, Monkey P''s 2-object errors are mostly at no vertex (249 against 207 at the non-target
+    object); with 4.8 degrees misbinding is the main error class in both monkeys. This attempt assumed 4.8 degrees.'
+- kind: methods_unavailable
+  statement: 'Question for the authors, fig2b-selectivity-range and fig5cd-ring-tuning: the Fig. 2b legend calls
+    the AUC values cross-validated, but neither the Methods nor the code says how; this attempt used the uncross-validated
+    AUC of the Methods.'
