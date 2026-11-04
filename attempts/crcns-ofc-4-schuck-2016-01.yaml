@@ -34,8 +34,9 @@ outcomes:
     on time-outs give the same count. The data set holds 24 of the 27 participants. Measured in trial
     slots, 82 of the 172 blocks after an Exit trial span about two (an error and its repetition) and
     most others three to five; a least-squares fit over runs gives 1.52 designed trials per block after
-    an Exit trial and 1.87 per other block, so about half the blocks hold one designed trial besides
-    the error trial, which may be a second error or a correct trial after the error. The 'err' RT-file
+    an Exit trial and 1.87 per other block, so a block after an Exit trial holds on average about half
+    a designed trial besides the error trial (0.52) and another block close to one (0.87); that trial
+    may be a second error or a correct trial after the error. The 'err' RT-file
     duration runs to the last response of the block.
 - claim: supp-errors-by-trial-class
   outcome: partially_reproduced
@@ -51,8 +52,8 @@ outcomes:
     higher than the other two classes together in all 24 participants, but the Enter rate is 4.79%
     against 3.4 +/- 0.34. Errors after an Exit trial (Enter errors) are 181 of 225 error blocks
     after a run's first trial; the 44 others are Internal or Exit errors whose class the files do not
-    give, so Exit and Internal rates together are 1.18 to 1.20% whichever class they are given (measured
-    gives them all to Internal, the first assignment shown). Neither Exit (2.3%) nor Internal (1.4%)
+    give, so Exit and Internal together are 0.60%, and given all 44 errors one class reaches at most
+    1.18% (Exit) or 1.20% (Internal) (measured gives them all to Internal, the first assignment shown). Neither Exit (2.3%) nor Internal (1.4%)
     can reach its expected value, and their order cannot be told. One error is counted per block, a
     lower bound, so the Enter rate can only be higher. Blocks after an Exit trial are 79% of blocks,
     where the paper's class rates imply that Enter errors are 48% of errors, so Internal and Exit errors
@@ -65,13 +66,15 @@ outcomes:
     logistic mixed model; reading (a) uses statsmodels' MixedLM in place of lmer.
 - claim: supp-errors-stable-over-blocks
   outcome: reproduced
+  assumed: true
   notebook: reproduce_schuck_2016.ipynb
   output: claim:supp-errors-stable-over-blocks
   notes: Run effect on per-run error rates, random intercept and slope by participant, slope -0.11
     percentage points per run, chi2(1) = 1.44, p = 0.23 (paper chi2(1) = 0.08, p = .77); logistic
     variant p = 0.22. Mean rates per run 1.94, 2.35, 2.27, 2.01, 1.51%.
   deviations:
-  - Errors are counted one per error block, a lower bound (see behavior-error-rate).
+  - Assumed, as for supp-errors-by-trial-class and fig4a-decoding-error-correlation, that each error
+    block holds one error, a lower bound (see behavior-error-rate); the files do not record the number.
   - statsmodels' MixedLM in place of lmer; the logistic variant uses participant fixed effects.
 - claim: supp-errors-not-by-age-category
   outcome: reproduced
@@ -199,8 +202,8 @@ outcomes:
   notes: With maps z-scored by voxel, 8-way accuracy 15.89% (within tolerance; one-sided p = 0.006),
     previous category 55.36% (p = 0.0024) and current category 54.48% (p = 0.0036) above 50%; previous
     age 49.09% (p = 0.67), which matches neither the main text (above baseline) nor the supplement's
-    p = .09. With maps z-scored by map, 14.90% (outside tolerance, p = 0.018) and no component above
-    50% (p >= 0.17), so the outcome rests on the z-scoring.
+    p = .09. With maps z-scored by map, 14.79% (outside tolerance, p = 0.025) and no component above
+    50% (p = 0.20 to 0.44), so the outcome rests on the z-scoring.
   deviations:
   - Beta maps z-scored per voxel across the state maps of each run, assumed as the operation of the
     Princeton MVPA toolbox's zscore_runs, which the Methods name; the Methods say only that the maps
@@ -285,6 +288,7 @@ outcomes:
     values are outside tolerance. With maps z-scored by map, error trials decode better than the
     trials before them (7.70% against 5.67%). No reading gives p < 0.05. Every error trial with a state
     is an Enter trial, and correct Enter trials decode at 0.90% by voxel (Exit 11.79%, Internal 14.30%),
+    as that classifier names an Enter state on 5.60% of labelled volumes where 50% would be unbiased,
     so the comparison with the mixed-class trials before an error is confounded by class.
   deviations:
   - Volumes unsmoothed (no coordinates), where the Methods smooth them at 3 mm.
@@ -295,9 +299,9 @@ outcomes:
   notebook: reproduce_schuck_2016.ipynb
   output: claim:fig4b-decline-before-errors
   notes: With maps z-scored by voxel, the error slope over trials -5 to 0 is negative but not
-    significant in any reading (smallest p = 0.37), nor is the interaction. With maps z-scored by map
+    significant in any reading (smallest p = 0.32), nor is the interaction. With maps z-scored by map
     and the nearest volume, slope and interaction are significant but positive (span reading, matched
-    courses a, 1.45 percentage points per trial, p = 0.019, interaction p = 0.030), the opposite of the
+    courses a, 1.47 percentage points per trial, p = 0.039, interaction p = 0.030), the opposite of the
     claim. Position 0 is always an Enter trial and position -1 an Exit trial, so the course also
     reflects how each class decodes.
   deviations:
@@ -318,13 +322,19 @@ outcomes:
     (1.59% against 9.21%, t20 = -4.07, one-sided p = 0.0003; strict reading 2.08% against 8.93%, p =
     0.005); with one matched course per error (b) p = 0.044 to 0.14; with maps z-scored by map the
     error trial is not lower (p >= 0.69). Trial -1 is not lower by voxel (11.59% against 8.81%,
-    one-sided p = 0.70; paper p = 0.07). 21 participants, so t20 where the paper gives t24. Changed
-    from reproduced after verification round 1.
+    one-sided p = 0.70; paper p = 0.07). 21 participants, so t20 where the paper gives t24. With maps
+    z-scored by voxel, reading (c) is at floor (1.59% against 1.42% and 0.88%, below the 6.25% chance
+    level), because that classifier names an Enter state on 5.60% of labelled volumes, and could not
+    show a drop. The reading that could is the map z-scoring, where labelled Enter trials decode at
+    8.02%, and there the error trial is not lower under the criterion's readings (p >= 0.69) or under (c)
+    (p >= 0.45). Changed from reproduced after verification round 1.
   deviations:
   - Assumed a class-matched comparison, reading (c), position 0 against matched courses whose position
     0 is an Enter trial. The criterion's matched courses (a) and (b) do not match class; the paper's
     error trials were of all three classes and its matched courses of the same mix, while here only
     Enter errors can be given a state, so only a class-matched comparison compares like with like.
+    That the paper's matched courses had the class mix of its error trials is an inference; the Figure
+    4B legend says only "seven consecutive trials with no behavioral error".
   - As fig4b-error-trial-drop for smoothing and error states.
 - claim: fig5-similarity-predicts-errors
   outcome: not_reproduced
@@ -348,13 +358,14 @@ outcomes:
   notes: With the span reading of error states, error rate rises with Euclidean distance over ordinal
     positions (raw maps t = 6.17, p = 0.0008; voxel z-scored t = 4.10, p = 0.0064) and within-
     participant correlations are above 0 (mean r 0.260, p = 0.003; 0.313, p = 0.0003). With the strict
-    reading (37 errors) the raw-map result is not significant (p = 0.17 and 0.105), and with maps
+    reading (39 errors in 35 participant-transitions, 16 participants) the raw-map result is not
+    significant (p = 0.17 and 0.105), and with maps
     z-scored by map the relation is absent or reversed. The regression over transition types is not
     significant in any reading (p >= 0.33). The same analysis with correlations does not reproduce
     (fig5-similarity-predicts-errors), where the paper reports the same result for both. Errors take trials out of a state's regressor, and distance falls with the Enter
     state's correct-trial count (mean within-participant r -0.212, p = 0.013 raw; -0.258, p = 0.003
     voxel z-scored); with that count held constant, distance and error rate are not related (mean
-    partial r 0.075, one-sided p = 0.21; 0.087, p = 0.14). The paper's analysis has the same coupling,
+    partial r 0.072, one-sided p = 0.22; 0.076, p = 0.18). The paper's analysis has the same coupling,
     so the outcome follows the criterion, but the result may come from trial counts.
   deviations:
   - Rests on the span reading of error states, an assumption about the content of the error blocks.
@@ -550,7 +561,8 @@ verifications:
     reason: Voxel reading, 15.89%, within 16.7 +/- 1.67, with p = 0.006 against 12.5%. Previous category
       is 55.4% (p = 0.002) and current category 54.5% (p = 0.004). Previous age is 49.1% (p = 0.67),
       against main-text "above baseline" and supplement p = 0.09.
-    response: No change; the per-map numbers in the text are updated to the re-run (14.90%, p = 0.018).
+    response: No change; the per-map numbers in the text are updated to the re-run (14.79%, p = 0.025;
+      corrected in round 2 from 14.90%, p = 0.018, which did not match the output).
   - claim: figs2a-permutation-control
     agrees: true
     outcome: partially_reproduced
@@ -610,8 +622,9 @@ verifications:
     outcome: not_reproduced
     reason: Voxel slopes are negative but p >= 0.37. The only significant error slopes (map, nearest, p =
       0.014 and 0.019) are positive, so accuracy rises toward the error.
-    response: Corrected the numbers in the conclusion (smallest p 0.37; map slope 1.45 points per trial,
-      p = 0.019; strict 2.08, p = 0.014). Outcome kept.
+    response: Corrected the numbers in the conclusion (smallest p 0.32; map slope 1.47 points per trial,
+      p = 0.039; strict 2.08, p = 0.014; corrected in round 2 from 0.37 and 1.45, p = 0.019, which did
+      not match the output). Outcome kept.
   - claim: fig4b-error-vs-matched
     agrees: true
     outcome: reproduced
@@ -641,7 +654,7 @@ verifications:
       for per-state trial counts.
     response: Added the correlation of distance with the correct-trial count (mean r -0.21, p = 0.013 raw;
       -0.26, p = 0.003 voxel) and the partial correlation of distance and error rate with the count held
-      constant (p = 0.21 and 0.14). Outcome kept, as the paper's analysis has the same coupling and the
+      constant (p = 0.22 and 0.18; corrected in round 2 from 0.21 and 0.14). Outcome kept, as the paper's analysis has the same coupling and the
       criterion holds; the notes say the result may come from trial counts.
   - claim: fig5-synthetic-control
     agrees: true
@@ -652,4 +665,213 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The data have no response side or per-trial response mapping, and no whole-brain data.
+    response: No change.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the round-1 revision, with its conclusions and
+    summary, the helper module, the claims file, the README and this record, with the paper. The
+    verifier agreed with all 29 stated outcomes, checked the conclusions against the printed outputs
+    and listed stale numbers, and reviewed its round-1 points. Report in
+    transcripts/crcns-ofc-4/verifier-2-report.md.
+  results:
+  - claim: behavior-error-rate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Cell 9 and the record notes say "about half the blocks hold one
+      designed trial besides the error trial", but the least-squares fit gives 0.52 extra designed trials
+      per block after an Exit trial and 0.87 per other block, so "half" fits only the blocks after an
+      Exit trial. Point 2 (error undercount) is resolved as far as the data allow; the bounds stay 1.98
+      to 3.10% and the undercount is stated.
+    response: Corrected the data check and the notes to give 0.52 and 0.87 extra designed trials per
+      block by the class of the trial before the block. Outcome kept.
+  - claim: supp-errors-by-trial-class
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome; the assumption (one error per block, with the class taken from the
+      trial before the block) is reasonable. Cell 18 and the notes say "Exit and Internal are 1.18 to
+      1.20% together", but cell 17 prints 0.60% for the two together; 1.18 to 1.20% is the most either
+      class can reach if it is given all 44 unknown errors.
+    response: Corrected the conclusion and the notes to 0.60% for the two classes together, with 1.18%
+      and 1.20% as the most each class reaches with all 44 errors. Outcome kept.
+  - claim: supp-errors-stable-over-blocks
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, but it rests on counting one error per block, the same as
+      supp-errors-by-trial-class and fig4a, which are marked assumed; this one is not and should be
+      marked for consistency.
+    response: Marked assumed, with the deviation stating the one-error-per-block assumption, in the
+      record, the conclusion, the summary table and the README. Outcome kept.
+  - claim: supp-errors-not-by-age-category
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the span reading is a stated and reasonable assumption.
+    response: No change.
+  - claim: supp-training-errors-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: supp-training-rt-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: supp-rt-stable-over-blocks
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: supp-rt-faces-faster
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Point 9 is resolved, a variant with by-participant category
+      slopes is added (chi2 = 54.1).
+    response: No change.
+  - claim: supp-rt-by-trial-class
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2a-16way-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Point 1 (O3) is resolved, both readings are built from the
+      error blocks, 16-way accuracy is 8.10 to 9.38% and the outcomes are unchanged.
+    response: No change.
+  - claim: fig2-two-back-state-space
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Points 6 and 7 are resolved, reading (b) uses the error trial
+      as the trial two back, and the comparison with '16rebuilt' is added.
+    response: No change.
+  - claim: fig2b-hidden-components
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Cell 45 says "Under the two readings of O3 the result is the
+      same or weaker", but previous category under O3 (a) with map z-scoring is stronger, p = 0.0129
+      against 0.038.
+    response: Corrected the conclusion to say the pattern is the same under the readings of O3 and that
+      previous category is stronger under O3 (a) with maps z-scored by map (p = 0.013 against 0.038).
+      Outcome kept.
+  - claim: fig2b-current-age-absent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2b-two-back-absent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: figs2c-8way-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; voxel z-scoring is a stated and reasonable assumption. Cell 52, the notes and the
+      round-1 response say "With maps z-scored by map, accuracy is 14.90% (outside tolerance, one-sided
+      p = 0.018) and no component is above 50% (p >= 0.17)", but cell 51 prints 14.79%, one-sided p =
+      0.0247, and component p of 0.196, 0.443 and 0.295.
+    response: Corrected the conclusion, the notes and the round-1 response to 14.79%, p = 0.025, and
+      component p = 0.20 to 0.44. Outcome kept.
+  - claim: figs2a-permutation-control
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: synthetic-data-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Point 10 is resolved, cell 4 lists every variable of every
+      run file and none is a mask or coordinates.
+    response: No change.
+  - claim: fig2c-enter-cluster
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2d-enter-nonenter-decoding
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3-searchlight-conjunction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: other-rois-incomplete
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4a-decoding-error-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees by the criterion's wording, r = -0.268 lies inside the paper's CI, but p = 0.205.
+      Voxel z-scoring is a stated and reasonable assumption.
+    response: No change.
+  - claim: fig4b-error-trial-drop
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. On point 5, correct Enter trials decode at 0.90% under voxel
+      z-scoring, far below the 6.25% chance level, which suggests the volume 2 TRs after onset carries
+      the previous (Exit) trial's state; if so, all three fig4b claims test signal lag more than errors.
+      The README and summary say "Enter trials decode worse than other trials on single volumes", which
+      holds only under voxel z-scoring (by map, Enter 8.30% against Exit 4.85%).
+    response: Added a data-check cell on what single volumes are decoded as. At the volume used, Enter
+      trials are decoded as the preceding Exit state on 10.78% of volumes, the same as that state's base
+      rate over all labelled trials (10.90%, t = -0.20); an excess appears only at onset (lag 0, t =
+      3.12). The low accuracy comes from the voxel-z-scored classifier naming an Enter state on 5.60% of
+      labelled volumes, where 50% would be unbiased (56.74% by map). So the fig4b comparisons under
+      voxel z-scoring measure this bias, not lag; this does not change any fig4b outcome, which are
+      all not_reproduced. Restricted the README and summary sentence to voxel z-scoring.
+  - claim: fig4b-decline-before-errors
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. Cell 74, the notes and the round-1 response say "smallest p
+      = 0.37" with voxel maps, but cell 73 prints 0.321, and "slope 1.45 percentage points per trial, p
+      = 0.019" for the span reading with matched courses (a), where cell 73 prints 1.47, p = 0.0394; the
+      interaction p = 0.030 matches.
+    response: Corrected the conclusion, the notes and the round-1 response to p = 0.32 and 1.47, p =
+      0.039. Outcome kept.
+  - claim: fig4b-error-vs-matched
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, but the outcome goes against the criterion as written, which passes under voxel
+      z-scoring with matched courses (a) (p = 0.0003). The confound behind reading (c) is real. That the
+      paper's matched courses were "of the same mix" of classes is an inference; the paper says only
+      "seven consecutive trials with no behavioral error". Under voxel z-scoring reading (c) is at floor
+      (1.59% against 1.42% and 0.88%), could not show a drop, and the notes should say so. The evidence
+      that decides it is the map reading, where Enter trials are not at floor (8.02%), and error trials
+      are not lower under the criterion's readings (p >= 0.69) or under (c) (p >= 0.45).
+    response: The conclusion, notes and deviation now say that the class mix of the paper's matched
+      courses is an inference and quote the legend, that reading (c) is at floor under voxel z-scoring
+      and why (the classifier names an Enter state on 5.60% of volumes), and that the map reading, where
+      Enter trials decode at 8.02%, decides it (p >= 0.69 and p >= 0.45). Outcome kept, with the
+      verifier's note that it departs from the criterion as written.
+  - claim: fig5-similarity-predicts-errors
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: figs5-euclidean-distance
+    agrees: true
+    outcome: reproduced
+    reason: Follows the criterion; the count control is stated and the assumption is reasonable, but the
+      cited numbers are stale. Cell 81, the notes and the round-1 response give mean partial r 0.075, p =
+      0.21 and 0.087, p = 0.14, where cell 79 prints 0.072, p = 0.215 and 0.076, p = 0.175. "With the
+      strict reading (37 errors, 16 participants)" is wrong, as the transition table uses all 39 strict
+      states; 37 is the fig4b count.
+    response: Corrected the conclusion, the notes and the round-1 response to 0.072, p = 0.22 and 0.076,
+      p = 0.18, and the strict reading to 39 errors in 35 participant-transitions of 16 participants.
+      Outcome kept.
+  - claim: fig5-synthetic-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: supp-motor-action-not-in-ofc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
     response: No change.
