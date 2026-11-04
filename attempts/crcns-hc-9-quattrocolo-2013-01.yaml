@@ -25,24 +25,41 @@ outcomes:
   assumed: true
   notebook: reproduce_quattrocolo_2013.ipynb
   output: claim:fig7a-olm-sag
-  notes: On the -100 pA step all three cells show a sag under both readings of the criterion. Reading
-    (a), relaxation from the peak hyperpolarization to the mean of the step's last 100 ms, gives 17.6,
-    8.0 and 8.8 mV (1May2012_P3, 20Sept2011_P2, 24October2012_C2), 22 to 47 times the threshold of twice
-    the pre-step SD (0.19 to 0.56 mV). Reading (b), the sag ratio, gives 0.449, 0.225 and 0.210, above
-    0.1. Both give 3 of 3 cells. With V_min from a 1 ms running mean and end windows of 50 to 200 ms the
-    smallest sag is 42.4 baseline SDs and the smallest ratio 0.200; the outcome holds up to a 10 SD threshold
-    or a ratio threshold of 0.15, and at 0.2 two of three cells pass. The cell the old description places
-    in Figure 7D (24October2012_C2, P15, Sst-Cre;ChR2) has a ratio of 0.210, between those of the two
-    Figure 7A cells. The firing at +50 pA (15, 15 and 18 spikes in 1 s) is shown as a description only.
-    The claim's firing-pattern similarity is judged by the sag, as the criterion says; whether the whole
-    firing pattern of the 7D cell is similar is not tested. The question of how the paper judged a sag
-    is recorded as a methods_unavailable finding for the paper's authors.
+  notes: On the -100 pA step all three cells show a sag under both readings of the criterion, with V_min
+    from a 1 ms running mean. Reading (a), relaxation from the peak hyperpolarization to the mean of the
+    step's last 100 ms, gives 17.5, 7.9 and 8.7 mV (1May2012_P3, 20Sept2011_P2, 24October2012_C2), 22
+    to 47 times the threshold of twice the pre-step SD (0.19 to 0.56 mV). Reading (b), the sag ratio,
+    gives 0.448, 0.224 and 0.208, above 0.1. Both give 3 of 3 cells. With raw V_min and end windows of
+    50 to 200 ms the smallest sag is 42.4 baseline SDs and the smallest ratio 0.200; the outcome holds
+    up to a 10 SD threshold or a ratio threshold of 0.15, and at 0.2 two of three cells pass. The 2 SD
+    threshold of reading (a) does not separate a sag from noise in these recordings. Each cell's 0 pA
+    sweep gives 1.3 to 2.4 mV, 2.8 to 20.1 pre-step SDs, and so passes it, because the 75 ms pre-step
+    baseline misses slow fluctuations over the 1 s step (SD 0.59 to 1.03 mV in the 0 pA step window).
+    On a synthetic trace without sag the raw minimum passes reading (a) in 100 of 100 draws and the 1
+    ms running mean in none; reading (b) passes in none. Against the 0 pA sweep the -100 pA sags are
+    4.5 to 7.3 times larger, and 4.2 to 10.8 times twice the SD of the 0 pA step window, and reading (b)
+    gives 3 of 3, so the outcome holds on references that separate a sag from noise. The cell the old
+    description places in Figure 7D (24October2012_C2, P15, Sst-Cre;ChR2) has a ratio of 0.208, close
+    to the 0.224 of 20Sept2011_P2 and below the 0.448 of 1May2012_P3. The firing at +50 pA (15, 15 and
+    18 spikes in 1 s) is shown as a description only. The claim's firing-pattern similarity is judged
+    by the sag, as the criterion says; whether the whole firing pattern of the 7D cell is similar is
+    not tested. The deposited traces were not compared with the printed Figure 7 traces, since the PDF
+    could not be rendered here; the notebook plots the first 300 ms of each -100 pA step for that comparison.
+    The question of how the paper judged a sag is recorded as a methods_unavailable finding for the
+    paper's authors.
   deviations:
   - The paper shows the sag in example traces and defines no measure; the claims file's two readings are
     run, both give 3 of 3, and the outcome rests on that assumed measure, as the criterion says.
   - The pre-step baseline for both readings is all of each sweep before the step (0 to 75 ms); the criterion
-    names no window, and this is a standard choice. V_min is the raw minimum during the step, with a 1
-    ms running mean as a variant; neither changes the outcome.
+    names no window, and this is a standard choice. V_min is the minimum of a 1 ms running mean during
+    the step, a standard choice, with the raw minimum as a variant; neither changes the outcome. The
+    raw minimum was the main measure in the first version, but it picks the most negative noise sample
+    and passes reading (a) on a trace without sag, so the running mean replaced it after round 1 of
+    verification.
+  - Reading (a)'s threshold, as the criterion states it, is passed by the 0 pA sweeps of all three
+    cells. The comparison with the 0 pA sweep (same measure, and twice the SD of the voltage in the
+    0 pA step window) is shown as a reference; it is not part of the criterion and does not change the
+    outcome.
   - Which cell is in which panel of Figure 7 is taken from the superseded description in the bucket's
     hc-9/old/ folder (ages P13, P14 and P15 and the mouse lines, which match the Figure 7 legends); the
     files and the current description do not say. The criterion judges every cell alike, so the outcome
@@ -252,3 +269,223 @@ findings:
     response at -100 pA, but the paper defines no measure of sag or criterion for its presence. Was it
     judged by eye, or by a measure such as the sag ratio (V_end - V_min) / (V_baseline - V_min)? This
     attempt used two standard readings, which agree for all three cells (sag ratios 0.21 to 0.45).
+verifications:
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first author run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper under paper/ and the CRCNS bucket listing.
+  results:
+  - claim: fig7a-olm-sag
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14 measures the -100 pA step. Reading (a) finds a sag in 3 of 3 cells, 8.0 to 17.6 mV,
+      or 44 to 94 baseline SD against a threshold of 2. Reading (b) also finds 3 of 3, with sag ratios
+      0.21 to 0.45 against a threshold of 0.1. Both readings agree, and every variant in cell 16 (end
+      window, smoothing) gives 3 of 3 at the criterion's thresholds. The peak hyperpolarization comes
+      88 to 126 ms after step onset, which fits a real sag and not a noise minimum. Problems that do not
+      affect the conclusion. (1) Taking V_min as the raw minimum biases reading (a) toward finding a sag;
+      a synthetic trace with no sag gave 4.0 baseline SD with the raw minimum and 0.7 SD with the 1 ms
+      running mean, so as written the 2 SD test cannot discriminate near threshold. (2) The mapping of
+      files to Figure 7 panels comes from the superseded hc-9/old/ description; the criterion judges every
+      cell alike. (3) The +50 pA firing table is shown but not assessed, as the criterion directs. (4)
+      The description gives 30 pA increments and a step about 0.5 s into the sweep, but the data have
+      25 pA increments and a step at 75 ms; the claims-file header repeats "30 pA increments" from the
+      description, a misstatement of the data description, not of the paper. Could not check. The deposited
+      traces against the printed Figure 7A and 7D traces (asked for a zoomed plot of the first 300 ms
+      of the -100 pA step next to a crop of Figure 7), and the noise floor of reading (a) on these recordings
+      (asked for sag_measures on each cell's 0 pA sweep, sweep 5).
+    response: 'Outcome kept. V_min is now the minimum of a 1 ms running mean (hc9.sag_measures and its
+      docstring), with the raw minimum as a variant; the numbers in the notes and the conclusion are updated
+      (17.5, 7.9 and 8.7 mV; ratios 0.448, 0.224 and 0.208). Added a cell that runs sag_measures on each
+      cell''s 0 pA sweep and on 100 synthetic traces without sag. The synthetic check confirms the verifier''s
+      point (raw minimum passes reading (a) in 100 of 100 draws, running mean in none). The 0 pA sweeps
+      show more: all three pass reading (a) at 2 SD even with the running mean (2.8 to 20.1 SD), because
+      the 75 ms pre-step SD misses slow fluctuations over the 1 s step. The -100 pA sags are 4.5 to 7.3
+      times the 0 pA value and 4.2 to 10.8 times twice the 0 pA step-window SD, and reading (b) gives
+      3 of 3, so the outcome stands; the notes, conclusion, summary and a new deviation say that reading
+      (a) alone does not separate sag from noise here. Added the zoomed plot of the first 300 ms of each
+      -100 pA step. It is not set against a crop of Figure 7, because entries embed no images or figures
+      from files and the PDF could not be rendered in this run; this is said in the notes. The panel mapping
+      and the +50 pA table are unchanged, as the verifier found them consistent with the criterion. Corrected
+      a sentence of the conclusion and notes that put the 7D cell''s ratio between those of the 7A cells;
+      it is below both. The 30 pA in the claims-file header is not raised as a question, since it repeats
+      the data description and no claim, expected value or criterion rests on it; the data description''s
+      error is already a metadata_error finding.'
+  - claim: fig1-spontaneous-amplitude
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive (archive listing, cell 3). The archive check (filelist.txt
+      and checksums.md5 list only the two description documents and Maccaferri_data.zip) confirms every
+      block; none of the 25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig4-upsc-amplitude
+    agrees: true
+    outcome: blocked
+    reason: No paired recordings in the archive. The archive check (filelist.txt and checksums.md5 list
+      only the two description documents and Maccaferri_data.zip) confirms every block; none of the 25
+      blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig4-upsc-kinetics
+    agrees: true
+    outcome: blocked
+    reason: No paired recordings in the archive. The archive check (filelist.txt and checksums.md5 list
+      only the two description documents and Maccaferri_data.zip) confirms every block; none of the 25
+      blocked claims can be tested even in part.
+    response: No change.
+  - claim: paired-presynaptic-neurogliaform
+    agrees: true
+    outcome: blocked
+    reason: No reconstructions or pair records in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: upsc-gabazine-block
+    agrees: true
+    outcome: blocked
+    reason: No paired recordings in the archive. The archive check (filelist.txt and checksums.md5 list
+      only the two description documents and Maccaferri_data.zip) confirms every block; none of the 25
+      blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig5-no-gabab-component
+    agrees: true
+    outcome: blocked
+    reason: No paired recordings in the archive. The archive check (filelist.txt and checksums.md5 list
+      only the two description documents and Maccaferri_data.zip) confirms every block; none of the 25
+      blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig6-spontaneous-larger-than-unitary
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig6-spontaneous-faster-than-unitary
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig7-chr2-olm-light-firing
+    agrees: true
+    outcome: blocked
+    reason: '24October2012_C2 is likely one of the nine ChR2 cells, but its file has only the current-step
+      protocol, with the signals "2CC mV" and "AO #1" (cell 4). There is no light channel and no voltage-clamp
+      record, so no part of the claim can be tested. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.'
+    response: No change.
+  - claim: fig8-light-evoked-psc
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig9-opsc-rise-time
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig9-opsc-amplitude-decay
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig10-dhpg-increases-frequency
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig10-dhpg-amplitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig10-reduced-slice-no-effect
+    agrees: true
+    outcome: blocked
+    reason: No Cajal-Retzius recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig11-slm-inhibition
+    agrees: true
+    outcome: blocked
+    reason: No cell-attached recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig11-slm-inhibition-gabazine
+    agrees: true
+    outcome: blocked
+    reason: No cell-attached recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig11-slm-excitation
+    agrees: true
+    outcome: blocked
+    reason: No cell-attached recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig11d-baseline-frequency-dichotomy
+    agrees: true
+    outcome: blocked
+    reason: No cell-attached recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: gabazine-baseline-firing
+    agrees: true
+    outcome: blocked
+    reason: No cell-attached recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig12a-slow-conductance-depolarized
+    agrees: true
+    outcome: blocked
+    reason: No dynamic-clamp recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig12a-slow-conductance-hyperpolarized
+    agrees: true
+    outcome: blocked
+    reason: No dynamic-clamp recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig12b-fast-conductance-depolarized
+    agrees: true
+    outcome: blocked
+    reason: No dynamic-clamp recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: fig12b-fast-conductance-hyperpolarized
+    agrees: true
+    outcome: blocked
+    reason: No dynamic-clamp recordings in the archive. The archive check (filelist.txt and checksums.md5
+      list only the two description documents and Maccaferri_data.zip) confirms every block; none of the
+      25 blocked claims can be tested even in part.
+    response: No change.
+  - claim: no-age-dependence
+    agrees: true
+    outcome: blocked
+    reason: The claim concerns synaptic events in Cajal-Retzius cells. Three O-LM cells cannot test it.
+      The archive check (filelist.txt and checksums.md5 list only the two description documents and Maccaferri_data.zip)
+      confirms every block; none of the 25 blocked claims can be tested even in part.
+    response: No change.

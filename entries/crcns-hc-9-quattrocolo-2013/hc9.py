@@ -21,9 +21,11 @@ Where the parameters come from:
   of at least 0.1 (`RATIO_THRESHOLD`).
 - The pre-step baseline is all of the sweep before the current step (0 to 75 ms in these files).
   The criterion says "pre-step baseline" without a window; using all of it is a standard choice.
-- V_min is the minimum of the raw trace during the step. The files are filtered at 3 kHz (paper,
-  Methods), so the raw minimum carries little noise; the minimum of a 1 ms running mean
-  (`SMOOTH_S`) is shown as a variant. Both are standard choices.
+- V_min is the minimum of a 1 ms running mean (`SMOOTH_S`) of the trace during the step, a
+  standard choice. The raw minimum is shown as a variant. The raw minimum picks the most negative
+  noise sample, so it finds a "sag" of several baseline SDs in a trace that has none (the
+  verifier's round-1 check, repeated in the notebook on a synthetic trace and on each cell's 0 pA
+  sweep); the running mean removes most of that bias.
 - Spikes are counted as upward crossings of 0 mV (`SPIKE_THRESHOLD_MV`), a standard choice used
   only to describe the +50 pA firing, which no outcome rests on.
 """
@@ -56,7 +58,7 @@ DEPOL_STEP_PA = 50.0       # Figure 7A and 7D legends
 END_WINDOW_S = 0.100       # claim criterion, reading (a): last 100 ms of the step
 SD_FACTOR = 2.0            # claim criterion, reading (a)
 RATIO_THRESHOLD = 0.1      # claim criterion, reading (b)
-SMOOTH_S = 0.001           # standard choice, variant for V_min
+SMOOTH_S = 0.001           # standard choice: V_min from a 1 ms running mean
 STEP_DETECT_PA = 5.0       # current departing from its first sample by more than this is the step
 SPIKE_THRESHOLD_MV = 0.0   # standard choice, descriptive only
 
@@ -156,11 +158,11 @@ def sweep_for(cell: dict, level_pa: float) -> int:
 
 
 def sag_measures(t: np.ndarray, v: np.ndarray, on: float, off: float,
-                 end_window: float = END_WINDOW_S, smooth: float = 0.0) -> dict:
+                 end_window: float = END_WINDOW_S, smooth: float = SMOOTH_S) -> dict:
     """Sag measures of one hyperpolarizing sweep.
 
-    Baseline: all samples before the step. V_min: minimum during the step (of a running mean of
-    `smooth` seconds when given). V_end: mean over the last `end_window` seconds of the step.
+    Baseline: all samples before the step. V_min: minimum during the step of a running mean of
+    `smooth` seconds (of the raw trace when `smooth` is 0). V_end: mean over the last `end_window` seconds of the step.
     """
     fs = 1.0 / np.median(np.diff(t))
     pre = t < on
