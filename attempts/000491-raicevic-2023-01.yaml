@@ -25,807 +25,1363 @@ outcomes:
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:cross-section-counts
   measured:
-  - 390
-  - 669
-  - 0.875
-  notes: No combination of P1, P2 and P4 holds. With P2 a and P4 b the segments give 390 to 669 cross
-    sections at 0.648 um (mean spacing 0.875 um, within tolerance) and 248 to 415 at 1 um (within the
-    widened range, but spacing 1.347 um). With P4 a, 5 segments keep none. P2 b gives up to 76393 points
-    per segment. Reference combination for measured values, P1 a (0.648 um), P2 a (longest path), P4 b
-    (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
+  - 202
+  - 604
+  - 0.876
+  notes: No combination of P1, P2 and P4 holds. With the cleaned path (P2 a) and P4 b the segments give 202 to 604
+    cross sections at 0.648 um (mean spacing 0.876 um, within tolerance, but the most above 496.1) and 124 to 394
+    at 1 um (within the widened range, but spacing 1.345 um). With P4 a, 4 segments keep none. P2 b gives up to
+    78712 points per segment. The spacing is the mean step between neighbouring kept points (0.83 to 0.93 um per
+    segment at 0.648 um). Before the revision after round 1, with the uncleaned path, the counts were 390 to 669
+    and 248 to 415. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4
+    b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - For P2 b the median widths of P4 are taken from 150 evenly spaced points per segment (a standard choice),
-    and the spacing is between consecutive points sorted along the main axis.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - For P2 b the median widths of P4 are taken from 150 evenly spaced points per segment (a standard choice), and
+    the spacing is between consecutive points sorted along the main axis.
+  assumed: true
 - claim: segmentation-validation-overlap
   outcome: blocked
   blocked_by: data_missing
-  notes: The single-plane time-averaged 2D images and their segmentations are not in the dandiset, every
-    file holds one 3D stack and its 3D masks, and the description names no 2D data. The paper says its
-    data are available from the corresponding author on request; no other public copy was found.
+  notes: The single-plane time-averaged 2D images and their segmentations are not in the dandiset, every file holds
+    one 3D stack and its 3D masks, and the description names no 2D data. The paper says its data are available from
+    the corresponding author on request; no other public copy was found.
+  deviations: []
 - claim: fig5a-pvs-area-scales-with-vessel-area
   outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig5a-pvs-area-scales-with-vessel-area
   measured:
-  - 2.227
-  - 0.139
-  notes: Slope 1.504 to 2.718 and R2 0.130 to 0.559 over the eight combinations of P1, P4 and intercept.
-    With P4 b, R2 is 0.130 to 0.149, near 0.158, but the slope is 2.220 to 2.718 (with intercept, P1 a,
-    2.227, 95% CI 2.102 to 2.352). Within segments the slope runs from -2.167 to 2.165. The large PVS
-    areas at E and F (medians 31155 and 27556 um^2) weigh on the pooled fit. Reference combination for
-    measured values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5 a, P6 erosion 3,
-    P7 b (outliers left out), unless stated.
+  - 0.912
+  - 0.176
+  notes: Slope 0.912 to 1.543 and R2 0.072 to 0.527 over the eight combinations of P1, P4 and intercept. Nearest,
+    P1 a, P4 b with intercept, slope 0.912 (95% CI 0.865 to 0.959) and R2 0.176, and P1 b, P4 b, slope 0.951 (0.894
+    to 1.007) and R2 0.199; the slope tolerance is 0.973 to 1.127 and the R2 tolerance 0.142 to 0.174. Within segments
+    the slope runs from -6.911 (G) to 2.462 (D). Before the revision after round 1, with all PVS pixels of the plane,
+    the slope was 1.504 to 2.718. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest
+    path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig5e-area-ratio-distribution
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig5e-area-ratio-distribution
   measured:
-  - 1.546
-  - 1.718
-  - 1.831
-  - 1.046
-  - 2.878
-  notes: Under P1 a, P4 b, P5 a the median 1.718 and the IQR 1.831 are within tolerance, and so is the
-    75th percentile 2.878; the 25th percentile is 1.046 and the peak 1.546 (P7 b) or 254.6 (P7 a), against
-    1.12. No combination puts all five within tolerance, which meets the claim's partial rule. With P4
-    a the median is 1.307 to 1.467. Reference combination for measured values, P1 a (0.648 um), P2 a (longest
-    path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
+  - 1.568
+  - 1.565
+  - 1.287
+  - 0.995
+  - 2.282
+  notes: No combination puts the median and IQR within tolerance, which the partial rule needs. The median is 1.226
+    to 1.565 (expected 1.88 within 0.188), the IQR 0.874 to 1.287 (1.79 within 0.179), the 25th percentile 0.875
+    to 1.016 and the 75th 1.749 to 2.282. The peak is within tolerance in eight combinations, all with P5 b, at
+    1.133 to 1.230. Before the revision after round 1, with all PVS pixels of the plane, the median (1.718) and
+    IQR (1.831) were within tolerance and the outcome was partially reproduced; keeping the lobes beside the vessel
+    lowers the large ratios. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path),
+    P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig5bc-area-intersegment-variation
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig5bc-area-intersegment-variation
-  notes: Both readings hold in three of the four combinations of P1 and P4. With P1 a and P4 b the IQR
-    of the 14 segment medians is 4747.9 um^2 against a median within-segment IQR of 1519.8, and the range
-    of medians is 30496.8 against the largest within-segment IQR, 13614.7 at E. With P1 a and P4 a only
-    reading (a) holds (range 7253.4 against 7968.5 at H), over 9 segments. Per segment medians run from
-    658.4 (C) to 31155.2 um^2 (E). Question for the authors under findings (the width measure of the exclusion).
+  notes: Reading (a) holds in all four combinations of P1 and P4 (P1 a, P4 b, IQR of the 14 segment medians 3260.3
+    um^2 against a median within-segment IQR of 1621.5). Reading (b) holds only with P1 a, P4 a, which keeps 10
+    segments (range of medians 8887.3 against 7661.6 at H); with all 14 (P4 b) the range of the medians, 8461.9
+    and 8603.5, is below the largest within-segment IQR, 9476.5 (H) and 10464.5. The criterion sends a split to
+    methods_underspecified. What is open is the measure of "much larger" (Figures 5B and 5C are compared by eye);
+    a question for the authors is under findings. Before the revision after round 1 both readings held under P4
+    b (range 30496.8 against 13614.7), because the PVS of E and F included most of the plane; the outcome was reproduced,
+    resting on P4 b.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - Assumed, P4 reading (b), the polynomial-fit width, for the median PVS width of the edge exclusion.
-    The criterion's outcome differs between P4 readings (methods_underspecified under P1 a, P4 a); reading
-    (a) leaves 5 of the 14 segments without a cross section, which the paper's "14 PVS segments that were
-    included in the subsequent analysis" (Methods, Creating normal cross sections) rules out, so (b) is
-    the reading the paper supports.
-  assumed: true
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'P4 reading (b) is no longer adopted as an assumption here: the readings of the criterion split under it, so
+    the outcome follows the criterion.'
 - claim: area-ratio-per-location
   outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:area-ratio-per-location
   measured:
-  - 0.052
-  - 9.81
-  - 1
-  notes: None of 128 combinations matches. The smallest per-location peak is 0.052 to 0.794 and the largest
-    1.8 to 257.17 across combinations; with the reference combination 0.052 (C) and 9.81 (G). At most
-    11 locations meet any reading of "within 30% of the peak" (reading c); reading (d) is met by none
-    in any combination with 14 segments. The per-location median ratio runs from 0.72 (C) to 9.6 (G),
-    with E 7.78 and F 8.1. Reference combination for measured values, P1 a (0.648 um), P2 a (longest path),
-    P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated. Count for reading
-    (a).
+  - 0.053
+  - 9.04
+  - 2
+  notes: None of 128 combinations matches. The smallest per-location peak is 0.052 to 0.74 and the largest 1.7 to
+    9.04; with the reference combination 0.053 (C) and 9.045 (G). At most 9 locations meet a reading of "within
+    30% of the peak" (reading c), against 11.7 to 14.3, and none meets reading (d). Count for reading (a). Before
+    the revision after round 1 the largest peak reached 257.17 and at most 11 locations met a reading. Reference
+    combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a,
+    P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig5d-polynomial-closest-area-ratio
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig5d-polynomial-closest-area-ratio
   measured:
-  - 57.8
+  - 70.7
   - 20.6
-  - 21.6
-  notes: 'The polynomial fit is closest in 46.5 to 73.8% of cross sections, the spline in 18.9 to 47.2%
-    and the ellipse in 0.4 to 32.5% over 96 combinations; none puts all three within tolerance. The polynomial
-    share is the largest and above 50% in 92 of 96. Reference values with P5 a for both and P9 a, 57.8,
-    20.6 and 21.6%. Between 131 and 913 cross sections per combination lack one of the fits and are not
-    counted. What the answer changed. The answer of 2026-11-04 to the question on fig8-ellipse-parameters
-    amended claims P9: the ellipse is fit to the PVS and vessel together, holes filled, for every claim
-    that uses it. The earlier run, with the ellipse of the PVS alone, gave 40.2 to 74.8%, 19.0 to 47.5%
-    and 0.0 to 28.7%, reference 58.3, 21.3 and 20.4%, and the same 92 of 96; the outcome, partially reproduced,
-    is unchanged. Reference combination for measured values, P1 a (0.648 um), P2 a (longest path), P4
-    b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.'
+  - 8.8
+  notes: 'Four of 96 combinations put the three shares within tolerance, all with P4 b and P5 a for the segmentation
+    and the fitted circle for the fits: P1 a with erosion 5 (70.7, 20.6 and 8.8% with P9 a, the measured values;
+    70.4, 20.8 and 8.8% with P9 b) and P1 b with erosion 3 (71.4, 20.8, 7.9% and 71.0, 20.8, 8.3%). The polynomial
+    share is the largest and above 50% in 92 of 96 (47.4 to 79.1% over all); under the other P5 readings the ellipse
+    share is 0.1 to 4.7%. The outcome rests on those four combinations. Before the revision after round 1 none matched
+    (closest 73.8, 24.8 and 1.4%) and the outcome was partially reproduced. Reference combination for measured values,
+    P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left
+    out), unless stated.'
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down
-    to the vessel center height, minus the circle; the Methods and the claims file do not say how the
-    region is closed across the vessel. The alternative was not run.
-  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations
-    together with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of
-    each cross section now holds the whole ellipse; being larger, it also cuts less of the polynomial
-    region at its edge, which moves the polynomial areas and resistances slightly (Table 2 reference polynomial
-    peak 1.749 before, 1.752 now; median unchanged at 1.901).
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down to the vessel
+    center height, minus the circle; the Methods and the claims file do not say how the region is closed across
+    the vessel. The alternative was not run.
+  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
+    with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
+    now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
+    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+    unchanged at 1.901).
   assumed: true
 - claim: table2-fit-area-ratio-peaks
   outcome: partially_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:table2-fit-area-ratio-peaks
   measured:
-  - 1.752
-  - 2.274
-  - 1.511
-  - 1.901
-  - 2.36
-  - 1.505
-  - 0.035
-  notes: 'No combination puts all seven values within tolerance (at most 6 of 7). The ellipse peak is
-    1.99 to 2.44 with outliers out (2.08 expected) and its median 1.949 to 2.737 (2.89, within in 16 of
-    96). The spline ratio is nearly constant (peak 1.43 to 1.70, IQR 0.019 to 0.298). The partial rule
-    (ellipse peak above spline above polynomial, spline IQR smallest) holds in 12 of 96 combinations,
-    ten with P4 a, where the polynomial peak falls at 0.91 to 0.97. Reference values (P5 a, pi R1^2, P9
-    a), peaks 1.752, 2.274, 1.511; medians 1.901, 2.360, 1.505; spline IQR 0.035. What the answer changed.
-    The answer of 2026-11-04 to the question on fig8-ellipse-parameters amended claims P9: the ellipse
-    is fit to the PVS and vessel together, holes filled, for every claim that uses it. The ellipse values
-    moved (reference peak 2.280 and median 2.472 before), the partial rule now holds in 12 combinations
-    against 9, and the outcome, partially reproduced, is unchanged. Reference combination for measured
-    values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers
-    left out), unless stated.'
+  - 1.684
+  - 2.222
+  - 1.508
+  - 1.71
+  - 2.25
+  - 1.506
+  - 0.027
+  notes: No combination puts all seven values within tolerance; at most 3 of 7. The partial rule (ellipse peak above
+    spline above polynomial, spline IQR the smallest) holds in 24 of 96 combinations, 19 with P4 a. Over all combinations
+    the polynomial peak is 0.842 to 12.237, the ellipse peak 0.682 to 14.544, the spline peak 1.47 to 1.897, the
+    medians 1.467 to 1.85, 1.848 to 2.455 and 1.504 to 1.71, and the spline IQR 0.019 to 0.26. Before the revision
+    after round 1 at most 6 of 7 were within and the partial rule held in 12 of 96. Reference combination for measured
+    values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers
+    left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down
-    to the vessel center height, minus the circle; the Methods and the claims file do not say how the
-    region is closed across the vessel. The alternative was not run.
-  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations
-    together with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of
-    each cross section now holds the whole ellipse; being larger, it also cuts less of the polynomial
-    region at its edge, which moves the polynomial areas and resistances slightly (Table 2 reference polynomial
-    peak 1.749 before, 1.752 now; median unchanged at 1.901).
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down to the vessel
+    center height, minus the circle; the Methods and the claims file do not say how the region is closed across
+    the vessel. The alternative was not run.
+  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
+    with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
+    now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
+    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+    unchanged at 1.901).
   assumed: true
 - claim: fig6a-resistance-power-law
   outcome: partially_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig6a-resistance-power-law
   measured:
-  - -2.134
-  - 0.956
-  notes: The log-log fit gives exponents -1.965 to -2.258 with R2 0.941 to 0.956; with P1 a, P4 a the
-    exponent is -1.965 (95% CI -1.981 to -1.949) and R2 0.941, which meets the partial rule. With P4 b
-    it is -2.134 (P1 a) and -2.258 (P1 b), which would not. No combination puts the exponent within 0.013
-    of -1.75. The nonlinear fit gives -1.06 to -6.44. 132 cross sections (P1 a, P4 b) have no flow domain
-    and are left out. Reference combination for measured values, P1 a (0.648 um), P2 a (longest path),
-    P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
+  - -1.926
+  - 0.922
+  notes: The log-log fit (reading a) gives -1.926 to -2.039 with R2 0.911 to 0.944. The partial rule holds with
+    P1 a, P4 a (-1.977, 95% CI -1.993 to -1.961, R2 0.944) and with P1 a, P4 b (-1.926, -1.939 to -1.912, R2 0.922).
+    The nonlinear fit (reading b) gives -2.99 to -4.69; a few cross sections with resistance up to 1.88e21 dominate
+    it, so it says little. Before the revision after round 1 only P1 a, P4 a met the partial rule (-1.965, R2 0.941);
+    now a combination with all 14 segments does too. Reference combination for measured values, P1 a (0.648 um),
+    P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig6b-resistance-segmentation-peak
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig6b-resistance-segmentation-peak
   measured:
-  - 1250000000000000.0
-  - 4160000000000000.0
-  notes: The median is within tolerance with P1 a and P4 b only (4.16e15 against 3.84e15). The peak is
-    within tolerance in no combination, 1.25e15 (linear bins, outliers out), 1.94e15 or 2.01e15 (logarithmic
-    bins) with P1 a, P4 b. With P4 a the median is 6.47e15 to 7.4e15. Reference combination for measured
-    values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers
-    left out), unless stated.
+  - 1680000000000000.0
+  - 5280000000000000.0
+  notes: The peak is within tolerance in one combination, 1.68e15 with P1 a, P4 b, outliers out, linear bins. The
+    median is 5.28e15 to 6.87e15 in every combination, against 3.84e15 within 3.84e14. The partial rule needs the
+    median within tolerance and the peak not; here it is the other way round, so the outcome is not reproduced.
+    Before the revision after round 1 the median (4.16e15) was within and the peak (1.25e15) was not, and the outcome
+    was partially reproduced; dropping PVS far from the vessel lowers the PVS area and raises the resistance. Reference
+    combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a,
+    P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: resistance-per-location
   outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:resistance-per-location
   measured:
-  - 51500000000000.0
-  - 7.0e+16
+  - 1140000000000000.0
+  - 3.78e+16
   - 7.1
-  notes: No combination matches. With P4 b the smallest per-location peak is 3.7e13 to 5.4e13 (E), against
-    3.23e14, and the largest 7e16 to 2e20, against 1.98e16; the share within 37% is 0 to 50%. The per-location
-    medians run from 5.41e13 (E) to 1.16e17 (C), so the variation between locations is large, as the statement
-    says. Reference combination for measured values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial
-    width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated. Share for reading (a).
+  notes: No combination matches. The smallest per-location peak is 8.93e14 to 2.35e15 (against 3.23e14), the largest
+    3.78e16 to 4.69e19 (1.98e16), and the share within 37% of the peak 0 to 35.7% (65%). Share for reading (a).
+    Per-location medians run from 1.72e15 (G) to 1.11e17 (C). Before the revision after round 1 the smallest peak
+    was about 5e13 at E. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path),
+    P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig5b-polynomial-closest-resistance
   outcome: partially_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig5b-polynomial-closest-resistance
   measured:
-  - 587000000000000.0
-  - 250000000000000.0
-  - 4160000000000000.0
-  - 429000000000000.0
-  notes: 'The polynomial fit is the closest model for the largest share in every combination, 79.5 to
-    83.2% against the three fits, 44.4 to 65.6% when the annulus competes. No combination puts the four
-    peaks within tolerance (at most 2 on linear bins; with P1 a, P4 a, P7 b the polynomial 1.31e15 and
-    spline 1.13e16 are within, the ellipse is 5.72e14). Median resistances (P1 a, P4 b), segmentation
-    4.16e15, polynomial 1.83e15, annulus 1.83e15, ellipse 9.58e14, spline 1.06e16; the two-sample KS distance
-    to the segmentation is smallest for the polynomial (0.224), then the annulus (0.232), then the spline
-    (0.354) and the ellipse (0.370), so the "followed by the ellipse fit" of the statement does not hold
-    by that measure. Logarithmic bins are shown as a variant. What the answer changed. The answer of 2026-11-04
-    to the question on fig8-ellipse-parameters amended claims P9: the ellipse is fit to the PVS and vessel
-    together, holes filled, for every claim that uses it. The ellipse''s resistances fell (reference peak
-    1.96e14 before, 2.5e14 now on the larger region; median 1.04e15 before, 9.58e14 now); the outcome,
-    partially reproduced, is unchanged. Reference combination for measured values, P1 a (0.648 um), P2
-    a (longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.'
+  - 848000000000000.0
+  - 390000000000000.0
+  - 1.15e+16
+  - 1350000000000000.0
+  notes: 'The polynomial fit is the best match for the largest share in all 96 combinations, now with every erosion
+    of P6: 81.4 to 85.7% against the fits and 52.8 to 76.5% with the annulus. On linear bins at most 2 of the 4
+    peaks are within tolerance (reference: spline and annulus). On logarithmic bins, a variant the claims file names
+    for fig6b but not for this claim, two combinations (P1 a, P4 b, erosion 5, P5 b, all values) put all four within
+    (1.37e15, 7.36e14, 1.08e16, 1.33e15); whether this claim should take fig6b''s bins is asked in questions/000491.yaml.
+    By the KS statistic the ellipse is the farthest of the four from the segmentation, not second. Before the revision
+    after round 1 the fits were solved at erosion 3 only, and the outcome was the same. Reference combination for
+    measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3,
+    P7 b (outliers left out), unless stated.'
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - The resistances and velocities of the fits are solved only with the circle fit at erosion 3, the middle
-    reading of P6; readings 1 and 5 would double the solve time.
-  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down
-    to the vessel center height, minus the circle; the Methods and the claims file do not say how the
-    region is closed across the vessel. The alternative was not run.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations
-    together with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of
-    each cross section now holds the whole ellipse; being larger, it also cuts less of the polynomial
-    region at its edge, which moves the polynomial areas and resistances slightly (Table 2 reference polynomial
-    peak 1.749 before, 1.752 now; median unchanged at 1.901).
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down to the vessel
+    center height, minus the circle; the Methods and the claims file do not say how the region is closed across
+    the vessel. The alternative was not run.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
+    with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
+    now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
+    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+    unchanged at 1.901).
+  - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
+    every erosion of P6 (1, 3 and 5 pixels).
   assumed: true
 - claim: ellipse-annulus-underestimate
   outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:ellipse-annulus-underestimate
-  notes: 'Both underestimate in all 16 combinations on linear bins (median per-cross-section ratio 0.297
-    to 0.327 for the ellipse, 0.461 to 0.634 for the annulus; readings a and b). The annulus-over-ellipse
-    ratios are within 10% of 1.87 and 1.61 in one of the 16 combinations on linear bins, P1 b, P4 a, P5
-    b, P7 b (1.831 and 1.675), which the criterion''s "under one reading" counts; over the 16 the medians
-    run from 1.587 to 2.272 and the peaks from 0.022 to 2.249. The outcome rests on that one combination,
-    with P4 a, the edge exclusion reading this attempt does not adopt; under P4 b none is within. What
-    the answer changed. The answer of 2026-11-04 to the question on fig8-ellipse-parameters amended claims
-    P9: the ellipse is fit to the PVS and vessel together, holes filled, for every claim that uses it.
-    With the ellipse of the PVS alone the ellipse ratio was 0.264 to 0.301 and no linear combination had
-    the two ratios within (medians 1.767 to 2.731, peaks 0.043 to 2.486), so the outcome was partially
-    reproduced; it is now reproduced.'
+  notes: 'Both underestimate in all 48 combinations on linear bins (both readings). The annulus-over-ellipse ratios
+    are within 10% of 1.87 and 1.61 in one: P1 b, P4 a, erosion 1, P5 b, outliers out, 1.82 and 1.702. The outcome
+    rests on that one combination, under the P4 reading that leaves 4 segments without a cross section; over all
+    48 the median ratio is 1.409 to 2.264 and the peak ratio 0.038 to 2.259. Before the revision after round 1 the
+    one matching combination was P1 b, P4 a, P5 b with erosion 3 (1.831 and 1.675); with the revised PVS and erosion
+    3 alone no combination matched, and solving the fits at erosions 1 and 5, as the verifier noted was missing,
+    gives the one above. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path),
+    P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.'
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - The resistances and velocities of the fits are solved only with the circle fit at erosion 3, the middle
-    reading of P6; readings 1 and 5 would double the solve time.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - The bins follow fig5b-polynomial-closest-resistance, linear; logarithmic bins are shown as a variant
-    and decide nothing.
-  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations
-    together with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of
-    each cross section now holds the whole ellipse; being larger, it also cuts less of the polynomial
-    region at its edge, which moves the polynomial areas and resistances slightly (Table 2 reference polynomial
-    peak 1.749 before, 1.752 now; median unchanged at 1.901).
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - The bins follow fig5b-polynomial-closest-resistance, linear; logarithmic bins are shown as a variant and decide
+    nothing.
+  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
+    with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
+    now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
+    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+    unchanged at 1.901).
+  - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
+    every erosion of P6 (1, 3 and 5 pixels).
+  assumed: true
 - claim: spline-resistance-five-times
   outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:spline-resistance-five-times
-  measured: 5.45
-  notes: 'The ratio of the spline peak to the segmentation peak is within 0.5 of 5 in four of 16 combinations,
-    5.45 (P1 a, P4 a, outliers out, linear bins, the first listed), 4.94 (same, logarithmic), 4.68 (P1
-    b, P4 a, logarithmic) and 5.22 (P1 b, P4 b, logarithmic); in the other 12 it is 0.00 to 4.09, and
-    with P1 a and P4 b 3.18 to 3.83. The median spline resistance exceeds the segmentation''s in every
-    combination (1.06e16 against 4.16e15 with P1 a, P4 b). The outcome rests on P4 a or P1 b. The statement''s
-    "despite a larger area ratio" does not hold per cross section, the spline''s ratio is larger in 38.8%
-    of them. What the answer changed. The answer of 2026-11-04 to the question on fig8-ellipse-parameters
-    amended claims P9: the ellipse is fit to the PVS and vessel together, holes filled, for every claim
-    that uses it. Neither the spline nor the segmentation uses the ellipse, and fig5b-polynomial-closest-resistance,
-    on which this claim depends, stays partially reproduced; the numbers here are the same as before and
-    the outcome is unchanged.'
+  measured: 6.59
+  notes: On linear bins 4 of 24 combinations are within tolerance (4.85 and 5.25 within 0.5 of 5; 6.59, the measured
+    value with P1 a, P4 b, erosion 3, and 6.57 within 0.62 of 6.2), and 11 more on logarithmic bins, which fig6b's
+    criterion allows for both peaks. The median spline resistance exceeds the segmentation's in every combination
+    (1.07e16 against 5.28e15). The spline area ratio exceeds the segmentation's in only 43.3% of cross sections,
+    so the statement's "larger area ratio" does not hold. Before the revision after round 1 the result rested on
+    P4 a (5.45); it now holds under P4 b on linear bins too. Reference combination for measured values, P1 a (0.648
+    um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless
+    stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - The resistances and velocities of the fits are solved only with the circle fit at erosion 3, the middle
-    reading of P6; readings 1 and 5 would double the solve time.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
   - Both peaks are taken with the same bins, linear or logarithmic, the readings of fig6b-resistance-segmentation-peak.
+  - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
+    every erosion of P6 (1, 3 and 5 pixels).
+  assumed: true
 - claim: fig7-velocity-profiles
   outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig7-velocity-profiles
-  notes: 'In all eight combinations and under both readings, the ellipse is faster than the segmentation
-    in 99.6 to 100% of cross sections, the spline slower in 89.5 to 96.7%, and the polynomial closer than
-    either in 67.4 to 78.5%. Median maximum velocity at 500 Pa/m (P1 a, P4 b), segmentation 96.53, ellipse
-    194.57, spline 44.25, polynomial 118.61 um/s. What the answer changed. The answer of 2026-11-04 to
-    the question on fig8-ellipse-parameters amended claims P9: the ellipse is fit to the PVS and vessel
-    together, holes filled, for every claim that uses it. The ellipse''s region is larger and its velocities
-    higher (median maximum 178.3 um/s before); the polynomial was closest in 66.7 to 75.7% before. The
-    outcome, reproduced, is unchanged.'
+  notes: In all 24 combinations of P1, P4 and P6 and both readings the ellipse is faster than the segmentation in
+    99.9 to 100% of cross sections, the spline slower in 85.8 to 97.6% and the polynomial closest in 71.5 to 81.0%.
+    Median maximum velocity (P1 a, P4 b, erosion 3) 79.88 um/s for the segmentation, 171.77 ellipse, 44.12 spline,
+    91.49 polynomial. Before the revision after round 1 the result was the same at erosion 3. Reference combination
+    for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion
+    3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite
-    elements (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which
-    is the polygon through the boundary pixel centres after the Methods' one-pixel erosion. The Methods'
-    check (a circle of the same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648
-    um; at 300 um^2 and 1 um the error is 2.5%.
-  - The resistances and velocities of the fits are solved only with the circle fit at erosion 3, the middle
-    reading of P6; readings 1 and 5 would double the solve time.
-  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down
-    to the vessel center height, minus the circle; the Methods and the claims file do not say how the
-    region is closed across the vessel. The alternative was not run.
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations
-    together with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of
-    each cross section now holds the whole ellipse; being larger, it also cuts less of the polynomial
-    region at its edge, which moves the polynomial areas and resistances slightly (Table 2 reference polynomial
-    peak 1.749 before, 1.752 now; median unchanged at 1.901).
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - Resistance is solved by finite differences on the pixel grid of the cross section, in place of finite elements
+    (MATLAB solvepde). The domain is the region at least 1.5 pixels inside the mask's edge, which is the polygon
+    through the boundary pixel centres after the Methods' one-pixel erosion. The Methods' check (a circle of the
+    same area within 1% of the exact resistance) holds from 1000 um^2 at 0.648 um; at 300 um^2 and 1 um the error
+    is 2.5%.
+  - Assumed, within the vessel's horizontal extent, the polynomial fit's region runs from the line down to the vessel
+    center height, minus the circle; the Methods and the claims file do not say how the region is closed across
+    the vessel. The alternative was not run.
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
+    with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
+    now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
+    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+    unchanged at 1.901).
+  - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
+    every erosion of P6 (1, 3 and 5 pixels).
   assumed: true
 - claim: vessel-radius-peak
   outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:vessel-radius-peak
-  measured: 30.38
-  notes: The R1 peak is within 2.8 um of 28 um in 11 of 24 combinations, including all six with P1 a and
-    P4 a (28.02 to 30.28 um) and 30.38 with the reference combination and all values binned (P7 a); with
-    outliers out it is 32.51. The median R1 is 27.7 to 31.4 um in every combination. Per location the
-    median runs from 17.6 (G) to 49.5 um (E).
+  measured: 29.5
+  notes: The R1 peak is within 2.8 um of 28 in 13 of 24 combinations; the first the criterion lists, P1 a, P4 a,
+    erosion 1, all values, gives 29.50 um (the measured value), and the reference combination 32.20. Peaks 28.75
+    to 33.03, medians 28.31 to 31.26 um. Per-location medians 17.8 (C, M) to 40.9 um (E). Before the revision after
+    round 1 it held in 11 of 24. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest
+    path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig8-ellipse-parameters
   outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig8-ellipse-parameters
   measured:
-  - 29.822
-  - 0.952
-  - 2.743
-  - 0.393
-  - 0.149
-  notes: 'No combination puts the three ratios within tolerance. With the ellipse of the PVS and vessel
-    together, R3 peaks at 28.8 to 30.0 um (35 expected, within in none), R3/R1 at 0.845 to 1.042 (0.80,
-    within in 3 of 72), R2/R1 at 1.934 to 2.947 (2.89, within in 60 of 72) and R3/R2 at 0.350 to 0.442
-    (0.398, within in 54 of 72). The three combinations with R3/R1 at 0.845 have R2/R1 at 2.594, below
-    the tolerance''s 2.601. Ov peaks at 0.15 to 0.80 R1 (0.24). Oh is centred near zero in 70 of 72 combinations
-    and its IQR at least twice Ov''s in 66 of 72. What the answer changed. The answer of 2026-11-04 to
-    the question on fig8-ellipse-parameters amended claims P9: the ellipse is fit to the PVS and vessel
-    together, holes filled, for every claim that uses it. The claims file had the ellipse of the PVS alone,
-    which gave R3 13.0 to 21.1 um and R3/R2 0.219 to 0.254 (reference 21.09, 0.659, 3.549, 0.254, 0.413).
-    The new ellipse brings R2/R1 and R3/R2 within tolerance in most combinations, but R3 stays below 31.5
-    um and R3/R1 near 0.95, above 0.88, so the outcome, not reproduced, is unchanged. Reference combination
-    for measured values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5 a, P6 erosion
-    3, P7 b (outliers left out), unless stated. Ov in units of R1.'
+  - 27.918
+  - 1.008
+  - 3.066
+  - 0.377
+  - 0.184
+  notes: No combination matches and none has the three ratios within tolerance. R3 peaks at 27.35 to 30.10 um and
+    R3/R1 at 0.965 to 1.107, within tolerance in none; R2/R1 is within in 69 of 72 and R3/R2 in 54 of 72; Ov in
+    5. Oh's IQR is at least twice Ov's in all 72 and its median within one Ov peak of zero in 11. Before the revision
+    after round 1 R3/R1 was within in 3 combinations. Reference combination for measured values, P1 a (0.648 um),
+    P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
-  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations
-    together with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of
-    each cross section now holds the whole ellipse; being larger, it also cuts less of the polynomial
-    region at its edge, which moves the polynomial areas and resistances slightly (Table 2 reference polynomial
-    peak 1.749 before, 1.752 now; median unchanged at 1.901).
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
+    with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
+    now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
+    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+    unchanged at 1.901).
+  assumed: true
 - claim: fig9c-pvs-two-lobes
   outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig9c-pvs-two-lobes
-  measured: -0.013
-  notes: The HC/R1 peak is within 0.1 of zero in 15 of 24 combinations (-0.013 with the reference combination,
-    median -0.025), and of the cross sections with HC above zero 60.4 to 66.0% have HC below 0.5 R1 in
-    all combinations. HC is above zero in 44.4 to 52.8% of cross sections. Reference combination for measured
-    values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers
-    left out), unless stated.
+  measured: -0.061
+  notes: The HC/R1 peak is within 0.1 of zero in 14 of 24 combinations (reference -0.061, median -0.005); among
+    cross sections with HC above zero, 63.4 to 68.4% have HC below 0.5 R1. HC is above zero in 47.1 to 54.6%. Before
+    the revision after round 1 the peak was within in 15 of 24. Reference combination for measured values, P1 a
+    (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out),
+    unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig9e-pvs-width-asymmetry
   outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig9e-pvs-width-asymmetry
   measured:
-  - 1.261
-  - 4.0
-  - 0.58
-  notes: No combination puts the three peaks within tolerance, WS/R1 peaks at 0.84 to 1.61, WL/R1 at 1.82
-    to 4.18, WS/WL at 0.38 to 0.63; medians 1.37 to 1.71, 2.67 to 3.31 and 0.585 to 0.616. The sides are
-    asymmetric (median WS/WL about 0.6), as the statement says, and the PVS is wider than the paper reports.
-    Reference combination for measured values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial
-    width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
+  - 1.041
+  - 2.109
+  - 0.678
+  notes: No combination has the three peaks within tolerance. WS/R1 peaks at 1.000 to 1.630, WL/R1 at 1.146 to 3.905
+    and WS/WL at 0.629 to 0.729; with P1 b, P4 a, erosion 1 and all values the first two are within (1.186, 1.887)
+    but WS/WL is 0.729. Medians WS/R1 1.197 to 1.484, WL/R1 2.230 to 3.136, WS/WL 0.564 to 0.595. Before the revision
+    after round 1 the WS/WL peak was 0.38 to 0.63. Reference combination for measured values, P1 a (0.648 um), P2
+    a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: left-right-no-difference
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:left-right-no-difference
-  notes: The criterion's readings disagree in all 12 combinations of P1, P4 and P6, the paired Wilcoxon
-    test (a, p 2e-16 to 8e-93, median left minus right -3.5 to -13.5 um) and the KS test (b, p 2e-32 to
-    1e-121) find a difference, the Wilcoxon test on the 9 or 14 per-segment medians (c, p 0.25 to 0.715)
-    does not, so the criterion gives methods_underspecified. The per-segment medians differ in both directions
-    (left wider in B, C, D, E, F, L, M; right in A, G, H, I, J, K, N). The paper names no test; the question
-    is put to the authors under findings.
+  notes: Readings (a) and (b) find a difference in every combination (p 2e-30 to 8e-190 and 1e-31 to 2e-142; median
+    left minus right -9.6 to -18.0 um); reading (c), on the per-segment medians, does not (p 0.055 to 0.715). Readings
+    (a) and (b) treat thousands of neighbouring, autocorrelated cross sections as independent, so their p-values
+    overstate the evidence; only (c) has independent units, but the criterion sends the split to methods_underspecified.
+    The question for the authors is under findings.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
 - claim: fig9a-heights-taper
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig9a-heights-taper
   measured:
-  - 1.256
-  - 1.059
-  - 0.295
-  notes: No combination puts the three peaks within tolerance. The order H1 above H2 above H3 holds for
-    peaks and medians in 30 of 48 combinations. With outliers out, H3/R1 peaks at 0.246 to 0.427 (0.307
-    expected), H1/R1 at 0.93 to 1.30 (1.34) and H2/R1 at 0.80 to 1.32 (0.792). Medians, H1/R1 1.13 to
-    1.42, H2/R1 1.04 to 1.28, H3/R1 0.39 to 0.61, so H1 is 2 to 3 times H3, not 4. Reference combination
-    for measured values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5 a, P6 erosion
-    3, P7 b (outliers left out), unless stated. Reading (a), sides pooled.
+  - 1.228
+  - 0.82
+  - 0.305
+  notes: 'One of 48 combinations puts the three peaks within tolerance: P1 b, P4 b, erosion 3, both sides pooled,
+    outliers out (1.228, 0.820, 0.305, the measured values). The outcome rests on that one combination; elsewhere
+    the H1/R1 peak runs from 0.343 to 1.445. The order H1 > H2 > H3 holds for peaks and medians in 12 of 48. Medians
+    H1/R1 1.037 to 1.199, H2/R1 1.108 to 1.205, H3/R1 0.458 to 0.536, so H1 is about 2.3 times H3 by median, not
+    4. Before the revision after round 1 no combination had all three and the outcome was partially reproduced.
+    Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width),
+    P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.'
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 - claim: fig9f-pvs-concave
   outcome: partially_reproduced
   notebook: reproduce_raicevic_2023.ipynb
   output: claim:fig9f-pvs-concave
-  measured: 1.006
-  notes: More than half the values are below 1 in every combination (61.8 to 71.4%, medians 0.072 to 0.491).
-    The peak is within 0.0108 of 0.108 in no combination; with outliers out it is 0.075 to 1.17. Reference
-    combination for measured values, P1 a (0.648 um), P2 a (longest path), P4 b (polynomial width), P5
-    a, P6 erosion 3, P7 b (outliers left out), unless stated. Reading (a).
+  measured: 1.088
+  notes: 63.9 to 73.6% of values are below 1 in every combination (medians -0.627 to 0.465). The peak is within
+    tolerance in none; with outliers out it is 0.164 to 1.162. Before the revision after round 1 the nearest peaks
+    were 0.092 and 0.075. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path),
+    P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
-  - Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's
-    3D thinning in place of MATLAB bwskel, and the longest path through the skeleton (P2 a) stands in
-    for the manual removal of erroneous points.
-  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal
-    to the fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB
-    obliqueslice (a standard choice).
-  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved
-    by hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in
-    258 of 7568 cross sections (P1 a, P4 b), 239 of them at J, so the choice is unlikely to change an
-    outcome. The other assignment was not run.
-  - All PVS pixels in a cross section are used, and the vessel is the connected region at or nearest the
-    slice center; the paper describes no selection within a slice (its selection of regions is in 3D and
-    already in the deposited masks). Cross sections with fewer than 20 vessel or PVS pixels have no fits
-    (shown per location in the data check).
-  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 5 of the 14 segments (A,
-    B, E, F, G), while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
+    3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
+    normal cross sections, "then manually removed erroneous points"), which the paper does not describe: the longest
+    path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline
+    than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
+    revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
+    which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
+    kept at 0.648 um and 4974 of 6010 at 1 um.'
+  - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
+    fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
+    standard choice).
+  - Pixels in both the vessel and the PVS mask are counted as vessel. The Methods say overlaps were resolved by
+    hand, case by case, but the deposited masks still overlap; the overlap exceeds 5% of the PVS in 381 of 6683
+    cross sections (P1 a, P4 b), 247 of them at J and 131 at E, so the choice is unlikely to change an outcome.
+    The other assignment was not run.
+  - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
+    radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
+    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
+    vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
+    plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
+    and, at 1 um, H (70%). Cross sections with fewer than 20 vessel or PVS pixels have no fits (shown per location
+    in the data check).
+  - 'Assumed, planes where the deposited PVS mask covers more than 90% of the field are cleared before the cross
+    sections are taken: at E and F the mask fills every plane below a depth (87 and 58 planes), and no plane of
+    any other file is more than 50% PVS. Added after the first verification.'
+  - The edge distance of P4 is measured from the vessel center in the slice (circle fit, erosion 3), to which the
+    Methods shift the slice ("The slices were then shifted so the center point of the vessel was located in the
+    center of the image", Methods, Creating normal cross sections). Before the first verification it was measured
+    from the skeleton point; the change is 0.75 to 3.85 um by median per location and keeps 6683 cross sections
+    in place of 6665 (P1 a, P4 b).
+  - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
+    while the paper analysed all 14; its results are shown but it is the less supported reading.
+  assumed: true
 findings:
 - kind: data_missing
-  statement: The single-plane time-averaged 2D images and their segmentations, which the Methods use to
-    validate the 3D segmentation (at least 70% overlap for PVS and vessel), are not in the dandiset, so
-    the validation cannot be checked.
+  statement: The single-plane time-averaged 2D images and their segmentations, which the Methods use to validate
+    the 3D segmentation (at least 70% overlap for PVS and vessel), are not in the dandiset, so the validation cannot
+    be checked.
 - kind: other
-  statement: The deposited vessel and PVS masks overlap in 11 of the 14 files (from 24 voxels at C to
-    344565 at E and 177417 at J), though the Methods say overlapping pixels were removed from one segmentation.
-    The dandiset does not say which mask should take them.
+  statement: The deposited vessel and PVS masks overlap in 11 of the 14 files (from 24 voxels at C to 344565 at
+    E and 177417 at J), though the Methods say overlapping pixels were removed from one segmentation. The dandiset
+    does not say which mask should take them.
 - kind: other
-  statement: At E and F the PVS mask fills 98 to 99% of the deepest plane and 50 to 60% of the whole volume,
-    so it includes far more than the space beside the vessel; with G, these segments have median PVS-to-vessel
-    area ratios of 7.8 to 9.6, against 0.7 to 2.2 elsewhere. The dandiset does not describe this, and
-    it bears on every pooled distribution.
+  statement: At E and F the PVS mask fills every plane below a depth (87 and 58 planes, 98 to 99% of the field)
+    and 50 to 60% of the whole volume, so it holds far more than the space beside the vessel. The dandiset does
+    not describe this; this attempt clears those planes.
+- kind: other
+  statement: The vessel mask of E holds a network of branching vessels in one connected region, though the Methods
+    say the vessels branching off the main vessel were removed by hand. The longest path through its skeleton runs
+    through branches; after the cleaning of this attempt 361 of its 939 points (0.648 um) are kept, along one branch.
 - kind: metadata_error
-  statement: For L, M and N the reference_frame gives a depth step of 0.648 um, while the session descriptions
-    say the planes are 1 micron apart. Vessel cross sections at the stated step are close to round (median
-    height over width 0.93 to 1.12), which is consistent with the reference_frame; the session descriptions
-    appear to be wrong for these files.
+  statement: For L, M and N the reference_frame gives a depth step of 0.648 um, while the session descriptions say
+    the planes are 1 micron apart. Vessel cross sections at the stated step are close to round (median height over
+    width 0.93 to 1.12), which is consistent with the reference_frame; the session descriptions appear to be wrong
+    for these files.
 - kind: metadata_error
-  statement: The vessel channel (ChanA, described as FITC-dextran) has an emission wavelength of 698 nm
-    and the PVS channel (ChanC) 525 nm, while the Methods say the green 525 nm channel holds the FITC-dextran.
-    Every imaging plane names GFP as its indicator.
+  statement: The vessel channel (ChanA, described as FITC-dextran) has an emission wavelength of 698 nm and the
+    PVS channel (ChanC) 525 nm, while the Methods say the green 525 nm channel holds the FITC-dextran. Every imaging
+    plane names GFP as its indicator.
 - kind: metadata_insufficient
-  statement: ChanB is described as injected fluorescent microspheres and its mask only as 'Segmentation
-    masks for ChanB'; the paper mentions no microspheres, and L, M and N have no ChanB.
+  statement: ChanB is described as injected fluorescent microspheres and its mask only as 'Segmentation masks for
+    ChanB'; the paper mentions no microspheres, and L, M and N have no ChanB.
 - kind: metadata_error
-  statement: The subjects of locations A to D (BPN-OLD-M2 and BPN-OLD-M3) are 573 to 603 days old in the
-    files, and most other subjects 76 to 113 days, while the Methods say all mice were 8 to 12 weeks old.
+  statement: The subjects of locations A to D (BPN-OLD-M2 and BPN-OLD-M3) are 573 to 603 days old in the files,
+    and most other subjects 76 to 113 days, while the Methods say all mice were 8 to 12 weeks old.
 - kind: other
   statement: The first published version, 0.230427.1809, holds no PVS mask for L, M and N; version 0.230602.1307
     adds them. The dandiset's description does not record the change.
 - kind: methods_unavailable
-  statement: Question for the authors (left-right-no-difference), which test found no difference between
-    the left and right PVS widths? Paired tests over all cross sections find one here (Wilcoxon p below
-    1e-15, KS below 1e-31), a test on the 14 per-segment medians does not (p 0.67 to 0.72).
+  statement: Question for the authors (left-right-no-difference), which test found no difference between the left
+    and right PVS widths? Paired tests over all cross sections find one here (Wilcoxon p below 1e-29, KS below 1e-30),
+    a test on the 14 per-segment medians does not (p 0.54 to 0.72 with all 14 segments).
 - kind: methods_unavailable
-  statement: Question for the authors (cross-section-counts and every pooled claim), how is the median
-    PVS width of the edge exclusion measured? Taken as the horizontal extent of the PVS, it excludes every
-    cross section in 5 of the 14 segments; taken as the polynomial-fit width, the segments keep 390 to
-    669 cross sections at 0.648 um, more than the paper's 54 to 451. This attempt adopts the polynomial
-    width.
+  statement: Question for the authors (cross-section-counts and every pooled claim), how is the median PVS width
+    of the edge exclusion measured? Taken as the horizontal extent of the PVS, it excludes every cross section in
+    4 of the 14 segments; taken as the polynomial-fit width, the segments keep 202 to 604 cross sections at 0.648
+    um, more than the paper's 54 to 451.
 - kind: methods_unavailable
-  statement: The paper's MATLAB code (segmentation, normal slices, fits, resistance) is not public, and
-    the Methods leave open which centerline points were removed by hand, how the polynomial region is
-    closed across the vessel and how each fit's edge points are chosen; the readings run here do not recover
-    the paper's counts or most of its peaks.
+  statement: The paper's MATLAB code (segmentation, normal slices, fits, resistance) is not public, and the Methods
+    leave open which centerline points were removed by hand, which PVS regions of a slice form its PVS, how the
+    polynomial region is closed across the vessel and how each fit's edge points are chosen; the readings run here
+    do not recover the paper's counts or most of its peaks.
+- kind: methods_unavailable
+  statement: Question for the authors (fig5bc-area-intersegment-variation), what shows that PVS area varies much
+    more between segments than along each? The IQR of the 14 segment medians exceeds the median within-segment IQR
+    (3260.3 against 1621.5 um^2), but the range of the medians (8461.9) is below the largest within-segment IQR
+    (9476.5, H).
+verifications:
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the run after the reader's answer (executed notebook with the conclusions and summary
+    removed, the helper module and the claims file); the verifier also queried the archive API for all three versions
+    and tested the helper functions on synthetic inputs.
+  results:
+  - claim: cross-section-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: No combination holds (cell 9). At P1a/P2a/P4b the counts run 390-669, so the most is above 496. At P1b/P2a/P4b
+      the counts (248-415) are in range but the mean spacing is 1.347 um. P4a leaves 0 sections in 5 segments. The
+      longest-path centerline is longer than any straight line through the volume (problem 1), most likely running
+      into branches or doubling back, which would explain counts above the paper's maximum.
+    response: 'Added a check of the path length against the distance between its ends and a projection of each vessel
+      mask with the path (data check); the path was 1.28 to 2.24 times that distance. The path is now cleaned of
+      points off the fitted centerline and of revisits (pvs.clean_path). Counts are now 202 to 604 (P1 a, P4 b)
+      and 124 to 394 at 1 um, spacing 0.876 and 1.345 um; outcome unchanged. Changes common to all claims, in reply
+      to problems 1, 2, 4, 7 and 10: the centerline is cleaned of erroneous points; the PVS of a slice is the two
+      largest regions beside the vessel; filled PVS planes at E and F are cleared; the edge distance is measured
+      from the vessel center in the slice (problem 4); the data check shows the path length against its chord, the
+      PVS content and one slice per location with the fits; location D''s whole-plane intensity falls with depth
+      in every channel and its PVS lies above the vessel, so its depth axis is kept (problem 7); the overlap assignment
+      is kept, with 381 of 6683 slices above 5% (problem 10).'
+  - claim: segmentation-validation-overlap
+    agrees: true
+    outcome: blocked
+    reason: All three versions hold 14 NWB files, one 3D z-stack per location, with only TwoPhotonSeries and PlaneSegmentation.
+      There are no 2D time series and no 2D segmentations, so no part can be tested.
+    response: No change. The changes common to all claims are listed under cross-section-counts.
+  - claim: fig5a-pvs-area-scales-with-vessel-area
+    agrees: true
+    outcome: not_reproduced
+    reason: The slope is 1.50-2.72 in all 8 combinations. R2 is within tolerance only at P4b (0.149, with intercept),
+      where the slope is 2.22. The slice's PVS is all PVS pixels in the plane (problem 2), which probably inflates
+      PVS area and the slope.
+    response: The PVS of a slice is now the two largest regions beside the vessel, and filled planes at E and F
+      are cleared. Slope now 0.912 to 1.543, R2 0.072 to 0.527; nearest P1 a, P4 b, 0.912 and 0.176. Outcome unchanged.
+      The changes common to all claims are listed under cross-section-counts.
+  - claim: fig5e-area-ratio-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: At P1a/P4b/P5a, median 1.718 and IQR 1.831 are within tolerance. The peak (1.546, or 254.6 under P7a)
+      and the 25th percentile (1.046) are not. No combination has all five.
+    response: Changed to not_reproduced. With the PVS lobes beside the vessel, the median is 1.226 to 1.565 and
+      the IQR 0.874 to 1.287, outside tolerance in every combination, so the partial rule no longer holds; the peak
+      is within in 8 combinations. The changes common to all claims are listed under cross-section-counts.
+  - claim: fig5bc-area-intersegment-variation
+    agrees: true
+    outcome: reproduced
+    reason: Both readings hold in every combination that keeps all 14 segments (P4b), and at P1b/P4a. Only P1a/P4a,
+      with 9 segments, fails reading (b).
+    response: Changed to blocked (methods_underspecified). With the revised PVS, reading (b) fails with all 14 segments
+      (range of medians 8461.9 against the largest within-segment IQR 9476.5 at H); it holds only at P1 a, P4 a,
+      which keeps 10 segments. The large range before came from the PVS of E and F that filled the plane. A question
+      for the authors is added. The changes common to all claims are listed under cross-section-counts.
+  - claim: area-ratio-per-location
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 128 combinations match. The smallest peak is 0.05-0.79, and at most 10 locations fall within 30%.
+    response: 'Rerun with the revised pipeline: 0 of 128 match, smallest peak 0.052 to 0.74, largest 1.7 to 9.04,
+      at most 9 locations within. Added a compact table of the best combinations, as the full table was truncated
+      in the verifier''s reader. Outcome unchanged. The changes common to all claims are listed under cross-section-counts.'
+  - claim: fig5d-polynomial-closest-area-ratio
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0 of 96 match. The polynomial share is the largest and above 50% in 92 of 96. The closest combination
+      gives 73.8 / 24.8 / 1.4%, against 73 / 19 / 8%. The paper states no chance level for the shares.
+    response: 'Changed to reproduced. With the revised centerline and PVS, 4 of 96 combinations put the three shares
+      within tolerance (P1 a, P4 b, erosion 5, P5 a for both: 70.7, 20.6 and 8.8%; and P1 b, erosion 3). The outcome
+      rests on those four, as the notes say. The changes common to all claims are listed under cross-section-counts.'
+  - claim: table2-fit-area-ratio-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0 of 96 match, and at most 6 of 7 values are within tolerance. The partial rule (ellipse > spline >
+      polynomial peaks, spline IQR smallest) is met in 12 of 96. Cells 19, 21, 29 and 39 print truncated tables
+      in the verifier's reader.
+    response: 'Rerun: at most 3 of 7 within, partial rule met in 24 of 96. Added a compact table of the 8 best combinations
+      and the ranges of each value. Outcome unchanged. The changes common to all claims are listed under cross-section-counts.'
+  - claim: fig6a-resistance-power-law
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Only P1a/P4a reading (a) meets the partial rule: exponent -1.965, R2 0.941. The other log-log fits
+      give -2.06 to -2.26, and that combination excludes 5 segments entirely. The partial result rests on a single
+      P4a combination (problem 3). Reading (b) is dominated by outliers, with R up to 8e21, and is uninformative
+      (problem 9).'
+    response: 'Rerun: the partial rule now holds at P1 a, P4 a (-1.977, R2 0.944) and at P1 a, P4 b with all 14
+      segments (-1.926, R2 0.922), so it no longer rests on P4 a alone. The conclusion now says reading (b) is dominated
+      by a few cross sections (R up to 1.88e21). Outcome unchanged. The changes common to all claims are listed
+      under cross-section-counts.'
+  - claim: fig6b-resistance-segmentation-peak
+    agrees: true
+    outcome: partially_reproduced
+    reason: The median, 4.16e15, is within tolerance at P1a/P4b. The peak is never within 1.557-1.903e15; the nearest
+      values are 1.25e15 and 1.94e15.
+    response: Changed to not_reproduced. With the revised PVS the median is 5.28e15 to 6.87e15, outside tolerance
+      everywhere, and the peak is within in one combination (1.68e15); the partial rule needs the median within.
+      The changes common to all claims are listed under cross-section-counts.
+  - claim: resistance-per-location
+    agrees: true
+    outcome: not_reproduced
+    reason: The smallest peak is about 5e13 (location E), the largest is often far above 1.98e16, and the share
+      is 0-50%.
+    response: 'Rerun: smallest peak 8.93e14 to 2.35e15, largest 3.78e16 to 4.69e19, share 0 to 35.7%. Outcome unchanged.
+      The changes common to all claims are listed under cross-section-counts.'
+  - claim: fig5b-polynomial-closest-resistance
+    agrees: true
+    outcome: partially_reproduced
+    reason: The polynomial is the best match in 44-83% of sections, the largest share in every combination. At most
+      2 of 4 peaks are within tolerance on linear bins (3 with the log variant). Fit resistances were solved only
+      at erosion 3 (problem 5); missing readings could only add matches. Log bins count toward spline-five-times
+      but are a variant here (problem 6).
+    response: The fit resistances are now solved at erosions 1, 3 and 5. The polynomial is the best match for the
+      largest share in all 96 combinations; at most 2 of 4 peaks within on linear bins. On logarithmic bins two
+      combinations put all four within. The bins follow this claim's criterion (P7), which names no logarithmic
+      reading; spline-resistance-five-times takes its bins from fig6b, whose criterion names both. The difference
+      is put to a reader in questions/000491.yaml. Outcome unchanged. The changes common to all claims are listed
+      under cross-section-counts.
+  - claim: ellipse-annulus-underestimate
+    agrees: true
+    outcome: reproduced
+    reason: Underestimation holds in 16 of 16 combinations. The annulus/ellipse ratios are within tolerance only
+      at P1b/P4a/P5b/P7b (1.831 and 1.675). The peak ratio ranges 0.02-2.25 across combinations. The reproduced
+      result rests on a single P4a combination, so it is fragile (problem 3).
+    response: 'Rerun with the fits at every erosion: underestimation in 48 of 48; the ratios are within 10% in one
+      combination, P1 b, P4 a, erosion 1, P5 b, outliers out (1.82 and 1.702). Outcome unchanged; the notes and
+      conclusion say it rests on that one P4 a combination. The changes common to all claims are listed under cross-section-counts.'
+  - claim: spline-resistance-five-times
+    agrees: true
+    outcome: reproduced
+    reason: The ratio is 5.45 at P1a/P4a/P7b on linear bins (4.94, 4.68 and 5.22 on log bins), and the spline median
+      is above the segmentation median everywhere. Other combinations give 0-4.1. The result rests on a single P4a
+      combination (problem 3).
+    response: 'Rerun: on linear bins 4 of 24 combinations are within tolerance, including P1 a, P4 b, erosion 3
+      (6.59 against 6.2), so it no longer rests on P4 a; 11 more on logarithmic bins. Outcome unchanged. The changes
+      common to all claims are listed under cross-section-counts.'
+  - claim: fig7-velocity-profiles
+    agrees: true
+    outcome: reproduced
+    reason: 'All 8 combinations: ellipse faster in >=99.6% of sections, spline slower in >=89.5%, polynomial closest
+      in 67-79%.'
+    response: 'Rerun over P1, P4 and the three erosions: ellipse faster in 99.9 to 100%, spline slower in 85.8 to
+      97.6%, polynomial closest in 71.5 to 81.0%. Outcome unchanged. The changes common to all claims are listed
+      under cross-section-counts.'
+  - claim: vessel-radius-peak
+    agrees: true
+    outcome: reproduced
+    reason: The peak is 27.6-30.4 um in 11 of 24 combinations, with medians of 28-31 um.
+    response: 'Rerun: within tolerance in 13 of 24, peaks 28.75 to 33.03 um. Outcome unchanged. The changes common
+      to all claims are listed under cross-section-counts.'
+  - claim: fig8-ellipse-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 72 match, and the partial rule is met in 0. The R3 peak is about 28.8-30 um against 35 +- 3.5,
+      and R3/R1 and R2/R1 are never both within tolerance.
+    response: 'Rerun: 0 of 72 match, R3 peak 27.35 to 30.10 um, R3/R1 within in none. Added a compact table and
+      the ranges of each value. Outcome unchanged. The changes common to all claims are listed under cross-section-counts.'
+  - claim: fig9c-pvs-two-lobes
+    agrees: true
+    outcome: reproduced
+    reason: The HC/R1 peak is within 0.1 of zero and 60-66% of sections with HC > 0 are below 0.5 R1, in 15 of 24
+      combinations.
+    response: 'Rerun: 14 of 24 combinations, 63.4 to 68.4% below 0.5 R1. Outcome unchanged. The changes common to
+      all claims are listed under cross-section-counts.'
+  - claim: fig9e-pvs-width-asymmetry
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 24 match, and the WS/WL peak is 0.38-0.63. The medians do match Table 3's medians (WS/R1 1.60-1.71
+      against 1.60; WS/WL 0.585-0.616 against 0.589), but the criterion tests peaks.
+    response: 'Rerun: 0 of 24 match; WS/WL peaks at 0.629 to 0.729; medians WS/R1 1.197 to 1.484 and WS/WL 0.564
+      to 0.595. Outcome unchanged. The changes common to all claims are listed under cross-section-counts.'
+  - claim: left-right-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Readings (a) and (b) find a difference (p < 1e-15). Reading (c) does not (p 0.25-0.72). The criterion
+      sends a mixed result to methods_underspecified. Readings (a) and (b) treat 2,000-6,600 autocorrelated slices
+      as independent, so their p-values are not meaningful; only reading (c) is a sound test, but the criterion
+      fixes the outcome (problem 8).
+    response: 'Rerun: (a) and (b) p below 1e-29, (c) p 0.055 to 0.715. The conclusion and notes now say that (a)
+      and (b) treat autocorrelated cross sections as independent. Outcome unchanged, as the criterion fixes it.
+      The changes common to all claims are listed under cross-section-counts.'
+  - claim: fig9a-heights-taper
+    agrees: true
+    outcome: partially_reproduced
+    reason: No combination puts all three peaks within tolerance. The order H1 > H2 > H3 holds for peaks and medians
+      in many combinations.
+    response: Changed to reproduced. With the revised pipeline one of 48 combinations (P1 b, P4 b, erosion 3, sides
+      pooled, outliers out) puts the three peaks within tolerance (1.228, 0.820, 0.305); the notes say it rests
+      on that one combination. The changes common to all claims are listed under cross-section-counts.
+  - claim: fig9f-pvs-concave
+    agrees: true
+    outcome: partially_reproduced
+    reason: 61-72% of values are below 1 in every combination. The peak is never within 0.097-0.119; the nearest
+      are 0.092 and 0.075.
+    response: 'Rerun: 63.9 to 73.6% below 1; peak never within (0.164 to 1.162 with outliers out). Outcome unchanged.
+      The changes common to all claims are listed under cross-section-counts.'

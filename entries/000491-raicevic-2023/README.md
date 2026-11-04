@@ -13,13 +13,13 @@ open method details is run, and the tables show each.
 | 54 to 451 cross sections per segment, 0.8 um apart | Not reproduced |
 | 2D and 3D segmentations overlap by at least 70% | Blocked: data missing |
 | PVS area on vessel area, slope 1.05, R2 0.158 | Not reproduced |
-| Area ratio peak 1.12, median 1.88, IQR 1.79 | Partially reproduced |
-| PVS area varies more between segments than within | Reproduced (assumption) |
+| Area ratio peak 1.12, median 1.88, IQR 1.79 | Not reproduced |
+| PVS area varies more between segments than within | Blocked: methods underspecified |
 | Per-location area ratio peaks 0.6 to 11.43, 13 locations within 30% | Not reproduced |
-| Polynomial fit closest in area ratio (73, 19, 8%) | Partially reproduced |
+| Polynomial fit closest in area ratio (73, 19, 8%) | Reproduced (4 of 96 combinations) |
 | Fit area ratio peaks and medians (Table 2) | Partially reproduced |
 | Resistance power law in area, exponent -1.75, R2 0.944 | Partially reproduced |
-| Segmentation resistance peak 1.73e15, median 3.84e15 | Partially reproduced |
+| Segmentation resistance peak 1.73e15, median 3.84e15 | Not reproduced |
 | Per-location resistance peaks and share within 37% | Not reproduced |
 | Polynomial fit closest in resistance; fit peaks | Partially reproduced |
 | Ellipse and annulus similar, both underestimate | Reproduced (one combination) |
@@ -30,7 +30,7 @@ open method details is run, and the tables show each.
 | HC peaks at zero; connecting channel below 0.5 R1 | Reproduced |
 | Widths WS/R1, WL/R1, WS/WL | Not reproduced |
 | No left-right difference in width | Blocked: methods underspecified |
-| Heights H1, H2, H3 taper | Partially reproduced |
+| Heights H1, H2, H3 taper | Reproduced (one combination) |
 | Bottom edge most often concave | Partially reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -38,15 +38,17 @@ reasoning and the differences from the paper's method.
 
 The paper's code is not public, so the pipeline follows the Methods and the readings the claims
 file names; the centerline, slicing and resistance solver are equivalents of the paper's MATLAB
-functions. The ellipse fit surrounds the vessel, fit to the PVS and vessel together, as a reader
+functions. After the first verification the centerline is cleaned of points off the vessel and
+of repeats, and the PVS of each cross section is the two lobes beside the vessel. The ellipse fit surrounds the vessel, fit to the PVS and vessel together, as a reader
 settled in answer to a question on the claims file
 ([`questions/000491.yaml`](../../questions/000491.yaml)). Among the findings about the data: the deposited vessel and PVS masks still overlap in
-11 of 14 files; at E and F the PVS mask fills nearly all of the deepest planes; the first published
+11 of 14 files; at E and F the PVS mask fills every plane below a depth; the vessel mask of E still holds its
+branching vessels; the first published
 version lacks the PVS masks of L, M and N; and the 2D images used to validate the segmentation are
 not in the dandiset. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000491-raicevic-2023-01.yaml`](../../attempts/000491-raicevic-2023-01.yaml).
 
-- `reproduce_raicevic_2023.ipynb`: the analysis. It takes about 21 minutes on four cores, most of
+- `reproduce_raicevic_2023.ipynb`: the analysis. It takes about 29 minutes on four cores, most of
   it in the cross sections and the resistance solves.
 - `pvs.py`: streaming the masks, the centerline and cross sections, the fits, the resistance solver
   and the distribution peak. Other notebooks on this dandiset can import it.

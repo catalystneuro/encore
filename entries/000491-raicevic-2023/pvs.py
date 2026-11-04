@@ -64,6 +64,19 @@ def voxel_size(f: h5py.File) -> tuple[float, float, float]:
     return tuple(float(v) for v in s.strip("()").split(","))
 
 
+FILLED_PLANE = 0.9  # assumption, see clear_filled_planes
+
+
+def clear_filled_planes(pvs: np.ndarray) -> np.ndarray:
+    """Clear the PVS mask in planes where it covers more than 90% of the field. In locations E and
+    F the deposited PVS mask fills every plane below a depth (87 and 58 planes); no other plane of
+    any file is more than 50% PVS. A plane filled edge to edge is not a segmentation of the space
+    around the artery (assumption)."""
+    out = pvs.copy()
+    out[pvs.mean((1, 2)) > FILLED_PLANE] = False
+    return out
+
+
 def load_masks(f: h5py.File):
     """Vessel and PVS masks as stored, indexed (z, y, x); z increases with depth."""
     seg = f["processing/ophys/ImageSegmentation"]
@@ -84,12 +97,14 @@ def isotropic(mask: np.ndarray, dz: float, target: float, dxy: float = XY_UM) ->
     return ndimage.zoom(mask.astype(np.float32), zoom, order=1) > 0.5
 
 
-def centerline(ves: np.ndarray, dz: float, target: float, reading: str = "a"):
+def centerline(ves: np.ndarray, dz: float, target: float, reading: str = "a", info: dict | None = None):
     """Vessel centerline points in um, (x, y, z) with z the depth.
 
     The skeleton is skimage's 3D thinning, the equivalent of MATLAB bwskel (claims P2), of the
     largest connected vessel region on the isotropic grid. Reading "a" keeps the longest path
-    through the skeleton (side branches dropped), reading "b" all skeleton points (claims P2).
+    through the skeleton (side branches dropped), then removes erroneous points with
+    ``clean_path``; reading "b" keeps all skeleton points (claims P2). ``info``, when given, is
+    filled with the path's length before and after cleaning.
     """
     z0, z1 = np.nonzero(ves.any((1, 2)))[0][[0, -1]]
     sub = ves[z0 : z1 + 1]
@@ -137,7 +152,77 @@ def centerline(ves: np.ndarray, dz: float, target: float, reading: str = "a"):
         sel = pts[big]
     zyx_um = sel * target
     zyx_um[:, 0] += z0 * dz
-    return zyx_um[:, ::-1]  # (x, y, z)
+    xyz = zyx_um[:, ::-1]  # (x, y, z)
+    if reading != "a":
+        return xyz
+    # inscribed radius of the vessel at each path point, from the stored (anisotropic) mask
+    edt = ndimage.distance_transform_edt(ves, sampling=(dz, XY_UM, XY_UM))
+    ijk = np.round(xyz[:, ::-1] / (dz, XY_UM, XY_UM)).astype(int)
+    ijk = np.clip(ijk, 0, np.array(ves.shape) - 1)
+    keep = clean_path(xyz, edt[tuple(ijk.T)])
+    if info is not None:
+        info["_path"] = (xyz, keep)
+        step = np.linalg.norm(np.diff(xyz, axis=0), axis=1)
+        info.update(path_points=len(xyz), path_length_um=float(step.sum()),
+                    path_chord_um=float(np.linalg.norm(xyz[-1] - xyz[0])), kept_points=int(keep.sum()),
+                    kept_chord_um=float(np.linalg.norm(xyz[keep][-1] - xyz[keep][0])),
+                    tube_radius_um=float(np.percentile(edt[tuple(ijk.T)], 95)))
+    return xyz[keep]
+
+
+def _curve(pts, keep):
+    """Second-order polynomial fit of the centerline (as in ``fit_centerline``), sampled densely:
+    the distance of every point from the fitted curve, and the arc length along the curve of the
+    nearest curve point."""
+    from scipy.spatial import cKDTree
+
+    p = pts[keep]
+    ax = int(np.ptp(p[:, 1]) > np.ptp(p[:, 0]))
+    o = 1 - ax
+    po, pz = np.polyfit(p[:, ax], p[:, o], 2), np.polyfit(p[:, ax], p[:, 2], 2)
+    u = np.linspace(pts[:, ax].min() - 50, pts[:, ax].max() + 50, 8000)
+    c = np.zeros((len(u), 3))
+    c[:, ax], c[:, o], c[:, 2] = u, np.polyval(po, u), np.polyval(pz, u)
+    s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(c, axis=0), axis=1))]
+    d, j = cKDTree(c).query(pts)
+    return d, s[j]
+
+
+def clean_path(pts: np.ndarray, radius: np.ndarray) -> np.ndarray:
+    """Remove erroneous centerline points, which the paper did by hand (Methods, Creating normal
+    cross sections: "We estimated the vessel centerline using MATLAB's bwskel function, then
+    manually removed erroneous points"). Assumption, two rules, since the paper does not say
+    which points it removed:
+
+    1. A point farther from the second-order polynomial fit of the centerline than the vessel's
+       radius lies outside the vessel around the fitted centerline (a branch, or a spur of the
+       thinning toward a corner of a cut end). The radius is the 95th percentile of the vessel's
+       inscribed radius along the path (robust to the thin branches the path may run through);
+       the fit is repeated without the removed points until no point changes.
+    2. A point whose position along the fitted centerline does not go beyond every earlier point
+       on the path revisits a stretch already sampled (a loop, or the path doubling back), and
+       would give a second cross section at the same place.
+
+    Returns a boolean mask over ``pts`` (path order)."""
+    keep = np.ones(len(pts), bool)
+    thr = np.percentile(radius, 95)
+    for _ in range(50):
+        d, s = _curve(pts, keep)
+        new = d <= thr
+        if (new == keep).all() or new.sum() < 10:
+            break
+        keep = new
+    idx = np.nonzero(keep)[0]
+    ss = s[idx]
+    if np.corrcoef(np.arange(len(ss)), ss)[0, 1] < 0:
+        ss = -ss
+    out = np.zeros(len(pts), bool)
+    m = -np.inf
+    for i, v in zip(idx, ss):
+        if v > m:
+            out[i] = True
+            m = v
+    return out
 
 
 def fit_centerline(pts: np.ndarray):
@@ -226,6 +311,27 @@ def vessel_component(v: np.ndarray) -> np.ndarray:
         return lab == lab[tuple(c)]
     d, (iy, ix) = ndimage.distance_transform_edt(lab == 0, return_indices=True)
     return lab == lab[iy[tuple(c)], ix[tuple(c)]]
+
+
+def pvs_lobes(pv: np.ndarray, vc: np.ndarray) -> np.ndarray:
+    """The PVS of the cross section: of the PVS regions in the slice (8-connected), the two
+    largest of those that come within one vessel radius, sqrt(area / pi) of the vessel region,
+    of the vessel (assumption; in some files a gap of 5 to 9 um parts the lobes from the vessel).
+    The paper's PVS is the space around the vessel of interest, its segmentation kept "all but
+    the two largest regions in the PVS segmentation" (Methods, Segmentation) and its fits are of
+    the lobes beside the vessel (Figure 4); PVS pixels elsewhere in the 332 um plane (around other
+    vessels, or the planes the deposited PVS mask fills below some vessels) are not this PVS."""
+    lab, n = ndimage.label(pv, structure=np.ones((3, 3)))
+    if n == 0 or not vc.any():
+        return np.zeros_like(pv)
+    gap = ndimage.distance_transform_edt(~vc)
+    near = gap <= np.sqrt(vc.sum() / np.pi)
+    ids = np.unique(lab[near & (lab > 0)])
+    if len(ids) == 0:
+        return np.zeros_like(pv)
+    sizes = ndimage.sum(pv, lab, ids)
+    ids = ids[np.argsort(sizes)[::-1][:2]]
+    return np.isin(lab, ids)
 
 
 def fit_circle(vc: np.ndarray, erosions=EROSIONS):
@@ -433,21 +539,34 @@ def measure_slice(v, p, px, erosions=EROSIONS, resist=True, resist_erosions=(3,)
     """All per-slice measures for one cross section. Pixels in both masks are counted as vessel
     (assumption: the paper resolved overlaps by hand, case by case, and the deposited masks still
     overlap). Lengths in um, areas in um^2, resistance in Pa s/m^4. The slice is cropped to a
-    window holding the vessel, the PVS and every fit (standard choice, for speed)."""
+    window holding the vessel, the PVS and every fit (standard choice, for speed). The PVS is
+    the lobes beside the vessel (``pvs_lobes``); ``pvs_area_all`` is all PVS pixels in the slice.
+    ``cx``, ``cy`` are the vessel center in slice pixels (circle fit, erosion 3; the vessel
+    region's centroid when there is no fit), to which the paper shifts the slice."""
     vc = vessel_component(v)
-    pv = p & ~v
+    pall = p & ~v
+    pv = pvs_lobes(pall, vc)
     row = {"ves_area": vc.sum() * px * px, "pvs_area": pv.sum() * px * px,
-           "overlap_area": (p & v).sum() * px * px}
+           "pvs_area_all": pall.sum() * px * px, "overlap_area": (p & v).sum() * px * px,
+           "pvs_regions": int(ndimage.label(pall, structure=np.ones((3, 3)))[1])}
     cols = np.nonzero(pv.any(0))[0]
     row["pvs_hext"] = (cols.max() - cols.min() + 1) * px if len(cols) else 0.0
+    cols = np.nonzero(pall.any(0))[0]
+    row["pvs_hext_all"] = (cols.max() - cols.min() + 1) * px if len(cols) else 0.0
     if vc.any():
         rr, cc = np.nonzero(vc)
         row["ves_h"], row["ves_w"] = (np.ptp(rr) + 1) * px, (np.ptp(cc) + 1) * px
+        row["cx"], row["cy"] = cc.mean(), rr.mean()
     if vc.sum() < 20 or pv.sum() < 20:
         if resist and pv.sum() > 0:
             row["R_seg"], row["umax_seg"], row["umean_seg"] = poiseuille(pv, px)
         return row
     circ = fit_circle(vc, erosions)
+    x3, y3, r3 = circ[3] if 3 in circ else next(iter(circ.values()))
+    row["cx"], row["cy"] = x3, y3
+    near = disk(pv.shape, x3, y3, 3 * r3)
+    row["pvs_near_share"] = (pv & near).sum() / pv.sum()
+    row["pvs_all_near_share"] = (pall & near).sum() / pall.sum()
     # window: vessel, PVS, the ellipse and the spline extent of every circle fit
     rr, cc = np.nonzero(vc | pv)
     r0, r1, c0, c1 = rr.min(), rr.max(), cc.min(), cc.max()
@@ -505,7 +624,26 @@ def measure_slice(v, p, px, erosions=EROSIONS, resist=True, resist_erosions=(3,)
     return row
 
 
-RESIST_EROSION = 3  # the middle reading of P6; resistance of the fits is solved for it alone
+RESIST_EROSIONS = EROSIONS  # resistance of the fits is solved for every reading of P6
+
+
+def fit_masks(v, p, k=3):
+    """For a figure: the vessel region, the PVS lobes, the circle (x, y, r) of erosion ``k`` and
+    the ellipse, spline and polynomial fits of one slice, as masks on the slice's grid."""
+    vc = vessel_component(v)
+    pv = pvs_lobes(p & ~v, vc)
+    out = {"vessel": vc, "pvs": pv}
+    if vc.sum() < 20 or pv.sum() < 20:
+        return out
+    x0, y0, r = fit_circle(vc, (k,))[k]
+    c = disk(v.shape, x0, y0, r)
+    out["circle"] = (x0, y0, r)
+    out["ellipse"] = ellipse_fit(ellipse_region(pv, vc))[-1] & ~c
+    out["spline"] = spline_mask(v.shape, x0, y0, r)
+    pf = polynomial_fit(pv, x0, y0, r)
+    if pf is not None:
+        out["polynomial"] = pf["mask"]
+    return out
 
 
 def exclusion(df):
@@ -534,15 +672,29 @@ def process_segment(f, target, reading="a", resist=True):
     ves, pvs = load_masks(f)
     dz = voxel_size(f)[2]
     digest = hashlib.sha1(np.packbits(ves).tobytes() + np.packbits(pvs).tobytes()).hexdigest()
-    pts = centerline(ves, dz, target, reading)
+    pvs = clear_filled_planes(pvs)
+    info = {}
+    pts = centerline(ves, dz, target, reading, info)
     ax, p_other, p_z, t, order = fit_centerline(pts)
     step = np.linalg.norm(np.diff(pts, axis=0), axis=1)
+    adjacent = step <= np.sqrt(3) * target * 1.01  # steps across a removed stretch are gaps
     V, P, E = cross_sections(ves, pvs, dz, pts, t, target)
+    shape_xyz = (ves.shape[2], ves.shape[1], ves.shape[0])
+    mips = (ves.any(0), pvs.any(0))
     del ves, pvs
+    eh, ev = slice_frames(t)
+    n = int(round(166.0 / target))
     rows = []
     for i in range(len(pts)):
         r = measure_slice(V[i], P[i], target, resist=False)
-        r["edge_dist"] = E[i]
+        r["edge_dist_skel"] = E[i]
+        # the paper shifts the slice so the vessel center is at the image center (Methods,
+        # Creating normal cross sections); the edge distance is measured from that center
+        if "cx" in r:
+            c = pts[i] + (r["cx"] - n) * target * eh[i] - (r["cy"] - n) * target * ev[i]
+            r["edge_dist"] = edge_distance(c, t[i], shape_xyz, dz)
+        else:
+            r["edge_dist"] = E[i]
         r["i"] = i
         rows.append(r)
     df = pd.DataFrame(rows)
@@ -551,12 +703,18 @@ def process_segment(f, target, reading="a", resist=True):
     if resist:
         extra = {}
         for i in np.nonzero((keep_a | keep_b).values)[0]:
-            r = measure_slice(V[i], P[i], target, erosions=(RESIST_EROSION,), resist=True)
+            r = measure_slice(V[i], P[i], target, erosions=RESIST_EROSIONS, resist=True,
+                              resist_erosions=RESIST_EROSIONS)
             extra[i] = {k: v for k, v in r.items() if k.startswith(("R_", "umax", "umean"))}
         ext = pd.DataFrame.from_dict(extra, orient="index")
         df = df.join(ext)
-    df.attrs.update(spacing=float(step.mean()), med_a=float(med_a), med_b=float(med_b),
-                    digest=digest)
+    kept = np.nonzero(df.keep_b.values)[0]
+    ex = int(kept[np.argmin(np.abs(kept - len(pts) / 2))]) if len(kept) else len(pts) // 2
+    df.attrs.update(spacing=float(step[adjacent].mean()), spacing_all=float(step.mean()),
+                    gaps=int((~adjacent).sum()), med_a=float(med_a), med_b=float(med_b),
+                    digest=digest, **{k: v for k, v in info.items() if k != "_path"})
+    df.attrs["example"] = {"i": ex, "v": V[ex], "p": P[ex], "path": info["_path"][0],
+                           "keep": info["_path"][1], "mip_vessel": mips[0], "mip_pvs": mips[1]}
     return df
 
 
@@ -579,10 +737,13 @@ def run_all(assets, target, workers=4):
     with ProcessPoolExecutor(workers) as ex:
         dfs = list(ex.map(run_asset, [(a, target) for a in assets]))
     meta = pd.DataFrame([{"location": d["location"].iloc[0], "points": len(d),
-                          "spacing": d.attrs["spacing"], "med_a": d.attrs["med_a"],
-                          "med_b": d.attrs["med_b"],
-                          "digest": d.attrs["digest"]} for d in dfs]).set_index("location")
+                          **{k: v for k, v in d.attrs.items() if k != "example"}}
+                         for d in dfs]).set_index("location")
+    examples = {d["location"].iloc[0]: d.attrs["example"] for d in dfs}
+    for d in dfs:
+        d.attrs = {}
     out = pd.concat(dfs, ignore_index=True)
+    meta.attrs["examples"] = examples
     return out, meta
 
 
@@ -594,6 +755,7 @@ def count_all_points(args):
     asset, target = args
     f = open_asset(asset)
     ves, pvs = load_masks(f)
+    pvs = clear_filled_planes(pvs)
     dz = voxel_size(f)[2]
     pts = centerline(ves, dz, target, "b")
     ax, p_other, p_z, t, order = fit_centerline(pts)
@@ -605,7 +767,7 @@ def count_all_points(args):
     hext, wpol = [], []
     for v, p in zip(V, P):
         vc = vessel_component(v)
-        pv = p & ~v
+        pv = pvs_lobes(p & ~v, vc)
         cols = np.nonzero(pv.any(0))[0]
         hext.append((cols.max() - cols.min() + 1) * target if len(cols) else 0.0)
         if vc.sum() >= 20 and pv.sum() >= 20:
