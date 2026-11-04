@@ -22,7 +22,7 @@ open method details is run, and the tables show each.
 | Segmentation resistance peak 1.73e15, median 3.84e15 | Partially reproduced |
 | Per-location resistance peaks and share within 37% | Not reproduced |
 | Polynomial fit closest in resistance; fit peaks | Partially reproduced |
-| Ellipse and annulus similar, both underestimate | Partially reproduced |
+| Ellipse and annulus similar, both underestimate | Reproduced (one combination) |
 | Spline resistance peak about 5 times the segmentation's | Reproduced |
 | Velocities: ellipse faster, spline slower, polynomial closest | Reproduced |
 | Vessel radius peak 28 um | Reproduced |
@@ -38,13 +38,15 @@ reasoning and the differences from the paper's method.
 
 The paper's code is not public, so the pipeline follows the Methods and the readings the claims
 file names; the centerline, slicing and resistance solver are equivalents of the paper's MATLAB
-functions. Among the findings about the data: the deposited vessel and PVS masks still overlap in
+functions. The ellipse fit surrounds the vessel, fit to the PVS and vessel together, as a reader
+settled in answer to a question on the claims file
+([`questions/000491.yaml`](../../questions/000491.yaml)). Among the findings about the data: the deposited vessel and PVS masks still overlap in
 11 of 14 files; at E and F the PVS mask fills nearly all of the deepest planes; the first published
 version lacks the PVS masks of L, M and N; and the 2D images used to validate the segmentation are
 not in the dandiset. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000491-raicevic-2023-01.yaml`](../../attempts/000491-raicevic-2023-01.yaml).
 
-- `reproduce_raicevic_2023.ipynb`: the analysis. It takes about 27 minutes on four cores, most of
+- `reproduce_raicevic_2023.ipynb`: the analysis. It takes about 21 minutes on four cores, most of
   it in the cross sections and the resistance solves.
 - `pvs.py`: streaming the masks, the centerline and cross sections, the fits, the resistance solver
   and the distribution peak. Other notebooks on this dandiset can import it.

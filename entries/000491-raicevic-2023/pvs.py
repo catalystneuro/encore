@@ -258,16 +258,33 @@ def disk(shape, x0, y0, r):
     return (xx - x0) ** 2 + (yy - y0) ** 2 <= r ** 2
 
 
-def ellipse_fit(p: np.ndarray):
-    """Ellipse with the centroid and second central moments of the PVS (Methods, Idealized
-    geometries, after Tithof et al.). Returns center (x, y), semi-axes (major, minor), angle, and
-    its mask on the slice grid."""
+def ellipse_params(p: np.ndarray):
+    """Ellipse with the centroid and second central moments of the region ``p`` (Methods,
+    Idealized geometries, after Tithof et al.). Returns center (x, y), semi-axes (major, minor)
+    and angle, in pixels of ``p``."""
     yy, xx = np.nonzero(p)
     cx, cy = xx.mean(), yy.mean()
     cov = np.cov(np.vstack([xx - cx, yy - cy]), bias=True)
     w, vec = np.linalg.eigh(cov)
     a, b = 2 * np.sqrt(w[1]), 2 * np.sqrt(max(w[0], 0))
     ang = np.arctan2(vec[1, 1], vec[0, 1])
+    return cx, cy, a, b, ang
+
+
+def ellipse_region(pv: np.ndarray, vc: np.ndarray) -> np.ndarray:
+    """The region the ellipse is fit to (claims P9, as amended after the question on
+    fig8-ellipse-parameters): the region the PVS's outer boundary encloses, the PVS (both lobes)
+    and the vessel together, holes filled, as the outer ellipse of Tithof et al.'s elliptical
+    annulus. Figure 4 legend: "We fit each of these idealized shapes to the PVS and vessel
+    segmentation"; Results, Characteristics of the typical PVS shape: "The major axis of the
+    ellipse fit represents the distance from the PVS center and so, it includes the vessel
+    radius"."""
+    return ndimage.binary_fill_holes(pv | vc)
+
+
+def ellipse_fit(p: np.ndarray):
+    """``ellipse_params`` of ``p`` and the ellipse's mask on the grid of ``p``."""
+    cx, cy, a, b, ang = ellipse_params(p)
     Y, X = np.indices(p.shape)
     u = (X - cx) * np.cos(ang) + (Y - cy) * np.sin(ang)
     v = -(X - cx) * np.sin(ang) + (Y - cy) * np.cos(ang)
@@ -431,9 +448,15 @@ def measure_slice(v, p, px, erosions=EROSIONS, resist=True, resist_erosions=(3,)
             row["R_seg"], row["umax_seg"], row["umean_seg"] = poiseuille(pv, px)
         return row
     circ = fit_circle(vc, erosions)
-    # window: vessel, PVS and the spline extent of every circle fit
+    # window: vessel, PVS, the ellipse and the spline extent of every circle fit
     rr, cc = np.nonzero(vc | pv)
     r0, r1, c0, c1 = rr.min(), rr.max(), cc.min(), cc.max()
+    sub = ellipse_region(pv[r0 : r1 + 1, c0 : c1 + 1], vc[r0 : r1 + 1, c0 : c1 + 1])
+    ex, ey, a, b, ang = ellipse_params(sub)
+    ex, ey = ex + c0, ey + r0
+    hx = np.hypot(a * np.cos(ang), b * np.sin(ang))  # half extents of the ellipse
+    hy = np.hypot(a * np.sin(ang), b * np.cos(ang))
+    r0, r1, c0, c1 = min(r0, ey - hy), max(r1, ey + hy), min(c0, ex - hx), max(c1, ex + hx)
     for x0, y0, r in circ.values():
         r0, r1 = min(r0, y0 - 1.4 * r), max(r1, y0 + 1.4 * r)
         c0, c1 = min(c0, x0 - 5.2 * r), max(c1, x0 + 5.2 * r)
@@ -443,10 +466,14 @@ def measure_slice(v, p, px, erosions=EROSIONS, resist=True, resist_erosions=(3,)
     vc, pv = vc[r0:r1, c0:c1], pv[r0:r1, c0:c1]
     if resist:
         row["R_seg"], row["umax_seg"], row["umean_seg"] = poiseuille(pv, px)
-    ex, ey, a, b, ang, em = ellipse_fit(pv)
-    # variant, not used by any criterion: the ellipse of PVS and vessel together
-    _, _, au, bu, _, _ = ellipse_fit(pv | vc)
-    row["R2u"], row["R3u"] = au * px, bu * px
+    ex, ey = ex - c0, ey - r0
+    Y, X = np.indices(pv.shape)
+    u = (X - ex) * np.cos(ang) + (Y - ey) * np.sin(ang)
+    w = -(X - ex) * np.sin(ang) + (Y - ey) * np.cos(ang)
+    em = (u / a) ** 2 + (w / max(b, 1e-9)) ** 2 <= 1
+    # variant, not used by any criterion since the answer on fig8: the ellipse of the PVS alone
+    _, _, ap, bp, _ = ellipse_params(pv)
+    row["R2p"], row["R3p"] = ap * px, bp * px
     for k in erosions:
         x0, y0, r = circ[k]
         x0, y0 = x0 - c0, y0 - r0
