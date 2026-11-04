@@ -15,7 +15,7 @@ auditory cortex (29 with a simultaneous LFP) and its six TTX recordings.
 | Residual LFP-PSP correlation after culling | Reproduced |
 | LFP-based culling and estimation, 2.9 mV, 26/29 reduced, up to 71% | Partially reproduced (assumed) |
 | PSP-based culling, 2.2 mV, 32/33 at most about 3 mV | Partially reproduced (assumed) |
-| PSP-based culling can increase q for some tones (18/33) | Partially reproduced |
+| PSP-based culling can increase q for some tones (18/33) | Partially reproduced (assumed) |
 | Best estimate of private variability, 1.6 mV over 28 neurons | Reproduced (assumed) |
 | Random culling controls (4.5, 3.67, 2.98, 2.9 mV; 29% and 38% culled) | Not reproduced |
 | Large responses (at least 15 mV): 2.9, 1.9 and 1.5 mV | Reproduced (assumed) |
@@ -36,8 +36,9 @@ reasoning and the differences from the paper's method.
 
 "Assumed" marks outcomes that rest on a choice the paper does not make, mostly the spike rule:
 the data set gives each neuron a spike threshold, which is used here, and the claims file's
-rule (a fast rise to above -20 mV) is shown alongside. Others rest on a reading of the culling
-details the paper leaves open, on how input resistance was measured, or on the mEPSP detector. The attempt record, with the reasons and the differences from the
+rule (a fast rise to above -20 mV) is shown alongside, with two further rules that bound the
+choice. Others rest on a reading of the culling details the paper leaves open, on measuring the
+heights once before culling, on how input resistance was measured, or on the mEPSP detector. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/crcns-ac-2-deweese-2004-01.yaml`](../../attempts/crcns-ac-2-deweese-2004-01.yaml).
 
 - `reproduce_deweese_2004.ipynb`: the analysis. It streams the 265 MB data tar once (about 30 s)

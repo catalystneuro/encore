@@ -37,14 +37,17 @@ Where the parameters come from:
   threshold, `spikethresh` in cell_specific_parameters.m ("height of threshold (mV) above
   BASELINE/REST for spike detection/removal", as the TTX cells' copies of the file describe it),
   applied here to `r` (`spike_rule="cell"`). Both readings are run; `"cell"`, the authors' own
-  parameter, is adopted as an assumption.
+  parameter, is adopted as an assumption. Two bounds are shown beside them: the corrected
+  potential above -20 mV at any rise (`"corrected"`), and spikethresh with the slow events kept
+  (`"cell_fast"`, largest rise above 5 mV/ms, `SLOW_DVDT`).
 - Culling (`cull`): Methods, LFP-based culling: scale factor f = (x, y)/(x, x) over the 100-ms
   window beginning 15 ms before onset, rms error to f x, threshold 0.35 times the
   peak-to-trough height of the tone's mean response (span: open detail 2, `span="culling"` or
   `"trace"`), negative scale factors removed (for PSP culling: open detail 4, `psp_negative`).
   The mean trace is over the trials that enter the culling (those without spikes).
 - Heights are measured once, on the full ensemble, and are not re-measured after culling (a
-  choice made here: the Methods say q is "recalculated", not that the heights are).
+  choice made here: the Methods say q is "recalculated", not that the heights are). Heights
+  taken again against the peak of the mean of the kept trials are a reading (`remeasure=True`).
 - When both cullings are applied, PSP-based culling comes first and LFP-based culling is then
   run on the trials it keeps, its mean LFP and threshold recomputed over them
   (`combine="sequential"`): the Figure 6 legend says "we repeat the above procedure after first
@@ -101,6 +104,7 @@ N_SHUFFLES = 20
 SPIKE_ABS_MV = -20.0           # claims file, open detail 6, after the junction potential correction
 JUNCTION_MV = 12.0             # Methods: "the liquid junction potential, which we calculated to be 12 mV"
 SPIKE_DVDT = 10.0              # mV/ms, the "fast rise" of detail 6 (standard choice)
+SLOW_DVDT = 5.0                # mV/ms, below which a spikethresh trial counts as a slow event (rule "cell_fast")
 # Tone frequencies (Hz) in order of presentation: read from Anesthetized_cell_info.txt by `load()`.
 TONE_ORDER = np.array([], int)
 ANESTHETIC = {"P": "pentobarbital", "P_with_Diaz": "pentobarbital and diazepam", "U": "urethane"}
@@ -296,11 +300,17 @@ def max_rise(traces: np.ndarray) -> np.ndarray:
 
 def spikes(neuron: dict, rule: str = "claims") -> np.ndarray:
     """Trials with a spike: `claims`, a rise faster than SPIKE_DVDT and the corrected potential above
-    -20 mV; `cell`, r above the cell's spikethresh."""
+    -20 mV; `corrected`, the corrected potential above -20 mV at any rise; `cell`, r above the
+    cell's spikethresh; `cell_fast`, spikethresh with a rise faster than SLOW_DVDT (slow events kept)."""
+    corrected = neuron["r"] + neuron["rbaseline"][:, None] - JUNCTION_MV
     if rule == "claims":
-        corrected = neuron["r"] + neuron["rbaseline"][:, None] - JUNCTION_MV
         return (corrected.max(1) > SPIKE_ABS_MV) & (max_rise(neuron["r"]) > SPIKE_DVDT)
-    return neuron["r"].max(1) > neuron["params"]["spikethresh"]
+    if rule == "corrected":
+        return corrected.max(1) > SPIKE_ABS_MV
+    above = neuron["r"].max(1) > neuron["params"]["spikethresh"]
+    if rule == "cell_fast":
+        return above & (max_rise(neuron["r"]) > SLOW_DVDT)
+    return above
 
 
 def heights(traces: np.ndarray, peak_window: str = "after_onset") -> tuple[np.ndarray, int, np.ndarray]:
@@ -368,11 +378,14 @@ def shuffled_estimate_q(h: np.ndarray, s: np.ndarray, rng: np.random.Generator, 
 
 # Main readings. spike_rule "cell" is an assumption (see the module docstring and the notebook).
 DEFAULTS = {"peak_window": "after_onset", "span": "culling", "psp_negative": True,
-            "spike_rule": "cell", "ddof": 1, "combine": "sequential"}
+            "spike_rule": "cell", "ddof": 1, "combine": "sequential", "remeasure": False}
 
 
 def analyse_neuron(neuron: dict, rng: np.random.Generator, with_lfp: bool = True, **options) -> list[dict]:
     """Per-tone values of every stage of the paper's procedure (Figure 6), for one neuron.
+
+    With `remeasure`, the heights of each stage are taken again against the peak of the mean of
+    the trials it keeps; otherwise once, on the full ensemble.
 
     Each row is one tone with its trials in the stable epoch, without spikes. Columns: `n`,
     `mean`, `q` (total), and for each stage the trials kept (`n_*`), the mean of their heights
@@ -393,15 +406,20 @@ def analyse_neuron(neuron: dict, rng: np.random.Generator, with_lfp: bool = True
         row = {"tone": int(tone), "n": len(sel), "mean": float(h.mean()), "q": q_index(h, o["ddof"]),
                "cv": float(h.std(ddof=o["ddof"]) / h.mean()), "peak_ms": (peak - PRE) / FS * 1000,
                "mean_peak": float(mean[peak]), "trials": sel, "h": h}
+        def kept_heights(keep):
+            if not o["remeasure"] or keep.sum() < 2:
+                return h[keep]
+            return heights(r[keep], o["peak_window"])[0]
+
         keep_psp, _ = cull(r, o["span"], o["psp_negative"])
-        row.update(_stage("psp", h, keep_psp, o["ddof"]))
+        row.update(_stage("psp", kept_heights(keep_psp), o["ddof"]))
         if with_lfp:
             lf = neuron["lfp"][sel].astype(float)
             keep_lfp, s = cull(lf, o["span"], True)
             row["s"] = s
             row["lfp_h"] = lfp_heights(lf, "culling")
             row["keep_psp"], row["keep_lfp"] = keep_psp, keep_lfp
-            row.update(_stage("lfp", h, keep_lfp, o["ddof"]))
+            row.update(_stage("lfp", kept_heights(keep_lfp), o["ddof"]))
             # Scale factors for the estimation after both cullings: against the mean LFP of the
             # PSP-culled trials when LFP-based culling follows PSP-based culling.
             both, s_both = keep_psp & keep_lfp, s
@@ -412,9 +430,9 @@ def analyse_neuron(neuron: dict, rng: np.random.Generator, with_lfp: bool = True
                 else:
                     both[:] = False
             row["keep_both"] = both
-            row.update(_stage("both", h, both, o["ddof"]))
+            row.update(_stage("both", kept_heights(both), o["ddof"]))
             for stage, keep, sc in (("lfp", keep_lfp, s), ("both", both, s_both)):
-                hk, sk = h[keep], sc[keep]
+                hk, sk = kept_heights(keep), sc[keep]
                 if keep.sum() >= 3:
                     row[f"q_{stage}_est"] = estimate_q(hk, sk, o["ddof"])
                     row[f"q_{stage}_shuf"] = shuffled_estimate_q(hk, sk, rng, ddof=o["ddof"])
@@ -425,9 +443,8 @@ def analyse_neuron(neuron: dict, rng: np.random.Generator, with_lfp: bool = True
     return rows
 
 
-def _stage(name: str, h: np.ndarray, keep: np.ndarray, ddof: int) -> dict:
-    hk = h[keep]
-    out = {f"n_{name}": int(keep.sum())}
+def _stage(name: str, hk: np.ndarray, ddof: int) -> dict:
+    out = {f"n_{name}": len(hk)}
     if len(hk) >= 2:
         out[f"mean_{name}"] = float(hk.mean())
         out[f"q_{name}"] = q_index(hk, ddof)
