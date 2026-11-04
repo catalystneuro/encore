@@ -317,8 +317,9 @@ def pvs_lobes(pv: np.ndarray, vc: np.ndarray) -> np.ndarray:
     """The PVS of the cross section: of the PVS regions in the slice (8-connected), the two
     largest of those that come within one vessel radius, sqrt(area / pi) of the vessel region,
     of the vessel (assumption; in some files a gap of 5 to 9 um parts the lobes from the vessel).
-    The paper's PVS is the space around the vessel of interest, its segmentation kept "all but
-    the two largest regions in the PVS segmentation" (Methods, Segmentation) and its fits are of
+    The paper's PVS is the space around the vessel of interest, its segmentation kept the two
+    largest PVS regions ("removed ... all but the two largest regions in the PVS segmentation",
+    Methods, Segmentation) and its fits are of
     the lobes beside the vessel (Figure 4); PVS pixels elsewhere in the 332 um plane (around other
     vessels, or the planes the deposited PVS mask fills below some vessels) are not this PVS."""
     lab, n = ndimage.label(pv, structure=np.ones((3, 3)))

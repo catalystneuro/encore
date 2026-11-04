@@ -33,8 +33,12 @@ outcomes:
     at 1 um (within the widened range, but spacing 1.345 um). With P4 a, 4 segments keep none. P2 b gives up to
     78712 points per segment. The spacing is the mean step between neighbouring kept points (0.83 to 0.93 um per
     segment at 0.648 um). Before the revision after round 1, with the uncleaned path, the counts were 390 to 669
-    and 248 to 415. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4
-    b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
+    and 248 to 415. The cleaned path still meanders, 1.08 to 1.44 times the arc of the fitted centerline at 0.648
+    um at every location but E. Counted along the fitted centerline (a diagnostic in the notebook, with the share
+    kept under P4 b), the segments would give 223 to 427 cross sections at each segment's own mean step (mean
+    0.876 um), 241 to 492 at the paper's 0.8 um, 219 to 447 at 0.88 um and 267 to 546 at 0.72 um; the first three
+    are inside 48.6 to 496.1. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest
+    path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
   - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
     3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating
@@ -43,7 +47,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -53,7 +61,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -71,7 +79,26 @@ outcomes:
     while the paper analysed all 14; its results are shown but it is the less supported reading.
   - For P2 b the median widths of P4 are taken from 150 evenly spaced points per segment (a standard choice), and
     the spacing is between consecutive points sorted along the main axis.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, the fewest cross sections at 0.648 um (P4 b) become 409 and the most stays 604; no
+    combination holds.'
   assumed: true
+  proposed:
+    outcome: reproduced
+    reason: 'The criterion takes one slice per centerline point, so the count follows the length of the path. The cleaned
+      path of this attempt, the stand-in for the paper''s manual removal of erroneous points, is still 1.08 to 1.44
+      times the arc of the fitted centerline at 0.648 um (data check, as the verifier of round 2 found), and the
+      voxel zigzag explains at most about 8% of that, so it holds more points than a centerline along the vessel. A
+      centerline that follows the fitted curve is the better-supported reading of a hand-cleaned centerline. Counted
+      along it with the share kept under P4 b (cell under cross-section-counts), P1 a gives 223 to 427 cross
+      sections per segment at each segment''s own mean step (mean spacing 0.876 um) and 241 to 492 at the paper''s
+      0.8 um, both inside 48.6 to 496.1 with the spacing within tolerance, so the claim holds; P1 b still fails on
+      its spacing (1.345 um). The margin is small: at a step of 0.72 um the most would be 546, and the counts are
+      estimated from the kept share, not from slices taken along the fitted curve. The fewest, 223, is far above the
+      paper''s 54, which the criterion allows.'
 - claim: segmentation-validation-overlap
   outcome: blocked
   blocked_by: data_missing
@@ -100,7 +127,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -110,7 +141,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -126,6 +157,12 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches; with the reference combination and an intercept the slope is
+    1.025 and R2 0.199 (0.912 and 0.176 with E).'
   assumed: true
 - claim: fig5e-area-ratio-distribution
   outcome: not_reproduced
@@ -152,7 +189,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -162,7 +203,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -178,6 +219,12 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination has the median and IQR within; with the reference combination the peak
+    is 1.508, the median 1.566 and the IQR 1.23.'
   assumed: true
 - claim: fig5bc-area-intersegment-variation
   outcome: blocked
@@ -200,7 +247,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -210,7 +261,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -228,6 +279,11 @@ outcomes:
     while the paper analysed all 14; its results are shown but it is the less supported reading.
   - 'P4 reading (b) is no longer adopted as an assumption here: the readings of the criterion split under it, so
     the outcome follows the criterion.'
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, reading (a) holds in 4 of 4 combinations and reading (b) in 1, as with E.'
 - claim: area-ratio-per-location
   outcome: not_reproduced
   notebook: reproduce_raicevic_2023.ipynb
@@ -239,7 +295,7 @@ outcomes:
   notes: None of 128 combinations matches. The smallest per-location peak is 0.052 to 0.74 and the largest 1.7 to
     9.04; with the reference combination 0.053 (C) and 9.045 (G). At most 9 locations meet a reading of "within
     30% of the peak" (reading c), against 11.7 to 14.3, and none meets reading (d). Count for reading (a). Before
-    the revision after round 1 the largest peak reached 257.17 and at most 11 locations met a reading. Reference
+    the revision after round 1 the largest peak reached 257.17 and at most 10 locations met a reading. Reference
     combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a,
     P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
@@ -250,7 +306,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -260,7 +320,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -276,6 +336,11 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination of 128 matches, as with E.'
   assumed: true
 - claim: fig5d-polynomial-closest-area-ratio
   outcome: reproduced
@@ -301,7 +366,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -311,7 +380,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -333,8 +402,14 @@ outcomes:
   - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
     with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
     now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
-    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
-    unchanged at 1.901).
+    the polynomial areas and resistances slightly; the values before the change are not in the notebook (with the
+    reference combination and P9 a the polynomial area ratio now peaks at 1.684, median 1.710, table2).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, 1 of the 96 combinations matches in place of 4, and the polynomial share is the largest
+    and above 50% in 94.'
   assumed: true
 - claim: table2-fit-area-ratio-peaks
   outcome: partially_reproduced
@@ -363,7 +438,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -373,7 +452,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -395,8 +474,13 @@ outcomes:
   - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
     with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
     now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
-    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
-    unchanged at 1.901).
+    the polynomial areas and resistances slightly; the values before the change are not in the notebook (with the
+    reference combination and P9 a the polynomial area ratio now peaks at 1.684, median 1.710, table2).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches; the partial rule holds in 18 of 96 in place of 24.'
   assumed: true
 - claim: fig6a-resistance-power-law
   outcome: partially_reproduced
@@ -419,7 +503,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -429,7 +517,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -450,6 +538,11 @@ outcomes:
     is 2.5%.
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches; the partial rule holds in 3 of 8 in place of 2.'
   assumed: true
 - claim: fig6b-resistance-segmentation-peak
   outcome: not_reproduced
@@ -458,7 +551,8 @@ outcomes:
   measured:
   - 1680000000000000.0
   - 5280000000000000.0
-  notes: The peak is within tolerance in one combination, 1.68e15 with P1 a, P4 b, outliers out, linear bins. The
+  notes: The peak is within tolerance in three combinations, 1.86e15 (P1 a, P4 a, all values, log bins), 1.68e15
+    (P1 a, P4 b, outliers out, linear bins) and 1.83e15 (P1 b, P4 b, outliers out, linear bins). The
     median is 5.28e15 to 6.87e15 in every combination, against 3.84e15 within 3.84e14. The partial rule needs the
     median within tolerance and the peak not; here it is the other way round, so the outcome is not reproduced.
     Before the revision after round 1 the median (4.16e15) was within and the peak (1.25e15) was not, and the outcome
@@ -473,7 +567,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -483,7 +581,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -504,6 +602,12 @@ outcomes:
     is 2.5%.
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, the median is within tolerance in no combination; with the reference combination the
+    peak is 1.63e15 and the median 5.19e15.'
   assumed: true
 - claim: resistance-per-location
   outcome: not_reproduced
@@ -526,7 +630,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -536,7 +644,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -557,6 +665,11 @@ outcomes:
     is 2.5%.
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches, as with E.'
   assumed: true
 - claim: fig5b-polynomial-closest-resistance
   outcome: partially_reproduced
@@ -584,7 +697,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -594,7 +711,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -621,10 +738,16 @@ outcomes:
   - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
     with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
     now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
-    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
-    unchanged at 1.901).
+    the polynomial areas and resistances slightly; the values before the change are not in the notebook (with the
+    reference combination and P9 a the polynomial area ratio now peaks at 1.684, median 1.710, table2).
   - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
     every erosion of P6 (1, 3 and 5 pixels).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches on linear bins and the polynomial is the closest for the largest
+    share in all 96, as with E.'
   assumed: true
 - claim: ellipse-annulus-underestimate
   outcome: reproduced
@@ -646,7 +769,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -656,7 +783,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -682,10 +809,15 @@ outcomes:
   - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
     with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
     now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
-    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
-    unchanged at 1.901).
+    the polynomial areas and resistances slightly; the values before the change are not in the notebook (with the
+    reference combination and P9 a the polynomial area ratio now peaks at 1.684, median 1.710, table2).
   - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
     every erosion of P6 (1, 3 and 5 pixels).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, 1 of 48 combinations on linear bins matches, as with E.'
   assumed: true
 - claim: spline-resistance-five-times
   outcome: reproduced
@@ -708,7 +840,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -718,7 +854,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -742,6 +878,11 @@ outcomes:
   - Both peaks are taken with the same bins, linear or logarithmic, the readings of fig6b-resistance-segmentation-peak.
   - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
     every erosion of P6 (1, 3 and 5 pixels).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, 18 of 48 combinations (both bin scales) are within tolerance in place of 15.'
   assumed: true
 - claim: fig7-velocity-profiles
   outcome: reproduced
@@ -761,7 +902,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -771,7 +916,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -798,10 +943,15 @@ outcomes:
   - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
     with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
     now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
-    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
-    unchanged at 1.901).
+    the polynomial areas and resistances slightly; the values before the change are not in the notebook (with the
+    reference combination and P9 a the polynomial area ratio now peaks at 1.684, median 1.710, table2).
   - Since the revision after round 1 the resistances and velocities of the fits are solved with the circle fit of
     every erosion of P6 (1, 3 and 5 pixels).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, 24 of 24 combinations match, as with E.'
   assumed: true
 - claim: vessel-radius-peak
   outcome: reproduced
@@ -821,7 +971,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -831,7 +985,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -847,6 +1001,11 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, 9 of 24 combinations are within tolerance in place of 13.'
   assumed: true
 - claim: fig8-ellipse-parameters
   outcome: not_reproduced
@@ -871,7 +1030,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -881,7 +1044,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -900,8 +1063,14 @@ outcomes:
   - The ellipse is fit to the region the PVS's outer boundary encloses, the PVS and vessel segmentations together
     with holes filled, as claims P9 has it since the answer of 2026-11-04. The crop window of each cross section
     now holds the whole ellipse; being larger, it also cuts less of the polynomial region at its edge, which moves
-    the polynomial areas and resistances slightly (Table 2 reference polynomial peak 1.749 before, 1.752 now; median
-    unchanged at 1.901).
+    the polynomial areas and resistances slightly; the values before the change are not in the notebook (with the
+    reference combination and P9 a the polynomial area ratio now peaks at 1.684, median 1.710, table2).
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches, but the three ratios are within tolerance in 12 of 72 in place
+    of none, so the partial rule would hold and the outcome would be partially reproduced.'
   assumed: true
 - claim: fig9c-pvs-two-lobes
   outcome: reproduced
@@ -921,7 +1090,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -931,7 +1104,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -947,6 +1120,11 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, 14 of 24 combinations match, as with E.'
   assumed: true
 - claim: fig9e-pvs-width-asymmetry
   outcome: not_reproduced
@@ -969,7 +1147,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -979,7 +1161,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -995,6 +1177,11 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches, as with E.'
   assumed: true
 - claim: left-right-no-difference
   outcome: blocked
@@ -1014,7 +1201,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -1024,7 +1215,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -1040,6 +1231,11 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, the readings still split in all 12 combinations (reading c p 0.055 to 0.414).'
 - claim: fig9a-heights-taper
   outcome: reproduced
   notebook: reproduce_raicevic_2023.ipynb
@@ -1063,7 +1259,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -1073,7 +1273,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -1089,6 +1289,12 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches in place of 1, while the order H1 above H2 above H3 holds in 11
+    of 48, so the outcome would be partially reproduced.'
   assumed: true
 - claim: fig9f-pvs-concave
   outcome: partially_reproduced
@@ -1107,7 +1313,11 @@ outcomes:
     than the vessel radius (95th percentile of the vessel''s inscribed radius along the path) and the points that
     revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification,
     which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are
-    kept at 0.648 um and 4974 of 6010 at 1 um.'
+    kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between
+    its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the
+    zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside
+    the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more
+    than where they lie.'
   - Cross sections are sampled by linear interpolation of the masks, thresholded at 0.5, on planes normal to the
     fitted centerline, one per path point, with pixels of the P1 voxel size, in place of MATLAB obliqueslice (a
     standard choice).
@@ -1117,7 +1327,7 @@ outcomes:
     The other assignment was not run.
   - Assumed, the PVS of a cross section is the two largest PVS regions (8-connected) that come within one vessel
     radius, sqrt(area / pi), of the vessel region, the vessel being the connected region at or nearest the slice
-    center. The segmentation kept "all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
+    center. The segmentation "removed ... all but the two largest regions in the PVS segmentation" (Methods, Segmentation)
     and the fits are of the lobes beside the vessel (Figure 4), while the deposited masks hold PVS around other
     vessels and far from the artery. Added after the first verification; before it all PVS pixels of the 332 um
     plane were used. By median area the lobes are 91 to 99% of a slice's PVS at every location but E (29 to 52%)
@@ -1133,6 +1343,11 @@ outcomes:
     in place of 6665 (P1 a, P4 b).
   - P4 reading (a), the horizontal extent of the PVS, keeps no cross section in 4 of the 14 segments (A, B, F, G),
     while the paper analysed all 14; its results are shown but it is the less supported reading.
+  - 'Location E is kept, as one of the paper''s 14 segments, though its cleaned path follows a side branch of the
+    vessel network in its mask, not the vessel with PVS beside it, and its lobes are 29 to 52% of the slice''s PVS;
+    it gives 202 of the 6683 cross sections (P1 a, P4 b). Neither keeping nor dropping it gives the paper''s E.
+    Added after the second verification, the notebook computes every claim''s table again without E (the cell before
+    the summary). Without E, no combination matches and the partial rule holds in 48 of 48, as with E.'
   assumed: true
 findings:
 - kind: data_missing
@@ -1150,11 +1365,12 @@ findings:
 - kind: other
   statement: The vessel mask of E holds a network of branching vessels in one connected region, though the Methods
     say the vessels branching off the main vessel were removed by hand. The longest path through its skeleton runs
-    through branches; after the cleaning of this attempt 361 of its 939 points (0.648 um) are kept, along one branch.
+    through branches; after the cleaning of this attempt 361 of its 939 points (0.648 um) are kept, along a side
+    branch, while the points removed run along the vessel with PVS beside it.
 - kind: metadata_error
   statement: For L, M and N the reference_frame gives a depth step of 0.648 um, while the session descriptions say
     the planes are 1 micron apart. Vessel cross sections at the stated step are close to round (median height over
-    width 0.93 to 1.12), which is consistent with the reference_frame; the session descriptions appear to be wrong
+    width 0.91, 1.08 and 1.13), which is consistent with the reference_frame; the session descriptions appear to be wrong
     for these files.
 - kind: metadata_error
   statement: The vessel channel (ChanA, described as FITC-dextran) has an emission wavelength of 698 nm and the
@@ -1385,3 +1601,284 @@ verifications:
       are 0.092 and 0.075.
     response: 'Rerun: 63.9 to 73.6% below 1; peak never within (0.164 to 1.162 with outliers out). Outcome unchanged.
       The changes common to all claims are listed under cross-section-counts.'
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the revision after round 1, with its conclusions and summary, the helper
+    module, the attempt record, the README and the claims file.'
+  results:
+  - claim: cross-section-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with not reproduced as the criterion decides it. The cleaned path is still 1.25 to 1.78 times its
+      end-to-end distance in 12 of 14 segments (kept points times mean step over kept end-to-end distance, cell 9);
+      voxel zigzag adds at most about 8% on a straight line, so most of the excess is the path still meandering,
+      against cell 10''s ''zigzag of a path of 26-connected voxels''. With a path close to the vessel''s real
+      length, the largest count (604, above the 496.1 limit) would fall to about 500 or below; the outcome could
+      change. Cell 10''s ''thinner vessel than the paper''s'' at E is not supported (E has the largest median R1,
+      40.9 um, and no per-location values from the paper are printed). The README''s ''Every reading ... is run''
+      omits that P2 reading b is run for the counts only. The record''s median height over width of L, M and N is
+      0.91, 1.08 and 1.13 in cell 5, not 0.93 to 1.12. The lobes deviation misquotes the Methods (''removed all but
+      the two largest regions'' means it kept the two largest). Problem 10 (overlap) is quantified but not run;
+      above 5% of the PVS in 247 of 485 slices at J and 131 of 202 at E is not small there. Location E affects every
+      pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery, its example
+      cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections;
+      this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Added the meander of the cleaned path to the data check (kept length over the kept end-to-end distance, 1.13
+      to 1.78, and over the arc of the fitted centerline, 1.08 to 1.44, E excepted) and corrected cell 10: most of
+      the excess is meander, not zigzag. Added a diagnostic count along the fitted centerline: 223 to 427 at each
+      segment''s own step, 241 to 492 at 0.8 um, 267 to 546 at 0.72 um. The outcome stays not reproduced; a change
+      to reproduced is proposed, with the reason, for a third round. Corrected the E statement (cell 10 now gives
+      E''s median R1 and says the paper gives none per location), the README and cell 0 on P2 reading b, and the
+      finding on L, M and N (0.91, 1.08 and 1.13). The lobes deviation now quotes the Methods correctly (the
+      segmentation removed all but the two largest PVS regions, so it kept the two largest), here and in
+      pvs.pvs_lobes. The overlap assignment is kept and not run the other way; it bears mostly on J and E, and the E
+      sensitivity covers E. Added a cell before the summary that computes every claim''s table again without E, and
+      a deviation on each pooled outcome giving its effect: without E the fewest at 0.648 um is 409 and the most
+      604.'
+  - claim: segmentation-validation-overlap
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees.'
+    response: 'No change.'
+  - claim: fig5a-pvs-area-scales-with-vessel-area
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: no combination matches without E (slope 1.025, R2 0.199 with the reference
+      combination). The lobes deviation now quotes the Methods correctly (the segmentation removed all but the two
+      largest PVS regions, so it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: fig5e-area-ratio-distribution
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: no combination has the median and IQR within without E. The lobes deviation
+      now quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so it kept the
+      two largest), here and in pvs.pvs_lobes.'
+  - claim: fig5bc-area-intersegment-variation
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; blocked as methods underspecified, the criterion''s readings splitting. Location E affects every
+      pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery, its example
+      cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections;
+      this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: the readings split as with E. The lobes deviation now quotes the Methods
+      correctly (the segmentation removed all but the two largest PVS regions, so it kept the two largest), here and
+      in pvs.pvs_lobes.'
+  - claim: area-ratio-per-location
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. The notes say that before the revision at most 11 locations met a reading; the round-1 report said at
+      most 10, and the verifications entry correctly says 10. Location E affects every pooled claim: its cleaned
+      path follows a side branch of the vessel network, not the main artery, its example cross section shows a tiny
+      vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections; this is recorded only as a
+      dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Corrected the notes to 10. Added a cell before the summary that computes every claim''s table again without
+      E, and a deviation on each pooled outcome giving its effect: no combination matches without E. The lobes
+      deviation now quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so
+      it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: fig5d-polynomial-closest-area-ratio
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The outcome rests on 4 of 96 combinations, all pairing the segmented vessel area for the segmentation
+      with the fitted circle for the fits; the ellipse share in them, 7.9 to 8.8%, sits at the edge of the tolerance
+      band (7.2 to 8.8), while across all combinations it runs from 0.1 to 32.2%. The record states that the outcome
+      rests on these four. The deviation ''Table 2 reference polynomial peak 1.749 before, 1.752 now; median
+      unchanged at 1.901'' is not supported: cell 30''s reference row gives a peak of 1.684 and a median of 1.710,
+      1.901 appears nowhere and 1.752 only in the erosion-5 row. Location E affects every pooled claim: its cleaned
+      path follows a side branch of the vessel network, not the main artery, its example cross section shows a tiny
+      vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections; this is recorded only as a
+      dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Replaced the unsupported values in the deviation with those of cell 30''s reference row (1.684 and 1.710) and
+      said the earlier values are not in the notebook. Added a cell before the summary that computes every claim''s
+      table again without E, and a deviation on each pooled outcome giving its effect: 1 of 96 combinations matches
+      without E in place of 4. The lobes deviation now quotes the Methods correctly (the segmentation removed all
+      but the two largest PVS regions, so it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: table2-fit-area-ratio-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The deviation''s ''Table 2 reference polynomial peak 1.749 before, 1.752 now; median unchanged at
+      1.901'' is not supported by cell 30 (peak 1.684, median 1.710). Location E affects every pooled claim: its
+      cleaned path follows a side branch of the vessel network, not the main artery, its example cross section shows
+      a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections; this is recorded
+      only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Corrected the deviation as under fig5d. Added a cell before the summary that computes every claim''s table
+      again without E, and a deviation on each pooled outcome giving its effect: the partial rule holds in 18 of 96
+      without E in place of 24. The lobes deviation now quotes the Methods correctly (the segmentation removed all
+      but the two largest PVS regions, so it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: fig6a-resistance-power-law
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; round-1 problem 3 resolved, the partial rule now holding under P4 b with all 14 segments. Location E
+      affects every pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery,
+      its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled
+      cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: the partial rule holds in 3 of 8 without E. The lobes deviation now quotes
+      the Methods correctly (the segmentation removed all but the two largest PVS regions, so it kept the two
+      largest), here and in pvs.pvs_lobes.'
+  - claim: fig6b-resistance-segmentation-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Cell 37 and the notes say the peak is within tolerance in one combination, 1.68e15; cell 36 shows
+      three within 1.557e15 to 1.903e15 (1.86e15 with P1 a, P4 a, P7 a, log bins; 1.68e15 with P1 a, P4 b, P7 b,
+      linear; 1.83e15 with P1 b, P4 b, P7 b, linear). The outcome does not change, because the median is outside
+      tolerance everywhere. Location E affects every pooled claim: its cleaned path follows a side branch of the
+      vessel network, not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it
+      contributes 202 of the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an
+      assumption the outcomes rest on.'
+    response: 'Corrected cell 37 and the notes to the three combinations. Added a cell before the summary that computes
+      every claim''s table again without E, and a deviation on each pooled outcome giving its effect: the median is
+      within in no combination without E. The lobes deviation now quotes the Methods correctly (the segmentation
+      removed all but the two largest PVS regions, so it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: resistance-per-location
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: no combination matches without E. The lobes deviation now quotes the Methods
+      correctly (the segmentation removed all but the two largest PVS regions, so it kept the two largest), here and
+      in pvs.pvs_lobes.'
+  - claim: fig5b-polynomial-closest-resistance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with partially reproduced. It would become reproduced if logarithmic bins are allowed: two
+      combinations meet the full rule on log bins (cell 42). The question is with a reader. Location E affects every
+      pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery, its example
+      cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections;
+      this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'No change of outcome; the question on the bins stays in questions/000491.yaml for a reader. Corrected the
+      Table 2 values in the deviation as under fig5d. Added a cell before the summary that computes every claim''s
+      table again without E, and a deviation on each pooled outcome giving its effect: unchanged without E. The
+      lobes deviation now quotes the Methods correctly (the segmentation removed all but the two largest PVS
+      regions, so it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: ellipse-annulus-underestimate
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The outcome rests on one combination of 48 (P1 b, P4 a, erosion 1, P5 b, outliers out; cell 45);
+      across all 48 the ratio of the two peaks ranges from 0.038 to 2.259, so that one match is not robust. The
+      record says this. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel
+      network, not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it
+      contributes 202 of the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an
+      assumption the outcomes rest on.'
+    response: 'No change; the notes and conclusion already say it rests on one combination. Corrected the Table 2 values in
+      the deviation as under fig5d. Added a cell before the summary that computes every claim''s table again without
+      E, and a deviation on each pooled outcome giving its effect: the same single combination matches without E.
+      The lobes deviation now quotes the Methods correctly (the segmentation removed all but the two largest PVS
+      regions, so it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: spline-resistance-five-times
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; round-1 problem 3 resolved, the result now holding under P4 b. Location E affects every pooled claim:
+      its cleaned path follows a side branch of the vessel network, not the main artery, its example cross section
+      shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections; this is
+      recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: 18 of 48 combinations are within without E in place of 15. The lobes
+      deviation now quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so
+      it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: fig7-velocity-profiles
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The deviation''s Table 2 values (1.749, 1.752, 1.901) are not supported by cell 30. Location E
+      affects every pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery,
+      its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled
+      cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Corrected the deviation as under fig5d. Added a cell before the summary that computes every claim''s table
+      again without E, and a deviation on each pooled outcome giving its effect: 24 of 24 match without E. The lobes
+      deviation now quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so
+      it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: vessel-radius-peak
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: 9 of 24 combinations are within without E in place of 13. The lobes
+      deviation now quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so
+      it kept the two largest), here and in pvs.pvs_lobes.'
+  - claim: fig8-ellipse-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. The deviation''s Table 2 values (1.749, 1.752, 1.901) are not supported by cell 30. Location E
+      affects every pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery,
+      its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled
+      cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Corrected the deviation as under fig5d. Added a cell before the summary that computes every claim''s table
+      again without E, and a deviation on each pooled outcome giving its effect: the three ratios are within
+      tolerance in 12 of 72 combinations without E, so the partial rule would hold. The outcome keeps E, as one of
+      the paper''s 14 segments, and the record and notebook state that it depends on E. The lobes deviation now
+      quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so it kept the two
+      largest), here and in pvs.pvs_lobes.'
+  - claim: fig9c-pvs-two-lobes
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: 14 of 24 combinations match without E, as with it. The lobes deviation now
+      quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so it kept the two
+      largest), here and in pvs.pvs_lobes.'
+  - claim: fig9e-pvs-width-asymmetry
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: no combination matches without E. The lobes deviation now quotes the Methods
+      correctly (the segmentation removed all but the two largest PVS regions, so it kept the two largest), here and
+      in pvs.pvs_lobes.'
+  - claim: left-right-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; blocked as methods underspecified, the readings splitting; round-1 problem 8 resolved. Location E
+      affects every pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery,
+      its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled
+      cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: the readings still split in every combination without E. The lobes deviation
+      now quotes the Methods correctly (the segmentation removed all but the two largest PVS regions, so it kept the
+      two largest), here and in pvs.pvs_lobes.'
+  - claim: fig9a-heights-taper
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The outcome rests on 1 of 48 combinations (cell 69); the H1/R1 peak ranges from 0.343 to 1.445 across
+      combinations, and by median H1 is about 2.3 times H3, not 4. The record says this. Location E affects every
+      pooled claim: its cleaned path follows a side branch of the vessel network, not the main artery, its example
+      cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of the 6683 pooled cross sections;
+      this is recorded only as a dataset finding, not as an assumption the outcomes rest on.'
+    response: 'No change of outcome. Added a cell before the summary that computes every claim''s table again without E, and
+      a deviation on each pooled outcome giving its effect: no combination matches without E, while the order of the
+      heights holds in 11 of 48, so the outcome would be partially reproduced. The outcome keeps E, and the record
+      and notebook state that it depends on E. The lobes deviation now quotes the Methods correctly (the
+      segmentation removed all but the two largest PVS regions, so it kept the two largest), here and in
+      pvs.pvs_lobes.'
+  - claim: fig9f-pvs-concave
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Location E affects every pooled claim: its cleaned path follows a side branch of the vessel network,
+      not the main artery, its example cross section shows a tiny vessel with no PVS lobe, and it contributes 202 of
+      the 6683 pooled cross sections; this is recorded only as a dataset finding, not as an assumption the outcomes
+      rest on.'
+    response: 'Added a cell before the summary that computes every claim''s table again without E, and a deviation on each
+      pooled outcome giving its effect: unchanged without E. The lobes deviation now quotes the Methods correctly
+      (the segmentation removed all but the two largest PVS regions, so it kept the two largest), here and in
+      pvs.pvs_lobes.'

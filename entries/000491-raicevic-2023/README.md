@@ -6,11 +6,12 @@ two-photon stacks and the final vessel and PVS segmentations of 14 pial artery s
 Starting from the deposited segmentations, the notebook takes cross sections normal to the vessel,
 measures the PVS and vessel areas, fits the vessel circle and the ellipse, spline and polynomial
 shapes, and computes the hydraulic resistance per unit length. Every reading of the claims file's
-open method details is run, and the tables show each.
+open method details is run, and the tables show each, except reading (b) of P2 (all skeleton
+points), which is run for the cross-section counts only.
 
 | Claim | Outcome |
 |---|---|
-| 54 to 451 cross sections per segment, 0.8 um apart | Not reproduced |
+| 54 to 451 cross sections per segment, 0.8 um apart | Not reproduced (change to reproduced proposed) |
 | 2D and 3D segmentations overlap by at least 70% | Blocked: data missing |
 | PVS area on vessel area, slope 1.05, R2 0.158 | Not reproduced |
 | Area ratio peak 1.12, median 1.88, IQR 1.79 | Not reproduced |
@@ -41,7 +42,10 @@ file names; the centerline, slicing and resistance solver are equivalents of the
 functions. After the first verification the centerline is cleaned of points off the vessel and
 of repeats, and the PVS of each cross section is the two lobes beside the vessel. The ellipse fit surrounds the vessel, fit to the PVS and vessel together, as a reader
 settled in answer to a question on the claims file
-([`questions/000491.yaml`](../../questions/000491.yaml)). Among the findings about the data: the deposited vessel and PVS masks still overlap in
+([`questions/000491.yaml`](../../questions/000491.yaml)). After the second verification no outcome changed. A path along the fitted centerline would give
+counts inside the claim's range, so a change of cross-section-counts to reproduced is proposed for a
+third round. The cleaned path of location E follows a side branch; without E,
+fig8-ellipse-parameters and fig9a-heights-taper would both be partially reproduced. Among the findings about the data: the deposited vessel and PVS masks still overlap in
 11 of 14 files; at E and F the PVS mask fills every plane below a depth; the vessel mask of E still holds its
 branching vessels; the first published
 version lacks the PVS masks of L, M and N; and the 2D images used to validate the segmentation are
