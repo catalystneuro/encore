@@ -90,20 +90,26 @@ claims:
   - quantity: mean trials per session
     value: 172
     tolerance: 17.2
+  - quantity: population average of the trial-to-trial SD of the firing rate
+    value: 6
+    tolerance: 0.6
+    unit: Hz
   criterion: The selection keeps sessions whose trial-to-trial SD of the firing rate is below
     35 Hz and whose mean rate is about 100 Hz (Methods, paragraph 4). The paper gives no bound
     for about 100 Hz, nor the window of the per-trial rate. Readings for the rate condition
     are (a) the SD condition alone; (b) the SD condition and a target rate of 100 Hz where the
     data record the target. Per-trial rates are taken over 200 to 1000 ms (the paper discards
     the first 200 ms in all results) and, as a variant, over the whole 1 s. The trial counts
-    are read (a) over the 86 kept sessions, (b) over all sessions. Reproduced when every
-    value is within tolerance under one reading.
+    and the average SD of 6 Hz (paragraph 4, in parentheses) are read (a) over the 86 kept
+    sessions, (b) over all sessions. Reproduced when every value is within tolerance under one
+    reading.
 - id: table1-sessions-per-protocol
   statement: The 86 kept sessions divide among the seven stimulus protocols as 43 (6 dB, 200
     Hz), 6 (3 dB, 200 Hz), 7 (12 dB, 200 Hz), 7 (6 dB, 25 Hz), 8 (6 dB, 100 Hz), 7 (6 dB, 400
     Hz) and 8 (6 dB, 800 Hz).
   source: Table 1, row Recorded sessions
-  inferred: The numbers are read from Table 1; no sentence states them.
+  inferred: The numbers are read from Table 1; no sentence states them. The legend calls the
+    row recorded sessions; the counts sum to 86, so they are read as the kept sessions.
   depends_on:
   - data-sessions-and-trials
   expected:
@@ -156,8 +162,9 @@ claims:
     claim of absence, judged on the paper's test, a one-way ANOVA of session rates on the
     seven stimulus protocols at p < 0.05; reproduced when it is not significant, with the
     F statistic and p reported. The paper does not say whether the 86 kept sessions or all
-    sessions were tested; the kept sessions are the main reading, as the sentence follows
-    their selection.
+    sessions were tested; the rate sentence comes before the SD selection in paragraph 4, and
+    the paragraph's last sentence counts the 86 as fulfilling both conditions. Readings (a)
+    the 86 kept sessions, (b) all sessions; both are shown.
 - id: threshold-population
   statement: The mean threshold of the cells at their best frequency was 58 dB (SD 14 dB).
   source: Materials and Methods, Electrophysiology and stimulus design, paragraph 2
@@ -339,7 +346,8 @@ claims:
     6, 12 dB). The legend does not say whether non-bursting sessions (all 1-bursts) enter the
     average; readings (a) all kept sessions, (b) bursting sessions only. Reproduced when, under
     one reading, P(n = 1) is lowest at 100 Hz among the cutoffs and at 12 dB among the SDs.
-    The figure's values cannot be read from the text, so only this ordering is judged.
+    The figure's values cannot be read from the text, so only this ordering is judged; the
+    ordering of P(n = 2) and P(n = 3), from the legend's sentence on high-n bursts, is shown.
 - id: fig3-correlation-shape
   statement: For a cell tested with all stimuli, larger stimulus SD gives correlation functions
     with sharper peaks, and faster stimuli lead from multi-modal (25 Hz) to single-peaked (100,
@@ -351,11 +359,14 @@ claims:
     B to F) leads from multi-modal (Figure 3 B) to single-peaked (Figures 3 C,D) to
     increasingly shallower and broader correlation functions (Figures 3 E,F).
   criterion: C_s(tau) by Eq. 1, 0.1 ms bins. The paper shows one sample cell tested with the
-    whole set of stimuli, while its Methods say each cell had two stimuli; the cell is not
-    identified. Reproduced when a cell with all seven stimuli is found and its correlation
-    functions show the described ordering (peak height of the first peak over its baseline
-    increasing with SD; more than one peak at 25 Hz, one peak at 100 and 200 Hz, no separable
-    first peak at 400 or 800 Hz under the Burst identification test). If no such cell is held,
+    whole set of stimuli (Methods paragraph 1 says two or more stimuli per cell, paragraph 3
+    two); the cell is not identified. Paragraph 4 names Figures 3 B to D and G as having a
+    separable first peak and 3 A, E and F as unimodal. "Sharper peaks" is not defined;
+    readings (a) a higher first peak over its baseline, (b) a narrower first peak. Reproduced
+    when a cell with all seven stimuli is found and, under one reading, its correlation
+    functions show the described ordering (sharper first peak with increasing SD; more than
+    one peak at 25 Hz, a single peak at 100 and 200 Hz, no separable first peak at 3 dB, 400
+    or 800 Hz under the Burst identification test). If no such cell is held,
     the claim is not testable as stated, and the same ordering on the average over sessions of
     each protocol's normalised C_s is shown as a variant.
 - id: method-correlation-error
@@ -401,8 +412,10 @@ claims:
     an inhomogeneous Poisson process with rate r_s(t), zero for t_ref after each spike, at 0.1
     ms steps, with as many trials as recorded. s_TH is measured (Methods, paragraph 2); if the
     data set does not hold it, the claim is not testable as the paper ran it. Open details
-    are the filter length T, read as (a) 25 ms (the nBTA window before a burst) and (b) 50 ms,
-    and the filter's scale, which the cross-correlation does not fix, read as (a) the
+    are the filter length, which Eq. 2 writes as T, the symbol the Methods define as the
+    duration of the AM signal, read as (a) T as defined there (the cross-correlation over all
+    lags of the 200 to 1000 ms analysis window) and (b) truncated at 25 ms (the nBTA window
+    before a burst, Methods, Estimation of burst-triggered averages), and the filter's scale, which the cross-correlation does not fix, read as (a) the
     cross-correlation divided by the variance of s*(t), (b) scaled so the model's mean rate
     equals the session's. Bursting classification and limiting ISI as for the data. Reproduced
     when both values are within tolerance under one reading. The linear model of Figure 3
@@ -452,7 +465,12 @@ claims:
     value: 59
     tolerance: 5.9
   criterion: I_n(1) = (1 / rbar_n) times the integral of r_n(t) log2(r_n(t) / rbar_n) over 200 to
-    1000 ms (Eq. 10), r_n(t) the trial-averaged rate of n-burst onsets. The Methods do not
+    1000 ms (Eq. 10), r_n(t) the trial-averaged rate of n-burst onsets. Read literally, Eq. 10
+    gives I_n(1) in bit seconds, while the text says the slopes are in bits and Eq. 3 (the
+    per-event information of Brenner et al., 2000, garbled in the text) carries a factor
+    1 / T; readings for I_n(1) are (i) (1 / T) times the integral of (r_n / rbar_n) log2(r_n /
+    rbar_n), bits per event, (ii) Eq. 10 as printed, differing by the factor T = 0.8 s. The
+    Methods do not
     give the bin width of r_n(t), any smoothing or any bias correction; readings (a) 0.1 ms
     bins, (b) 0.4 ms bins, both without smoothing or correction. The fit is a straight line of
     I_n(1) on n over the n values present; the paper says the slope's sign was judged with its
@@ -477,7 +495,8 @@ claims:
   criterion: Frequency of occurrence rbar_n over the sum of rbar_n, per session. The paper does
     not give the scale of the fit; a slope of -2.6 per unit n is impossible for a fraction on a
     linear scale, so it is read as a fit to the logarithm, with readings (a) log2, (b) natural
-    log, (c) log10. Significance as in fig7ab-information-per-burst-increases. Reproduced when,
+    log, (c) log10. The Figure 7C legend says number of occurrences where the text says
+    frequency of occurrence; on a log scale the two give the same slope. Significance as in fig7ab-information-per-burst-increases. Reproduced when,
     under one reading, the mean slope is within tolerance and the slope is significantly
     negative in every bursting session (at least 90% for partially reproduced).
 - id: fig7ef-jitter-independent-of-n
@@ -551,7 +570,7 @@ claims:
   expected:
   - quantity: correlation between the two information rates over sessions
     value: 0.95
-    tolerance: 0.05
+    tolerance: 0.095
   - quantity: mean information rate, direct method
     value: 222
     tolerance: 69
@@ -574,29 +593,18 @@ claims:
     rate at the 3.2 ms word length, (b) a linear extrapolation in the inverse word length over
     the lengths up to 3.2 ms. The burst-code rate is I' of fig7gh-information-rate, with the
     non-bursting sessions treated as all 1-bursts. "All sessions" is read as (a) the 86 kept
-    sessions, (b) the bursting sessions. The tolerance of R is 0.05 since 10% would allow
-    values above 1. Reproduced when, under one reading, R, the two means and the difference are
+    sessions, (b) the bursting sessions. Reproduced when, under one reading, R, the two means and the difference are
     within tolerance and the direct method is higher in all sessions but at most a few (90%).
 - id: fig8-nbta-differ
   statement: In every bursting cell the burst-triggered averages for n = 1 to 4 differ
-    significantly, their central peaks growing higher and wider with n; 50 of the 58 bursting
-    sessions show significantly different central peaks in the time domain, the other eight
-    having too few bursts.
+    significantly (in the example cell their central peaks grow higher and wider with n); 50
+    of the 58 bursting sessions show significantly different central peaks in the time domain,
+    the other eight having too few bursts.
   source: Results, Qualitative description of the information transmitted by bursts,
     paragraphs 3 and 6; Figure 8D
   quote: All recorded and simulated bursting cells exhibited significantly different n -BTAs,
     for n ranging between 1 and 4 ... out of the 58 sessions where bursting cells were found,
     50 exhibit n BTAs whose central peaks were significantly different from one another
-  statistics:
-  - about: nBTAs for n = 1 to 4, per session, frequency domain
-    test: two-way ANOVA (frequency band and burst order) on real and imaginary parts
-    p: 0.01
-    p_relation: "<"
-    corrected: Bonferroni
-  - about: nBTA against each other nBTA at each time point
-    test: Student's t-test
-    p: 0.01
-    p_relation: "<"
   depends_on:
   - table1-bursting-sessions
   expected:
@@ -633,11 +641,12 @@ claims:
     The paper shows it for one cell and gives no population test. Readings for "systematically"
     are (a) tau_n decreasing from n = 1 to n = 4 in the majority of bursting sessions with
     bursts up to n = 4; (b) the mean over those sessions of tau_n decreasing from n = 1 to 4.
-    Reproduced when both readings hold; partially reproduced when one does.
+    Reproduced when, under one reading, tau_n decreases from n = 1 to 4; both are shown.
 - id: fig8e-sigma-minimum
-  statement: The standard deviation of the stimuli preceding an n-burst has a minimum about 7 ms
-    before burst onset, at a position nearly the same for all n; over the bursting cells the SD
-    of the minimum's position across n = 1 to 4 averages 0.4 ms (SD 0.7 ms).
+  statement: The standard deviation of the stimuli preceding an n-burst has a minimum at a
+    position nearly the same for all n (about 7 ms before burst onset in the example cell, with
+    an SD of 0.33 ms across n); over the bursting cells the SD of the minimum's position across
+    n = 1 to 4 averages 0.4 ms (SD 0.7 ms), roughly 0.05 times the inverse cutoff frequency.
   source: Results, Qualitative description of the information transmitted by bursts, paragraph
     4; Figure 8E
   quote: The constancy of the location of the minima also holds at the population level ... Its
@@ -645,14 +654,21 @@ claims:
   depends_on:
   - fig8-nbta-differ
   expected:
-    quantity: mean over bursting sessions of the SD across n of the position of the minimum of
+  - quantity: mean over bursting sessions of the SD across n of the position of the minimum of
       sigma_n
     value: 0.4
     tolerance: 0.7
     unit: ms
-  criterion: sigma_n(tau) by Eq. 14, its minimum searched over -25 to 0 ms (the window of the
-    nBTA analysis before onset). Sessions with bursts of all four n. Reproduced when the value
-    is within tolerance.
+  - quantity: mean over bursting sessions of the SD across n of the position of the minimum of
+      sigma_n, times the cutoff frequency
+    value: 0.05
+    tolerance: 0.005
+  criterion: sigma_n(tau) by Eq. 14. The window searched for the minimum is not stated;
+    readings (a) -25 to 0 ms, (b) -25 to +15 ms, the window of the nBTA analysis (Methods,
+    Estimation of burst-triggered averages, paragraph 2). Sessions with bursts of all four n.
+    Reproduced when, under one reading, the 0.4 ms value is within tolerance; the 0.05 value
+    ("roughly") is reported and judged with it, and the claim is partially reproduced when
+    only one of the two is within tolerance.
 - id: sigma-n-below-sta-sigma
   statement: In 98% of bursting cells, for all n, the SD of the stimuli preceding an n-burst is
     smaller than the SD of the stimuli preceding all spikes, by a ratio of minima of 1.62 on
@@ -686,12 +702,6 @@ claims:
     simulated data. Hence, also at the population level, the n BTAs differ significantly from
     the convolved 1BTAs. As n increases, the number of sessions with significant differences
     diminishes.
-  statistics:
-  - about: nBTA against the convolved 1BTA, per session and n
-    test: two-way ANOVA on real and imaginary Fourier parts
-    p: 0.01
-    p_relation: "<"
-    corrected: Bonferroni
   depends_on:
   - fig8-nbta-differ
   criterion: As the Methods (Estimation of burst-triggered averages, paragraph 3) give it. For
@@ -719,8 +729,10 @@ claims:
   - fig8-nbta-differ
   criterion: As paragraph 9 gives it, each session's 1BTA, 2BTA and 3BTA with the session's mean
     stimulus subtracted, shifted by tau_n before averaging and back after, averaged over the
-    bursting sessions of protocol 5 (6 dB, 100 Hz). Reproduced when the central peak of the
-    average is higher or wider (width at half height) for 2 than for 1 and for 3 than for 2.
+    bursting sessions of protocol 5 (6 dB, 100 Hz). The paper does not define the width;
+    readings (a) full width at half height, (b) the interval between the two minima flanking
+    the central maximum, as the Methods use for Figure 9. Reproduced when, under one reading,
+    the central peak of the average is higher or wider for 2 than for 1 and for 3 than for 2.
 - id: fig10-burst-n-vs-height
   statement: The probability of a burst with n spikes after a stimulus maximum depends on its
     height, low excursions giving no response or an isolated spike and high ones doublets,
@@ -784,3 +796,27 @@ claims:
     slopes of Figure 7 (information per burst rising with n, occurrence and information rate
     falling with n). Reproduced when all three signs match the data's; partially reproduced for
     two.
+checks:
+- date: 2026-11-04
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig8-nbta-differ, removed the two statistics entries (ANOVA and t-test at p < 0.01); they are significance levels used to count sessions, a method kept in the criterion, not results.
+  - fig9-nbta-not-concatenated-1bta, removed the ANOVA statistics entry for the same reason.
+  - fig8-nbta-differ, the statement said every bursting cell has central peaks growing higher and wider with n; the paper shows this for the example cell (paragraph 3) and says in paragraph 6 that not all cells do, so the statement now limits it to the example cell.
+  - direct-method-comparison, tolerance of R restored to the default 10% (0.095); the stated reason (values above 1) does not justify narrowing the lower side.
+  - fig8-latency-decreases, the criterion required both readings to hold; per protocol it is reproduced under any one reading, now so.
+  - fig8e-sigma-minimum, the statement gave the 7 ms minimum as a population result; it is the example cell's (Figure 8E, paragraph 4), now said, with that cell's 0.33 ms. Added the paper's second population value (0.05 times the inverse cutoff) as an expected value. The search window for the minimum was presented as fixed; it is not stated, now two readings.
+  - firing-rate-uniform, the criterion's reason for the kept-sessions reading was wrong (the rate sentence precedes the SD selection); now both populations are readings.
+  - data-sessions-and-trials, added the reported population average of the trial-to-trial rate SD (6 Hz, Methods paragraph 4) as an expected value.
+  - table1-sessions-per-protocol, the inferred note now says why the legend's recorded sessions are read as the 86 kept ones (the counts sum to 86).
+  - fig3-correlation-shape, the criterion said Methods give two stimuli per cell; paragraph 1 says two or more. Sharper peaks was operationalised as peak height alone; now height or narrowness as readings, and the expected classification per panel is cited from Results paragraph 4, adding 3 dB as unimodal.
+  - model-matches-classification, the filter-length readings (25 and 50 ms) were made up; Eq. 2 integrates to T, the symbol the Methods define as the AM signal's duration, now the main reading with the 25 ms truncation as the second.
+  - fig7ab-information-per-burst-increases, added the open normalisation of I_n(1) (Eq. 10 as printed against the per-event form of Eq. 3 and Brenner et al., a factor T apart).
+  - fig7cd-occurrence-decreases, noted that the Figure 7C legend says number of occurrences, which gives the same slope on a log scale.
+  - fig9c-population-nbta, the peak width (half height) was presented as fixed; it is not defined, now two readings.
+  - fig5-burst-probability-vs-stimulus, the criterion now shows the n = 2 and 3 ordering that the statement also asserts.
+  - Open, the number of bursting sessions differs across the paper (63 in Table 1, 59 for Figure 7, 58 for Figure 8) with no stated reason; the file's detail (4) carries both readings.
+  - Open, the partial-reproduction thresholds in several criteria (for example 16 of 19 values in table1-burst-length, 90% in the Figure 7 claims) are the file's judgement rules, not the paper's; left as written.
+  - Open, two sentences are garbled in the text (no <69% in fig7gh-information-rate, the sigma ratio in sigma-n-below-sta-sigma); no PDF was supplied to settle them.
