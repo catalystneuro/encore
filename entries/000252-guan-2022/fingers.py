@@ -468,6 +468,8 @@ def run_ccgp(Xs: list, ys: list, o6: str, decoder: str, rng, n_shuffles: int = N
     null_h, null_f = np.array(null_h), np.array(null_f)
     out["p_hand"] = float((1 + (null_h >= out["hand"]).sum()) / (1 + n_shuffles))
     out["p_finger"] = float((1 + (null_f >= out["finger"]).sum()) / (1 + n_shuffles))
+    out["n_null_ge_hand"] = int((null_h >= out["hand"]).sum())
+    out["n_null_ge_finger"] = int((null_f >= out["finger"]).sum())
     out["null_hand_mean"], out["null_hand_max"] = float(null_h.mean()), float(null_h.max())
     out["null_finger_mean"], out["null_finger_max"] = float(null_f.mean()), float(null_f.max())
     out["n_neurons"] = int(sum(x.shape[1] for x in Xs))
