@@ -15,6 +15,11 @@ Where parameters come from:
 - Widefield d' follows plot misc/stats.py:97 as the claims file gives it (ddof 0, signed).
 - Window lengths for trial-aligned widefield traces (-0.3 to +0.3 s) are a standard choice that
   cannot change a result: every measure uses a sub-window of it.
+- The pixel reads for Figure 3H (_pix_one) take 250 ms before to 120 ms after the stimulus, the
+  longest baseline reading of the claims file and the Figure 3H window.
+- The behaviour-model features (_model_one, model_features) follow the paper's code, process
+  main_analysis/model_context_behaviour.py and explain_behaviour v1.0.1 preprocessing/trial_features.py,
+  as the claims file cites them; each function's docstring names the quirks kept.
 """
 import io
 import json
@@ -460,3 +465,218 @@ def load_dlc(assets, n=8):
     likelihood filters of the Methods, and stimulus-aligned jaw opening traces (-0.25 to 0.3 s)."""
     res = _pmap(_dlc_one, list(zip(assets.asset_id, assets.session_id)), n=n)
     return dict(res)
+
+
+# ---------------------------------------------------------------- widefield pixel stack (Figure 3H)
+PIX_PRE, PIX_POST = 25, 13  # frames read per trial: 250 ms before (the longest baseline reading) to 120 ms after
+
+
+def _pix_one(args):
+    """Per session, the trial-mean ΔF/F0 image series (0 to 120 ms after the stimulus) of each trial
+    group, after subtracting each trial's pre-stimulus mean over 50, 250 and 100 ms (the claims file's
+    baseline readings). Only the frames of the selected trials are read (windowed reads of the
+    unchunked processing/ophys/dff0 stack). groups: {name: array of trial indices in start-time order}."""
+    asset_id, session_id, groups = args
+    signal.signal(signal.SIGALRM, _timeout)
+    for attempt in range(3):
+        signal.alarm(3000)
+        try:
+            f = _open(asset_id)
+            d = f["processing/ophys/dff0/data"]
+            ts = f["processing/ophys/dff0/timestamps"][:]
+            t = f["intervals/trials"]
+            order = np.argsort(t["start_time"][:], kind="stable")
+            tt = t["trial_type"][:].astype(str)
+            st = np.where(tt == "whisker_trial", t["whisker_stim_time"][:],
+                          np.where(tt == "auditory_trial", t["auditory_stim_time"][:], t["no_stim_time"][:]))[order]
+            i0 = np.searchsorted(ts, st)
+            out, n = {}, {}
+            for g, idx in groups.items():
+                acc = {b: np.zeros((PIX_POST, d.shape[1], d.shape[2])) for b in (50, 250, 100)}
+                k = 0
+                for i in idx:
+                    if i0[i] - PIX_PRE < 0 or i0[i] + PIX_POST > len(ts):
+                        continue
+                    X = d[i0[i] - PIX_PRE:i0[i] + PIX_POST]
+                    for b in acc:
+                        acc[b] += X[PIX_PRE:] - X[PIX_PRE - b // 10:PIX_PRE].mean(0)
+                    k += 1
+                out[g] = {b: (v / max(k, 1)).astype(np.float32) for b, v in acc.items()}
+                n[g] = k
+            masks = f["processing/ophys/grid_areas/brain_grid_area_segmentation/image_mask"][:]
+            names = [x.decode() if isinstance(x, bytes) else x for x in
+                     f["processing/ophys/brain_grid_fluorescence/dff0_grid_traces/control_description"][:]]
+            rois = f["processing/ophys/brain_grid_fluorescence/dff0_grid_traces/rois"][:]
+            info = dict(shape=d.shape, dtype=str(d.dtype), chunks=d.chunks, rate=1 / np.median(np.diff(ts)))
+            signal.alarm(0)
+            return session_id, dict(means=out, n=n, masks=masks[rois], names=names, info=info)
+        except Exception as e:
+            signal.alarm(0)
+            err = repr(e)
+    return session_id, {"error": err}
+
+
+def load_pixels(assets, groups, n=12):
+    """Trial-group mean image series per session (see _pix_one). groups: {session_id: {name: trial indices}}."""
+    res = _pmap(_pix_one, [(a, s, groups[s]) for a, s in zip(assets.asset_id, assets.session_id)], n=n)
+    return dict(res)
+
+
+# ---------------------------------------------------------------- pre-trial seed correlations (Figure 4A-B, ROI variant)
+def _precorr_one(args):
+    """Per trial (start-time order), the zero-lag Pearson correlations among the given grid ROI
+    columns over the 2 s before the trial start (Methods, Seed correlations; Figures 4A&B), from the
+    grid ROI traces, not the pixel stack. Returns trials x k x k (NaN where the window leaves the imaging)."""
+    asset_id, session_id, names_wanted = args
+    signal.signal(signal.SIGALRM, _timeout)
+    for attempt in range(3):
+        signal.alarm(900)
+        try:
+            f = _open(asset_id)
+            g = f["processing/ophys/brain_grid_fluorescence/dff0_grid_traces"]
+            names = [n.decode() if isinstance(n, bytes) else n for n in g["control_description"][:]]
+            idx = site_index(names)
+            cols = [idx[s] for s in names_wanted]
+            ts = g["timestamps"][:]
+            X = g["data"][:][:, cols]
+            start = np.sort(f["intervals/trials"]["start_time"][:])
+            dt = np.median(np.diff(ts))
+            n = int(round(2.0 / dt))
+            out = np.full((len(start), len(cols), len(cols)), np.nan, np.float32)
+            i1 = np.searchsorted(ts, start)
+            for k, i in enumerate(i1):
+                if i - n < 0 or start[k] - ts[i - 1] > 2 * dt or ts[i - 1] - ts[i - n] > 2.0 + 2 * dt:
+                    continue
+                out[k] = np.corrcoef(X[i - n:i].T)
+            signal.alarm(0)
+            return session_id, out
+        except Exception as e:
+            signal.alarm(0)
+            err = repr(e)
+    return session_id, err
+
+
+def load_precorr(assets, sites, n=8):
+    """{session_id: trials x k x k} pre-trial correlations among the grid ROIs at the (AP, ML) sites given."""
+    res = _pmap(_precorr_one, [(a, s, sites) for a, s in zip(assets.asset_id, assets.session_id)], n=n)
+    return dict(res)
+
+
+# ---------------------------------------------------------------- behaviour model features (Figure 1K-L)
+MODEL_LIK = {"pupil_area": ("pupil_likelihood", 0.6), "whisker_velocity": ("whisker_base_likelihood", 0.8),
+             "jaw_y": ("jaw_likelihood", 0.6), "whisker_angle": ("whisker_base_likelihood", 0.8)}
+
+
+def _model_one(args):
+    """Trial table (early licks dropped) with the five DLC features of the paper's model, as
+    process main_analysis/model_context_behaviour.py:build_features_table computes them: series
+    filtered by likelihood (pupil and jaw 60%, whisker 80% on the whisker base); the session skipped
+    when jaw_angle, whisker_velocity, jaw_y or whisker_angle has over 30% filtered frames; per trial the
+    2 s before the trial start (nearest frames), centred on the mean of its frames 175 to 199; jaw_y
+    minus its session 5th percentile first. Returns (session_id, table or None, reason)."""
+    asset_id, session_id = args
+    signal.signal(signal.SIGALRM, _timeout)
+    for attempt in range(3):
+        signal.alarm(1200)
+        try:
+            f = _open(asset_id)
+            t = f["intervals/trials"]
+            d = {k: (t[k][:].astype(str) if t[k].dtype == object else t[k][:]) for k in t if k != "id"}
+            bhv = pd.DataFrame(d).sort_values("start_time").reset_index(drop=True)
+            bhv = bhv[bhv.early_lick == 0].reset_index(drop=True)
+            bhv["session_name"] = session_id
+            bhv["subject"] = session_id.split("_")[0]
+            b = f["processing/behavior/BehavioralTimeSeries"]
+            ts = b["pupil_area/timestamps"][:]
+            n = min(len(ts), b["pupil_area/data"].shape[0])
+            ts = ts[:n]
+            fr = 1 / np.median(np.diff(ts))
+            nwin = int(round(2 * fr))
+            def near(x):  # index of the nearest frame (cicada find_nearest)
+                j = np.clip(np.searchsorted(ts, x), 1, n - 1)
+                return j - (np.abs(ts[j - 1] - x) <= np.abs(ts[j] - x))
+            st = bhv.start_time.values
+            i1, i0 = near(st), near(st - 2)
+            ja = np.where(b["jaw_likelihood/data"][:n] >= 0.6, b["jaw_angle/data"][:n], np.nan)
+            if np.isnan(ja).mean() > 0.3:
+                signal.alarm(0)
+                return session_id, None, "jaw_angle over 30% filtered"
+            part = {}
+            for key, (lk, thr) in MODEL_LIK.items():
+                x = np.where(b[f"{lk}/data"][:n] >= thr, b[f"{key}/data"][:n], np.nan).astype(float)
+                if key != "pupil_area" and np.isnan(x).mean() > 0.3:
+                    signal.alarm(0)
+                    return session_id, None, f"{key} over 30% filtered"
+                part[key] = x
+            out = {k: [] for k in ["pupil_area_nanmean", "whisker_velocity_mean_abs", "jaw_y_nanmean", "jaw_y_mean_abs_diff", "whisker_angle_mean"]}
+            with np.errstate(all="ignore"):
+                for key, x in part.items():
+                    if key == "jaw_y":
+                        v = x[~np.isnan(x)]
+                        if len(v):
+                            x = x - np.percentile(v, 5)
+                    for ws, we in zip(i0, i1):
+                        w = x[ws:min(we, len(x))].copy() if we > ws else np.array([np.nan])
+                        c = np.nanmean(w[175:200]) if len(w) >= 200 else np.nanmean(w)
+                        w = w - c
+                        if key == "pupil_area":
+                            out["pupil_area_nanmean"].append(np.nanmean(w))
+                        elif key == "whisker_velocity":
+                            dv = np.full(len(w), np.nan)
+                            if len(w) > 1:
+                                dv[1:] = np.diff(w) * nwin
+                            out["whisker_velocity_mean_abs"].append(np.nanmean(np.abs(dv)))
+                        elif key == "jaw_y":
+                            out["jaw_y_nanmean"].append(np.nanmean(w))
+                            out["jaw_y_mean_abs_diff"].append(np.nanmean(np.abs(np.diff(w))) if len(w) > 1 else np.nan)
+                        else:
+                            out["whisker_angle_mean"].append(np.nanmean(w))
+            signal.alarm(0)
+            return session_id, pd.concat([bhv, pd.DataFrame(out)], axis=1), "ok"
+        except Exception as e:
+            signal.alarm(0)
+            err = repr(e)
+    return session_id, None, err
+
+
+def load_model_features(assets, n=8):
+    """{session_id: (table or None, reason)} for the behaviour model's sessions (see _model_one)."""
+    res = _pmap(_model_one, list(zip(assets.asset_id, assets.session_id)), n=n)
+    return {r[0]: (r[1], r[2]) for r in res}
+
+
+def model_features(df):
+    """explain_behaviour v1.0.1 preprocessing/trial_features.py (label_trial_outcomes and
+    create_trial_features), for the features the paper's model uses; the code's quirks are kept
+    (cumulative water shifted over the concatenated table, previous whisker reward taken from the
+    previous trial of any type, DLC features min-max normalised per mouse over all trial types)."""
+    df = df.reset_index(drop=True).copy()
+    df["trial_outcome"] = "Unknown"
+    au, wh, ns = df.trial_type == "auditory_trial", df.trial_type == "whisker_trial", df.trial_type == "no_stim_trial"
+    df.loc[au & (df.lick_flag == 1), "trial_outcome"] = "Hit"; df.loc[au & (df.lick_flag == 0), "trial_outcome"] = "Miss"
+    df.loc[wh & (df.context == 1) & (df.lick_flag == 1), "trial_outcome"] = "Hit"; df.loc[wh & (df.context == 1) & (df.lick_flag == 0), "trial_outcome"] = "Miss"
+    df.loc[wh & (df.context == 0) & (df.lick_flag == 0), "trial_outcome"] = "CR"; df.loc[wh & (df.context == 0) & (df.lick_flag == 1), "trial_outcome"] = "FA"
+    df.loc[ns & (df.lick_flag == 0), "trial_outcome"] = "CR"; df.loc[ns & (df.lick_flag == 1), "trial_outcome"] = "FA"
+    F = pd.DataFrame(index=df.index)
+    dlc = ["pupil_area_nanmean", "jaw_y_nanmean", "whisker_velocity_mean_abs", "whisker_angle_mean", "jaw_y_mean_abs_diff"]
+    for c in dlc:
+        F[c] = df[c]
+    for c in ["context", "subject", "trial_type", "lick_flag", "trial_outcome"]:
+        F[c] = df[c]
+    F["session"] = df["session_name"]
+    for c in dlc:
+        F[c] = F.groupby("subject")[c].transform(lambda x: (x - x.min()) / (x.max() - x.min()) if x.max() != x.min() else 0)
+    stim = df.trial_type.isin(["auditory_trial", "whisker_trial"])
+    F["last_stimulus_type"] = df.loc[stim, "trial_type"].groupby(df.session_name).shift(1)
+    hitw = wh & (df.trial_outcome == "Hit")
+    F["prev_whisker_rewarded"] = hitw.groupby(df.session_name).shift(1).fillna(False).astype(bool)
+    F["time_since_last_stimulus"] = (df.groupby("session_name", group_keys=False)
+                                     .apply(lambda x: x["start_time"] - x["start_time"].where(stim[x.index]).shift(1).ffill()))
+    hit = df.trial_outcome == "Hit"
+    F["cum_water"] = (hit.groupby(df.session_name).cumsum() * 5).shift(1).fillna(0)
+    F["prev_trial_correct"] = df.trial_outcome.isin(["Hit", "CR"]).groupby(df.session_name).shift(1).fillna(False).astype(bool)
+    F["context_block_index"] = F.groupby("session")["context"].transform(lambda x: (x != x.shift()).cumsum())
+    F["whisker_trial_in_block"] = np.nan
+    F.loc[wh, "whisker_trial_in_block"] = F[wh].groupby(["session", "context_block_index"]).cumcount() + 1
+    F["prev_trial_water"] = hit.groupby(df.session_name).shift(1).fillna(False).astype(bool)
+    return F

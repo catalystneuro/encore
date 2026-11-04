@@ -7,22 +7,23 @@ orofacial tracking, optogenetic grid inactivation, muscimol and widefield imagin
 
 | Claims | Outcome |
 |---|---|
-| The code's session lists match the dandiset (link) | Reproduced |
+| The code's session lists match the dandiset (link) | Partially reproduced (every list a claim uses matches; the pool list does not in full) |
 | 201 expert sessions in 41 mice by the Methods' rule | Not reproduced (the rule selects 318 in 49; the code's list matches) |
 | Context modulation of licking, its independence of the noise, catch rates, Context Off, first-trial switch, further adaptation, temporal integration, block durations | Reproduced (9 claims) |
 | Faster spout contact in W+ | Partially reproduced (tests match; means about 100 ms longer) |
 | Pupil larger in W+; posture before lick | Reproduced (2 claims) |
 | Jaw speed higher in W+ and before lick, whisking unchanged | Partially reproduced |
-| Gradient-boosted model of the choice (Figure 1K-L) | Blocked, not run within the time limit (3 claims) |
+| Gradient-boosted model of the choice: accuracy 0.78 and context the strongest feature (Figure 1K) | Reproduced (2 claims) |
+| SHAP values of whisker trial in block (Figure 1L) | Not reproduced as the criterion reads it (asked of a reader) |
 | Optogenetic inactivation maps and latencies (Figure 2C-F, control mice) | Blocked, methods underspecified (7 claims; the nulls and thresholds disagree) |
 | Muscimol in wS1 and RSC | Reproduced |
-| Jaw onset 108 ms | Reproduced, resting on an assumption |
+| Jaw onset 108 ms | Reproduced, resting on an assumption (the Methods' correct whisker trials) |
 | Auditory activity similar across contexts, with an order of areas | Partially reproduced |
 | Whisker activity diverges after 50 ms in RSC and wM1/2 | Reproduced |
-| RSC first to discriminate contexts | Blocked, too large (pixel part) |
+| RSC first to discriminate contexts, in pixels and ROIs | Reproduced, resting on an assumption (the 50 ms baseline) |
 | GCaMP6f consistent, controls flat | Partially reproduced |
 | RSC axon tracing | Blocked, data missing |
-| Seed correlations (Figure 4A-B) | Blocked, too large (3 claims) |
+| Seed correlations (Figure 4A-B) | Blocked, too large (3 claims; a variant on the ROI traces is shown) |
 | Inhibition effects on cortex, photoactivation control, angle predicts lick change | Reproduced (3 claims) |
 | PC3 trajectories follow lick or no-lick | Not reproduced |
 | Smaller angles for RSC and tjS1 | Partially reproduced |

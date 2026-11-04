@@ -1,0 +1,44 @@
+dandiset: "001847"
+paper: doi:10.7554/elife.109717
+questions:
+- claim: fig2d-auditory-a1-frontal
+  asked: 2026-11-04
+  question: The opening comment's null (i) for the opto map shuffles the block labels of whole blocks
+    and recomputes ΔP(Lick) against the control trials. Under that null the laser trials keep their
+    outcomes and only their context labels move, so an effect of the laser that is shared by both
+    contexts stays inside the null and gives d' near 0. Can null (i) be a reading of the paper for
+    Figures 2C to 2E, whose Results describe effects "similar across contexts" (Figure 2D) and present
+    "across both contexts" (Figure 2E)? The same reading decides fig2c-catch-little-effect,
+    fig2e-whisker-sensory-premotor-reduction, fig2e-rsc-tjs1-increase-wminus and
+    fig2cd-rsc-no-effect-catch-auditory.
+  passage: Figure 2C legend, "d' computed between the distribution of ΔP(Lick) in stim trials and a null
+    distribution computed by shuffling all trials 1,000 times"; Figure 2 figure supplement 1D legend,
+    "a null distribution computed by shuffling all trials 1,000 times"; the Methods (Quantification,
+    Figures 2C-E) describe shuffling block labels.
+  why: On synthetic data with a laser effect of -0.2 in both contexts the notebook's null (i) has a mean
+    of -0.22 and gives d' 0.19, while null (ii) gives d' above 5. In the data null (i) gives d' of at most
+    0.57 at every named site, and its null means range from -0.35 to 0.18. Because every criterion
+    requires all null and threshold readings to agree, fig2d and the whisker claims can never be
+    reproduced under null (i), and the claims are blocked as methods_underspecified. Without null (i)
+    the d' threshold readings still disagree, so the outcomes would stay blocked unless the threshold
+    were also settled.
+- claim: fig1l-shap-whisker-trial-in-block
+  asked: 2026-11-04
+  question: The criterion asks that the mean SHAP value of "whisker trial in block" at trial 1 of a new
+    block differ in sign from that of trial -1 of the previous block, in the direction of the new
+    context. The model has context as a separate feature, so the SHAP value of the trial-in-block
+    feature carries only what context does not explain. Does Figure 1L show the trial-1 value of this
+    feature on the side of the new context, or on the side of the old one (the single-trial lag of the
+    behaviour), with a decay over the next trials? The claims file says the figures were not seen.
+  passage: Results, paragraph 5, "we examined the SHAP value of the parameter 'whisker trial in block',
+    finding a pattern consistent with the mouse behavior capturing both single trial adaptation after
+    context transition and a slower component"; Figure 1L legend, "SHAP values for the 'whisker trial
+    in block' parameter aligned on context transition from W+ to W- in magenta and from W- to W+ in
+    green."
+  why: The rebuilt model reproduces the paper's balanced accuracy (0.781) and feature ranking. Its SHAP
+    values of whisker trial in block are, after W+ to W-, -0.016 at trial -1, +0.603 at trial 1, +0.332
+    at trial 2 and -0.128 at trial 4, and after W- to W+, -0.162, -0.152, +0.099 and -0.038. Trial 1
+    moves against the new context in both directions and trial 2 toward it, so the criterion as written
+    gives not reproduced. The sum of the context and trial-in-block SHAP values does change sign at trial
+    1 with trial 2 further (W- to W+, -1.342, +0.738, +1.224), which the criterion would count as
+    reproduced.

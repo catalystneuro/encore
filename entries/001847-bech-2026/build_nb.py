@@ -46,10 +46,10 @@ used as labels (`with_labels`) and their link is tested in `session-list-link`.
 | fig2c, fig2d, fig2e (2 claims), fig2-no-effect-control-mice, fig2cd-rsc, fig2f | run under every reading; blocked where the readings disagree |
 | supp2-muscimol-ws1-rsc | tested |
 | fig3e, fig3f, fig3-gcamp-consistent-controls-flat | tested on the grid ROI traces |
-| fig3h-rsc-first-context-discrimination | ROI part run; pixel part blocked (too_large) |
+| fig3h-rsc-first-context-discrimination | tested, ROI part on the grid ROI traces and pixel part on windowed reads of the ΔF/F0 stack |
 | fig4c, fig4d, fig4e, fig4fg, supp4d | tested on the grid ROI traces |
-| fig1k-model-accuracy, fig1k-context-strongest-feature, fig1l-shap-whisker-trial-in-block | blocked, not run within the time limit |
-| fig4b (3 claims) | blocked, too_large (pixel stack) |
+| fig1k-model-accuracy, fig1k-context-strongest-feature, fig1l-shap-whisker-trial-in-block | tested (the code's XGBoost model rebuilt) |
+| fig4b (3 claims) | blocked, too_large (pixel stack); a variant on the grid ROI traces is shown |
 | supp3c-rsc-projects-to-wm | blocked, data_missing |
 """)
 
@@ -140,6 +140,11 @@ allids = set().union(*LISTS.values())
 print('sessions named by any list', len(allids), 'found', len(allids & S), f'({len(allids & S) / len(allids):.1%})')
 missing = sorted(set(LISTS['sessions_Context_sessions']) - S)
 print('pool list sessions not in the dandiset:', len(missing), missing[:10])
+pool = LISTS['sessions_Context_sessions']
+plain = {'_'.join(x.split('_')[:3]) for x in missing}
+print('of these, the plain identifier is in the dandiset:', len(plain & S), '| also listed plainly in the pool list:', len(plain & set(pool)),
+      '| pool list entries', len(pool), 'distinct', len(set(pool)), 'distinct sessions after cutting the suffix', len({'_'.join(x.split('_')[:3]) for x in pool}))
+print('pool list sessions in the dandiset without a readable trial table:', sorted((set(pool) & S) - set(T.session_id)))
 # session types of the listed sessions agree with the list's purpose
 st = M.set_index('session_id').session_type
 for n in ['sessions_Context_sessions_opto', 'sessions_Context_sessions_opto_control', 'sessions_Context_sessions_wf_opto',
@@ -149,7 +154,7 @@ opto = T[T.session_id.isin(LISTS['sessions_Context_sessions_opto'])]
 print('opto list: sites per session', opto[opto.opto_stim == 1].groupby('session_id').apply(lambda g: len(set(zip(g.opto_grid_ap, g.opto_grid_ml)))).describe().round(1).to_dict())
 """, tags=["claim:session-list-link"])
 md("""
-**Result: reproduced.** Every session of every list used here is in the dandiset under the same identifier with a readable trial table, the per-list counts of mice and sessions equal the claims file's, and the session types agree with each list's purpose.
+**Result: partially reproduced.** Every session of every list a claim selects from is in the dandiset under the same identifier with a readable trial table, and those lists' counts of mice and sessions equal the claims file's. The pool list `sessions_Context_sessions`, used for the expert rule's pool variant, does not match in full: it has 1451 entries for the stated 1449, 30 of them carry a processing-date suffix and are not dandiset identifiers, and 3 of its sessions have no readable trial table (printed above). 98.0% of the sessions named by any list are found.
 """)
 
 md("""
@@ -183,11 +188,23 @@ eA_pool = [s for s in expA if s in inpool]
 print('(a) restricted to the code pool list: sessions', len(eA_pool), 'mice', len({s.split('_')[0] for s in eA_pool}))
 lo = pd.Series({s: v[0] for s, v in ex.items()})
 print('lower bound of the code-list sessions under the rule: min', lo.reindex(expB).min().round(3), ', below 0.375:', (lo.reindex(expB) <= 0.375).sum())
+# which sessions the rule is run on: session types, and the 60 sessions described 'context_...'
+print('session types of the sessions tested:', M[M.session_id.isin(con)].session_type.value_counts().to_dict())
+ctxS = M[M.session_description.str.startswith('context_')]
+print('sessions described context_...:', len(ctxS), 'mice', sorted(ctxS.mouse_id.unique()), 'types', ctxS.session_type.value_counts().to_dict())
+print('   in the code lists:', {n: len(set(ctxS.session_id) & set(l)) for n, l in LISTS.items() if set(ctxS.session_id) & set(l)})
+conC = bech.block_contrast(T[T.session_id.isin(ctxS.session_id)], 'epochs'); exC = bech.is_expert(conC, seed=3)
+withC = expA + sorted(s for s, (l_, e) in exC.items() if e)
+onlyB = [s for s in expA if M.set_index('session_id').session_type.get(s) == 'behaviour_only_session']
+for name, Sx in [('variant, rule also on the context_ sessions', withC), ('variant, rule on behaviour_only sessions only', onlyB)]:
+    print(f'{name}: sessions {len(Sx)}, mice {len({s.split("_")[0] for s in Sx})}, blocks per session (epochs) {nb_ep.reindex(Sx).mean():.2f}')
 """, tags=["claim:expert-sessions"])
 md("""
 **Result: not reproduced under the rule.** The Methods' rule applied to every behavioural session gives
 the session and mouse counts printed above, outside the tolerance of 201 ± 20.1 sessions and 41 ± 4.1
-mice; the code's list matches the paper's counts and its blocks per session are within 23 ± 2.3.
+mice; neither variant (the rule with the `context_` sessions added, 322 sessions in 52 mice, or on
+behaviour-only sessions, 112 sessions in 42 mice) gives all three counts within tolerance. The code's list
+matches the paper's counts and its blocks per session are within 23 ± 2.3.
 """)
 
 code("""
@@ -212,6 +229,8 @@ for k, m in LB.items():
 md("""
 **Result: reproduced under reading (b).** With the code's list the auditory hit rates are within the
 paper's SDs in both contexts (printed above); under reading (a) the W- value is below the tolerance.
+The criterion accepts either reading of the selection, and reading (b) is the one whose mice and sessions
+are the paper's (41 mice and 201 sessions, expert-sessions).
 """)
 
 md("""
@@ -354,7 +373,7 @@ for k, Sx in [('a', expA), ('b', expB)]:
           f'W- {m["non-rewarded"].mean():.1f} ± {m["non-rewarded"].std():.1f} s (185 ± 4: {abs(m["non-rewarded"].mean() - 185) <= 4}); t {r.statistic:.2f}, p {r.pvalue:.1e}')
     print('    epoch durations range (s)', D.dur.min().round(1), D.dur.max().round(1))
 """, tags=["claim:supp1c-wplus-blocks-longer"])
-md("**Result: reproduced under the code's list.** W+ 195.5 s and W- 185.4 s, both within tolerance, W+ longer with p 3.4e-6; under the rule the W- mean is outside its tolerance.")
+md("**Result: reproduced under the code's list.** W+ 195.5 s and W- 185.4 s, both within tolerance, W+ longer with p 3.4e-6; under the rule the W- mean is outside its tolerance. As for fig1c-auditory-hit-both-contexts, the code's list is the reading whose mice and sessions are the paper's.")
 
 md("""
 ### supp1d-faster-response-wplus
@@ -372,8 +391,15 @@ for k, Sx in [('a', expA), ('b', expB)]:
         print(f'   {tt}: W+ {mm[1].mean():.0f} (SD {mm[1].std():.0f}, SEM {mm[1].sem():.0f}; {ep} ± 9: {abs(mm[1].mean() - ep) <= 9}), '
               f'W- {mm[0].mean():.0f} (SD {mm[0].std():.0f}, SEM {mm[0].sem():.0f}; {em} ± 9: {abs(mm[0].mean() - em) <= 9}); '
               f't {r.statistic:.2f}, p x2 {min(1, 2 * r.pvalue):.1e}, mice {len(mm)}')
+# variant: lick time measured from the opening of the response window (response_window_start_time)
+D = T[T.session_id.isin(expB) & (T.early_lick == 0) & (T.lick_flag == 1) & T.trial_type.isin(['auditory_trial', 'whisker_trial'])].copy()
+print('response window start minus stimulus time (ms):', ((D.response_window_start_time - D.stim_time) * 1000).round().value_counts().head(3).to_dict())
+D['rt'] = (D.lick_time - D.response_window_start_time) * 1000
+m = bech.mouse_avg(D, 'rt', ['trial_type', 'context']).pivot_table('rt', 'mouse_id', ['trial_type', 'context'])
+print('variant, lick time minus response window start, reading (b):',
+      {f'{tt} {"W+" if c else "W-"}': round(m[(tt, c)].mean()) for tt in ['auditory_trial', 'whisker_trial'] for c in (1, 0)})
 """, tags=["claim:supp1d-faster-response-wplus"])
-md("**Result: partially reproduced.** W+ is faster for both trial types with corrected p below 0.05 and t-values equal to the paper's, but every mean is about 100 ms above the paper's value, outside the 9 ms tolerance.")
+md("**Result: partially reproduced.** W+ is faster for both trial types with corrected p below 0.05 and t-values equal to the paper's, but every mean is about 100 ms above the paper's value, outside the 9 ms tolerance. Measured from the opening of the response window, 100 ms after the stimulus in almost every trial, the means come close to the paper's (variant, printed above), which suggests the paper timed spout contact from that point; the criterion times it from the stimulus.")
 
 md("""
 ### fig1e-context-off-no-discrimination
@@ -446,6 +472,22 @@ def readings():
     for nl in ['blocks', 'trials']:
         for tk, tv in THR.items():
             yield f'null {"i" if nl == "blocks" else "ii"}, d>={tv}', MAPS[nl], tv
+FIG4_OMIT = [(1.5, 5.5), (2.5, 4.5), (2.5, 5.5)]  # sites the Figure 4 code leaves out besides AP 3.5 (plot utils/figure4C_G.py)
+print('stimulated sites after dropping AP 3.5:', MAPS['trials'].site.nunique(), '| of these, sites the Figure 4 code also leaves out:',
+      sorted(set(MAPS['trials'].site) & set(FIG4_OMIT)))
+# null (i) on synthetic data: 4 mice, 3 sessions of 20 blocks, the laser lowers licking by 0.2 at one site in both contexts
+rs = np.random.default_rng(5); syn = []
+for mo in range(4):
+    for se in range(3):
+        for b in range(20):
+            for k in range(20):
+                laser = rs.random() < 0.5
+                p = 0.6 - (0.2 if laser else 0)
+                syn.append((f'M{mo}', f'M{mo}_s{se}', b, b % 2, int(laser), 1.5 if laser else 0, 1.5 if laser else 0, 'whisker_trial', int(rs.random() < p), se * 1e4 + b * 100 + k))
+syn = pd.DataFrame(syn, columns=['mouse_id', 'session_id', 'block', 'context', 'opto_stim', 'opto_grid_ap', 'opto_grid_ml', 'trial_type', 'lick_flag', 'start_time'])
+for nl in ['blocks', 'trials']:
+    _, sy = bech.opto_map(syn, [f'M{m}' for m in range(4)], null=nl, n_shuffle=1000, seed=4)
+    print(f'synthetic, true dP -0.2 in both contexts, null ({"i" if nl == "blocks" else "ii"}):', sy[['context', 'dP_mean', 'null_mean', 'dprime']].round(3).to_dict('records'))
 """)
 
 md("""
@@ -458,7 +500,10 @@ for lab, S, thr in readings():
     c = S[S.trial_type == 'no_stim_trial']
     n = {ctx: int((c[c.context == ctx].dprime >= thr).sum()) for ctx in (0, 1)}
     res[lab] = max(n.values()) <= 3
-    print(f'{lab}: sites with an effect W- {n[0]}, W+ {n[1]} (of {c[c.context == 0].shape[0]}); at most 3: {res[lab]}')
+    c39 = c[~c.site.isin(FIG4_OMIT)]
+    n39 = {ctx: int((c39[c39.context == ctx].dprime >= thr).sum()) for ctx in (0, 1)}
+    print(f'{lab}: sites with an effect W- {n[0]}, W+ {n[1]} (of {c[c.context == 0].shape[0]}); at most 3: {res[lab]} | '
+          f'on the {c39[c39.context == 0].shape[0]} sites of the Figure 4 code: W- {n39[0]}, W+ {n39[1]}')
 print('largest mean |dP| over sites in catch trials:', MAPS['trials'][MAPS['trials'].trial_type == 'no_stim_trial'].dP_mean.abs().max().round(3))
 print('all readings agree:', len(set(res.values())) == 1, set(res.values()))
 """, tags=["claim:fig2c-catch-little-effect"])
@@ -607,6 +652,14 @@ for area in ['wS1', 'fpS1', 'RSC']:
         dr = np.concatenate(g[('r', 2)]).mean() - np.concatenate(g[('r', 1)]).mean()
         print(f'   {"W+" if ctx else "W-"} whisker: muscimol change {dm:+.3f}, Ringer change {dr:+.3f}, statistic {o:+.3f}, '
               f'95% CI [{np.percentile(bs, 2.5):+.3f}, {np.percentile(bs, 97.5):+.3f}], p {p:.5f} (resolution 2e-5)')
+# the injection day is the second date of each mouse in the list (the code's ranking); the files type some sessions pharma_session
+STYPE = M.set_index('session_id').session_type
+for area in ['wS1', 'fpS1', 'RSC']:
+    for cond in ['muscimol', 'ringer']:
+        d = pd.DataFrame({'session_id': LISTS[f'sessions_Context_{cond}_{area}']}); d['mouse'] = d.session_id.str.split('_').str[0]
+        d['rank'] = d.groupby('mouse').session_id.transform(lambda s: pd.to_datetime(s.str.split('_').str[1]).rank(method='dense')).astype(int)
+        d['type'] = d.session_id.map(STYPE)
+        print(f'{area} {cond}: sessions by date rank and session_type', d.groupby(['rank', 'type']).size().to_dict())
 """, tags=["claim:supp2-muscimol-ws1-rsc"])
 md("**Result: reproduced.** wS1 muscimol lowers whisker licking in both contexts (p 0.00032 in W-, below 2e-5 in W+), and RSC muscimol gives a positive W- change with p 0.060, inside 0.05 to 0.1.")
 
@@ -633,6 +686,11 @@ for n in WF_LISTS:
     print(n, 'rates', rates.reindex(LISTS[n]).value_counts().to_dict())
 lags = np.concatenate([v[3][np.isfinite(v[2][:, 0, 0])] for v in G.values()])
 print('trials inside the imaging: ', len(lags), 'of', sum(len(v[3]) for v in G.values()), '| lag of the first frame after the stimulus (ms): median', round(np.nanmedian(lags) * 1000, 1), 'max', round(np.nanmax(lags) * 1000, 1))
+# trials whose first frame after the stimulus comes more than one frame late (a gap in the imaging)
+LATE = {k: (v[3] > np.median(np.diff(v[1])) + 1e-6) & np.isfinite(v[2][:, 0, 0]) for k, v in G.items()}
+lt = pd.Series({k: int(v.sum()) for k, v in LATE.items()})
+print('trials with a lag above one frame:', lt.sum(), 'of', len(lags), 'in', (lt > 0).sum(), 'of', len(lt), 'sessions; per list:',
+      {n.replace('sessions_Context_sessions_', ''): int(lt.reindex(LISTS[n]).sum()) for n in WF_LISTS})
 allv = np.concatenate([np.nanpercentile(v[2], [1, 99]) for v in G.values()])
 print('dF/F0 1st to 99th percentile over sessions:', np.round(allv.min(), 4), np.round(allv.max(), 4))
 names0 = G[wf_ids[0]][0]; print('grid ROI names', len(names0), names0[:3], '...')
@@ -645,7 +703,7 @@ TT = T.set_index(['session_id', T.groupby('session_id').cumcount()])
 def trial_table(sid):
     return T[T.session_id == sid].sort_values('start_time').reset_index(drop=True)
 
-def mouse_traces(sids, select, baseline_ms, subtract=True):
+def mouse_traces(sids, select, baseline_ms, subtract=True, drop_late=False):
     # per mouse mean trace (time x site): trials -> session -> mouse. select(trials) -> boolean mask
     per = {}
     for sid in sids:
@@ -653,6 +711,7 @@ def mouse_traces(sids, select, baseline_ms, subtract=True):
         tr = trial_table(sid)
         assert len(tr) == W.shape[0], sid
         m = select(tr).values
+        if drop_late: m = m & ~LATE[sid]
         if m.sum() == 0: continue
         X = W[m]
         if subtract:
@@ -730,26 +789,76 @@ for base in BASES:
 md("**Result: reproduced.** wS1 and wS2 stay below |d'| 2 from 20 to 50 ms, and RSC, wM1 and wM2 pass d' 2 between 50 and 120 ms under every baseline.")
 
 md("""
-### fig3h-rsc-first-context-discrimination (ROI part)
+### fig3h-rsc-first-context-discrimination
 > RSC is the first cortical area to discriminate the contexts in whisker trials, both in the pixel-wise maps and in the ROI averages, the time of the first d' above 2 between W+ and W-.
 
-Only the ROI ranking is run. The pixel version needs the ΔF/F0 image stack (`processing/ophys/dff0`,
-125 x 160 pixels x about 380,000 frames per session, float64, about 60 GB per session, stored unchunked); see the summary.
+ROI part on the grid ROI traces. Pixel part on the ΔF/F0 image stack (`processing/ophys/dff0`): only the
+frames of the selected trials are read (250 ms before to 120 ms after the stimulus, 38 frames per trial),
+baseline-subtracted per trial, averaged per session, then per mouse; d' per pixel across the 6 mice; for
+each ROI the earliest crossing among the pixels of its 1 mm circle (the file's grid masks,
+`grid_areas/brain_grid_area_segmentation`), with the code's Gaussian smoothing of sigma 1 pixel on the
+mouse-average images and without it as a variant. The Methods for Figure 3H define d' as that "shown in
+Figure 3F bottom row", whose Methods (Figures 3E&F) subtract the 50 ms baseline.
 """)
 code("""
+def first_cross(t, dfun, start):
+    first = {}
+    for n in ['wS1', 'wS2', 'wM1', 'RSC', 'ALM', 'tjS1']:
+        w = [k for k in range(len(t)) if t[k] >= start - 1e-9 and dfun(k, n) > 2]
+        first[n] = int(round(t[w[0]] * 1000)) if w else None
+    valid = {k: v for k, v in first.items() if v is not None}
+    best = min(valid.values()) if valid else None
+    rsc = first['RSC'] is not None and first['RSC'] == best
+    tie = sum(v == best for v in valid.values()) > 1 if valid else None
+    return first, rsc, tie
+H = {}
+print('ROI part')
 for base in BASES:
     t, d, _, _ = D3[base]
     for start in [0.02, 0.03]:
-        first = {}
-        for n in ['wS1', 'wS2', 'wM1', 'RSC', 'ALM', 'tjS1']:
-            w = np.where((t >= start - 1e-9) & (d[:, COL[n]] > 2))[0]
-            first[n] = int(round(t[w[0]] * 1000)) if len(w) else None
-        valid = {k: v for k, v in first.items() if v is not None}
-        best = min(valid.values()) if valid else None
-        print(f'baseline {base} ms, from {int(start * 1000)} ms: first d>2 (ms) {first}; RSC earliest: {first["RSC"] is not None and first["RSC"] == best}, '
-              f'tie: {sum(v == best for v in valid.values()) > 1 if valid else None}')
+        first, rsc, tie = first_cross(t, lambda k, n: d[k, COL[n]], start)
+        H[('roi', base, start)] = 'reproduced' if rsc and not tie else ('tie' if rsc else 'not')
+        print(f'   baseline {base} ms, from {int(start * 1000)} ms: first d>2 (ms) {first}; RSC earliest {rsc}, tie {tie}')
+print('   trials whose first frame after the stimulus is more than one frame late, jRGECO1a sessions:', int(sum(LATE[k].sum() for k in JR)))
+# pixel part
+pgroups = {sid: {'W+ hit': np.where(wplus_hit(trial_table(sid)))[0], 'W- miss': np.where(wminus_miss(trial_table(sid)))[0]} for sid in JR}
+import time
+t_pix = time.time()
+PIX = bech.load_pixels(A[A.session_id.isin(JR)], pgroups, n=12)
+t_pix = time.time() - t_pix
+GB_PIX = sum(v['n']['W+ hit'] + v['n']['W- miss'] for v in PIX.values() if 'n' in v) * (bech.PIX_PRE + bech.PIX_POST) * 125 * 160 * 8 / 1e9
+print(f'pixel reads: {GB_PIX:.1f} GB in {t_pix / 60:.1f} min, {GB_PIX / t_pix * 1000:.0f} MB/s with 12 parallel reads')
+print('pixel part: sessions failed', [k for k, v in PIX.items() if 'error' in v])
+P0 = next(iter(PIX.values()))
+print('stack', P0['info'], '| trials read per session, W+ hits', pd.Series({k: v['n']['W+ hit'] for k, v in PIX.items()}).describe().round(0).to_dict(),
+      '| W- misses', pd.Series({k: v['n']['W- miss'] for k, v in PIX.items()}).describe().round(0).to_dict())
+print('pixels without data (NaN, outside the brain) per frame:', int(np.isnan(P0['means']['W+ hit'][50][0]).sum()), 'of', P0['means']['W+ hit'][50][0].size,
+      '| grid masks identical in every session:', all((v['masks'] == P0['masks']).all() for v in PIX.values()),
+      '| pixels per ROI circle', int(P0['masks'][SIDX[bech.SITES['RSC']]].sum()))
+from scipy.ndimage import gaussian_filter
+JR_MICE = sorted({s.split('_')[0] for s in JR})
+tp = np.arange(bech.PIX_POST) / 100
+for base in BASES:
+    for smooth in (True, False):
+        X = {}
+        for g in ('W+ hit', 'W- miss'):
+            per = []
+            for mo in JR_MICE:
+                x = np.mean([v['means'][g][base] for k, v in PIX.items() if k.startswith(mo + '_') and v['n'][g] > 0], 0)
+                if smooth: x = np.stack([gaussian_filter(np.nan_to_num(f), 1) for f in x])
+                per.append(x)
+            X[g] = np.stack(per)
+        dp = bech.dprime(X['W+ hit'], X['W- miss'])
+        masks = {n: P0['masks'][SIDX[bech.SITES[n]]].astype(bool) for n in ROI}
+        for start in [0.02, 0.03]:
+            first, rsc, tie = first_cross(tp, lambda k, n: np.nanmax(dp[k][masks[n]]), start)
+            H[('pixel', smooth, base, start)] = 'reproduced' if rsc and not tie else ('tie' if rsc else 'not')
+            print(f'   pixels, {"smoothed" if smooth else "unsmoothed (variant)"}, baseline {base} ms, from {int(start * 1000)} ms: first d>2 (ms) {first}; RSC earliest {rsc}, tie {tie}')
+for base in [50, 250]:
+    v = {H[('roi', base, s)] for s in (0.02, 0.03)} | {H[('pixel', True, base, s)] for s in (0.02, 0.03)}
+    print(f'baseline {base} ms, ROI and smoothed pixel versions, both exclusion readings:', v)
 """, tags=["claim:fig3h-rsc-first-context-discrimination"])
-md("**Result: blocked (too_large).** In the ROI ranking RSC is the first area with d' above 2 under every baseline and exclusion reading, with no tie; the pixel version, which the criterion also needs, was not run.")
+md("**Result: reproduced, resting on an assumption.** With the 50 ms baseline, which the Methods for Figure 3H take from Figure 3F, RSC is the earliest area in both the ROI ranking and the smoothed pixel version, under both exclusion readings, with no tie. With the 250 ms baseline RSC is first in the ROI ranking but ties with wM1 in the pixel version (50 ms), which counts as partially reproduced; the unsmoothed pixel variant at 250 ms puts wM1 and tjS1 first.")
 
 md("""
 ### fig3-gcamp-consistent-controls-flat
@@ -806,8 +915,9 @@ def site_sel(site):
 wo_trials = T[T.session_id.isin(WO)]
 print('wf-opto sites stimulated:', wo_trials[wo_trials.opto_stim == 1].groupby(['opto_grid_ap', 'opto_grid_ml']).size().shape[0],
       '| control laser coordinates', wo_trials[wo_trials.opto_stim == 0][['opto_grid_ap', 'opto_grid_ml']].value_counts().to_dict())
+DROP_LATE = False
 def peaks(sids, site, base):
-    mt = mouse_traces(sids, site_sel(site), base)
+    mt = mouse_traces(sids, site_sel(site), base, drop_late=DROP_LATE)
     t, X, mice = stack(mt)
     w = (t >= 0.05 - 1e-9) & (t <= 0.12 + 1e-9)
     return pd.DataFrame(np.nanmax(X[:, w, :], 1)[:, [COL[n] for n in ROI]], index=mice, columns=ROI)
@@ -819,7 +929,9 @@ def fig4c(sids, base, sites):
         diff = P.mean() - C.loc[P.index].mean(); sd = C.loc[P.index].std(ddof=1)
         out[s] = (diff, sd, P.mean(), len(P))
     return C, out
-for base in [50, 250]:
+print('late-frame trials in the wf-opto sessions:', int(sum(LATE[k].sum() for k in WO)), 'of', int(sum(len(LATE[k]) for k in WO)))
+for base, DROP_LATE in [(50, False), (250, False), (50, True)]:
+    if DROP_LATE: print('variant: trials whose first frame after the stimulus is more than one frame late left out')
     C, out = fig4c(WO, base, ['wS1', 'wM1', 'wM2', 'RSC'])
     print(f'baseline {base} ms; control peak (mean over {len(C)} mice):', C.mean().round(4).to_dict())
     dec = {s: (o[0] < -o[1]) for s, o in out.items()}
@@ -833,6 +945,7 @@ for base in [50, 250]:
     n = int(p1) + int(p2) + int(p3)
     print(f'   parts: wS1 widespread {p1} ({dec["wS1"].sum()} of {len(ROI)}), wM1/2 motor only {p2}, RSC no increase {p3} ->',
           'reproduced' if n == 3 else ('partially' if n == 2 else 'not'))
+DROP_LATE = False
 """, tags=["claim:fig4c-inhibition-propagates-forward"])
 md("**Result: reproduced.** All three parts hold under both baselines; wS1 inhibition lowers 7 of 9 ROIs, wM1 inhibition lowers motor ROIs and not wS1 or wS2, and RSC inhibition raises no motor ROI.")
 
@@ -945,45 +1058,225 @@ print('within tolerance: W+', abs(m[1].mean() - 3.0) <= 1.0, 'W-', abs(m[0].mean
 """, tags=["claim:fig1j-jaw-speed-context"])
 md("**Result: partially reproduced.** Jaw speed is higher in W+ and before lick with corrected p below 0.05 and all four means within tolerance, but whisker speed is also higher in W+ (corrected p 0.018), where the claim states no effect.")
 
+md(r"""
+## Gradient-boosted model of the whisker-trial choice (Figure 1K-L)
+
+As the claims file gives it (process main_analysis/model_context_behaviour.py; configs/analysis_params/
+whisker_classification.yaml; explain_behaviour v1.0.1 preprocessing/trial_features.py and
+models/behavioural_analysis_GBM.py, read at the commits the claims file cites): the code's 60 sessions of
+21 mice; early licks dropped; the five DLC features of the code (`bech._model_one`); the trial features of
+explain_behaviour (`bech.model_features`); whisker trials only; one session held out (numpy default_rng(20),
+choice over the sessions in list order); categorical columns coded by sorted value; a stratified 67/33 split
+(random_state 123); Optuna TPE (seed 123, 1000 trials, 80/20 inner split, random_state 123, binary log
+loss, early stopping 100 rounds on the inner validation split); the final model fitted with early stopping
+on the test split, as the code does, and on the inner validation split as a variant; balanced accuracy on
+the test split. XGBoost runs on 4 threads (the code sets 20 for the search), which can change the fitted
+trees slightly.
+""")
+code(r"""
+import xgboost as xgb, optuna
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import balanced_accuracy_score, log_loss
+MODEL_S = LISTS['session_context_expert_behaviour_model']
+MF = bech.load_model_features(A[A.session_id.isin(MODEL_S)], n=8)
+print('sessions', len(MF), '| kept or skipped by the 30% rule of the code:', pd.Series({k: v[1] for k, v in MF.items()}).value_counts().to_dict())
+MDF = pd.concat([MF[s][0] for s in MODEL_S if MF[s][0] is not None], ignore_index=True)
+MFE = bech.model_features(MDF)
+FEAT = ['context', 'subject', 'cum_water', 'prev_trial_correct', 'whisker_trial_in_block', 'prev_trial_water', 'last_stimulus_type',
+        'prev_whisker_rewarded', 'time_since_last_stimulus', 'lick_flag', 'pupil_area_nanmean', 'jaw_y_nanmean', 'whisker_velocity_mean_abs',
+        'whisker_angle_mean', 'jaw_y_mean_abs_diff']
+LABELS = ['Context', 'Mouse ID', 'Cumulative water', 'Previous trial correct', 'Whisker trial in block', 'Previous trial water', 'Last stimulus type',
+          'Previous whisker rewarded', 'Time since last stimulus', 'Lick flag', 'Pupil Area', 'Jaw y', 'Whisker Speed', 'Whisker Angle', 'Jaw Speed']
+MW = MFE[MFE.trial_type == 'whisker_trial']
+test_session = np.random.default_rng(20).choice(MW['session'].unique())
+MWt, MW = MW[MW.session == test_session], MW[MW.session != test_session]
+def code_cats(Xd, maps=None):
+    Xd = Xd.copy(); maps = maps or {}
+    for col in ['Context', 'Mouse ID', 'Previous trial correct', 'Previous whisker rewarded', 'Last stimulus type']:
+        if col not in maps:
+            u = Xd[col].unique()
+            try: u = np.sort(u)
+            except TypeError: pass
+            maps[col] = {v: i for i, v in enumerate(u)}
+        Xd[col] = Xd[col].map(maps[col])
+    return Xd, maps
+MX, CMAP = code_cats(MW[FEAT].rename(columns=dict(zip(FEAT, LABELS))))
+My = MX.pop('Lick flag').astype(int)
+print('whisker trials', len(MX), 'in', MW.session.nunique(), 'sessions of', MW.subject.nunique(), 'mice; held-out session', test_session, len(MWt), 'trials')
+print('lick rate', round(My.mean(), 3), '| missing values per feature:', MX.isna().mean().round(3)[MX.isna().mean() > 0].to_dict())
+print('feature ranges:', {c: (round(float(MX[c].min()), 2), round(float(MX[c].max()), 2)) for c in MX.columns})
+Xtr, Xte, ytr, yte = train_test_split(MX, My, test_size=0.33, random_state=123, stratify=My)
+Xo, Xv, yo, yv = train_test_split(Xtr, ytr, test_size=0.2, random_state=123)
+def objective(trial):
+    p = dict(subsample=trial.suggest_float('subsample', 0.1, 1), learning_rate=trial.suggest_float('learning_rate', 0.0001, 0.5, log=True),
+             max_depth=trial.suggest_int('max_depth', 7, 20), min_child_weight=trial.suggest_int('min_child_weight', 1, 200),
+             reg_alpha=trial.suggest_float('reg_alpha', 0.001, 10, log=True), reg_lambda=trial.suggest_float('reg_lambda', 0.001, 10, log=True),
+             gamma=trial.suggest_float('gamma', 0, 20), colsample_bytree=trial.suggest_float('colsample_bytree', 0.5, 1),
+             colsample_bylevel=trial.suggest_float('colsample_bylevel', 0.5, 1), colsample_bynode=trial.suggest_float('colsample_bynode', 0.5, 1),
+             n_estimators=trial.suggest_int('n_estimators', 100, 1000), scale_pos_weight=trial.suggest_float('scale_pos_weight', 1, 10))
+    m = xgb.XGBClassifier(**p, eval_metric='logloss', early_stopping_rounds=100, random_state=123, verbosity=0, n_jobs=4)
+    m.fit(Xo, yo, eval_set=[(Xv, yv)], verbose=False)
+    return log_loss(yv, m.predict_proba(Xv)[:, 1])
+optuna.logging.set_verbosity(optuna.logging.WARNING)
+study = optuna.create_study(direction='minimize', sampler=optuna.samplers.TPESampler(seed=123))
+study.optimize(objective, n_trials=1000)
+print('Optuna trials', len(study.trials), '| best inner log loss', round(study.best_value, 4), '| best parameters', {k: round(v, 4) for k, v in study.best_params.items()})
+def fit_final(Xe, ye):
+    m = xgb.XGBClassifier(**study.best_params, objective='binary:logistic', eval_metric='logloss', early_stopping_rounds=100, random_state=123, verbosity=0, n_jobs=4)
+    return m.fit(Xtr, ytr, eval_set=[(Xe, ye)], verbose=False)
+GBM = fit_final(Xte, yte)
+""")
+md(r"""
+### fig1k-model-accuracy
+> A gradient-boosted tree model of the whisker-trial lick choice, from task, history and orofacial features, reaches a cross-validated accuracy of 0.78 on held-out test trials.
+
+Chance for balanced accuracy is 0.5; the accuracy of a model fitted with the lick labels permuted is shown as a reference.
+""")
+code(r"""
+ba = balanced_accuracy_score(yte, GBM.predict(Xte))
+print(f'balanced accuracy, test split: {ba:.3f} (0.78 ± 0.078: {abs(ba - 0.78) <= 0.078}) | train {balanced_accuracy_score(ytr, GBM.predict(Xtr)):.3f} | trees {GBM.best_iteration + 1}')
+GBMv = fit_final(Xv, yv)
+print(f'variant, early stopping on the inner validation split: {balanced_accuracy_score(yte, GBMv.predict(Xte)):.3f}')
+Xh, _ = code_cats(MWt[FEAT].rename(columns=dict(zip(FEAT, LABELS))), CMAP); yh = Xh.pop('Lick flag').astype(int)
+print(f'held-out session {test_session}: balanced accuracy {balanced_accuracy_score(yh, GBM.predict(Xh)):.3f} on {len(yh)} trials')
+yperm = pd.Series(np.random.default_rng(31).permutation(ytr.values), index=ytr.index)
+mp = xgb.XGBClassifier(**study.best_params, objective='binary:logistic', eval_metric='logloss', early_stopping_rounds=100, random_state=123, verbosity=0, n_jobs=4)
+mp.fit(Xtr, yperm, eval_set=[(Xte, yte)], verbose=False)
+print(f'reference, labels of the training split permuted: {balanced_accuracy_score(yte, mp.predict(Xte)):.3f} (chance 0.5)')
+""", tags=["claim:fig1k-model-accuracy"])
+md("**Result: reproduced.** The balanced accuracy on the test split is within 0.78 ± 0.078, against 0.50 for the model fitted on permuted labels (printed above).")
+md(r"""
+### fig1k-context-strongest-feature
+> Among the model's features, context gives the largest drop in accuracy when permuted, followed by whether the previous whisker trial was rewarded, the cumulative number of rewards and the index of the whisker trial in the block.
+
+Each feature permuted 10,000 times on the test split, the drop in balanced accuracy recorded (claims file).
+""")
+code(r"""
+rng_pi = np.random.default_rng(32)
+BOOST, ITR = GBM.get_booster(), (0, GBM.best_iteration + 1)
+Xn, yn = Xte.values.astype(np.float32), yte.values
+def bacc(p):  # balanced accuracy of the 0.5-threshold prediction, as GBM.predict gives it
+    return 0.5 * ((p[yn == 1] > 0.5).mean() + (p[yn == 0] <= 0.5).mean())
+base_ba = bacc(BOOST.inplace_predict(Xn, iteration_range=ITR))
+print('balanced accuracy of the fast predictor equals that of the model:', np.isclose(base_ba, balanced_accuracy_score(yte, GBM.predict(Xte))))
+drops = {}
+for j, col in enumerate(Xte.columns):
+    Xp_ = Xn.copy(); d = np.empty(10000)
+    for i in range(10000):
+        Xp_[:, j] = rng_pi.permutation(Xn[:, j])
+        d[i] = base_ba - bacc(BOOST.inplace_predict(Xp_, iteration_range=ITR))
+    drops[col] = (d.mean(), d.std(), np.percentile(d, 2.5), np.percentile(d, 97.5))
+PI = pd.DataFrame(drops, index=['mean drop', 'SD', '2.5%', '97.5%']).T.sort_values('mean drop', ascending=False)
+print(PI.round(4).to_string())
+top = list(PI.index)
+print('order:', top[:5], '| context first:', top[0] == 'Context', '| next three as stated:', top[1:4] == ['Previous whisker rewarded', 'Cumulative water', 'Whisker trial in block'],
+      '| the three in the top five:', set(['Previous whisker rewarded', 'Cumulative water', 'Whisker trial in block']) <= set(top[:5]))
+""", tags=["claim:fig1k-context-strongest-feature"])
+md("**Result: reproduced.** Context gives the largest mean drop in balanced accuracy, followed in order by previous whisker rewarded, cumulative water and whisker trial in block (printed above).")
+md(r"""
+### fig1l-shap-whisker-trial-in-block
+> The SHAP values of the whisker-trial-in-block feature follow the behaviour, with a single-trial change after a context transition and a slower further component.
+
+Interventional TreeExplainer, 100 background trials from the training split (random_state 123), over the
+training and test trials; whisker trials 5 to 8 of a block relabelled -4 to -1 (claims file).
+""")
+code(r"""
+import shap
+Xall = pd.concat([Xtr, Xte]).astype(float)
+bg = Xtr.sample(min(100, len(Xtr)), random_state=123).astype(float)
+expl = shap.TreeExplainer(GBM, data=bg, feature_perturbation='interventional', model_output='raw')
+SV = expl.shap_values(Xall)
+sv = pd.DataFrame({'pos': Xall['Whisker trial in block'].values, 'ctx': Xall['Context'].values,
+                   'shap': SV[:, list(Xall.columns).index('Whisker trial in block')]})
+sv['rel'] = np.where(sv.pos >= 5, sv.pos - 9, sv.pos)
+ctx_code = {v: k for k, v in CMAP['Context'].items()}
+sv['context'] = sv.ctx.map(ctx_code)
+print('positions in block:', sv.pos.value_counts().sort_index().to_dict())
+tab = sv.groupby(['context', 'rel']).shap.agg(['mean', 'count']).unstack(0)
+print(tab.round(4).to_string())
+m = sv.groupby(['context', 'rel']).shap.mean()
+res = {}
+for newc, oldc, sgn, name in [(1, 0, 1, 'W- to W+'), (0, 1, -1, 'W+ to W-')]:
+    s1, s2, sm1 = m[(newc, 1)], m[(newc, 2)], m[(oldc, -1)]
+    flip = sgn * s1 > 0 and sgn * sm1 < 0
+    further = sgn * s2 > sgn * s1
+    res[name] = (flip, further)
+    print(f'{name}: trial -1 (old block) {sm1:+.4f}, trial 1 {s1:+.4f}, trial 2 {s2:+.4f} -> sign change toward the new context {flip}, trial 2 further {further}')
+print('base value', np.round(expl.expected_value, 4), '| SHAP range of the feature', sv.shap.min().round(3), sv.shap.max().round(3))
+# variant: the SHAP values of context and whisker trial in block summed, the model's account of both features together
+sv['both'] = sv.shap + SV[:, list(Xall.columns).index('Context')]
+mb = sv.groupby(['context', 'rel']).both.mean()
+print('variant, context + whisker trial in block:', mb.unstack(0).round(3).to_dict())
+for newc, oldc, sgn, name in [(1, 0, 1, 'W- to W+'), (0, 1, -1, 'W+ to W-')]:
+    print(f'   {name}: trial -1 {mb[(oldc, -1)]:+.3f}, trial 1 {mb[(newc, 1)]:+.3f}, trial 2 {mb[(newc, 2)]:+.3f}, trial 4 {mb[(newc, 4)]:+.3f}')
+""", tags=["claim:fig1l-shap-whisker-trial-in-block"])
+md("**Result: not reproduced as the criterion reads it.** In both directions the SHAP value of whisker trial in block at trial 1 of the new block does not take the sign of the new context: it moves against it (negative after W- to W+, positive after W+ to W-), and trial 2 then moves toward the new context. The feature carries the one-trial lag of the behaviour, while context carries the switch (variant with both features summed, printed above).")
+
 md("""
 ### fig3c-jaw-onset
 > Jaw opening, the first movement, begins 108 ± 24 ms after the sensory stimulus, so the first 120 ms after the stimulus largely precede movement.
 
-jRGECO1a mice. Methods' rule: per mouse, the d' (ddof 0) between the trial values of jaw opening at
-each time and the trials' mean over the 250 ms before the stimulus; onset is the first time after
-the stimulus with d' >= 1. Trial sets: (a) the Methods' correct whisker trials (W+ hits and W- misses
-pooled, Figure 3B), (b) W+ whisker hits, (c) the code's auditory and whisker hits. The code's rule
-(per trial, the first time |jaw| over its pre-stimulus SD exceeds 3) is a variant.
+jRGECO1a mice. As the Methods (Figures 3B and 3C): jaw opening filtered at 60% likelihood (points below it
+set missing, not dropped trials), and, "as in Figures 1I&J", the jaw dropped for a session when under 70%
+of its points pass (the variant without this rule is shown); each trial centred on its mean over the 250 ms
+before the stimulus; traces averaged within session, then over sessions per mouse. Methods' onset rule:
+per mouse, the d' (ddof 0) at each time between the trial values of jaw opening (missing points left out)
+and the trials' pre-stimulus mean (0 after centring); onset is the first time after the stimulus with d' >= 1.
+The d' over session means is a variant. Trial sets: (a) the Methods' correct whisker trials, W+ hits and
+W- misses pooled (Figure 3B: "correct trials (i.e. licks to whisker in W+ and no licks in W-)"), (b) W+
+whisker hits, (c) the code's auditory and whisker hits, and the Figure 3C legend's groups (auditory hits
+in W+ and W-, whisker hits in W-). The code's rule (per trial, the first time |jaw| over its pre-stimulus
+SD exceeds 3, averaged per session, then mouse) is a variant.
 """)
 code("""
-sets = {'(a) correct whisker': lambda tr: (tr.trial_type == 'whisker_trial') & (tr.lick_flag == tr.context),
+sets = {'(a) correct whisker, W+ hits and W- misses': lambda tr: (tr.trial_type == 'whisker_trial') & (tr.lick_flag == tr.context),
         '(b) W+ whisker hits': lambda tr: (tr.trial_type == 'whisker_trial') & (tr.context == 1) & (tr.lick_flag == 1),
-        '(c) auditory and whisker hits': lambda tr: tr.trial_type.isin(['whisker_trial', 'auditory_trial']) & (tr.lick_flag == 1)}
-for name, sel in sets.items():
-    on_m, on_code = {}, {}
-    for mouse in sorted({s.split('_')[0] for s in JR}):
-        Js = []
-        for sid in [s for s in JR if s.startswith(mouse) and s in ok]:
-            tr = T[T.session_id == sid].sort_values('start_time').reset_index(drop=True)
-            m = (sel(tr) & (tr.early_lick == 0)).values
-            Js.append(ok[sid]['jaw_traces'][m]); t = ok[sid]['jaw_t']
-        if not Js: continue
-        J = np.concatenate(Js); J = J[np.isfinite(J).all(1)]
-        if len(J) < 5: continue
-        base = J[:, (t < 0) & (t >= -0.25 - 1e-9)]
-        bm = base.mean(1)
-        d = np.array([bech.dprime(J[:, i], bm) for i in range(J.shape[1])])
-        post = np.where((t > 0) & (d >= 1))[0]
-        on_m[mouse] = t[post[0]] * 1000 if len(post) else np.nan
-        # code's rule per trial
-        z = np.abs(J - bm[:, None]) / base.std(1)[:, None]
-        firsts = [t[np.where((t > 0) & (zz > 3))[0][0]] * 1000 for zz in z if ((t > 0) & (zz > 3)).any()]
-        on_code[mouse] = np.mean(firsts) if firsts else np.nan
-    v = pd.Series(on_m); c = pd.Series(on_code)
-    print(f'{name}: Methods onset per mouse (ms) {v.round(0).to_dict()}, mean {v.mean():.1f} ± SD {v.std():.1f} (108 ± 24: {abs(v.mean() - 108) <= 24}); '
-          f'code rule mean {c.mean():.1f}')
+        '(c) auditory and whisker hits (code)': lambda tr: tr.trial_type.isin(['whisker_trial', 'auditory_trial']) & (tr.lick_flag == 1),
+        'auditory hits W+': lambda tr: (tr.trial_type == 'auditory_trial') & (tr.context == 1) & (tr.lick_flag == 1),
+        'auditory hits W-': lambda tr: (tr.trial_type == 'auditory_trial') & (tr.context == 0) & (tr.lick_flag == 1),
+        'whisker hits W-': lambda tr: (tr.trial_type == 'whisker_trial') & (tr.context == 0) & (tr.lick_flag == 1)}
+def first_d1(t, J):
+    # J: values x time, centred on the pre-stimulus mean; d' of each time against the zero baseline means
+    d = np.array([bech.dprime(J[np.isfinite(J[:, i]), i], np.zeros(np.isfinite(J[:, i]).sum())) if np.isfinite(J[:, i]).sum() > 2 else np.nan
+                  for i in range(J.shape[1])])
+    post = np.where((t > 0) & (d >= 1))[0]
+    return t[post[0]] * 1000 if len(post) else np.nan
+print('jaw points passing 60% likelihood per jRGECO1a session:', frac.reindex(JR).jaw.round(2).to_dict())
+F3C = {}
+for keep70 in (True, False):
+    print('70% session rule (Methods, Figures 1I-J)' if keep70 else 'variant, without the 70% session rule')
+    for name, sel in sets.items():
+        rows = []
+        for mouse in sorted({s.split('_')[0] for s in JR}):
+            sids = [s for s in JR if s.startswith(mouse + '_') and s in ok and (not keep70 or frac.loc[s, 'jaw'] >= bech.KEEP_FRACTION)]
+            Js, Ss, codes = [], [], []
+            for sid in sids:
+                tr = trial_table(sid); t = ok[sid]['jaw_t']
+                J = ok[sid]['jaw_traces'][(sel(tr) & (tr.early_lick == 0)).values]
+                b = (t < 0) & (t >= -0.25 - 1e-9)
+                with np.errstate(all='ignore'):
+                    bm = np.nanmean(J[:, b], 1); bs = np.nanstd(J[:, b], 1)
+                    keep = np.isfinite(bm)
+                    J, bs = J[keep] - bm[keep, None], bs[keep]
+                    if len(J) == 0: continue
+                    Js.append(J); Ss.append(np.nanmean(J, 0))
+                    z = np.abs(J) / bs[:, None]
+                    f1 = [t[np.where((t > 0) & (zz > 3))[0][0]] * 1000 for zz in z if ((t > 0) & (zz > 3)).any()]
+                    codes.append(np.mean(f1) if f1 else np.nan)
+            if not Js:
+                rows.append((mouse, len(sids), 0, 0, np.nan, np.nan, np.nan, np.nan)); continue
+            J = np.concatenate(Js); S_ = np.array(Ss)
+            post_ = (t > 0) & (t <= 0.15)
+            rows.append((mouse, len(Ss), len(J), round(float(np.isnan(J[:, post_]).mean()), 3), first_d1(t, J),
+                         first_d1(t, S_) if len(S_) > 2 else np.nan, np.nanmean(codes), np.nan))
+        R = pd.DataFrame(rows, columns=['mouse', 'sessions', 'trials', 'missing_0_150ms', 'onset_ms', 'onset_session_dprime', 'code_rule_ms', '_']).drop(columns='_').set_index('mouse')
+        v = R.onset_ms
+        F3C[(keep70, name)] = v.mean()
+        print(f'  {name}: Methods onset {v.mean():.1f} ± SD {v.std():.1f} ms over {v.notna().sum()} mice (108 ± 24: {abs(v.mean() - 108) <= 24}); '
+              f'd prime over session means {R.onset_session_dprime.mean():.1f} ({R.onset_session_dprime.notna().sum()} mice with 3 or more sessions); code rule {R.code_rule_ms.mean():.1f}')
+        print('    per mouse:', R.round(1).to_dict('index'))
 """, tags=["claim:fig3c-jaw-onset"])
-md("**Result: reproduced, resting on an assumption.** With the code's auditory and whisker hits the mean onset is within 108 ± 24 ms; with whisker trials only it is not.")
+md("**Result: reproduced, resting on an assumption.** With the Methods' correct whisker trials (a) and the 70% session rule the mean onset is within 108 ± 24 ms, and so it is without the rule. With W+ whisker hits only (b), with the code's auditory and whisker hits (c), and for auditory hits it is below the tolerance. The assumption is the Methods' trial set (a).")
 
 
 md("""
@@ -1039,6 +1332,11 @@ wS1col = KEEP.index(bech.SITES['wS1'])
 sgn = np.sign(pca.components_[:, wS1col]); sgn[sgn == 0] = 1
 proj = lambda X: (pca.transform(np.nan_to_num(scaler.transform(X))) * sgn)
 print('time samples', len(tw), tw.round(2), '| variance explained by PC1-5', pca.explained_variance_ratio_[:5].round(3), 'cumulative 15', pca.explained_variance_ratio_.sum().round(3))
+print('sign flips applied (wS1 loading made positive), PC1-3:', sgn[:3])
+print('loadings after the sign convention, PC1-3, named sites:')
+print(pd.DataFrame((pca.components_[:3] * sgn[:3, None]).T, index=[str(s) for s in KEEP], columns=['PC1', 'PC2', 'PC3'])
+      .loc[[str(bech.SITES[n]) for n in ['wS1', 'wS2', 'wM1', 'wM2', 'ALM', 'tjS1', 'tjM1', 'A1', 'RSC', 'RSC_2']]]
+      .set_axis(['wS1', 'wS2', 'wM1', 'wM2', 'ALM', 'tjS1', 'tjM1', 'A1', 'RSC', 'RSC_2']).round(3).T.to_string())
 ctrl_pc3 = {k: proj(v)[:, 2] for k, v in rows}
 STIM = {}
 for site_name in ['wS1', 'wS2', 'wM1', 'wM2', 'ALM', 'RSC', 'RSC_2', 'tjS1', 'tjM1', 'A1']:
@@ -1132,6 +1430,52 @@ for variant in [False, True]:
 """, tags=["claim:fig4fg-angle-predicts-lick-change"])
 md("**Result: reproduced.** The correlation of angle with dP over 39 sites is negative with p below 0.05 in both contexts, for both angle definitions.")
 
+md("""
+## Pre-stimulus correlations (Figure 4A-B), a variant on the grid ROI traces
+
+The three fig4b claims are blocked: the criterion uses seed-to-pixel correlation maps of the ΔF/F0 stack
+in the 2 s before every trial, masked by a block-shuffle null. The reads alone are estimated below from the
+rate measured for the pixel part of fig3h; with the rest of this notebook they do not fit the
+notebook limit of 60 minutes. As a variant
+that does not decide the outcome, the zero-lag Pearson correlations between the grid ROI traces of the
+seven seeds (1 mm circles at the seed sites) in the 2 s before each trial start are computed, whisker
+trials, correct (W+ hits, W- misses) and incorrect (W+ misses, W- hits), averaged per session, then per
+mouse; the paired d' (mean of the W- minus W+ differences over their SD, ddof 1) and the related t-test
+with Bonferroni x7 are given for the code's seven pairs. No null, so the connectivity claim is not
+addressed.
+""")
+code("""
+SEEDS = ['wS1', 'wS2', 'wM1', 'RSC', 'ALM', 'tjM1', 'tjS1']
+PAIRS = [('ALM', 'tjM1'), ('ALM', 'tjS1'), ('tjM1', 'tjS1'), ('wM1', 'ALM'), ('wM1', 'tjM1'), ('wS1', 'wS2'), ('wS2', 'wM1')]
+PC = bech.load_precorr(A[A.session_id.isin(JR)], [bech.SITES[s] for s in SEEDS], n=8)
+n_all = int(T[T.session_id.isin(JR)].shape[0]); gb = n_all * 200 * 125 * 160 * 8 / 1e9
+print(f'seed-to-pixel maps would need 200 frames for each of the {n_all} trials of the jRGECO1a sessions, {gb:.0f} GB; '
+      f'at the rate of the fig3h pixel reads, {gb / (GB_PIX / t_pix) / 60:.0f} min of reading')
+print('sessions failed', [k for k, v in PC.items() if isinstance(v, str)])
+rows = []
+for sid, C in PC.items():
+    tr = trial_table(sid); assert len(tr) == len(C)
+    w = (tr.trial_type == 'whisker_trial').values; corr = (tr.lick_flag == tr.context).values
+    for ctx in (0, 1):
+        for oc, m in [('correct', corr), ('incorrect', ~corr)]:
+            s_ = w & (tr.context.values == ctx) & m & np.isfinite(C[:, 0, 1])
+            if s_.sum() == 0: continue
+            mc = C[s_].mean(0)
+            for a, b in PAIRS:
+                rows.append((sid.split('_')[0], sid, ctx, oc, f'{a}-{b}', mc[SEEDS.index(a), SEEDS.index(b)], s_.sum()))
+R4 = pd.DataFrame(rows, columns=['mouse', 'session', 'context', 'outcome', 'pair', 'r', 'n'])
+print('whisker trials with a full 2 s window per session and group, median:', R4.groupby(['session', 'context', 'outcome']).n.first().groupby(['context', 'outcome']).median().to_dict())
+Mm = R4.groupby(['mouse', 'context', 'outcome', 'pair']).r.mean().unstack(['outcome', 'context'])
+for oc in ['correct', 'incorrect']:
+    print(oc, 'trials, mice', Mm.index.get_level_values(0).nunique())
+    for a, b in PAIRS:
+        x = Mm.xs(f'{a}-{b}', level='pair'); wm, wp = x[(oc, 0)].values, x[(oc, 1)].values
+        dd = wm - wp; tt = stats.ttest_rel(wm, wp)
+        print(f'   {a}-{b}: W- {wm.mean():.3f}, W+ {wp.mean():.3f}, W- minus W+ {dd.mean():+.3f}, paired d {dd.mean() / dd.std(ddof=1):+.2f}, t {tt.statistic:.2f}, p x7 {min(1, 7 * tt.pvalue):.3f}')
+print('W+ incorrect minus W+ correct:', {f'{a}-{b}': round(float((Mm.xs(f'{a}-{b}', level='pair')[('incorrect', 1)] - Mm.xs(f'{a}-{b}', level='pair')[('correct', 1)]).mean()), 3) for a, b in PAIRS})
+""", tags=["claim:fig4b-wminus-higher-correlation-correct"])
+md("**Result: blocked (too_large).** The pixel analysis the criterion needs was not run. In the ROI-trace variant, before correct trials W- is higher than W+ for 5 of the 7 pairs (paired d' at or above 0.8 for 4 of them) and lower for wM1-ALM and wM1-tjM1, and no pair passes the corrected t-test; before incorrect trials no pair has a W- minus W+ d' of 0.8 or more.")
+
 
 md("""
 ## Summary
@@ -1140,30 +1484,32 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 
 | claim | outcome |
 |---|---|
-| session-list-link | reproduced |
+| session-list-link | partially reproduced (every list a claim uses matches; the pool list does not in full) |
 | expert-sessions | not reproduced (the Methods' rule selects more sessions and mice; the code's list matches) |
 | fig1c-auditory-hit-both-contexts, fig1c-whisker-context-modulation, fig1d, fig1c-catch-higher-wplus, fig1e, fig1g, fig1f, fig1h, supp1c | reproduced |
 | supp1d-faster-response-wplus | partially reproduced (tests match, means about 100 ms longer) |
 | fig1i-pupil-larger-wplus, fig1i-posture-before-lick | reproduced |
 | fig1j-jaw-speed-context | partially reproduced (jaw holds; whisker speed differs by context) |
-| fig1k (3 claims) | blocked (not run within the time limit) |
+| fig1k-model-accuracy, fig1k-context-strongest-feature | reproduced |
+| fig1l-shap-whisker-trial-in-block | not reproduced (trial 1 of a block moves against the new context; trial 2 toward it) |
 | fig2c, fig2d, fig2e (2 claims), fig2-no-effect-control-mice, fig2cd-rsc, fig2f | blocked, methods_underspecified (the null and threshold readings disagree) |
 | supp2-muscimol-ws1-rsc | reproduced |
-| fig3c-jaw-onset | reproduced, resting on the code's trial set (assumption) |
+| fig3c-jaw-onset | reproduced, resting on the Methods' correct whisker trials (assumption) |
 | fig3e-auditory-similar-across-contexts | partially reproduced (similar, A1 first; the order of the others not found) |
 | fig3f-whisker-divergence-after-50ms | reproduced |
-| fig3h-rsc-first-context-discrimination | blocked, too_large (pixel part); RSC is first in the ROI ranking |
+| fig3h-rsc-first-context-discrimination | reproduced, resting on the 50 ms baseline (assumption); a tie in the pixel version with the 250 ms baseline |
 | fig3-gcamp-consistent-controls-flat | partially reproduced (GCaMP6f holds; control mice also show W+ vs W- differences) |
 | supp3c-rsc-projects-to-wm | blocked, data_missing |
-| fig4b (3 claims) | blocked, too_large (pixel stack) |
+| fig4b (3 claims) | blocked, too_large (pixel stack); an ROI-trace variant is shown |
 | fig4c-inhibition-propagates-forward, supp4d-photoactivation-control, fig4fg-angle-predicts-lick-change | reproduced |
 | fig4d-trajectories-follow-lick | not reproduced |
 | fig4e-rsc-tjs1-smaller-angle | partially reproduced (W+ only at RSC (-1.5, 0.5); both contexts at (-0.5, 0.5)) |
 
 Differences from the paper's method: session groups and mouse lines come from the code's lists, since the
 files do not record the lines; the opto-map nulls and thresholds are run under every reading the claims
-file names; the pixel-level analyses (Figure 3H pixel maps, Figure 4A-B seed correlations) are not run;
-the gradient-boosted model of Figure 1K-L is not run.
+file names; the Figure 3H pixel maps are computed from windowed reads of the stack, while the Figure 4A-B
+seed-to-pixel correlations are not run (an ROI-trace variant is shown); the gradient-boosted model of
+Figure 1K-L is rebuilt from the code and run with 4 threads.
 
 What was found about the dataset: the subject genotype is "WT" for every mouse but one, so no file says
 which mice carry VGAT-ChR2, jRGECO1a, GCaMP6f, tdTomato or GFP; session type and day (Context Off, muscimol
