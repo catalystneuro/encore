@@ -28,7 +28,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000252-guan-2022-01.yaml`](../../attempts/000252-guan-2022-01.yaml).
 
-- `reproduce_guan_2022.ipynb`: the analysis. It takes about fourteen minutes, most of it the
+- `reproduce_guan_2022.ipynb`: the analysis. It takes about eleven minutes, most of it the
   permutation tests of the cross-condition generalization.
 - `fingers.py`: streaming the files, firing rates in the paper's analysis windows, the 0.5 Hz
   exclusion, diagonal LDA, single-neuron ANOVA with FDR, cross-validated Mahalanobis distances

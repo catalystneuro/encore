@@ -62,7 +62,8 @@ outcomes:
     and 65.1% of 252 J-MC neurons have q below 0.05; under O1 (b) 48.9%, 38.1% and 65.6%; before
     the exclusion 40.4%, 37.6% and 63.7%. All are below the lower tolerance bounds (59.4%, 51.3%,
     70.2%). As variants, uncorrected p below 0.05 gives at most 56.1%, 46.5% and 68.8%, FDR per
-    session gives no more, and the Delay, Cue and ITI windows give fewer (0 to 49%). Moving the
+    session, averaged over sessions, gives at most 0.3 points more than pooled FDR (40.7% against 40.4%
+    for N-PPC before the exclusion, 38.4% against 38.1% for J-PPC under O1 a; cell 13), and the Delay, Cue and ITI windows give fewer (0 to 49%). Moving the
     500 ms window's start from 0.5 s before to 0.5 s after the Go cue gives at most 47.8%, 43.5% and
     72.2%. A 1 s window from the Go cue gives 60.8%, 56.8% and 82.9%, all within tolerance; it is a
     variant only, as the Methods use 500 ms windows unless stated and the claims file fixes the 200
@@ -84,7 +85,7 @@ outcomes:
     and O2 (a), 72.2% (N-PPC, 1000 trials), 69.5% (J-PPC, 200) and 78.5% (J-MC, 200); over all
     readings of O1 (including no exclusion) and O2 the values are 71.4 to 73.0%, 68.0 to 70.0% and
     78.0 to 78.5%, and single seeds of O2 (b) 69.9 to 73.6%, 66.0 to 72.5% and 76.5 to 80.0%, all
-    within tolerance. Chance is 10%; with shuffled labels per-session accuracies are 0.07 to 0.17.
+    within tolerance. Chance is 10%; with shuffled labels per-session accuracies are 0.04 to 0.17.
   deviations:
   - The variance floor of the diagonal LDA (1e-9 of the largest variance, as scikit-learn's
     GaussianNB) is a standard choice that only prevents division by zero.
@@ -189,8 +190,8 @@ outcomes:
     65%, with CCGP below 0.9 of it, which the criterion calls partially reproduced. With the
     within-hand accuracy computed per session, run under every O1 x O7, it is 0.680 to 0.690, within
     tolerance in all eight readings, and the same reading (O1 b, O6 a, SVM) is reproduced. The two
-    populations give different outcomes; the pseudo-population is kept as the better-supported
-    choice (deviation below).
+    populations give different outcomes; the pseudo-population is kept for the reasons in the
+    deviation below, a judgement call, as the round-2 verifier notes.
   deviations:
   - Assumed that the standard (within-hand) accuracy is computed on the same pseudo-population as
     CCGP, since the Methods (Compositionality of finger representations) call it an upper bound on
@@ -236,12 +237,13 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs the online BMI sessions with the decoded class of each trial. The dandiset has none.
-    Its metadata says it continues DANDI:000147, which by its description holds participant N's
-    BMI reaction-time sessions of ref 46 (10 files, with in-session classified finger); the claims
+    Its metadata says it continues DANDI:000147, whose description (printed in the notebook's last
+    code cell) is a BCI finger-press task of the PC-IP array, with in-session classified finger, the
+    reaction-time task whose figure the paper adapts from ref 46 (Methods, Reaction-time finger-press task, feedback 1.5 s after the cue); the claims
     file does not name it as a source of this paper's data and it holds nothing of participant J,
-    so it was not used. Its archive record lists 10 files of subject P1 from 2018 and describes a
-    BCI finger-press task with decoder feedback 1.5 s after the cue, citing the eLife paper of ref
-    46; it holds no alternating-cues task either. J's BMI sessions are not public anywhere the paper names.
+    so it was not used. The same cell lists its 10 files, all of subject P1 from 2018, and its
+    IsDescribedBy link to doi 10.7554/eLife.74478 (Stability of motor representations after
+    paralysis); it holds no alternating-cues task either. J's BMI sessions are not public anywhere the paper names.
 - claim: figs6-single-array-retrospective
   outcome: blocked
   blocked_by: data_missing
@@ -455,4 +457,138 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Same reason.
+    response: No change needed.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusion cells and
+    summary, the helper module, the claims file, the attempt record and the README, with the paper. The
+    verifier checked every number in the Result cells, the Summary, the README and the record's notes
+    against the printed outputs. It agreed with all 19 outcomes.
+  results:
+  - claim: tenfinger-recording-counts
+    agrees: true
+    outcome: reproduced
+    reason: Counted before the exclusion (cell 10), which is one of the criterion's readings, so no
+      assumption is needed.
+    response: No change needed.
+  - claim: tenfinger-pooled-npcc-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 1114 against 1111 +/- 111.
+    response: No change needed.
+  - claim: tenfinger-discriminative-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Robust. The uncorrected p < 0.05 shares are 56.1 / 46.5 / 68.8%; N-PPC and J-PPC are below
+      their bounds even with no correction, so no FDR choice can reach the paper's values. The sentence
+      "FDR per session gives no more" is not supported, as the per-session FDR mean is slightly higher
+      than pooled FDR in some rows (N-PPC none 40.7 vs 40.4, J-PPC none 37.9 vs 37.6, J-PPC a 38.4 vs
+      38.1), by at most 0.3 points. The criterion corrects J-PPC and J-MC separately while the Methods
+      correct "for m = N ... neurons for each participant", which departs from the Methods' wording but
+      cannot change the outcome. A 1 s window from the Go cue brings all three arrays within tolerance;
+      which window and test the paper used remains an open question for the authors.
+    response: The sentence in the Result cell and the notes now says per-session FDR gives at most 0.3
+      points more than pooled FDR, with the two largest cases. The correction over each participant's
+      neurons is added to questions/000252.yaml as a question for a reader; the claim is unchanged. The
+      window question stays in the methods_unavailable finding. Outcome kept.
+  - claim: tenfinger-decoding-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: The record's "with shuffled labels per-session accuracies are 0.07 to 0.17" does not match
+      cell 7, which prints a minimum of 0.04 (P1 2015-08-14) and 0.06 several times; the range is 0.04
+      to 0.17. This does not affect the outcome.
+    response: Corrected to 0.04 to 0.17 in the notes. Outcome kept.
+  - claim: tenfinger-error-structure
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the record; no remark.
+    response: No change needed.
+  - claim: fig8b-matching-closer
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (precision of the partition mean, x5) is stated and reasonable, because
+      rsatoolbox documents that input for a list of noises, and it is the only reading that matches the
+      paper's magnitudes; that dependence is disclosed. Without it the result is partially reproduced
+      (N-PPC 0.28 to 0.36 against 1.56). Cell 21 prints "N-PPC mean RDM range 0.00 to 3.90", apparently
+      from the diagonal, while the text gives 0.57 to 3.90.
+    response: Cell 21 now prints the range of the off-diagonal elements, 0.57 to 3.90, as the text gives.
+      The question for the authors stays in the findings. Outcome kept, with assumed true.
+  - claim: fig8a-npcc-index-distinct
+    agrees: true
+    outcome: reproduced
+    reason: Holds in all 18 readings.
+    response: No change needed.
+  - claim: fig8e-hand-ccgp
+    agrees: true
+    outcome: reproduced
+    reason: The result is the same under both populations for the standard accuracy, so it needs no
+      assumption.
+    response: No change needed.
+  - claim: fig8e-finger-ccgp
+    agrees: true
+    outcome: reproduced
+    reason: Passes under O9 (b), which is a claims-file reading, so it needs no assumption.
+    response: No change needed.
+  - claim: jppc-finger-ccgp-low
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption (standard accuracy on the same pseudo-population as CCGP) is defensible, but
+      calling it "the better-supported choice" is a judgement call; the paper's 65% is matched by the
+      per-session within-hand accuracy (0.680 to 0.690), and that population gives reproduced. Under
+      either population p < 0.001 holds in only one of eight readings (O1 b / O6 a / SVM), at the 1/1002
+      floor; the others have p = 0.002 to 0.038, so the claimed significance is fragile.
+    response: The notes now call the choice of the pseudo-population a judgement call, with the reasons
+      in the deviation, in place of "better-supported". The question for the authors stays in the
+      findings. Outcome kept, with assumed true.
+  - claim: figs11-jppc-lower-matched-size
+    agrees: true
+    outcome: reproduced
+    reason: Now holds in all 8 readings.
+    response: No change needed.
+  - claim: fig4c-contra-discriminative
+    agrees: true
+    outcome: blocked
+    reason: Cell 36 shows every file is the ten-finger task, with no No-Go condition and no
+      decoder-output column.
+    response: No change needed.
+  - claim: fig4e-plan-vs-move
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36).
+    response: No change needed.
+  - claim: fig5a-contra-decoding
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36).
+    response: No change needed.
+  - claim: fig5bcd-npcc-data-requirements
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36).
+    response: No change needed.
+  - claim: fig5e-planning-decoding
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36).
+    response: No change needed.
+  - claim: fig6-online-bmi
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36). What the record and Summary say DANDI:000147 contains (10 files of
+      subject P1 from 2018, BCI finger-press task, citing the eLife paper of ref 46) is printed by no
+      notebook cell; cell 3 prints only the Continues DANDI:000147 relation. It may be true, but nothing
+      in the notebook backs it.
+    response: Added a code cell after cell 36 that prints DANDI:000147's name, description, related
+      resources and file list from the archive. The notes and the Summary now state only what it prints,
+      and tie it to ref 46 through the paper's own description of that task. Outcome kept.
+  - claim: figs6-single-array-retrospective
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36).
+    response: No change needed.
+  - claim: figs7-left-hand-bmi
+    agrees: true
+    outcome: blocked
+    reason: Same reason (cell 36).
     response: No change needed.
