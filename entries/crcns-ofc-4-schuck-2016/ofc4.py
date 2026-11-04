@@ -40,11 +40,19 @@ Where the parameters come from (the claims file is claims/crcns-ofc-4/10.1016-j.
   sampled at TR with a shift of -0.6 s, the shift at which the rebuilt state columns best match
   the data set's own (a check in the notebook, not a method choice of the paper).
 - Error trials: the 'err' events are blocks that start at the error trial and run over the
-  repeated trials (the Figure 1B legend: "Wrong responses led to a repetition of the same (Enter
-  trials) or preceding trial (Internal and Exit trials)"). The error trial's previous components
+  repeated trials. The Methods ("Task") say errors on Internal and Enter trials led to "a
+  repetition of the trial", and errors on Exit trials to a repetition of "the trial preceding the
+  error"; the Figure 1B legend says the preceding trial was repeated for Internal and Exit trials.
+  The Methods are followed; the data descriptor agrees with them. The error trial's previous components
   are the current components of the trial before the block; its current components are the
   previous components of the first labelled trial after the block when the block holds one
   error (the rule is in `error_trials`; its use is an assumption, stated in the notebook).
+- Post-error trials in the GLM (claims file, O3). The data set's 'err' column follows a short
+  event at each block onset, so the trials inside a block after the error trial are in no
+  regressor. The two readings of O3 are rebuilt from the 'err' events: (a) the data set's 'err'
+  column with a separate nuisance regressor for the rest of the block, a boxcar from onset +
+  4.5 s (the mean trial duration, Methods, Task) to the end of the block; (b) one 'err' boxcar
+  over the whole block, from onset to the end of the last stimulus (the dur file's duration).
 """
 
 import io
@@ -116,6 +124,7 @@ def load_run(subject, run):
         "TR": float(m["TR"].ravel()[0]),
         "n_TR": int(m["n_TR"].ravel()[0]),
         "n_voxel": int(m["n_voxel"].ravel()[0]),
+        "keys": sorted(k for k in m if not k.startswith("__")),
     }
 
 
@@ -151,6 +160,7 @@ def events(subject, run):
 
 
 SHORT_BLOCK = 12.0
+MEAN_TRIAL = 4.5  # mean trial duration (Methods, Task), for reading (a) of O3
 
 
 def error_trials(ev):
@@ -278,8 +288,10 @@ def subject_designs(subject):
     'err', nuisance), the events and reconstructed error trials, and the rebuilt regressors of
     the two-back state space under both readings of the claims file (a: trials whose two-back
     trial is unknown, after 'first' or an error block, go to one left-out regressor; b: after a
-    block with one reconstructed error, the trial two back as presented is the trial before the
-    block)."""
+    block with one reconstructed error, which is an Enter error repeated as the same trial
+    (Methods, Task), the trial two back as presented is the error trial, whose current components
+    are those of its repetition, the trial before), and the nuisance sets of the two readings of
+    O3."""
     out = {}
     for r in runs(subject):
         d = load_run(subject, r)
@@ -300,8 +312,8 @@ def subject_designs(subject):
             for reading in ("a", "b"):
                 if prev is not None and prev["cond"] in STATES:
                     lab2 = e["cond"][:2] + prev["cond"][2:]
-                elif reading == "b" and prev is not None and prev["cond"] == "err" and prev["onset"] in single and i >= 2 and ev.loc[i - 2, "cond"] in STATES:
-                    lab2 = e["cond"][:2] + ev.loc[i - 2, "cond"][:2]
+                elif reading == "b" and prev is not None and prev["cond"] == "err" and prev["onset"] in single:
+                    lab2 = e["cond"][:2] + e["cond"][2:]
                 else:
                     lab2 = "leftout"
                 two[reading].setdefault(lab2, []).append((e["onset"], e["rt"]))
@@ -319,8 +331,17 @@ def subject_designs(subject):
                                 "missing": missing, "n_leftout": len(lo)}
         # the hypothesised space rebuilt the same way, to check the rebuilt regressors
         hyp = [regressor(ev.loc[ev.cond == s, "onset"], ev.loc[ev.cond == s, "rt"], n) for s in STATES]
+        # the two readings of O3, in place of the data set's 'err' column where they differ from it
+        blk = ev[ev.cond == "err"]
+        o3 = {"a": Xo, "b": Xo}
+        if len(blk):
+            no_err = [i for i, l in enumerate(lab) if l not in STATES and l != "err"]
+            rest = regressor(blk.onset + MEAN_TRIAL, blk.dur - MEAN_TRIAL, n)
+            whole = regressor(blk.onset, blk.dur, n)
+            o3 = {"a": np.column_stack([rest, Xo]),
+                  "b": np.column_stack([d["X"][:, no_err], whole, d["nuis"]])}
         out[r] = {"Y": d["Y"], "Xs": Xs, "Xo": Xo, "ev": ev, "err": err, "n_TR": n,
-                  "two": rebuilt, "Xs_rebuilt": np.column_stack(hyp)}
+                  "two": rebuilt, "Xs_rebuilt": np.column_stack(hyp), "o3": o3}
     return out
 
 
@@ -364,6 +385,7 @@ def analyse_subject(subject, seed, zhow=("voxel", "map"), n_perm=10):
         for reading in ("a", "b"):
             t = d["two"][reading]
             betas[("two" + reading, r)] = glm_betas(d["Y"], t["Xs"], t["Xo"])
+            betas[("16o3" + reading, r)] = glm_betas(d["Y"], d["Xs"], d["o3"][reading])
     labels8 = [c + p for c in "FH" for p in ["Fo", "Fy", "Ho", "Hy"]]
     res = {"betas": {k: v for k, v in betas.items() if k[0] == "16"}, "pred": [], "perm": [], "trial": [],
            "missing_two": {r: {k: D[r]["two"][k]["missing"] for k in "ab"} for r in rs},
@@ -371,7 +393,8 @@ def analyse_subject(subject, seed, zhow=("voxel", "map"), n_perm=10):
            "events": pd.concat([D[r]["ev"] for r in rs]), "err": pd.concat([D[r]["err"] for r in rs]),
            "rebuilt_r": {r: [np.corrcoef(D[r]["Xs"][:, j], D[r]["Xs_rebuilt"][:, j])[0, 1] for j in range(16)] for r in rs}}
     for zh in zhow:
-        for space, labs in (("16", STATES), ("16rebuilt", STATES), ("8", labels8), ("twoa", STATES), ("twob", STATES)):
+        for space, labs in (("16", STATES), ("16rebuilt", STATES), ("16o3a", STATES), ("16o3b", STATES), ("8", labels8),
+                            ("twoa", STATES), ("twob", STATES)):
             Z = {r: zscore_maps(betas[(space, r)], zh) for r in rs}
             for test in rs:
                 tr_r = [r for r in rs if r != test]
