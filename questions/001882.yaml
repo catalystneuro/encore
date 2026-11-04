@@ -1,0 +1,27 @@
+# Questions from attempt 001882-yuan-2025-01 (author, 2026-11-04, from the round-2 verifier report)
+# about the claims file claims/001882/10.3390-genes16010043.yaml. Each is asked under
+# docs/protocol.md, Author, step 1.6, and "Hand over for verification"; the claim is not changed.
+dandiset: "001882"
+paper: doi:10.3390/genes16010043
+questions:
+- claim: table3-destabilizing
+  asked: 2026-11-04
+  question: The criterion says "iMutant and MuPRO run from sequence". Does the paper say that
+    I-Mutant 2.0 was run from sequence, or does it allow (or point to) its structure mode, run on
+    the I-TASSER models that Methods 2.3 chose "for further analysis"? If either mode is allowed,
+    should the criterion name both readings, with the structure mode blocked until the models are
+    available?
+  passage: >-
+    Methods 2.4, "iMutant ( https://folding.biofold.org/i-mutant/i-mutant2.0.html ,
+    accessed on 16 November 2024) [46]"; reference 46, "I-Mutant2.0: Predicting stability changes
+    upon mutation from the protein sequence or structure"; Methods 2.3, "the structure with the
+    highest confidence score and over 80% of residues in the favored regions of the Ramachandran
+    plot was chosen for further analysis". No passage names the I-Mutant mode.
+  why: The outcome (not reproduced) rests on I-Mutant 2.0 run from sequence, whose DDG regression
+    gives positive (stabilizing) values for 4 of the 5 variants and whose sign classifier calls
+    p.Asp423Glu an increase in stability. Neither sequence output gives Table 3's IMPG1 values
+    (-0.85, -0.76; the server gives +0.19 and +0.88), and the regression and the classifier
+    disagree in sign for p.Leu740Phe, p.Cys1019Tyr and p.Leu249Phe, which suggests the paper may
+    have used the structure mode. If the structure mode is the reading, iMutant cannot be run
+    without the undeposited models, and the sign test would rest on MuPRO alone (negative for all
+    5) with 20 of 25 values not computed.
