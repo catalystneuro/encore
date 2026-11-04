@@ -6,13 +6,15 @@
 # with its Methods, Results, Discussion and the legends of Figures 1 to 8. The paper has no
 # supplement. It links no analysis code, so none was read. The PDF could not be rendered here,
 # and the extracted text prints the signs =, <, >, the minus sign and plus/minus as a
-# replacement character. Each relation below is read from the sentence it sits in: values
-# printed as "a ? b" after a quantity are read as mean plus/minus SE, as the Methods state
-# ("all quantities are mean ?SE unless otherwise specified"); the correlation coefficients
-# are read as negative because the text calls them a "negative correlation" and
-# "anticorrelated"; "mean responses of ?15 mV" is read as above 15 mV, as the text calls
-# these the "larger" and "high mean" responses (whether 15 mV itself is included is open
-# and cannot matter beyond a tone or two).
+# replacement character. The check of 2026-11-04 read these signs from the PDF's font
+# encodings (Universal-GreekwithMathPi and MathematicalPi-One glyph names in the PDF's
+# Differences arrays): values printed as "a ? b" are mean plus/minus SE; the correlation
+# coefficients are negative ("= -0.14", "= -0.22"); the variability index ranges "from < 1 to
+# > 10 mV"; the Figure 3B bins are "1 mV < q < 2 mV" and "4 mV < q < 12 mV"; the large
+# responses are those with mean responses of at least 15 mV ("of >= 15 mV"); the LFP CV test
+# gives "P = 0.5"; the access resistance groups are "R-series > median = 4.2" (17 cells) and
+# "R-series < median = 4.9" (16 cells); the small total variability in the Figure 7A text is
+# "already small (approx. 1 mV)".
 #
 # Data the paper used. Sprague-Dawley rats, 17 to 24 days old, anesthetized with
 # pentobarbital (13 neurons), pentobarbital and diazepam (3) or urethane after
@@ -95,7 +97,8 @@ claims:
   depends_on:
   - fig3a-reliable-neuron
   criterion: The example neuron is the one of Figures 2 and 3 (the Figure 3 legend says "the
-    same neuron as in Fig. 2"), identified as in fig3a-reliable-neuron. Latency and peak
+    same neuron as in Fig. 2"), identified as in fig3a-reliable-neuron; the Figure 2 legend
+    adds that each mean trace averages 20 presentations of the tone. Latency and peak
     height of each tone's mean trace against the 15-ms baseline (open detail 1 for the peak
     search window). The ranges hold when the shortest and longest values lie within the
     reported ranges widened by 10% of each bound (24.3 to 46.2 ms; 1.08 to 19.8 mV). Shape
@@ -103,7 +106,9 @@ claims:
     it) and judged with a number fixed here, as the paper gives none. The median correlation
     of each normalized, aligned mean trace with their average over the 100-ms culling window
     is at least 0.9. The "all neurons" part holds when every one of the 33 neurons has a mean
-    response that peaks within 50 ms of onset for its largest tone. Reproduced when all three
+    response that peaks within 50 ms of onset for its largest tone; the paper gives no number
+    for "brief short-latency", so the 50 ms bound is a choice made here, set above the 42 ms
+    longest latency of the example neuron. Reproduced when all three
     hold; partially reproduced when the ranges hold but one of the others does not.
 - id: fig3a-reliable-neuron
   statement: For the most reliable neuron, the responses to 20 presentations of a 32-kHz tone
@@ -126,15 +131,17 @@ claims:
     tolerance: 0
     unit: tones
   criterion: The paper does not name the neuron. It is identified as the neuron with the
-    lowest <q>tones among the 33, as the text calls it "among the most reliable we recorded";
+    lowest <q>tones among the 33, as the text calls it "among the most reliable we recorded"
+    and later "The most reliable neuron showed an average total variability of 0.88 mV"
+    (Results, Comparison to the contribution from stochastic synaptic release, paragraph 1);
     the neuron whose <q>tones is nearest 0.88 mV is shown if it differs. The count of tones is
     exact, as it identifies the neuron. "32 kHz" matches no tone of the set; readings (a)
     31,118 Hz, the nearest, (b) 34,448 Hz. Reproduced when <q>tones and the count match and q
     matches under one reading of the tone.
 - id: fig3b-total-variability-distribution
-  statement: Across the 33 neurons the tone-averaged variability index ranges from about 1 to
-    about 10 mV; about a fifth (7/33) have low variability (1 to 2 mV) and about half (18/33)
-    have high variability (4 to 12 mV).
+  statement: Across the 33 neurons the tone-averaged variability index ranges over more than an
+    order of magnitude, from below 1 to above 10 mV; about a fifth (7/33) have low variability
+    (1 to 2 mV) and about half (18/33) have high variability (4 to 12 mV).
   source: Results, Trial-to-trial response variability, paragraphs 1 and 2; Figure 3B
   quote: Across the population, the variability index ranged over more than an order of
     magnitude, from �1 to �10 mV; about half (18/33) of the neurons showed a high variability
@@ -149,9 +156,12 @@ claims:
     tolerance: 1.8
     unit: neurons
   criterion: <q>tones of all 33 neurons, without culling, under the Methods' tone criteria.
-    The bins are read as the legend writes them, 1 mV < q < 2 mV and 4 mV < q < 12 mV (the
-    relation signs are garbled; whether the bounds are included is open and is shown both
-    ways). Reproduced when both counts are within tolerance, partially reproduced when one is.
+    The bins are as the Figure 3B legend writes them, 1 mV < q < 2 mV and 4 mV < q < 12 mV,
+    strict (signs read from the PDF). The low count has a second reading, q < 2 mV, as the
+    Results call the 0.88 mV example neuron "comparably low (1-2 mV)" in the sentence that
+    gives the 7/33. The lowest value is below 1 mV and the highest above 10 mV. Reproduced
+    when both counts are within tolerance under one reading and the extremes hold, partially
+    reproduced when one count is.
 - id: total-variability-population
   statement: The mean total variability index across neurons is 4.6 mV.
   source: Figure 7A legend; Methods, LFP-based culling and PSP-based culling procedures,
@@ -226,7 +236,10 @@ claims:
     reduction per neuron compares <q>tones after the procedures with the neuron's total
     <q>tones over all its included tones (Figure 7A plots one against the other). The 40%
     average is read in two ways, (a) 1 - 2.9/4.8 over the same 29 neurons, (b) the mean of the
-    per-neuron fractional reductions; it holds within 36% to 44% under one of them. Reproduced
+    per-neuron fractional reductions; it holds within 36% to 44% under one of them. The "little
+    effect" part rests on the Results' "already small (approx. 1 mV)"; it is shown for the
+    neurons with total <q>tones below 1.5 mV (a bound chosen here) and not judged with a
+    number. Reproduced
     when the value, the count, the largest reduction and the 40% hold; partially reproduced
     when the value holds and one other does not.
 - id: psp-culling-reduction
@@ -361,10 +374,11 @@ claims:
     the trials the two cullings remove. Which neurons enter the PSP-matched control (33, or
     the 29 with LFP) is open; both are run. The fractions of trials removed are read as
     fractions of all trials of included tones, pooled over neurons, with the mean of
-    per-neuron fractions as a variant. Reproduced when the three controls and the second
-    control hold, and the PSP-based fraction is below the LFP-based one.
+    per-neuron fractions as a variant. Reproduced when the three controls, the second
+    control and both fractions hold; partially reproduced when the four q values hold and a
+    fraction does not.
 - id: fig7d-large-responses
-  statement: For tones with mean PSPs above 15 mV, total variability is lower (2.9 mV, 19
+  statement: For tones with mean PSPs of at least 15 mV, total variability is lower (2.9 mV, 19
     neurons) than for all tones, but the private variability is the same as for all tones (best
     estimate 1.5 mV, LFP-based bound 1.9 mV, 16 neurons).
   source: Results, Variability of large mean responses, paragraph 1; Figure 7D
@@ -373,38 +387,38 @@ claims:
     displayed the same level of private noise (�qPSP-culled,LFP-culled&estimation�neurons �1.5 �
     0.2 mV; n �16 neurons) as the average tone.
   expected:
-  - quantity: <q>neurons, tones above 15 mV
+  - quantity: <q>neurons, tones of at least 15 mV
     value: 2.9
     tolerance: 0.4
     unit: mV
-  - quantity: neurons with a tone above 15 mV
+  - quantity: neurons with a tone of at least 15 mV
     value: 19
     tolerance: 0
     unit: neurons
-  - quantity: <q LFP-culled&estimation>neurons, tones above 15 mV
+  - quantity: <q LFP-culled&estimation>neurons, tones of at least 15 mV
     value: 1.9
     tolerance: 0.3
     unit: mV
-  - quantity: <q PSP-culled,LFP-culled&estimation>neurons, tones above 15 mV
+  - quantity: <q PSP-culled,LFP-culled&estimation>neurons, tones of at least 15 mV
     value: 1.5
     tolerance: 0.2
     unit: mV
-  criterion: As fig7a and fig7b, restricted to tones whose mean PSP height exceeds 15 mV (open
-    detail 5 and the 15 mV bound as noted in the header). The count of 19 neurons is exact
+  criterion: As fig7a and fig7b, restricted to tones whose mean PSP height is at least 15 mV
+    (the sign read from the PDF as noted in the header; open detail 5 applies). The count of 19 neurons is exact
     under the paper's rules; a different count is reported as a mismatch. Tolerances are the
     paper's SE. Reproduced when the three means hold.
 - id: large-responses-controls
-  statement: For tones above 15 mV, random culling and keeping only tones that survive both
+  statement: For tones of at least 15 mV, random culling and keeping only tones that survive both
     cullings give 3.2 mV, so the private estimate of 1.5 mV is not an undersampling effect.
   source: Methods, LFP-based culling and PSP-based culling procedures, paragraph 4
   quote: both the random culling control (�q�neurons �3.20 �0.05 mV, n �20 simulations) and the
     second control (�q�neurons �3.2 �0.5 mV, n �16 neurons) resulted in equivalent increases
   expected:
-  - quantity: <q>neurons after random culling matched to both cullings, tones above 15 mV
+  - quantity: <q>neurons after random culling matched to both cullings, tones of at least 15 mV
     value: 3.2
     tolerance: 0.05
     unit: mV
-  - quantity: <q>neurons without culling, tones above 15 mV that keep 10 trials after both
+  - quantity: <q>neurons without culling, tones of at least 15 mV that keep 10 trials after both
       cullings
     value: 3.2
     tolerance: 0.5
@@ -412,11 +426,11 @@ claims:
   depends_on:
   - culling-controls
   - fig7d-large-responses
-  criterion: As culling-controls, restricted to tones above 15 mV. Tolerances are the paper's
+  criterion: As culling-controls, restricted to tones of at least 15 mV. Tolerances are the paper's
     SE; a miss of the random control by less than three of its SEs is reported as partial.
 - id: cv-large-responses
   statement: In coefficient of variation, both the total and the private variability of the
-    large (above 15 mV) responses are lower than for the full data set (total 0.37 against
+    large (at least 15 mV) responses are lower than for the full data set (total 0.37 against
     0.73; private 0.27 against 0.41, significantly lower), unlike the variability index.
   source: Results, Variability of large mean responses, paragraph 2
   quote: Expressed in terms of the coefficient of variation, the total variability of the high
@@ -425,20 +439,14 @@ claims:
     private contribution to the variability of the large mean responses
     (�CVPSP-culled,LFP-culled&estimation�neurons � 0.27 �0.01, n �16 neurons) was also
     significantly lower than the private contribution to the full data set
-  statistics:
-  - about: private CV, tones above 15 mV against all tones
-    test: not named
-    p: 0.05
-    p_relation: "<"
-    n: 16 and 28 neurons
   expected:
-  - quantity: <CV>neurons total, tones above 15 mV
+  - quantity: <CV>neurons total, tones of at least 15 mV
     value: 0.37
     tolerance: 0.03
   - quantity: <CV>neurons total, all tones
     value: 0.73
     tolerance: 0.04
-  - quantity: <CV>neurons private, tones above 15 mV
+  - quantity: <CV>neurons private, tones of at least 15 mV
     value: 0.27
     tolerance: 0.01
   - quantity: <CV>neurons private, all tones
@@ -457,7 +465,7 @@ claims:
     when the values hold and the test does not.
 - id: lfp-cv-not-different
   statement: The LFP recorded with the more variable neurons is not more variable than that
-    recorded with the less variable neurons (CV 0.66 against 0.74, P > 0.5), so differences in
+    recorded with the less variable neurons (CV 0.66 against 0.74, P = 0.5), so differences in
     total variability are not explained by gross state differences seen in the LFP.
   source: Results, Partitioning variability based on the LFP, paragraph 8
   quote: We therefore compared the CV of a simultaneously recorded LFP of the more variable
@@ -466,7 +474,6 @@ claims:
   statistics:
   - test: Student's t-test
     p: 0.5
-    p_relation: ">"
     n: 14 more variable and 15 less variable neurons
   expected:
   - quantity: LFP CV, more variable neurons
@@ -493,12 +500,6 @@ claims:
     these 3 protocols (pentobarbital alone ... and only a small, although statistically
     significant, difference in the private component of the variability for pentobarbital
     alone and urethane
-  statistics:
-  - about: private variability, pentobarbital alone against urethane
-    test: not named
-    p: 0.05
-    p_relation: "<"
-    n: 12 and 13 neurons
   expected:
   - quantity: q total, pentobarbital alone
     value: 3.7
@@ -705,11 +706,11 @@ claims:
     median access resistance �60 M�). ... Variability showed no systematic dependency on
     recording depth.
   expected:
-  - quantity: <q>neurons, access resistance below the median
+  - quantity: <q>neurons, access resistance above the median (17 cells)
     value: 4.2
     tolerance: 0.7
     unit: mV
-  - quantity: <q>neurons, access resistance above the median
+  - quantity: <q>neurons, access resistance below the median (16 cells)
     value: 4.9
     tolerance: 0.7
     unit: mV
@@ -719,9 +720,29 @@ claims:
     unit: MOhm
   criterion: A claim of absence. The paper names no test; access resistance is the value the
     data set records at the start of each recording, and depth is the recorded manipulator
-    travel divided by the square root of 2, as the data set's notes give it. Which side of
-    the median has 17 and which 16 is garbled; the lower value (4.2) is read as the group
-    below the median, with the other assignment shown. Readings for the test, at p < 0.05,
+    travel divided by the square root of 2, as the data set's notes give it. The PDF's signs
+    put the 17 cells with access resistance above the median at 4.2 mV and the 16 below it at
+    4.9 mV; with 33 cells the median cell's side is not stated, so both placements of it are
+    shown. Readings for the test, at p < 0.05,
     (a) Pearson correlation of total <q>tones with access resistance, and with depth, over 33
     neurons, (b) Spearman correlation. Reproduced when neither reading finds a correlation for
     either variable and the group values hold; the correlations are reported either way.
+checks:
+- date: 2026-11-04
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - header. The garbled relation signs were read from the PDF's font encodings (glyph names in its Differences arrays) in place of guesses from context; the decoded signs are listed there.
+  - fig2-stereotyped-shape. Added the Figure 2 legend's 20 presentations per tone to the identification, and stated that the 50 ms latency bound is a choice made here, as the paper gives no number.
+  - fig3a-reliable-neuron. Cited the Results sentence that calls the 0.88 mV neuron "The most reliable neuron", which supports identifying it by the lowest tone-averaged q.
+  - fig3b-total-variability-distribution. The range is "from < 1 to > 10 mV" in the PDF, not about 1 to about 10; statement and criterion corrected. The Figure 3B bins are strict in the PDF, so the open bound reading was removed; added the reading q < 2 mV for the 7/33, as the Results count the 0.88 mV neuron as comparably low.
+  - fig7a-lfp-culling-estimation. The criterion did not judge the statement's "little effect" part; it is now shown, not scored, citing "already small (approx. 1 mV)" from the PDF, with a 1.5 mV bound named as a choice.
+  - culling-controls. The criterion ignored the 29% and 38% expected values it lists; the fractions now count toward the outcome.
+  - fig7d-large-responses, large-responses-controls, cv-large-responses. The PDF prints "mean responses of >= 15 mV"; "above 15 mV" changed to "at least 15 mV".
+  - cv-large-responses. Removed the statistics entry; the paper names no test and gives no p-value, and the 0.05 was an assumption (it stays in the criterion).
+  - anesthesia-comparison. Removed the statistics entry for the same reason.
+  - lfp-cv-not-different. The PDF prints "P = 0.5", not "P > 0.5"; statement and p_relation corrected.
+  - access-resistance-depth-no-effect. The PDF prints "R-series > median = 4.2 mV, n = 17" and "R-series < median = 4.9 mV, n = 16"; the file had the groups the other way round. Expected labels and criterion corrected.
+  - open. The PDF could not be rendered here, so figure panels were not inspected; the H11349 and H11350 glyphs were read as less-or-equal and greater-or-equal by their place in the Mathematical Pi set (consistent with "<= 85%" beside "as much as 85%").
+  - open. Several criteria fix numbers for words the paper leaves unquantified (fig2 correlation 0.9, fig5b "many", private-shared-ranges 80%, psp-culling "about 3 mV"); each is named as a choice, and the outcomes on those parts rest on them.
