@@ -1,31 +1,30 @@
-I've written the claims file for DANDI:001893 at `claims/001893/10.64898-2026.04.10.717727.yaml`. Nothing is committed. The quote checker passes all 25 quotes. It also reports two "VALUE NOT FOUND" lines: both are p = 3.0e-4 (fig5g, fig6a), which the text prints as "3.0 × 10 −4". I confirmed both by reading the text; the checker just doesn't match that format, the same issue recorded in 001950's checks.
+I wrote `claims/001893/10.1038-s41586-026-11026-0.yaml`. The quote checker passes: 29 claims, 29 quotes, 29 statistical values, 0 problems.
 
-**Text read:** the bioRxiv preprint, version 1, from the JATS XML: Results, Discussion, Methods, and the legends of Figures 1–6 and S1–S18. There is no separate supplement file and no PDF, so the supplementary figures exist only as legends and no panel was seen. The extraction lost the Methods' equations and the contents of Table 1; nothing in the Patch-seq claims needs either.
+**Text read.** The version of record, from Crossref and the publisher's HTML (stored 2026-10-21): main text, Methods, figure legends and the Extended Data Fig. 1–15 legends. Supplementary Tables 1–3 are a PDF and are not in the text. The paper cites them only for injection coordinates, volumes and model priors, and no result rests on them. I also read the bioRxiv preprint v1, only to compare. The paper is titled "Topographic structure and function of locus coeruleus noradrenaline neurons"; "Patch-seq profiling of mouse locus coeruleus norepinephrine neurons" is the dataset's title on DANDI.
 
-**Code read:**
-- The index repository, `locus_coeruleus_norepinephrine_neurons` at commit 43f7083.
-- `LCNE-patchseq-figures` at commit 79fa20a, which makes Figure S14j/k directly from DANDI:001893 version 0.260817.1647.
-- `LCNE-patchseq-analysis` at commit 1190697.
+**Code read.**
+- The linked index repository at commit 43f7083.
+- `LCNE-patchseq-figures` at 79fa20a. It builds Extended Data Fig. 11j,k from dandiset 001893 version 0.260817.1647: 96 NWB files, with projection target and donor from `participants.tsv`.
+- `LCNE-patchseq-analysis` at 1190697.
 
-**Dataset:** it holds the Patch-seq experiment only: 96 cells from 28 mice, labelled from frontal cortex (27), cerebellum (15) or spinal cord (54). That is Figure S14j/k and Results paragraph 5.
-
-**Claims:** 25, all with quotes. 15 have statistics entries (18 values) and 12 have expected values. 6 have criteria, all on the Patch-seq experiment:
-- cohort counts
-- action potential waveform, spinal cord against cortex
-- action potential waveform, spinal cord against cerebellum
-- membrane time constant, cortex against spinal cord
-- membrane time constant, cortex against cerebellum
-- each cell's identity as an NE neuron, marked `data: elsewhere`
-
-The other 19 cover the paper's anatomy, transcriptomics and in vivo findings without criteria, since this dataset is not described as holding those data.
+**Claims.** 29 in total, all with quotes; 16 have statistics, 29 have criteria and 12 have expected values.
+- **Testable here (6 Patch-seq claims):**
+  - Cell and mouse counts per projection target (96 cells, 28 mice).
+  - Identity of each cell as noradrenergic. The transcriptomes are marked as held elsewhere, in NeMO collection col-p9d5w39.
+  - Action-potential waveform, spinal cord against cortex (p < 0.01) and spinal cord against cerebellum (p < 0.05).
+  - Membrane time constant, cortex longer than spinal cord and than cerebellum (both p < 0.001).
+- **Not in this dataset (23 claims):** whole-brain anatomy, single-neuron reconstructions, MAPseq, retrograde tracing, snRNA-seq, MERFISH, retro-seq, in vivo recordings during behaviour, axonal photometry, and extracellular waveforms. The paper names where its data are only as a GitHub index, NeMO and a Code Ocean collection, without saying which data each holds.
 
 **Details the paper leaves open, and the readings named:**
-- **Test:** the S14k legend says "paired t-tests", which can't apply to different cells in groups of unequal size. The code uses two-sided Welch t-tests per cell; I follow the code, with Student's t-test as a variant.
-- **Waveform measure:** the paper says only "action potential waveforms". The code fixes it as PC1 of averaged spike waveforms (rheobase sweep, −10 mV peak detection, −5 to 10 ms window, min-max normalisation over −2 to 4 ms, PCA over −3 to 6 ms). I follow the code.
-- **Sweep inclusion:** the Methods give inclusion criteria; the code applies none. The Methods are the main reading and the code's choice is a variant.
-- **Membrane time constant:** the Methods say IPFX, but give no version or settings. The code reads frozen per-cell values from Allen's internal database, missing for 14 cells. The main reading is IPFX defaults, recorded as a deviation, with the frozen table as a variant to compare cell by cell.
-- **NE identity:** the paper doesn't say how identity was confirmed. Readings are (a) Dbh detected, or (b) all four markers it names (Dbh, Th, Slc6a2, Slc18a2) detected.
+- **Which action-potential measure:** the legend names none. The code settles it, so the criterion follows the code: PC1 of the averaged rheobase spike waveform, with its windows, normalisation and spike detection, tested with a two-sided Welch t-test per cell.
+- **Sweep inclusion for the waveform:** the Methods give a sweep quality rule that the code does not apply. Readings: (a) the code's, with no further rule; (b) the Methods' rule, applied where the files hold the values it needs.
+- **Membrane time constant:** the code does not compute it; it reads a frozen IPFX value, missing for 14 of the 96 cells. Main reading: compute it with IPFX at default settings from the dataset, as the Methods say. Variant: the code's frozen table, which is an outside input.
+- **How cell identity was confirmed:** not stated. Readings: (a) Dbh detected; (b) all four markers (Dbh, Th, Slc6a2, Slc18a2) detected; (c) the cell maps to the LC-NE type.
+- **Go-cue responses:** the paper gives no threshold for counting a cell as responding. Readings: (a) paired t-test p < 0.05 with a higher rate after the cue; (b) a higher mean rate after the cue.
+- **Outcome responses in space:** the test behind P = 3.0 × 10⁻⁴ is not named. The criterion uses the LDA trend test, which the Methods give for categorical labels.
 
-**Missing:**
-- The paper names no archive for the Patch-seq transcriptomes. The code's README names a NeMO collection (col-p9d5w39), pinned only by that identifier and described as not used for the paper's figures. The identity claim points there.
-- The paper gives no direction for the waveform difference, so those two claims test difference only.
+**Inconsistencies in the paper, recorded in the file:**
+- Fig. 3e gives χ²₂ = 29.9 with bootstrapped P = 10⁻⁴; Extended Data Fig. 15c gives the same statistic with p = 3.25 × 10⁻⁷.
+- The preprint says "paired t-tests" for the Patch-seq comparisons; the version of record says two-sided Welch's t-tests. I followed the version of record.
+
+**Missing from the paper.** Nothing the Patch-seq claims need. The only gaps are the details above that the code did not settle: how the time constant was computed, sweep inclusion, and how identity was confirmed.
