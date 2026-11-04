@@ -98,7 +98,7 @@ outcomes:
     and the stimulus files; no threshold, best-frequency or tuning measurement. The data descriptor says
     the best frequency was determined from f-I curves but does not deposit them for Data1.
 - claim: table1-bursting-sessions
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_eyherabide_2008.ipynb
   output: claim:table1-bursting-sessions
   measured:
@@ -109,13 +109,6 @@ outcomes:
   - 7
   - 3
   - 0
-  proposed:
-    outcome: not_reproduced
-    reason: Selection (c) leaves out the off-line sorted sessions, which no passage of the paper supports,
-      and was chosen in part because the kept and bursting sessions per protocol then come close to Table
-      1, so it cannot decide this claim, as it does not decide table1-sessions-per-protocol. Under the
-      selections the criterion supports, (a) and (b), at most 2 of 7 counts are within tolerance under
-      any burst reading (output claim:table1-bursting-sessions). The second verifier gave this outcome.
   notes: 'Under the main burst reading the sessions of selection (c) with bursts of n > 1 are 40/47, 1/6,
     7/7, 6/7, 7/8, 3/7 and 0/7 against 40/43, 0/6, 7/7, 6/7, 7/8, 3/7 and 0/8: six of seven counts equal
     the paper''s, and one 3 dB session bursts where the paper has none. The plateau-excluded first maximum
@@ -131,7 +124,8 @@ outcomes:
     7) and the bursting sessions per protocol come close to Table 1; the off-line exclusion has no passage
     in the paper behind it. The 115 sessions of selection (a), the first round's population, are shown
     beside it. For this claim selection (c) was chosen in part from the expected counts, so it is a variant
-    and the change of outcome under `proposed` follows the selections the criterion supports.
+    and the outcome follows the selections the criterion supports, (a) and (b), under which at most 2 of
+    7 counts are within tolerance under any burst reading.
   - Burst identification takes the first peak as the largest value of C_s below 5 ms (peak reading b),
     the first local minimum after it that differs significantly from it (minimum reading a), and the error
     bar with sigma the SD of the product terms of Eq. 1 and N their number (reading a). Assumed because
@@ -141,7 +135,6 @@ outcomes:
     verification) it leaves 61, near the 64 of the main reading; with N the number of trials no session
     bursts; the main reading gives an error bar of 2.6% of the span of C_s, near the paper's 3.4% (paragraph
     6). The notebook shows every combination.
-  assumed: true
 - claim: table1-isolated-spikes
   outcome: not_reproduced
   notebook: reproduce_eyherabide_2008.ipynb
@@ -1247,3 +1240,26 @@ verifications:
     outcome: blocked
     reason: Agrees with the outcome.
     response: No change.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3 (verifier-3), the one proposed change of outcome, for table1-bursting-sessions, with
+    the full executed notebook of the second revision, the attempt record and the claims file, with the
+    paper under paper/.
+  results:
+  - claim: table1-bursting-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: The counts come from the data (cells 8 and 21), and recomputed by hand for the main reading
+      over selection (a) only protocols 6 and 7 are within tolerance, 2 of 7; across all 18 burst-reading
+      combinations selections (a) and (b) score 1 or 2, never more. The counts depend on table1-sessions-per-protocol,
+      whose readings are (a) and (b); selection (c) drops the off-line sorted sessions, which no passage
+      of the paper supports, and was fitted partly to this claim's own expected values, so it cannot decide
+      it. The outcome holds under every burst reading and both supported selections, so the assumed flag
+      is no longer needed. The criterion compares absolute counts, so under selection (a), with 115 kept
+      sessions against 86, it partly measures the session selection; the fractions are closer (52/60
+      = 87% against 40/43 = 93%), a limit of the criterion that does not change the outcome as written.
+    response: The outcome is now not reproduced and `proposed` is removed. The assumed flag is removed,
+      as the outcome holds under every reading shown, and the deviation says the outcome follows selections
+      (a) and (b). The conclusion cell, the Summary and the README give the new outcome. The note on the
+      criterion comparing absolute counts is reported here and leaves the claims file unchanged.

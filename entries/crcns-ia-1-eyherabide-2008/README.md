@@ -11,7 +11,7 @@ stimulus files. The cells' thresholds, which the paper's model needs, are not in
 | Kept sessions per stimulus protocol (Table 1) | Not reproduced |
 | Firing rate 113 Hz, not different across protocols | Reproduced |
 | Mean threshold 58 dB | Blocked: data missing |
-| Bursting sessions per protocol (Table 1) | Partially reproduced; not reproduced proposed |
+| Bursting sessions per protocol (Table 1) | Not reproduced |
 | Percentage of isolated spikes per protocol (Table 1) | Not reproduced |
 | Highest and average n per protocol (Table 1) | Not reproduced |
 | Isolated spikes least likely at 12 dB and 100 Hz (Figure 5) | Reproduced |
