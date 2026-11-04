@@ -1,0 +1,1284 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001678",
+  "label": "DANDI:001678"
+ },
+ "page": "datasets/dandi/001678/",
+ "generated": "2026-11-04T16:21:01+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 41
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 3
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001678-bellvila-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001678",
+    "version": "0.260227.1824",
+    "doi": "10.48324/dandi.001678/0.260227.1824"
+   },
+   "key": "dandi:001678",
+   "label": "DANDI:001678",
+   "dataset_version": "0.260227.1824",
+   "paper": "10.1162/imag.a.1066",
+   "paper_title": "Parametrizing alternating current stimulation for neuromodulation",
+   "date": "2026-11-03",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41599870329"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001678-bellvila-2026",
+   "entry_title": "Alternating current stimulation of rat cortex (Bell Vila et al. 2026)",
+   "description": "Tests the findings of Bell Vila et al. (2026) on dandiset 001678. The 1-minute files hold only the stimulation command, so the claims on the 1-minute recordings cannot be tested; the 20-minute files hold a 16-channel stream with LFP and spikes but no sorted units. The electric field of the 20-minute experiments is computed from the stimulation artifact; the claims on 20-minute spikes are blocked because sorting the 13 rats, timed on one full rat, exceeds the notebook time limit.",
+   "notebooks": [
+    {
+     "path": "reproduce_bellvila_2026.ipynb",
+     "title": "Reproducing Bell Vila et al. (2026) from dandiset 001678",
+     "executed": "notebooks/001678-bellvila-2026/reproduce_bellvila_2026.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "efield-1min-medians",
+     "statement": "The electric fields estimated from the stimulation artifact in the 1-minute experiments had medians of 0.77, 1.42, 2.86 and 6.04 mV/mm for 50, 100, 200 and 400 uA.",
+     "source": "Results 3.1, paragraph 1; Figure 1C",
+     "quote": "The magnitude of electric fields was assessed from sACS artifacts in electrophysiological recordings, and had medians of 0.77 \u00b1 0.29, 1.42 \u00b1 0.60, 2.86 \u00b1 1.20, and 6.04 \u00b1 1.68 mV/mm for 50, 100, 200, 400 \u03bcA sACS amplitudes, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The 1-minute files hold one channel per trial, the stimulation command (a sinusoid whose peak is the current in uA, zero outside stimulation). No recording channel is stored, so there is no stimulation artifact to measure. The trial parameters (185 trials, printed in the data check) are known from the command. Science Data Bank (doi 10.57760/sciencedb.32375), which the paper names for its data, answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "efield-20min-median",
+     "statement": "The median electric field in the 20-minute 100 uA experiments was 1.65 mV/mm.",
+     "source": "Results 3.4, paragraph 1; Figure 1D",
+     "quote": "The median electric field produced for these experiments was 1.65 \u00b1 0.21 mV/mm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Average peak per 40 Hz cycle per channel over the 20 minutes of stimulation of each of the 13 rats, neighbour differences over 0.5 mm, vector addition. With the channels laid out row by row and reading (i) taken per 2 x 2 cell, the median over rats of each rat's mean field (a) is 1.834 mV/mm and the median of all 117 estimates (b) is 1.525, both within 1.65 +/- 0.21. Per electrode on the 9 electrodes with a right and a lower neighbour, (b) gives 1.648 (within) and (a) 1.890 (outside); per electrode on all 16, using all 24 neighbour pairs, (a) gives 1.748 and (b) 1.650, both within. Reading (ii), the largest pair per axis, gives 3.698 (outside). Grubbs' test over the pooled cell estimates removes none. A serpentine layout gives 1.848 and 1.589 per cell. The criterion takes the claim as reproduced under one reading; (b) matches under every pairing and both layouts tested. The outcome depends on the layout. Over 2000 random layouts, (a) per cell is within tolerance in 18% and (b) in 43%, and over the smoothest 5% of them in 29% and 65%; that 5% is still much rougher than any layout in rows (summed roughness at least 22.4, against 13 for row by row and 13.8 for serpentine). A bootstrap over the 117 cell estimates gives a 95% interval of 1.310 to 1.777 for (b), half-width 0.234, close to the paper's 0.21; resampling rats gives half-widths of 0.313 for (b) and 0.522 for (a). The spread between rats is wider than the paper's 0.21, with rat means 0.810 to 3.052 mV/mm (SD 0.730). In 4 rats 14 of the 208 channels change their artifact by more than half between the two halves of the stimulation (the whole first row in two rats); dropping the cells that touch them gives 1.834 (a) and 1.695 (b). The detected onsets and offsets fall where the 40 Hz line ratio crosses from at most 310 to at least 2406 (and back to at most 810). The measured value is reading (a), (i) per cell, the first the criterion lists. The claims file's opening comment says a claim whose readings give different outcomes is blocked as methods_underspecified, while this criterion takes one matching reading; the criterion is followed, and whether reading (ii) is the paper's is asked of a reader (questions/001678.yaml).",
+     "deviations": [
+      "The 4 x 4 layout of channels aw_1 to aw_16 is assumed to be row by row; the files have no electrode positions and the paper gives no map. The paper names the maker (Microprobes); its arrays are built to order, and neither its catalogue nor TDT's ZIF-Clip and channel-mapping manuals give the map of such an array (searched 2026-11-03). The artifact varies smoothly across the grid under this layout (at most 1.35% of 2000 random layouts are as smooth in any rat), which supports rows of four; the serpentine order gives the same outcome. Choosing a layout for its smoothness tends to lower the neighbour differences, so the random-layout results are shown with the outcome. This is the assumption the outcome rests on.",
+      "Methods 2.8 do not say how a difference along one axis is paired with one along the other for the vector addition. Three pairings are run, per 2 x 2 cell, per electrode on the 9 electrodes with a right and a lower neighbour, and per electrode on all 16 (the left or upper neighbour at the last column or row); under reading (b) all three match, under reading (a) the per-cell and the all-16 pairing.",
+      "Methods 2.8 do not say over which set Grubbs' test is applied; it is run over all estimates pooled, within each rat, and not at all, with the same outcome.",
+      "The band-pass filter is not named by the paper; a zero-phase order-2 Butterworth of 39 to 41 Hz after decimation to 1.2 kHz (Methods 2.5, LFP decimated to 1.2 kHz) is used, the criterion's standard choice. A band of 38 to 42 Hz changes the peaks by under 1% in the rat checked.",
+      "The stimulation period is found from the 40 Hz artifact to 1 s, as the files have no epochs; 1 s is dropped at each end.",
+      "The stored values are read as volts, not scaled by the files' conversion factor of 1e-6, which would give fields near 1.8e-6 mV/mm.",
+      "The field is computed from the stored 16-channel stream, which is not low-passed at 300 Hz and in 8 of 13 rats not notch-filtered at 60 Hz (Methods 2.3 describe the LFP stream as both); at 40 Hz this makes no difference to the artifact."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fem-depth-falloff",
+     "statement": "In the finite element model the electric field falls to about half of its value at the recording electrodes about 70 um deeper.",
+     "source": "Results 3.1, paragraph 2; Figure 2C legend",
+     "quote": "Within the model, the electric field dropped to ~50% of the intensity measured at the recording electrodes at a further ~70 \u00b5m in depth",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The finite element model is out of reach. Sim4Life is commercial software, the ViZOO Big Male Rat model is licensed by the IT'IS Foundation and is not public, the paper publishes no exported field volume, and the linked code holds no FEM script, so the outside input the claim needs is not public. The claim is a ratio of fields at two depths, which a linear model keeps under any scaling, so it does not depend on the missing 1-minute fields; the model alone blocks it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fem-lognormal-fits",
+     "statement": "Cerebral electric field RMS values in the model follow log-normal distributions with shape 1.28 at every amplitude and scale 0.217, 0.400, 0.807 and 1.70 for 50, 100, 200 and 400 uA.",
+     "source": "Results 3.1, paragraph 2; Figure 2D",
+     "quote": "The cerebral electric field root mean square (RMS) values were fitted with log-normal distributions, with shape, location, and scale parameters of 1.28, 8.54E-03, 2.17E-01 for 50 \u00b5A; 1.28, 1.57E-02, 4.00E-01 for 100 \u00b5A; 1.28, 3.17E-02, 8.07E-01 for 200 \u00b5A; and 1.28, 6.70E-02, 1.70 for 400 \u00b5A",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The finite element model is out of reach. Sim4Life is commercial software, the ViZOO Big Male Rat model is licensed by the IT'IS Foundation and is not public, the paper publishes no exported field volume, and the linked code holds no FEM script, so the outside input the claim needs is not public. The model is also scaled to the measured 1-minute fields (efield-1min-medians), which the files do not hold.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fem-ellipsoid-axes",
+     "statement": "Ellipsoids fitted to the hemispheric volumes with fields of at least 1 mV/mm have axes of 7.37, 2.46, 1.58 mm (50 uA), 7.37, 3.32, 2.22 mm (100 uA), 7.86, 4.73, 3.28 mm (200 uA) and 8.80, 6.57, 4.35 mm (400 uA).",
+     "source": "Results 3.1, paragraph 2; Figure 2E",
+     "quote": "Ellipsoids were fit to thresholded hemispheric volumes experiencing electric field magnitude of at least 1 mV/mm, with primary, secondary, and tertiary axes lengths of 7.37, 2.46, and 1.58 mm for 50-\u00b5A ACS; 7.37, 3.32, and 2.22 for 100-\u00b5A ACS; 7.86, 4.73, and 3.28 mm for 200-\u00b5A ACS; and 8.80, 6.57, and 4.35 mm for 400-\u00b5A ACS",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The finite element model is out of reach. Sim4Life is commercial software, the ViZOO Big Male Rat model is licensed by the IT'IS Foundation and is not public, the paper publishes no exported field volume, and the linked code holds no FEM script, so the outside input the claim needs is not public. The model is also scaled to the measured 1-minute fields (efield-1min-medians), which the files do not hold.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-1min",
+     "statement": "In the 1-minute experiments a median of 5 neurons was detected per channel and 66 per rat, of which 71% (405 of 586 cumulatively) fired at 0.25 Hz or more in at least half of the 10-second windows and were analysed.",
+     "source": "Results 3.1, paragraph 3; Figure 3A, B",
+     "quote": "Across rats, a median of 5.00 \u00b1 0.17 neurons were detected per recording electrode channel using SpyKING CIRCUS ... This amounted to 66.00 \u00b1 19.60 neurons per rat, of which 71.43 \u00b1 10.39% (or, cumulatively, 405/586) had FRs \u22650.25 Hz in at least half of 10-second windows (of baseline and stimulation periods) and were, therefore, included in subsequent analysis",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "baseline-fr",
+     "statement": "Median baseline firing rates were 1.20 Hz in the 1-minute and 1.05 Hz in the 20-minute experiments.",
+     "source": "Supplementary Figure S1.1; Results 3.1, paragraph 4 and 3.4, paragraph 1",
+     "quote": "Neurons from 1-min experiments had a median firing rate of 1.20 \u00b1 2.11 Hz, and those from 20-min experiments had a median firing rate of 1.05 \u00b1 4.92 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login. The claim also has a 20-minute part, which has data (the 20-minute files carry spikes) but depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "baseline-ppc",
+     "statement": "Median baseline entrainment (sqrt|PPC|) was 0.12, 0.12, 0.11 and 0.11 to the 5, 10, 20 and 40 Hz waveforms in the 1-minute experiments and 0.14 to 40 Hz in the 20-minute experiments.",
+     "source": "Supplementary Figure S1.2; Results 3.1, paragraph 4",
+     "quote": "Neurons from 1-min experiments had median \u221a|PPC| of 0.12 \u00b1 0.05, 0.12 \u00b1 0.07, 0.11 \u00b1 0.10, 0.11 \u00b1 0.09 to 5, 10, 20, and 40 Hz endogenous oscillatory frequencies, respectively, and those from 20-min experiments had a median \u221a|PPC| of 0.14 \u00b1 0.06 to 40 Hz frequencies",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login. The claim also has a 20-minute part, which has data (the 20-minute files carry spikes) but depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-any-change",
+     "statement": "Across 1-minute trials about 75% of included neurons per rat were significantly affected (FR or entrainment change), and some neurons were affected under every frequency and amplitude combination.",
+     "source": "Results 3.1, paragraph 3; Table 1",
+     "quote": "Across trials, about 75% of neurons were affected (amplitude/frequency-specific percentages are listed in Table 1 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fr-change-more-common-than-timing",
+     "statement": "In 1-minute trials a change in FR was far more common than a change in spike timing (about 70% against under 10% of neurons).",
+     "source": "Results 3.1, paragraph 3; Table 1",
+     "quote": "A change in FR was more frequent than a change in spike timing (approximately 70% vs. <10%; Table 1 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fr-change-mostly-negative",
+     "statement": "The FR change in 1-minute trials was mostly a decrease, about 60% of neurons inhibited against under 10% excited.",
+     "source": "Results 3.3, paragraph 1; Table 1; Figures 4C, D and 10",
+     "quote": "The majority of neurons responding to sACS decreased their FRs during stimulation (60% of neurons were inhibited by sACS while <10% were excited, Table 1 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ppc-change-mostly-increase",
+     "statement": "Of the neurons whose spike timing changed in 1-minute trials, nearly all increased their entrainment (about 4%), and very few decreased it (under 0.5%).",
+     "source": "Results 3.1, paragraph 4; Table 1; Figures 6 and 7",
+     "quote": "whereas the vast majority of spike timing affected neurons showed increases in entrainment (4%, Table 1 ... and only a few neurons exhibited negative \u0394\u221a|PPC| values (<0.5%; Table 1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-magnitudes",
+     "statement": "Among affected neurons in 1-minute trials the median changes were +0.32 and -0.13 in sqrt|PPC| and +0.85 and -0.91 Hz in FR.",
+     "source": "Table 2",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "The overall medians are the last cells of Table 2; no sentence states them.",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fr-change-within-2hz",
+     "statement": "In 1-minute trials FR changes stayed within about 2 Hz of baseline, while entrainment changes were pronounced, Delta sqrt|PPC| reaching 0.55.",
+     "source": "Results 3.1, paragraph 4; Table 2",
+     "quote": "FR remained within ~2 Hz of baseline level ( Table 2 ), 1.20 \u00b1 2.11 Hz ( Supplementary Fig. S1.1 ), whereas entrainment levels achieved were pronounced (\u0394\u221a|PPC| of up to 0.55",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-distributions",
+     "statement": "With increasing amplitude and frequency, the distribution of neurons' changes broadens, shifting toward stronger entrainment and slight suppression of firing.",
+     "source": "Figure 4 legend",
+     "quote": "With increasing sACS amplitude (A) and frequency (B), neurons exhibit a broader distribution of responses, with a shift toward stronger entrainment from baseline and a slight suppression of their activity (C, D)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lmer-ppc-increase-interaction",
+     "statement": "Among neurons with increased entrainment, the interaction of amplitude and frequency positively affected the degree of entrainment (LMER), with no significant main effects.",
+     "source": "Results 3.2, paragraph 1; Table 3",
+     "quote": "An LMER revealed that the interaction between amplitude and frequency positively affected the degree of entrainment ( Table 3 , p = 0.02",
+     "statistics": [
+      {
+       "about": "amplitude by frequency interaction",
+       "test": "linear mixed effects model",
+       "statistic": "estimate 1.47E-05, SE 6.00E-06, t(140.1) = 2.46",
+       "p": 0.02,
+       "n": "neurons with significant sqrt|PPC| increases in 1-min trials, 9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lmer-ppc-decrease-amplitude",
+     "statement": "Among neurons with decreased entrainment, only amplitude significantly affected the decrease, larger amplitudes giving smaller decreases.",
+     "source": "Results 3.2, paragraph 1; Table 3",
+     "quote": "Only amplitude was found to significantly affect decreases in entrainment ( Table 3 , p = 0.01; Fig. 7 ; Supplementary Tables S1.2\u2013S1.5 ), with increasing amplitude yielding smaller magnitudes of entrainment decrease",
+     "statistics": [
+      {
+       "about": "amplitude",
+       "test": "linear mixed effects model",
+       "statistic": "estimate 2.73E-04, SE 1.03E-04, t(48.9) = 2.64",
+       "p": 0.01,
+       "n": "neurons with significant sqrt|PPC| decreases in 1-min trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lmer-fr-increase-no-dependence",
+     "statement": "The FR change of neurons that increased their FR did not depend on stimulation parameters.",
+     "source": "Results 3.3, paragraph 1; Table 3",
+     "quote": "Neurons that increased their FR during sACS did not show a dependence of their induced FR change on the sACS parameters ( Table 3 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lmer-fr-decrease",
+     "statement": "For suppressed neurons, amplitude and frequency had independent and interactive effects on the decrease in FR (larger amplitude and frequency, deeper suppression).",
+     "source": "Results 3.3, paragraph 1; Table 3 and legend",
+     "quote": "an LMER revealed that amplitude and frequency had independent and interactive effects on the decrease in FR ( Table 3 , independent effect of amplitude",
+     "statistics": [
+      {
+       "about": "amplitude",
+       "test": "linear mixed effects model",
+       "statistic": "estimate -4.84E-04, SE 1.67E-04, t(1766.5) = -2.90",
+       "p": 0.004
+      },
+      {
+       "about": "frequency",
+       "test": "linear mixed effects model",
+       "statistic": "estimate -1.01E-02, SE 1.61E-03, t(1764.1) = -6.26",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "amplitude by frequency interaction",
+       "test": "linear mixed effects model",
+       "statistic": "estimate 1.67E-05, SE 6.72E-06, t(1761.9) = 2.48",
+       "p": 0.01
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-ppc-frequency-400ua",
+     "statement": "At 400 uA the increase in entrainment grew with stimulation frequency, 5.10e-3 Delta sqrt|PPC| per Hz.",
+     "source": "Figure 6A; Results 3.2, paragraph 2; Table S1.2",
+     "quote": "The 400 \u00b5A linear regressions showed significant increases in \u0394\u221a|PPC| with increasing frequency at 5.10 \u00d7 10 \u22123 \u0394\u221a|PPC| per Hz, p = 0.002)",
+     "statistics": [
+      {
+       "test": "linear regression (scipy.stats)",
+       "p": 0.002
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-ppc-amplitude-5-40hz",
+     "statement": "At 5 and 40 Hz the increase in entrainment grew with amplitude, by 7.22e-4 and 7.63e-4 Delta sqrt|PPC| per uA.",
+     "source": "Figure 6B; Results 3.2, paragraph 2; Table S1.3",
+     "quote": "with increasing sACS amplitudes, the degree of entrainment increased across 5 and 40 Hz stimulation frequencies (p = 0.004 and 0.0002, respectively); growing at a rate of 7.22 \u00d7 10 \u22124 and 7.63 \u00d7 10 \u22124 \u0394\u221a|PPC| per \u03bcA",
+     "statistics": [
+      {
+       "about": "5 Hz",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.004
+      },
+      {
+       "about": "40 Hz",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0002
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-entrained-share-40hz",
+     "statement": "At 40 Hz the share of neurons entrained rose with amplitude, by 6.04e-2 % per uA.",
+     "source": "Figure 6D; Results 3.2, paragraph 2; Table S1.5",
+     "quote": "40 Hz also showed an increase in the number of neurons entrained with increasing stimulation amplitude (6.04 \u00d7 10 \u22122 % per \u03bcA, p = 0.007)",
+     "statistics": [
+      {
+       "test": "linear regression (scipy.stats)",
+       "p": 0.007
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-ppc-decrease-regressions",
+     "statement": "For neurons with decreased entrainment, only the 400 uA regression across frequency (-1.74e-3 per Hz) and the 5 Hz regression across amplitude (2.67e-4 per uA) were significant.",
+     "source": "Figure 7A, B legend; Table S1.2, S1.3",
+     "quote": "Only the 400-\u00b5A regression (A) across frequencies and the 5-Hz regression across amplitudes (B) showed significance, with -1.74 \u00d7 10 \u22123 \u0394\u221a|PPC| per Hz and 2.67 \u00d7 10 \u22124 \u0394\u221a|PPC| per \u00b5A (p = 0.04 and 0.005, respectively)",
+     "statistics": [
+      {
+       "about": "400 uA, against frequency",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.04
+      },
+      {
+       "about": "5 Hz, against amplitude",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.005
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8a-excited-fr-frequency-100ua",
+     "statement": "At 100 uA the FR increase of excited neurons grew with frequency, 3.65e-2 Hz per Hz.",
+     "source": "Figure 8A; Results 3.3, paragraph 1; Table S1.2",
+     "quote": "Linear regressions of 100 \u03bcA sACS response data versus sACS frequency showed increases in the magnitude of FR increase in excited neurons with increasing frequency (3.65 \u00d7 10 \u22122 \u0394Hz per Hz, p = 0.0003)",
+     "statistics": [
+      {
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0003
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-excited-fr-amplitude-5hz",
+     "statement": "At 5 Hz the FR increase of excited neurons grew with amplitude, 2.22e-3 Hz per uA.",
+     "source": "Figure 8B; Results 3.3, paragraph 1; Table S1.3",
+     "quote": "The 5 Hz response regression across amplitudes ( Fig. 8B ; Supplementary Table S1.3 ) showed an increase in the magnitude of FR increase of excited neurons with increasing amplitude (2.22 \u00d7 10 \u22123 \u0394Hz per \u03bcA, p = 0.002)",
+     "statistics": [
+      {
+       "test": "linear regression (scipy.stats)",
+       "p": 0.002
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8c-excited-share-frequency-200ua",
+     "statement": "At 200 uA the share of excited neurons fell with frequency.",
+     "source": "Figure 8C; Results 3.3, paragraph 1; Table S1.4",
+     "quote": "The 200 \u00b5A response regression showed a significant decrease in the percentage of excited neurons with increasing frequency ( Fig. 8C ; Supplementary Table S1.4 ) (-2.30 \u00d7 10 \u22123 % per Hz, p = 0.01)",
+     "statistics": [
+      {
+       "test": "linear regression (scipy.stats)",
+       "p": 0.01
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9a-suppressed-fr-frequency",
+     "statement": "For suppressed neurons at 50 and 100 uA, FR decreased further with frequency, by -8.33e-3 and -1.19e-2 Hz per Hz.",
+     "source": "Figure 9A legend; Results 3.3, paragraph 2; Table S1.2",
+     "quote": "The 50 and 100 \u00b5A regressions across frequencies (A) showed greater degrees of suppression in FRs with increasing frequency (-8.33 \u00d7 10 \u22123 and -1.19 \u00d7 10 \u22122 \u0394Hz per Hz, p = 0.0004 and <0.0001, respectively)",
+     "statistics": [
+      {
+       "about": "50 uA",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0004
+      },
+      {
+       "about": "100 uA",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9b-suppressed-fr-amplitude-5hz",
+     "statement": "Only at 5 Hz did suppressed neurons' FR decrease further with amplitude, -1.36e-3 Hz per uA.",
+     "source": "Figure 9B legend; Results 3.3, paragraph 2; Table S1.3",
+     "quote": "Only the 5-Hz regression (B) showed increased suppression with increasing amplitude (-1.36 \u00d7 10 \u22123 \u0394Hz per \u00b5A, p = 0.0008)",
+     "statistics": [
+      {
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0008
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9cd-suppressed-share-unchanged",
+     "statement": "The share of suppressed neurons showed no linear dependence on frequency and was maintained across amplitudes.",
+     "source": "Results 3.3, paragraph 2; Figure 9C, D; Tables S1.4, S1.5",
+     "quote": "with no (linear) stimulation frequency dependence of the fraction of neurons affected ( Fig. 9C ; Supplementary Table S1.4 ) ... However, the fraction of neurons affected was maintained across sACS amplitudes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10a-all-fr-frequency",
+     "statement": "Taking all FR-changed neurons together, suppression deepened with frequency at 50, 100 and 200 uA (-1.02e-2, -1.33e-2, -1.47e-2 Hz per Hz), while it was largely maintained across amplitudes.",
+     "source": "Figure 10 legend; Results 3.3, paragraph 2; Tables S1.2, S1.3",
+     "quote": "When considering grouped FR changes, most amplitudes of stimulation elicited further suppression with increasing stimulation frequency (at rates of -1.02 \u00d7 10 \u22122 , -1.33 \u00d7 10 \u22122 , and -1.47 \u00d7 10 \u22122 \u0394Hz per Hz for 50, 100, and 200 \u00b5A trials; p = 0.0003, <0.0001, and 0.0001, respectively",
+     "statistics": [
+      {
+       "about": "50 uA",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0003
+      },
+      {
+       "about": "100 uA",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "200 uA",
+       "test": "linear regression (scipy.stats)",
+       "p": 0.0001
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lfp-1min-no-change",
+     "statement": "One minute of sACS produced no significant change in LFP power or LF-HF PAC from before to after stimulation.",
+     "source": "Results 3.1, paragraph 4; Tables S1.6, S1.7",
+     "quote": "LFP analysis did not show significant changes in power or LF-HF PAC before and after 1-min sACS ( Supplementary Tables S1.6\u2013S1.7 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-1min. The 1-minute files hold only the stimulation command channel, one series per trial. The multi-unit recordings that the paper sorted, the LFP and the stimulation monitor are not in the dandiset, and no sorted units are stored. Science Data Bank (doi 10.57760/sciencedb.32375) answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sham-no-fr-change",
+     "statement": "Under sham stimulation no neuron changed its FR in any of the 16 paradigms, and one or two neurons were spuriously detected as changing entrainment in some, without the trends seen under true sACS.",
+     "source": "Results 3.1, paragraph 5; Table S3.1",
+     "quote": "Under sham sACS, no neurons showed significant changes in firing rate across any of the 1-minute baseline to sham stimulation paradigms ( Supplementary Table S3.1 ). One or two neurons were spuriously detected as having significantly changed entrainment levels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The sham recording (one F344 nTg female rat, 80 minutes) is not in the dandiset; its 22 subjects are the 9 and 13 rats of the two paradigms (P3M Sprague-Dawley by their dates and sexes). Science Data Bank answers PERMISSION NO ACCESS without a login.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sham-lfp-baseline",
+     "statement": "Without stimulation, LFP band power and modulation indices stayed stable over 80 minutes under propofol, for example delta power 1.71e-6 and delta to low-gamma MI 1.17e-3.",
+     "source": "Results 3.7, paragraph 2 and 3.8, paragraph 2",
+     "quote": "In 80-minute LFP recordings under propofol anesthesia without sACS perturbation, power was maintained at 1.71E-06 \u00b1 6.94E-07 mV/Hz, 9.70E-07 \u00b1 3.89E-07 mV/Hz, 6.66E-07 \u00b1 2.72E-07 mV/Hz, 3.03E-07 \u00b1 9.35E-08, 8.40E-08 \u00b1 1.74E-08 mV/Hz, and 3.61E-08 \u00b1 3.50E-09 mV/Hz for \u03b4, \u03b8, \u03b1, \u03b2, low-\u03b3, and high-\u03b3 band activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The sham recording is not in the dandiset (see sham-no-fr-change).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-20min",
+     "statement": "In the 20-minute experiments a median of 44 neurons was detected per rat and 4 per channel; 52% (343 of 620) passed the 0.25 Hz criterion and were analysed.",
+     "source": "Results 3.4, paragraph 1",
+     "quote": "A median of 44.00 \u00b1 10.36 neurons were detected per rat, with 4.00 \u00b1 0.60 neurons per electrode channel. Of these neurons, 51.61 \u00b1 10.62% (or, cumulatively, 343 of 620) had FRs \u22650.25 Hz in at least half of all 1-minute windows across baseline and stimulation periods",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The 20-minute files hold a 16-channel stream at 12207 Hz that carries spikes (negative 500 to 3000 Hz peaks with troughs of 50 to 180 uV, up to 44 per second on one channel), but no sorted units. One rat (sub-2023-04-28) was sorted over its whole window, 20 min of baseline, the 20 min of stimulation and the 9.3 min after offset that its first series holds (49.3 min). In the executed notebook of this record, streaming, filtering and removing the artifact took 89 s and SpyKING CIRCUS 2 (spikeinterface 0.103.0, printed) 302 s, 7.9 s per minute of recording. Scaled to the windows of the 13 rats (45.6 to 50 min), loading and sorting take about 85 minutes, 25 over the 60-minute limit of a notebook; with the 5 minutes the rest of the notebook took before this point, 90 minutes, before the permutation tests, the phase extraction and the LFP analyses. The time depends on the machine and varies between runs: the notebook handed to round 2 printed 68 minutes (6.4 s per minute), and the two runs of this revision 83 and 85. The block holds in every run, by a margin of 8 to 25 minutes for the sorting alone, which a faster machine could narrow. The comb filter brings the 40 Hz-locked part of the multi-unit band from 11 to 22 uV peak to peak to 0.8 to 1.6 uV, near the 0.4 to 2.0 uV of the baseline. The rat sorted gives 25 units (a median of 1 per channel), all passing the 0.25 Hz rule, against the paper's medians of 44 per rat and 4 per channel (24 to 27 units in the runs so far); one rat does not test the claim. SpyKING CIRCUS 1, which the paper used, was tried while preparing and needs an MPI library that is not available here; it is not in the locked environment, so the notebook does not show this.",
+     "deviations": [
+      "The timing uses SpyKING CIRCUS 2 in place of SpyKING CIRCUS 1, with the paper's band (500 to 3000 Hz, Methods 2.3) and detection threshold (6, Methods 2.6), the sorter's whitening and default settings otherwise, on one rat's whole 49.3-minute window.",
+      "The artifact is removed during stimulation by subtracting the mean of the samples 1 to 10 stimulation periods earlier, a causal uniform comb filter as Methods 2.5 name (ARtACS; the paper's MUAartrem.m uses 10 periods), in place of the ARtACS software itself."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "20min-during-percentages",
+     "statement": "Over the 20 minutes of sACS, 4% of neurons were entrained and 2% decreased their entrainment, while 54% increased and 34% decreased their FRs; on the whole neurons were excited.",
+     "source": "Results 3.5, paragraph 1; Table 4; Supplementary Figures S2.1, S2.2",
+     "quote": "4% of all neurons were entrained, while in 2% of all neurons \u221a|PPC| decreased ( Table 4 ; Supplementary Fig. S2.1 ). When considering the FRs of neurons, 54% showed increased FRs, while 34% decreased their FRs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit). The stimulation waveform used for spike phases is not stored either; the 40 Hz artifact in the stream could stand in for it. In four rats the first series holds less than 10 minutes after offset (5.6 to 9.3).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "20min-post-percentages",
+     "statement": "In the 10 minutes after the 20-minute sACS, 2% of neurons kept increased entrainment and 4% had decreased entrainment; 51% had decreased and 39% increased FRs, so excitation during sACS turned to suppression after it.",
+     "source": "Results 3.6, paragraph 1; Table 4; Supplementary Figures S2.3, S2.4",
+     "quote": "2% of all neurons maintained imposed spiking patterns (i.e., showed increases in entrainment from baseline after stimulus offset) ... Finally, half of all neurons (51%) had decreased firing post-stimulation ... while 39% showed increased FRs post-sACS ... excitation during sACS thus turned to suppression post-sACS",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit). The stimulation waveform used for spike phases is not stored either; the 40 Hz artifact in the stream could stand in for it. In four rats the first series holds less than 10 minutes after offset (5.6 to 9.3).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "20min-magnitudes",
+     "statement": "Affected neurons changed sqrt|PPC| by +0.04 and -0.07 during 20-minute sACS and by +0.07 and -0.04 after it, with FR changes of +0.91 and -0.30 Hz during and +1.53 and -0.43 Hz after.",
+     "source": "Table 4",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Values from the columns of Table 4 for changes across all affected neurons; no sentence states them. The Discussion (4.2) says the FR changes remained within 2 Hz.",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "Depends on units-20min, blocked as too large (loading and sorting the 13 rats takes about 85 minutes at the speed measured on one full rat in this run, over the 60-minute limit). The stimulation waveform used for spike phases is not stored either; the 40 Hz artifact in the stream could stand in for it. In four rats the first series holds less than 10 minutes after offset (5.6 to 9.3).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "power-entrained-channels",
+     "statement": "On the 12 channels near entrained neurons, log power fell from before to after 20-minute sACS in the delta, theta, alpha, beta and low-gamma bands.",
+     "source": "Results 3.7, paragraph 1; Figure 11B legend; Table S2.1",
+     "quote": "For channels near entrained neurons, significant decreases in log power observed across \u03b4, \u03b8, \u03b1, \u03b2, and low-\u03b3 frequency bands (emmean = -0.12, -0.15, -0,13, -0.06, and -0.04",
+     "statistics": [
+      {
+       "about": "delta, theta, alpha, beta (each)",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "12 channels"
+      },
+      {
+       "about": "low gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0002,
+       "corrected": "Bonferroni",
+       "n": "12 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "power-reduced-entrainment-channels",
+     "statement": "On the 6 channels near neurons with decreased entrainment, log power rose in the alpha, beta, low-gamma and high-gamma bands.",
+     "source": "Results 3.7, paragraph 1; Figure 11B legend; Table S2.1",
+     "quote": "whereas near decreases in \u221a|PPC|, channels showed increases in the log power of \u03b1, \u03b2, low-\u03b3, and high-\u03b3 frequency bands (emmean = 0.05, 0.09, 0.09, and 0.09",
+     "statistics": [
+      {
+       "about": "alpha",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "6 channels"
+      },
+      {
+       "about": "beta, low gamma (each)",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "high gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0007,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "power-excited-channels",
+     "statement": "On the 78 channels near neurons whose FR rose, log power increased in all bands.",
+     "source": "Results 3.7, paragraph 2; Figure 11B legend; Table S2.1",
+     "quote": "Channels near excited neurons had increases in log power across all frequency bands (emmean = 0.04, 0.08, 0.10, 0.10, 0.09, and 0.05",
+     "statistics": [
+      {
+       "about": "each of the six bands",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "78 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "power-suppressed-channels",
+     "statement": "On the 47 channels near neurons whose FR fell, log power decreased in all bands.",
+     "source": "Results 3.7, paragraph 2; Figure 11B legend; Table S2.1",
+     "quote": "and near suppressed neurons, decreases across all bands (emmean = -0.14, -0.19, -0.18, -0.16, -0.13, and 0.09",
+     "statistics": [
+      {
+       "about": "each of the six bands",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "47 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pac-entrained-channels",
+     "statement": "On channels near entrained neurons, order-normalized MI fell after 20-minute sACS for delta and theta to low gamma and to high gamma.",
+     "source": "Results 3.8, paragraph 1; Figure 12B legend; Table S2.2",
+     "quote": "For channels near entrained neurons, there was a significant decrease in the order normalized MI observed in \u03b4 to low-\u03b3, \u03b8 to low-\u03b3, \u03b4 to high-\u03b3, and \u03b8 to high-\u03b3 (emmean = -0.39, -0.21, -0.15, and -0.15",
+     "statistics": [
+      {
+       "about": "delta to low gamma, delta to high gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "12 channels"
+      },
+      {
+       "about": "theta to low gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.002,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "theta to high gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.03,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pac-reduced-entrainment-channels",
+     "statement": "On channels near neurons with decreased entrainment, alpha to high-gamma order-normalized MI increased.",
+     "source": "Results 3.8, paragraph 1; Figure 12B legend; Table S2.2",
+     "quote": "whereas channels near decreases in \u221a|PPC| showed a significant increase in \u03b1 to high-\u03b3 coupling (emmean = 0.22, SE = 0.10, p = *0.02)",
+     "statistics": [
+      {
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.02,
+       "corrected": "Bonferroni",
+       "n": "6 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pac-excited-channels",
+     "statement": "On channels near excited neurons, order-normalized MI rose for alpha and beta to low gamma and delta, alpha and beta to high gamma.",
+     "source": "Results 3.8, paragraph 2; Figure 12B legend; Table S2.2",
+     "quote": "Channels near excited neurons showed increases in the order normalized MI between \u03b1 to low-\u03b3, \u03b2 to low-\u03b3, \u03b4 to high-\u03b3, \u03b1 to high-\u03b3, and \u03b2 to high-\u03b3 band pairs (emmean = 0.10, 0.10, 0.15, 0.12, and 0.09",
+     "statistics": [
+      {
+       "about": "alpha to low gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0007,
+       "corrected": "Bonferroni",
+       "n": "78 channels"
+      },
+      {
+       "about": "beta to low gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0005,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "delta to high gamma, alpha to high gamma (each)",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "beta to high gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.002,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pac-suppressed-channels",
+     "statement": "On channels near suppressed neurons, order-normalized MI fell for seven of the eight band pairs (all but beta to low gamma).",
+     "source": "Results 3.8, paragraph 2; Figure 12B legend; Table S2.2",
+     "quote": "and near suppressed neurons, decreases in \u03b4 to low-\u03b3, \u03b8 to low-\u03b3, \u03b1 to low-\u03b3, \u03b4 to high-\u03b3, \u03b8 to high-\u03b3, \u03b1 to high-\u03b3, and \u03b2 to high-\u03b3 band pairs (emmean = -0.60, -0.37, -0.21, -0.54, -0.36, -0.29, and -0.06",
+     "statistics": [
+      {
+       "about": "the first six pairs (each)",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "47 channels"
+      },
+      {
+       "about": "beta to high gamma",
+       "test": "LMER pairwise comparison of estimated marginal means, pre against post",
+       "p": 0.01,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_bellvila_2026.ipynb",
+     "notes": "The channels analysed are those near neurons significantly changed during the 20 minutes of stimulation, so the claim depends on 20min-during-percentages and units-20min, blocked as too large. The recordings before onset and after offset are in the files, so the power and modulation index could be computed once the neurons are sorted. The stored stream shows a 60 Hz line 10 to 1099 times its neighbours in 8 of 13 rats, so it is not notch-filtered there as Methods 2.3 describe, and the power analysis would need the notches applied first.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The 9 files of the 1-minute paradigm hold only the stimulation command channel ('S1r 1', the TDT stream uS1r), one series per trial. The multi-unit recordings, the LFP and the stimulation monitor that the paper analysed are not in them, so none of the paper's 1-minute findings (the parameter exploration, Tables 1 to 3, Figures 3 to 10) can be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "No file holds sorted units, although the paper's results rest on SpyKING CIRCUS output. For the 20-minute paradigm the recordings could be sorted again, but at about 6.5 minutes per rat in this run, about 85 minutes for the 13 (68 to 85 in the runs so far); the published spike times would make the 20-minute findings testable.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The sham recording (one F344 nTg female rat, 80 minutes under propofol) is not in the dandiset.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every series is labelled in volts with a conversion of 1e-6. In the 1-minute files the values are the stimulation current in uA (peaks of 49.98 to 399.87 for 50 to 400 uA); in the 20-minute files they are already in volts (median magnitude about 0.1 mV, spike troughs about 100 uV), so the conversion would make them a million times too small.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The 20-minute stream (channels 'aw_ 1' to 'aw_ 16', 12207 Hz) matches neither stream of Methods 2.3. It has the LFP's rate but is not low-passed at 300 Hz, and it carries spikes. In 8 of 13 rats the 60 Hz line stands 10 to 1099 times above its neighbours, so these are not notch-filtered; in the other five the ratio is 1.0 to 9.6 (no line at all in sub-2023-05-04 and sub-2023-05-05), so a notch cannot be ruled out there. The files and the dandiset description do not say which TDT stream it is or how it was filtered; the description gives 24 kHz for all data.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrodes table has no positions (location 'unknown'), so the 4 x 4 layout of the array, which the paper's field estimate needs, is not documented. The 20-minute files have no epochs or stimulation times; the stimulation is found only from its artifact. Session descriptions are empty.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The paper gives 20 trials per 1-minute rat; the files hold 15 to 23 (185 in all), with repeats of some combinations, three rats missing some of the 16 analysed combinations (one lacks all four at 400 uA), and one trial at 100 Hz and 20 uA outside the paper's design. Which trials the paper analysed is not documented.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The 20-minute subjects are 6 male and 7 female in the files; Methods 2.1 say 7 male and 6 female. The 1-minute subjects (4 male, 5 female) agree with the paper.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the paper's authors on the electric field estimate (Methods 2.8). What is the 4 x 4 layout of channels 1 to 16 (assumed here row by row)? How are the differences along the two axes paired for the vector addition (per 2 x 2 cell or per electrode)? Over which set is Grubbs' test applied? Is the reported median (1.65 +/- 0.21 mV/mm for the 20-minute experiments) taken over rats or over all channel-pair estimates, and what is the +/-? Under the row-by-row layout the readings give 1.53 to 1.89 mV/mm per pair and 3.70 for the largest pair per axis; over random layouts the per-cell median of all estimates is within 1.65 +/- 0.21 in 43% of them.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the author-answers run with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the archive's file list and metadata and tested fields and grubbs on synthetic inputs. Report in transcripts/001678/verifier-1-report.md.",
+     "agreed": 45,
+     "of": 45,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the author-revise-1 run, the helper module, the claims file and this record, with the paper. Report in transcripts/001678/verifier-2-report.md.",
+     "agreed": 45,
+     "of": 45,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001678-bellvila-2026",
+   "type": "reproduction",
+   "title": "Alternating current stimulation of rat cortex (Bell Vila et al. 2026)",
+   "description": "Tests the findings of Bell Vila et al. (2026) on dandiset 001678. The 1-minute files hold only the stimulation command, so the claims on the 1-minute recordings cannot be tested; the 20-minute files hold a 16-channel stream with LFP and spikes but no sorted units. The electric field of the 20-minute experiments is computed from the stimulation artifact; the claims on 20-minute spikes are blocked because sorting the 13 rats, timed on one full rat, exceeds the notebook time limit.",
+   "datasets": [
+    "dandi:001678"
+   ],
+   "papers": [
+    "10.1162/imag.a.1066"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_bellvila_2026.ipynb",
+     "title": "Reproducing Bell Vila et al. (2026) from dandiset 001678",
+     "executed": "notebooks/001678-bellvila-2026/reproduce_bellvila_2026.html"
+    }
+   ]
+  }
+ ]
+}
