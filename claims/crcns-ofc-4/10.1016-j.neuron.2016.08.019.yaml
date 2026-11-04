@@ -79,11 +79,12 @@ claims:
     value: 2.3
     tolerance: 0.23
     unit: percent
-  criterion: Error rate as error and time-out responses (both led to feedback, Methods, Task)
-    over all responded trials of the five runs, per participant, then the mean over
-    participants. The denominator is open; readings are (a) all trials including the
-    repetitions that follow errors, (b) all trials but the first of each run. Reproduced when
-    under one reading the mean is within tolerance. The data set holds 24 of the 27
+  criterion: Error rate per participant over the trials of the five runs, then the mean over
+    participants. Whether time-outs count as errors is open (both led to feedback, Methods,
+    Task; time-outs were 0.3% of trials, Supplemental Results 1.1, more than the tolerance);
+    readings are errors only, and errors plus time-outs. The denominator is open; readings are
+    (a) all trials including the repetitions that follow errors, (b) all trials but the first
+    of each run. Reproduced when under one reading the mean is within tolerance. The data set holds 24 of the 27
     participants, so the value is compared as given and the subset is noted.
 - id: supp-errors-by-trial-class
   statement: Error rates differed by trial class (Enter 3.4%, Exit 2.3%, Internal 1.4%).
@@ -129,7 +130,8 @@ claims:
     linear term, participants as random effect on intercept and on the block slope (Methods,
     Behavioral Analyses), Wald chi-square at p < 0.05. Reproduced when the block effect is not
     significant; the slope is reported either way. The model family is open as in
-    supp-errors-by-trial-class; both readings are shown and the absence is judged on (a).
+    supp-errors-by-trial-class; both readings are shown and the absence is judged on (a), the
+    linear mixed model, as the Methods name lmer, which fits linear models.
 - id: supp-errors-not-by-age-category
   statement: Error rates were not affected by the age or the category judged, nor by their
     interaction.
@@ -308,8 +310,12 @@ claims:
   - fig2a-16way-decoding
   criterion: From the predictions of fig2a-16way-decoding, each test map scored correct on a
     component when predicted and true state agree on it (Methods, fMRI Data Analysis); per
-    participant the proportion correct; one-sided one-sample t-test against 50%. Reproduced
-    when all three components have p < 0.05; partially reproduced when one or two do.
+    participant the proportion correct; one-sided one-sample t-test against 50%. The paper's
+    numbers do not agree with each other (t26 > 3 gives a one-sided p below 0.003, not 0.014
+    or 0.007), so the p-values may come from the bootstrap of Figure S2B (participants
+    resampled with replacement, 10000 iterations, Supplemental Results 1.2); readings are the
+    t-test and that bootstrap. Reproduced when under one reading all three components have p
+    < 0.05; partially reproduced when one or two do.
 - id: fig2b-current-age-absent
   statement: The observable component, current age, is not classified above chance within the
     16-way classification.
@@ -318,13 +324,15 @@ claims:
     observable given the current category, contributed to state representations in the OFC
     (rightmost bar in Figure 2B, p > 0.72
   statistics:
-  - test: t-test against chance, one-sided
+  - test: test against chance, one-sided (test not named)
     p: 0.72
     p_relation: ">"
   depends_on:
   - fig2a-16way-decoding
   criterion: A claim of absence. Current-age accuracy as in fig2b-hidden-components, one-sided
-    one-sample t-test against 50% at p < 0.05. Reproduced when the test is not significant.
+    one-sample t-test against 50% at p < 0.05, the test the Results imply for Figure 2B (t26);
+    the bootstrap of Figure S2B, which the sentence cites, is shown as a variant. Reproduced
+    when the t-test is not significant.
 - id: fig2b-two-back-absent
   statement: The task-irrelevant category and age from two trials back are not classified above
     chance by the two-back classifier.
@@ -332,14 +340,15 @@ claims:
   quote: This analysis confirmed that no information about irrelevant events from two trials ago
     could be detected (two leftmost bars in Figure 2B, p > 0.66)
   statistics:
-  - test: t-test against chance, one-sided
+  - test: test against chance, one-sided (test not named)
     p: 0.66
     p_relation: ">"
   depends_on:
   - fig2-two-back-state-space
   criterion: A claim of absence. Component accuracies for category and age of two trials back
     from the predictions of fig2-two-back-state-space, one-sided one-sample t-test against
-    50% at p < 0.05. Reproduced when neither is significant.
+    50% at p < 0.05, the test the Results imply for Figure 2B (t26); the bootstrap of Figure
+    S2B is shown as a variant. Reproduced when neither t-test is significant.
 - id: figs2c-8way-decoding
   statement: Decoding an 8-state space without current age (previous category, previous age,
     current category) is above chance (16.7%), and its three components are decoded above
@@ -385,7 +394,7 @@ claims:
     unit: percent
   - quantity: current category accuracy, 8-way
     value: 55.5
-    tolerance: 5.5
+    tolerance: 5.55
     unit: percent
   criterion: States with different current ages modelled as the same event type (Figure S2C
     legend), giving 8 regressors; then the analysis of fig2a-16way-decoding with chance 12.5%
@@ -416,30 +425,32 @@ claims:
     unit: percent
   - quantity: upper 95th percentile, previous category
     value: 51.5
-    tolerance: 0.15
+    tolerance: 5.15
     unit: percent
   - quantity: upper 95th percentile, previous age
     value: 51.7
-    tolerance: 0.17
+    tolerance: 5.17
     unit: percent
   - quantity: upper 95th percentile, current category
     value: 51.4
-    tolerance: 0.14
+    tolerance: 5.14
     unit: percent
   - quantity: upper 95th percentile, current age
     value: 51.7
-    tolerance: 0.17
+    tolerance: 5.17
     unit: percent
   criterion: Training labels permuted in each fold, 10 permutations per participant, accuracies
     averaged within participant, test labels unchanged (Supplemental Results 1.2). The
-    component tolerances are 10% of the distance from chance (1.5 to 1.7 points), as 10% of
-    the value would span chance. The distribution whose 95th percentile is reported, and the
-    test behind p < 0.025, are open; readings are (a) the participants' averaged permutation
-    accuracies, with a paired t-test of real against permuted; (b) all participant and
-    permutation values pooled, with the real group mean compared to the percentile.
-    Reproduced when under one reading the permuted 16-way mean is not above 6.25% at p < 0.05
-    and the real 16-way accuracy exceeds the permuted at p < 0.025; the percentiles are
-    compared with the expected values and reported.
+    tolerances are the default 10% of the value; the percentiles are chance-level numbers
+    from 10 random permutations, so the claim rests on the comparison with the real accuracy.
+    The distribution whose 95th percentile is reported, and the test behind p < 0.025, are
+    open; readings are (a) the participants' averaged permutation accuracies, with a paired
+    t-test of real against permuted; (b) all participant and permutation values pooled, with
+    the real group mean compared to the percentile. Reproduced when under one reading the
+    permuted 16-way mean is not above 6.25% at p < 0.05 and the real accuracy exceeds the
+    permuted at p < 0.025 for the 16-way classification and each of the four components;
+    partially reproduced when this holds for the 16-way classification but not for every
+    component. The percentiles are compared with the expected values and reported.
 - id: synthetic-data-control
   statement: Decoding on synthetic fMRI data with univariate stimulus-driven OFC activation and
     each participant's event timing is not above chance (6.8%).
@@ -459,8 +470,12 @@ claims:
     decoding plus spatial noise of mean 3 and SD 2 voxels; state amplitudes from a normal
     distribution of mean 25, SD 5; double-gamma HRF; default noise mixture, baseline 10, SNR
     2.87; smoothed to the real data's smoothness), then the analysis of fig2a-16way-decoding.
-    The participant's peak is read as the peak of the conjunction searchlight within OFC
-    (Figure S3C); the searchlight radius is not given anywhere and is open, with 2 and 3 voxels
+    The Methods place the peak at each participant's maximum decoding and cite Figure S5,
+    which shows Euclidean distances, so the reference is wrong. Readings are (a) the peak of
+    the participant's conjunction searchlight within OFC (Figure S3C), (b) the peak of the
+    participant's 16-way searchlight accuracy within OFC. The Methods simulate whole-brain
+    data and match the real data's smoothness with AFNI's 3dFWHMx; with OFC voxels only, both
+    are restricted to the OFC mask, as a deviation. The searchlight radius is not given anywhere and is open, with 2 and 3 voxels
     as the readings run (a standard choice, not the paper's). The test is not named; reading,
     a one-sample t-test against 6.25%. Reproduced when that test is not significant at p <
     0.05; the mean is reported against 6.8%. Being a simulation, the result is reported over
@@ -503,7 +518,8 @@ claims:
   criterion: The classifiers of fig2a-16way-decoding unchanged; the test set split into the 8
     Enter and 8 non-Enter state maps, component accuracies computed in each subset and then
     averaged within participant (Methods, fMRI Data Analysis); one-sample t-test against 50%,
-    one-sided as in the Figure 2 and S2 legends (two-sided shown). Which averages are tested
+    one-sided as the Results state for Figure 2B and the Figure S2 legend for its panels
+    (two-sided shown). Which averages are tested
     is open; readings are (a) per component, the mean of the Enter and non-Enter accuracies,
     (b) per component and subset, each of the six tested. Reproduced when under one reading
     all tested accuracies have p < 0.05.
@@ -531,8 +547,9 @@ claims:
     The searchlight radius is not given (open).
 - id: other-rois-incomplete
   statement: Hippocampus, DLPFC and FFA/PPA code current and previous category but not previous
-    age, and show neither complete nor task-specific encoding; decoding there is not related to
-    error rates or behavior as it is in OFC, except a weaker relation in PPA/FFA.
+    age, and show neither complete nor task-specific encoding. Their decoding accuracy does
+    not correlate with error rate in hippocampus or DLPFC but does in PPA/FFA, and in none of
+    them does pattern similarity relate to transition error rates.
   source: Results, paragraphs 10, 11 and 15; Figure S2D to S2F
   quote: None of these areas showed either complete encoding of all hidden state components nor
     specific encoding of only task-relevant variables
@@ -665,7 +682,10 @@ claims:
   criterion: Per participant, accuracy at position 0 (and -1) in the error and in the matched
     non-error courses of fig4b-decline-before-errors; paired t-test. The side is not stated;
     t24 = 2.3 with p = 0.01 fits a one-sided test, so the reading is one-sided, with two-sided
-    shown. Reproduced when trial 0 is lower at p < 0.05.
+    shown. The paper gives t24 for trial 0 though 24 participants enter the error analyses
+    (Methods, Participants), which implies 23 degrees of freedom; the difference is reported
+    with its degrees of freedom. Reproduced when trial 0 is lower at p < 0.05; trial -1 is
+    reported against p = 0.07.
 - id: fig5-similarity-predicts-errors
   statement: Across the eight Exit to Enter transitions, transitions between states whose OFC
     patterns are more correlated have lower error rates.
@@ -744,6 +764,29 @@ claims:
     p: 0.4
   criterion: A claim of absence for the OFC part. States defined by previous category, previous
     age, current category and the correct response side, with GLM onsets at the response; the
-    analysis of fig2a-16way-decoding in OFC, t-test against chance at p < 0.05. Needs the
+    analysis of fig2a-16way-decoding in OFC, t-test against chance at p < 0.05. Which accuracy
+    the ROI test uses is not given; readings are the 16-way accuracy against 6.25% and the
+    motor-response component against 50%. The test is not named; the t-test is a reading. Needs the
     response side of each trial; whether the data set has it is the author's to find. The
     whole-brain part needs data the description does not list.
+checks:
+- date: 2026-11-04
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. The two values it did not find, the CI bounds -0.8432 and -0.0169 of fig4a-decoding-error-correlation, are in the text with a garbled minus sign; they match the paper.
+  - behavior-error-rate. The criterion counted time-outs as errors and spoke of responded trials, which excludes time-outs; whether they count is not stated and they are 0.3% of trials, more than the tolerance. Named it open, with both readings.
+  - supp-errors-stable-over-blocks. Gave the reason for judging the absence on the linear mixed model, the Methods naming lmer.
+  - fig2b-hidden-components. t26 > 3 implies a one-sided p below 0.003, which does not agree with the reported 0.014 and 0.007; the p-values may come from the Figure S2B bootstrap. Named the bootstrap as a second reading.
+  - fig2b-current-age-absent and fig2b-two-back-absent. The test behind p > 0.72 and p > 0.66 is not named; the statistics no longer call it a t-test, and the criterion names the t-test as the one the Results imply with the bootstrap of Figure S2B as a variant.
+  - figs2c-8way-decoding. The current-category tolerance was 5.5; 10% of 55.5 is 5.55.
+  - figs2a-permutation-control. The component tolerances of 0.14 to 0.17 points were justified by spanning chance, which does not apply to a chance-level permutation percentile from 10 permutations; set to the default 10% of the value. The statement covers each binary component, but the criterion judged the 16-way result only; it now judges all four components, with partial reproduction when only the 16-way holds.
+  - synthetic-data-control. The Methods cite Figure S5 for the participant peaks, which is the Euclidean-distance figure; the criterion read Figure S3C without saying so. Named the wrong reference and two readings (conjunction peak, 16-way searchlight peak), and noted that whole-brain simulation and smoothness matching are restricted to OFC.
+  - fig2d-enter-nonenter-decoding. The criterion said the Figure 2 legend states one-sided tests; it does not. Cited the Results for Figure 2B and the Figure S2 legend.
+  - other-rois-incomplete. The statement called the PPA/FFA relation weaker, which the paper does not say, and mixed the decoding-error correlation with the similarity analysis. Rewrote it to give each as the paper does.
+  - fig4b-error-vs-matched. Noted that t24 does not fit the 24 participants of the error analyses, and that trial -1 is reported against p = 0.07, as the statement includes it.
+  - supp-motor-action-not-in-ofc. Which accuracy the OFC ROI test (p = .40) uses and which test it is are not given; named the 16-way and motor-component readings.
+  - Open. fig3-searchlight-conjunction gives the peak as left medial orbital gyrus at x = 3, as the Results do, while Table S1 lists the conjunction peak as right rectal gyrus; the claim cannot be tested on the data set either way.
+  - Open. The paper's GLM nuisance set (26 cardiac regressors, SPM8) cannot be rebuilt from the data set as described (header, O5).
+  - Coverage. The decoding of response mapping in visual cortex (Figure S3B) has no claim; it is an exploratory supplementary result and was not added.
