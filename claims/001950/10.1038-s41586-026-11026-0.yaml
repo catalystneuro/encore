@@ -95,6 +95,21 @@ claims:
     value: 367
     tolerance: 95
     unit: cells
+- id: fig1-dense-axon-distribution
+  statement: Dense unilateral labeling shows LC-NE axons at high density in all CNS regions other
+    than the striatum, with predominantly ipsilateral projections to the telencephalon and both
+    ipsilateral and contralateral projections elsewhere.
+  source: Results, LC-NE projections are spatially organized, paragraph 2; Figure 1c to 1e, S2
+  quote: We found a high density of LC-NE axons in all CNS regions other than the striatum, with
+    varying densities across regions ( Figures 1c–1e and S2 ). Projections to the telencephalon
+    were predominantly ipsilateral, from somata in the same hemisphere.
+  data: elsewhere
+  where: Code Ocean collection 9cf044ce-93c7-4c7e-bfa1-5d8c37aa42ec; the capsule is not named in
+    the paper; not pinned by a DOI
+  criterion: The paper gives no measure or test; a standard choice is used, axon density per CCF
+    region from the expanded SPIM volumes. Reproduced when the striatum has the lowest axon density
+    of the major regions, and in telencephalic regions the density ipsilateral to the labeled LC
+    exceeds the contralateral density.
 - id: axon-length-and-branching
   statement: Single LC-NE neurons have long axons (35.14 +/- 13.60 cm, up to 72.57 cm; 130 cells,
     4 mice) and branch less per length than 1,227 MouseLight neurons (17.8 against 24.9
@@ -137,10 +152,12 @@ claims:
   data: elsewhere
   where: Code Ocean capsule aind-LC-morphologies (collection 9cf044ce-93c7-4c7e-bfa1-5d8c37aa42ec);
     not pinned by a DOI
-  criterion: From the fraction of each neuron's axon length in each CCF level-2 region (Figure 2c),
-    the rank correlation across neurons between region pairs. Reproduced when forebrain regions
-    (OLF, CTX, HPF, CTXsp, CNU) correlate positively with each other and negatively with MY and
-    spinal cord.
+  criterion: From the fraction of each neuron's axon length in each CCF level-2 region (Figure 2c;
+    Methods, Models of single-neuron axonal distributions), the rank correlation across neurons
+    between region pairs (Figure 2c legend). Figure 2c has no spinal cord column (the legend lists
+    OLF to MY). The paper gives no test or threshold; a standard choice is used. Reproduced when
+    forebrain regions (OLF, CTX, HPF, CTXsp, CNU) correlate positively with each other and their
+    correlations with P and MY are at or below zero.
 - id: fig2ef-dorsal-ventral-projections
   statement: Dorsal LC neurons project mainly to the forebrain and ventral LC neurons to the
     hindbrain and spinal cord, in single-neuron reconstructions and in retrograde tracing.
@@ -150,8 +167,11 @@ claims:
   data: elsewhere
   where: Code Ocean capsules aind-LC-morphologies and LC-NE_retrograde_viral_labelling_analyses
     (collection 9cf044ce-93c7-4c7e-bfa1-5d8c37aa42ec); not pinned by a DOI
-  criterion: Reproduced when the dorsal-ventral CCF coordinate of retrogradely labeled somata
-    from frontal cortex is dorsal to that of somata labeled from spinal cord, by median.
+  criterion: The paper gives no test; comparison of medians is a standard choice. Reproduced when
+    the median dorsal-ventral CCF coordinate of somata retrogradely labeled from frontal cortex is
+    dorsal to that of somata labeled from spinal cord (Figure 2f, S7), and the median of
+    reconstructed neurons with primary forebrain projections (OLF, CTX, HPF) is dorsal to that of
+    neurons with primary hindbrain projections (P, MY, spinal cord) (Figure 2e).
 - id: fig3a-gene-expression-continuum
   statement: snRNAseq of 4,845 LC-NE neurons (40 mice) is best explained by a single cluster, with
     gene expression varying smoothly along a pseudospace axis.
@@ -266,14 +286,17 @@ claims:
     value: 4.83
     tolerance: 0.483
     unit: s
-  criterion: The inter-trial interval as the Methods define it, the time between consecutive cue
-    onsets after the 3.0 or 3.1 s trial, over all task sessions. Reproduced when the mean is
-    within tolerance and the range lies within 1.1 to 20 s widened by 10%.
+  criterion: The inter-trial interval as the Methods define it, the time from the end of the 3.0
+    or 3.1 s trial to the next cue onset (a full cue-to-cue interval cannot be as short as the
+    reported 1.1 s), over all task sessions. Open, run as readings, whether no-go cues count as
+    cue onsets (Methods, Data analysis, treats them as part of the inter-trial interval).
+    Reproduced when, under one reading, the mean is within tolerance and the range lies within
+    1.1 to 20 s widened by 10% of each bound.
 - id: fig4c-choice-history
   statement: Mice used reward and choice history to guide choices; a logistic regression of choice
     on outcome history has R2 = 0.60 and predicts 0.88 of choices, with coefficients decaying
     over past trials (exponential fit coefficient 3.95).
-  source: Results, Spatial variation of LC-NE activity, paragraph 4; Figure 4c legend
+  source: Results, Spatial variation of LC-NE activity, paragraph 3; Figure 4c legend
   quote: Logistic regression coefficients for choice as a function of outcome history for all mice
     (error bars are smaller than points). R 2 = 0.60, successful choice prediction, 0.88 ...
     exponential fit (coefficient of 3.95)
@@ -298,13 +321,28 @@ claims:
     predicted are within tolerance.
 - id: fig5a-engagement-reward-history
   statement: Whether mice respond to a go cue depends on reward history.
-  source: Results, Spatial variation of LC-NE activity, paragraph 6; Figure 5a
+  source: Results, Spatial variation of LC-NE activity, paragraph 7; Figure 5a
   quote: A logistic regression predicting whether mice responded to a go cue with a lick revealed a
     dependence on reward history ( Figure 5a )
   criterion: Methods, Analyses and models of behavior, engagement model (response or ignore
     regressed on past rewards regardless of direction); the code (F_hit_miss.ipynb) fits it per
     session and per mouse over several lags. Reproduced when the coefficient for the previous
     trial's reward has a 95% CI excluding zero across mice, as plotted in Figure 5a.
+- id: fig5e-switch-history
+  statement: Mice were likely to repeat choices when they had recently been rewarded for that lick
+    direction, as shown by a logistic regression of switch against stay on no-reward and choice
+    history.
+  source: Results, Spatial variation of LC-NE activity, paragraph 8; Figure 5e
+  quote: Mice were likely to repeat choices when they received recent rewards from those lick
+    directions ( Figure 5e )
+  criterion: Methods, Analyses and models of behavior, switch model, whose equation is lost from
+    the text. Per mouse, logistic regression of switch s(t) on no-reward history N_ipsi (1 for an
+    unrewarded choice ipsilateral to the choice at t - 1, -1 for an unrewarded contralateral
+    choice, 0 for a rewarded choice) and choice history (Figure 5e legend). The number of lags is
+    open; readings 5, 10 and 15, as in claim fig4c-choice-history. The paper gives no test (error
+    bars are smaller than the points); the 95% CI across mice is a standard choice. Reproduced
+    when, under one reading, the lag-1 no-reward coefficient is positive (an unrewarded previous
+    choice raises the probability of switching) with a CI excluding zero.
 - id: fig6c-choice-change-rpe
   statement: Changes of choice on consecutive trials correlate with the model's RPE (rank
     correlation rho = 0.84).
@@ -331,7 +369,7 @@ claims:
 - id: fig4g-go-cue-excitation
   statement: Nearly all LC-NE neurons (240 of 241, 19 mice) increased their spike rate in the
     300 ms after the go cue.
-  source: Results, Spatial variation of LC-NE activity, paragraph 5; Figure 4g
+  source: Results, Spatial variation of LC-NE activity, paragraph 6; Figure 4g
   quote: Nearly all LC-NE neurons showed an increase in spike rate in a 300 ms window following the
     go cue (paired t -tests, 240/241 cells, 19 mice
   expected:
@@ -367,8 +405,10 @@ claims:
     includes neurons outside the task criteria. Reproduced when r is negative with p < 0.05 and
     within tolerance under one reading.
 - id: figs15f-tonic-modulation-vs-engagement
-  statement: Neurons with more negative baseline-response correlations show larger increases on
-    response trials and stronger baseline prediction of respond against ignore (r = -0.59).
+  statement: Across neurons, the correlation between baseline and go-cue spike rates (tonic
+    modulation strength) correlates with the increase of spike rate on lick-response trials over
+    trials without a response, and with the respond-versus-ignore t-statistics of the baseline
+    rate (r = -0.59 for each).
   source: Figure S15f legend
   quote: Top, increase of spike rate in trials with lick responses vs. those without against tonic
     modulation strength from e ( r = –0.59, p = 4.63 × 10 −21 )
@@ -392,7 +432,7 @@ claims:
 - id: fig5b-baseline-predicts-ignore
   statement: LC-NE neurons had higher spike rates before ignored go cues than before responded
     ones; baseline rates in the 2 s before the go cue predicted the response in 46.5% of neurons.
-  source: Results, Spatial variation of LC-NE activity, paragraph 6; Figure 5b
+  source: Results, Spatial variation of LC-NE activity, paragraph 7; Figure 5b
   quote: LC-NE neurons had higher spike rates preceding ignored trials relative to those with a lick
     response ... (46.5% of neurons had p -values < 0.05)
   expected:
@@ -413,7 +453,7 @@ claims:
 - id: fig5c-ignore-ventral
   statement: Neurons with higher activity before ignored trials lie more ventral in LC (103 cells,
     15 mice; linear model R2 = 0.152).
-  source: Results, Spatial variation of LC-NE activity, paragraph 6; Figure 5c legend
+  source: Results, Spatial variation of LC-NE activity, paragraph 7; Figure 5c legend
   quote: Neurons with higher activity preceding ignore vs. respond trials (blue) were located more
     in ventral than dorsal LC (103 cells, 15 mice; t -statistics shown in d ; kNN cross-validated R
     2 = 5.57 × 10 −2 , p = 8.4 × 10 −3 ; linear model R 2 = 0.152, p = 1.4 × 10 −3 )
@@ -448,7 +488,7 @@ claims:
 - id: fig5d-ignore-on-anatomy-axes
   statement: Respond-versus-ignore t-statistics vary along the primary spatial axes of axonal
     projections and gene expression (r = 0.23 for each).
-  source: Figure 5d legend; Results, Spatial variation of LC-NE activity, paragraph 6
+  source: Figure 5d legend; Results, Spatial variation of LC-NE activity, paragraph 7
   quote: Respond vs. ignore t -statistics projected onto the primary spatial axes from axonal
     projections and gene expression ( Figure 3e ; left, r = 0.23, p = 6.1 × 10 −3 ; right, r = 0.23,
     p = 5.8 × 10 −3 )
@@ -480,7 +520,7 @@ claims:
 - id: fig5g-switch-dorsal
   statement: Neurons with higher activity in the 500 ms after the go cue on switch than on stay
     choices lie more dorsal in LC (114 cells, 15 mice; linear model R2 = 0.168).
-  source: Results, Spatial variation of LC-NE activity, paragraph 7; Figure 5f, 5g legend
+  source: Results, Spatial variation of LC-NE activity, paragraph 8; Figure 5f, 5g legend
   quote: Neurons with higher activity during switch vs. stay choices (magenta) were located more in
     dorsal than ventral LC (114 cells, 15 mice; t -statistics shown in h ; kNN cross-validated R 2 =
     –4.96 × 10 −2 , p = 0.15; linear model R 2 = 0.168, p = 3.0 × 10 −4 )
@@ -510,7 +550,7 @@ claims:
 - id: fig5h-switch-on-anatomy-axes
   statement: Switch-versus-stay t-statistics vary along the primary spatial axes of axonal
     projections (r = 0.32) and gene expression (r = 0.30).
-  source: Figure 5h legend; Results, Spatial variation of LC-NE activity, paragraph 7
+  source: Figure 5h legend; Results, Spatial variation of LC-NE activity, paragraph 8
   quote: Switch vs. stay t -statistics projected onto the primary spatial axes from axonal
     projections and gene expression (left, r = 0.32, p = 6.1 × 10 −5 ; right, r = 0.30, p = 1.7 × 10 −4 )
   statistics:
@@ -538,7 +578,7 @@ claims:
 - id: fig5k-cortical-input-switch
   statement: LC-NE axonal fluorescence in prelimbic cortex and spiking of LC-NE neurons projecting
     to cortex are higher on switch than on stay choices.
-  source: Results, Spatial variation of LC-NE activity, paragraph 8; Figure 5j, 5k
+  source: Results, Spatial variation of LC-NE activity, paragraph 9; Figure 5j, 5k
   quote: LC-NE axonal fluorescence changes in PL and single-neuron spiking projecting to frontal
     cortex were significantly higher during switch versus stay choices ( Figures 5j and 5k ; Fisher's
     exact test, p = 7.8 × 10 −5 )
@@ -579,7 +619,10 @@ claims:
   criterion: Respond-versus-ignore t-statistics on the 2 s before the go cue for neurons (claim
     fig5b-baseline-predicts-ignore) and photometry sessions (Methods, Linear regression models of
     axonal GCaMP). As in the code (A&O cells 57 and 61, 5,000 permutations), the sign comparison is
-    Fisher's exact test on positive against non-positive counts, and the Welch test is two-sided
+    Fisher's exact test on positive against non-positive counts with a label permutation (legend);
+    the Methods (Comparison between single neuron activity and axonal GCaMP) describe a
+    two-proportion z-test and a label-permutation test on the difference in positive rates, run as
+    a variant. The Welch test is two-sided
     with a label permutation (Methods, Comparison between single neuron activity and axonal
     GCaMP). Reproduced when axons against neurons gives p < 0.05, and, as a claim of absence,
     cortex-projecting against other neurons gives p >= 0.05 in both tests; effect sizes reported.
@@ -684,8 +727,9 @@ claims:
   source: Results, Activity of LC-NE projections to frontal cortex, paragraph 2; Figure 6g
   quote: Average responses of neurons of each population showed modulation by RPE or lack of reward
     ( Figure 6g )
-  criterion: Neurons split by outcome response sign (auROC above or below 0.5, Methods); mean
-    outcome-window rate against RPE quartiles. Reproduced when the reward-excited group's rate
+  criterion: Neurons split by outcome response sign (auROC above or below 0.5, Methods, Linear
+    regression models of spike rates); mean outcome-window rate against RPE quartiles (the binning
+    of the Figure 6d examples; the Figure 6g binning is not stated). Reproduced when the reward-excited group's rate
     increases monotonically with RPE across quartiles and the no-reward-excited group's rate on
     unrewarded trials does not differ across chosen-value quartiles (one-way ANOVA p >= 0.05, a
     standard choice; the paper gives no test).
@@ -698,7 +742,8 @@ claims:
   quote: Neurons that correlated with RPE or lack of reward had opposing correlations with choice
     behavior on subsequent trials ( Figure 6h )
   criterion: For each group of claim fig6g-rpe-vs-no-reward-populations, the change of choice
-    likelihood (claim fig6c-choice-change-rpe) against outcome-window rate binned by quantile.
+    likelihood (claim fig6c-choice-change-rpe) against outcome-window rate binned by quantile (the
+    binning is not stated; quartiles, as in Figure 6d, are a standard choice).
     Reproduced when the slopes of the two groups have opposite signs; the paper gives no test, so
     a sign difference of the group mean slopes with a two-sample t-test p < 0.05 is the standard
     choice used.
@@ -707,7 +752,7 @@ claims:
 - id: fig6i-axons-rpe
   statement: LC-NE axonal activity in prelimbic cortex after the choice outcome correlates with RPE,
     with regression angles that differ from the single-neuron population (Watson-Wheeler W = 0.1).
-  source: Results, Activity of LC-NE projections to frontal cortex, paragraph 4; Figure 6i to 6l
+  source: Results, Activity of LC-NE projections to frontal cortex, paragraph 3; Figure 6i to 6l
   quote: LC-NE axonal activity in frontal cortex 1.5 s after choice outcome correlated with RPE (
     Figures 6i–6l )
   statistics:
@@ -728,7 +773,7 @@ claims:
 - id: fig6j-cortical-input-more-positive
   statement: Outcome regression t-statistics of cortex-projecting neurons and of axonal fluorescence
     are more positive than those of the single-neuron population (Fisher's exact test, p < 0.01).
-  source: Results, Activity of LC-NE projections to frontal cortex, paragraph 4; Figure 6j, 6k
+  source: Results, Activity of LC-NE projections to frontal cortex, paragraph 3; Figure 6j, 6k
   quote: Regression t -statistics ( Figure 6j ) and coefficients ( Figure 6k ) were more positive
     than the population of single neurons (Fisher's exact test, p < 0.01)
   statistics:
@@ -827,9 +872,32 @@ claims:
     unit: s
     # tolerance is the reported SD
   criterion: Pupil diameter from left and right edges with confidence at least 0.9, 5 Hz low-pass
-    (Methods, Pupil tracking); exponential fit to the whole-session autocorrelogram per session.
+    (Methods, Pupil tracking); exponential fit, A exp(-t/tau) + C, to the whole-session
+    autocorrelogram per session, computed with a 0.5 s sliding window and with periods of poor
+    time alignment or edge detection removed (Methods, Pupil auto-correlogram).
     For spiking, per neuron, Pearson correlation over trials of the rate and pupil diameter 1 s
     before the go cue (Methods, Pupil correlation with neuron activity). The paper gives no
     population test; reproduced when the mean tau is within tolerance and more neurons have
     significant positive than negative baseline correlations (binomial test p < 0.05, a standard
     choice).
+checks:
+- date: 2026-11-04
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Quotes checked against the preprint text (paper/10.64898-2026.04.10.717727.txt), since the version of record text holds only the abstract and references; all quotes match. The checker's two value flags (p = 3.0e-4 in fig5g-switch-dorsal and fig6a-outcome-space) were confirmed by reading the Figure 5g and 6a legends.
+  - Sources of fig4c-choice-history, fig4g-go-cue-excitation, fig5a-engagement-reward-history, fig5b-baseline-predicts-ignore, fig5c-ignore-ventral, fig5d-ignore-on-anatomy-axes, fig5g-switch-dorsal, fig5h-switch-on-anatomy-axes and fig5k-cortical-input-switch pointed one paragraph early in Results, Spatial variation of LC-NE activity; renumbered to the paragraphs holding the quotes (3, 6, 7, 8, 9).
+  - Sources of fig6i-axons-rpe and fig6j-cortical-input-more-positive named paragraph 4 of a section with three paragraphs; set to paragraph 3.
+  - fig2c-primary-targets, the criterion compared forebrain regions with a spinal cord column that Figure 2c does not have and required negative correlations, a threshold the paper does not state; now P and MY, correlations at or below zero, marked as a standard choice.
+  - fig2ef-dorsal-ventral-projections, the criterion tested only the retrograde tracing although the statement also rests on the reconstructions (Figure 2e); added them, and marked the median comparison as a standard choice.
+  - iti-mean, the criterion was ambiguous about what the interval spans; set to the end of the trial to the next cue onset (a full cue-to-cue interval cannot reach the reported 1.1 s minimum), and named whether no-go cues count as cue onsets as open readings.
+  - figs15f-tonic-modulation-vs-engagement, the statement gave a direction for the second panel ("stronger baseline prediction") that the legend does not state; restated as the two correlations the legend reports.
+  - figs17i-baseline-axons-vs-spiking, the Methods describe the sign comparison as a two-proportion z-test and a label-permutation test on the difference in positive rates; added as a variant beside the legend's Fisher's exact test.
+  - fig6g-rpe-vs-no-reward-populations and fig6h-opposing-behavior, the quartile binning was presented without source; cited Figure 6d for quartiles and marked the binning of 6g and 6h as not stated.
+  - figs16-pupil-spiking, added the Methods' autocorrelogram details (0.5 s sliding window, exclusions, fitted form).
+  - Added fig1-dense-axon-distribution (Figure 1c to 1e, a main-figure finding without a claim).
+  - Added fig5e-switch-history (Figure 5e, a main-figure behavioral finding the dataset can test, without a claim).
+  - Open, fig6j-cortical-input-more-positive, the paper does not say which t-statistic (outcome or chosen value) is "more positive"; the criterion's use of the outcome t-statistic is a reading.
+  - Open, figs18d-outcome-not-on-anatomy-axes, which two of the three axes the legend's r values belong to is not stated; the criterion lets the absence hold under either pair of axes, which is lenient for a claim of absence.
+  - Open, the paper's code was not re-read in this check; the criteria's citations of aind-beh-ephys-analysis at 971c1ca (windows, unit selection, readings) are taken as written.
