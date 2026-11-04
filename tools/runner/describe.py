@@ -321,7 +321,9 @@ def main() -> int:
     elif command == "published":
         import datasets
         key = datasets.key_of_folder(rest[0])
-        found = next((t for t in datasets.targets() if t["key"] == key), None)
+        # From main, as the rest of the runner: the clone's working tree can be on an attempt's branch, older than
+        # main, whose target lists lack datasets added since (as on 2026-11-04, when six CRCNS requests were skipped).
+        found = next((t for t in main_targets() if t["key"] == key), None)
         print("true" if found and published(found) else "false")
     elif command == "claims-ready":
         print("true" if claims_ready(rest[0]) else "false")
