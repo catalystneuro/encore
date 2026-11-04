@@ -1,0 +1,383 @@
+schema_version: 2
+id: 001893-su-2026-01
+dataset:
+  archive: dandi
+  id: 001893
+  version: 0.260817.1647
+  doi: 10.48324/dandi.001893/0.260817.1647
+paper: doi:10.1038/s41586-026-11026-0
+date: '2026-11-04'
+entry: 001893-su-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41785737032
+inputs:
+- what: Patch-seq FASTQ files (R1 and R2) of the 64 cells that have a library identifier in the dandiset's
+    mapping.tsv, streamed into memory and checked against the MD5 sums the NeMO API gives, for patchseq-transcriptome-link
+    and patchseq-ne-identity.
+  source: NeMO Archive collection nemo:col-s96tk9a (named in the dandiset's README and metadata), each
+    file by its NeMO identifier and MD5
+- what: The frozen table of IPFX membrane time constants keyed by ephys_roi_id, for tau-table-link and
+    the code variant of the patchseq-tau claims.
+  source: https://github.com/AllenNeuralDynamics/LCNE-patchseq-figures at commit 79fa20aff7f0195140fac6584962814562c33922,
+    code/data/LCNE_patchseq_S14_cell_table.csv
+- what: Soft-masked genomic sequence of eight gene bodies (Dbh, Th, Slc6a2, Slc18a2, Snap25, Slc32a1,
+    Tph2, Alb) at Ensembl release 116 coordinates, for counting marker reads.
+  source: UCSC Genome Browser API, assembly mm39 (GRCm39), coordinates in entries/001893-su-2026/rna.py
+outcomes:
+- claim: patchseq-sample
+  outcome: reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-sample
+  measured:
+  - 96
+  - 28
+  - 27
+  - 8
+  - 15
+  - 7
+  - 54
+  - 13
+  notes: 96 NWB files, one per ephys_roi_id, from 28 donors; cortex 27 cells from 8 mice, cerebellum 15
+    from 7, spinal cord 54 from 13, from participants.tsv injection_target_region; every count equals
+    the paper's. No recording is deposited twice (no repeated session start time or rheobase sweep). By
+    IPFX's test-pulse measures 80 cells have a seal above 1 GOhm, 92 an initial access resistance below
+    20 MOhm, 93 below 15% of the break-in input resistance, and 78 pass all three; 2 cells have no break-in
+    sweep and some seal values are negative, so these are reported and not used to exclude cells. 8 of
+    the 54 spinal cord cells, from 2 of the 13 mice, are wild-type C57BL6J by their NWB genotype and sample
+    names (see findings).
+  deviations:
+  - The cell inclusion values are measured here with IPFX's qc_features functions on the last cell-attached
+    and break-in sweeps, as IPFX's qc_feature_extractor does; the paper's own values are not in the files.
+- claim: patchseq-transcriptome-link
+  outcome: reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-transcriptome-link
+  notes: 64 of the 96 cells have a library identifier in mapping.tsv (16 of 27 cortex, 12 of 15 cerebellum,
+    36 of 54 spinal cord). All 64 resolve at the NeMO API to a library of the same name with two FASTQ
+    files, R1 and R2, whose MD5 sums match NeMO's; all are SMART-seq libraries of nuclei, with 175,250
+    to 1,110,791 read pairs of 51 bases. The other 32 cells have no transcriptome in the deposit.
+  deviations:
+  - The MD5 sums are checked against those the NeMO API gives at run time, not against a stored list.
+- claim: patchseq-ne-identity
+  outcome: partially_reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-ne-identity
+  measured: 0.938
+  notes: Of the 64 cells with a transcriptome, Dbh is detected (CPM above 0) in 60 (93.8%, reading a)
+    and all four of Dbh, Th, Slc6a2 and Slc18a2 in 58 (90.6%, reading b); both pass the criterion's 90%
+    and neither reaches every cell. One cell (1409801288) has no read of any marker and 1,007 Snap25 read
+    pairs; three more have no Dbh read. Marker levels are high (median Dbh 192 CPM, Th 710 CPM); the controls
+    are low (Tph2 at most 28 CPM, Alb at most 2.6 CPM, Slc32a1 at most 83 CPM), though at CPM above 0
+    Slc32a1 is detected in 46 of 64 cells, so the criterion's threshold separates little. The statement
+    is about every recorded cell, and 32 of the 96 cells have no transcriptome to check. Reading (c),
+    MapMyCells, was not run.
+  deviations:
+  - Read pairs are counted by exact 31-mer matches (every 4 bases) to the repeat-masked gene bodies on
+    mm39, in place of the paper's STAR alignment to mm10 with duplicates removed and unique reads only
+    (Methods, cDNA and sequencing).
+  - Reading (c) of the criterion, MapMyCells against the LC-NE type, was not run; it needs whole-transcriptome
+    counts and the reference taxonomy.
+- claim: tau-table-link
+  outcome: reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:tau-table-link
+  notes: All 96 rows of the frozen table match an NWB file by ephys_roi_id. Of the 82 cells with a value
+    on both sides, IPFX's time constant computed here from all subthreshold long squares is within 10%
+    of the table's for 77 (94%), 24 of them to 0.01 ms; Pearson r = 0.992. The table has no value for
+    14 cells, 13 of which have one here, and has values for 17 of the 19 cells whose every sweep has a
+    bias current beyond +-100 pA.
+- claim: patchseq-ap-waveform-spinal-vs-cortex
+  outcome: reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-ap-waveform-spinal-vs-cortex
+  measured: 0.000204
+  notes: Main reading (the Methods' sweep rule before choosing the rheobase sweep) keeps 68 of 96 cells;
+    spinal cord against cortex PC1 means -0.435 and 0.524, Welch t = -3.98, df = 54.8, p = 0.00020 (35
+    and 24 cells). The code's variant on all 96 cells gives t = -2.66, df = 69.4, p = 0.0097 (54 and 27).
+    Taking Rin from all subthreshold sweeps gives p = 0.00019, and the rule without its bias part p =
+    0.0038. Over mouse means p = 0.018 (12 and 7 mice). Without the 8 cells of the two wild-type spinal
+    cord donors the main reading gives p = 0.0058, and the code's variant p = 0.14, so the paper's own
+    computation of this result rests on those cells.
+  deviations:
+  - The Methods' sweep rule needs the input resistance for its 15% bridge-balance part, and the paper
+    does not say from which sweeps; IPFX's input resistance over the subthreshold long squares passing
+    the rule's other parts is used, and Rin from all of them is shown; the outcome is the same.
+  - Where the noise windows sit is not in the Methods; IPFX's are used (1.5 ms opening the experiment
+    epoch, 500 ms before the stimulus), as the Methods say the features were computed with IPFX.
+- claim: patchseq-ap-waveform-spinal-vs-cerebellum
+  outcome: reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-ap-waveform-spinal-vs-cerebellum
+  measured: 0.0406
+  notes: Main reading, spinal cord against cerebellum PC1 means -0.435 and 0.295, Welch t = -2.25, df
+    = 14.7, p = 0.041 (35 and 9 cells). The code's variant gives p = 0.031 (54 and 15), Rin from all sweeps
+    p = 0.042, the rule without its bias part p = 0.033. The main reading keeps 9 of 15 cerebellum cells.
+    Over mouse means p = 0.063 (12 and 5 mice), and without the 8 cells of the two wild-type donors p
+    = 0.19 (main) and 0.20 (code), so the result is weak and rests on those cells.
+  deviations:
+  - As for patchseq-ap-waveform-spinal-vs-cortex (input resistance for the bridge rule, IPFX's noise windows).
+- claim: patchseq-tau-cortex-vs-spinal
+  outcome: partially_reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-tau-cortex-vs-spinal
+  measured: 0.00705
+  notes: Main reading (IPFX on the subthreshold long squares passing the Methods' sweep rule) gives cortex
+    55.4 ms and spinal cord 42.9 ms, Welch t = 2.83, df = 43.6, p = 0.0071 (24 and 35 cells), below 0.05
+    and not below 0.001. The code's variant, the frozen table, gives 51.8 and 34.4 ms, p = 4.0e-05 (22
+    and 46), and IPFX on all sweeps p = 1.3e-04 (27 and 54), both below 0.001. The rule's bias part drops
+    19 of the 54 spinal cord cells, which have shorter time constants (23.1 ms on all sweeps, against
+    42.9 ms for the cells kept); without that part p = 0.00055. Rin from all sweeps and the X1PS_SubThresh
+    sweeps alone give the main result unchanged. Over mouse means p = 0.0088 (7 and 12 mice). The frozen
+    table holds values for 17 of the 19 cells with no sweep within +-100 pA of bias, so the paper's value
+    was not computed under that rule (see findings).
+  deviations:
+  - The time constant is IPFX's own subthreshold functions at their defaults, run on the four 1 s step
+    sets (X1PS_SubThresh, X3LP_Rheo, X4PS_SupraThresh, X5LP_Rheo); which sets the upstream pipeline treated
+    as long squares is not stated, and X1PS_SubThresh alone gives the same result.
+  - As for the waveform claims, the input resistance for the bridge rule and IPFX's noise windows.
+- claim: patchseq-tau-cortex-vs-cerebellum
+  outcome: partially_reproduced
+  notebook: reproduce_su_2026.ipynb
+  output: claim:patchseq-tau-cortex-vs-cerebellum
+  measured: 0.0025
+  notes: Main reading, cortex 55.4 ms and cerebellum 37.1 ms, Welch t = 3.38, df = 23.7, p = 0.0025 (24
+    and 10 cells), below 0.05 and not below 0.001. The frozen table gives p = 3.1e-04 (22 and 14), IPFX
+    on all sweeps p = 2.0e-04 (27 and 14), the rule without its bias part p = 0.00051, all below 0.001.
+    Over mouse means, main reading, p = 0.0026 (7 and 5 mice).
+  deviations:
+  - As for patchseq-tau-cortex-vs-spinal.
+- claim: lc-definition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: axon-density
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: axon-length-and-branching
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: single-neuron-primary-targets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: markov-renewal-model
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: mapseq-consistent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: dorsal-ventral-projection-targets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: retrograde-dorsal-cortex-ventral-spinal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: snrnaseq-single-cluster
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The claims file names NeMO collection col-p9d5w39 for these data; it lists no files. Processed
+    counts of the grant were found at NeMO (data.nemoarchive.org, BICAN_Neuromodulation, aibs, transcriptome,
+    nuclei; 10x v4 count files of 1.9 to 3.5 GB each, and SMART-seq v4 STAR counts of 1,383 retro-seq
+    nuclei, whose manifest names collection col-afgz110), not checked against the paper. Every claim here
+    starts from the paper's selection of 4,743 LC-NE nuclei, made by an R Seurat and Harmony pipeline
+    (capsule 10, LCNE_10x_preprocessing_R), and goes on with scVI, MMIDAS or the pseudospace fit; none
+    of these was installed or run in this attempt, which spent its time on the dandiset's claims.
+- claim: pseudospace-graded-genes
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The claims file names NeMO collection col-p9d5w39 for these data; it lists no files. Processed
+    counts of the grant were found at NeMO (data.nemoarchive.org, BICAN_Neuromodulation, aibs, transcriptome,
+    nuclei; 10x v4 count files of 1.9 to 3.5 GB each, and SMART-seq v4 STAR counts of 1,383 retro-seq
+    nuclei, whose manifest names collection col-afgz110), not checked against the paper. Every claim here
+    starts from the paper's selection of 4,743 LC-NE nuclei, made by an R Seurat and Harmony pipeline
+    (capsule 10, LCNE_10x_preprocessing_R), and goes on with scVI, MMIDAS or the pseudospace fit; none
+    of these was installed or run in this attempt, which spent its time on the dandiset's claims.
+- claim: merfish-pseudospace-dorsal-ventral
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The claims file names NeMO collection col-p9d5w39 for these data; it lists no files. Processed
+    counts of the grant were found at NeMO (data.nemoarchive.org, BICAN_Neuromodulation, aibs, transcriptome,
+    nuclei; 10x v4 count files of 1.9 to 3.5 GB each, and SMART-seq v4 STAR counts of 1,383 retro-seq
+    nuclei, whose manifest names collection col-afgz110), not checked against the paper. Every claim here
+    starts from the paper's selection of 4,743 LC-NE nuclei, made by an R Seurat and Harmony pipeline
+    (capsule 10, LCNE_10x_preprocessing_R), and goes on with scVI, MMIDAS or the pseudospace fit; none
+    of these was installed or run in this attempt, which spent its time on the dandiset's claims. The
+    claim also needs the MERFISH data of Nardone et al. 2024, which were not fetched.
+- claim: retroseq-projection-gene-space
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The claims file names NeMO collection col-p9d5w39 for these data; it lists no files. Processed
+    counts of the grant were found at NeMO (data.nemoarchive.org, BICAN_Neuromodulation, aibs, transcriptome,
+    nuclei; 10x v4 count files of 1.9 to 3.5 GB each, and SMART-seq v4 STAR counts of 1,383 retro-seq
+    nuclei, whose manifest names collection col-afgz110), not checked against the paper. Every claim here
+    starts from the paper's selection of 4,743 LC-NE nuclei, made by an R Seurat and Harmony pipeline
+    (capsule 10, LCNE_10x_preprocessing_R), and goes on with scVI, MMIDAS or the pseudospace fit; none
+    of these was installed or run in this attempt, which spent its time on the dandiset's claims.
+- claim: projection-and-expression-axes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: behaviour-history-dependence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: go-cue-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: ventral-respond-ignore
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: dorsal-switch-stay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: cortex-input-switch
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: outcome-responses-spatial
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: rpe-predicts-choice-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: outcome-coefficients-cluster
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: frontal-axons-rpe
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+- claim: extracellular-waveform-spatial
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the slice recordings of the Patch-seq experiment (its metadata lists
+    intracellular electrophysiology alone; 96 NWB files and BIDS tables). The paper's Data availability
+    names the GitHub index of code capsules, NeMO collection col-p9d5w39, which lists no files, and a
+    Code Ocean collection, whose data assets carry no DOI or fixed version and so cannot be pinned (protocol,
+    author, step 4); whether they can be read without an account was not checked.
+findings:
+- kind: other
+  statement: Eight of the 54 spinal cord cells, all those of donors sub-1435396971 (3 cells) and sub-1435397039
+    (5 cells), carry the genotype wt/wt in their NWB files and C57BL6J in their sample names, where the
+    Methods (Patch-seq, Transgenic mice and labelling projection neurons) describe Dbh-Cre;Ai65 mice labelled
+    with AAVrg-DIO-FLPo. Either the metadata or the paper's description is wrong, or these cells were
+    labelled another way. The waveform results depend on them (spinal cord against cortex in the code's
+    computation, p = 0.0097 with them and 0.14 without).
+- kind: code_mismatch
+  statement: The Methods give a sweep inclusion rule (bridge balance, bias current within +-100 pA, noise)
+    that the paper's code (LCNE-patchseq-figures at 79fa20a) does not apply. 19 of the 96 cells have no
+    sweep within +-100 pA of bias, yet the paper's frozen time-constant table has values for 17 of them.
+    Under the rule as written the time-constant comparisons reach p = 0.0071 and 0.0025, not the p < 0.001
+    the paper reports.
+- kind: data_missing
+  statement: 32 of the 96 cells have no library identifier in mapping.tsv and no transcriptome in the
+    deposit, though the paper says it confirmed the identity of each recorded cell from its RNA.
+- kind: identifier_missing
+  statement: The NeMO collection the paper's Data availability names (col-p9d5w39), and which the dandiset
+    lists as a related resource, holds no files. The Patch-seq FASTQ files are in collection col-s96tk9a,
+    and the processed sequencing counts of the grant sit in folders whose manifest names collection col-afgz110;
+    neither the paper nor the dandiset links these to the paper's snRNA-seq and retro-seq data.
+- kind: selection_undocumented
+  statement: The paper's frozen time-constant table lacks a value for 14 of the 96 cells without saying
+    why; IPFX gives a value for 13 of them from the dandiset's sweeps.
+- kind: metadata_insufficient
+  statement: The filtering field of all 96 NWB files reads PLACEHOLDER; the Methods give a 10 kHz Bessel
+    filter.
+- kind: metadata_error
+  statement: participants.tsv gives no sex, age or donor NHash identifier for sub-1435396971; its NWB
+    files give female, P62.
+- kind: metadata_error
+  statement: datasets.tsv gives dandiset 001858 the URL of dandiset 001748.
