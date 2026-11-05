@@ -99,9 +99,9 @@ claims:
     ANOVA on the area under each slice's stimulus-response curve (fEPSP slope against stimulus
     voltage, 0 to 40 V, Methods), with Tukey post hoc tests. Reproduced when the training effect and
     the interaction have p < 0.05 and the Tukey tests give Fmr1-null exposed above WT exposed and
-    above both naive groups, with naive WT and naive Fmr1-null not different. Whether the unit is
-    the slice or the mouse is not stated; the slice is used, as the Methods describe one slice
-    recording per stimulus-response curve.
+    above both naive groups, with naive WT and naive Fmr1-null not different. The unit is one value
+    per mouse; the error degrees of freedom (42 with six groups) give 48 units, the 22 WT and 26
+    Fmr1-null mice of the Methods.
 - id: fig1cd-potentiation
   statement: Post-tetanic and early potentiation after 100 Hz stimulation are greater in exposed
     Fmr1-null than in exposed WT mice and smaller in trained mice of both genotypes; late
@@ -134,7 +134,8 @@ claims:
     p: 1.0e-6
   criterion: Phases from the Methods, as slope relative to the 10 min baseline before HFS, PTP the
     mean of the first 8 min, early 10-20 min, late 50-60 min after HFS. A two-way genotype x
-    training ANOVA per phase, as the legend does. Reproduced when PTP and early potentiation show
+    training ANOVA per phase, as the legend does, one value per mouse (as in
+    fig1ab-baseline-transmission, from the 42 error degrees of freedom). Reproduced when PTP and early potentiation show
     exposed Fmr1-null above exposed WT at p < 0.05 and a training effect at p < 0.05 with trained
     lowest, and late potentiation shows no genotype effect (p >= 0.05) and a training effect at p <
     0.05.
@@ -239,7 +240,7 @@ claims:
     first reading), so z is not a target.
 - id: figs3-nonspatial-properties-similar
   statement: Waveform width, burst probability, interspike interval and overall firing rate do not
-    differ between genotypes in any cell class.
+    differ between genotypes.
   source: Figure S3C to S3F; Results, Non-spatial and Spatial Single-Cell Discharge Features,
     paragraph 1
   quote: The fundamental extracellular waveform and non-spatial discharge characteristics of the
@@ -304,7 +305,8 @@ claims:
     information and in-field rate; the effect sizes are given.
 - id: tables1-place-cell-properties-similar
   statement: Firing rate, in-field rate, spatial coherence, information content and proportion of
-    active pixels of place cells do not differ between WT and Fmr1-null mice.
+    active pixels of place cells, and the firing rate of interneurons, do not differ between WT and
+    Fmr1-null mice.
   source: Table S1; Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1
   quote: the fundamental measures of spatial discharge quality did not differ between either the WT
     and the Fmr1-null place cells or interneurons (Table S1)
@@ -358,6 +360,22 @@ claims:
   - quantity: Fmr1-null place cell firing rate
     value: 1.27
     tolerance: 0.12
+    unit: AP/s
+  - quantity: WT place cell in-field rate
+    value: 2.61
+    tolerance: 0.2
+    unit: AP/s
+  - quantity: Fmr1-null place cell in-field rate
+    value: 2.2
+    tolerance: 0.13
+    unit: AP/s
+  - quantity: WT interneuron firing rate
+    value: 16.61
+    tolerance: 2.8
+    unit: AP/s
+  - quantity: Fmr1-null interneuron firing rate
+    value: 16.02
+    tolerance: 1.42
     unit: AP/s
   criterion: Tolerances are the SEMs of Table S1. A claim of absence on the paper's test, an unpaired
     t test per measure, or Mann-Whitney when a sample fails Shapiro-Wilk (Table S1 legend).
@@ -424,9 +442,12 @@ claims:
     tolerance: 0.027
   criterion: Similarity as in the Methods, Fisher z of the Pearson correlation of rates in
     corresponding pixels of the two maps (pixels visited in both). The square and circular
-    enclosures are read as a box and the stationary circular arena recorded the same day; whether
-    the box is the small or the large one is open, and every same-day pair of a box and the
-    stationary arena is used. Tolerances are the printed SEMs. For the absence part, reproduced
+    enclosures are read as a box and the stationary circular arena (the "circular cylinder" of the
+    Results); whether the box is the small or the large one is open. The paper does not say the
+    two recordings were made the same day, and Table S2 lists box and arena sessions of a mouse on
+    different dates, so the readings are (a) same-day pairs of a box and a stationary arena session
+    and (b) any box and stationary arena sessions in which the data identify the same cell; the
+    counts 25 and 31 indicate which fits. Tolerances are the printed SEMs. For the absence part, reproduced
     when the genotype t test on z values has p >= 0.05; the claim is reproduced when that holds
     and both means are within tolerance.
 - id: fig3b-place-cell-modulation-similar
@@ -447,9 +468,12 @@ claims:
   criterion: Mean vector length of spike phases per cell at 8 and 40 Hz, averaged across cells
     (Figure 3B legend), phases from complex Morlet wavelets on the LFP of the same tetrode, wire
     with fewest artifacts (Methods; SpikeField code, wavelet factor 8), spikes at speed above 2
-    cm/s only (Results). A claim of absence on the paper's t test between genotypes; reproduced
-    when both p >= 0.05. Which recordings are used is not stated; all stationary-environment
-    sessions are used.
+    cm/s only (Results). The Methods put the wavelets on a log scale from 2 to 100 Hz and the code
+    from 2 to 250 Hz; the Methods range is used, the code's as a variant, and the wavelet nearest 8
+    and 40 Hz is taken. A claim of absence on the paper's t test between genotypes; reproduced
+    when both p >= 0.05. Which recordings are used is not stated (the t169 degrees of freedom give
+    171 place cells, more than the 162 of Table S1); the readings are all stationary-environment
+    sessions, a cell counted once from its first, and the box sessions of fig2-spatial-quality-similar.
 - id: fig3bc-weaker-modulation-nonspatial-interneurons
   statement: Theta and gamma phase modulation is weaker in Fmr1-null than in WT non-spatial
     pyramidal cells and interneurons.
@@ -500,33 +524,35 @@ claims:
   expected:
   - quantity: WT place cell theta phase
     value: 353.9
-    tolerance: 36
+    tolerance: 67.3
     unit: degrees
   - quantity: Fmr1-null place cell theta phase
     value: 32.1
-    tolerance: 36
+    tolerance: 53.1
     unit: degrees
   - quantity: WT place cell gamma phase
     value: 332.2
-    tolerance: 36
+    tolerance: 63.6
     unit: degrees
   - quantity: Fmr1-null place cell gamma phase
     value: 238.8
-    tolerance: 36
+    tolerance: 74.5
     unit: degrees
   - quantity: WT interneuron gamma phase
     value: 218.6
-    tolerance: 36
+    tolerance: 75.0
     unit: degrees
   - quantity: Fmr1-null interneuron gamma phase
     value: 10.6
-    tolerance: 36
+    tolerance: 76.4
     unit: degrees
   criterion: Phase preference per cell is the circular mean phase at 8 or 40 Hz, with 0 at the
-    trough (Figure 3B legend). The tolerance is 36 degrees, 10% of a cycle, as 10% of a circular
-    value is meaningless near 0 and 360; the printed spreads (about 50 to 76 degrees) are given as
-    ± and are not usable as SEMs. Circular distance is used. Reproduced when the three
-    Watson-Williams tests give p < 0.05 and at least four of the six means are within tolerance.
+    trough (Figure 3B legend), averaged across cells as a circular mean. Tolerances are the printed
+    ± values, the paper's stated spread (the Quantification section calls every ± an SEM; their
+    size suggests a circular SD, and either way they are the paper's own uncertainty). Circular
+    distance is used. Reproduced when the three Watson-Williams tests give p < 0.05 in the stated
+    directions and all six means are within tolerance; partially reproduced when the tests hold
+    and some means fall outside.
   depends_on:
   - fig3b-place-cell-modulation-similar
 - id: fig3d-stereotypy
@@ -559,8 +585,10 @@ claims:
     p: 1.0e-7
   criterion: MSE between the phase-frequency discharge probability histograms of every pair of
     cells of a class within a genotype, restricted to 5-12 Hz and 30-100 Hz (Figure 3D legend);
-    histograms normalized by the cell's spike count (Methods). The number of phase bins is not
-    stated; 20 bins (18 degrees) is used and 36 shown as a variant. Pairs are within a genotype
+    histograms normalized by the cell's spike count (Methods), frequencies as in
+    fig3b-place-cell-modulation-similar. The number of phase bins is not stated in the paper and
+    was not found in the code read; the readings are 20 bins (18 degrees) and 36 bins (10 degrees),
+    both run. Pairs are within a genotype
     across all mice (the degrees of freedom imply all pairs). Reproduced when all six t tests give p
     < 0.05 in the stated directions; partially reproduced for four or five.
   depends_on:
@@ -750,7 +778,8 @@ claims:
     readings K1 and K2 of the opening comment, crossed with which period gives a pair's tau (P1, the
     whole session; P2, the first 5 min interval, as the Figure 4D legend and the code's 300 s
     episodes). Sessions are those of the standard (stationary) environments; a pair recorded in
-    several sessions counts once, from its first. Mann-Whitney between genotypes, pairs as units.
+    several sessions counts once, from its first (not stated in the paper; counting it per session
+    is the other reading, and the pair counts 247 and 504 indicate which fits). Mann-Whitney between genotypes, pairs as units.
     Tolerances are the printed SEMs. Reproduced when, under one reading, 25, 40 and 125 ms give p <
     0.05 with Fmr1-null lower, and 1 s and 5 s give p >= 0.05; partially reproduced when two of the
     three short timescales do. Mean tau values are reported against tolerance for each reading.
@@ -951,7 +980,9 @@ claims:
     with repeated measures on half, on each mouse's average speed (Figure S5B inset). Reproduced
     when the genotype effect and the interaction have p >= 0.05. Speed is computed from the tracked
     position; the smoothing is not stated, so a 1 s window is used, a standard choice. The printed
-    degrees of freedom (27) imply recordings, not mice, as units; both units are run.
+    degrees of freedom (27) imply recordings, not mice, as units; both units are run. The paper
+    prints no test for speed or linearity in the Results sentence, and linearity is not defined in
+    the Methods; that part of the statement is not judged.
 - id: fig5b-frame-specific-ipos
   statement: During arena rotation, room-frame positional information (Ipos) is greater in
     Fmr1-null than in WT place cells, and arena-frame Ipos only marginally greater.
@@ -1033,7 +1064,7 @@ claims:
     p: 0.04
     n: 9 mice (5 WT, 4 Fmr1-null)
   expected:
-    quantity: r, entries against SEM of pair covariance
+  - quantity: r, entries against SEM of pair covariance
     value: 0.61
     tolerance: 0.061
   criterion: Per mouse, the SEM over its place cell pairs of the pass covariance r of
@@ -1140,7 +1171,9 @@ claims:
     p: 0.5
   criterion: The tests of the Figure 6 legend, on the shock zone entries, time to first entry and
     shocks per entry from the tracked sessions (Pretrain, Train 1-3, Extinct 1, Retrain, Extinct
-    2), 10 min blocks of the 30 min extinction sessions. Reproduced when the learning tests (D to F)
+    2), 10 min blocks of the 30 min extinction sessions. The session effect of D to F has 3 degrees
+    of freedom, so four sessions; the reading is the four shock-on sessions (Train 1-3 and
+    Retrain), as shocks per entry is undefined with the shock off. Reproduced when the learning tests (D to F)
     and the first extinction show no genotype effect (p >= 0.05) and the second extinction shows a
     genotype effect at p < 0.05 with Fmr1-null fewer entries; partially reproduced when the
     absences hold but the second extinction effect does not.
@@ -1153,3 +1186,26 @@ claims:
     spectrum over open field recordings (11 WT and 9 Fmr1-null mice, Figure S5A); mean log power in
     5-12 Hz and 30-100 Hz (the ranges of Figure 3D) compared between genotypes by t test, as the
     Quantification section sets for two-group comparisons. Reproduced when both have p >= 0.05.
+checks:
+- date: 2026-11-05
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - "All quotes match the text. The six p-values the checker could not find (fig1ab 1e-8, fig1cd 1e-6, fig3b-phase-preference 1e-7, fig3d 1e-10 and 1e-7, overdispersion-passes 1e-6) are printed as powers of ten at lines 289, 332, 714, 731, 736 and 756 of the text and were confirmed by reading."
+  - "fig1ab-baseline-transmission and fig1cd-potentiation. The criterion said the unit (slice or mouse) is not stated and chose the slice; the error degrees of freedom (42 with six groups) give 48 units, the 22 WT and 26 Fmr1-null mice of the Methods, so the unit is one value per mouse."
+  - "figs3-nonspatial-properties-similar. Dropped 'in any cell class' from the statement; the paper says the characteristics are indistinguishable between genotypes and tests the genotype main effect."
+  - "tables1-place-cell-properties-similar. The statistics include the interneuron firing rate and the quote names interneurons, but the statement did not; added it. Added the Table S1 in-field rates (2.61 ± 0.2, 2.2 ± 0.13) and interneuron rates (16.61 ± 2.8, 16.02 ± 1.42) to expected, which had been left out."
+  - "figs4-remapping-similar. The criterion restricted pairs to a box and arena recorded the same day; the paper does not say this and Table S2 lists box and arena sessions on different dates. Named it open with two readings."
+  - "fig3b-place-cell-modulation-similar. The Methods give wavelets from 2 to 100 Hz, the code 2 to 250 Hz; the protocol puts the Methods first, so their range is used and the code's is a variant. The choice of recordings, stated as all stationary sessions, is named open with readings (t169 implies 171 place cells, not the 162 of Table S1)."
+  - "fig3b-phase-preference. The tolerance was an invented 36 degrees and the pass rule an invented four of six means; the protocol takes the paper's stated spread, so the tolerances are now the printed ± values and all six means must match (partial otherwise)."
+  - "fig3d-stereotypy. The phase bin count is not in the paper; 20 and 36 bins are now both readings, not a choice and a variant."
+  - "fig4cd-kendall-place-cells. Counting a pair once from its first session was presented as fixed; marked it as not stated, with per-session counting as the other reading."
+  - "locomotion-similar. The statement's speed and linearity part has no printed test and linearity is not defined in the Methods; the criterion now says that part is not judged."
+  - "fig6-covariance-sem-predicts-errors. expected was a mapping; made it a one-item list like the other claims."
+  - "fig6-avoidance-behavior. The criterion did not say which sessions enter the D to F ANOVA; the 3 session degrees of freedom imply four, read as the shock-on sessions Train 1-3 and Retrain."
+  - "Open. fig2-spatial-quality-similar defines place fields by two readings (mean rate or 20% of peak, at least 9 pixels) that the paper does not give; the paper reports number of fields and in-field rate without defining a field, so these remain assumptions."
+  - "Open. overdispersion-cells uses minimum pass counts of 2, 10 and 30 to explain 80 and 98 cells; the paper states no minimum."
+  - "Open. figs1-avoidance-equal and figs5a-power-spectra-similar are claims of absence with no printed test; the criteria borrow a test (the Figure 6D ANOVA, a t test of band power), which is the reader's choice."
+  - "Open. figs6-room-frame-preference reads 'similar for the two genotypes' as a non-significant interaction, which the paper does not print; which measure was log transformed is not stated."
+  - "Open. Figure S6C (map stability across sessions, one t49 = 2.69, p < 0.01 comparison) and the Figure 4B and 4C upper and lower 50% insets have no claim; the extracted text does not say which S6C comparison is significant, and none is a main finding."
