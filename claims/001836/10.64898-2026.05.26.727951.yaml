@@ -195,7 +195,8 @@ claims:
   depends_on:
   - fig1e-trial-counts
   criterion: Per the Figure 1G legend, the daily probability that the initial choice would have been
-    rewarded (the initial arm is the next arm of the sequence after the last rewarded arm) and the
+    rewarded (it would have been when the initial arm is the next arm of the sequence after the last
+    rewarded arm) and the
     daily probability that the final choice was rewarded, over COM trials; one value per day. Per rat a
     two-sided Wilcoxon rank-sum test of the final against the initial daily values. Reproduced when
     the final values are higher and p < 0.05 in all five rats; partially reproduced for three or four.
@@ -211,10 +212,11 @@ claims:
     that of nearby run-through trials (for each COM trial one trial drawn at random from t-3 to t+3
     that is not a COM trial, Methods, Identification of nearby trials), one value per day. The paper
     names no test for this comparison; the test of the same panel, a two-sided Wilcoxon rank-sum test
-    per rat at p < 0.05, is used. Reproduced when no rat shows a significant difference; not reproduced
-    when any does. The difference of medians is reported per rat either way, and, as the random draw
-    can change the result, the test is repeated over 100 draws and the share of draws with p < 0.05
-    shown.
+    per rat at p < 0.05, is used. As the random draw can change the result and the paper does not say
+    how it was handled, the test is repeated over 100 draws and judged on each rat's median p-value
+    over the draws, a choice the paper does not make; the share of draws with p < 0.05 is shown.
+    Reproduced when no rat shows a significant difference; not reproduced when any does. The
+    difference of medians is reported per rat either way.
 - id: fig1h-final-choice-less-switching
   statement: The initial choice on COM trials was heavily biased to side-switching, while the final
     choice was much less so, with a switch-side to same-side ratio close to 1.
@@ -247,8 +249,8 @@ claims:
     initial and final choices. Per rat a two-sided paired t-test over days of initial against final
     ratio, and two-sided sign tests of the daily ratios against 2. Reproduced when the initial ratio
     exceeds the final with p < 0.01 in at least four rats, the initial ratio is above 2 by the sign
-    test (p < 0.05) in at least three rats and the final ratio below 2 (p < 0.05) in at least three
-    rats; partially reproduced when the paired t-test holds in at least three rats. Days with no
+    test (p < 0.05) in at least four rats and the final ratio below 2 (p < 0.05) in at least four
+    rats, as the legend reports for rats E, J, K and L; partially reproduced when the paired t-test holds in at least three rats. Days with no
     same-side transition give an undefined ratio and are dropped, a detail the paper does not settle.
 - id: fig1h-final-ratio-near-one
   statement: The final choice of COM trials did not differ from a switch-side to same-side ratio of 1
@@ -312,7 +314,7 @@ claims:
     do_GLM_version2, which also take a second covariate). Readings, (a) distance alone, (b) distance and
     the mean speed before stopping (figure4c.make_distance_plot computes this speed for the same
     trials), distance in cm. Reproduced when, under one reading, the fold change is within tolerance
-    with p < 1e-20 (or p < 1e-10 with a smaller sample); partially reproduced when it is above 1 with
+    with p < 1e-20; partially reproduced when it is above 1 with
     p < 0.05.
 - id: fig3c-distant-after-stopping
   statement: Representations far from the animal were much more prevalent after stopping than before;
@@ -418,7 +420,10 @@ claims:
     Open, the window, (a) the 2 s around COM time used in Figure S7A and from the outer poke to 2 s after,
     (b) from stopping to arm exit and from outer poke to leaving the well; and the reference level of
     the indicators, (i) a constant and per-rat indicators with the three conditions as given, (ii) the
-    rate rescaled (A.U.) to z-scores within rat. Reproduced when, under one reading, the COM coefficient
+    rate rescaled (A.U.) to z-scores within rat. If every row is one of the three conditions, the
+    three condition indicators and the rat indicators are collinear; reading (iii) is the fit with all
+    of them by pseudo-inverse, the default of statsmodels OLS, the package the Methods name for their
+    GLMs. Reproduced when, under one reading, the COM coefficient
     is negative and the two end-of-trial coefficients positive, each with p < 0.05; partially
     reproduced when the COM rate is below both end-of-trial rates in at least four rats.
 - id: figs3-local-extended-at-reward
@@ -487,8 +492,10 @@ claims:
     subsampled from about as many run-through trials as COM trials, at head speed above 4 cm/s; MAP
     outside mean plus or minus 6 times the deviation for more than 30 ms makes an event. Remote events
     as in fig4e-next-choice. Theta cycles from MUA-derived theta (Methods, Theta LFP, for Figure S11).
-    Per COM event the number of theta cycles holding either kind of content; logistic regression of
-    the next choice's correctness on that number with one indicator per rat. Tolerance from the wider
+    Per COM event the number of theta cycles holding content; logistic regression of the next choice's
+    correctness on that number with one indicator per rat. The legend of S11B(d) gives one estimate
+    and does not say which content is counted; readings, (a) cycles with either kind (panel c), (b)
+    cycles with local extended and cycles with remote content as two predictors. Tolerance from the wider
     side of the CI. Reproduced when the fold change is within tolerance and p < 0.05; partially
     reproduced when above 1 with p < 0.1. The GP subsample and the choice of run-through trials are
     random; the fit is repeated over 10 seeds and the median reported.
@@ -665,7 +672,10 @@ claims:
     figure axis of the proportion of COM trials with remote content; readings, (a) the daily proportion
     of COM trials with remote content, (b) the daily mean number of remote events per COM event. OLS of
     the daily value on the day index with one indicator per rat. Reproduced when, under one reading,
-    the day effect is within tolerance and p < 0.005; partially reproduced when positive with p < 0.05.
+    the day effect is within tolerance and p < 0.005, and the daily value rises with day (a positive
+    OLS slope per rat, a direction check for the paper's "in all five animals", for which it gives no
+    per-rat test) in all five rats; partially reproduced when the pooled effect is positive with p <
+    0.05.
 - id: fig4c-home-with-other-content
   statement: COM representations often combined the home arm with local extended or remote arm content;
     events with home representation more often had local extended content and had more remote outer
@@ -696,8 +706,9 @@ claims:
     paper does not say how the counts enter a Fisher test; readings, (i) a 2 by 2 table of home against
     at least one remote outer arm, (ii) home against two or more remote outer arms, (iii) a
     Fisher-Freeman-Halton test on the 2 by 4 table of counts 0 to 3. Reproduced when, under one reading,
-    all five rats show the effect in the stated direction for both (a) and (b) (binomial p = 0.031) and
-    at least two rats reach p < 0.05 in each; partially reproduced when one of (a) and (b) holds.
+    all five rats show the effect in the stated direction for both (a) and (b) (binomial p = 0.031),
+    at least three rats reach p < 0.01 in (a) and at least three reach p < 0.05 in (b), as the legend
+    reports; partially reproduced when one of (a) and (b) holds.
 - id: fig4d-one-remote-arm
   statement: In COM events with remote content, most often only one of the three other arms was
     represented.
@@ -889,12 +900,17 @@ claims:
   depends_on:
   - fig4e-next-choice
   - figs11b-theta-cycles-correct
-  criterion: Theta phase from MUA (Methods, Theta LFP, peaks of MUA smoothed with a 40 ms Gaussian and
-    found at least 100 ms apart as phase 0 and 2 pi, phase linearly interpolated). Per the Methods
-    (Content / Theta Phase relationship), event onsets in the arm, phase at onset. The paper gives no
-    test; a Rayleigh test of onset phases is used, and late phase is read as a mean phase between pi
-    and 2 pi. Reproduced when the onset phases of both kinds of event are non-uniform (p < 0.05) with
-    a mean phase between pi and 2 pi in at least four rats.
+  criterion: Theta phase from MUA (Figure S8 legend; Methods, Theta LFP, peaks of MUA smoothed with a
+    40 ms Gaussian and found at least 100 ms apart as phase 0 and 2 pi, phase linearly interpolated).
+    Per the Methods (Content / Theta Phase relationship), for each event the window from 60 ms before
+    to 60 ms after onset, while the animal is in a choice arm, in 4 ms bins, each bin's theta phase and
+    its content (for remote events the summed posterior outside the animal's outer arm, for local
+    extended events the decode to animal distance). How the figure turns these into "more likely to
+    occur" is open; readings, (a) the phase at event onset, (b) the content-weighted distribution of
+    bin phases over the window. The paper gives no test; a Rayleigh test (weighted in reading b) is
+    used, and late phase is read as a mean phase between pi and 2 pi. Reproduced when, under one
+    reading, the phases of both kinds of event are non-uniform (p < 0.05) with a mean phase between
+    pi and 2 pi in at least four rats.
 - id: figs10-theta-power-and-cycle-length
   statement: After controlling for movement speed, theta cycles with local extended or remote content
     had lower theta power and longer cycles.
@@ -956,8 +972,29 @@ claims:
   - figs11b-theta-cycles-correct
   criterion: Tolerances are the CI half-widths. Per theta cycle while the animal is in the outer arm
     during a COM event, z-scored theta power and cycle length, regressed (OLS) on pre-stopping, speed,
-    local extended content and remote content, with one indicator per rat (Figure S10 legend). Open,
-    (a) theta from the corpus callosum LFP, the default of the Methods, or (b) MUA-derived theta; and
-    the z-score, (i) within session, (ii) within rat. Reproduced when, under one reading, the four
+    local extended content and remote content, with one indicator per rat (Figure S10 legend). Theta
+    from the corpus callosum LFP (Methods, Theta LFP, which reserve MUA-derived theta for Figures S9
+    and S11 only; the S8 legend names S8 and S11); MUA-derived theta is shown as a variant. Open, the
+    z-score, (i) within session, (ii) within rat. Reproduced when, under one reading, the four
     effects have the stated signs with p < 0.0001 and are within tolerance; partially reproduced when
     the signs hold with p < 0.05.
+checks:
+- date: 2026-11-05
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1g-com-corrective, criterion reworded so the next arm of the sequence defines when the initial choice would have been rewarded, as the old wording read as defining the initial arm itself.
+  - fig1g-com-matches-run-through, the outcome rule over the 100 random draws was left undecided; it is now judged on each rat's median p over the draws, named as a choice the paper does not make.
+  - fig1h-final-choice-less-switching, the sign-test conditions asked for three rats; the Figure 1H legend reports p < 0.05 against 2 in four rats (E, J, K, L) for both initial and final ratios, so four are now required.
+  - fig3b-distance-predicts-com, removed the fallback "p < 1e-10 with a smaller sample", a threshold the paper does not give.
+  - figs7b-no-swr, noted that condition and rat indicators are collinear when every row is one of the three conditions, and added the statsmodels pseudo-inverse fit as reading (iii).
+  - figs11b-theta-cycles-correct, the legend of S11B(d) does not say which content's theta cycles enter the regression; the criterion had fixed "either kind", and now names (a) either kind and (b) the two kinds as separate predictors.
+  - figs11a-more-representations-over-days, the statement says "in all five animals" but the criterion tested only the pooled model; added a per-rat direction check, stated as one the paper does not test.
+  - fig4c-home-with-other-content, the criterion asked for two rats significant per panel; the Figure 4C legend reports three (M, K, L at p < 0.01 in a; E, J, K at p < 0.05 in b), so three are now required at those levels.
+  - figs8-late-theta-phase, the criterion used the phase at event onset only, while the Methods (Content / Theta Phase relationship) analyse 4 ms bins over 60 ms either side of onset with each bin's content; both readings are now named, and the MUA theta is cited to the Figure S8 legend.
+  - figs10-theta-power-and-cycle-length, the theta source was listed as open, but the Methods (Theta LFP) use the corpus callosum LFP for every theta analysis except S9 and S11; that is now the main reading and MUA theta a variant.
+  - Open, the per-rat sequence; Results (2 rats 1-2-4-3-1, 3 rats 3-4-2-1-3) and Figure 1B (rat E 3-4-2-1-3) agree with each other and disagree with the Figure S1E label for rat E; the reward log is to decide, as the opening comment says.
+  - Open, the Figure 4E event counts (18, 35, 21, 135, 93) differ from the remote counts of Figure 4A and the S11C counts differ from the Figure 4A totals for rats J, K and L; the paper does not explain either.
+  - Open, Figure 4A and 4B print the same estimate and CI (1.50, 1.18 to 1.90); kept as printed for both claims.
+  - Not added, supporting supplementary results without their own claim (S4 short slow periods, S5 posterior concentrated in one arm, S9 events lasting about half a theta cycle, S12 stable decoding error); none is a main finding of the paper.
