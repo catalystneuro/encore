@@ -176,7 +176,7 @@ claims:
   depends_on:
   - fig1b-signal-components
 - id: supp5-sws-only
-  statement: Replay is restricted to SWS; reactivation strength of signal components shows effects
+  statement: Replay is concentrated in SWS; reactivation strength of signal components shows effects
     of SWS against non-SWS and of post against pre, and no post-pre effect is seen in rest periods
     not classified as SWS.
   source: Results, Transient synchronized replay of awake patterns, paragraph 2; Supplementary Figure
@@ -197,9 +197,12 @@ claims:
     rest epochs; a two-way ANOVA of these means on state (SWS, non-SWS) and epoch (pre, post).
     Non-SWS bins are the bins of the rest epochs outside SWS intervals; how the rest epochs are
     bounded is not given in the paper beyond their 20-30 min duration and is taken from the data
-    set's epoch times. Reproduced when both main effects have p < 0.01 with SWS above non-SWS and
-    post above pre, and post does not exceed pre significantly (paired t-test, p < 0.05) in non-SWS
-    bins.
+    set's epoch times. The legend does not say what the ANOVA's observations are; per signal
+    component means is the reading used. The paper reports no separate test of post against pre in
+    non-SWS bins; the readings are (a) a paired t-test and (b) a Wilcoxon signed-rank test over the
+    signal components, at p 0.05. Reproduced when both main effects have p < 0.01 with SWS above
+    non-SWS and post above pre, and, under one reading, post does not exceed pre significantly in
+    non-SWS bins.
   depends_on:
   - fig1b-signal-components
 - id: supp6-pre-post-sws-alike
@@ -216,7 +219,9 @@ claims:
   criterion: A claim of absence, judged on the paper's test, a paired t-test over sessions of each
     measure, pre against post, at p 0.05. Measures are SWS duration per session (the legend's
     "Average SWS duration"; readings are the total SWS time per epoch and the mean SWS episode
-    duration), mean firing rate of the cells in SWS, and, where the data hold them, SPWR rate,
+    duration), mean firing rate of the cells in SWS (the legend's "Average firing rates of cells"
+    leaves open whether the pairs are sessions, with the population mean, or cells; both are
+    run), and, where the data hold them, SPWR rate,
     delta wave count and delta and spindle power differences. Reproduced for each measure when
     the test does not find a difference; the size of each difference is reported.
   depends_on:
@@ -310,10 +315,11 @@ claims:
     reactivation strengths beyond the 99th percentile.
   expected:
     quantity: fraction of net reactivation above the post 99th percentile
-    value: 45
-    tolerance: 9
+    value: 45.5
+    tolerance: 9.5
     unit: percent
-  criterion: The range 40 to 50% widened by 10% of each bound, 36 to 55%. The cumulative
+  criterion: The range 40 to 50% widened by 10% of each bound, 36 to 55%, written above as 45.5
+    with tolerance 9.5. The cumulative
     contribution of the Methods, the integral of u P(u) up to r, for post SWS minus pre SWS, with P
     the distribution of R_l(t); the fraction is one minus the cumulative difference at the post 99th
     percentile (Figure 2f legend, "99th percentile of reactivation strength distribution (in post)")
@@ -382,9 +388,13 @@ claims:
     ripples). SPWR bins are 100 ms bins holding a ripple time; which bins count is not fixed for
     this figure, and the readings are (a) the bin of the ripple peak, and (b) that bin and the next,
     as the Methods take for Figure 7. Per component, mean post SWS R_l in SPWR and non-SPWR bins;
-    a paired test (readings as in fig2b-post-greater-than-pre). Reproduced when, under one reading,
-    SPWR bins exceed non-SPWR bins with p < 0.005 in all three signal groups and the difference
-    correlates positively with Phi. Needs hippocampal LFP or ripple times.
+    a paired test (readings as in fig2b-post-greater-than-pre). The text does not say what is
+    correlated with Phi; Supplementary Figure 7B, which it cites, plots the mean post SWS R_l in
+    SPWR bins against Phi ("The correlation was significant only for POST (Pearson's correlation
+    test, p < 10−23)"). Readings are (i) that mean against Phi, and (ii) the SPWR minus non-SPWR
+    difference against Phi. Reproduced when, under one reading, SPWR bins exceed non-SPWR bins with
+    p < 0.005 in all three signal groups, and, under one reading, the correlation with Phi is
+    positive with p < 1e-20. Needs hippocampal LFP or ripple times.
   depends_on:
   - fig2b-post-greater-than-pre
 - id: fig5b-spwr-triggered
@@ -408,8 +418,9 @@ claims:
   criterion: Event-triggered average of R_l(t) (100 ms bins) on SPWR times over -4 to 4 s, per signal
     component, in pre and post SWS. The baseline window for this figure is not given; readings are
     (a) -4 to -2 s and 2 to 4 s, as the Figure 6a legend defines for delta waves, and (b) the mean
-    over the whole -4 to 4 s window. The test is not named; a paired t-test of peak against baseline
-    over components. Reproduced when, under one reading, the post rise is within tolerance with p <
+    over the whole -4 to 4 s window. The test is not named; readings are a paired t-test and a
+    Wilcoxon signed-rank test of the bin at the SPWR against baseline over the 270 signal components
+    of sessions with reliable ripples (fig5a-spwr-bins). Reproduced when, under one reading, the post rise is within tolerance with p <
     1e-10, the pre rise is not significant at p 0.05, and the post average is back within the
     baseline s.e.m. by 1 s from the SPWR. Needs ripple times.
   depends_on:
@@ -437,9 +448,12 @@ claims:
     maintained sustained activity thereafter20,21 (with no difference between pre and post epochs)
   criterion: SPWR-triggered spiking probability density of all recorded cells pooled (Figure 5d,
     multi-unit activity averaged over sessions), -4 to 4 s, 100 ms bins (a standard choice).
-    Reproduced when the post-SPWR mean (0.5 to 2 s) exceeds the pre-SPWR mean (-2 to -0.5 s) by a
-    paired t-test over sessions at p < 0.05, and pre and post epochs do not differ by the same test;
-    the windows are a standard choice. Needs ripple times.
+    The paper gives no test and no window for the asymmetry or the pre-post comparison; these are
+    the file's readings, not the paper's. The sustained rise is judged on the post-SPWR mean (0.5 to
+    2 s) against (a) the pre-SPWR mean (-2 to -0.5 s) and (b) the baseline -4 to -2 s, by a paired
+    t-test over sessions at p < 0.05. Reproduced when, under one reading, the post-SPWR mean is
+    higher, and the pre and post epoch profiles do not differ by the same test on the same window.
+    Needs ripple times.
   depends_on:
   - fig5a-spwr-bins
 - id: fig5e-autocorrelogram
@@ -539,9 +553,13 @@ claims:
     p_relation: <
   criterion: Spindles as in the Online Methods (10 to 20 Hz, r.m.s. smoothed with a 100 ms Gaussian,
     1 s.d. threshold, intervals closer than 100 ms merged, at least 500 ms long; troughs the minima of
-    the filtered signal). Post SWS event-triggered average of R_l for signal components; the
-    t-test compares the mean over -1 to 0 s with that over 0 to 1 s, per component (paired form).
-    Reproduced when the pre-spindle mean is higher with p < 0.001. Needs the prefrontal LFP.
+    the filtered signal). Post SWS event-triggered average of R_l for signal components. The text's
+    t-test is not described; readings are (a) the mean over -1 to 0 s against that over 0 to 1 s,
+    per component (paired form), and (b) each bin against the baseline of Figure 6a (-4 to -2 s and
+    2 to 4 s), as the legend's "Same plots as in a" allows. Reproduced when, under (a), the
+    pre-spindle mean is higher with p < 0.001, or, under (b), the bins over about 1 s before the
+    trough are significant and those after are not. The legend's threshold for (b) is p < 0.05.
+    Needs the prefrontal LFP.
   depends_on:
   - fig1b-signal-components
 - id: fig6d-reactivation-spwr-correlation
@@ -659,11 +677,12 @@ claims:
   depends_on:
   - fig7b-post-spwr-after-learning
 - id: fig7c-choice-point
-  statement: Post SPWR components that strengthened after learning are most active from the central
-    platform toward the end of the target arm, the only part of the maze where after-learning
-    activation differs significantly from before.
+  statement: Post SPWR components appear mainly when the rat is on the central platform, and the
+    effect of learning on their spatial distribution is significant only in the part of the maze
+    from the central platform toward the end of the target arm.
   source: Results, Replay of choice point activity increases with learning, paragraph 2; Figure 7c
-  quote: A significant effect (P o 0.05) of learning on the spatial distribution of principal
+  quote: the principal components computed from post SPWR appeared primarily when the rat was on the
+    central platform of the Y maze ... A significant effect (P o 0.05) of learning on the spatial distribution of principal
     components from post SPWR appeared only in the part of the maze going from the central platform
     toward the end of the target arm (Fig. 7c).
   statistics:
@@ -675,7 +694,8 @@ claims:
     equal bins of the linearized maze (departure arm, platform, target arm, with left and right arms
     combined), before and after learning, averaged over trials. The legend's n of 10 is read as 10
     sessions, each the mean of its components. Per bin, a paired t-test at p < 0.05. Reproduced when
-    the significant bins all lie from the platform onward; the platform's position along the
+    the significant bins all lie from the platform onward and the after-learning profile is
+    highest on the platform bins; the platform's position along the
     linearized path comes from the maze geometry (85 cm arms, Methods). Needs ripple times.
   depends_on:
   - fig7b-post-spwr-after-learning
@@ -716,3 +736,21 @@ claims:
     bin.
   depends_on:
   - learning-sessions
+checks:
+- date: 2026-11-05
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Quote checker. The three p-values it could not find (fig2b-pre-weaker 1e-5, fig5b-spwr-triggered 1e-10, replay-in-delta-spindle-periods 1e-5) are printed as "10�5", "10�10" in the extracted text and were confirmed by reading.
+  - supp5-sws-only. The statement said replay is restricted to SWS; the paper says no effect outside SWS and that replay is concentrated in SWS, so it now says concentrated. The criterion fixed a paired t-test for post against pre in non-SWS bins, which the paper does not give; it now names it open, with paired t-test and Wilcoxon readings, and says the ANOVA's observations (per component means) are a reading.
+  - supp6-pre-post-sws-alike. The firing-rate comparison could pair sessions or cells; the legend does not say. Both are now named.
+  - fig2f-tail-contribution. The expected value 45 with tolerance 9 gave 36 to 54%, while the protocol's widened range of 40 to 50% is 36 to 55%. Changed to 45.5 with tolerance 9.5.
+  - fig5a-spwr-bins. The criterion correlated the SPWR minus non-SPWR difference with Phi; the cited Supplementary Fig. 7B plots the mean SPWR-bin reactivation against Phi. Both are now readings, and the p < 1e-20 bound of the text is required.
+  - fig5b-spwr-triggered. The single test chosen (paired t-test) is not the paper's; added the Wilcoxon reading, and tied the n of 270 to the sessions with reliable ripples (8 + 37 + 225 of fig5a-spwr-bins).
+  - fig5d-population-asymmetric. Windows and test were presented as standard choices, but they can change the outcome. The criterion now says the paper gives neither and names two baselines as readings.
+  - fig6c-spindles. The text's t-test is not described and the legend says the panel is made as Figure 6a. Added the per-bin test against the Figure 6a baseline (legend threshold p < 0.05) as a second reading.
+  - fig7c-choice-point. The statement said the components are most active from the platform to the end of the target arm, which merges two findings. It now says they appear mainly on the platform (Results, same paragraph, added to the quote) and that the learning effect is significant only from the platform toward the target arm; the criterion checks the platform peak.
+  - Open, not settled. The order of the three r values in Figure 6d (0.79, 0.53, 0.96) against the three events cannot be read from the extracted text; no figure was rendered.
+  - Open, not settled. fig5e-autocorrelogram, supp10-no-coactivation and fig6b-down-up rest on bins, lag ranges and DOWN-state thresholds the paper does not give; the criteria name them as the file's choices.
+  - Open, not settled. Secondary findings without claims, none with a test that would change the main results. They are the Supplementary Fig. 8C,E details of the same-tetrode control, Supplementary Fig. 11C (no pre-post difference in the population z-score), the Fig. 6a population activity profile around delta waves, and the Methods' statement that post SPWR patterns have the same incidence for the first and second rules learned.
