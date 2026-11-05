@@ -120,21 +120,23 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_plitt_2023.ipynb
   output: claim:vr-reward-location-learning
-  notes: Under speed reading (ii), the day-6 spatial pattern holds in both groups on both arms. Normalized
-    lick rate in the 30 cm before the zone is 1.69 to 3.50, above every bin outside the zone, where the
-    maximum is 0.84 to 1.65. Normalized speed there is 0.47 to 0.57. Under reading (i), the Cre speed
-    ratio is 1.10, so the pattern holds for control only. The day effect of the familiar-trial licking
-    ANOVA is significant (p=0.007 and p=0.0006). But the day-6 mean (2.67 and 2.38 licks/s) is below the
-    day-1 mean (3.22 and 3.17), and the criterion asks for day 6 above day 1. So the day part fails.
+  notes: Under speed reading (ii), the main one, the day-6 spatial pattern holds in both groups on both
+    arms. Normalized lick rate in the 30 cm before the zone is 1.69 to 3.50, above every bin outside the
+    zone, where the maximum is 0.84 to 1.65. Normalized speed there is 0.47 to 0.57. Under the variant
+    (i), the Cre speed ratio is 1.10. The day effect of the familiar-trial licking ANOVA is significant
+    (p=0.007 and p=0.0006). But the day-6 mean (2.67 and 2.38 licks/s) is below the day-1 mean (3.22 and
+    3.17), and the criterion asks for day 6 above day 1. So the day part fails. The paper says only that
+    licking changed over days; whether the criterion should ask for an increase is asked of a reader (questions/001710.yaml).
   deviations:
   - Cre-8 is not in the dataset, so the claims file's reading (b), Cre-1 to Cre-8, cannot be run; every
     test uses Cre-1 to Cre-7.
   - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
     the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
     the zone are bins 16 to 18 (left) and 23 to 25 (right).
-  - The Methods do not say how the animal's average running speed is taken; readings (i) time-weighted
-    mean and (ii) mean of the binned speeds are both run, and the pattern holds in both groups only under
-    (ii).
+  - The Methods do not say how the animal's average running speed is taken. The mean of the binned speeds
+    (ii) is used, as it is normalised the same way as the binned values it divides; the time-weighted
+    session mean (i), which weights the reward stops by their duration and pushes the normalised binned
+    speeds above 1, is shown as a variant. The claims file names no reading.
 - claim: figs2f-novelty-slowing-familiar
   outcome: reproduced
   notebook: reproduce_plitt_2023.ipynb
@@ -145,8 +147,10 @@ outcomes:
     t=4.43, p=0.007). Reading (a,ii) has a virus effect (p=0.006) but no day-1 effect (Holm p=0.108).
     Readings (b,i) and (b,ii), all block-6 familiar trials, show no effect (p=0.56, 0.27).'
   deviations:
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - Speed is the full-resolution speed series used as cm/s (see findings).
 - claim: figs2g-novel-arm-slowing-no-difference
   outcome: reproduced
@@ -155,8 +159,10 @@ outcomes:
   notes: On the first two novel trials of block 6 (binned speed), the virus main effect is F(1,14)=1.11,
     p=0.309 (paper F(1,14)=1.12, p=0.308). The variant (a,ii) gives p=0.048.
   deviations:
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
 - claim: figs2i-reward-approach-speed-cv
   outcome: reproduced
   notebook: reproduce_plitt_2023.ipynb
@@ -210,7 +216,12 @@ outcomes:
   output: claim:figs3a-spatial-information-fraction-no-difference
   notes: 'With the deposited place-cell masks there is no virus effect on the place-cell fraction: F(1,14)=0.182,
     p=0.676 (familiar) and F(1,14)=0.118, p=0.736 (novel). With the recomputed masks (variant), the novel
-    fraction differs (p=0.036). The fractions are high: 0.88 to 0.89 familiar and 0.66 to 0.68 novel.'
+    fraction differs (p=0.036). The fractions are high: 0.88 to 0.89 familiar and 0.66 to 0.68 novel.
+    The recomputed place cells contain almost every deposited one (only-deposited 0 to 4% per mouse-day)
+    and add others (0.1 to 49%, median 7% familiar, 14% novel); spatial information ranks agree (Spearman
+    rho 0.84 to 0.98) but its scale does not (recomputed over deposited, median 25 and 31), so the deposited
+    masks come from another spatial information measure and a stricter null. The function that made them
+    is not in the linked repository.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -248,7 +259,8 @@ outcomes:
     reading (a), Cre mice have a higher familiar-to-novel correlation (p=0.018 and 0.020; 0.32 against
     0.25). The familiar-to-novel correlation, 0.30 (control) and 0.33 (Cre) under (b,i), is lower than
     the within-type trial-by-trial correlation, 0.40 in both groups. It is not near zero, as the stem
-    is shared.
+    is shared. Like for like, single familiar trials against single novel trials, the correlation is 0.108
+    (control) and 0.140 (Cre) under (a,i) and 0.116 and 0.140 under (b,i), virus p=0.174 and 0.303.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -438,8 +450,10 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
   assumed: true
@@ -457,8 +471,10 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
   assumed: true
@@ -476,8 +492,10 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
   assumed: true
@@ -487,7 +505,9 @@ outcomes:
   output: claim:fig4-block6-activity-increase-pattern
   notes: In both groups, familiar and novel values are above 0 (control 0.077 and 0.122, Cre 0.023 and
     0.051), and novel exceeds familiar. With the stem as the first 150 cm, arm exceeds stem for both types
-    in both groups. With a 100 cm stem, Cre familiar trials do not show it (arm 0.020, stem 0.029).
+    in both groups. With a 100 cm stem, Cre familiar trials do not show it (arm 0.020, stem 0.029). The
+    two stem readings give different outcomes; the 150 cm stem is adopted because the Methods say the
+    stem and the arms are of equal length.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -496,10 +516,15 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  - 'Where the stem ends is open (claims file readings a, 150 cm, and b, 100 cm), and the readings give
+    different outcomes for Cre familiar trials. Assumed: the first 150 cm, as the Methods (VR novel arm
+    Y-maze) give stem and arms of equal length on the 300 cm track.'
   assumed: true
 - claim: fig4e-novel-increase-grows-over-days
   outcome: reproduced
@@ -515,8 +540,10 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
   assumed: true
@@ -536,8 +563,10 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
   assumed: true
@@ -546,7 +575,9 @@ outcomes:
   notebook: reproduce_plitt_2023.ipynb
   output: claim:figs6b-block4-activity-no-difference
   notes: 'Block-4 normalized activity does not differ between groups: virus F(1,14)=0.118, p=0.736 (paper
-    F(1,14)=0.139, p=0.715). The variants give p=0.95 and 0.55.'
+    F(1,14)=0.139, p=0.715). The variants give p=0.95 and 0.55. Before the block numbers of the split
+    days were continued across their files (round 1), Ctrl-4 day 2''s ''block 4'' was its novel block;
+    the group means and the test are unchanged to the printed precision.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -556,6 +587,10 @@ outcomes:
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
   - Block 4 is the fourth block of each day, its baseline the 10 trials before it.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   assumed: true
 - claim: figs6e-familiar-activity-trials-since-novel
   outcome: reproduced
@@ -573,8 +608,10 @@ outcomes:
     give the kernel.
   - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
     between its two files (1048 and 1036 cells).
-  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
-    used as block 6.
+  - On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers restart at 0 in
+    the second file; they are continued from the first file's last block, as the authors' code does when
+    it joins the scans of a day (session.py at commit f2ab24d, printed in the notebook), which gives 6
+    blocks on every day.
   - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
     in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
   - Familiar trials of block 6 before its first novel trial have no 'trials since novel' and are left
@@ -652,7 +689,9 @@ outcomes:
     t=5.32, p=0.0007); Cre mice do not (0.029 against 0.029, p=0.925). The same holds with denominator
     (ii). With the permutation chance (a), Cre mice also exceed chance (p=0.002 and 0.002), which the
     criterion counts as partial. With the wider window (b), the analytic chance exceeds the observed fraction
-    in both groups.'
+    in both groups. With the stem ending at 100 cm (variant), the analytic chance gives the same: control
+    above chance (p=0.0002, window a, denominator i), Cre not (p=0.076; denominator ii p=0.094); the permutation
+    chance puts Cre above chance (p=0.0003).'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -687,6 +726,8 @@ outcomes:
     day-1 shift is below 0 (t=-4.50, Holm p=0.020), and control days 2 to 5 are not (Holm p >= 0.81).
     Place cells only (b,ii) gives the same (day 1 Holm p=0.023, control vs 0 p=0.009). With the raw COM
     (i), the virus effect holds (p=0.001 for all cells) but the day-1 tests do not (Holm p=0.118 and 0.41).
+    The raw COM is ill-conditioned (synthetic check in the notebook), so its results are not evidence
+    either way.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -699,6 +740,9 @@ outcomes:
     file's PV shift method; the paper's ref 60 is not read).
   - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
     deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - 'The centre of mass of the raw cross-correlation (reading i) is ill-conditioned: on synthetic maps
+    with a true -30 cm shift it gives means of -9.6, -26.8 and 1416 cm as noise grows, where the clipped
+    COM (ii) gives -29.4, -20.9 and -6.8 cm. The clipped COM is the main reading; the raw one is shown.'
   assumed: true
 - claim: fig6c-no-pv-shift-cre
   outcome: reproduced
@@ -717,14 +761,19 @@ outcomes:
     file's PV shift method; the paper's ref 60 is not read).
   - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
     deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - 'The centre of mass of the raw cross-correlation (reading i) is ill-conditioned: on synthetic maps
+    with a true -30 cm shift it gives means of -9.6, -26.8 and 1416 cm as noise grows, where the clipped
+    COM (ii) gives -29.4, -20.9 and -6.8 cm. The clipped COM is the main reading; the raw one is shown.'
   assumed: true
 - claim: figs8h-across-day-pv-shift
   outcome: not_reproduced
   notebook: reproduce_plitt_2023.ipynb
   output: claim:figs8h-across-day-pv-shift
-  notes: 'Across days, the control novel-arm shift is not below 0 under any reading: means -9.3 to 2.4
-    cm, p=0.15 to 0.83. Control and Cre do not differ (p=0.065 to 0.31). Cre means are positive, 8.7 to
-    17.4 cm, with p=0.10 to 0.26 against 0.'
+  notes: Across days, the control novel-arm shift is not below 0 under any reading. With the clipped COM
+    the control means are -1.77 cm (days 1 to 6, p=0.76) and -7.70 cm (days 1 to 5, p=0.145), and control
+    and Cre do not differ (p=0.131 and 0.065). With the raw COM, which is ill-conditioned, the control
+    means are 2.4 and -9.3 cm (p=0.83, 0.27). Cre means are positive under every reading, 8.7 to 17.4
+    cm, with p=0.10 to 0.26 against 0.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -738,14 +787,17 @@ outcomes:
   - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
     checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
     of the type on at least one day, as the paper does not say which days.
+  - 'The centre of mass of the raw cross-correlation (reading i) is ill-conditioned: on synthetic maps
+    with a true -30 cm shift it gives means of -9.6, -26.8 and 1416 cm as noise grows, where the clipped
+    COM (ii) gives -29.4, -20.9 and -6.8 cm. The clipped COM is the main reading; the raw one is shown.'
   assumed: true
 - claim: figs8d-pv-shift-not-explained-by-speed
   outcome: reproduced
   notebook: reproduce_plitt_2023.ipynb
   output: claim:figs8d-pv-shift-not-explained-by-speed
-  notes: 'The day-1 initial PV shift is not correlated with running speed over the first five novel trials:
-    r=-0.109, p=0.689, 16 mice (paper r=-0.317, p=0.231). The other PV readings give r=-0.15 to -0.39,
-    p >= 0.135.'
+  notes: 'With the clipped COM, all cells (a,ii), the day-1 initial PV shift is not correlated with running
+    speed over the first five novel trials: r=-0.148, p=0.585, 16 mice (paper r=-0.317, p=0.231). The
+    other readings give r=-0.109 to -0.390, p >= 0.135; the raw-COM ones are ill-conditioned (see fig6c).'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -756,6 +808,9 @@ outcomes:
     between its two files (1048 and 1036 cells).
   - The PV correlation at each lag is the Pearson correlation of the overlapping bins x cells (the claims
     file's PV shift method; the paper's ref 60 is not read).
+  - 'The centre of mass of the raw cross-correlation (reading i) is ill-conditioned: on synthetic maps
+    with a true -30 cm shift it gives means of -9.6, -26.8 and 1416 cm as noise grows, where the clipped
+    COM (ii) gives -29.4, -20.9 and -6.8 cm. The clipped COM is the main reading; the raw one is shown.'
   assumed: true
 - claim: fig6d-field-com-shift-larger-control
   outcome: not_reproduced
@@ -765,7 +820,8 @@ outcomes:
     mean, Wald chi2=0.05, p=0.815. With the next lap, p=0.984. In variant (c), next lap minus formation
     lap, p=0.956. Both groups show a small backward step after the formation lap in variant (c): -0.74
     cm (control) and -0.68 cm (Cre) on day 1. The only significant virus terms are on day 4 (p=0.036 and
-    0.032), where Cre fields shift more.'
+    0.032), where Cre fields shift more. Which sign the paper''s greater shift takes under the criterion''s
+    measure is asked of a reader (questions/001710.yaml).'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -789,8 +845,11 @@ outcomes:
   output: claim:fig6e-width-speed-correlation
   notes: 'On day 1 novel trials, field width rises with formation-lap speed in both groups: 0.43 cm per
     cm/s in control (p=9e-78) and 0.46 in Cre (p=7e-45). Neither the virus term (p=0.688) nor the speed
-    by virus term (p=0.409) is significant. Pooling days 1 to 6 (reading b), the speed by virus term is
-    significant (p=0.001).'
+    by virus term (p=0.409) is significant. Pooling days 1 to 6 (reading b) with the claims file''s random
+    intercept per mouse, the speed by virus term is significant (p=0.001), so the readings differ, and
+    day 1 is adopted. The pooled interaction rests on 78,255 fields with one intercept per mouse: with
+    a random slope per mouse it is p=0.585 (virus p=0.702), from per-mouse slopes p=0.586 (slopes positive
+    in 16 of 16 mice); with a variance component per mouse-day it stays p=0.002.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -804,14 +863,28 @@ outcomes:
   - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
     against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
     choice).
+  - 'The Fig 6E legend names no day (claims file readings a, day 1, and b, days 1 to 6 pooled), and the
+    readings give different outcomes. Assumed: day 1, as Fig 6E plots the fields of Fig 6D and S8F, which
+    are day 1 fields.'
   assumed: true
 - claim: figs9a-hse-trial-proportion-no-difference
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:figs9a-hse-trial-proportion-no-difference
-  notes: 'Cre mice have more trials with HSEs under both shuffle readings: S, 0.26 against 0.02, virus
-    F(1,14)=13.1, p=0.003; O, 0.46 against 0.20, F(1,14)=9.3, p=0.009. Under reading S, 19 of the 54 control
-    mouse-days have no HSE.'
+  notes: 'As tested, Cre mice have more trials with HSEs under both shuffle readings: S, 0.26 against
+    0.02, virus F(1,14)=13.1, p=0.003; O, 0.46 against 0.20, F(1,14)=9.3, p=0.009. On real minus null
+    the virus effect is p=0.61 (O) and p=0.003 (S). The HSE detector was checked (notebook, Checks of
+    the HSE detector). With each cell''s dF/F series circularly shifted in time by its own offset, which
+    removes synchrony and keeps each cell''s transients, the detector flags 0.43 (Cre) and 0.16 (control)
+    of trials under null reading O, against 0.46 and 0.20 in the real data, and 0.15 (Cre) and 0.003 (control)
+    under reading S, against 0.26 and 0.02. On synthetic independent cells it flags 0.20 to 0.27 (S) and
+    0.38 to 0.40 (O) of trials. The ANOVA of figs9a on the data with synchrony removed also finds Cre
+    higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4 s against 1.5 s). By the rule
+    fixed before the null was run on all sessions (more than half the real fraction in a group under both
+    readings), the detector as read from the Methods does not pick out synchronous events, and the two
+    null readings give 3.2 and 36 HSEs per control day; the paper does not settle the null, so the claim
+    is blocked.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -826,15 +899,27 @@ outcomes:
     in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
     not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
     taken as 8 frames.
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: figs9b-hse-size-no-difference
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:figs9b-hse-size-no-difference
-  notes: 'The fraction of cells per HSE does not differ between groups. Under reading O, 7 control and
-    7 Cre mice have HSEs on every day: virus F(1,12)=0.135, p=0.72, means 0.020 and 0.022. Under reading
-    S, only 1 control mouse has HSEs every day, so the ANOVA has 1 control mouse (p=0.985). The per-mouse
-    t-test variant gives p=0.67 (S) and 0.65 (O).'
+  notes: 'As tested, the fraction of cells per HSE does not differ: reading O, F(1,12)=0.135, p=0.72 (7
+    and 7 mice with HSEs every day), means 0.020 and 0.022; reading S keeps 1 control mouse (p=0.985);
+    per-mouse t-tests p=0.67 (S) and 0.65 (O). HSEs in the data with synchrony removed have the same size
+    (0.025 to 0.028). The HSE detector was checked (notebook, Checks of the HSE detector). With each cell''s
+    dF/F series circularly shifted in time by its own offset, which removes synchrony and keeps each cell''s
+    transients, the detector flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against
+    0.46 and 0.20 in the real data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and
+    0.02. On synthetic independent cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The
+    ANOVA of figs9a on the data with synchrony removed also finds Cre higher (O p=0.0014, S p=0.029);
+    Cre stopping periods are longer (5.4 s against 1.5 s). By the rule fixed before the null was run on
+    all sessions (more than half the real fraction in a group under both readings), the detector as read
+    from the Methods does not pick out synchronous events, and the two null readings give 3.2 and 36 HSEs
+    per control day; the paper does not settle the null, so the claim is blocked.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -849,14 +934,29 @@ outcomes:
     in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
     not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
     taken as 8 frames.
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: fig7e-reactivated-cells-more-stable-across-days-control
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig7e-reactivated-cells-more-stable-across-days-control
-  notes: In control mice, reactivated tracked cells are not more stable across days under any reading.
-    The differences are -0.067 to 0.005, and none is positive and significant. Under reading O with all
-    day pairs, they are significantly lower (familiar -0.067, Holm p=0.020; novel -0.056, p=0.015).
+  notes: 'As tested, control reactivated tracked cells are not more stable across days under any reading
+    (differences -0.067 to 0.005; under reading O with all day pairs significantly lower, familiar -0.067
+    Holm p=0.020, novel -0.056 p=0.015). Under reading (i) some Cre mice have few non-reactivated cells
+    (Cre-5: 1 of 522; Cre-2: 6 or 7 of 70); keeping mice with at least 10 cells in each group changes
+    no control result. Depends on figs9a-hse-trial-proportion-no-difference, blocked for the same reason.
+    The HSE detector was checked (notebook, Checks of the HSE detector). With each cell''s dF/F series
+    circularly shifted in time by its own offset, which removes synchrony and keeps each cell''s transients,
+    the detector flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against 0.46 and
+    0.20 in the real data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and 0.02.
+    On synthetic independent cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The ANOVA
+    of figs9a on the data with synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping
+    periods are longer (5.4 s against 1.5 s). By the rule fixed before the null was run on all sessions
+    (more than half the real fraction in a group under both readings), the detector as read from the Methods
+    does not pick out synchronous events, and the two null readings give 3.2 and 36 HSEs per control day;
+    the paper does not settle the null, so the claim is blocked.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -874,14 +974,27 @@ outcomes:
   - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
     checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
     of the type on at least one day, as the paper does not say which days.
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: fig7e-cre-reactivation-boost-novel-only
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig7e-cre-reactivation-boost-novel-only
-  notes: In Cre mice, reactivated cells are less stable across days on novel trials (differences -0.014
-    to -0.116; significant and negative under the O readings, Holm p=0.003 to 0.008). On familiar trials
-    they are also less stable (-0.016 to -0.156), not just equal.
+  notes: As tested, Cre reactivated cells are less stable across days on novel trials (differences -0.014
+    to -0.116; Holm p=0.003 to 0.008 under the O readings) and on familiar trials (-0.016 to -0.156).
+    Depends on figs9a-hse-trial-proportion-no-difference, blocked for the same reason. The HSE detector
+    was checked (notebook, Checks of the HSE detector). With each cell's dF/F series circularly shifted
+    in time by its own offset, which removes synchrony and keeps each cell's transients, the detector
+    flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against 0.46 and 0.20 in the real
+    data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and 0.02. On synthetic independent
+    cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The ANOVA of figs9a on the data with
+    synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
+    s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
+    fraction in a group under both readings), the detector as read from the Methods does not pick out
+    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
+    not settle the null, so the claim is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -899,14 +1012,27 @@ outcomes:
   - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
     checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
     of the type on at least one day, as the paper does not say which days.
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: fig7e-reactivation-effect-virus-and-novelty
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig7e-reactivation-effect-virus-and-novelty
-  notes: The virus main effect is significant under six of eight readings (p=0.004 to 0.045), with control
-    less negative than Cre. The trial-type main effect is not significant under any reading (p=0.08 to
-    0.98), and the novelty comparison is not either (p=0.20 to 0.84).
+  notes: As tested, the virus main effect is significant under six of eight readings (p=0.004 to 0.045),
+    control less negative than Cre; the trial-type main effect (p=0.08 to 0.98) and the novelty comparison
+    (p=0.20 to 0.84) are not. Depends on figs9a-hse-trial-proportion-no-difference, blocked for the same
+    reason. The HSE detector was checked (notebook, Checks of the HSE detector). With each cell's dF/F
+    series circularly shifted in time by its own offset, which removes synchrony and keeps each cell's
+    transients, the detector flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against
+    0.46 and 0.20 in the real data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and
+    0.02. On synthetic independent cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The
+    ANOVA of figs9a on the data with synchrony removed also finds Cre higher (O p=0.0014, S p=0.029);
+    Cre stopping periods are longer (5.4 s against 1.5 s). By the rule fixed before the null was run on
+    all sessions (more than half the real fraction in a group under both readings), the detector as read
+    from the Methods does not pick out synchronous events, and the two null readings give 3.2 and 36 HSEs
+    per control day; the paper does not settle the null, so the claim is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -924,14 +1050,27 @@ outcomes:
   - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
     checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
     of the type on at least one day, as the paper does not say which days.
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: fig7h-reactivated-cells-higher-trial-correlation-control
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig7h-reactivated-cells-higher-trial-correlation-control
-  notes: In control mice, reactivated cells do not have a higher trial-by-trial correlation under any
-    reading. The differences are -0.049 to 0.008. Under reading O:b,ii they are significantly lower (familiar
-    -0.049, Holm p=0.017; novel -0.031, p=0.046).
+  notes: As tested, control reactivated cells do not have a higher trial-by-trial correlation under any
+    reading (differences -0.049 to 0.008; under O:b,ii significantly lower, familiar Holm p=0.017, novel
+    p=0.046). Depends on figs9a-hse-trial-proportion-no-difference, blocked for the same reason. The HSE
+    detector was checked (notebook, Checks of the HSE detector). With each cell's dF/F series circularly
+    shifted in time by its own offset, which removes synchrony and keeps each cell's transients, the detector
+    flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against 0.46 and 0.20 in the real
+    data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and 0.02. On synthetic independent
+    cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The ANOVA of figs9a on the data with
+    synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
+    s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
+    fraction in a group under both readings), the detector as read from the Methods does not pick out
+    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
+    not settle the null, so the claim is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -951,16 +1090,28 @@ outcomes:
     of the type on at least one day, as the paper does not say which days.
   - Reading (a, ii) is not run, as HSEs on other days are defined only for tracked cells; it equals (b,
     ii).
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: fig7h-no-trial-correlation-boost-cre
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig7h-no-trial-correlation-boost-cre
-  notes: 'The paper''s tests do find an effect in Cre mice, but in the other direction. Reactivated cells
-    have a lower trial-by-trial correlation: differences -0.022 to -0.121, Holm p=0.0006 to 0.044 under
-    five of six readings. Under reading S:b,ii, familiar p=0.115 and novel p=0.033. They are not higher
-    in any reading, which is the paper''s statement. But the claim of absence is judged on the tests,
-    which find a difference.'
+  notes: As tested, Cre reactivated cells have a lower trial-by-trial correlation (differences -0.022
+    to -0.121, Holm p=0.0006 to 0.044 under five of six readings), higher in none; the criterion's two-sided
+    test finds a difference. Whether the test should be one-sided is asked of a reader (questions/001710.yaml).
+    Depends on figs9a-hse-trial-proportion-no-difference, blocked for the same reason. The HSE detector
+    was checked (notebook, Checks of the HSE detector). With each cell's dF/F series circularly shifted
+    in time by its own offset, which removes synchrony and keeps each cell's transients, the detector
+    flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against 0.46 and 0.20 in the real
+    data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and 0.02. On synthetic independent
+    cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The ANOVA of figs9a on the data with
+    synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
+    s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
+    fraction in a group under both readings), the detector as read from the Methods does not pick out
+    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
+    not settle the null, so the claim is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -980,14 +1131,27 @@ outcomes:
     of the type on at least one day, as the paper does not say which days.
   - Reading (a, ii) is not run, as HSEs on other days are defined only for tracked cells; it equals (b,
     ii).
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
 - claim: fig7h-reactivation-effect-virus-and-novelty
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig7h-reactivation-effect-virus-and-novelty
-  notes: The virus main effect is significant under every reading (p=0.011 to 0.036), with control higher,
-    that is, less negative. The trial-type main effect is not significant under any reading (p=0.05 to
-    0.74).
+  notes: As tested, the virus main effect is significant under every reading (p=0.011 to 0.036), control
+    higher because the Cre differences are negative; the trial-type main effect is not (p=0.05 to 0.74).
+    Depends on figs9a-hse-trial-proportion-no-difference, blocked for the same reason. The HSE detector
+    was checked (notebook, Checks of the HSE detector). With each cell's dF/F series circularly shifted
+    in time by its own offset, which removes synchrony and keeps each cell's transients, the detector
+    flags 0.43 (Cre) and 0.16 (control) of trials under null reading O, against 0.46 and 0.20 in the real
+    data, and 0.15 (Cre) and 0.003 (control) under reading S, against 0.26 and 0.02. On synthetic independent
+    cells it flags 0.20 to 0.27 (S) and 0.38 to 0.40 (O) of trials. The ANOVA of figs9a on the data with
+    synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
+    s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
+    fraction in a group under both readings), the detector as read from the Methods does not pick out
+    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
+    not settle the null, so the claim is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -1007,7 +1171,407 @@ outcomes:
     of the type on at least one day, as the paper does not say which days.
   - Reading (a, ii) is not run, as HSEs on other days are defined only for tracked cells; it equals (b,
     ii).
-  assumed: true
+  - The detector was checked against data with synchrony removed (each cell's whole dF/F series circularly
+    shifted by an independent random offset, helper time_shuffled) and against synthetic sessions (helper
+    synthetic_hse_check); both are checks added here, not methods of the paper.
+verifications:
+- date: '2026-11-05'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the author run (executed notebook with the conclusions and summary removed,
+    the helper module stx3.py and the claims file), with the paper under paper/. Round 1.
+  results:
+  - claim: link-roi-alignment
+    agrees: true
+    outcome: reproduced
+    reason: Every matched index is valid. 100% of matched cells lie within 10 px after the median shift
+      (median residual 0.5 to 1.6 px), against a 247 px median for random pairs. 70 to 562 cells are tracked
+      per mouse.
+    response: No change of outcome.
+  - claim: fig1c-novelty-preference
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive lists 139 assets, all ses-ymaze 2P sessions. There is no freely
+      moving behaviour, and the Figshare record holds only roi_aligners.zip and shuffle_pkls.zip.
+    response: No change of outcome.
+  - claim: figs1c-training-occupancy-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive lists 139 assets, all ses-ymaze 2P sessions. There is no freely
+      moving behaviour, and the Figshare record holds only roi_aligners.zip and shuffle_pkls.zip.
+    response: No change of outcome.
+  - claim: figs1e-open-field-distance-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive lists 139 assets, all ses-ymaze 2P sessions. There is no freely
+      moving behaviour, and the Figshare record holds only roi_aligners.zip and shuffle_pkls.zip.
+    response: No change of outcome.
+  - claim: figs1f-epm-closed-arm-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive lists 139 assets, all ses-ymaze 2P sessions. There is no freely
+      moving behaviour, and the Figshare record holds only roi_aligners.zip and shuffle_pkls.zip.
+    response: No change of outcome.
+  - claim: figs1f-epm-distance-no-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive lists 139 assets, all ses-ymaze 2P sessions. There is no freely
+      moving behaviour, and the Figshare record holds only roi_aligners.zip and shuffle_pkls.zip.
+    response: No change of outcome.
+  - claim: fig2ab-example-cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 7 of 8 counts match exactly. Cre-3 day 5 has 82 familiar trials against the paper's 17 (only
+      7 are in block 6), so the criterion's 'each count' fails.
+    response: No change of outcome. Trials per block and type of Cre-3 day 5 are now printed in the data
+      check.
+  - claim: fig1f-anticipatory-licking-familiar
+    agrees: true
+    outcome: reproduced
+    reason: Virus F(1,14)=21, p=4e-4, control higher under both rate readings. Cre-8 is not in the archive,
+      so reading (b) cannot be run.
+    response: No change of outcome.
+  - claim: fig1g-anticipatory-licking-novel
+    agrees: true
+    outcome: reproduced
+    reason: Virus F(1,14)=25, p=2e-4, control higher.
+    response: No change of outcome.
+  - claim: vr-reward-location-learning
+    agrees: true
+    outcome: partially_reproduced
+    reason: The spatial pattern holds for both groups and arms under the consistent speed normalisation
+      (ii). The day effect is significant (p=0.007 / 6e-4), but day 6 (2.67) is below day 1 (3.22), and
+      the criterion requires an increase.
+    response: 'No change of outcome. Problem 5: speed reading (ii) is now the main one and (i) a variant,
+      with the reason in the notebook and a deviation. Point 11: whether the day criterion should ask
+      for an increase is added to questions/001710.yaml; the claim is tested as written.'
+  - claim: figs2f-novelty-slowing-familiar
+    agrees: true
+    outcome: reproduced
+    reason: 'Under the legend reading (a,i): virus F=4.89, p=0.044 (paper 4.82, 0.045), control lower,
+      day 1 Holm p=0.007 (Welch 0.006). The near-exact match identifies this as the paper''s method. The
+      Methods reading (b) fails.'
+    response: No change of outcome.
+  - claim: figs2g-novel-arm-slowing-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Main measure (a,i): p=0.309 (paper 0.308). Readings (b,i) and (b,ii) give p>=0.56. Only the
+      (a,ii) variant gives p=0.048.'
+    response: No change of outcome.
+  - claim: figs2i-reward-approach-speed-cv
+    agrees: true
+    outcome: reproduced
+    reason: Familiar p=0.012, novel p=0.025, Cre higher.
+    response: No change of outcome.
+  - claim: fig2cd-decoding-no-group-difference
+    agrees: true
+    outcome: reproduced
+    reason: Virus p=0.335 (familiar) and 0.62 (novel).
+    response: 'No change of outcome. Section C: the decoder input lines of the authors'' naive_bayes.py
+      (dF/F x 10, minus the minimum over cells) and the F_dff loading line of session.py are now printed
+      from the pinned commit.'
+  - claim: fig2cd-decoding-improves-over-days
+    agrees: true
+    outcome: partially_reproduced
+    reason: The day effect holds for both types. On familiar trials none of the day 1 contrasts survives
+      Holm (p 0.12 to 0.29); on novel trials day 1 vs day 5 gives p=0.066.
+    response: No change of outcome.
+  - claim: figs3a-spatial-information-fraction-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: With the deposited place-cell masks, p=0.68 and 0.74. With recomputed masks the novel p is
+      0.036 (problem 3).
+    response: 'No change of outcome. Problem 3: deposited and recomputed spatial information and p are
+      compared per cell and per mouse-day; the recomputed masks hold almost every deposited place cell
+      and add others, the SI ranks agree but the scale does not, so the deposited masks use another SI
+      measure and a stricter null. The function that made them is not in the linked repository, so the
+      cause was not traced further.'
+  - claim: figs3b-within-day-stability-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: All 8 readings give p>=0.897.
+    response: 'No change of outcome. Section C: the authors'' calc_pv_corr is now printed from the pinned
+      commit; it is the per-bin reading (b).'
+  - claim: figs3c-familiar-novel-remapping
+    agrees: false
+    outcome: partially_reproduced
+    reason: Reading (b) gives p=0.31. Reading (a) gives p=0.018 and 0.020, with Cre higher, so the readings
+      disagree.
+    response: 'Outcome kept, disagreement recorded. The criterion''s correlation readings give different
+      outcomes, so, as author step 1.6 says, the per-bin reading of the authors'' calc_pv_corr (now printed
+      from the pinned commit) is adopted as an assumption, and the outcome is marked assumed. Point 8:
+      a like-for-like variant (single familiar against single novel trials) is added; it gives no group
+      difference under either reading (p=0.174, 0.303).'
+  - claim: fig2gh-across-day-pv-correlation-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: All readings give p>=0.30, Student and Welch.
+    response: No change of outcome.
+  - claim: figs3eg-across-day-decoding-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: All p>=0.63.
+    response: No change of outcome.
+  - claim: figs4-morph-task-context-discrimination
+    agrees: true
+    outcome: blocked
+    reason: data_missing. There are no morph-task sessions in the archive (the criterion is also unspecified).
+    response: No change of outcome.
+  - claim: figs5-ca3-dg-place-fields
+    agrees: true
+    outcome: blocked
+    reason: data_missing. Cre-8 is absent, and Cre-7 has only ymaze days 0 to 5 with location CA1.
+    response: No change of outcome.
+  - claim: fig3bc-model-stable-place-cells
+    agrees: true
+    outcome: blocked
+    reason: methods_underspecified. These are simulations. The weight-update and tuning equations, trial
+      count and measures are missing from the text.
+    response: No change of outcome.
+  - claim: fig3d-model-wider-fields-with-plasticity
+    agrees: true
+    outcome: blocked
+    reason: methods_underspecified. These are simulations. The weight-update and tuning equations, trial
+      count and measures are missing from the text.
+    response: No change of outcome.
+  - claim: fig3e-model-more-fields-without-plasticity
+    agrees: true
+    outcome: blocked
+    reason: methods_underspecified. These are simulations. The weight-update and tuning equations, trial
+      count and measures are missing from the text.
+    response: No change of outcome.
+  - claim: fig3f-narrower-fields-cre-familiar
+    agrees: true
+    outcome: not_reproduced
+    reason: Virus p is 0.089 to 0.21 and day 6 p is 0.06 to 0.21 under all readings.
+    response: No change of outcome.
+  - claim: fig3g-narrower-fields-cre-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: Day 6 holds only under candidate fields (p=0.026 / 0.024, Welch <0.05). The virus effect fails
+      under every reading (p 0.051 to 0.082).
+    response: No change of outcome.
+  - claim: fig3h-more-fields-per-cell-cre-familiar
+    agrees: true
+    outcome: reproduced
+    reason: Virus p <=0.043 and day 6 p <=0.041, Cre higher, under all four readings. Only the (b,b) day
+      6 Welch test is borderline (p=0.051).
+    response: No change of outcome.
+  - claim: fig3i-more-fields-per-cell-cre-novel
+    agrees: false
+    outcome: partially_reproduced
+    reason: Three readings reproduce. Reading (b,b) fails (virus p=0.07, day 6 p=0.056).
+    response: Outcome kept, disagreement recorded. The criterion's readings are of which cells are counted
+      (reader step 3, a reported number read in more than one way), and the claim is reproduced when it
+      holds under any of them; three of four readings reproduce it.
+  - claim: fig4e-block6-familiar-activity-lower-cre
+    agrees: true
+    outcome: reproduced
+    reason: Virus p=3e-4, Cre lower.
+    response: No change of outcome.
+  - claim: fig4e-block6-novel-activity-lower-cre
+    agrees: true
+    outcome: reproduced
+    reason: Virus p=1.9e-5, Cre lower.
+    response: No change of outcome.
+  - claim: fig4e-novel-minus-familiar-larger-control
+    agrees: true
+    outcome: reproduced
+    reason: 'The Methods measure gives p=0.0395, control larger. This is fragile: the code-style v1 normalisation
+      gives p=0.28.'
+    response: No change of outcome.
+  - claim: fig4-block6-activity-increase-pattern
+    agrees: false
+    outcome: partially_reproduced
+    reason: Everything holds with the 150 cm stem. With the 100 cm stem, the Cre familiar arm value (0.020)
+      is below the stem value (0.029).
+    response: Outcome kept, disagreement recorded. The stem readings are a method detail that gives different
+      outcomes, so the 150 cm stem, which the Methods support (stem and arms of equal length), is adopted
+      as an assumption, now stated as a deviation and in the conclusion.
+  - claim: fig4e-novel-increase-grows-over-days
+    agrees: true
+    outcome: reproduced
+    reason: Day p=0.003; day 5 (0.108) is above day 1 (0.078).
+    response: No change of outcome.
+  - claim: fig4d-activity-increase-spread-across-cells
+    agrees: true
+    outcome: reproduced
+    reason: Control is above Cre at every decile from 0.2 to 0.9 on novel trials.
+    response: No change of outcome.
+  - claim: figs6b-block4-activity-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: p=0.736 (paper 0.715).
+    response: 'No change of outcome. Problem 7: the block numbers restart at 0 in the second file of a
+      split day (printed per file). They are now continued from the first file, as the authors'' code
+      does; before this, Ctrl-4 day 2''s block 4 was its novel block. The group means and the test are
+      unchanged to the printed precision.'
+  - claim: figs6e-familiar-activity-trials-since-novel
+    agrees: true
+    outcome: reproduced
+    reason: p<0.05 in both groups under all readings. The Cre df (2,6) with n=4 matches the paper.
+    response: No change of outcome.
+  - claim: figs7b-reward-overrepresentation
+    agrees: true
+    outcome: reproduced
+    reason: 'With deposited place cells: familiar p=0.033, novel p=0.009, control higher. Recomputed familiar
+      p=0.052.'
+    response: No change of outcome.
+  - claim: fig5d-reward-cells-fewer-in-cre
+    agrees: true
+    outcome: reproduced
+    reason: All 4 readings give p<=0.038, control higher.
+    response: No change of outcome.
+  - claim: fig5d-reward-cells-increase-over-days-control
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a,i) p=0.016 and (b,i) p=6e-5, control day 6 above day 1.
+    response: No change of outcome.
+  - claim: fig5d-reward-cells-above-chance-control-only
+    agrees: true
+    outcome: reproduced
+    reason: Under window (a) with analytic chance, control is above chance (p=7e-4) and Cre is not (p=0.93).
+      Under permutation chance Cre is also above (p=0.002), which would be partial.
+    response: 'No change of outcome. Point 9: the chance with a 100 cm stem is added; the analytic chance
+      gives the same result (control p=0.0002, Cre p=0.076).'
+  - claim: fig5h-extinction-group-difference
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive has only file days 0 to 5; there are no reversal days 7 to 8.
+    response: No change of outcome.
+  - claim: fig5i-extinction-intercept-not-slope
+    agrees: true
+    outcome: blocked
+    reason: data_missing. The archive has only file days 0 to 5; there are no reversal days 7 to 8.
+    response: No change of outcome.
+  - claim: fig6c-pv-backward-shift-day1-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Under the clipped-COM readings (a,ii) and (b,ii) every condition holds: virus p<=0.004, day
+      1 Holm p<=0.023, control day 1 vs 0 Holm p<=0.02, later days n.s. The raw-COM readings fail, but
+      they are ill-conditioned (problem 4).'
+    response: 'No change of outcome. Problem 4: a synthetic check of the raw COM is added and the notebook
+      says it is ill-conditioned; the outcome rests on the clipped COM.'
+  - claim: fig6c-no-pv-shift-cre
+    agrees: true
+    outcome: reproduced
+    reason: All Cre Holm p>=0.88.
+    response: No change of outcome.
+  - claim: figs8h-across-day-pv-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: The control shift is never below 0 (p>=0.145), and control vs Cre p>=0.065.
+    response: No change of outcome. The conclusion now rests on the clipped COM (problem 4).
+  - claim: figs8d-pv-shift-not-explained-by-speed
+    agrees: true
+    outcome: reproduced
+    reason: r=-0.11, p=0.69; all readings give p>=0.13.
+    response: 'No change of outcome. Problem 4: the main reading is now the clipped COM (a,ii), r=-0.148,
+      p=0.585; the raw readings are variants.'
+  - claim: fig6d-field-com-shift-larger-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Day 1 virus Wald p is 0.82, 0.98 and 0.96 for readings a, b and c, with effects under 0.1
+      cm. The result holds under either sign convention.
+    response: 'No change of outcome. Point 11: the sign convention of the criterion against the paper''s
+      backward shift is added to questions/001710.yaml.'
+  - claim: fig6e-width-speed-correlation
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under day 1 everything holds (slopes p<1e-44; virus p=0.69, interaction p=0.41). Pooled over
+      days the interaction is significant (p=0.001).
+    response: 'Outcome kept, disagreement recorded. The day readings give different outcomes; day 1 is
+      adopted as an assumption, as Fig 6E plots the fields of Fig 6D and S8F. Problem 6: with a random
+      slope per mouse the pooled interaction is p=0.585, and from per-mouse slopes p=0.586; with a variance
+      component per mouse-day it stays p=0.002. All are shown.'
+  - claim: figs9a-hse-trial-proportion-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: Cre is higher under both HSE readings (p=0.003 / 0.009). Confidence is low (problem 1).
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified.'
+  - claim: figs9b-hse-size-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Onset reading p=0.72; series-reading variant p=0.67. The series-reading ANOVA keeps only 1
+      control mouse.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. The verifier''s outcome was reproduced; the block replaces it.'
+  - claim: fig7e-reactivated-cells-more-stable-across-days-control
+    agrees: true
+    outcome: not_reproduced
+    reason: The control differences are <=0 under every reading, and significantly negative under some.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. Problem 2: the reactivated and non-reactivated counts per mouse
+      are printed, and a variant with at least 10 cells in each group is added; it changes no control
+      result. The claim depends on figs9a and is blocked with it.'
+  - claim: fig7e-cre-reactivation-boost-novel-only
+    agrees: true
+    outcome: not_reproduced
+    reason: The Cre novel difference is negative or n.s., never positive.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. The claim depends on figs9a and is blocked with it.'
+  - claim: fig7e-reactivation-effect-virus-and-novelty
+    agrees: true
+    outcome: not_reproduced
+    reason: The trial-type effect is never significant, and the novelty contrast has p>=0.20.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. The claim depends on figs9a and is blocked with it.'
+  - claim: fig7h-reactivated-cells-higher-trial-correlation-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Control differences are <=0.008 and n.s., or negative.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. Problem 2: the smallest group per mouse and the days entering each
+      mean are printed. The claim depends on figs9a and is blocked with it.'
+  - claim: fig7h-no-trial-correlation-boost-cre
+    agrees: true
+    outcome: not_reproduced
+    reason: Cre differences are significantly negative (Holm p<0.05) under most readings, so the two-sided
+      p>=0.05 criterion fails, even though there is no boost.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. Point 11: whether the test should be one-sided is added to questions/001710.yaml.
+      The claim depends on figs9a and is blocked with it.'
+  - claim: fig7h-reactivation-effect-virus-and-novelty
+    agrees: false
+    outcome: partially_reproduced
+    reason: The virus effect holds (p<=0.036, control higher) but comes from negative Cre differences.
+      The trial-type effect never reaches p<0.05.
+    response: 'Problem 1 (the HSE detector was never validated) is addressed in the notebook: synthetic
+      sessions, a null with each cell''s series shifted in time on every session, per-mouse HSE counts
+      and sizes, and the Figshare shuffles (they hold no HSE results). The null flags 0.43 (Cre) and 0.16
+      (control) of trials under reading O, against 0.46 and 0.20 real, and 0.15 against 0.26 (Cre) under
+      reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
+      blocked, methods_underspecified. The verifier would give partially_reproduced; the block replaces
+      both. The claim depends on figs9a and is blocked with it.'
 findings:
 - kind: data_missing
   statement: The dandiset holds the head-fixed VR imaging of Ctrl-1 to Ctrl-9 and Cre-1 to Cre-7 on days
@@ -1061,10 +1625,25 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. In the HSE null, does the circular shift move a cell's whole activity
     series within the stopping period (so that transients that began before the stop can enter the null)
-    or only the transients that began in the period? And which speed and smoothing define 'stationary
-    (<2 cm/s)'? Under both null readings tried, Cre mice have more HSE trials than control mice, against
-    Fig S9A.
+    or only the transients that began in the period? Which speed and smoothing define 'stationary (<2
+    cm/s)'? And how were HSEs told apart from chance coincidences? Read from the Methods, the detector
+    flags, on data with synchrony removed (each cell shifted in time), 0.43 of Cre and 0.16 of control
+    trials under the onset reading against 0.46 and 0.20 in the real data, and 0.15 against 0.26 of Cre
+    trials under the series reading. The HSE claims are blocked for this. The Figshare shuffles (shuffle_pkls.zip)
+    hold no HSE results.
 - kind: methods_unavailable
   statement: Question for the authors. Where are the reward zones in spline coordinates, and how is the
     animal's average running speed taken for normalized speed (time-weighted or over bins)? The day-6
     spatial pattern of vr-reward-location-learning holds for Cre mice only with the bin mean.
+- kind: other
+  statement: On the two days split over two files (Ctrl-2 day 4, Ctrl-4 day 2) the block numbers of the
+    second file restart at 0, so the files alone give 5 and 4 blocks for those days; the authors' code
+    continues them from the first file's last block, which gives 6 blocks with the novel trials in block
+    6.
+- kind: methods_unavailable
+  statement: Question for the authors. How were the deposited place-cell masks (place_cell_info) computed?
+    They equal shuffle p < 0.05 of the deposited spatial information, but that information is on another
+    scale than the Skaggs information of the trial-averaged dF/F map (recomputed over deposited, median
+    25 to 31), and a 1000-shuffle test recomputed here marks 0.1 to 49% more cells per mouse-day. The
+    function that made them (two_photon_utils.spatial_analyses.place_cells_calc) is not in the linked
+    repository.

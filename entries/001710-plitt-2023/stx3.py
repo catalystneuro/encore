@@ -263,9 +263,16 @@ def _concat_scans(scans: list[dict], mapping: np.ndarray | None) -> dict:
         out["dff"].append(s["dff"][:, mapping[j]])
         out["starts"].append(np.array(s["meta"]["trial_start_inds"]) + off)
         out["ends"].append(np.array(s["meta"]["teleport_inds"]) + off)
-        for k in ("LR", "block_number"):
-            out["trial_info"][k].append(np.array(s["meta"]["trial_info"][k]))
-        out["full_trials"].append(_full_res_trials(s["full"]))
+        # block numbers restart at 0 in a day's second scan; they are continued from the
+        # first scan's last block, as the authors' code does when it joins the scans of one
+        # day (session.py at CODE_COMMIT: block_number + previous scan's last block + 1)
+        bn = np.array(s["meta"]["trial_info"]["block_number"])
+        boff = int(out["trial_info"]["block_number"][-1][-1]) + 1 if j > 0 and len(bn) and bn[0] == 0 else 0
+        out["trial_info"]["LR"].append(np.array(s["meta"]["trial_info"]["LR"]))
+        out["trial_info"]["block_number"].append(bn + boff)
+        ft = _full_res_trials(s["full"])
+        ft["block"] = ft["block"] + boff
+        out["full_trials"].append(ft)
         off += len(s["pos"])
     for k in ("pos", "speed", "reward", "starts", "ends"):
         out[k] = np.concatenate(out[k])
@@ -421,7 +428,8 @@ def hse(dff, pos, reward, starts, ends, rng, n_shuffle=N_SHUFFLE, min_stop=12, w
             if hi - lo >= min_stop:
                 periods.append((i, r0 + lo, r0 + hi))
     if not periods:
-        return dict(trial_hse=np.zeros(len(starts), bool), events=[], thr=np.nan, n_periods=0)
+        return dict(trial_hse=np.zeros(len(starts), bool), events=[], thr=np.nan, n_periods=0,
+                    frac_above=np.nan, period_s=np.nan)
     # rising edges: real (non-circular, j >= 1) and circular (for shuffles)
     real_on, circ = [], []
     for pid, (i, a, b) in enumerate(periods):
@@ -477,7 +485,8 @@ def hse(dff, pos, reward, starts, ends, rng, n_shuffle=N_SHUFFLE, min_stop=12, w
             m = (rp == p) & (rj >= lo) & (rj < hi - 1 + win)
             events.append(dict(trial=i, cells=np.unique(rc[m])))
             trial_hse[i] = True
-    return dict(trial_hse=trial_hse, events=events, thr=thr, n_periods=len(periods))
+    return dict(trial_hse=trial_hse, events=events, thr=thr, n_periods=len(periods),
+                frac_above=float((cnt > thr).mean()), period_s=float(L.mean() / FRAME_RATE))
 
 
 def session_summary(asset_ids: list[str], mapping: np.ndarray | None = None, seed_name: str = "",
@@ -516,13 +525,14 @@ def session_summary(asset_ids: list[str], mapping: np.ndarray | None = None, see
                dep_pc={"fam": dep[fam_arm], "nov": dep[nov_arm]}, n_scans=len(scans))
     # shuffles, fields, SI recomputed, per trial type
     rng = np.random.default_rng(seed)
-    out["fields"], out["si_p"], out["field_laps"] = {}, {}, {}
+    out["fields"], out["si_p"], out["si_obs"], out["field_laps"] = {}, {}, {}, {}
     for tt, arm in (("fam", -novel), ("nov", novel)):
         idx = np.flatnonzero(LR == arm)
         if len(idx) < 2:
             continue
         obs, thr, si, p = shuffle_maps(s["dff"], bins, s["starts"], s["ends"], idx, n_shuffle, rng)
         out["si_p"][tt] = p
+        out["si_obs"][tt] = si
         flds = find_fields(obs, thr, R[idx])
         out["fields"][tt] = flds
         laps = []
@@ -535,6 +545,53 @@ def session_summary(asset_ids: list[str], mapping: np.ndarray | None = None, see
                      np.random.default_rng(seed + 1))
     out["hse_on"] = hse(s["dff"], s["pos"], s["reward"], s["starts"], s["ends"],
                         np.random.default_rng(seed + 2), mode="onsets")
+    # null check of the detector: each cell's whole dF/F series circularly shifted by its own
+    # random offset, which removes synchrony between cells and keeps each cell's transients
+    X = time_shuffled(s["dff"], np.random.default_rng(seed + 3))
+    out["hse_null"] = hse(X, s["pos"], s["reward"], s["starts"], s["ends"], np.random.default_rng(seed + 4))
+    out["hse_on_null"] = hse(X, s["pos"], s["reward"], s["starts"], s["ends"],
+                             np.random.default_rng(seed + 5), mode="onsets")
+    return out
+
+
+def time_shuffled(dff, rng):
+    """Each cell's series circularly shifted by an independent random offset over the session."""
+    n = dff.shape[0]
+    sh = rng.integers(0, n, dff.shape[1])
+    idx = (np.arange(n)[:, None] - sh[None, :]) % n
+    return np.take_along_axis(dff, idx, axis=0)
+
+
+def synthetic_hse_check(rng, n_cells=300, n_trials=60, rate=0.02, stop_s=(1.0, 6.0), sync=0):
+    """Detector check on synthetic sessions: independent cells with random transients
+    (onset probability `rate` per frame, decaying 1 s), one post-reward stop per trial of
+    random length; `sync` > 0 adds one synchronous event of that many cells in half the
+    stops. Returns the fraction of trials flagged, under both null readings."""
+    fr = FRAME_RATE
+    run = int(8 * fr)
+    starts, ends, rew, pos = [], [], [], []
+    t = 0
+    planted = []
+    for i in range(n_trials):
+        L = int(rng.uniform(*stop_s) * fr)
+        p_run = np.linspace(POS_MIN, POS_MIN + 29, run)
+        p_stop = np.full(L, POS_MIN + 29)
+        pos.append(np.r_[p_run, p_stop]); r = np.zeros(run + L); r[run] = 1; rew.append(r)
+        starts.append(t); ends.append(t + run + L)
+        if sync and i % 2 == 0 and L > 20:
+            planted.append(t + run + int(rng.integers(5, L - 10)))
+        t += run + L
+    pos = np.concatenate(pos); rew = np.concatenate(rew)
+    on = rng.random((t, n_cells)) < rate
+    for t0 in planted:
+        on[t0:t0 + 3, rng.choice(n_cells, sync, replace=False)] = True
+    k = np.exp(-np.arange(int(fr)) / (fr / 3))
+    dff = np.apply_along_axis(lambda x: np.convolve(x, k)[:t], 0, on.astype(float)).astype(np.float32)
+    dff += rng.normal(0, 0.05, dff.shape).astype(np.float32)
+    out = {}
+    for mode in ("series", "onsets"):
+        h = hse(dff, pos, rew, np.array(starts), np.array(ends), rng, n_shuffle=200, mode=mode)
+        out[mode] = dict(frac_trials=float(h["trial_hse"].mean()), n_hse=len(h["events"]), thr=h["thr"])
     return out
 
 
@@ -766,3 +823,37 @@ def _hse_job(args):
     return key, {m: hse(s["dff"], s["pos"], s["reward"], s["starts"], s["ends"],
                         np.random.default_rng(seed + (1 if m == "series" else 2)), mode=m)
                  for m in ("series", "onsets")}
+
+
+def cross_pv(Ra, Rb, reading):
+    """Mean PV correlation over all pairs of a single trial of Ra and a single trial of Rb
+    (trials, bins, cells), readings as `pv_corr`."""
+    A = np.nan_to_num(Ra); B = np.nan_to_num(Rb)
+    if len(A) == 0 or len(B) == 0:
+        return np.nan
+    if reading == "a":
+        a = A.reshape(len(A), -1); b = B.reshape(len(B), -1)
+        a = a - a.mean(1, keepdims=True); b = b - b.mean(1, keepdims=True)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            C = (a @ b.T) / np.outer(np.sqrt((a * a).sum(1)), np.sqrt((b * b).sum(1)))
+        return float(np.nanmean(C))
+    a = A - A.mean(2, keepdims=True); b = B - B.mean(2, keepdims=True)
+    na = np.sqrt((a * a).sum(2)); nb = np.sqrt((b * b).sum(2))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        C = np.einsum("ibk,jbk->ijb", a, b) / (na[:, None, :] * nb[None, :, :])
+    return float(np.nanmean(C))
+
+
+def synthetic_shift_check(rng, true_shift_bins=-3, n_cells=200, noise=0.5, n_rep=20):
+    """`xcorr_shift` on synthetic maps: Gaussian fields (width 2 bins) at random centres,
+    the second map moved by `true_shift_bins`, both with Gaussian noise. Returns the
+    recovered shifts (cm) for the raw and the clipped centre of mass."""
+    x = np.arange(NBINS)
+    out = {"raw": [], "clipped": []}
+    for _ in range(n_rep):
+        c = rng.uniform(0, NBINS, n_cells)
+        a = np.exp(-0.5 * ((x[:, None] - c[None]) / 2.0) ** 2)
+        b = np.exp(-0.5 * ((x[:, None] - c[None] - true_shift_bins) / 2.0) ** 2)
+        a = a + rng.normal(0, noise, a.shape); b = b + rng.normal(0, noise, b.shape)
+        out["raw"].append(xcorr_shift(a, b)); out["clipped"].append(xcorr_shift(a, b, True))
+    return {k: np.array(v) for k, v in out.items()}
