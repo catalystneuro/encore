@@ -18,5 +18,7 @@ The claims are in `claims/001708/`, the outcomes in `attempts/001708-ashworth-20
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
 
-Run with `python tools/entry.py all entries/001708-ashworth-2025` (about two hours on 4 cores: about 27
-minutes for each of evoked.ipynb, ongoing.ipynb and gp_methods.ipynb and 35 for gp.ipynb).
+Run with `python tools/entry.py all entries/001708-ashworth-2025` (about two hours on 4 cores: in the last
+execution 31.8 min for evoked.ipynb, 27.1 for ongoing.ipynb, 36.7 for gp.ipynb and 25.6 for gp_methods.ipynb).
+The PyMC fits repeat exactly on one machine at the fixed seeds, but their draws differ between machines, so the
+model numbers can move in the third digit, and the convergence of a few fits can change, on another machine.
