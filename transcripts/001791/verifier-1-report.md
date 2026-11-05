@@ -1,0 +1,54 @@
+**Verifier report, round 1: Wong-Campos et al. 2023 on DANDI:001791 v0.260424.0313**
+
+The claims file holds 19 claims. My outcomes: reproduced 3, partially reproduced 5, not reproduced 4, blocked 7.
+
+### A. Outcomes
+
+| Claim | Outcome | Reason |
+|---|---|---|
+| fig1d-light-intensity-spike-rate | reproduced | Cell 18: with pulse windows inferred from the traces, rho is 0.564 (K=5) and 0.862 (K=4), and the last pulse beats the first (2 and 16 Hz against 0) under both readings. Most somatic spikes have a dendritic event within 5 ms: 1.00 and 0.98 for any dendrite, and above 0.7 in 3 of 4 dendrites (D4 only 0.14 and 0.33). |
+| fig1fg-dendrite-peaks-after-soma | partially_reproduced | Cell 21: timing by the sample of the maximum gives delay 0.0 at all 4 dendrites (0 of 4), and the parabola gives 3 of 4 (0.04, 0.66, 0.18, −0.27 ms). The bootstrap separates only D2 and D3 from 0; D4 is negative. |
+| fig2c-no-trial-variation | blocked (data_missing) | There are no single-trial Fig. 2 traces or baseline-noise windows in the archive. See item B1 for two files that were not examined. |
+| fig2e-half-amplitude-distance | reproduced | Cell 24: on the deposited LR set (30 sites, matching the paper's n), the linear reading gives 238.9 µm (212–272) and R² 0.491 (0.441–0.539). It holds only on that set: all 53 sites give R² 0.631. |
+| fig2f-delay-range | not_reproduced | Cell 27: for LR sites at 50–280 µm, delays run 0.0–3.92 ms and 23 of 32 fall below 1.35 ms (median 0.96). The fitted delay at 50 µm is −0.43 ms against the paper's 1.5. Every site set fails. |
+| fig2f-conduction-speed | reproduced | Cell 29: a pooled fit on LR (32 sites) gives 0.088 m/s and R² 0.462; the 30 sites shared with the amplitude file give 0.085 m/s and R² 0.427. Both are within tolerance. Reading (b) could not be run because sites lack neuron labels. |
+| fig3d-dendrite-cross-correlation | partially_reproduced | Cell 32: only P1 matches, the single Fig. 3 neuron with 10 pairs (0.903 and 0.732). The only 3-neuron set, P2 (14 and 21 pairs), gives 0.863 and 0.803, outside tolerance under every measure. The deposited Fig. 3d values (cell 33) give 0.79 and 0.58. |
+| figs9-shot-noise-bound | blocked (data_missing) | The archive holds no pixel-level functional movies. The 9 large files are, by their asset metadata, "HiLo Z-stack … for 3D dendrite reconstruction". I agree. |
+| fig3i-coupling-vs-distance | blocked (data_missing) | No dendrite-targeted stimulation recording exists. `figure3e` is a copy of spontaneous rec03 (cell 5), and `figure3i` and `figure3d` are spontaneous traces and correlations. I agree. |
+| figs11-dendritic-spikes-rare | blocked (data_missing) | Same reason; nothing in the asset list or metadata records strong dendrite-targeted stimuli. I agree. |
+| fig4a-doublet-isi | not_reproduced | Cell 35: no reading has mean and s.d. within tolerance (mean 28–39 ms, s.d. 15.6–20.8). The only count within tolerance is K4(b) at 210, with mean 30.5. The authors' deposited spike times give 25.2 ± 13.7. No mouse gets near 18 ± 7. |
+| fig4bc-doublet-first-fails | partially_reproduced | Cell 38: every reading passes except K5 with doublet (b) on all branches, where 0.68 of branches have second > first against the required 0.70. The criterion asks for "every reading". The distal reading (delay > 3 ms) rests on 2 branches. |
+| fig4d-accelerating-amplifies | partially_reproduced | Cell 40: K4 and the deposited spikes pass (a), (b) and (c) in both windows. K5 fails (a) (decelerating p = 0.097 and 0.094) and (c) (decelerating median 1.03 and 1.01, above 1). Trio counts are 87 (K5), 284 (K4) and 473 (deposited) against the paper's 186. |
+| fig4fg-opto-first-bap-attenuated | blocked (other: the criterion's distal selection is empty) | Cell 43: 0 of 46 deposited delays exceed 3 ms (maximum 2.26). By STA, 1 (K5) or 2 (K4) dendrites do, all in rec14, whose stated onsets are inconsistent (cell 14). The test was never run on them, and reading (b) was never run. Cell 44, on all dendrites and marked "not deciding", shows first 0.85–0.90 against later 1.05–1.07. |
+| fig4h-biphasic-bap-amplitude | blocked (other: same empty distal selection) | There is no analysis cell at all. |
+| figs13-distal-more-modulated | blocked (other: no distal group to compare) | There is no analysis cell at all. |
+| fig4ijk-sensory-first-fails | not_reproduced | Cell 46: the requirement that every dendritic spike follows a somatic spike fails under both detection readings: 3–5 (K5) and 6–9 (K4) dendritic spikes have no somatic spike within 0–5 ms before. Under K5, D1 has 8 of 13 trials with first < later, below 9. The direction holds in the average (4.32 against 6.31). No dendrite qualifies for the distal (> 3 ms) reading. |
+| fig4l-sensory-plateau | not_reproduced | Cell 48: reading (a) never returns within 2 s (the pre-stimulus baseline, −0.85, sits below the late post-stimulus level). Reading (b) gives a width of 236–270 ms. Neither is in 360–440. The depolarization does outlast 100 ms. |
+| figs12-spontaneous-failures-both-states | partially_reproduced | Cell 51: awake failures appear in 7 (K5) to 15 (K4) recordings, including 5 of the 11 Fig. 4a–d recordings at K5 (soma column stated). The anesthetized result rests on 6 detected events at K5 in 3 recordings, on the unchecked assumption that column 1 of the `figure3i` recordings is a soma. |
+
+### B. Problems
+
+1. [affects a conclusion] Cells 3, 7 and the fig2c section: `figure2h_soma_dendrite_correlation.nwb` and `figure2j_dendrite_dendrite_correlation.nwb` are, by asset metadata, "Trial-to-trial soma-dendrite / dendrite-dendrite bAP amplitude correlation" for Fig. 2. They are listed in `dv.FILES` but never opened or printed. Calling fig2c "no Fig. 2 traces" without showing whether these files hold per-trial amplitudes is unchecked. It may still be blocked for lack of baseline noise.
+2. [affects a conclusion] Cells 43 and 44, fig4fg: reading (b), the dendrite/soma ratio, is never computed. The criterion's distal test is not run on the 1–2 dendrites with STA delay > 3 ms, and no attempt is made to identify the Fig. 4g neuron. fig4h and figs13 have no cells, so the notebook gives these claims no tested result, only a stated selection.
+3. [affects a conclusion] fig4fg, fig4h, figs13, fig4bc(b), fig4ijk: the 3 ms distal threshold is applied to delays that run about 1.5–2 ms lower than the paper's. Cell 27's fitted delay at 50 µm is −0.43 ms against the paper's 1.5, and the opto delays reach at most 2.3–4.6 ms. Peak-to-peak delays measured from these traces may not be the paper's delay, so the empty distal sets may come from a definition mismatch. This makes the blocked outcomes methods-dependent, and the notebook does not discuss it.
+4. [affects a conclusion] Cell 32, fig3d: P1 (1 neuron, 10 pairs) is the only set that matches. The claim is about 23 pairs in 3 neurons, and the 3-neuron set (P2) fails. A match on P1 is not a reproduction of the claim. P2's neuron identity is inferred from mouse names only.
+5. [affects a conclusion] Cell 46, fig4ijk: the orphan test needs a somatic spike at or before the dendritic peak at frame resolution (`sp <= d`). With sub-frame soma–dendrite delays (0.3–1.5 ms, cell 46) at 2 ms frames, a bAP whose dendritic peak lands one frame early counts as an orphan; I confirmed this on synthetic input. The 3–9 orphans were never inspected, so they may be artifacts. The outcome still fails on the 9-of-13 bound under K5 for D1.
+6. [affects a conclusion] Cell 51, figs12: no check that column 1 of anesthetized `figure3i` recordings rec09–rec14 is a soma (the file says "soma (if present)"). Cell 32 treats both options for fig3d; here only the soma option is run. The anesthetized side rests on 6 events (K5).
+7. [does not affect a conclusion] Cell 21 and `sta_delay_ms`: at 500 Hz the sample reading cannot resolve the expected sub-2 ms delays (all exactly 0). The parabola is the only informative reading, and on synthetic input it is biased by about +0.1 ms (1.50 against a true 1.40).
+8. [does not affect a conclusion] Cell 40, `trio_tests` reading (a): pairs are pooled over branches of the same trio, which is pseudo-replication and inflates p (for example 1e-78). The criterion does word it this way. Also, the third-spike baseline is the 4 ms before that spike, not the fig4bc pre-first-spike baseline the criterion cites.
+9. [does not affect a conclusion] `bap_amplitude` and `frames`: the "5 ms" baseline is 2 frames (4 ms), and the 0–5 ms window is frames 0–2 (0–4 ms). Both follow from 500 Hz sampling and are documented.
+10. [does not affect a conclusion] Cell 32, `pair_values` "nospike": it excludes ±10 ms (20 ms total) around spikes, while the criterion says 10 ms around each spike. For P1 (no soma) this reading is identical to the zero-lag one.
+11. [does not affect a conclusion] Cell 18, `infer_pulses`: the period is fixed at 1000 ms, not fitted. Cell 18's binned trace and the rising per-pulse contrast (0.49 to 2.32) support the assumption, and on synthetic input it recovers the phase exactly.
+12. [does not affect a conclusion] Cells 24 and 29: the outcomes of fig2e and the conduction speed depend on choosing the LR site set. The choice is justified (n = 30, and Lucy-Rho is the preprint's construct), but other sets fail on R². Doublet and trio helpers (`doublet_starts`, `trios`) gave correct results on synthetic spike trains.
+
+The claims file reads the paper correctly for these claims; I found no misreadings to report. No chance levels apply.
+
+### C. What I could not check
+
+- **fig2c:** whether `figure2h` and `figure2j` hold per-trial amplitudes or baseline values. Printing their data-interface names, shapes and descriptions would settle whether fig2c is partly testable.
+- **fig2f:** whether the 0.0 ms deposited delays are real values or placeholders. A count of exact-zero delays per series in cell 27 would show it, since placeholders would bias both the delay range and the speed fit.
+- **fig4ijk:** whether the orphan dendritic spikes in cell 46 are real or a frame-rounding effect. A table of each orphan's offset to the nearest somatic spike, including spikes up to 1 frame after, would answer it.
+- **figs12 and fig3d:** whether column 1 of each `figure3i` recording is a soma. A per-recording check would show it, for example column 1's STA delay against the other columns, or its event rate and amplitude.
+- **fig4fg:** the result of reading (b) and of the criterion's test restricted to rec14's dendrites with delay > 3 ms (with and without rec14's suspect onsets). Neither was run.
+- **fig4h and figs13:** the time-binned normalized amplitudes. They were not computed, even on all dendrites, so I cannot say whether these claims would pass on any selection.
+- **fig1d:** whether the 9 inferred pulses match the paper's actual pulse series. The deposited file records no stimulus, and I could not read Fig. 1d itself.
