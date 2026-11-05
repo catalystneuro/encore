@@ -22,6 +22,15 @@ verification round three outcomes changed from partially reproduced to not repro
 (ground-truth-neuron-counts, fig4a-yield-deep-layers, fig5a-evoked-more-units), as their criteria
 name no partial outcome.
 
+After the second verification round no outcome changed. Two assumptions are now stated and marked on
+the outcomes they carry: that the paper's evoked recording in Figures 4 and 5 is the first 10 minutes
+of the 1-hour recording, the only evoked recording with sortings (fig4a-lognormal-firing-rates,
+fig4-median-firing-rates, fig4bc-lower-median-narrower-distribution, supp4-other-sorters-firing-rates,
+fig5a-evoked-more-units, fig5cd-most-units-degraded); and that "partially reproduced" covers a claim
+whose testable parts hold while the rest cannot be tested (fig4-median-firing-rates,
+fig4bc-lower-median-narrower-distribution, fig5a-single-unit-fraction-differs,
+fig5a-single-unit-counts, fig5b-yield-far-below-theory), which would otherwise be blocked.
+
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001250-laquitaine-2024-01.yaml`](../../attempts/001250-laquitaine-2024-01.yaml).
 

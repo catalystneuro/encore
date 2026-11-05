@@ -145,8 +145,10 @@ outcomes:
     amplitude below half that of the nearest electrode. The largest is 0.408 of it with the
     electrode of largest amplitude as the soma, and 0.339 with the code's soma position. Beyond 200
     um the summed trace's spike-triggered peak-to-peak is below 5 MAD at all 122 electrodes (the
-    reported part, a threshold of the claims file). The Reyes grid is sparse, with one electrode
-    within 25 um and one in each 25 um band to 100 um.
+    reported part, a threshold of the claims file). The Reyes grid is sparse. With the electrode of
+    largest amplitude as the soma, one electrode lies within 25 um, none in 25 to 50 um, and one in
+    each of 50 to 75 and 75 to 100 um; with the code's soma position the nearest is at 25.5 um, and
+    one lies in each 25 um band from 25 to 100 um.
   deviations:
   - The files hold no soma position; distances are from the electrode of largest amplitude, with
     the code's soma position as a variant (an outside input). Both give the same outcome.
@@ -184,6 +186,7 @@ outcomes:
     python-louvain are recent versions, not 0.5.3 and 0.16.
 - claim: fig4a-lognormal-firing-rates
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig4a-lognormal-firing-rates
   notes: Shapiro-Wilk on log10 rates of Kilosort4 single units does not reject normality in M
@@ -193,6 +196,12 @@ outcomes:
   deviations:
   - E is the first 10 minutes of the 1-hour recording; the 10-minute 40 kHz recording has no
     deposited sorting.
+  - Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is
+    taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording
+    open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot
+    be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units
+    with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed
+    median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).
 - claim: fig4a-yield-deep-layers
   outcome: not_reproduced
   notebook: reproduce_laquitaine_2024.ipynb
@@ -204,6 +213,7 @@ outcomes:
     reproduced, narrowly (changed from partially reproduced after verification round 1).
 - claim: fig4-median-firing-rates
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig4-median-firing-rates
   measured:
@@ -217,8 +227,18 @@ outcomes:
   deviations:
   - E is the first 10 minutes of the 1-hour recording.
   - No value for S (no sorting in the dandiset).
+  - Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is
+    taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording
+    open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot
+    be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units
+    with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed
+    median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).
+  - Assumed after verification round 2. Partially reproduced is used for "every part that can be
+    tested holds and the rest cannot be tested", which the criterion does not provide for (it names no partial outcome). Without
+    this convention the claim would be blocked (data_missing, S) for its untested parts.
 - claim: fig4bc-lower-median-narrower-distribution
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig4bc-lower-median-narrower-distribution
   notes: In layers 5 and 6 (the only layers with three or more M single units) NS and E have lower
@@ -227,8 +247,18 @@ outcomes:
     part (layer 5 variance and median against M) cannot be tested, as S has no sorting.
   deviations:
   - E is the first 10 minutes of the 1-hour recording.
+  - Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is
+    taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording
+    open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot
+    be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units
+    with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed
+    median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).
+  - Assumed after verification round 2. Partially reproduced is used for "every part that can be
+    tested holds and the rest cannot be tested", which the criterion does not provide for (it defines partial as the medians or the variances part holding alone, while here both hold and the S part cannot be tested). Without
+    this convention the claim would be blocked (data_missing, S) for its untested parts.
 - claim: supp4-other-sorters-firing-rates
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:supp4-other-sorters-firing-rates
   notes: The Kilosort3 part, a claim of absence on the paper's test, fails. 2 of 4 median
@@ -239,11 +269,18 @@ outcomes:
     every experiment, M included (p < 0.0001), and not for Kilosort 3 or 4 (p from 0.29 to 0.996).
   deviations:
   - E is the first 10 minutes of the 1-hour recording.
+  - Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is
+    taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording
+    open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot
+    be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units
+    with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed
+    median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).
   - The Kilosort2 sorting of E covers 240 s (its last spike), as the Methods say Kilosort2 sorted 4
     minutes of the evoked recording, so its rates are counts over 240 s (verifier round 1). The
     counts of the outcome are unchanged by this.
 - claim: fig5a-single-unit-fraction-differs
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig5a-single-unit-fraction-differs
   measured: 0.354
@@ -252,12 +289,20 @@ outcomes:
     (a) and (b) (M, NS, E; p = 2e-05 and 8.7e-76). The 41% is not found under reading (i), the only
     one that can be computed; NS's fraction is 0.354 (184 of 520), outside 0.369 to 0.451. Readings
     (ii) and (iii) need NS-2X, which is not in the dandiset. The paper's own NS counts (182 of 504)
-    also give 36%.
+    also give 36%. For reference only, with NS-2X taken from the paper's counts (193 of 508),
+    reading (ii) gives 0.367 (outside) and reading (iii), which the claims file says the paper's counts
+    favour, 0.405 (within); these use the paper's numbers and do not decide the outcome.
   deviations:
   - NS-2X and S have no sorting, so readings (a) and (b) are run on M, NS and E only.
   - NS has 520 cortical Kilosort4 units against the paper's 504.
+  - Assumed after verification round 2. The test part holds; the fraction fails under reading (i), the
+    only one the dandiset allows, and readings (ii) and (iii) need NS-2X. Partially reproduced is used
+    for "one part holds and the other cannot be fully tested", which the criterion does not provide for
+    (it names no partial outcome). Without this convention the claim would be blocked (data_missing,
+    NS-2X) for the fraction.
 - claim: fig5a-single-unit-counts
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig5a-single-unit-counts
   measured:
@@ -265,18 +310,26 @@ outcomes:
   - 96
   - 199
   - 93
-  notes: Single-unit counts are NS 184 (182), M 96 (96) and H 93 (93), within tolerance, and the
-    fractions do not differ on the code's test (M against NS p = 0.17; H against DS p = 0.061). Two
-    parts cannot be tested. The NS-2X count (193) and the paper's three-way test with it cannot be
-    computed, as NS-2X is not in the dandiset. The DS count is incomplete, as depth 1 has no
-    sorting of its own; depths 2 and 3 give 199 single units of 481 (fraction 0.414, against the
-    paper's 206 of 562, 0.367), and the deposit with DS2 counted twice gives 275, outside
-    tolerance, with H against DS p = 0.024. The paper's own dense probe numbers give chi2 = 1.82
-    on the code's test, its printed 1.8, which confirms the form of the test. The measured values
+  notes: Single-unit counts are NS 184 (182), M 96 (96) and H 93 (93), within tolerance. Neither
+    test of the fractions can be run as the criterion has it. The NS-2X count (193) and the paper's
+    three-way test with it cannot be computed, as NS-2X is not in the dandiset; M against NS, run
+    two-way, gives p = 0.17 (with NS-2X taken from the paper's counts, 193 of 508, the three-way test
+    gives p = 0.33, for reference only). The DS count is incomplete, as depth 1 has no sorting of its
+    own; depths 2 and 3 give 199 single units of 481 (fraction 0.414, against the paper's 206 of 562,
+    0.367) and H against DS p = 0.061, while the deposit with DS2 counted twice gives 275, outside
+    tolerance, and p = 0.024. So H against DS is undetermined. If depth 1 adds the 81 units that
+    separate 481 from the paper's 562, p is 0.05 or more when 37 or fewer of them are single and
+    below 0.05 when 38 or more are; the paper's own total (206 single units, 7 more) gives chi2 =
+    1.82, p = 0.177, its printed 1.8, which confirms the form of the test. That the fractions do not
+    differ is not established. The measured values
     are given for NS, M, DS (depths 2 and 3) and H, in that order, NS-2X having none.
   deviations:
   - DS sums depths 2 and 3, as the deposited depth 1 sortings are copies of depth 2's.
   - The contingency chi-square variant gives p = 0.0025 (M, NS) and 5.2e-06 (H, DS).
+  - Assumed after verification round 2. Partially reproduced is used for "the counts that can be
+    computed hold and the rest cannot be tested", which the criterion does not provide for (it names
+    no partial outcome). Without this convention the claim would be blocked (data_missing, NS-2X and
+    the depth 1 sortings) for its untested parts.
 - claim: fig5a-synthetic-mostly-single-units
   outcome: blocked
   blocked_by: data_missing
@@ -286,6 +339,7 @@ outcomes:
     attempted.
 - claim: fig5a-evoked-more-units
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig5a-evoked-more-units
   notes: E has 6.77 times NS's cortical Kilosort4 units (3,520 against 520) and a lower single-unit
@@ -295,10 +349,18 @@ outcomes:
     reproduced after verification round 1). The E sorting belongs to the 1-hour recording - 250
     Kilosort4 units reach an agreement of 0.5 with its ground truth and none with that of the
     10-minute 40 kHz recording. Whether the paper's evoked recording in Figures 4 and 5a is this one is
-    asked of a reader (questions/001250.yaml).
+    asked of a reader (questions/001250.yaml). The criterion says the claim holds under either
+    recording, and the 10-minute 40 kHz recording cannot be tested, so the outcome rests on the
+    assumption that E is the paper's evoked recording.
   deviations:
   - Only the first 10 minutes of the 1-hour recording has a sorting; the 10-minute 40 kHz recording
     has none, so the claim is judged on that reading alone.
+  - Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is
+    taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording
+    open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot
+    be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units
+    with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed
+    median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).
 - claim: fig5a-dense-probe-more-multi-units
   outcome: reproduced
   notebook: reproduce_laquitaine_2024.ipynb
@@ -320,6 +382,7 @@ outcomes:
     and is not public elsewhere.
 - claim: fig5b-yield-far-below-theory
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig5b-yield-far-below-theory
   measured:
@@ -333,16 +396,21 @@ outcomes:
     one for NS and 4.8 times for E, an order of magnitude under reading (b), 3.16 or more, and not
     under reading (a), 10 or more. Across sorters the ratio ranges from 0.8 (Kilosort) to 9.2
     (herdingspikes on E). No test of the differences between probes or sorters is run, as the
-    criterion says.
+    criterion says. Both parts hold for what can be computed; only DS's theoretical yield stops a
+    full reproduction.
   deviations:
   - E's theoretical yield uses the first 10 minutes of the 1-hour recording; the 10-minute
     recording is shown.
+  - Assumed after verification round 2. Partially reproduced is used for "every part that can be
+    tested holds and the rest cannot be tested", which the criterion does not provide for (it defines partial as one of its two parts holding, while here both hold for what can be computed). Without
+    this convention the claim would be blocked (metadata_insufficient, DS layers) for its untested parts.
 - claim: fig5b-synthetic-redundant-units
   outcome: blocked
   blocked_by: data_missing
   notes: No sorting of S is in the dandiset (see fig5a-synthetic-mostly-single-units).
 - claim: fig5cd-most-units-degraded
   outcome: reproduced
+  assumed: true
   notebook: reproduce_laquitaine_2024.ipynb
   output: claim:fig5cd-most-units-degraded
   notes: Among cortical Kilosort4 single units, 54.3% (NS, 184 units) and 74.2% (E, 407) have a best
@@ -357,6 +425,12 @@ outcomes:
     the quality tags are computed over every sorted unit of the sorting, and "partial" looks only
     at the unit's above-chance neurons, as the claims file defines it; the Kilosort4 numbers are
     unchanged. The Kilosort2 sorting of E is scored over its 240 s.
+  - Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is
+    taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording
+    open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot
+    be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units
+    with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed
+    median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).
 - claim: fig5ef-curation-precision-recall
   outcome: blocked
   blocked_by: too_large
@@ -403,8 +477,9 @@ outcomes:
     blocked. The dense probe value can be computed in part. With depths 2 and 3 the mean well-sorted
     fraction is 0.0225 (0.0196 as deposited, the depth 1 neurons scored against depth 2's
     sortings), below the expected 0.03 +- 0.003. Only one depth 3 neuron is well sorted, by
-    Kilosort2. The depth 3 sortings match none of the three dense probe ground truths at any lag
-    within 100 ms (data check), so their scores are unreliable.
+    Kilosort2. In a scan of lags from -100 to +100 ms (data check, every sorter since verification
+    round 2), no depth 3 sorting's coincidence rate with any of the three dense probe ground truths
+    rises more than 0.011 above its median over lags, so their scores are unreliable.
 - claim: fig6c-f-accuracy-predictors
   outcome: blocked
   blocked_by: too_large
@@ -440,16 +515,19 @@ outcomes:
   output: claim:fig6gh-selection-bias-layer5-pyramidal
   measured:
   - 0.912
-  - 8.07
+  - 9.98
   notes: The 1-hour evoked ground truth is 91.2% excitatory. With the 1-hour sortings layer 5
     excitatory neurons are over-represented by every sorter (ratios 1.43 to 2.20, p < 1e-6), but
     the other excitatory layers are not all at 0.67 or below with p < 0.05 for any sorter (Kilosort4
     has layer 6 at 0.81); with the 10-minute sortings layer 5 is at 1.5 or more for Kilosort 3, 4 and
     herdingspikes only and no sorter meets the criterion. Both durations give the same outcome. The
-    interneuron part holds in both. The largest interneuron-type ratio is 8.07 (Kilosort2) and 4.12
-    (Kilosort) with the 1-hour sortings, 4.01 (Kilosort2) and 2.90 (Kilosort2.5) with the 10-minute
-    ones, each on 1 to 9 units. The measured values are the excitatory share and the largest
-    interneuron ratio of Kilosort 1 to 2.5 with the 1-hour sortings.
+    interneuron part holds in both, as at least one of Kilosort, 2 and 2.5 lies within 2.6 to
+    8.9. With the 1-hour sortings the largest interneuron-type ratios are 9.98 (Kilosort2.5, INH L4
+    cSTUT, 1 unit; outside), 8.07 (Kilosort2) and 4.12 (Kilosort); with the 10-minute sortings 13.3
+    (Kilosort, 324 units of 17 L5 cNAC neurons; outside), 4.01 (Kilosort2) and 2.90 (Kilosort2.5).
+    Apart from Kilosort's 13.3, each rests on 1 to 9 units. The measured values are the excitatory
+    share and the largest interneuron ratio of Kilosort 1 to 2.5 with the 1-hour sortings (9.98,
+    outside 8.1 +- 0.81; corrected from 8.07 after verification round 2).
   deviations:
   - Sorted units whose scores are all 0 have no best match and are dropped (at most 37 of 2,665,
     Kilosort, 10 minutes).
@@ -699,9 +777,10 @@ verifications:
     outcome: blocked
     reason: It depends on fig6ab. Also, depth 1 has no sorting, and the DS3 sortings fail the clock check
       (problem 3).
-    response: No change of outcome. The clock check now covers every sorter and a scan of lags from -100
-      to +100 ms against all three dense probe ground truths; no lag gives a peak, so the DS3 sortings
-      could not be paired with any ground truth, and the notebook says DS3 scores carry this caveat.
+    response: No change of outcome. The clock check now covers every sorter at lags 0 and 50 ms, and
+      a scan of lags from -100 to +100 ms for Kilosort4 against all three dense probe ground truths
+      (extended to every sorter after round 2); no lag gives a peak, so the DS3 sortings could not be
+      paired with any ground truth, and the notebook says DS3 scores carry this caveat.
   - claim: fig6c-f-accuracy-predictors
     agrees: true
     outcome: blocked
@@ -752,6 +831,271 @@ verifications:
     outcome: blocked
     reason: Same as fig7a.
     response: No change.
+- date: '2026-11-05'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, with its conclusions and
+    summary, the helper module, the claims file and the attempt record.
+  results:
+  - claim: ground-truth-neuron-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation.'
+    response: 'No change.'
+  - claim: fitted-trace-maximal-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed without reservation. It is no longer fragile; over 600 s under reading (a), NS is
+      331.1 against a bound of 324.9 (cell 18).'
+    response: 'No change.'
+  - claim: fig2m-peak-amplitude-increases-with-depth
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed without reservation (as recorded).'
+    response: 'No change.'
+  - claim: fig2np-noise-increases-with-depth
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed without reservation (as recorded).'
+    response: 'No change.'
+  - claim: fig2q-anr-within-vivo-range
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation. Over 600 s, all four models are outside their in vivo ranges
+      (cell 27).'
+    response: 'No change.'
+  - claim: fig2r-power-law-spiking-band
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation.'
+    response: 'No change.'
+  - claim: fig2s-v-ap-power-and-scaling-increase-with-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed without reservation; the alpha part fails.'
+    response: 'No change.'
+  - claim: supp2-no-slow-oscillations
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed without reservation (as recorded).'
+    response: 'No change.'
+  - claim: fig3e-amplitude-decay-with-distance
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed with the outcome. The notes'' ''one electrode within 25 um and one in each 25 um band
+      to 100 um'' is not supported; cell 39 shows no electrode in 25 to 50 um under reading (i),
+      and under reading (ii) none within 25 um (the nearest is at 25.5).'
+    response: 'The notes now give the electrodes per band under each reading, as cell 39 prints them.'
+  - claim: fig3c-five-temporal-profiles
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation (as recorded).'
+    response: 'No change.'
+  - claim: fig3fg-wavemap-six-profiles
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation. NS gives 7 to 12 clusters across every seed and variant; M gives
+      6 under the main reading but 5 under two variants. The outcome turns on NS, so it is robust
+      (cell 42).'
+    response: 'No change.'
+  - claim: fig4a-lognormal-firing-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome rests on the unflagged assumption that E is the paper''s evoked recording. The
+      criteria say to run both evoked recordings, and E40 has no sorting. The evidence for E is
+      strong (the E sorting matches E''s ground truth with 250 units at 0.5 and E40''s with 0; the
+      deposited E reproduces the code''s 0.655), so the assumption is reasonable, but it should be
+      marked assumed and the notes should say that E40 cannot be tested.'
+    response: 'Marked assumed; a deviation states the assumption, its basis and that E40 cannot be tested,
+      and a methods_unavailable finding asks it. The notebook''s conclusion and summary say so.
+      The reader question already asked stays.'
+  - claim: fig4a-yield-deep-layers
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation.'
+    response: 'No change.'
+  - claim: fig4-median-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Rests on the assumption that E is the evoked recording, which should be marked. ''Partial''
+      is used for ''the tested parts hold, the rest cannot be tested'', which the criterion does
+      not provide for (it names no partial outcome). Accepted only if this convention is stated as
+      an assumption; otherwise blocked for the missing part.'
+    response: 'Marked assumed, with deviations stating both assumptions (E as the evoked recording; the
+      partial convention, without which the claim would be blocked for S). Notebook conclusion and
+      summary updated.'
+  - claim: fig4bc-lower-median-narrower-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Rests on the assumption that E is the evoked recording. The criterion defines partial as
+      ''medians or variances part alone''; here both hold and the S part cannot be tested.
+      Accepted only if the partial-for-untestable convention is stated as an assumption; otherwise
+      blocked for the missing part.'
+    response: 'Marked assumed, with deviations stating both assumptions. Notebook conclusion and summary
+      updated.'
+  - claim: supp4-other-sorters-firing-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation.'
+    response: 'No change of outcome. As its decisive comparisons include E (E layer 5, Kilosort3), it is
+      also marked assumed for E as the evoked recording, for consistency with the other Figure 4
+      claims.'
+  - claim: fig5a-single-unit-fraction-differs
+    agrees: true
+    outcome: partially_reproduced
+    reason: '''Partial'' for ''tested parts hold, the rest cannot be tested'' is not provided for by the
+      criterion. The only computable fraction reading, (i), fails (0.354); reading (iii), which
+      the paper''s own counts favour, needs NS-2X. Accepted only if the convention is stated as an
+      assumption; otherwise blocked for the missing part.'
+    response: 'Marked assumed, with a deviation stating the convention. The notebook now prints readings
+      (ii) and (iii) with NS-2X taken from the paper''s counts (0.367 and 0.405), for reference
+      only.'
+  - claim: fig5a-single-unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Both tests are substitutes. M against NS is run two-way, while the criterion''s test is
+      three-way with NS-2X. H against DS uses an incomplete DS; it gives p = 0.061, but 0.024 as
+      deposited, which would make the claim not reproduced. ''The fractions do not differ (... H
+      against DS p = 0.061)'' is on depths 2 and 3 only, so ''do not differ'' is not established.
+      Accepted only if the partial convention is stated as an assumption; otherwise blocked.'
+    response: 'Marked assumed, with a deviation stating the convention. The notes and conclusion now call H
+      against DS undetermined and no longer say the fractions do not differ. The notebook adds the
+      code''s test for every number of single units depth 1 could add (p >= 0.05 up to 37 of 81,
+      below from 38; the paper''s total gives p = 0.177) and the three-way test with NS-2X from
+      the paper''s counts (p = 0.33, for reference only).'
+  - claim: fig5a-synthetic-mostly-single-units
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig5a-evoked-more-units
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Rests on the unflagged assumption that E is the evoked recording. For fig5a-evoked the
+      criterion says ''the claim holds under either'', so a failure on E alone does not rule out
+      E40, which has no sorting. The assumption is reasonable but should be marked assumed, and
+      the notes should say E40 cannot be tested.'
+    response: 'Marked assumed; the notes and a deviation say that E40 cannot be tested and that the outcome
+      rests on E being the paper''s evoked recording; a methods_unavailable finding asks it.'
+  - claim: fig5a-dense-probe-more-multi-units
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed; DS lacks depth 1, but the result is robust. The paper''s DS has 562 units against
+      481 here, so depth 1 adds about 81; even if all or none were single units, NS against DS
+      gives p >= 0.12 on the code''s test.'
+    response: 'No change.'
+  - claim: fig5a-downsampling-small-gain
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig5b-yield-far-below-theory
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'fig5b''s second part holds under reading (b), so the only thing stopping a full reproduction
+      is DS''s theoretical yield; the notes do not say this. Partial for ''tested parts hold, the
+      rest cannot be tested'' is accepted only if stated as an assumption; otherwise blocked for
+      the missing part.'
+    response: 'Marked assumed, with a deviation stating the convention; the notes and conclusion say that
+      only DS''s theoretical yield stops a full reproduction.'
+  - claim: fig5b-synthetic-redundant-units
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig5cd-most-units-degraded
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed. The assumption that E is the evoked recording is also behind it. Cell 78''s method
+      text says the tags are ''computed among the single units'', while the code and cell 80
+      compute them over every sorted unit, so the text is stale.'
+    response: 'Marked assumed for E as the evoked recording, with a deviation. Cell 78 now says the tags
+      are computed over every sorted unit, then kept for the single units.'
+  - claim: fig5ef-curation-precision-recall
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig5g-mad-ratio-and-firing-predict-quality
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: supp5-cebra-knn-curation
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig6a-synthetic-accuracy-range
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig6ab-biophysical-accuracy-15-percent
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig6-dense-probe-lower-accuracy
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed with the outcome. Cell 8 scans lags for Kilosort4 only; the other sorters get only
+      the 0 and 50 ms check. Yet the round-1 response, the notes (''the depth 3 sortings match
+      none ... at any lag''), the finding, the Summary and cell 9 generalise to all sortings or
+      all sorters.'
+    response: 'The lag scan now covers every DS3 sorting against all three dense probe ground truths: no
+      sorter''s largest coincidence rate is more than 0.011 above its median over lags. The notes,
+      finding, cell 9, Summary and round-1 response now say what was scanned.'
+  - claim: fig6c-f-accuracy-predictors
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed. The criterion''s partial outcome requires the sign of spatial extent, which cannot
+      be computed, so blocked is correct. Cell 93''s ''its weights are close to those of the
+      identified refit'' is not quite supported (synapse class 0.40 against 0.23, bAC +0.08
+      against -0.03, cell 92); minor.'
+    response: 'Cell 93 now says the evoked fit keeps the signs of the four features but differs for others,
+      giving those two examples.'
+  - claim: supp6-sorted-rates-overestimated
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed without reservation.'
+    response: 'No change.'
+  - claim: fig6gh-selection-bias-layer5-pyramidal
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed with the outcome. The notes'' measured 8.07 as ''the largest interneuron ratio of
+      Kilosort 1 to 2.5 with the 1-hour sortings'' is wrong; cell 89 prints Kilosort2.5 over 1
+      hour at 9.978 (INH L4 cSTUT, 1 unit). The list leaves out that ratio and the 10-minute
+      Kilosort ratio of 13.3 (324 of 17 L5 cNAC), both outside 2.6 to 8.9. The interneuron part
+      still holds (''at least one'' sorter qualifies).'
+    response: 'Measured value corrected to 9.98; the notes and cell 90 list all the ratios, including 9.98
+      and 13.3, and say the interneuron part holds because at least one sorter lies within 2.6 to
+      8.9.'
+  - claim: fig7a-ring-manifold
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig7b-sorting-halves-capacity
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig7f-undersampling-no-loss-selection-bias-loss
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig7g-assignment-bias-capacity
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
+  - claim: fig7h-j-manifold-geometry
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (all 15 blocked outcomes).'
+    response: 'No change.'
 findings:
 - kind: metadata_error
   statement: The sortings in the sub-003-fitted folder (dense probe, depth 1) are identical, spike
@@ -797,8 +1141,8 @@ findings:
 - kind: other
   statement: The depth 3 dense probe sortings (sub-005-fitted) barely agree with the depth 3 ground
     truth. 34.6% of Kilosort4 spikes fall within 0.65 ms of a ground truth spike, against 33.6% after
-    a 50 ms shift (every sorter gives an excess of at most 1.1 points), no lag within 100 ms gives a
-    peak against the depth 1, 2 or 3 ground truth, no Kilosort4 unit reaches an agreement of 0.5,
+    a 50 ms shift (every sorter gives an excess of at most 1.1 points), no lag within 100 ms raises any sorter's
+    coincidence rate more than 0.011 above its median over lags against the depth 1, 2 or 3 ground truth, no Kilosort4 unit reaches an agreement of 0.5,
     and one neuron in 1,123 is well sorted by any sorter. The deposit could not be shown to pair
     these sortings with any deposited ground truth.
 - kind: code_mismatch
@@ -818,3 +1162,10 @@ findings:
     (sub-002-fitted_ses-ks2-10m) ends at 240 s, as the Methods say Kilosort2 sorted only 4 minutes
     of the evoked recording, but neither its file name nor its metadata says so. Rates computed
     over 600 s would be 2.5 times too low.
+- kind: methods_unavailable
+  statement: Which evoked recording enters Figures 4 and 5a is not stated. The Figure 6 legend names
+    the 10-minute 40 kHz recording for panels a and b and the 1-hour 20 kHz recording for d, f, g and
+    h; Figures 4 and 5 name none. The deposited evoked sortings are of the first 10 minutes of the
+    1-hour recording (250 Kilosort4 units reach an agreement of 0.5 with its ground truth, none with
+    the 40 kHz one), and they reproduce the code's printed median rate of 0.655 spikes/s. This
+    attempt assumes that recording; could the authors confirm it?
