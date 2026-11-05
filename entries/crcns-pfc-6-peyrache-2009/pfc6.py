@@ -15,9 +15,9 @@ Where parameters come from:
 - A bin counts as SWS when it lies wholly inside an SWS interval: standard choice named in the
   claims file's opening comment.
 - Rest epochs: the data set gives SWS intervals and the awake epoch only. The pre epoch is taken
-  as the time before the awake epoch and the post epoch as the time after it, each bounded by the
-  first and last spike of the session (an assumption; the claims file's supp5 criterion says the
-  rest epochs are taken from the data set's epoch times).
+  as the time from 0 to the start of the awake epoch and the post epoch as the time from its end to
+  the end of the position record, or of the last post SWS interval if later (an assumption; the
+  claims file's supp5 criterion says the rest epochs are taken from the data set's epoch times).
 """
 import io
 import tarfile
@@ -297,7 +297,9 @@ def learning_point(correct, include_block=True):
     the performance until the end of the session is above 80% (Online Methods, Behavioral task).
 
     include_block: performance counted from the first trial of the block (reading a of the claim)
-    or from the trial after the block (reading b). Returns None when no trial qualifies.
+    or from the trial after the block (reading b). Under reading b a block that runs to the end
+    of the session leaves no trials after it, and counts as passing. Returns None when no trial
+    qualifies.
     """
     c = np.asarray(correct, int)
     n = len(c)
@@ -307,6 +309,6 @@ def learning_point(correct, include_block=True):
             while j < n and c[j]:
                 j += 1                      # end of the block of consecutive rewarded trials
             rest = c[i:] if include_block else c[j:]
-            if len(rest) and rest.mean() > 0.8:
+            if len(rest) == 0 or rest.mean() > 0.8:
                 return i + 1
     return None

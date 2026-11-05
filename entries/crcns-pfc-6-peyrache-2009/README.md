@@ -13,7 +13,7 @@ Figures 5 to 7 and the same-tetrode control cannot be repeated.
 | Ten learning sessions by the paper's definition | Not reproduced |
 | 323 signal and 811 nonsignal components | Partially reproduced |
 | Reactivation higher in post than pre SWS, all signal groups | Reproduced |
-| Replay concentrated in SWS (Supplementary Fig. 5) | Partially reproduced |
+| Replay concentrated in SWS (Supplementary Fig. 5) | Partially reproduced (post exceeds pre outside SWS too) |
 | Pre and post SWS alike in duration and firing rate | Reproduced (LFP measures not testable) |
 | Reactivation correlates with encoding strength, r squared 0.61 | Not reproduced |
 | Weaker relation in pre SWS | Partially reproduced |
@@ -21,7 +21,7 @@ Figures 5 to 7 and the same-tetrode control cannot be repeated.
 | 40 to 50% of net reactivation above the 99th percentile | Partially reproduced |
 | Patterns do not coactivate in sleep, do awake | Reproduced |
 | Shuffle control | Partially reproduced |
-| Reactivation before DOWN to UP transitions | Reproduced, resting on an assumption |
+| Reactivation before DOWN to UP transitions | Partially reproduced, resting on an assumption |
 | Behaviour unchanged by learning | Reproduced |
 | SPWR, delta, spindle and same-tetrode analyses (14 claims) | Blocked: data missing |
 
