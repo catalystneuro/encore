@@ -1,0 +1,293 @@
+schema_version: 2
+id: 001836-gu-2026-01
+dataset:
+  archive: dandi
+  id: "001836"
+  version: 0.261030.0428
+  doi: 10.48324/dandi.001836/0.261030.0428
+paper: doi:10.64898/2026.05.26.727951
+date: 2026-11-05
+entry: 001836-gu-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42041615778
+outcomes:
+- claim: fig1c-learning
+  outcome: reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1c-learning
+  notes: Per day, the fraction of adjacent-trial transitions that are transitions of the rat's
+    rewarded cycle (sessions with at least 20 trials) rises from 0.268, 0.338, 0.312, 0.416 and 0.408
+    on the first day to 0.511, 0.629, 0.598, 0.581 and 0.537 on the peak day for rats M, E, J, K and
+    L, all above 0.25. The Spearman correlations with day are 1.00, 0.97, 0.72, 0.67 and 0.77, all
+    positive (p = 0.071 and 0.072 for K and L; the criterion asks only for a positive sign). The peak
+    day is every rat's last day in the dandiset. The dandiset holds 5, 9, 12, 8 and 6 days, against
+    about 6, 9, 11, 8 and 6 in Figure 1C.
+  deviations:
+  - The rat's cycle is read from the reward log (claims file, opening comment); a reward is followed
+    by a reward at the cycle's next arm in 96 to 100% of cases, and trials are rewarded exactly when
+    the final arm is the cycle's next arm after the last reward in 99.96% of the 14627 trials where
+    that arm is defined.
+  - Trials are built from the digital poke and pump events of the raw files (Methods, Behavioral
+    analysis), a trial running from a home reward to the next outer poke. Against the Statescript
+    logs of rats E, J, K and L the rewarded trials and the trials differ by at most one per session.
+    Rat M's logs hold no counts to compare.
+- claim: fig1e-trial-counts
+  outcome: not_reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1e-trial-counts
+  measured:
+  - 2083
+  - 3519
+  - 4578
+  - 2959
+  - 1816
+  - 120
+  - 196
+  - 126
+  - 226
+  - 240
+  notes: Values are reading a-i (10 cm, all trials), the first the criterion lists. Trials are 2083,
+    3519, 4578, 2959 and 1816 for M, E, J, K and L against 2370, 3554, 4628, 3779 and 2087; COM trials
+    are 120, 196, 126, 226 and 240 against 107, 225, 138, 315 and 309. Within tolerance are 3 of 10
+    counts under readings a-i and a-ii, and 4 of 10 under b-i and b-ii (0.1 of arm length; COM 127,
+    222, 137, 245 and 250), against the 8 the criterion asks for (5 for a partial reproduction).
+    Every rat has at least 120 COM trials under every reading, so the "hundreds of COM trials per
+    subject" part holds in the sense of the criterion. The dandiset holds 0.88, 0.99, 0.99, 0.78 and
+    0.87 of the paper's trials; the COM share of trials is 0.058, 0.056, 0.028, 0.076 and 0.132
+    against the paper's 0.045, 0.063, 0.030, 0.083 and 0.148, so for rats K and L most of the
+    shortfall in COM trials follows the shortfall in trials.
+  deviations:
+  - COM detection on the deposited 500 Hz linearization (Methods, Change of mind time detection),
+    whose outer arms are 85.3 to 87.2 cm long in its units, against the 96 cm of the Methods. The
+    binary closing of the reversal mask uses scipy's default structure, as the Methods name the
+    function without parameters.
+  - The claims file's code reading that requires 0.8 s of position in the second before the
+    reversal is applied; the 500 Hz linearization has at most 8% NaN samples in any epoch.
+- claim: fig1d-initial-switch-bias
+  outcome: reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1d-initial-switch-bias
+  notes: On the first analysed day P(switch-side)/P(same-side) is 5.53, 4.23, 3.76, 2.31 and 2.25 for
+    rats M, E, J, K and L; the mean of the first two days is 5.59, 3.54, 4.00, 2.66 and 2.30. Both
+    readings put all five above 2 (one-sided binomial p = 0.031). Transitions to the same arm (52 of
+    14708) are neither switch-side nor same-side and are left out.
+  deviations:
+  - Transitions between two trials to the same arm are left out, as they are neither kind; the claims
+    file does not say.
+- claim: fig1d-switch-bias-declines
+  outcome: partially_reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1d-switch-bias-declines
+  measured:
+  - 0.933
+  - 1.85
+  notes: The logistic regression over 14656 transitions gives a day effect of 0.933 (95% CI 0.920 to
+    0.946, p = 2.3e-23), within 0.92 plus or minus 0.092, the same with the day counted from the
+    first or from the last day and with or without an intercept. The ratio on the peak day is 1.85
+    as a mean over rats (1.69, 1.94, 1.88, 1.84 and 1.89 for M, E, J, K and L) and 1.84 pooled, both
+    outside 1.5 plus or minus 0.15. Fitted per rat, the day effect is significant in M, E, J and L and
+    not in K (0.984, p = 0.38).
+  deviations:
+  - Sessions with fewer than 20 trials are left out, as for fig1c-learning; the claims file does not
+    say whether this claim uses the same selection.
+- claim: figs1f-multiple-com
+  outcome: reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:figs1f-multiple-com
+  notes: With the 10 cm threshold, the share of COM trials with one COM event is 0.875, 0.923, 0.960,
+    0.889 and 0.892 for M, E, J, K and L, and 15, 15, 5, 25 and 26 trials have two or more events (up
+    to 5 in rat K). Trials with two or more COM arms, more than two arms entered, occur in every rat
+    (14, 15, 5, 24 and 26). The 0.1-of-arm threshold gives the same outcome.
+- claim: fig1g-com-corrective
+  outcome: reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1g-com-corrective
+  notes: Daily medians of the probability that the initial choice would have been rewarded are
+    0.18, 0.18, 0.00, 0.14 and 0.09 for M, E, J, K and L, and of the final choice being rewarded 0.47,
+    0.55, 0.72, 0.57 and 0.66; rank-sum p = 0.028, 0.0004, below 1e-4, 0.0008 and 0.0039. The paper
+    reports p < 0.01 for M, J, K and L and p < 0.05 for E; here M is the rat at p < 0.05 only. Two COM
+    trials, first in their session before any reward, have no correct arm and are left out. The
+    0.1-of-arm threshold gives the same outcome.
+- claim: fig1g-com-matches-run-through
+  outcome: reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1g-com-matches-run-through
+  notes: Over 100 draws of nearby non-COM trials, each rat's median rank-sum p is 0.60, 0.57, 0.21,
+    0.19 and 0.75 for M, E, J, K and L; the share of draws with p < 0.05 is at most 0.16 (rat K). The
+    median differences of daily reward rate, COM minus nearby, are -0.04, -0.06, 0.12, 0.04 and
+    0.00. Every COM trial had an eligible nearby trial.
+  deviations:
+  - Nearby trials are drawn within the same session; the Methods (Identification of nearby trials)
+    say only within plus or minus 3 trials. The random draws use a fixed seed.
+- claim: fig1h-final-choice-less-switching
+  outcome: not_reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1h-final-choice-less-switching
+  notes: The mean daily initial ratio exceeds the final in all five rats (medians 3.00 to 3.93
+    against 0.97 to 1.38), but the paired t-test reaches p < 0.01 only in rats J and K (p = 0.0036
+    and 0.0040); E and L have p = 0.013 and M p = 0.42. The criterion asks for four rats at p < 0.01,
+    or three for a partial reproduction, so the outcome is not reproduced; at p < 0.05 four rats
+    (E, J, K, L) would hold, which is the pattern the legend reports with p < 0.01. The sign tests
+    hold as the legend says, the initial ratio above 2 and the final below 2 with p < 0.05 in E, J,
+    K and L and not in M. Days with no same-side transition are dropped (1 day of E and 2 of J for
+    the initial ratio). The 0.1-of-arm threshold gives the same counts.
+  deviations:
+  - The previous trial is the one before in the same session, and transitions from the previous arm
+    to the same arm are left out as neither switch-side nor same-side; the claims file does not say.
+- claim: fig1h-final-ratio-near-one
+  outcome: reproduced
+  notebook: reproduce_gu_2026.ipynb
+  output: claim:fig1h-final-ratio-near-one
+  notes: The sign test of the daily final-choice ratios against 1 gives p = 0.38, 0.18, 1.0, 0.69 and
+    0.22 for M, E, J, K and L, so no rat differs; the median ratios are 1.29, 1.33, 1.00, 0.97 and
+    1.38.
+- claim: fig3b-extended-before-stopping
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The claim needs, per trial, the decoded MAP position against the head position within the
+    COM arm, with the causal posterior for the 0.2 posterior reading. The dandiset holds 1219
+    analysis files with `scratch/triggered` tables of decoded and head linear positions in 2 ms bins
+    from about 3 s before to 5 s after unnamed trigger times, with a `triggered_trial_info` column of
+    two integers per row. Nothing says which events trigger them (COM time, stopping, controls),
+    which trials the integers name, or whether the decode is causal; no posterior is deposited.
+    Refitting the decoder from the 30 kHz voltage (12.5 TB of raw files, 313 GB per day on average) does not fit
+    an entry's time limit (too_large as a second reason).
+- claim: fig3b-distance-predicts-com
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig3b-extended-before-stopping, blocked for the same reason.
+- claim: fig3c-distant-after-stopping
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the decoded MAP position before and after the stopping time of each COM event. The
+    triggered decode tables could hold it, but which triggers and trials they hold is not described
+    (see fig3b-extended-before-stopping); the decoder cannot be refit within the time limit.
+- claim: fig3d-distant-vs-inbound
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig3c-distant-after-stopping, blocked for the same reason; it also needs the
+    decodes on inbound run-through trials, which the triggered tables do not identify.
+- claim: fig4e-next-choice
+  outcome: blocked
+  blocked_by: too_large
+  notes: Remote events need the decoder's posterior per 2 ms bin and its continuous-state
+    probability, which the dandiset does not hold. They would have to be recomputed by spike
+    detection and clusterless state-space decoding of every run session from the 30 kHz voltage,
+    12.5 TB of raw files over the 40 days (313 GB per day on average); streaming alone at the 55 MB/s
+    the notebook measures on an LFP file would take about 2.7 days.
+- claim: figs6-remote-during-forward-running
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice (remote events), blocked as too large.
+- claim: figs7b-no-swr
+  outcome: blocked
+  blocked_by: too_large
+  notes: The ripple rate needs SWR detection on the LFP. Each day's `*_ecephys.nwb` holds a 1 kHz,
+    66-channel ElectricalSeries described only as "filtered data" (39 files, 152 GB; rat M has 4 for
+    5 days). The notebook reads 600 s of one in 1.5 s (55 MB/s in the final run), so streaming all of
+    them would take about 46 minutes, on top of the 25-minute behavioral load, before ripple filtering and the
+    consensus detection of the Methods (SWR detection). Together this exceeds the 60-minute limit
+    of a notebook, and a second notebook was not attempted within the run's remaining time. The
+    detection also needs the channel annotated per CA1 tetrode, which was not looked for in the
+    electrode table.
+- claim: figs3-local-extended-at-reward
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on figs11b-theta-cycles-correct (local extended events from the decoder's MAP and
+    a GP fit to decode-to-animal distances), which needs the decoder output; blocked as too large.
+- claim: figs11b-theta-cycles-correct
+  outcome: blocked
+  blocked_by: too_large
+  notes: Local extended and remote events need the decoder output (see fig4e-next-choice), and theta
+    cycles need MUA from spike detection on the 30 kHz voltage; both are too large to recompute here.
+- claim: fig4a-local-extended-correct
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on figs11b-theta-cycles-correct, blocked as too large.
+- claim: fig4a-remote-correct
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice, blocked as too large.
+- claim: fig4b-any-alternative-correct
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4a-local-extended-correct and fig4a-remote-correct, blocked as too large.
+- claim: figs11a-more-representations-over-days
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice, blocked as too large.
+- claim: fig4c-home-with-other-content
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4a-local-extended-correct and fig4a-remote-correct, blocked as too large.
+- claim: fig4d-one-remote-arm
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice, blocked as too large.
+- claim: figs11c-next-choice-unthresholded
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice and needs the MAP of every 2 ms bin of every COM event, which
+    the dandiset does not hold in a documented form; blocked as too large.
+- claim: fig5a-remote-at-arm-ends
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice, blocked as too large.
+- claim: fig5b-remote-behind
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice, blocked as too large. The head orientation of the Spyglass
+    position files is there (`scratch/CompassDirection/head_orientation`, unit given as meters), but
+    whether it is the Kalman-filtered direction of the Methods is not said.
+- claim: figs8-late-theta-phase
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice and figs11b-theta-cycles-correct, blocked as too large.
+- claim: figs10-theta-power-and-cycle-length
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig4e-next-choice and figs11b-theta-cycles-correct, blocked as too large.
+findings:
+- kind: data_missing
+  statement: The decoder output behind Figures 3 to 5 and S3 to S11 (the posterior per 2 ms bin, the
+    continuous and fragmented state probabilities, the detected remote and local extended events) is
+    not deposited, nor are the spike marks or MUA times. Only the 30 kHz voltage is, from which these
+    would have to be recomputed over 12.7 TB.
+- kind: metadata_insufficient
+  statement: None of the 2415 Spyglass analysis files (`obj-*.nwb`) says what it holds; the file
+    names carry only an object id, and their tables have empty descriptions. By content they are
+    head position, velocity and orientation (750), linearized position at about 23 Hz and at 500 Hz
+    (446), and decodes triggered on events (1219). The triggered tables do not say which events
+    trigger them, what the two integers of `triggered_trial_info` are, or what the `baseoff` and
+    `abs` variants of the decodes mean. The track graph of the linearization is not deposited; which
+    track segment is which arm had to be read from the head's position at each well's pokes.
+- kind: data_missing
+  statement: The dandiset holds fewer trials than the paper reports for three rats. Built from the
+    poke and pump events, it holds 2083, 3519, 4578, 2959 and 1816 trials for rats M, E, J, K and L,
+    against 2370, 3554, 4628, 3779 and 2087 in the Figure 1E inset (0.88, 0.99, 0.99, 0.78 and 0.87
+    of them). Rat M has 5 days against the 6 the paper says were collected; rat J has 12 days against
+    about 11 in Figure 1C.
+- kind: other
+  statement: Rat M's 500 Hz linearizations are each deposited twice, in 26 pairs of files with
+    identical values, one pair per run epoch. They are counted once.
+- kind: metadata_error
+  statement: Rat M's Statescript logs are named "syayescript Seq2Session1" and so on, a misspelling
+    of "statescript", and hold no trial or reward counts, unlike the other rats' logs. Rat M's days
+    also have 4 LFP files for 5 days.
+- kind: paper_inconsistency
+  statement: The reward log gives the cycle 3-4-2-1-3 for rats M, E and J and 1-2-4-3-1 for rats K
+    and L. This fits the Results (1-2-4-3-1 in 2 rats, 3-4-2-1-3 in 3) and the Figure 1B legend (rat
+    E, 3-4-2-1-3), while Figure S1E labels Seq2 (1-2-4-3-1) for M, E and J. The files name the
+    epochs of K and L "Rev2" and those of M, E and J "Seq2".
+- kind: metadata_error
+  statement: The head orientation series (`scratch/CompassDirection/head_orientation`) gives its unit
+    as meters.

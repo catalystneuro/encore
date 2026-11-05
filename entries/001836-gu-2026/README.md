@@ -1,0 +1,36 @@
+# Gu, Liu, Gillespie, Nevers, Denovellis, Coulter, Kay & Frank (2026) from dandiset 001836
+
+Tests the findings of [Gu et al. (2026)](https://doi.org/10.64898/2026.05.26.727951) that can be
+tested on [DANDI:001836](https://dandiarchive.org/dandiset/001836/0.261030.0428), which holds the
+recordings of five rats learning a hidden four-arm sequence in a maze. The behavioral findings of
+Figure 1 and Figure S1F are tested from the well pokes and pumps and the deposited linearized
+position. The findings on hippocampal content need the decoder output, which the dandiset does not
+hold.
+
+| Claim | Outcome |
+|---|---|
+| All rats learned the task (Figure 1C) | Reproduced |
+| Trial and COM trial counts per rat (Figure 1E inset) | Not reproduced |
+| Initial switch-side bias above 2 in every rat (Figure 1D) | Reproduced |
+| The bias declines with days, to about 1.5 (Figure 1D) | Partially reproduced |
+| Most COM trials have one COM event, several in every rat (Figure S1F) | Reproduced |
+| COM final choices are rewarded more often than the initial ones (Figure 1G) | Reproduced |
+| COM trials reach the reward rate of nearby trials (Figure 1G) | Reproduced |
+| The final choice switches side less than the initial one (Figure 1H) | Not reproduced |
+| The final-choice ratio does not differ from 1 (Figure 1H) | Reproduced |
+| Decoded content before and after stopping (Figure 3B to 3D, four claims) | Blocked: metadata insufficient |
+| Remote and local extended content, ripples, theta (16 claims) | Blocked: too large |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The dandiset holds fewer trials than the paper reports for rats M, K and L, which is most of why the
+counts are not reproduced. For Figure 1H the effect is in every rat, but the paired t-test reaches
+p < 0.01 in two rats where the paper reports four. The attempt record, with the reasons and the
+differences from the paper's method, is
+[`attempts/001836-gu-2026-01.yaml`](../../attempts/001836-gu-2026-01.yaml).
+
+- `reproduce_gu_2026.ipynb`: the analysis. It takes about 26 minutes, nearly all of it streaming the
+  events and the linearized position of 197 run sessions.
+- `comtask.py`: loading, trials, change-of-mind detection and the side and sequence measures. Other
+  notebooks on this dandiset can import it.
