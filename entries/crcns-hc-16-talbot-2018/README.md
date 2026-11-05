@@ -8,8 +8,8 @@ not in it.
 
 | Claim | Outcome |
 |---|---|
-| Mouse, cluster and cell counts | Not reproduced |
-| Interneuron proportion | Not reproduced |
+| Mouse, cluster and cell counts | Blocked: data missing (15 of 21 mice) |
+| Interneuron proportion | Partially reproduced |
 | Place cell proportion | Not reproduced |
 | Non-spatial discharge alike between genotypes (Figure S3) | Partially reproduced |
 | Spatial firing quality alike between genotypes (Figure 2) | Not reproduced |
@@ -19,8 +19,8 @@ not in it.
 | Weaker pass-by-pass covariance of Fmr1-null pairs (30 and 40 passes) | Partially reproduced |
 | Weaker Kendall correlations, place and non-spatial cells, and during quiet periods | Not reproduced |
 | Network states recur less in Fmr1-null | Not reproduced |
-| Locomotion alike | Reproduced |
-| Room-frame Ipos greater in Fmr1-null (Figure 5B) | Reproduced, resting on an assumption |
+| Locomotion alike | Reproduced, resting on an assumption |
+| Room-frame Ipos greater in Fmr1-null (Figure 5B) | Partially reproduced |
 | Weaker ensemble coordination of Ipos (Figure 5C) | Not reproduced |
 | Room frame preferred during rotation (Figure S6) | Partially reproduced, resting on an assumption |
 | Slice physiology, LFP, remapping and avoidance claims (13) | Blocked: data missing |
@@ -29,6 +29,9 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The data set has no isolation measures or waveforms, so every sorted cluster is used in place of the
-paper's well-isolated cells; this bears on every tested claim. The attempt record, with the reasons
+paper's well-isolated cells; this bears on every tested claim. The overdispersion claims read the
+paper's pass rule literally, as the claims file does; a reading of it as a count changes the
+overdispersion result and is asked of a reader in
+[`questions/crcns-hc-16.yaml`](../../questions/crcns-hc-16.yaml). The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/crcns-hc-16-talbot-2018-01.yaml`](../../attempts/crcns-hc-16-talbot-2018-01.yaml).

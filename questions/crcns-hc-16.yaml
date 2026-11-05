@@ -1,0 +1,27 @@
+questions:
+- claim: overdispersion-passes
+  asked: 2026-11-05
+  question: >-
+    The claims file reads the pass rule literally, a 5 s interval is a pass when exp, the
+    expected spike count in the interval, is at least the cell's average rate in AP/s. Is the
+    threshold meant as the count expected at the average rate over the interval (exp at least
+    the average rate x 5 s), so that a pass is an interval in which the expected firing is at
+    least the cell's average? The same rule selects the joint passes of
+    fig4b-covariance-30-passes and fig4b-covariance-40-passes, and the passes of
+    overdispersion-cells.
+  passage: >-
+    Only 5 s intervals when the mouse sampled a cell's firing field well were studied. These
+    were identified by exp >= average rate for the cell (Fenton et al., 2010). To study
+    discharge covariations between pairs of cells, we selected 5 s epochs when the mouse crossed
+    the firing fields of both cells as epochs when expected spatial firing (exp) of each cell
+    was above the individual cell's average rate. (STAR Methods, Overdispersion; the extracted
+    text prints the sign as "R")
+  why: >-
+    The literal rule compares a count with a rate. Here it passes a median 76% of a cell's 5 s
+    intervals, gives about twice the paper's passes (12,802 and 18,521 against 6,776 and 9,102),
+    and every place cell pair has at least 39 joint passes, so the 30 and 40 pass minimums of
+    the fig4b claims select nothing. The count reading passes 33% of intervals and gives 5,442
+    and 8,250 passes. With it, overdispersion-passes meets its criterion in R2 (variances 5.28
+    and 4.66, within 5.81 +/- 0.58 and 4.89 +/- 0.49; F test one-sided p < 0.0001, Levene p =
+    0.0006), where the literal rule gives 3.69 and 3.55 with Levene p = 0.998. The fig4b and
+    overdispersion-cells outcomes do not change with it. Raised by the round-1 verifier.

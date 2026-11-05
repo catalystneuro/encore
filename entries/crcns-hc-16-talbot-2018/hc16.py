@@ -25,9 +25,14 @@ Where each parameter comes from:
   notebook.
 - Passes and overdispersion z: STAR Methods, "Overdispersion" (5 s intervals, exp from the
   time-averaged rate map, pass when exp >= the cell's average rate, z = (obs - exp)/sqrt(exp)).
-  Consecutive non-overlapping intervals from the session start: the claims file's reading.
+  Consecutive non-overlapping intervals from the session start: the claims file's reading. The
+  pass threshold is read literally, as the claims file does (exp, a count, >= the average rate in
+  AP/s); the count expected at the average rate over the interval is a variant (rule="count"),
+  asked of a reader in questions/crcns-hc-16.yaml.
 - Kendall tau-b between spike counts: STAR Methods, "Functional Coupling of Cell Pairs", and the
   claims file (readings K1, every bin, and K2, the code's active-pixel gate on 32 x 32 maps).
+- Refractory violations (fraction of ISIs below 2 ms): not in the paper; shown in the notebook as
+  a proxy for isolation, which the data set does not give, a standard choice.
 - Ipos: STAR Methods, "Frame-Specific Spatial Firing Analysis", Equation 1, with 133 ms intervals,
   and the claims file (PositionalInfo code: 32 x 32 maps, pixels with fewer than 10 visits left
   out). An interval is four position samples at 30 Hz (133 ms); its location is that of its first
@@ -108,7 +113,8 @@ def parse_ts(b):
                | a[s + 2].astype(np.int64) << 16 | a[s + 3].astype(np.int64) << 24)
     else:
         spk = np.zeros(0, np.int64)
-    return dict(rate=rate, t0=t0, x=a[st].copy(), y=a[st + 1].copy(), n=n, spk=spk, leftover=L - p)
+    return dict(rate=rate, t0=t0, x=a[st].copy(), y=a[st + 1].copy(), n=n, spk=spk, leftover=L - p,
+                header=b[:i + len(b"%%ENDHEADER")].decode("latin1"))
 
 
 def read_members(names, workers=8):
@@ -137,9 +143,12 @@ class Session:
         self.counts = {}
         self.spikes = {}
         self.leftover = 0
+        self.header = first["header"]
+        self.header_fields = set()  # the %NAME fields of every file's header
         for _, r in rows.iterrows():
             d = parsed[r["name"]]
             self.leftover += d["leftover"]
+            self.header_fields |= set(re.findall(r"%([A-Z_]+)", d["header"]))
             if r["unit"] == "0spks":
                 continue
             fr = r["frame"]
@@ -296,17 +305,19 @@ def isi_measures(spk):
     return float((isi < 0.010).mean()), float(isi.mean()), float(np.median(isi)), float(peak)
 
 
-def cell_table(sessions):
-    """One row per cluster per session, with the single-cell measures on 1.25 cm room-frame maps."""
+def cell_table(sessions, index_fn=pixel_index):
+    """One row per cluster per session, with the single-cell measures on room-frame maps: 1.25 cm
+    pixels by default, or the code's 32 x 32 grid with index_fn=pixel_index_code."""
     rows = []
     for s in sessions:
-        idx, shape = pixel_index(s, "Rm")
+        idx, shape = index_fn(s, "Rm")
         occ = occupancy(s, idx, shape)
         for c in s.cells:
             rm, o = rate_map(s, c, idx, shape, occ)
             nsp = int(s.counts[c].sum())
             rate = nsp / s.duration
             burst, isi_mean, isi_med, peak = isi_measures(s.spikes[c])
+            isi = np.diff(np.sort(s.spikes[c])) / 1e4
             v = ~np.isnan(rm)
             mean_map = float(np.nansum(rm * o) / o[v].sum())
             peak_rate = float(np.nanmax(rm)) if v.any() else np.nan
@@ -316,7 +327,8 @@ def cell_table(sessions):
                 session=s.id, env=s.env, genotype=s.genotype, mouse=s.mouse, date=s.date,
                 cond=s.cond, cut=s.cut, cell=c, cell_key=f"{s.mouse}_{s.date}_{s.cut}_{c}",
                 spikes=nsp, rate=rate, burst_prob=burst, isi_mean=isi_mean, isi_median=isi_med,
-                isi_peak_ms=peak, coherence=coherence(rm), info=information(rm, o),
+                isi_peak_ms=peak, refractory=float((isi < 0.002).mean()) if len(isi) else np.nan,
+                coherence=coherence(rm), info=information(rm, o),
                 active=active_fraction(rm), nfields_mean=nf_a, infield_mean=inf_a,
                 nfields_20pk=nf_b, infield_20pk=inf_b))
     t = pd.DataFrame(rows)
@@ -339,9 +351,11 @@ def classify(t, use_burst=True):
 
 # ---------------------------------------------------------------- overdispersion
 
-def passes(s, cell, window_s=5.0, step_s=None, idx_shape=None):
-    """5 s intervals: obs, exp and whether each is a pass (exp >= the cell's average rate).
-    Intervals are consecutive from the session start, or start every step_s seconds."""
+def passes(s, cell, window_s=5.0, step_s=None, idx_shape=None, rule="rate"):
+    """5 s intervals: obs, exp and whether each is a pass. rule="rate" is the claims file's literal
+    reading, exp (a count) >= the cell's average rate (AP/s); rule="count" reads the threshold as
+    the count expected at the average rate, exp >= average rate x window_s. Intervals are
+    consecutive from the session start, or start every step_s seconds."""
     idx, shape = idx_shape if idx_shape is not None else pixel_index(s, "Rm")
     rm, occ = rate_map(s, cell, idx, shape)
     r = np.nan_to_num(rm.ravel())
@@ -356,7 +370,7 @@ def passes(s, cell, window_s=5.0, step_s=None, idx_shape=None):
     exp = ce[starts + w] - ce[starts]
     obs = co[starts + w] - co[starts]
     avg = n.sum() / s.duration
-    ok = exp >= avg
+    ok = exp >= (avg if rule == "rate" else avg * window_s)
     with np.errstate(invalid="ignore", divide="ignore"):
         z = np.where(exp > 0, (obs - exp) / np.sqrt(exp), np.nan)
     return dict(start=starts, obs=obs, exp=exp, z=z, is_pass=ok & (exp > 0))
@@ -420,7 +434,7 @@ def active_pixels(s, cell, idx32, shape32):
 def pair_taus(s, cells, widths=TIMESCALES, periods=None, gate=False, mask_fn=None):
     """Tau for every pair of cells, per timescale and period. periods: dict name -> (start, stop)
     in seconds from the session start. gate: K2, keep bins where the mouse is in an active pixel
-    of both cells. mask_fn(s, sample) -> boolean array of bins to keep (e.g. low speed)."""
+    of both cells. mask_fn(s, sample, edges) -> boolean array of bins to keep (e.g. low speed)."""
     if periods is None:
         periods = {"session": (None, None)}
     idx32, shape32 = pixel_index_code(s, "Rm")
@@ -432,7 +446,7 @@ def pair_taus(s, cells, widths=TIMESCALES, periods=None, gate=False, mask_fn=Non
             if len(edges) < 4:
                 continue
             counts = {c: np.histogram(s.spikes[c] / 1e4, bins=edges)[0] for c in cells}
-            keep_base = np.ones(len(sample), bool) if mask_fn is None else mask_fn(s, sample)
+            keep_base = np.ones(len(sample), bool) if mask_fn is None else mask_fn(s, sample, edges)
             pix = idx32[sample]
             for i in range(len(cells)):
                 for j in range(i + 1, len(cells)):
@@ -469,7 +483,8 @@ def speed(s, window_s=1.0):
 def ipos_series(s, cell, frame, samples_per_bin=4, min_visits=10, signed=False, log=np.log2):
     """Ipos per 133 ms interval: |p(i|x) log2(p(i|x)/p(i))| for the count i observed at the
     interval's location x on the code's 32 x 32 map of the frame; NaN where x is untracked or
-    visited in fewer than min_visits intervals."""
+    holds fewer than min_visits position samples (the PositionalInfo code counts visits per
+    position sample)."""
     idx32, shape32 = pixel_index_code(s, frame)
     nb = s.nsamp // samples_per_bin
     n = s.counts[cell][:nb * samples_per_bin].reshape(nb, samples_per_bin).sum(1)
@@ -482,13 +497,14 @@ def ipos_series(s, cell, frame, samples_per_bin=4, min_visits=10, signed=False, 
     joint = np.zeros((shape32[0] * shape32[1], ncount))
     np.add.at(joint, (x[ok], n[ok]), 1)
     visits = joint.sum(1)
+    samples = np.bincount(idx32[idx32 >= 0], minlength=shape32[0] * shape32[1])
     p_i = joint.sum(0) / joint.sum()
     with np.errstate(invalid="ignore", divide="ignore"):
         p_ix = joint / visits[:, None]
     xi = x[ok]; ni = n[ok]
     pix = p_ix[xi, ni]
     val = pix * log(pix / p_i[ni])
-    val = np.where(visits[xi] >= min_visits, val, np.nan)
+    val = np.where(samples[xi] >= min_visits, val, np.nan)
     out[ok] = val if signed else np.abs(val)
     return out
 
