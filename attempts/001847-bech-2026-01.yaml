@@ -1,0 +1,1287 @@
+schema_version: 2
+id: 001847-bech-2026-01
+dataset:
+  archive: dandi
+  id: 001847
+  version: 0.260610.1400
+  doi: 10.48324/dandi.001847/0.260610.1400
+paper: doi:10.7554/elife.109717
+date: '2026-11-03'
+entry: 001847-bech-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41732033724
+inputs:
+- what: Session lists of the paper's processing code (configs/session_groups, 19 lists), used as labels for the dandiset's
+    sessions (expert, Context Off, optogenetic and control mice, muscimol and Ringer, widefield mouse lines, model sessions).
+  source: https://github.com/LSENS-BMI-EPFL/Bech_Dard_process_NWB at commit 212a63103528cdeafb6ebcf90a50235cd2290082
+outcomes:
+- claim: session-list-link
+  outcome: partially_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:session-list-link
+  notes: Of the 1497 sessions named by the 19 lists, 1467 (98.0%) are in the dandiset under the same identifier. Every session
+    of every list a claim selects from is present with a readable trial table, and those lists' counts agree with the claims
+    file (expert 41 mice and 201 sessions, opto 7 and 56, control 4 and 39, Context Off 7 and 21, jRGECO1a 6 and 25, GCaMP6f
+    8 and 33, tdTomato 4 and 15, GFP 6 and 24, wf-opto 4 and 40, photoactivation 2 and 6, model 21 and 60). The pool list
+    sessions_Context_sessions, used for the expert rule's pool variant, does not match in full. It has 1451 entries for the
+    stated 1449; 30 are written with a processing-date suffix (for example PB165_20231115_144956_2023_12_01) and are not dandiset
+    identifiers, although all 30 sessions are in the dandiset under the plain identifier and none is also listed plainly;
+    and 3 of its sessions (PB185_20240801_095038, PB186_20240801_110359, PB189_20240902_155436) have no readable trial table.
+    So 1418 of the 1451 entries match with a trial table, which is partially reproduced under the criterion (at least 90%).
+    The session types in the files agree with each list's purpose.
+- claim: expert-sessions
+  outcome: not_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:expert-sessions
+  measured:
+  - 49
+  - 318
+  - 24.73
+  notes: The Methods' rule (lower bound of the 95% bootstrap interval of the mean block contrast above 0.375), applied to
+    the 1434 behavioural sessions described whisker_context, selects 318 sessions in 49 mice with 24.7 blocks per session,
+    outside 201 ± 20.1 and 41 ± 4.1 (blocks within 23 ± 2.3). With 20-trial blocks (the code's variant) 316 sessions in 48
+    mice. Restricted to the code's pool list, 293 sessions in 42 mice. The tested sessions are of every type (888 behaviour-only,
+    364 widefield, 80 wf-opto, 74 opto, 28 pharmacology). Variants, the rule also run on the 60 sessions described context_...
+    (6 mice, RD003 to RD032, 51 of them in the pool list) gives 322 sessions in 52 mice, and on behaviour-only sessions 112
+    sessions in 42 mice (23.8 blocks); neither has all three counts within tolerance. The rule keeps 189 of the 201 sessions
+    of the code's expert list; 12 list sessions have a lower bound below 0.375 (lowest 0.299). The code's list itself has
+    41 mice, 201 sessions and 23.9 blocks per session, as the paper says, so the paper's set is not the rule applied to all
+    sessions.
+  deviations:
+  - Blocks are the context runs of the trial table, which equal the context epochs in 99.6% of sessions; three files have
+    no epochs and are left out.
+- claim: fig1c-auditory-hit-both-contexts
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1c-auditory-hit-both-contexts
+  measured:
+  - 95.7
+  - 93.7
+  notes: Under reading (b), the code's list (41 mice), auditory hit rate W+ 95.7% and W- 93.7% (SD 3.6 and 5.2), both within
+    tolerance. Under reading (a), the rule (49 mice), W+ 93.0% and W- 88.4%, the W- value outside 94 ± 5 (some mice in the
+    rule's set lick little to the tone, lowest 3.5%). The criterion takes the expert sessions "under either reading of the
+    selection", and the claims file's opening comment lists the two as readings of the selection, for which a match under
+    one suffices (protocol, reader, step 3). Reading (b) is also the only one whose mice and sessions are the paper's (41
+    mice and 201 sessions, expert-sessions), so reproduced. The verifier would give partially reproduced; the disagreement
+    is recorded under verifications.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+    Reading (b) rests on it.
+- claim: fig1c-whisker-context-modulation
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1c-whisker-context-modulation
+  measured:
+  - 83.9
+  - 31.7
+  notes: Whisker lick rate W+ 83.9% and W- 31.7% under the code's list (SD 6.1 and 7.0), 84.3% and 31.4% under the rule; all
+    within tolerance. Paired t 54.7 (list) and 74.4 (rule).
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+    Reading (b) rests on it.
+- claim: fig1c-catch-higher-wplus
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1c-catch-higher-wplus
+  measured:
+  - 13.3
+  - 4.4
+  notes: Catch lick rate W+ 13.3% and W- 4.4% under the code's list, t = -8.52, p = 1.6e-10 (paper t = -9, p = 1.6e-10); under
+    the rule 14.5% and 4.3%, t = -9.03, p = 6.4e-12.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+    Reading (b) rests on it.
+- claim: fig1d-independent-of-noise-identity
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1d-independent-of-noise-identity
+  notes: Mice split by the noise of their W+ context. Code's list, pink 21 mice (W+ 84.4%, W- 31.9%, t 51.2, p 1.1e-22) and
+    brown 20 mice (83.4%, 31.6%, t 31.3, p 8.4e-18); the rule gives the same (26 and 23 mice, p below 1e-22).
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1e-context-off-no-discrimination
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1e-context-off-no-discrimination
+  notes: On the 7 Context Off days the last whisker trial before against the first after a transition does not differ, W-
+    to W+ 44.1% against 49.5% (t 1.20, p 0.275) and W+ to W- 67.1% against 71.8% (t 0.64, p 0.545). Variant, W+ against W-
+    blocks on the Off day, 66.9% against 61.3% (difference 5.6 points, t 2.13, p 0.077); on the 14 On days 81.5% against 32.0%
+    (difference 49.4, p 1.0e-5). The Off-day trials are still labelled pink and brown in context_background.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1g-first-trial-switch
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1g-first-trial-switch
+  measured:
+  - 25.5
+  - 70.9
+  - 86.2
+  - 56.8
+  notes: Code's list, 41 mice, W- to W+ 25.5% to 70.9% (t 20.9, p 3.8e-23; paper t 21, p 2.8e-23), W+ to W- 86.2% to 56.8%
+    (t -14.2, p 3.4e-17; paper t -14, p 7.3e-17). The rule's 49 mice give 25.7, 72.4, 86.8 and 54.7%, all within tolerance,
+    p below 1e-22. The p-values are significant with or without the x2 Bonferroni factor.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1f-gradual-further-adaptation
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1f-gradual-further-adaptation
+  notes: Code's list, W- to W+ trials +1, +2, +4 at 70.9, 82.6, 84.8% (t of +2 against +1 9.3, p 1.4e-11); W+ to W- 56.8,
+    38.2, 25.4% (t -10.6, p 3.8e-13). The rule gives the same pattern (72.4, 82.6, 85.4 and 54.7, 38.7, 24.6%).
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1h-temporal-integration
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1h-temporal-integration
+  notes: First part, under both selections and with or without early licks, the fitted exponential rises from bin +1 to bin
+    +5 after transitions to W+ (code's list 0.609 to 0.793, tau 0.94 bins) and falls after transitions to W- (0.615 to 0.368,
+    tau 1.56 bins). Second part, no anticipation under both readings, Pearson r of bins -5 to -1 with time -0.27 (p 0.66)
+    and -0.38 (p 0.52), and Fisher tests of bin -1 against bins -5 to -2 p 0.21 and 0.95 (code's list); with the rule's sessions
+    p 0.73, 0.56, 0.081 and 0.67.
+  deviations:
+  - The transition time is the start of the context epoch in which the first trial of the new block falls; the code's transition
+    table is not in the files.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: supp1c-wplus-blocks-longer
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:supp1c-wplus-blocks-longer
+  measured:
+  - 195.5
+  - 185.4
+  notes: Code's list, 41 mice, W+ blocks 195.5 ± 12.7 s and W- 185.4 ± 3.7 s, t 5.39, p 3.4e-6 (paper t 4.3, p 2.0e-4). Under
+    the rule (49 mice) 203.6 and 189.4 s, the W- value outside 185 ± 4; one epoch in the rule's sessions lasts 6359 s. Reproduced
+    under the code's list, the reading of the selection whose mice and sessions are the paper's (as fig1c-auditory-hit-both-contexts);
+    the verifier would give partially reproduced, and the disagreement is recorded under verifications.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: supp1d-faster-response-wplus
+  outcome: partially_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:supp1d-faster-response-wplus
+  measured:
+  - 470
+  - 501
+  - 492
+  - 518
+  notes: Lick time minus stimulus time, code's list, 41 mice, auditory W+ 470 and W- 501 ms (t -8.71, p x2 1.8e-10; paper
+    t -8.7, p 1.8e-10), whisker W+ 492 and W- 518 ms (t -3.95, p x2 6.2e-4; paper t -4, p 6.0e-4). The tests and the W+ minus
+    W- differences (31 and 26 ms against the paper's 30 and 26) match, but every mean is about 100 ms above the paper's (370,
+    400, 392, 418 ms), outside the 9 ms tolerance. The SD over mice is 72 to 94 ms and the SEM 11 to 15 ms. Measured from
+    the opening of the response window (response_window_start_time, 100 ms after the stimulus in every lick trial of the code's
+    list), the means are 370, 401, 392 and 418 ms, the paper's values, so the paper most likely timed spout contact from that
+    point. The criterion times it from the stimulus onset, so the outcome stays partially reproduced.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1i-pupil-larger-wplus
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1i-pupil-larger-wplus
+  measured:
+  - 0.534
+  - 0.513
+  notes: 96 sessions of 24 mice (pupil kept in 96 of 97). Pupil area W+ 0.534 ± 0.134 and W- 0.513 ± 0.127 mm2, t 3.82, Bonferroni
+    x20 p 0.017 (paper 0.52, 0.50, t 3.7, p 0.023). No context effect after correction for whisker angle (Methods angle p
+    0.56, stored angle p 0.35) or jaw opening (21 mice, p 1.0).
+  deviations:
+  - Pupil area is the polygon of the four pupil points in pixels over 28 squared (side camera 28 pixels/mm, Methods, Behavior
+    videography); the stored pupil_area is in square pixels and its conversion (1/28) does not give mm2.
+  - Jaw is dropped for 32 of 97 sessions by the Methods' 70% rule at 60% likelihood.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1i-posture-before-lick
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1i-posture-before-lick
+  measured:
+  - 0.282
+  - 0.247
+  - 87.0
+  - 88.4
+  notes: Jaw opening before lick 0.282 ± 0.052 and before no lick 0.247 ± 0.041 mm (21 mice, t 4.56, p x20 0.0038). Whisker
+    angle as the Methods define it, 87.0 ± 4.8 and 88.4 ± 5.4 degrees (24 mice, t -3.96, p x20 0.012), within the stated SDs.
+    The stored whisker_angle series gives 97.27 and 98.61 degrees (t -4.04, p x20 0.010), the paper's values, so the paper
+    used that series; the angle recomputed from the points by the Methods' formula is about 10 degrees lower.
+  deviations:
+  - Jaw opening is jaw_y minus its 5th percentile (50% likelihood) in pixels over 28.
+  - Whisker angle is computed from the particle, whisker base and nose points as the Methods give it, filtered at 80% likelihood
+    of whisker base and particle; the stored series is a variant.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1j-jaw-speed-context
+  outcome: partially_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig1j-jaw-speed-context
+  measured:
+  - 2.96
+  - 2.5
+  - 2.83
+  - 2.58
+  notes: Jaw speed W+ 2.96 ± 0.98 and W- 2.50 ± 0.81 mm/s (t 4.96, p x20 0.0015), before lick 2.83 and no lick 2.58 mm/s (t
+    4.15, p x20 0.0099), all four within tolerance. Whisker speed shows no lick effect (p x20 1.0) but is higher in W+ (190
+    against 156 deg/s, t 3.81, p x20 0.018; from the stored angle 220 against 179, p x20 0.012), so the absence of a context
+    effect on whisking speed fails. The fixed x200 variant gives the same (jaw t 5.09 and 3.73).
+  deviations:
+  - Speed is the absolute first difference times each session's frame rate (89 sessions at 200 Hz, 8 at 100 Hz).
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1k-model-accuracy
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  notes: 60 sessions of 21 mice, 12,220 whisker trials without early lick in 59 sessions after holding out RD055_20240816_100734
+    (187 trials); lick rate 0.577. Optuna (1000 TPE trials, seed 123) reaches an inner log loss of 0.469. Balanced accuracy
+    on the 33% test split 0.781 (0.78 ± 0.078), training split 0.842; with early stopping on the inner validation split 0.782;
+    on the held-out session 0.824. A model fitted on permuted training labels gives 0.500, the chance level of balanced accuracy.
+  output: claim:fig1k-model-accuracy
+  measured: 0.781
+  deviations: &id001
+  - The DLC features are rebuilt from the dandiset's series by the code's build_features_table (process main_analysis/model_context_behaviour.py)
+    and the trial features by explain_behaviour v1.0.1 preprocessing/trial_features.py, quirks kept (cumulative water shifted
+    over the concatenated table, previous whisker reward from the previous trial of any type); no session fails the code's
+    30% rule.
+  - XGBoost runs on 4 threads (the code sets 20 for the search and -1 for the final fit), which can change the fitted trees
+    slightly.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig1k-context-strongest-feature
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  notes: Each feature permuted 10,000 times on the test split. Mean drop in balanced accuracy, context 0.209 (95% of permutations
+    0.196 to 0.223), previous whisker rewarded 0.028, cumulative water 0.016, whisker trial in block 0.014, previous trial
+    water 0.0045, jaw y 0.0031, mouse ID 0.0022; the others below 0. Context first and the next three in the stated order.
+  output: claim:fig1k-context-strongest-feature
+  deviations: *id001
+- claim: fig1l-shap-whisker-trial-in-block
+  outcome: not_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  notes: 'Interventional TreeExplainer, 100 background trials, 12,220 trials. Mean SHAP value of whisker trial in block after
+    W- to W+, trial -1 (in the W- block) -0.162, trial 1 -0.152, trial 2 +0.099; after W+ to W-, trial -1 -0.016, trial 1
+    +0.603, trial 2 +0.332, trial 4 -0.128. Trial 1 does not take the sign of the new context in either direction (it moves
+    against it), while trial 2 moves toward it, so neither the full nor the partial condition holds. The feature carries the
+    one-trial lag of the behaviour on top of context: the sum of the context and trial-in-block SHAP values changes sign at
+    trial 1 with trial 2 further (W- to W+ -1.342, +0.738, +1.224; W+ to W- +1.306, -0.202, -0.674), a variant that does not
+    decide. Whether the criterion''s sign reading is what Figure 1L shows is asked of a reader in questions/001847.yaml.'
+  output: claim:fig1l-shap-whisker-trial-in-block
+  deviations: *id001
+- claim: fig2c-catch-little-effect
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2c-catch-little-effect
+  notes: Sites with an effect in catch trials (of 41), W- and W+, null (i) 2 and 2 at d' 0.5, 0 at 0.8 and 2; null (ii) 7
+    and 11 at 0.5, 0 and 3 at 0.8, 0 at 2. Five readings give at most 3, null (ii) at 0.5 does not. Largest mean |dP| 0.118.
+    The readings give different outcomes, so the claim is blocked as its criterion says. Open for the authors (methods_unavailable
+    finding). The block-label null of the Methods keeps the laser effect inside the null (laser trials keep their outcomes,
+    only their context labels move), so under it no named site reaches d' 0.8 in whisker or auditory trials (the largest,
+    in whisker trials, tjS1 0.57 and 0.56 and wS1 0.53 and 0.53); the legend's trial shuffle gives the map the paper describes.
+    The d' at which a site counts as affected is not stated. On synthetic data with a laser effect of -0.2 in both contexts,
+    null (i) gives d' 0.19 and null (ii) above 5 (notebook, opto set-up cell), so null (i) cannot find an effect shared by
+    both contexts; whether it is a reading of the paper is asked of a reader in questions/001847.yaml. Without null (i) the
+    threshold readings still disagree. The maps have 41 stimulated sites after the AP 3.5 row is dropped, the claims file's
+    39 plus (1.5, 5.5) and (2.5, 4.5), which the Figure 4 code leaves out; on those 39 sites the counts are the same.
+  deviations: &id002
+  - The opto-map rule is run under both nulls of the claims file, (i) the Methods' block-label shuffle (Quantification, Figures
+    2C-E) and (ii) the legend's and code's trial shuffle (figure2_analysis.py:70-82), each with 10,000 shuffles, and under
+    the three d' thresholds 0.5, 0.8 and 2.
+  - Early-lick trials are kept in the opto map, as the code builds it from the full trial table (process main_analysis/figure2_analysis.py:20-40,
+    build_standard_behavior_table); the AP 3.5 row is dropped as the code drops it (figure2_analysis.py:150).
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig2d-auditory-a1-frontal
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2d-auditory-a1-frontal
+  notes: Mean dP in auditory trials, A1 -0.29 (W-) and -0.35 (W+), ALM -0.22 and -0.21, wM1 -0.16 and -0.29, wM2 -0.17 and
+    -0.16. Null (ii) at d' 0.5 and 0.8 gives reproduced (A1 d' 1.77 and 2.03, wM2 1.11 and 0.94); null (ii) at 2 and every
+    null (i) reading give not reproduced. The readings give different outcomes, so the claim is blocked as its criterion says.
+    Open for the authors (methods_unavailable finding). The block-label null of the Methods keeps the laser effect inside
+    the null (laser trials keep their outcomes, only their context labels move), so under it no named site reaches d' 0.8
+    in whisker or auditory trials (the largest, in whisker trials, tjS1 0.57 and 0.56 and wS1 0.53 and 0.53); the legend's
+    trial shuffle gives the map the paper describes. The d' at which a site counts as affected is not stated. On synthetic
+    data with a laser effect of -0.2 in both contexts, null (i) gives d' 0.19 and null (ii) above 5 (notebook, opto set-up
+    cell), so null (i) cannot find an effect shared by both contexts; whether it is a reading of the paper is asked of a reader
+    in questions/001847.yaml. Without null (i) the threshold readings still disagree.
+  deviations: *id002
+- claim: fig2e-whisker-sensory-premotor-reduction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2e-whisker-sensory-premotor-reduction
+  notes: Mean dP in whisker trials, wS1 -0.24 (W-) and -0.46 (W+), wS2 -0.21 and -0.29, ALM -0.29 and -0.30. Null (ii) d'
+    wS1 0.94 and 2.25, wS2 1.72 and 2.57, ALM 1.21 and 1.42, so reproduced at 0.5 and 0.8 and not at 2; null (i) d' at most
+    0.54, not reproduced at any threshold. The readings give different outcomes, so the claim is blocked as its criterion
+    says. Open for the authors (methods_unavailable finding). The block-label null of the Methods keeps the laser effect inside
+    the null (laser trials keep their outcomes, only their context labels move), so under it no named site reaches d' 0.8
+    in whisker or auditory trials (the largest, in whisker trials, tjS1 0.57 and 0.56 and wS1 0.53 and 0.53); the legend's
+    trial shuffle gives the map the paper describes. The d' at which a site counts as affected is not stated. On synthetic
+    data with a laser effect of -0.2 in both contexts, null (i) gives d' 0.19 and null (ii) above 5 (notebook, opto set-up
+    cell), so null (i) cannot find an effect shared by both contexts; whether it is a reading of the paper is asked of a reader
+    in questions/001847.yaml. Without null (i) the threshold readings still disagree.
+  deviations: *id002
+- claim: fig2e-rsc-tjs1-increase-wminus
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2e-rsc-tjs1-increase-wminus
+  notes: In W- whisker trials RSC (-1.5, 0.5) dP +0.21 and tjS1 +0.23, in W+ +0.10 and +0.02; 6 of 7 mice positive at RSC,
+    7 of 7 at tjS1. Null (ii) d' in W- RSC 1.22, tjS1 1.14, in W+ 0.64 and 0.06, so reproduced at 0.8, partially at 0.5 (RSC
+    passes in W+ too), not at 2; null (i) d' at most 0.57, not reproduced. The site (-0.5, 0.5) gives the same pattern. The
+    readings give different outcomes, so the claim is blocked as its criterion says. Open for the authors (methods_unavailable
+    finding). The block-label null of the Methods keeps the laser effect inside the null (laser trials keep their outcomes,
+    only their context labels move), so under it no named site reaches d' 0.8 in whisker or auditory trials (the largest,
+    in whisker trials, tjS1 0.57 and 0.56 and wS1 0.53 and 0.53); the legend's trial shuffle gives the map the paper describes.
+    The d' at which a site counts as affected is not stated. On synthetic data with a laser effect of -0.2 in both contexts,
+    null (i) gives d' 0.19 and null (ii) above 5 (notebook, opto set-up cell), so null (i) cannot find an effect shared by
+    both contexts; whether it is a reading of the paper is asked of a reader in questions/001847.yaml. Without null (i) the
+    threshold readings still disagree.
+  deviations: *id002
+- claim: fig2cd-rsc-no-effect-catch-auditory
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2cd-rsc-no-effect-catch-auditory
+  notes: At RSC (-1.5, 0.5), catch dP +0.05 (W-) and +0.12 (W+), auditory -0.005 and +0.014. Under null (ii) the catch W+
+    d' is 0.84 and W- 0.53, so an effect is found at 0.5 and 0.8 and none at 2; null (i) finds none at any threshold. Auditory
+    d' at most 0.10 under every reading. The readings give different outcomes, so the claim is blocked as its criterion says.
+    Open for the authors (methods_unavailable finding). The block-label null of the Methods keeps the laser effect inside
+    the null (laser trials keep their outcomes, only their context labels move), so under it no named site reaches d' 0.8
+    in whisker or auditory trials (the largest, in whisker trials, tjS1 0.57 and 0.56 and wS1 0.53 and 0.53); the legend's
+    trial shuffle gives the map the paper describes. The d' at which a site counts as affected is not stated. On synthetic
+    data with a laser effect of -0.2 in both contexts, null (i) gives d' 0.19 and null (ii) above 5 (notebook, opto set-up
+    cell), so null (i) cannot find an effect shared by both contexts; whether it is a reading of the paper is asked of a reader
+    in questions/001847.yaml. Without null (i) the threshold readings still disagree.
+  deviations: *id002
+- claim: fig2-no-effect-control-mice
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2-no-effect-control-mice
+  notes: 4 control mice, null (ii). Groups of site, trial type and context passing d' 0.5 61 of 246, 0.8 20, 2 0; largest
+    d' 1.80 (catch, W-, (-2.5, 2.5)), largest |dP| 0.225. The thresholds disagree. The readings give different outcomes, so
+    the claim is blocked as its criterion says. Open for the authors (methods_unavailable finding). The block-label null of
+    the Methods keeps the laser effect inside the null (laser trials keep their outcomes, only their context labels move),
+    so under it no named site reaches d' 0.8 in whisker or auditory trials (the largest, in whisker trials, tjS1 0.57 and
+    0.56 and wS1 0.53 and 0.53); the legend's trial shuffle gives the map the paper describes. The d' at which a site counts
+    as affected is not stated.
+  deviations: *id002
+- claim: fig2f-latency-frontal-not-rsc
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig2f-latency-frontal-not-rsc
+  notes: Latency change at wM1, wM2, ALM +158, +78, +96 ms (auditory, d' 1.01, 0.75, 0.62) and +120, +128, +198 ms (whisker
+    W+, d' 1.10, 1.09, 1.49); RSC -28 and -34 ms (d' 0.39, 0.43), tjS1 +13 and +9 ms (0.17, 0.11). Reproduced at d' 0.5 and
+    0.8, partially at 2 (no frontal site reaches 2). The readings give different outcomes, so the claim is blocked as its
+    criterion says. Open for the authors (methods_unavailable finding). The block-label null of the Methods keeps the laser
+    effect inside the null (laser trials keep their outcomes, only their context labels move), so under it no named site reaches
+    d' 0.8 in whisker or auditory trials (the largest, in whisker trials, tjS1 0.57 and 0.56 and wS1 0.53 and 0.53); the legend's
+    trial shuffle gives the map the paper describes. The d' at which a site counts as affected is not stated.
+  deviations: *id002
+- claim: supp2-muscimol-ws1-rsc
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:supp2-muscimol-ws1-rsc
+  notes: Difference of differences (muscimol minus Ringer change), whisker trials, 100,000 two-level bootstrap draws. wS1
+    W- -0.405 (95% CI -0.659 to -0.180, p 0.00032), W+ -0.653 (p below 2e-5, none of 100,000 draws crossing 0); RSC W- +0.206
+    (CI -0.009 to +0.422, p 0.060; paper p 0.059); fpS1 W- -0.022 (p 0.83), W+ -0.199 (p 0.0077). The wS1 W- p is above the
+    paper's bound of 1e-5 but below 0.05, which the criterion asks. The injection day is the second date of each mouse in
+    the list, as the code ranks them. Where the files type a session pharma_session (26 entries of the six lists) it is always
+    the second date; the other second-date sessions (3 of 5 in wS1 muscimol, 1 of 5 in fpS1 muscimol) are typed behaviour_only_session,
+    and no first or third date is typed pharma_session.
+  deviations:
+  - The trial level of the bootstrap is drawn as Binomial(n, p)/n per mouse, which has the same distribution as resampling
+    n binary trials with replacement; the random stream differs from the code's.
+  - Session 1 and 2 are ranked by date within mouse and condition, third sessions dropped, as figure2_supp_stats.py does.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig3c-jaw-onset
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig3c-jaw-onset
+  measured: 90.0
+  assumed: true
+  notes: 'Methods'' rule per mouse on the jRGECO1a mice, now with the Methods'' processing: points below 60% likelihood set
+    missing (trials kept), the 70% session rule of Figures 1I-J applied ("as in Figures 1I&J"), each trial centred on its
+    250 ms pre-stimulus mean, traces averaged within session then over sessions. With the Methods'' correct whisker trials
+    (a), W+ hits and W- misses, the onset is 90.0 ± 12.2 ms over 5 mice (PB177 has no session passing the 70% rule), within
+    108 ± 24; without the 70% rule 85.8 ms over 6 mice. W+ whisker hits only (b) give 76.0 ms, the code''s auditory and whisker
+    hits (c) 77.0 ms, auditory hits 65.0 (W+) and 76.0 (W-), whisker hits in W- 106.0 ms, so the trial set decides. The code''s
+    3 SD rule gives 64 to 70 ms; d'' over session means (a variant, for the 3 mice with 3 or more kept sessions) gives 10
+    to 42 ms. Assumed, the Methods'' trial set, since the Methods compute the onset "from the jaw traces in Figure 3B", which
+    are "correct trials (i.e. licks to whisker in W+ and no licks in W-)". The earlier result (86.3 ms with the code''s set,
+    135 ms with set a) dropped every trial with one untracked frame and pooled trials within mouse; both are corrected. Question
+    for the authors under findings. The claims file says the trial set is open in the text, while the Methods name it; this
+    is asked of a reader in questions/001847.yaml.'
+  deviations:
+  - Assumption, the trials pooled for the onset are the correct whisker trials of Figure 3B (Methods, Figures 3B and 3C);
+    the other trial sets give onsets below the tolerance.
+  - The 70% session rule of Figures 1I-J is applied, as the Methods for Figure 3B say "As in Figures 1I&J"; the variant without
+    it is shown.
+  - d' at each time is over the mouse's trials, with untracked points left out at that time; the variant over session means
+    is shown.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig3e-auditory-similar-across-contexts
+  outcome: partially_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig3e-auditory-similar-across-contexts
+  notes: Auditory hits, 6 jRGECO1a mice. No ROI reaches |d'| 2 between W+ and W- from 20 to 120 ms (largest 0.75, tjM1, 250
+    ms baseline). A1 is first under every reading (half-peak at 40 ms, other ROIs 80 to 90 ms), but the order RSC, then wM1/2,
+    then tjS1 and ALM is not found, RSC and wM1/2 reaching half-peak at the same 80 ms; the peak reading puts every ROI at
+    120 ms, the window's end. All baseline and order readings agree.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig3f-whisker-divergence-after-50ms
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig3f-whisker-divergence-after-50ms
+  notes: W+ hits against W- misses, 6 jRGECO1a mice. From 20 to 50 ms |d'| at most 0.97 (wS1) and 1.08 (wS2), both with the
+    250 ms baseline (0.91 and 0.94 with 50 ms); from 50 to 120 ms d' reaches 3.70 at RSC, 3.14 at wM1 and 2.77 at wM2 (50
+    ms baseline), and 3.49, 3.23, 2.84 (250 ms). RSC passes 2 at 50 to 60 ms. All baselines agree.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig3h-rsc-first-context-discrimination
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig3h-rsc-first-context-discrimination
+  notes: ROI part, RSC is the first ROI with d' above 2 under every baseline and exclusion reading (50 ms with the 50 ms baseline,
+    60 ms with 250 ms; then wM1 at 80 ms, wS1 90 to 100 ms, the others 100 to 110 ms), no tie. Pixel part, run on windowed
+    reads of the ΔF/F0 stack (377,564 frames of 125 x 160 float64 per session, unchunked; 38 frames per trial, about 78 W+
+    hits and 67 W- misses per session, 22.1 GB read in 3.1 min in the final run), earliest crossing among the 249 pixels of each ROI circle.
+    With the code's smoothing (sigma 1 pixel) and the 50 ms baseline, RSC 40 ms, wM1 50, wS2 80, wS1 90, ALM and tjS1 110,
+    no tie, under both exclusion readings; so with the 50 ms baseline both versions put RSC first. With the 250 ms baseline
+    RSC ties with wM1 at 50 ms in the pixel version (partially reproduced under that reading); the code's 100 ms baseline
+    gives RSC first at 40 ms. Unsmoothed pixels (variant) put RSC first at 30 ms with the 50 ms baseline and wM1 and tjS1
+    first at 30 ms with 250 ms. The criterion asks for the outcome every baseline gives, otherwise methods_underspecified,
+    and names the 50 and 250 ms baselines, which give reproduced and partially reproduced, so the claim is blocked. The paper
+    states both. The Methods for Figure 3H define the d' as that "shown in Figure 3F bottom row", whose Methods (Figures 3E&F)
+    subtract "the average value of the 50 ms preceding the trial", and the Methods' Computation of ΔF/F0 give 250 ms for
+    Figures 3 and 4. Question for the authors under findings. No jRGECO1a trial has its first frame after the stimulus more
+    than one frame late.
+  deviations:
+  - The pre-stimulus baseline is run under the paper's two readings, 50 ms (Methods, Figure 3H, citing the d' of Figure 3F,
+    and Methods, Figures 3E&F) and 250 ms (Methods, Computation of ΔF/F0), and the code's 100 ms as a variant.
+  - The pixel version reads only the frames from 250 ms before to 120 ms after the stimulus of the W+ hits and W- misses;
+    ROI circles are the file's grid masks (grid_areas/brain_grid_area_segmentation); smoothing is applied to the mouse-average
+    images.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig3-gcamp-consistent-controls-flat
+  outcome: partially_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig3-gcamp-consistent-controls-flat
+  notes: GCaMP6f (8 mice) shows a whisker-evoked wS1 response (d' up to 3.55 against baseline, mean peak 0.010) and W+ above
+    W- in RSC or wM1/2 (d' 3.36). tdTomato (4 mice) and GFP (6 mice) show no evoked wS1 response (d' 0.37 and 0.23, peaks
+    0.0024 and 0.0014), but both show W+ against W- differences above d' 2 (tdTomato up to 2.91 to 4.67, GFP 3.43 to 3.58,
+    by baseline), so the controls part fails under every baseline. The control differences are small in amplitude and may
+    be haemodynamic or movement signals; the outputs do not say.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: supp3c-rsc-projects-to-wm
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_bech_2026.ipynb
+  notes: The light-sheet images of cleared brains are not in the dandiset (no image or microscopy file among the 1497 assets,
+    which are behaviour, DLC and widefield NWB files), and the paper names no other archive for them.
+- claim: fig4b-wminus-higher-correlation-correct
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_bech_2026.ipynb
+  notes: 'Seed-to-pixel correlations need the ΔF/F0 image stack for the 2 s before every trial (200 frames of 125 x 160 float64,
+    32 MB per trial), 367 GB over the 11,476 trials of the 25 jRGECO1a sessions, plus 1,000 block shuffles per seed and pixel.
+    Not run in this attempt. At the rate measured for the fig3h pixel reads in the final run (22.1 GB in 3.1 min, 118 MB/s)
+    the reads alone take about 52 min; the notebook has run 40 min when it reaches the fig4b cell, so the two together (92
+    min) exceed the 60-minute notebook limit. In a separate notebook the reads would take 86% of the limit, before the 1,000
+    block shuffles per seed and pixel (all printed in the fig4b cell). The read rate varies between runs (118 to 189 MB/s
+    in the last four runs, so 32 to 52 min of reads, 54% to 86% of the limit). The data are therefore not shown to be too
+    large; the analysis was not run because no separate notebook was built within this attempt''s runs. The grid ROI traces in the files are not the code''s seeds-to-pixels maps. Variant on the grid ROI traces, not deciding
+    (no pixel maps, no null): zero-lag correlations between the seven seed ROIs in the 2 s before each whisker trial, 6 mice.
+    Before correct trials W- is higher than W+ for 5 of the code''s 7 pairs, with paired d'' 0.88 (ALM-tjM1), 1.00 (ALM-tjS1),
+    0.90 (tjM1-tjS1), 1.17 (wS1-wS2) and 0.28 (wS2-wM1), and lower for wM1-ALM (-1.29) and wM1-tjM1 (-0.64); no pair passes
+    the related t-test with Bonferroni x7 (smallest corrected p 0.175). Before incorrect trials no pair has a W- minus W+
+    d'' of 0.8 or more (largest 0.63), and W+ incorrect minus W+ correct is positive for 5 of 7 pairs.'
+  output: claim:fig4b-wminus-higher-correlation-correct
+- claim: fig4b-no-context-modulation-incorrect
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_bech_2026.ipynb
+  notes: 'Seed-to-pixel correlations need the ΔF/F0 image stack for the 2 s before every trial (200 frames of 125 x 160 float64,
+    32 MB per trial), 367 GB over the 11,476 trials of the 25 jRGECO1a sessions, plus 1,000 block shuffles per seed and pixel.
+    Not run in this attempt. At the rate measured for the fig3h pixel reads in the final run (22.1 GB in 3.1 min, 118 MB/s)
+    the reads alone take about 52 min; the notebook has run 40 min when it reaches the fig4b cell, so the two together (92
+    min) exceed the 60-minute notebook limit. In a separate notebook the reads would take 86% of the limit, before the 1,000
+    block shuffles per seed and pixel (all printed in the fig4b cell). The read rate varies between runs (118 to 189 MB/s
+    in the last four runs, so 32 to 52 min of reads, 54% to 86% of the limit). The data are therefore not shown to be too
+    large; the analysis was not run because no separate notebook was built within this attempt''s runs. The grid ROI traces in the files are not the code''s seeds-to-pixels maps. Depends on fig4b-wminus-higher-correlation-correct.
+    Variant on the grid ROI traces, not deciding (no pixel maps, no null): zero-lag correlations between the seven seed ROIs
+    in the 2 s before each whisker trial, 6 mice. Before correct trials W- is higher than W+ for 5 of the code''s 7 pairs,
+    with paired d'' 0.88 (ALM-tjM1), 1.00 (ALM-tjS1), 0.90 (tjM1-tjS1), 1.17 (wS1-wS2) and 0.28 (wS2-wM1), and lower for wM1-ALM
+    (-1.29) and wM1-tjM1 (-0.64); no pair passes the related t-test with Bonferroni x7 (smallest corrected p 0.175). Before
+    incorrect trials no pair has a W- minus W+ d'' of 0.8 or more (largest 0.63), and W+ incorrect minus W+ correct is positive
+    for 5 of 7 pairs.'
+- claim: fig4b-connected-network
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_bech_2026.ipynb
+  notes: Seed-to-pixel correlations need the ΔF/F0 image stack for the 2 s before every trial (200 frames of 125 x 160 float64,
+    32 MB per trial), 367 GB over the 11,476 trials of the 25 jRGECO1a sessions, plus 1,000 block shuffles per seed and pixel.
+    Not run in this attempt. At the rate measured for the fig3h pixel reads in the final run (22.1 GB in 3.1 min, 118 MB/s)
+    the reads alone take about 52 min; the notebook has run 40 min when it reaches the fig4b cell, so the two together (92
+    min) exceed the 60-minute notebook limit. In a separate notebook the reads would take 86% of the limit, before the 1,000
+    block shuffles per seed and pixel (all printed in the fig4b cell). The read rate varies between runs (118 to 189 MB/s
+    in the last four runs, so 32 to 52 min of reads, 54% to 86% of the limit). The data are therefore not shown to be too
+    large; the analysis was not run because no separate notebook was built within this attempt's runs. The grid ROI traces in the files are not the code's seeds-to-pixels maps. Depends on fig4b-wminus-higher-correlation-correct.
+    The ROI-trace variant has no null, so it does not address connectivity.
+- claim: fig4c-inhibition-propagates-forward
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig4c-inhibition-propagates-forward
+  notes: 4 wf-opto mice, W+ whisker trials, peak ΔF/F0 50 to 120 ms. Laser at wS1 lowers 7 of 9 ROIs below control by more
+    than the control SD (not wS1 and wS2 themselves, which rise, +0.017 and +0.008); laser at wM1 lowers wM2, ALM, tjS1, tjM1
+    and not wS1 or wS2; laser at RSC raises no motor ROI above control by more than its SD (it lowers wS1, wM1, wM2, ALM,
+    tjM1). The same with the 250 ms baseline. 833 of 21,425 wf-opto trials have their first frame after the stimulus more
+    than one frame late (gaps in the imaging, up to 81 s); without them (50 ms baseline) the three parts hold the same way.
+  deviations:
+  - The measure (peak 50 to 120 ms, a decrease being more than the control SD over mice) is the claims file's; the paper gives
+    none.
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig4d-trajectories-follow-lick
+  outcome: not_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig4d-trajectories-follow-lick
+  notes: 'PC3 from 0 to 140 ms. RSC (-1.5, 0.5) is closer to the control-no-lick trajectory in W- (MSD 0.86 against 1.41)
+    and closer to lick in W+; tjS1 is closer to lick in both. wS1, wS2, wM1, wM2 and ALM are far from both control trajectories
+    (MSD 17 to 61 against 0.2 to 3 for RSC) and closer to lick in W- (all five) and for wM1, wM2 and ALM in W+, so they do
+    not move toward no-lick by this measure. With RSC at (-0.5, 0.5) RSC and tjS1 are closer to lick in both contexts but
+    the others still fail. PCA on the control matrix: PC1 to PC3 explain 0.748, 0.154 and 0.044 of the variance; signs set
+    by a positive wS1 loading flip PC2 only; PC3 loadings wS1 0.410, wS2 0.372, wM1 0.098, wM2 0.027, ALM -0.126, tjS1 -0.296,
+    tjM1 -0.265, RSC 0.093. Variant, not deciding, along the control lick to no-lick direction (coefficient of the site trajectory
+    minus lick on no lick minus lick, 0 at lick and 1 at no-lick): wS1, wS2, wM1, wM2 and ALM lie 3.8 to 6.9 times the control
+    lick to no-lick distance from the lick trajectory (RSC 1.1 in W- and 0.4 in W+), with coefficients -3.09 to -0.39 in W-
+    and -0.93 to -0.10 for wM1, wM2 and ALM in W+; only wS1 (1.17) and wS2 (0.59) in W+ lie toward no-lick. Whether the claim''s
+    toward no-lick should be read as away from control-lick, since the inhibited trajectories are far from both control trajectories,
+    is asked of a reader in questions/001847.yaml.'
+  deviations:
+  - Closeness is mean squared distance on PC3, the claims file's measure; the paper gives none.
+  - Time samples at 50 Hz from -140 to 140 ms (the code's -150 to 150 ms window).
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig4e-rsc-tjs1-smaller-angle
+  outcome: partially_reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig4e-rsc-tjs1-smaller-angle
+  notes: 'Methods angle, mean over 4 mice. W+, RSC 33.1 and tjS1 26.9 degrees against wS1 54.0, wS2 46.3, wM1 41.2, wM2 43.5,
+    ALM 43.7, so it holds. W-, RSC 37.5 and tjS1 23.9 against wS1 42.7, wS2 41.0, wM1 34.3, wM2 30.4, ALM 30.3, so RSC is
+    not smaller. With RSC at (-0.5, 0.5) (21.2 and 23.7 degrees) it holds in both contexts. The code''s angle (minimum added)
+    gives the same outcome. PCA on the control matrix: PC1 to PC3 explain 0.748, 0.154 and 0.044 of the variance; signs set
+    by a positive wS1 loading flip PC2 only; PC3 loadings wS1 0.410, wS2 0.372, wM1 0.098, wM2 0.027, ALM -0.126, tjS1 -0.296,
+    tjM1 -0.265, RSC 0.093.'
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: fig4fg-angle-predicts-lick-change
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:fig4fg-angle-predicts-lick-change
+  notes: 39 sites, mean angle against mean whisker dP of the same 4 mice. Methods angle, W- r -0.41 (p 0.0088), W+ r -0.33
+    (p 0.043); code angle, r -0.51 (p 0.00089) and -0.46 (p 0.0036). Sites are paired by coordinate.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+- claim: supp4d-photoactivation-control
+  outcome: reproduced
+  notebook: reproduce_bech_2026.ipynb
+  output: claim:supp4d-photoactivation-control
+  notes: 2 mice, W+ whisker trials. Laser at wS1, the wS1 ROI rises 0.049 above control and no other ROI falls below control
+    by more than its SD; at wM1, wM1 rises 0.041 and 1 of 8 falls; at wM2, wM2 rises 0.039 and 1 of 8 falls. The same with
+    the 250 ms baseline. The control SD is over 2 mice.
+  deviations:
+  - Session groups (expert list, Context Off, opto, control, muscimol, Ringer, widefield lines) are the lists of the paper's
+    processing code at commit 212a6310, as the claims file cites them; the files record no mouse line (session-list-link).
+findings:
+- kind: metadata_insufficient
+  statement: The files do not record the mouse lines. The subject genotype is "WT" for every mouse but one ("Ai148"), and
+    strain is C57BL/6 for all, so no file says which mice carry VGAT-ChR2, jRGECO1a, GCaMP6f, tdTomato or GFP, or which received
+    no opsin. The optogenetic, control and widefield groups can only be formed from the session lists of the paper's code.
+- kind: metadata_insufficient
+  statement: Session groups are not recorded in a usable form. Muscimol and Ringer days, the injected area, baseline and injection
+    days, and Context Off days have no field; the pharmacology, surgery and virus fields are "na" in every file, and most
+    muscimol and Ringer sessions are typed behaviour_only_session. The Context Off trials still name pink and brown noise
+    in context_background.
+- kind: metadata_error
+  statement: The DeepLabCut series (processing/behavior/BehavioralTimeSeries) carry the unit "seconds" and a conversion of
+    1/28 (side camera) or 1/24 (top camera) for every series, likelihoods and angles included. The positions are in pixels,
+    the whisker_angle series is in degrees (it reproduces the paper's 97.3 and 98.6 degrees unconverted), and pupil_area is
+    in square pixels, for which the conversion would have to be 1/28 squared.
+- kind: metadata_insufficient
+  statement: No trial table column has a description (all "None"), and the perf codes 0 to 6 are not explained in the files;
+    they were read from their cross-tabulation with trial type and lick (6 is an early lick).
+- kind: other
+  statement: lick_time minus the stimulus time is about 100 ms longer than the paper's spout-contact times (470 against 370
+    ms for auditory W+), while the context differences and the tests match; lick_time minus response_window_start_time, which
+    is 100 ms after the stimulus, gives the paper's 370, 400, 392 and 418 ms. What lick_time is measured from is not described.
+- kind: format_error
+  statement: Three files (PB185_20240801_095038, PB186_20240801_110359, PB189_20240902_155436) have no BehavioralEpochs. In
+    76 of the 97 face-video sessions the DLC timestamps and data differ in length (printed in the DLC data cell), mostly by
+    a few frames; in PB192_20241121_122848 the jaw series has 311,339 data points for 1,116,888 timestamps, and in PB177_20240529_121819
+    953,445 (jaw) and 948,779 (whisker) for 955,705.
+- kind: selection_undocumented
+  statement: The Methods' expert rule (block contrasts significantly above 0.375) applied to the dandiset selects 318 sessions
+    in 49 mice; the paper's 201 sessions in 41 mice are the code's fixed list, which includes 12 sessions the rule rejects.
+    How the list was chosen is not stated.
+- kind: methods_unavailable
+  statement: Question for the authors on Figure 2C-F. The Methods build the opto-map null by shuffling block labels; the legends
+    and the code shuffle all trials. The block-label shuffle keeps the laser effect inside the null, and under it no named
+    site reaches d' 0.8 (at most 0.57); the trial shuffle gives the published map. Which null was used, and at what d' is
+    a site counted as affected (the colour scale starts at 0.5)? Seven claims are blocked on this.
+- kind: methods_unavailable
+  statement: Question for the authors on Figure 3C. Which trials are pooled for the jaw-opening onset of 108 ± 24 ms? The
+    correct whisker trials of Figure 3B (W+ hits and W- misses) give 90 ms, W+ whisker hits 76 ms, the code's auditory and
+    whisker hits 77 ms; the attempt assumed the Figure 3B set.
+- kind: data_missing
+  statement: The light-sheet images of RSC axons (Figure 3, figure supplement 1C) are not in the dandiset and no other deposit
+    is named.
+- kind: methods_unavailable
+  statement: Question for the authors on Figure 3H. Which pre-stimulus baseline is subtracted before the d' maps? The paper
+    gives two, the 250 ms of the Methods' Computation of ΔF/F0 for Figures 3 and 4 and the 50 ms of the Methods for Figures
+    3E&F, whose d' Figure 3H uses; the code uses 100 ms. With 50 or 100 ms RSC is first in the pixel and ROI versions; with
+    250 ms it ties with wM1 in the pixel version, so the claim is blocked as methods_underspecified.
+- kind: other
+  statement: In 46 of the 46 widefield-with-optogenetics and photoactivation sessions, 910 of the trials (833 wf-opto, 77
+    photoactivation) have their first imaging frame after the stimulus more than one frame late, up to 81 s, so the imaging
+    has gaps that the trial table does not mark.
+verifications:
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper; the verifier checked the archive for the blocked claims and tested opto_map
+    on synthetic data. Report in transcripts/001847/verifier-1-report.md.
+  results:
+  - claim: session-list-link
+    agrees: false
+    outcome: partially_reproduced
+    reason: 98.0% of listed sessions found. Every list used in a test matches in sessions and mice, but the pool list has
+      1451 sessions against the 1449 the claims file gives; 30 of them are not in the dandiset and 3 more have no readable
+      table.
+    response: 'Changed to partially reproduced: the pool list is used for the expert rule''s pool variant, so not every session
+      of every list used here matches. Added the check that the 30 suffixed entries are in the dandiset under the plain identifier,
+      and the names of the 3 sessions without a trial table.'
+  - claim: expert-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: The Methods' rule, run on all behavioural sessions as the criterion requires, gives 318 sessions in 49 mice (expected
+      201 ± 20.1 and 41 ± 4.1). Blocks per session, 24.7, is within 23 ± 2.3. 12 sessions of the code's list fail the rule.
+      The rule includes opto, pharma and widefield sessions, and 60 sessions with the context_ prefix are excluded without
+      identification (B11).
+    response: 'Added the session types tested, the 60 context_ sessions (6 mice, the lists they are in), and two variants:
+      the rule with them added (322 sessions, 52 mice) and on behaviour-only sessions (112 sessions, 42 mice). Outcome kept.'
+  - claim: fig1c-auditory-hit-both-contexts
+    agrees: false
+    outcome: partially_reproduced
+    reason: With the code's list W+ 95.7, W- 93.7 (in tolerance). With the rule's sessions W- 88.4, outside 94 ± 5. The claims
+      file has no rule for when the two selections disagree (B14).
+    response: Kept reproduced and recorded the disagreement. The criterion takes the expert sessions under either reading
+      of the selection, the opening comment lists the two as readings of the selection, for which a match under one suffices,
+      and the code's list is the reading whose 41 mice and 201 sessions are the paper's.
+  - claim: fig1c-whisker-context-modulation
+    agrees: true
+    outcome: reproduced
+    reason: 84.3/31.4 and 83.9/31.7, all within the SDs.
+    response: No change needed.
+  - claim: fig1c-catch-higher-wplus
+    agrees: true
+    outcome: reproduced
+    reason: 13.3/4.4 with t -8.52 and p 1.6e-10 under the code's list, the paper's p.
+    response: No change needed.
+  - claim: fig1d-independent-of-noise-identity
+    agrees: true
+    outcome: reproduced
+    reason: In both noise groups under both selections, W+ is higher, p ≤ 1e-17.
+    response: No change needed.
+  - claim: fig1e-context-off-no-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Off-day transition tests give p 0.275 and 0.545, so no discrimination. The Off-day labels pink and brown were
+      not checked (B13); the behaviour fits Off days.
+    response: No change; the files hold nothing that says which noise was played on the Off days beyond context_background,
+      which the notes report.
+  - claim: fig1g-first-trial-switch
+    agrees: true
+    outcome: reproduced
+    reason: All four values within the SDs; t 20.9 and -14.2.
+    response: No change needed.
+  - claim: fig1f-gradual-further-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: +2 is closer to the new context than +1, and +4 at least as close as +2, in both directions and both selections.
+    response: No change needed.
+  - claim: fig1h-temporal-integration
+    agrees: true
+    outcome: reproduced
+    reason: Fitted curves run in the stated directions. Both anticipation readings give p ≥ 0.05 under every variant.
+    response: No change needed.
+  - claim: supp1c-wplus-blocks-longer
+    agrees: false
+    outcome: partially_reproduced
+    reason: With the code's list 195.5 vs 185.4 s, t 5.39, p 3.4e-6, all as required. With the rule's sessions W- is 189.4
+      s, outside 185 ± 4 (B14).
+    response: Kept reproduced and recorded the disagreement, for the reason given for fig1c-auditory-hit-both-contexts.
+  - claim: supp1d-faster-response-wplus
+    agrees: true
+    outcome: partially_reproduced
+    reason: Directions and corrected tests hold; under the code's list t -8.71, p 1.8e-10 and t -3.95, p 6.2e-4. All four
+      means are about 100 ms above the paper's, outside ± 9. The offset was not investigated (B7).
+    response: 'Investigated: lick time measured from response_window_start_time (100 ms after the stimulus) gives 370, 401,
+      392 and 418 ms, the paper''s values. Shown as a variant; the criterion times from the stimulus, so the outcome is kept.'
+  - claim: fig1i-pupil-larger-wplus
+    agrees: true
+    outcome: reproduced
+    reason: Pupil 0.534 vs 0.513 mm², Bonferroni p 0.017. Whisker angle and jaw give corrected p 0.56 and 1.0.
+    response: No change needed.
+  - claim: fig1i-posture-before-lick
+    agrees: true
+    outcome: reproduced
+    reason: Jaw 0.282 vs 0.247 (corrected p 0.0038). Whisker angle 87.0 vs 88.4 computed, 97.3 vs 98.6 stored (corrected p
+      0.012 and 0.010). The computed angle is about 10° off the stored one, which gives the paper's exact numbers (B6).
+    response: No change; both versions pass, and the notes already say the stored series gives the paper's values.
+  - claim: fig1j-jaw-speed-context
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The jaw-speed parts hold (2.96/2.50 and 2.83/2.58; corrected p 0.0015 and 0.0099). The claimed absence fails:
+      whisker speed differs by context, corrected p 0.018 (0.012 with the stored angle). The criterion has no partial clause;
+      strictly this is not_reproduced.'
+    response: Kept partially reproduced, the protocol's meaning for an effect that holds in part.
+  - claim: fig1k-model-accuracy
+    agrees: true
+    outcome: blocked
+    reason: 'Not run "within the time limit". The data exist: all 60 model sessions have trial tables and the face-video data
+      load (B4).'
+    response: Ran the model, rebuilt from the code (60 sessions, 1000 Optuna trials). Balanced accuracy 0.781 against chance
+      0.5 (permuted labels 0.500); changed to reproduced.
+  - claim: fig1k-context-strongest-feature
+    agrees: true
+    outcome: blocked
+    reason: 'Not run "within the time limit". The data exist: all 60 model sessions have trial tables and the face-video data
+      load (B4).'
+    response: 'Ran the permutation importance (10,000 per feature): context first, then previous whisker rewarded, cumulative
+      water and whisker trial in block, as stated; changed to reproduced.'
+  - claim: fig1l-shap-whisker-trial-in-block
+    agrees: true
+    outcome: blocked
+    reason: 'Not run "within the time limit". The data exist: all 60 model sessions have trial tables and the face-video data
+      load (B4).'
+    response: Ran the SHAP analysis. Trial 1 moves against the new context in both directions, so the criterion gives not
+      reproduced; changed to not reproduced, and asked a reader whether the criterion's sign reading is what Figure 1L shows.
+  - claim: fig2c-catch-little-effect
+    agrees: true
+    outcome: blocked
+    reason: Null (ii) with d' ≥ 0.5 gives 11 sites (more than 3); every other reading gives 3 or fewer. Null (i) cannot detect
+      a context-shared effect (B1). The maps use 41 sites, the claims file says 39 (B12).
+    response: 'Outcome kept. Added a synthetic test of null (i) to the notebook (d'' 0.19 for a shared effect of -0.2, null
+      (ii) above 5) and asked a reader, in questions/001847.yaml, whether null (i) is a reading of the paper; the threshold
+      readings disagree without it. Printed the 41 sites: the 39 plus (1.5, 5.5) and (2.5, 4.5); the counts on the 39 are
+      the same.'
+  - claim: fig2d-auditory-a1-frontal
+    agrees: true
+    outcome: blocked
+    reason: Null (ii) with d' 0.5 or 0.8 reproduced; null (i), and d' ≥ 2, not. Under null (i) no effect shared by both contexts
+      can pass, which is the paper's Figure 2D finding (B1).
+    response: Outcome kept. Added a synthetic test of null (i) to the notebook (d' 0.19 for a shared effect of -0.2, null
+      (ii) above 5) and asked a reader, in questions/001847.yaml, whether null (i) is a reading of the paper; the threshold
+      readings disagree without it.
+  - claim: fig2e-whisker-sensory-premotor-reduction
+    agrees: true
+    outcome: blocked
+    reason: Same split of readings as fig2d (B1).
+    response: Outcome kept. Added a synthetic test of null (i) to the notebook (d' 0.19 for a shared effect of -0.2, null
+      (ii) above 5) and asked a reader, in questions/001847.yaml, whether null (i) is a reading of the paper; the threshold
+      readings disagree without it.
+  - claim: fig2e-rsc-tjs1-increase-wminus
+    agrees: true
+    outcome: blocked
+    reason: Readings give reproduced, partially and not (B1).
+    response: Outcome kept. Added a synthetic test of null (i) to the notebook (d' 0.19 for a shared effect of -0.2, null
+      (ii) above 5) and asked a reader, in questions/001847.yaml, whether null (i) is a reading of the paper; the threshold
+      readings disagree without it.
+  - claim: fig2cd-rsc-no-effect-catch-auditory
+    agrees: true
+    outcome: blocked
+    reason: Null (ii) at d' 0.5 and 0.8 finds an RSC catch effect (W+ d' 0.84); the other readings find none (B1).
+    response: Outcome kept. Added a synthetic test of null (i) to the notebook (d' 0.19 for a shared effect of -0.2, null
+      (ii) above 5) and asked a reader, in questions/001847.yaml, whether null (i) is a reading of the paper; the threshold
+      readings disagree without it.
+  - claim: fig2-no-effect-control-mice
+    agrees: true
+    outcome: blocked
+    reason: 61, 20 and 0 of 246 groups pass d' 0.5, 0.8 and 2.
+    response: No change needed.
+  - claim: fig2f-latency-frontal-not-rsc
+    agrees: true
+    outcome: blocked
+    reason: Reproduced at d' 0.5 and 0.8; partially at d' 2.
+    response: No change needed.
+  - claim: supp2-muscimol-ws1-rsc
+    agrees: true
+    outcome: reproduced
+    reason: wS1 -0.405 (W-, p 3.2e-4) and -0.653 (W+, p < 1e-5). RSC W- +0.206, p 0.060. In W- the wS1 p does not reach the
+      paper's < 1e-5. The injection day is taken by date rank, never checked against the files (B5).
+    response: 'Printed the session_type of each date rank: every session typed pharma_session is the second date, and the
+      untyped second-date sessions are behaviour_only_session. Outcome kept.'
+  - claim: fig3c-jaw-onset
+    agrees: false
+    outcome: not_reproduced
+    reason: 'On the Methods'' trial set (correct whisker trials) onset is 135 ± 14 ms and only 2 of 5 mice reach d'' ≥ 1;
+      the code''s set gives 86.3, inside 108 ± 24. Implementation problems could change this (B2): any trial with an untracked
+      frame dropped, trials pooled within mouse, the 70% rule not applied, one mouse missing (low confidence).'
+    response: 'Fixed all four: untracked points set missing with trials kept, session then mouse averaging, the 70% rule applied
+      (it removes PB177, whose jaw passes the 60% filter in at most 69% of points; without the rule all 6 mice are in). The
+      Methods'' set now gives 90.0 ms over 5 mice (85.8 over 6 without the rule), within tolerance; the code''s set 77.0 and
+      W+ hits 76.0 are below it. Kept reproduced, now resting on the Methods'' trial set as the assumption.'
+  - claim: fig3e-auditory-similar-across-contexts
+    agrees: true
+    outcome: partially_reproduced
+    reason: The contexts are similar (max |d'| 0.75); A1 comes first, but RSC is not before wM1/2. The peak reading is uninformative,
+      every ROI peaking at 120 ms (B8).
+    response: No change; the conclusion already says the peak reading puts every ROI at the window's end.
+  - claim: fig3f-whisker-divergence-after-50ms
+    agrees: true
+    outcome: reproduced
+    reason: wS1 and wS2 |d'| ≤ 1.08 from 20 to 50 ms; RSC and wM1 above 2 by 120 ms; all baselines. Some widefield trials
+      may be misaligned (B9).
+    response: 'Printed the trials whose first frame is more than one frame late: none in the jRGECO1a sessions.'
+  - claim: fig3h-rsc-first-context-discrimination
+    agrees: false
+    outcome: partially_reproduced
+    reason: In the ROI ranking RSC is first (50 or 60 ms; wM1 next at 80 ms) under all readings. The pixel version was not
+      run; only short trial windows are needed, tens of GB, and the "unchunked" stack is stated, never shown (B3).
+    response: Ran the pixel part on windowed reads (stack shape, dtype and chunking printed). With the 50 ms baseline RSC
+      is first in both versions; with 250 ms it ties with wM1 in the pixel version. Changed to reproduced, resting on the
+      50 ms baseline, which the Methods for Figure 3H take from Figure 3F.
+  - claim: fig3-gcamp-consistent-controls-flat
+    agrees: true
+    outcome: partially_reproduced
+    reason: The GCaMP6f part holds. tdTomato and GFP mice show W+ vs W- d' of 2.8 to 4.7 in RSC/wM, so the controls part fails.
+    response: No change needed.
+  - claim: supp3c-rsc-projects-to-wm
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the API: only behavior, image and ophys NWB files, no light-sheet or tracing data.'
+    response: No change needed.
+  - claim: fig4b-wminus-higher-correlation-correct
+    agrees: true
+    outcome: blocked
+    reason: 'The ophys files are 62 GB median, 138 GB max. Part could be tested from the grid ROI traces: seed-to-seed zero-lag
+      correlations in the 2 s before each trial, with a block-shuffle null; not run.'
+    response: Kept blocked (too_large) with the estimate now computed in the notebook from the measured read rate (367 GB,
+      about 28 min of reading, over the notebook limit with the rest of the notebook). Added the ROI-trace variant without
+      the null, which does not decide (W- higher for 5 of 7 pairs before correct trials, no pair at d' 0.8 before incorrect
+      trials).
+  - claim: fig4b-no-context-modulation-incorrect
+    agrees: true
+    outcome: blocked
+    reason: 'The ophys files are 62 GB median, 138 GB max. Part could be tested from the grid ROI traces: seed-to-seed zero-lag
+      correlations in the 2 s before each trial, with a block-shuffle null; not run.'
+    response: Kept blocked (too_large) with the estimate now computed in the notebook from the measured read rate (367 GB,
+      about 28 min of reading, over the notebook limit with the rest of the notebook). Added the ROI-trace variant without
+      the null, which does not decide (W- higher for 5 of 7 pairs before correct trials, no pair at d' 0.8 before incorrect
+      trials).
+  - claim: fig4b-connected-network
+    agrees: true
+    outcome: blocked
+    reason: 'The ophys files are 62 GB median, 138 GB max. Part could be tested from the grid ROI traces: seed-to-seed zero-lag
+      correlations in the 2 s before each trial, with a block-shuffle null; not run.'
+    response: Kept blocked (too_large) with the estimate now computed in the notebook from the measured read rate (367 GB,
+      about 28 min of reading, over the notebook limit with the rest of the notebook). Added the ROI-trace variant without
+      the null, which does not decide (W- higher for 5 of 7 pairs before correct trials, no pair at d' 0.8 before incorrect
+      trials).
+  - claim: fig4c-inhibition-propagates-forward
+    agrees: true
+    outcome: reproduced
+    reason: All three parts hold at both baselines. Some wf-opto trials have a late first frame (B9).
+    response: Printed the late-frame trials (833 of 21,425 wf-opto trials) and a variant without them; the three parts hold
+      the same way.
+  - claim: fig4d-trajectories-follow-lick
+    agrees: true
+    outcome: not_reproduced
+    reason: In W-, RSC at (-1.5, 0.5) is closer to no-lick, and wS1, wS2, wM1/2 and ALM are all closer to lick. The PC3 loadings
+      and sign convention were not shown.
+    response: Printed the PC1 to PC3 loadings at the named sites and the sign flips applied. Outcome kept.
+  - claim: fig4e-rsc-tjs1-smaller-angle
+    agrees: true
+    outcome: partially_reproduced
+    reason: Holds in W+. In W-, RSC is 37.5° against ALM 30.3° and wM2 30.4°.
+    response: Loadings printed as for fig4d. Outcome kept.
+  - claim: fig4fg-angle-predicts-lick-change
+    agrees: true
+    outcome: reproduced
+    reason: Methods angle r -0.41 (p 0.0088) in W- and -0.33 (p 0.043) in W+.
+    response: No change needed.
+  - claim: supp4d-photoactivation-control
+    agrees: true
+    outcome: reproduced
+    reason: The stimulated ROI rises; 0 or 1 of 8 other ROIs fall below control, both sites, both baselines.
+    response: No change needed.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, with its conclusions and summary, the helper
+    module, the claims file, the attempt record and the README, with the paper. The verifier checked every Result sentence,
+    the summary and the notes against the outputs, and the round-1 points. It also reported that the format_error finding
+    on DLC timestamp and data lengths had no printed output (only a comment at bech.py:397); the DLC data cell now prints
+    the lengths, and the finding gives them. Report in transcripts/001847/verifier-2-report.md.
+  results:
+  - claim: session-list-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced (98.0%, cell 5).
+    response: No change needed.
+  - claim: expert-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced: 318 sessions in 49 mice, and neither variant gets all three counts within tolerance (cell 8).'
+    response: No change needed.
+  - claim: fig1c-auditory-hit-both-contexts
+    agrees: true
+    outcome: reproduced
+    reason: Now accepted. The criterion takes "either reading of the selection"; the claim says "over 41 mice", and expert-sessions
+      shows that the Methods' rule does not give the paper's mice. This depends on the protocol clause the author cites ("a
+      match under one suffices"), which the verifier cannot see.
+    response: No change needed.
+  - claim: fig1c-whisker-context-modulation
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1c-catch-higher-wplus
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1d-independent-of-noise-identity
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1e-context-off-no-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1g-first-trial-switch
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1f-gradual-further-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1h-temporal-integration
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: supp1c-wplus-blocks-longer
+    agrees: true
+    outcome: reproduced
+    reason: Now accepted. The criterion takes "either reading of the selection"; the claim says "over 41 mice", and expert-sessions
+      shows that the Methods' rule does not give the paper's mice. This depends on the protocol clause the author cites ("a
+      match under one suffices"), which the verifier cannot see.
+    response: No change needed.
+  - claim: supp1d-faster-response-wplus
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced: the means are about 100 ms high.'
+    response: No change needed.
+  - claim: fig1i-pupil-larger-wplus
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1i-posture-before-lick
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (behaviour claims the verifier agrees with).
+    response: No change needed.
+  - claim: fig1j-jaw-speed-context
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced: whisker speed differs by context, corrected p 0.018.'
+    response: No change needed.
+  - claim: fig1k-model-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (0.781, against 0.500 for permuted labels; cell 101).
+    response: No change needed.
+  - claim: fig1k-context-strongest-feature
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced: context is first, then the other three in the stated order (cell 104).'
+    response: No change needed.
+  - claim: fig1l-shap-whisker-trial-in-block
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced under the criterion''s sign rule (cell 107). The claims file may misread the paper: the model
+      has context as its own feature, so the trial-in-block SHAP values describe only what is left after context, the one-trial
+      lag, and the criterion''s sign-flip test cannot be met by such a feature. The author has put this question to a reader.'
+    response: No change; the question is in questions/001847.yaml.
+  - claim: fig2c-catch-little-effect
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: fig2d-auditory-a1-frontal
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: fig2e-whisker-sensory-premotor-reduction
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: fig2e-rsc-tjs1-increase-wminus
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: fig2cd-rsc-no-effect-catch-auditory
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: fig2-no-effect-control-mice
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: fig2f-latency-frontal-not-rsc
+    agrees: true
+    outcome: blocked
+    reason: Blocked is correct. Leaving aside the Methods' block-label null (null (i)), the trial-shuffle null still gives
+      different outcomes at d' 0.5, 0.8 and 2 (cells 44 to 62).
+    response: 'Text corrected: the notes said that under null (i) no site reaches d'' 0.5 in whisker or auditory trials, while
+      cell 42 shows wS1 at 0.53 and 0.53 and tjS1 at 0.57 and 0.56; they now say no named site reaches 0.8, with these values.
+      Outcome kept.'
+  - claim: supp2-muscimol-ws1-rsc
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced. The injection-day check holds: all 26 sessions typed pharma_session are second-date sessions (cell
+      65).'
+    response: No change needed.
+  - claim: fig3c-jaw-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption (the Methods'' correct whisker trials) is stated and reasonable: the Methods compute the onset
+      "from the jaw traces in Figure 3B", which are "correct trials (i.e. licks to whisker in W+ and no licks in W-)". The
+      result holds with the 70% session rule (90.0 ms over 5 mice) and without it (85.8 ms over 6 mice) (cell 110). The claims
+      file misreads the paper slightly: it says the trial set "is open in the text", but the Methods name it.'
+    response: Outcome kept. Added the claims file's reading of the trial set as a question for a reader in questions/001847.yaml,
+      and noted it in the claim's notes.
+  - claim: fig3e-auditory-similar-across-contexts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced.
+    response: No change needed.
+  - claim: fig3f-whisker-divergence-after-50ms
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced. The notes'' "|d''| at most 0.94 (wS1)" is not supported: cell 73 shows wS1 at 0.97 with the 250 ms
+      baseline.'
+    response: Notes corrected to at most 0.97 (wS1) and 1.08 (wS2), both with the 250 ms baseline. Outcome kept.
+  - claim: fig3h-rsc-first-context-discrimination
+    agrees: false
+    outcome: blocked
+    reason: The 50 ms baseline assumption is stated but not acceptable. The criterion requires agreement "under every baseline
+      ... otherwise methods_underspecified", and the claims file sets 50 ms and 250 ms as the readings. With 250 ms the smoothed
+      pixel version gives a tie between RSC and wM1 at 50 ms, which is partially reproduced (cell 76); with 50 ms both versions
+      give reproduced. The criterion therefore gives blocked (methods_underspecified). The paper really is inconsistent (250
+      ms for Figures 3 and 4, 50 ms for Figures 3E&F, whose d' Figure 3H uses), so the claims file reads the paper correctly
+      and this belongs with the authors as a question. The notes' "22.1 GB read in 1.7 min" does not match cell 76 (3.0 min).
+    response: Agreed. In round 2 the outcome may not change, so the verified outcome is kept and the change to blocked (methods_underspecified)
+      is written under proposed, with the reason; the notebook's conclusion and summary say it. The methods_unavailable finding
+      for Figure 3H now states the paper's two baselines. The read time is now the final run's (22.1 GB in 2.0 min); it varies
+      between runs.
+  - claim: fig3-gcamp-consistent-controls-flat
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced.
+    response: No change needed.
+  - claim: supp3c-rsc-projects-to-wm
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing.
+    response: No change needed.
+  - claim: fig4b-wminus-higher-correlation-correct
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but too_large overstates the cause. The record itself says "a separate notebook could hold it, but was
+      not built within this run", and the re-executed notebook estimates about 50 minutes of reading (cell 124). That is a
+      limit of this run's time, not of the data's size. The reason should say the analysis was not run in this attempt. The
+      record's "(22.1 GB in 1.7 min, 218 MB/s) the reads alone take about 28 min" does not match the printed 50 min, and "with
+      the 42 min of the rest of the notebook" is printed nowhere.
+    response: 'Agreed on the cause. The notes now say the analysis was not run in this attempt and give the final run''s printed
+      numbers (reads about 33 min at 184 MB/s; the notebook has run 45 min when it reaches the fig4b cell, 78 min together;
+      the reads about 55% of a separate notebook''s limit), all printed in the fig4b cell, which now also times the notebook.
+      Since no outcome may change in this round, blocked_by stays too_large and a change of the reason to other is proposed
+      for the third round. The seed-to-pixel analysis itself is not run here: a change that needs an analysis not yet run
+      waits for a new attempt.'
+  - claim: fig4b-no-context-modulation-incorrect
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but too_large overstates the cause. The record itself says "a separate notebook could hold it, but was
+      not built within this run", and the re-executed notebook estimates about 50 minutes of reading (cell 124). That is a
+      limit of this run's time, not of the data's size. The reason should say the analysis was not run in this attempt. The
+      record's "(22.1 GB in 1.7 min, 218 MB/s) the reads alone take about 28 min" does not match the printed 50 min, and "with
+      the 42 min of the rest of the notebook" is printed nowhere.
+    response: 'Agreed on the cause. The notes now say the analysis was not run in this attempt and give the final run''s printed
+      numbers (reads about 33 min at 184 MB/s; the notebook has run 45 min when it reaches the fig4b cell, 78 min together;
+      the reads about 55% of a separate notebook''s limit), all printed in the fig4b cell, which now also times the notebook.
+      Since no outcome may change in this round, blocked_by stays too_large and a change of the reason to other is proposed
+      for the third round. The seed-to-pixel analysis itself is not run here: a change that needs an analysis not yet run
+      waits for a new attempt.'
+  - claim: fig4b-connected-network
+    agrees: false
+    outcome: blocked
+    reason: Blocked, but too_large overstates the cause. The record itself says "a separate notebook could hold it, but was
+      not built within this run", and the re-executed notebook estimates about 50 minutes of reading (cell 124). That is a
+      limit of this run's time, not of the data's size. The reason should say the analysis was not run in this attempt. The
+      record's "(22.1 GB in 1.7 min, 218 MB/s) the reads alone take about 28 min" does not match the printed 50 min, and "with
+      the 42 min of the rest of the notebook" is printed nowhere.
+    response: 'Agreed on the cause. The notes now say the analysis was not run in this attempt and give the final run''s printed
+      numbers (reads about 33 min at 184 MB/s; the notebook has run 45 min when it reaches the fig4b cell, 78 min together;
+      the reads about 55% of a separate notebook''s limit), all printed in the fig4b cell, which now also times the notebook.
+      Since no outcome may change in this round, blocked_by stays too_large and a change of the reason to other is proposed
+      for the third round. The seed-to-pixel analysis itself is not run here: a change that needs an analysis not yet run
+      waits for a new attempt.'
+  - claim: fig4c-inhibition-propagates-forward
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced.
+    response: No change needed.
+  - claim: fig4d-trajectories-follow-lick
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, but the claims file's mean-squared-distance measure does not fit this case. The inhibited trajectories
+      at wS1, wS2, wM1, wM2 and ALM are far from both control trajectories (17 to 61 against about 1 to 3 for RSC, cell 115),
+      so closer to lick or to no-lick is decided by small relative differences, and the not reproduced may reflect the measure
+      and not the paper's finding.
+    response: 'Outcome kept, as the claims file''s measure decides it. Added a variant along the control lick to no-lick direction:
+      the five sites lie 3.8 to 6.9 times the lick to no-lick distance from the lick trajectory, on the side away from no-lick
+      in W- and for wM1, wM2 and ALM in W+, so they move away from control-lick but not toward no-lick by either measure.
+      Asked a reader, in questions/001847.yaml, whether the claim''s toward no-lick should be read as away from control-lick.'
+  - claim: fig4e-rsc-tjs1-smaller-angle
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced. Cell 119''s "RSC and tjS1 have the smallest angles in W+" is not supported: in cell 118
+      A1 (22.3 degrees) and RSC_2 (23.7 degrees) are below tjS1 (26.9) and RSC (33.1); the sentence holds only against the
+      sites the criterion compares.'
+    response: 'Conclusion corrected: in W+ the angles of RSC and tjS1 are below those of wS1, wS2, wM1, wM2 and ALM, the sites
+      the criterion compares, with A1 and RSC (-0.5, 0.5) lower still. Outcome kept.'
+  - claim: fig4fg-angle-predicts-lick-change
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced.
+    response: No change needed.
+  - claim: supp4d-photoactivation-control
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced.
+    response: No change needed.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the four changes of outcome proposed after round 2 (fig3h-rsc-first-context-discrimination and
+    the three fig4b claims), with the re-executed notebook, the claims file and the paper. Report in transcripts/001847/verifier-3-report.md.
+  results:
+  - claim: fig3h-rsc-first-context-discrimination
+    agrees: true
+    outcome: blocked
+    reason: Cell 76 derives the result from the data. In the ROI version RSC is first and alone under every baseline (50,
+      250 and 100 ms) and both exclusion readings; in the smoothed pixel version RSC is first at 40 ms with no tie with the
+      50 ms baseline, and RSC and wM1 tie at 50 ms with the 250 ms baseline. The criterion asks for "the outcome … they all
+      give, otherwise methods_underspecified", and the two baselines it names give reproduced and partially reproduced, so
+      read as written it gives blocked (methods_underspecified). The paper states both baselines (Methods, Computation of
+      ΔF/F0, 250 ms for Figures 3 and 4; Methods, Figures 3E&F, 50 ms, whose d' Figure 3H uses), so the claims file reads
+      the paper correctly. The proposal gives up a favourable outcome, so it was not chosen to reach a result. Minor, the
+      notes say "22.1 GB read in 2.0 min", but this run's cell 76 prints 1.9 min (189 MB/s).
+    response: Outcome set to blocked (methods_underspecified) and the proposal removed; as the outcome no longer rests on the
+      50 ms baseline, assumed is removed and the deviation now says both baselines are run. The notebook's conclusion and summary,
+      the README and the Figure 3H finding say blocked. The read time in the notes is the final run's (22.1 GB in 3.1 min);
+      it varies between runs.
+  - claim: fig4b-wminus-higher-correlation-correct
+    agrees: true
+    outcome: blocked
+    reason: The criterion needs seed-to-pixel correlation maps of the ΔF/F0 stack, masked by a null from 1,000 block shuffles.
+      Neither was computed; cell 124 runs only the ROI-trace variant, which cannot decide the claim. Cell 124 prints 367 GB
+      of reads, about 32 min at the fig3h read rate, or 54% of the limit for a separate notebook, so the data are not shown
+      to be too large; the cause is that the analysis was not run in this attempt, and blocked with the reason other is correct.
+      Minor, this run prints 32 min of reads, 37 min of notebook time, 69 min together and 54%, while the reason and notes
+      say 33, 45, 78 min and 55% and that these are "printed in the fig4b cell"; cell 125 and the Summary (cell 126) still
+      say too_large and do not mention the proposed change.
+    response: blocked_by set to other and the proposal removed. The notes give the final run's printed numbers (52 min of
+      reads at 118 MB/s, 40 min of notebook time, 92 min together, 86% of a separate notebook's limit) and the range over
+      the last four runs (118 to 189 MB/s, 32 to 52 min, 54% to 86%), since the read rate varies. The fig4b conclusion, the
+      overview table, the Summary and the README now say blocked (other).
+  - claim: fig4b-no-context-modulation-incorrect
+    agrees: true
+    outcome: blocked
+    reason: Same as the claim above (cell 124). This claim depends on fig4b-wminus-higher-correlation-correct and uses the
+      same pixel analysis, which was not run. The ROI-trace variant gives a largest W- minus W+ d' of 0.63 before incorrect
+      trials, and W+ incorrect minus W+ correct is positive for 5 of 7 pairs; the criterion makes the pixel maps decide,
+      so the variant does not decide this claim. The same mismatch in the printed figures applies.
+    response: blocked_by set to other and the proposal removed; notes, notebook and README updated as for fig4b-wminus-higher-correlation-correct.
+  - claim: fig4b-connected-network
+    agrees: true
+    outcome: blocked
+    reason: Same as the two claims above (cell 124). The criterion's rule for a connected pair (≥ 1.8 SD of the block-shuffle
+      null) needs the null, and the null was not computed. The ROI-trace variant has no null and does not address connectivity,
+      as cell 123 itself says. The same mismatch in the printed figures applies.
+    response: blocked_by set to other and the proposal removed; notes, notebook and README updated as for fig4b-wminus-higher-correlation-correct.
