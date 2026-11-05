@@ -22,7 +22,7 @@ reasoning and the differences from the paper's method.
 | Behavior (learning, anticipatory licking) | Learning not reproduced, licking reproduced |
 | Go/NoGo decoding (Figures 4D to 4J, S8) | Identity and any-p valence reproduced; three valence-timing claims not |
 | Differences growing over learning (Discussion) | Reproduced, resting on an assumption |
-| Tracked neurons (Figures 5, S10) | Three reproduced (one resting on an assumption), one partially, one blocked |
+| Tracked neurons (Figures 5, S10) | Four reproduced (one resting on an assumption), one partially |
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000785-daste-2025-01.yaml`](../../attempts/000785-daste-2025-01.yaml).
