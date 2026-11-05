@@ -12,7 +12,9 @@ the pinned version with remfile and h5py and read with pynwb; nothing is written
 
 Where the parameters come from:
 
-- Sampling rate 500 Hz: the files' `rate` and descriptions; the Methods give 500 or 1,000 Hz.
+- Sampling rate: 500 Hz for every trace file (the files' `rate` and descriptions), except
+  recordings 14 and 15 of the Fig. 4e-h file, which are at 1,000 Hz (their `rate` and
+  descriptions); the Methods give 500 or 1,000 Hz. The measures below take `fs` for those two.
 - Spike detection: peaks of the high-pass filtered soma trace above K robust standard deviations
   (1.4826 times the median absolute deviation), with K = 5 and K = 4 as the two readings of the
   claims' criterion (fig1d-light-intensity-spike-rate); the paper gives no detection method. The
@@ -44,7 +46,7 @@ from scipy import signal
 
 DANDISET_ID = "001791"
 DANDISET_VERSION = "0.260424.0313"
-FS = 500.0  # Hz, every trace file in the dandiset
+FS = 500.0  # Hz, every trace file except recordings 14 and 15 of the Fig. 4e-h file (1,000 Hz)
 API = "https://api.dandiarchive.org/api"
 
 # The copy read, by its role, and the identical twin deposited under another path.
@@ -151,11 +153,11 @@ def highpass(x, fc=10.0, fs=FS, order=2):
     return signal.filtfilt(b, a, np.asarray(x, float), axis=0)
 
 
-def detect_spikes(trace, k, fc=10.0, min_sep=2):
+def detect_spikes(trace, k, fc=10.0, min_sep_ms=4.0, fs=FS):
     """Frame indices of peaks of the high-pass filtered trace above k robust s.d."""
-    hp = highpass(trace, fc)
+    hp = highpass(trace, fc, fs)
     thr = k * robust_sd(hp)
-    idx, _ = signal.find_peaks(hp, height=thr, distance=min_sep)
+    idx, _ = signal.find_peaks(hp, height=thr, distance=max(1, frames(min_sep_ms, fs)))
     return idx
 
 
@@ -180,12 +182,13 @@ def sta(trace, idx, pre, post):
     return seg.mean(0), len(keep)
 
 
-def sta_delay_ms(soma, dend, idx, parabolic, half_window=5):
+def sta_delay_ms(soma, dend, idx, parabolic, half_window_ms=10.0, fs=FS):
     """Peak delay of the dendritic STA after the somatic STA peak (ms), both triggered off idx.
 
-    Peaks are searched within +/- half_window frames (10 ms) of the trigger frame.
+    Peaks are searched within +/- half_window_ms (10 ms) of the trigger frame.
     """
-    pre = post = 20
+    pre = post = frames(40, fs)
+    half_window = frames(half_window_ms, fs)
     ws, n = sta(soma, idx, pre, post)
     wd, _ = sta(dend, idx, pre, post)
     if ws is None:
@@ -193,17 +196,21 @@ def sta_delay_ms(soma, dend, idx, parabolic, half_window=5):
     lo, hi = pre - half_window, pre + half_window + 1
     i_s = lo + int(np.argmax(ws[lo:hi]))
     i_d = lo + int(np.argmax(wd[lo:hi]))
-    return (peak_time(wd, i_d, parabolic) - peak_time(ws, i_s, parabolic)) * 1000.0 / FS, n
+    return (peak_time(wd, i_d, parabolic) - peak_time(ws, i_s, parabolic)) * 1000.0 / fs, n
 
 
-def frames(ms):
-    return int(round(ms * FS / 1000.0))
+def frames(ms, fs=FS):
+    return int(round(ms * fs / 1000.0))
 
 
-def bap_amplitude(trace, spike, base_spike, win_ms):
-    """Peak of trace within 0..win_ms after `spike` minus the mean of the 5 ms before `base_spike`."""
-    w = frames(win_ms)
-    b = frames(5)
+def bap_amplitude(trace, spike, base_spike, win_ms, fs=FS):
+    """Peak of trace within 0..win_ms after `spike` minus the mean of the 5 ms before `base_spike`.
+
+    At 500 Hz, round(2.5) gives 2 frames for the 5 ms baseline (4 ms) and frames 0 to 2 for the
+    0 to 5 ms window; at 1,000 Hz 5 frames and frames 0 to 5.
+    """
+    w = frames(win_ms, fs)
+    b = frames(5, fs)
     if base_spike - b < 0 or spike + w >= len(trace):
         return np.nan
     return float(np.max(trace[spike:spike + w + 1]) - np.mean(trace[base_spike - b:base_spike]))
