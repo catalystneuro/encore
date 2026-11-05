@@ -1,0 +1,1155 @@
+# Claims for Talbot, Sparks, Dvorak, Curran, Alarcon & Fenton (2018), Neuron 97:684-697, on CRCNS
+# data set hc-16 (doi:10.6080/K01V5C44).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-05,
+# protocol as stated in docs/protocol.md (Reader), version pilot-13.
+#
+# Text read: the version of record with its supplemental information, as supplied under paper/
+# (PyMuPDF text of the journal PDF): Results, Discussion, figure legends, STAR Methods, and the
+# supplement (Figures S1 to S6, Tables S1 and S2). The PDF pages could not be rendered here, so no
+# figure was read from the image. The extracted text prints some signs as other glyphs. "Dt" is
+# delta t, "t" before a value in the Kendall passages is tau, "jDIposj" is |delta Ipos|, "3" between
+# factors is "x", "hp 2" is partial eta squared, and "10�17" is 10 to the power -17. Quotes keep these
+# glyphs as printed; p-values printed as powers of ten were confirmed by reading, as the quote
+# checker cannot find them. The second paper under paper/ (Dvorak et al. 2018, PLoS Biol) also
+# uses the data set; no claim comes from it, nor from the data set's description.
+#
+# Code read (the Key Resources Table links three FentonLab repositories, for Figures 3, 4, 5 and
+# S5). SpikeField, commit 4dfbc35 (MATLAB, getLFPphase.m and getWavelets.m): spike phases from
+# complex Morlet wavelets (wavelet factor 8) at 100 log-spaced frequencies from 2 to 250 Hz on LFP
+# sampled at 2 kHz, the wire of each tetrode with the least artifact, spikes in artifact periods
+# dropped, cluster 0 dropped; no speed filter. CorrelateBPFSpikeTrainEpisodes, commit 150c2df (C):
+# Kendall tau-b (ties corrected) between spike counts of all cell pairs (cluster 0 dropped) in bins
+# of a chosen size, in consecutive episodes of 300 s by default from the start of the recording; by
+# default a pair of bins enters tau only when, in both bins, the mouse was in a pixel where each
+# cell's rate is at or above the cell's mean rate (option KRtThr, default 100% of the mean rate);
+# rate maps of 32 x 32 pixels, unsmoothed; samples without a tracked position dropped; no speed
+# filter; PCorr vectors and PCo are not computed in it. PositionalInfo, commit 9f186c5 (C):
+# momentary Ipos for the observed spike count i at the current pixel x, p(i|x) ln(p(i|x)/p(i)), one
+# value per position sample of the input file, on a 32 x 32 pixel map, pixels visited fewer than 10
+# times left undefined; natural log, and sign kept unless option -A; delta Ipos, the ensemble sums
+# and the correlations are not computed in it.
+#
+# Data the paper used. Ex vivo slices (Figure 1, S1): male WT (n = 22) and Fmr1-null (n = 26)
+# mice, 3-4 months, naive (home cage), exposed or trained in active place avoidance; fEPSPs at CA1
+# stratum radiatum. In vivo (Figures 2 to 6, S2 to S6): male WT (12) and Fmr1-null (9) mice, 4-6
+# months, tetrodes in dorsal CA1 (Axona recording, 8-tetrode Flexdrive or 4-tetrode Versadrive),
+# position tracked at 30 frames/s from head LEDs (room frame, and arena frame during rotation).
+# Environments: small box (28.5 cm square), large box (50 cm square), a 10 cm wide ring (40 cm
+# outer diameter), and a 40 cm circular arena, stationary or rotating at 0.75 rpm; recordings
+# during quiet wakefulness and sleep for a subset. 1,115 clusters (499 WT, 616 Fmr1-null); 226 WT
+# and 334 Fmr1-null well-isolated cells. Table S2 lists, per mouse (M1 to M37 and pie1 to pie6),
+# the date, environment (big box, small box, ring, stationary arena 1 and 2, rotating arena),
+# tetrode and cell counts; its extracted text lists 11 WT and 9 Fmr1-null mice. Nine mice (5 WT, 4
+# Fmr1-null) were later trained in active place avoidance (Figure 6), with shock zone entries per
+# session as the measure.
+#
+# The CRCNS data set, by its title and description, holds CA1 spike trains with position (TS files:
+# spike times and x, y per position sample), from WT and Fmr1-null mice, in directories by
+# environment (small and large box, ring, stationary and rotating circular arena) and genotype. Its
+# description lists no LFP, no waveforms, no slice recordings and no avoidance sessions. Claims that
+# need those are kept as the paper's findings; the author decides what the data set can test.
+#
+# Methods shared by several claims, from the STAR Methods unless said otherwise.
+# Cells. Units with IsoIBG and IsoINN of at least 4 bits; pyramidal cells have waveforms longer than
+# 250 (printed "ms", read as microseconds), rate below 2 AP/s and bursts (peak ISI below 10 ms);
+# interneurons have short waveforms and rate above 2 AP/s. Place cells have overall rate 0.1-2
+# AP/s, spatial coherence (z) above 0.4 and information content above 0.4 bits/spike; the other
+# pyramidal cells are non-spatial pyramidal cells. Rate maps have 1.25 x 1.25 cm pixels (spikes
+# over time in each pixel). The session used to classify a cell ("standard recordings") is open:
+# the readings are its first stationary-environment session, or each session classified on its
+# own. Map smoothing and a minimum occupancy are not stated; unsmoothed maps (the Methods stress
+# measures free of smoothing) and pixels with any occupancy are used, a standard choice.
+# Passes. A pass is a 5 s interval in which the expected count exp (the sum over visited pixels of
+# time spent times the session's time-averaged rate there) is at least the cell's average rate;
+# z = (obs - exp)/sqrt(exp). How the 5 s intervals are placed is not stated; consecutive,
+# non-overlapping intervals from the start of the session are used (the reading the text gives,
+# "each 5 s interval"), and a 1 s sliding step is shown as a variant. For a pair, passes are the
+# intervals that qualify for both cells.
+# Kendall. Tau between spike-count series of a cell pair at 25, 40, 125, 250 ms, 1 s and 5 s.
+# Two readings of which bins enter, both to be run: (K1) every bin of the session, as the Results
+# call the measure "location-independent"; (K2) the code's default, only bin pairs in which the
+# mouse was in an active pixel (rate at least the cell's mean) of both cells. Tau-b, as in the code.
+# Correlations are compared on Fisher z values where a t test is used (Quantification).
+# Statistics. Two-group comparisons by t test, with Mann-Whitney U when a sample is not normal by
+# Shapiro-Wilk; proportions by z test; ANOVA with Tukey post hoc; significance at p < 0.05.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-16
+  doi: 10.6080/K01V5C44
+paper: doi:10.1016/j.neuron.2017.12.043
+claims:
+- id: fig1ab-baseline-transmission
+  statement: Baseline CA3-CA1 synaptic responses do not differ between naive WT and Fmr1-null
+    slices; training enhances them in both genotypes, and Fmr1-null mice, unlike WT, show the
+    enhancement after control exposure as well, with responses almost twice those of naive mice.
+  source: Results, Exaggerated Baseline and Learning-Induced Changes, paragraph 1; Figure 1A and 1B
+  quote: Synaptic responses from the exposed Fmr1-null group were almost twice as large as the
+    task-naive Fmr1-null and the WT groups (Figure 1B)
+  statistics:
+  - about: training effect, area under the stimulus-response curve
+    test: two-way genotype x training ANOVA
+    statistic: F(2, 42) = 25.7
+    p: 1.0e-8
+  - about: genotype x training interaction
+    test: two-way genotype x training ANOVA
+    statistic: F(1, 42) = 3.49
+    p: 0.04
+  criterion: As in the Figure 1 legend, a two-way genotype x training (naive, exposed, trained)
+    ANOVA on the area under each slice's stimulus-response curve (fEPSP slope against stimulus
+    voltage, 0 to 40 V, Methods), with Tukey post hoc tests. Reproduced when the training effect and
+    the interaction have p < 0.05 and the Tukey tests give Fmr1-null exposed above WT exposed and
+    above both naive groups, with naive WT and naive Fmr1-null not different. Whether the unit is
+    the slice or the mouse is not stated; the slice is used, as the Methods describe one slice
+    recording per stimulus-response curve.
+- id: fig1cd-potentiation
+  statement: Post-tetanic and early potentiation after 100 Hz stimulation are greater in exposed
+    Fmr1-null than in exposed WT mice and smaller in trained mice of both genotypes; late
+    potentiation does not differ between genotypes but is weakest in the trained groups.
+  source: Figure 1C and 1D legend; Results, Exaggerated Baseline and Learning-Induced Changes,
+    paragraph 1
+  quote: The de novo protein-synthesis-independent PTP and early-potentiation changes were greater
+    in exposed Fmr1-null mice than in exposed WT mice ... De novo protein-synthesis-dependent late
+    potentiation was not different between the genotypes
+  statistics:
+  - about: PTP, exposed Fmr1-null against exposed WT
+    test: two-way genotype x training ANOVA, genotype effect
+    statistic: t(42) = 2.79
+    p: 0.008
+  - about: early potentiation, exposed Fmr1-null against exposed WT
+    test: two-way genotype x training ANOVA, genotype effect
+    statistic: t(42) = 3.62
+    p: 0.0008
+  - about: PTP, training effect
+    statistic: F(2, 42) = 13.72
+    p: 1.0e-5
+  - about: early potentiation, training effect
+    statistic: F(2, 42) = 14.42
+    p: 1.0e-5
+  - about: late potentiation, genotype
+    statistic: t(42) = 0.84
+    p: 0.4
+  - about: late potentiation, training effect
+    statistic: F(2, 42) = 19.36
+    p: 1.0e-6
+  criterion: Phases from the Methods, as slope relative to the 10 min baseline before HFS, PTP the
+    mean of the first 8 min, early 10-20 min, late 50-60 min after HFS. A two-way genotype x
+    training ANOVA per phase, as the legend does. Reproduced when PTP and early potentiation show
+    exposed Fmr1-null above exposed WT at p < 0.05 and a training effect at p < 0.05 with trained
+    lowest, and late potentiation shows no genotype effect (p >= 0.05) and a training effect at p <
+    0.05.
+- id: figs1-avoidance-equal
+  statement: Fmr1-null mice learn the active place avoidance task as well as WT mice (the slice
+    cohort).
+  source: Results, Exaggerated Baseline and Learning-Induced Changes, paragraph 1; Figure S1
+  quote: Fmr1-null mice performed as well as WT mice (Figure S1) in the hippocampus- and
+    LTP-dependent active place avoidance task
+  criterion: A claim of absence for which the paper prints no test. The test for the same measure
+    in Figure 6D (a genotype x session repeated-measures ANOVA on entries per session) is used,
+    over the trained mice's Pretrain, Train 1-3 and Retest sessions. Reproduced when the genotype
+    effect has p >= 0.05; the effect size is given either way.
+- id: unit-and-cell-counts
+  statement: Of 1,115 clusters, 499 came from 12 WT and 616 from 9 Fmr1-null mice; 226 WT and 334
+    Fmr1-null well-isolated cells formed the data set.
+  source: Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1; Table S2
+  quote: Of the 1,115 single-unit waveform clusters that were identified, 499 were recorded from 12
+    WT mice and 616 were recorded from 9 Fmr1-null mice (Table S2) ... 226 WT and 334 Fmr1-null
+    presumptive cells comprised the dataset
+  expected:
+  - quantity: WT clusters
+    value: 499
+    tolerance: 49.9
+  - quantity: Fmr1-null clusters
+    value: 616
+    tolerance: 61.6
+  - quantity: WT cells passing isolation criteria
+    value: 226
+    tolerance: 22.6
+  - quantity: Fmr1-null cells passing isolation criteria
+    value: 334
+    tolerance: 33.4
+  - quantity: WT mice
+    value: 12
+    tolerance: 0
+  - quantity: Fmr1-null mice
+    value: 9
+    tolerance: 0
+  criterion: Mice are counted exactly. The extracted Table S2 lists 11 WT mice, so 11 and 12 are
+    both readings of the WT count. Whether a cell recorded in several sessions is counted once or
+    per session is open; both counts are given and either may match.
+- id: interneuron-proportion
+  statement: A lower proportion of the well-isolated cells is classified as interneurons in WT (28,
+    12.4%) than in Fmr1-null mice (98, 29.3%).
+  source: Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1
+  quote: A lower proportion of these were classified as interneurons in WT mice (28, 12.4%) than
+    Fmr1-null mice (98, 29.3%; test of proportions z = 9.4, p = 10�17)
+  statistics:
+  - test: test of proportions
+    statistic: z = 9.4
+    p: 1.0e-17
+    n: 226 WT and 334 Fmr1-null cells
+  expected:
+  - quantity: WT interneuron percentage
+    value: 12.4
+    tolerance: 1.24
+    unit: '%'
+  - quantity: Fmr1-null interneuron percentage
+    value: 29.3
+    tolerance: 2.93
+    unit: '%'
+  criterion: Classification as in the Methods (waveform duration, rate, bursting). Reproduced when
+    both percentages are within tolerance and a two-proportion z test gives p < 0.05 with WT lower.
+    The printed z cannot be recovered from the printed counts by a pooled two-proportion z test,
+    which gives about 4.7, so z itself is not a target. Waveform duration needs waveforms; when the
+    data hold none, the classification by rate and bursting alone is a variant, and the claim
+    rests on it.
+- id: place-cell-proportion
+  statement: Place cells are less prevalent in Fmr1-null mice (141, 42.2%) than in WT mice (108,
+    47.8%).
+  source: Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1
+  quote: when the putative principal cells were classified as place cells (WT n = 108 [47.8%], Fmr1
+    null n = 141 [42.2%]), the prevalence was lower in the Fmr1-null mice (test of proportions z =
+    2.04, p = 0.02)
+  statistics:
+  - test: test of proportions
+    statistic: z = 2.04
+    p: 0.02
+  expected:
+  - quantity: WT place cells
+    value: 108
+    tolerance: 10.8
+  - quantity: Fmr1-null place cells
+    value: 141
+    tolerance: 14.1
+  - quantity: WT place cell percentage
+    value: 47.8
+    tolerance: 4.78
+    unit: '%'
+  - quantity: Fmr1-null place cell percentage
+    value: 42.2
+    tolerance: 4.22
+    unit: '%'
+  criterion: Place cell criteria from the Methods (rate 0.1-2 AP/s, coherence z above 0.4,
+    information above 0.4 bits/spike). The denominator is open. The printed percentages are 108/226
+    and 141/334, all well-isolated cells; the sentence names the principal cells (198 WT, 236
+    Fmr1-null), which would give 54.5% and 59.7%. Both readings are run, and the claim holds under
+    one if the counts and percentages are within tolerance and a two-proportion z test (one-sided,
+    as the printed p suggests, and two-sided as a variant) gives p < 0.05 with Fmr1-null lower. The
+    printed z cannot be recovered from the printed counts by a pooled test (about 1.3 for the
+    first reading), so z is not a target.
+- id: figs3-nonspatial-properties-similar
+  statement: Waveform width, burst probability, interspike interval and overall firing rate do not
+    differ between genotypes in any cell class.
+  source: Figure S3C to S3F; Results, Non-spatial and Spatial Single-Cell Discharge Features,
+    paragraph 1
+  quote: The fundamental extracellular waveform and non-spatial discharge characteristics of the
+    classified cells were indistinguishable between the genotypes
+  statistics:
+  - about: action potential width, genotype
+    test: two-way genotype x cell class ANOVA
+    statistic: F(1, 386) = 0.97
+    p: 0.32
+  - about: burst probability, genotype
+    test: two-way genotype x cell class ANOVA
+    statistic: F(1, 386) = 0.69
+    p: 0.41
+  - about: interspike interval, genotype
+    test: two-way genotype x cell class ANOVA
+    statistic: F(1, 386) = 2.78
+    p: 0.1
+  - about: overall firing rate, genotype
+    test: two-way genotype x cell class ANOVA
+    statistic: F(1, 386) = 0.32
+    p: 0.57
+  criterion: A claim of absence on the paper's test, a two-way genotype x cell class ANOVA per
+    measure (Figure S3 legend). Burst probability is the fraction of interspike intervals below 10
+    ms; width is at 30% of the peak; the interspike interval measure (mean or median per cell) is
+    not stated, the mean is used and the median shown as a variant. Reproduced when no genotype
+    effect has p < 0.05; the effect sizes are given. Measures needing waveforms are left to the
+    author if the data hold none.
+- id: fig2-spatial-quality-similar
+  statement: In a fixed environment, spatial firing quality (coherence, proportion of active pixels,
+    information content, number of place fields, in-field rate) differs between place cells and
+    interneurons but not between genotypes.
+  source: Figure 2B to 2F; Results, Non-spatial and Spatial Single-Cell Discharge Features,
+    paragraph 1
+  quote: Spatial firing quality differs between place cells and interneurons, but not between
+    genotypes, as assessed by two-way genotype 3 cell class ANOVAs
+  statistics:
+  - about: spatial coherence, genotype
+    test: two-way genotype x cell class ANOVA
+    statistic: F(1, 340) = 0.60
+    p: 0.44
+  - about: proportion of active pixels, genotype
+    statistic: F(1, 340) = 3.7
+    p: 0.06
+  - about: information content, genotype
+    statistic: F(1, 340) = 3.6
+    p: 0.06
+  - about: number of place fields, genotype
+    statistic: F(1, 340) = 0.13
+    p: 0.72
+  - about: in-field firing rate, genotype
+    statistic: F(1, 340) = 0.24
+    p: 0.62
+  criterion: A claim of absence on the paper's test, a two-way genotype x cell class (place cell,
+    non-spatial pyramidal, interneuron) ANOVA per measure on cells recorded "in the box" (Figure 2
+    legend; 346 cells by the degrees of freedom, as in Table S1). Which box is open; the readings
+    are the large box, the small box, or both. A place field and the in-field rate are not defined
+    in the paper or the code linked for Figure 2 (there is none; a field routine in
+    CorrelateBPFSpikeTrainEpisodes takes contiguous pixels above a per-cell rate threshold, which
+    is not set there). The readings are fields as contiguous pixels (4-connected) with rate above
+    (a) the cell's mean rate or (b) 20% of its peak rate, with at least 9 pixels. Reproduced when no
+    genotype effect has p < 0.05 and the cell class effect has p < 0.05 for coherence, active pixels,
+    information and in-field rate; the effect sizes are given.
+- id: tables1-place-cell-properties-similar
+  statement: Firing rate, in-field rate, spatial coherence, information content and proportion of
+    active pixels of place cells do not differ between WT and Fmr1-null mice.
+  source: Table S1; Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1
+  quote: the fundamental measures of spatial discharge quality did not differ between either the WT
+    and the Fmr1-null place cells or interneurons (Table S1)
+  statistics:
+  - about: place cell firing rate
+    test: unpaired t test
+    statistic: t(160) = 1.19
+    p: 0.23
+    n: 73 WT and 89 Fmr1-null place cells
+  - about: in-field rate
+    statistic: t(160) = 1.74
+    p: 0.08
+  - about: spatial coherence
+    statistic: t(160) = 1.22
+    p: 0.23
+  - about: information content
+    statistic: t(160) = 0.45
+    p: 0.65
+  - about: proportion active pixels
+    statistic: t(160) = 0.35
+    p: 0.73
+  - about: interneuron firing rate
+    statistic: t(67) = 0.18
+    p: 0.85
+    n: 13 WT and 56 Fmr1-null interneurons
+  expected:
+  - quantity: WT place cell spatial coherence
+    value: 0.61
+    tolerance: 0.02
+  - quantity: Fmr1-null place cell spatial coherence
+    value: 0.57
+    tolerance: 0.02
+  - quantity: WT place cell information content
+    value: 1.57
+    tolerance: 0.09
+    unit: bits/AP
+  - quantity: Fmr1-null place cell information content
+    value: 1.5
+    tolerance: 0.09
+    unit: bits/AP
+  - quantity: WT place cell proportion active pixels
+    value: 0.45
+    tolerance: 0.03
+  - quantity: Fmr1-null place cell proportion active pixels
+    value: 0.46
+    tolerance: 0.03
+  - quantity: WT place cell firing rate
+    value: 1.49
+    tolerance: 0.15
+    unit: AP/s
+  - quantity: Fmr1-null place cell firing rate
+    value: 1.27
+    tolerance: 0.12
+    unit: AP/s
+  criterion: Tolerances are the SEMs of Table S1. A claim of absence on the paper's test, an unpaired
+    t test per measure, or Mann-Whitney when a sample fails Shapiro-Wilk (Table S1 legend).
+    Reproduced when no comparison has p < 0.05; the cells and box are as in
+    fig2-spatial-quality-similar, and in-field rate takes the field readings named there.
+  depends_on:
+  - fig2-spatial-quality-similar
+- id: tables1-nonspatial-active-pixels
+  statement: Non-spatial pyramidal cells of Fmr1-null mice discharge in a larger proportion of the
+    environment than those of WT mice (0.40 against 0.26).
+  source: Table S1, non-spatial pyramidal cells
+  inferred: Numbers and tests from Table S1; no sentence of the paper states this difference.
+  statistics:
+  - test: unpaired t test
+    statistic: t(113) = 2.37
+    p: 0.02
+    n: 58 WT and 57 Fmr1-null non-spatial pyramidal cells
+  - test: Mann-Whitney
+    statistic: U = 1,219
+    p: 0.02
+  expected:
+  - quantity: WT proportion active pixels
+    value: 0.26
+    tolerance: 0.03
+  - quantity: Fmr1-null proportion active pixels
+    value: 0.4
+    tolerance: 0.05
+  criterion: Tolerances are the SEMs of Table S1. Reproduced when both values are within tolerance
+    and the t test (or Mann-Whitney, as Table S1 chooses by Shapiro-Wilk) gives p < 0.05 with
+    Fmr1-null higher.
+  depends_on:
+  - fig2-spatial-quality-similar
+- id: figs4-remapping-similar
+  statement: Place cells recorded in a square and a circular enclosure remap in both genotypes; the
+    map similarities are near independence and their distributions do not differ between genotypes.
+  source: Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1; Figure S4
+  quote: Importantly, the WT and Fmr1-null distributions of z-transformed similarity values were not
+    distinguishable (t54 = 0.10, p = 0.9, d = 0.03)
+  statistics:
+  - about: WT similarity against zero
+    test: t test
+    statistic: t(24) = 1.92
+    p: 0.07
+    n: 25 WT place cells
+  - about: Fmr1-null similarity against zero
+    test: t test
+    statistic: t(30) = 1.89
+    p: 0.07
+    n: 31 Fmr1-null place cells
+  - about: proportion significantly positively correlated, 8/25 against 8/31
+    test: proportions test
+    statistic: z = 0.85
+    p: 0.3
+  - about: WT against Fmr1-null z-transformed similarities
+    test: t test
+    statistic: t(54) = 0.10
+    p: 0.9
+  expected:
+  - quantity: WT mean map similarity r
+    value: 0.054
+    tolerance: 0.028
+  - quantity: Fmr1-null mean map similarity r
+    value: 0.05
+    tolerance: 0.027
+  criterion: Similarity as in the Methods, Fisher z of the Pearson correlation of rates in
+    corresponding pixels of the two maps (pixels visited in both). The square and circular
+    enclosures are read as a box and the stationary circular arena recorded the same day; whether
+    the box is the small or the large one is open, and every same-day pair of a box and the
+    stationary arena is used. Tolerances are the printed SEMs. For the absence part, reproduced
+    when the genotype t test on z values has p >= 0.05; the claim is reproduced when that holds
+    and both means are within tolerance.
+- id: fig3b-place-cell-modulation-similar
+  statement: Theta (8 Hz) and gamma (40 Hz) phase modulation of place cell discharge is similar
+    between genotypes.
+  source: Results, Abnormal Spike-Field Coordination, paragraph 2; Figure 3B
+  quote: The modulation of place cell discharge in the theta (�8 Hz) and ... low gamma (�40 Hz)
+    bands is similar between the genotypes
+  statistics:
+  - about: theta
+    test: t test
+    statistic: t(169) = 0.78
+    p: 0.44
+  - about: gamma
+    test: t test
+    statistic: t(169) = 0.61
+    p: 0.53
+  criterion: Mean vector length of spike phases per cell at 8 and 40 Hz, averaged across cells
+    (Figure 3B legend), phases from complex Morlet wavelets on the LFP of the same tetrode, wire
+    with fewest artifacts (Methods; SpikeField code, wavelet factor 8), spikes at speed above 2
+    cm/s only (Results). A claim of absence on the paper's t test between genotypes; reproduced
+    when both p >= 0.05. Which recordings are used is not stated; all stationary-environment
+    sessions are used.
+- id: fig3bc-weaker-modulation-nonspatial-interneurons
+  statement: Theta and gamma phase modulation is weaker in Fmr1-null than in WT non-spatial
+    pyramidal cells and interneurons.
+  source: Results, Abnormal Spike-Field Coordination, paragraph 2; Figure 3B and 3C
+  quote: However, the modulation is weaker in Fmr1-null compared to WT non-spatial pyramidal cells
+  statistics:
+  - about: non-spatial pyramidal cells, theta
+    test: t test
+    statistic: t(50) = 3.52
+    p: 0.0009
+  - about: non-spatial pyramidal cells, gamma
+    test: t test
+    statistic: t(50) = 4.25
+    p: 0.0001
+    p_relation: <
+  - about: interneurons, theta
+    test: t test
+    statistic: t(75) = 3.93
+    p: 0.0002
+  - about: interneurons, gamma
+    test: t test
+    statistic: t(75) = 5.02
+    p: 0.0001
+    p_relation: <
+  criterion: Method as in fig3b-place-cell-modulation-similar. Reproduced when all four t tests give
+    p < 0.05 with Fmr1-null lower; partially reproduced for two or three.
+  depends_on:
+  - fig3b-place-cell-modulation-similar
+- id: fig3b-phase-preference
+  statement: WT place cells fire at an earlier theta phase and a later gamma phase than Fmr1-null
+    place cells, and WT interneurons at an earlier gamma phase than Fmr1-null interneurons.
+  source: Results, Abnormal Spike-Field Coordination, paragraph 2; Figure 3B
+  quote: WT place cells discharged ... at the theta trough on an earlier theta phase compared to
+    Fmr1null place cells
+  statistics:
+  - about: place cells, theta
+    test: Watson-Williams multi-sample test for equal means
+    statistic: F(1, 169) = 8.97
+    p: 0.003
+  - about: place cells, gamma
+    test: Watson-Williams multi-sample test
+    statistic: F(1, 169) = 26.88
+    p: 1.0e-7
+  - about: interneurons, gamma
+    test: Watson-Williams multi-sample test
+    statistic: F(1, 75) = 10.52
+    p: 0.002
+  expected:
+  - quantity: WT place cell theta phase
+    value: 353.9
+    tolerance: 36
+    unit: degrees
+  - quantity: Fmr1-null place cell theta phase
+    value: 32.1
+    tolerance: 36
+    unit: degrees
+  - quantity: WT place cell gamma phase
+    value: 332.2
+    tolerance: 36
+    unit: degrees
+  - quantity: Fmr1-null place cell gamma phase
+    value: 238.8
+    tolerance: 36
+    unit: degrees
+  - quantity: WT interneuron gamma phase
+    value: 218.6
+    tolerance: 36
+    unit: degrees
+  - quantity: Fmr1-null interneuron gamma phase
+    value: 10.6
+    tolerance: 36
+    unit: degrees
+  criterion: Phase preference per cell is the circular mean phase at 8 or 40 Hz, with 0 at the
+    trough (Figure 3B legend). The tolerance is 36 degrees, 10% of a cycle, as 10% of a circular
+    value is meaningless near 0 and 360; the printed spreads (about 50 to 76 degrees) are given as
+    ± and are not usable as SEMs. Circular distance is used. Reproduced when the three
+    Watson-Williams tests give p < 0.05 and at least four of the six means are within tolerance.
+  depends_on:
+  - fig3b-place-cell-modulation-similar
+- id: fig3d-stereotypy
+  statement: Phase-frequency discharge relationships are more stereotyped (lower pairwise MSE) among
+    WT than Fmr1-null place cells, and less stereotyped among WT than Fmr1-null non-spatial
+    pyramidal cells and interneurons, in the theta and gamma ranges.
+  source: Results, Abnormal Spike-Field Coordination, paragraph 3; Figure 3D
+  quote: The relationship was more stereotyped in WT compared to Fmr1-null place cells in the theta
+    (5–12 Hz) and gamma (30–100 Hz) frequency ranges
+  statistics:
+  - about: place cells, theta
+    test: t test
+    statistic: t(7219) = 6.16
+    p: 1.0e-10
+  - about: place cells, gamma
+    test: t test
+    statistic: t(7219) = 11.32
+    p: 1.0e-29
+  - about: non-spatial pyramidal cells, theta
+    statistic: t(733) = 15.30
+    p: 1.0e-46
+  - about: interneurons, theta
+    statistic: t(1980) = 14.46
+    p: 1.0e-45
+  - about: non-spatial pyramidal cells, gamma
+    statistic: t(733) = 12.92
+    p: 1.0e-34
+  - about: interneurons, gamma
+    statistic: t(1980) = 5.02
+    p: 1.0e-7
+  criterion: MSE between the phase-frequency discharge probability histograms of every pair of
+    cells of a class within a genotype, restricted to 5-12 Hz and 30-100 Hz (Figure 3D legend);
+    histograms normalized by the cell's spike count (Methods). The number of phase bins is not
+    stated; 20 bins (18 degrees) is used and 36 shown as a variant. Pairs are within a genotype
+    across all mice (the degrees of freedom imply all pairs). Reproduced when all six t tests give p
+    < 0.05 in the stated directions; partially reproduced for four or five.
+  depends_on:
+  - fig3b-place-cell-modulation-similar
+- id: overdispersion-passes
+  statement: Overdispersion is lower (spatial firing more reliable) in Fmr1-null mice when the unit
+    is a pass through a place field (variance 4.89 against 5.81).
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 1
+  quote: Overdispersion was lower (spatial firing was more reliable) in Fmr1-null mice when the unit
+    of analysis is a pass through a place field
+  statistics:
+  - test: F test
+    statistic: F(6775, 9101) = 1.19
+    p: 1.0e-17
+    n: 6,776 WT and 9,102 Fmr1-null passes
+  - test: Levene's test
+    statistic: F(1, 15874) = 22.21
+    p: 1.0e-6
+  expected:
+  - quantity: WT variance of z over passes
+    value: 5.81
+    tolerance: 0.58
+  - quantity: Fmr1-null variance of z over passes
+    value: 4.89
+    tolerance: 0.49
+  - quantity: WT passes
+    value: 6776
+    tolerance: 678
+  - quantity: Fmr1-null passes
+    value: 9102
+    tolerance: 910
+  criterion: Passes and z as in the opening comment (Methods, Overdispersion), over the place cells
+    of the standard (stationary) environments, all passes of a genotype pooled. Reproduced when
+    both variances are within tolerance and the F test and Levene's test give p < 0.05 with
+    Fmr1-null lower.
+  depends_on:
+  - place-cell-proportion
+- id: overdispersion-cells
+  statement: Overdispersion is marginally lower in Fmr1-null mice when the unit is a place cell (5.02
+    against 5.98).
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 1
+  quote: Overdispersion was also marginally lower in Fmr1-null mice when the unit of analysis is a
+    place cell
+  statistics:
+  - test: t test, one-tailed
+    statistic: t(176) = 1.87
+    p: 0.03
+    n: 80 WT and 98 Fmr1-null place cells
+  - test: Mann-Whitney, one-tailed
+    statistic: U = 3,386
+    p: 0.06
+  expected:
+  - quantity: WT mean per-cell overdispersion
+    value: 5.98
+    tolerance: 0.44
+  - quantity: Fmr1-null mean per-cell overdispersion
+    value: 5.02
+    tolerance: 0.3
+  criterion: Per cell, the variance of z over its passes; mean ± SEM per genotype (tolerances are the
+    SEMs). The sample (80 and 98, fewer than the 108 and 141 place cells) implies a minimum number of
+    passes per cell that is not stated; the readings are at least 2, 10 and 30 passes. Reproduced
+    when, under one reading, both means are within tolerance and the one-tailed t test gives p <
+    0.05 with Fmr1-null lower.
+  depends_on:
+  - overdispersion-passes
+- id: fig4b-covariance-30-passes
+  statement: Pairs of Fmr1-null place cells with overlapping fields covary less in their pass-by-pass
+    discharge than WT pairs (average r 0.04 against 0.09), a difference that disappears after
+    shuffling.
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 2; Figure 4A and 4B
+  quote: This greater spatial discharge reliability of individual Fmr1-null place cells is
+    accompanied by significantly less spatial discharge covariance (Figure 4A) of the Fmr1-null cell
+    pairs with overlapping place fields and at least 30 passes through both firing fields
+  statistics:
+  - test: t test
+    statistic: t(356) = 2.39
+    p: 0.02
+    n: 109 WT and 249 Fmr1-null pairs
+  - test: Mann-Whitney
+    statistic: U = 12,424
+    p: 0.2
+  - about: after random permutation of z values within pairs
+    test: t test
+    statistic: t(356) = 0.8
+    p: 0.4
+  expected:
+  - quantity: WT average pair r
+    value: 0.09
+    tolerance: 0.03
+  - quantity: Fmr1-null average pair r
+    value: 0.04
+    tolerance: 0.01
+  - quantity: WT pairs
+    value: 109
+    tolerance: 10.9
+  - quantity: Fmr1-null pairs
+    value: 249
+    tolerance: 24.9
+  criterion: For each pair of simultaneously recorded place cells, the Pearson correlation of the two
+    cells' z values over the 5 s intervals that are passes for both (Methods), pairs with at least
+    30 such passes. A t test on Fisher z values (Quantification). Tolerances are the printed SEMs.
+    Reproduced when the t test gives p < 0.05 with Fmr1-null lower and both averages within
+    tolerance; the shuffle (z values permuted within each cell of a pair, 1 permutation per pair
+    as the text implies, 100 shown as a variant) is reported.
+  depends_on:
+  - overdispersion-passes
+- id: fig4b-covariance-40-passes
+  statement: With at least 40 passes, the covariance difference holds and is larger (average r 0.06
+    in Fmr1-null against 0.19 in WT).
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 2; Figure 4B
+  quote: In fact, the difference is maintained when at least 40 qualified passes were required
+  statistics:
+  - test: t test
+    statistic: t(227) = 4.2
+    p: 1.0e-4
+    n: 56 WT and 173 Fmr1-null pairs
+  - test: Mann-Whitney
+    statistic: U = 3,791
+    p: 0.01
+    p_relation: <
+  expected:
+  - quantity: WT average pair r
+    value: 0.19
+    tolerance: 0.04
+  - quantity: Fmr1-null average pair r
+    value: 0.06
+    tolerance: 0.01
+  criterion: As fig4b-covariance-30-passes with at least 40 passes. Reproduced when the t test gives
+    p < 0.05 with Fmr1-null lower and both averages within tolerance.
+  depends_on:
+  - fig4b-covariance-30-passes
+- id: fig4cd-kendall-place-cells
+  statement: Kendall correlations between Fmr1-null place cell spike trains are weaker than between
+    WT ones at the 25 ms, 40 ms and 125 ms timescales, but not significantly at 1 s and 5 s.
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 3; Figure 4C and 4D
+  quote: At the 25 ms (Figures 4C and 4D) and 40 ms timescales of gamma oscillations, as well as the
+    125 ms timescale of theta oscillations, Fmr1-null cell pair discharge correlations (n = 504
+    pairs) were significantly weaker than those of WT cell pairs
+  statistics:
+  - about: 25 ms
+    test: Mann-Whitney
+    statistic: U = 51,894
+    p: 0.0002
+    n: 247 WT and 504 Fmr1-null pairs
+  - about: 40 ms
+    test: Mann-Whitney
+    statistic: U = 53,512
+    p: 0.002
+  - about: 125 ms
+    test: Mann-Whitney
+    statistic: U = 55,708
+    p: 0.02
+  - about: 1 s
+    test: Mann-Whitney
+    statistic: U = 60,801
+    p: 0.6
+  - about: 5 s
+    test: Mann-Whitney
+    statistic: U = 60,313
+    p: 0.5
+  expected:
+  - quantity: WT mean tau, 25 ms
+    value: 0.017
+    tolerance: 0.006
+  - quantity: Fmr1-null mean tau, 25 ms
+    value: 0.009
+    tolerance: 0.0012
+  - quantity: WT mean tau, 40 ms
+    value: 0.02
+    tolerance: 0.007
+  - quantity: Fmr1-null mean tau, 40 ms
+    value: 0.01
+    tolerance: 0.002
+  - quantity: WT mean tau, 125 ms
+    value: 0.02
+    tolerance: 0.008
+  - quantity: Fmr1-null mean tau, 125 ms
+    value: 0.017
+    tolerance: 0.003
+  - quantity: WT place cell pairs
+    value: 247
+    tolerance: 24.7
+  - quantity: Fmr1-null place cell pairs
+    value: 504
+    tolerance: 50.4
+  criterion: Kendall tau per pair of simultaneously recorded place cells (Figure 4 legend), under
+    readings K1 and K2 of the opening comment, crossed with which period gives a pair's tau (P1, the
+    whole session; P2, the first 5 min interval, as the Figure 4D legend and the code's 300 s
+    episodes). Sessions are those of the standard (stationary) environments; a pair recorded in
+    several sessions counts once, from its first. Mann-Whitney between genotypes, pairs as units.
+    Tolerances are the printed SEMs. Reproduced when, under one reading, 25, 40 and 125 ms give p <
+    0.05 with Fmr1-null lower, and 1 s and 5 s give p >= 0.05; partially reproduced when two of the
+    three short timescales do. Mean tau values are reported against tolerance for each reading.
+  depends_on:
+  - place-cell-proportion
+- id: fig4d-network-state-recurrence
+  statement: Network states recur less in Fmr1-null ensembles; the vector of pairwise Kendall
+    correlations does not differ between the two halves of WT recordings but does in Fmr1-null
+    recordings, at timescales from 25 ms to 5 s.
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 3; Figure 4D legend
+  quote: pairwise t tests could not reject the hypothesis that the WT vector of Kendall correlations
+    from the two halves of a recording are the same whereas the corresponding Fmr1-null comparisons
+    were all significantly different
+  statistics:
+  - about: WT halves, 25 ms
+    test: paired t test
+    statistic: t(246) = 0.9
+    p: 0.4
+  - about: Fmr1-null halves, 25 ms
+    test: paired t test
+    statistic: t(503) = 3.03
+    p: 0.002
+  - about: WT halves, 40 ms
+    test: paired t test
+    statistic: t(246) = 0.6
+    p: 0.5
+  - about: Fmr1-null halves, 40 ms
+    test: paired t test
+    statistic: t(503) = 3
+    p: 0.003
+  - about: WT halves, 125 ms
+    test: paired t test
+    statistic: t(246) = 1.02
+    p: 0.3
+  - about: Fmr1-null halves, 125 ms
+    test: paired t test
+    statistic: t(503) = 1.7
+    p: 0.09
+  - about: WT halves, 250 ms
+    test: paired t test
+    statistic: t(246) = 1.0
+    p: 0.3
+  - about: Fmr1-null halves, 250 ms
+    test: paired t test
+    statistic: t(503) = 2.4
+    p: 0.02
+  - about: WT halves, 1 s
+    test: paired t test
+    statistic: t(246) = 0.9
+    p: 0.4
+  - about: Fmr1-null halves, 1 s
+    test: paired t test
+    statistic: t(503) = 2.6
+    p: 0.001
+  - about: WT halves, 5 s
+    test: paired t test
+    statistic: t(246) = 0.3
+    p: 0.7
+  - about: Fmr1-null halves, 5 s
+    test: paired t test
+    statistic: t(503) = 2.0
+    p: 0.046
+  criterion: For each pair, tau in the earlier and the later interval; a paired t test of the two
+    PCorr vectors per genotype and timescale (Figure 4D legend), and PCo, the Pearson correlation of
+    the two vectors. The intervals are open; the readings are (H1) the two halves of each recording
+    (Results) and (H2) the first two 5 min intervals (Figure 4D legend; the code's 300 s episodes),
+    each with K1 and K2. The legend prints p = 0.09 for Fmr1-null at 125 ms, against "all
+    significantly different" in the Results; the claim is judged on the legend's pattern.
+    Reproduced when, under one reading, no WT test has p < 0.05 and at least five of the six
+    Fmr1-null tests do, and WT PCo exceeds Fmr1-null PCo at most timescales (the Results say WT PCo
+    "was greater at the various timescales"; PCo values are read per genotype from all pairs
+    pooled). Partially reproduced when the WT and Fmr1-null patterns differ at three or four
+    timescales.
+  depends_on:
+  - fig4cd-kendall-place-cells
+- id: kendall-nonspatial-pyramidal
+  statement: Kendall correlations between Fmr1-null non-spatial pyramidal cells are weaker than
+    between WT ones at 25 ms, 40 ms, 125 ms and 1 s, but not significantly at 5 s.
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 4
+  quote: Similar to place cell ensembles, Fmr1-null cell pair discharge correlations of non-spatial
+    pyramidal cells (n = 203 pairs) were significantly weaker than those of WT cell pairs (n = 252
+    pairs
+  statistics:
+  - about: 25 ms
+    test: Mann-Whitney
+    statistic: U = 22,437
+    p: 0.03
+  - about: 40 ms
+    test: Mann-Whitney
+    statistic: U = 22,318
+    p: 0.02
+  - about: 125 ms
+    test: Mann-Whitney
+    statistic: U = 21,745
+    p: 0.007
+  - about: 1 s
+    test: Mann-Whitney
+    statistic: U = 21,977
+    p: 0.01
+  - about: 5 s
+    test: Mann-Whitney
+    statistic: U = 23,333
+    p: 0.12
+  expected:
+  - quantity: WT mean tau, 25 ms
+    value: 0.03
+    tolerance: 0.006
+  - quantity: Fmr1-null mean tau, 25 ms
+    value: 0.007
+    tolerance: 0.002
+  - quantity: WT mean tau, 125 ms
+    value: 0.04
+    tolerance: 0.007
+  - quantity: Fmr1-null mean tau, 125 ms
+    value: 0.01
+    tolerance: 0.003
+  - quantity: WT pairs
+    value: 252
+    tolerance: 25.2
+  - quantity: Fmr1-null pairs
+    value: 203
+    tolerance: 20.3
+  criterion: As fig4cd-kendall-place-cells, for pairs of non-spatial pyramidal cells, with the same
+    readings. Reproduced when, under one reading, 25 ms, 40 ms, 125 ms and 1 s give p < 0.05 with
+    Fmr1-null lower and 5 s gives p >= 0.05; partially reproduced when three of the four do.
+  depends_on:
+  - fig4cd-kendall-place-cells
+- id: kendall-quiet-states
+  statement: During quiet wakefulness and sleep, place cell pair correlations do not differ at the
+    gamma timescales (25, 40 ms) but are weaker in Fmr1-null at 125 ms, 250 ms and 1 s.
+  source: Results, Reduced Spatial Discharge Coordination, paragraph 5
+  quote: Spike train correlations did not differ at the gamma timescale ... whereas the Fmr1-null
+    correlation distribution was weaker at theta and 1 s timescales
+  statistics:
+  - about: 25 ms
+    test: Mann-Whitney
+    statistic: U = 11,248
+    p: 0.24
+    n: 125 WT pairs (35 cells, 6 mice) and 195 Fmr1-null pairs (39 cells, 4 mice)
+  - about: 40 ms
+    test: Mann-Whitney
+    statistic: U = 11,026
+    p: 0.15
+  - about: 125 ms
+    test: Mann-Whitney
+    statistic: U = 10,583
+    p: 0.05
+    p_relation: <
+  - about: 250 ms
+    test: Mann-Whitney
+    statistic: U = 10,397
+    p: 0.03
+  - about: 1 s
+    test: Mann-Whitney
+    statistic: U = 10,629
+    p: 0.05
+    p_relation: <
+  - about: 5 s
+    test: Mann-Whitney
+    statistic: U = 10,917
+    p: 0.12
+  expected:
+  - quantity: WT pairs
+    value: 125
+    tolerance: 12.5
+  - quantity: Fmr1-null pairs
+    value: 195
+    tolerance: 19.5
+  criterion: Kendall tau (K1 only, as the mouse is still and the active-pixel gate of K2 has no
+    meaning for it; K2 shown as a variant) for place cell pairs over the quiet wakefulness and
+    sleep recordings. How those periods are identified is not stated; the readings are the
+    recordings the data label as sleep or rest, and periods of speed below 2 cm/s in the session.
+    Reproduced when 25 and 40 ms give p >= 0.05 and 125 ms, 250 ms and 1 s give p < 0.05 with
+    Fmr1-null lower; partially reproduced when two of these three do.
+  depends_on:
+  - fig4cd-kendall-place-cells
+- id: locomotion-similar
+  statement: WT and Fmr1-null mice do not differ in locomotion speed or path linearity during the
+    recordings, and the change in speed between the two halves of a session does not differ between
+    genotypes.
+  source: Results, Abnormal Spike-Field Coordination, paragraph 1; Results, Reduced Spatial
+    Discharge Coordination, paragraph 3; Figure S5B
+  quote: These genotypic differences were unlikely to be due to differences in locomotion because the
+    changes in locomotion across the two halves of the session were not distinct between the WT and
+    Fmr1-null mice
+  statistics:
+  - about: genotype
+    test: two-way genotype x epoch ANOVA
+    statistic: F(1, 27) = 0.94
+    p: 0.94
+  - about: epoch
+    statistic: F(1, 27) = 7.39
+    p: 0.01
+  - about: genotype x epoch interaction
+    statistic: F(1, 27) = 2.16
+    p: 0.15
+  criterion: A claim of absence on the paper's test, a two-way genotype x half (first, second) ANOVA
+    with repeated measures on half, on each mouse's average speed (Figure S5B inset). Reproduced
+    when the genotype effect and the interaction have p >= 0.05. Speed is computed from the tracked
+    position; the smoothing is not stated, so a 1 s window is used, a standard choice. The printed
+    degrees of freedom (27) imply recordings, not mice, as units; both units are run.
+- id: fig5b-frame-specific-ipos
+  statement: During arena rotation, room-frame positional information (Ipos) is greater in
+    Fmr1-null than in WT place cells, and arena-frame Ipos only marginally greater.
+  source: Figure 5B; Results, During Dissociation of Spatial Frames, paragraph 1
+  quote: Room-specific Ipos is greater in Fmr1 null compared to WT (Mann-Whitney U = 208, p < 0.05,
+    d = 0.45) whereas arena-specific Ipos is only marginally greater in Fmr1 null
+  statistics:
+  - about: room frame
+    test: Mann-Whitney
+    statistic: U = 208
+    p: 0.05
+    p_relation: <
+    n: 20 WT and 31 Fmr1-null place cells
+  - about: arena frame
+    test: Mann-Whitney
+    statistic: U = 213
+    p: 0.06
+  criterion: Ipos(t) = p(i|x) log2(p(i|x)/p(i)) for the count i in each 133 ms interval at location x
+    (Methods, Equation 1), its absolute value, per frame from the room and arena positions,
+    averaged over time per cell. Spatial bins and occupancy follow the PositionalInfo code (32 x 32
+    pixels, pixels with fewer than 10 visits left out). Place cells recorded in the rotating arena.
+    Reproduced when the room-frame comparison gives p < 0.05 with Fmr1-null higher; the arena-frame
+    comparison is reported. The code's signed, natural-log values are a variant.
+  depends_on:
+  - place-cell-proportion
+- id: fig5c-ensemble-coordination
+  statement: The frame-specific positional discharge fluctuations of single place cells are less
+    correlated with those of the rest of the ensemble in Fmr1-null than in WT mice.
+  source: Figure 5C; Results, During Dissociation of Spatial Frames, paragraph 2
+  quote: The association between the ensemble and the single left-out cell was weaker in Fmr1-null
+    compared to WT place cells (Figure 5C)
+  statistics:
+  - test: t test
+    statistic: t(48) = 2.4
+    p: 0.01
+    p_relation: <
+    n: 20 WT and 30 Fmr1-null place cells
+  criterion: Per cell, delta Ipos = Ipos(room) - Ipos(arena) per 133 ms interval; the ensemble series
+    from the frame-specific sums of Ipos over the other simultaneously recorded cells; the Pearson
+    correlation of the cell's and the ensemble's series (Methods). The Methods correlate delta Ipos
+    and the Results and legend correlate |delta Ipos|; both readings are run. Correlations compared
+    by t test on Fisher z (Quantification). Reproduced when, under one reading, p < 0.05 with
+    Fmr1-null lower.
+  depends_on:
+  - fig5b-frame-specific-ipos
+- id: figs6-room-frame-preference
+  statement: Session-averaged spatial firing during rotation is better organized in the room frame
+    than in the arena frame, similarly in both genotypes.
+  source: Results, During Dissociation of Spatial Frames, paragraph 1; Figure S6B
+  quote: The session-averaged, frame-specific spatial firing was better organized in the room frame,
+    and this preference was similar for the two genotypes (Figure S6)
+  statistics:
+  - about: map coherence, environment effect
+    test: two-way genotype x environment ANOVA, repeated measures on environment
+    statistic: F(3, 147) = 9.02
+    p: 1.6e-5
+  - about: information content, environment effect
+    test: two-way genotype x environment ANOVA, repeated measures on environment
+    statistic: F(3, 147) = 4.17
+    p: 0.046
+  criterion: The ANOVA of the Figure S6 legend on coherence and information content over Stationary
+    I, Stationary II, rotating room frame and rotating arena frame, with Tukey post hoc tests, log
+    transform where a measure is skewed (the legend's "where appropriate"; information content is
+    log transformed, coherence not, as the variant also run in reverse). WT 20 and Fmr1-null 31
+    place cells. The paper prints no genotype or interaction statistic; "similar" is read as the
+    interaction having p >= 0.05. Reproduced when the environment effect has p < 0.05 for coherence
+    with the rotating arena frame below both stationary sessions, and the interaction has p >= 0.05.
+  depends_on:
+  - fig5b-frame-specific-ipos
+- id: fig6-covariance-sem-predicts-errors
+  statement: Across nine mice, the number of shock zone entries during training is positively
+    correlated with the SEM of the pass-by-pass covariance of place cell pairs (r = 0.61).
+  source: Results, Correlated Network Discharge Predicts Cognitive Performance, paragraph 1
+  quote: this index of poor performance was positively correlated with inconsistently coordinated
+    discharge during passes across the firing fields of pairs of place cells
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.61
+    p: 0.04
+    n: 9 mice (5 WT, 4 Fmr1-null)
+  expected:
+    quantity: r, entries against SEM of pair covariance
+    value: 0.61
+    tolerance: 0.061
+  criterion: Per mouse, the SEM over its place cell pairs of the pass covariance r of
+    fig4b-covariance-30-passes. Errors are shock zone entries "during training"; the readings are
+    (a) the sum over Train 1-3 and (b) the sum over all shock-on sessions (Train 1-3 and Retrain).
+    Whether the p is one- or two-tailed is not printed; both are given. Reproduced when, under one
+    reading, r is within tolerance and p < 0.05.
+  depends_on:
+  - fig4b-covariance-30-passes
+- id: fig6-kendall-predicts-errors
+  statement: Across nine mice, shock zone entries are negatively correlated with the mouse's average
+    place cell Kendall correlation, strongest at 25 ms (r = -0.87), 40 ms (r = -0.80) and 125 ms (r
+    = -0.62), and not significant at 250 ms and longer.
+  source: Results, Correlated Network Discharge Predicts Cognitive Performance, paragraph 2
+  quote: Indeed, place avoidance performance was negatively correlated with Kendall’s correlation;
+    the relationship was strongest at the gamma and theta timescales of 25 ms
+  statistics:
+  - about: 25 ms
+    test: Pearson correlation, one-tailed
+    statistic: r = -0.87
+    p: 0.001
+    n: 9 mice
+  - about: 40 ms
+    test: Pearson correlation, one-tailed
+    statistic: r = -0.80
+    p: 0.005
+  - about: 125 ms
+    test: Pearson correlation, one-tailed
+    statistic: r = -0.62
+    p: 0.04
+  - about: 250 ms
+    test: Pearson correlation, one-tailed
+    statistic: r = -0.47
+    p: 0.1
+  expected:
+  - quantity: r at 25 ms
+    value: -0.87
+    tolerance: 0.087
+  - quantity: r at 40 ms
+    value: -0.8
+    tolerance: 0.08
+  - quantity: r at 125 ms
+    value: -0.62
+    tolerance: 0.062
+  - quantity: r at 250 ms
+    value: -0.47
+    tolerance: 0.047
+  criterion: Per mouse, the mean tau over its place cell pairs (fig4cd-kendall-place-cells, with its
+    readings), against shock zone entries with the readings of fig6-covariance-sem-predicts-errors.
+    Reproduced when, under one reading, 25, 40 and 125 ms give one-tailed p < 0.05 with negative r
+    and 250 ms gives p >= 0.05, and the 25 ms r is within tolerance; partially reproduced when 25 ms
+    holds alone.
+  depends_on:
+  - fig4cd-kendall-place-cells
+  - fig6-covariance-sem-predicts-errors
+- id: discussion-single-cell-measures-no-relation
+  statement: Avoidance performance is not predicted by single-cell place field quality (map
+    coherence r = -0.32, information content r = 0.27).
+  source: Discussion, Experience-Dependent Synaptic Function Abnormalities, paragraph 2
+  quote: no such relationship was identified between cognitive variables and single-cell measures of
+    place field quality
+  statistics:
+  - about: map coherence
+    test: Pearson correlation
+    statistic: r = -0.32
+    p: 0.2
+  - about: information content
+    test: Pearson correlation
+    statistic: r = 0.27
+    p: 0.24
+  criterion: A claim of absence on the paper's test, Pearson correlation across the nine mice of
+    shock zone entries (readings as in fig6-covariance-sem-predicts-errors) with the mouse's mean
+    place cell coherence and information content. Reproduced when both have p >= 0.05; r is given.
+  depends_on:
+  - fig6-covariance-sem-predicts-errors
+- id: fig6-avoidance-behavior
+  statement: In the nine recorded mice, Fmr1-null and WT mice explore alike, learn the avoidance
+    equally, and extinguish alike in the first extinction session, but Fmr1-null mice enter the
+    former shock zone less often in the second extinction session.
+  source: Figure 6B to 6H
+  quote: During the second extinction session, there were significant effects of genotype
+  statistics:
+  - about: number of entries, genotype
+    test: genotype x session repeated-measures ANOVA
+    statistic: F(1, 28) = 0.045
+    p: 0.8
+  - about: time to first entry, genotype
+    statistic: F(1, 28) = 0.10
+    p: 0.8
+  - about: shocks per entry, genotype
+    statistic: F(1, 28) = 1.19
+    p: 0.28
+  - about: first extinction, genotype
+    test: two-way genotype x 10 min block ANOVA
+    statistic: F(1, 21) = 1.33
+    p: 0.3
+  - about: second extinction, genotype
+    test: two-way genotype x 10 min block ANOVA
+    statistic: F(1, 18) = 7.00
+    p: 0.02
+  - about: pretraining distance
+    test: t test
+    statistic: t(7) = 1.03
+    p: 0.5
+  criterion: The tests of the Figure 6 legend, on the shock zone entries, time to first entry and
+    shocks per entry from the tracked sessions (Pretrain, Train 1-3, Extinct 1, Retrain, Extinct
+    2), 10 min blocks of the 30 min extinction sessions. Reproduced when the learning tests (D to F)
+    and the first extinction show no genotype effect (p >= 0.05) and the second extinction shows a
+    genotype effect at p < 0.05 with Fmr1-null fewer entries; partially reproduced when the
+    absences hold but the second extinction effect does not.
+- id: figs5a-power-spectra-similar
+  statement: CA1 LFP power spectra in the theta and gamma ranges do not differ between genotypes.
+  source: Results, Abnormal Spike-Field Coordination, paragraph 1; Figure S5A
+  quote: Although the power spectra of LFP oscillations recorded from the CA1 pyramidal cell layer is
+    indistinguishable between the genotypes in �8 Hz theta and 30–100 Hz gamma ranges
+  criterion: A claim of absence for which the paper prints no test. Per mouse, the average power
+    spectrum over open field recordings (11 WT and 9 Fmr1-null mice, Figure S5A); mean log power in
+    5-12 Hz and 30-100 Hz (the ranges of Figure 3D) compared between genotypes by t test, as the
+    Quantification section sets for two-group comparisons. Reproduced when both have p >= 0.05.
