@@ -17,7 +17,8 @@ opening comment cites the paper and the code, github.com/steevelaquitaine/spikeb
 - `chance_scores` follows the code's `_compute_chance_score` (claims file, opening comment).
 - `qualify_units` follows the code's `qualify_sorted_units` (src/nodes/metrics/quality.py).
 - `THR_GOOD` = 0.8, well sorted (claims file, opening comment).
-- `DURATION_S` = 600, the first 10 minutes (claims file, opening comment).
+- `DURATION_S` = 600, the first 10 minutes (claims file, opening comment); 240 s for the
+  Kilosort2 sorting of the evoked recording (`SORT_DURATION_S`, Methods, Spike sorting).
 - `std_layer` merges L2 and L3 into L2/3, as the code's `standardize_layers` (src/nodes/utils.py)
   does; WM and Outside are outside the cortex.
 - Preprocessing: a 300 Hz high-pass and a global common median reference (Methods,
@@ -26,9 +27,10 @@ opening comment cites the paper and the code, github.com/steevelaquitaine/spikeb
   traces to int16 before filtering, which is not done here (a detail of the code that cannot
   change a per-layer comparison by more than a rounding of 1 uV).
 - Trace statistics are computed on `N_BLOCKS` blocks of `BLOCK_S` seconds spread over the first
-  10 minutes, not on the whole 10 minutes: streaming the whole 10 minutes of every recording
+  10 minutes, not on the whole 10 minutes: holding the whole 10 minutes of every recording
   (about 110 GB) does not fit the run. This is a deviation, recorded in the attempt; the block
-  layout is a choice made here.
+  layout is a choice made here. The extremes (maxima, ANR range), which grow with duration, are
+  also streamed over the whole first 600 s by `trace_extremes`.
 - Noise per site: the mean absolute deviation in 1 s segments, minimum over segments (code,
   src/nodes/validation/noise.py, `measure_trace_noise`); the median absolute deviation is the
   variant of the Methods (Amplitude-to-noise ratio).
@@ -83,6 +85,17 @@ GROUND_TRUTH = {
     "DS3": "sub-005/sub-005_ecephys.nwb",
     "S": "sub-mearec-synthetics-buccino-rep/sub-mearec-synthetics-buccino-rep_ecephys.nwb",
 }
+# Kilosort2 sorted only the first 4 minutes of the evoked recording: "We report results from
+# Kilosort2 for 4 minutes of evoked recordings, as it failed to process longer durations"
+# (Methods, Spike sorting); the deposited 10-minute Kilosort2 sorting of E ends at 240 s (data
+# check). Its rates and scores use 240 s (verifier round 1, problem 4).
+SORT_DURATION_S = {("E", "KS2"): 240.0}
+
+
+def sort_duration(exp: str, sorter: str) -> float:
+    return SORT_DURATION_S.get((exp, sorter), DURATION_S)
+
+
 SORTER_TAGS = {"KS4": "ks4", "KS3": "ks3", "KS2.5": "ks25", "KS2": "ks2", "KS": "ks", "HS": "hs"}
 SORTING_SUBJECT = {
     "NS": "sub-001-fitted", "E": "sub-002-fitted", "M": "sub-vivo-marques-smith",
@@ -216,18 +229,24 @@ def chance_scores(n_gt: np.ndarray, n_s: np.ndarray, duration: float) -> np.ndar
 
 
 def qualify_units(scores: np.ndarray, chances: np.ndarray, thr_good: float = THR_GOOD):
-    """Quality tags per sorted unit (rows), as the code's qualify_sorted_units."""
+    """Quality tags per sorted unit (rows), as the code's qualify_sorted_units, in the claims
+    file's words (opening comment): false positive when every score is at or below chance;
+    otherwise good when a score is 0.8 or more, merged ("overmerger") when more than one ground
+    truth neuron scores above chance, partial ("oversplitter") when another sorted unit also
+    scores above chance with one of the unit's above-chance neurons. Pass the scores of every
+    sorted unit (rows), so that "another sorted unit" is any unit of the sorting; select the
+    single units afterwards (verifier round 1, problem 5)."""
     out = []
     above = scores > chances
     for i in range(scores.shape[0]):
-        g = np.where(scores[i] > 0)[0]
+        g = np.where(above[i])[0]
         tags = set()
-        if len(g) == 0 or (scores[i, g] <= chances[i, g]).all():
+        if len(g) == 0:
             tags.add("false_positive")
         else:
             if (scores[i, g] >= thr_good).any():
                 tags.add("good")
-            if above[i, g].sum() > 1:
+            if len(g) > 1:
                 tags.add("overmerger")
             others = np.delete(above[:, g], i, axis=0)
             if others.any():
@@ -330,3 +349,38 @@ def soma_distances(gt: pd.DataFrame, elec: pd.DataFrame) -> np.ndarray:
     e = elec[["rel_x", "rel_y", "rel_z"]].to_numpy(float)
     d = np.sqrt(((s[:, None, :] - e[None, :, :]) ** 2).sum(-1))
     return d.min(axis=1)
+
+
+def _block_extremes(args):
+    path, start_s, block_s, fs = args
+    margin = int(0.05 * fs)
+    with open_nwb(path) as f:
+        d = f["acquisition/ElectricalSeriesRaw/data"]
+        a = int(round(start_s * fs))
+        lo = max(0, a - margin)
+        hi = a + int(round(block_s * fs)) + margin
+        x = d[lo:hi, :].astype(np.float32)
+    n = int(round(block_s * fs))
+    raw = x[a - lo:a - lo + n]
+    sos = signal.butter(5, FREQ_MIN, btype="highpass", fs=fs, output="sos")
+    y = signal.sosfiltfilt(sos, x, axis=0).astype(np.float32)
+    del x
+    y = y - np.median(y, axis=1, keepdims=True)
+    y = y[a - lo:a - lo + n]
+    return np.abs(raw).max(axis=0), y.min(axis=0), y.max(axis=0)
+
+
+def trace_extremes(exp: str, duration_s: float = DURATION_S, block_s: float = 2.5, workers: int = 8):
+    """Extremes per site (all sites) over the whole first `duration_s` seconds, streamed in
+    blocks of `block_s` seconds with the same preprocessing as `trace_blocks` (each block is
+    filtered with 50 ms margins). Returns, per block and site, the raw maximum |trace|, and the
+    minimum and maximum of the preprocessed trace, in the file's units. The block length is a
+    standard choice that only bounds memory (verifier round 1 asked for 10-minute extremes)."""
+    path = RECORDINGS[exp]
+    fs = SAMPLING_HZ[exp]
+    starts = np.arange(0, duration_s, block_s)
+    args = [(path, s, min(block_s, duration_s - s), fs) for s in starts]
+    with ProcessPoolExecutor(workers) as ex:
+        res = list(ex.map(_block_extremes, args))
+    return {"starts": starts, "raw_absmax": np.array([r[0] for r in res]),
+            "pre_min": np.array([r[1] for r in res]), "pre_max": np.array([r[2] for r in res])}
