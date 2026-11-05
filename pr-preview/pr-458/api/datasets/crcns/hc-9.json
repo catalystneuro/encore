@@ -1,0 +1,836 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "hc-9",
+  "label": "CRCNS:hc-9"
+ },
+ "page": "datasets/crcns/hc-9/",
+ "generated": "2026-11-05T15:44:30+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 25
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "crcns-hc-9-quattrocolo-2013-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "hc-9",
+    "version": "unversioned",
+    "doi": "10.6080/K0HQ3WTH"
+   },
+   "key": "crcns:hc-9",
+   "label": "CRCNS:hc-9",
+   "dataset_version": "unversioned",
+   "paper": "10.1523/jneurosci.5680-12.2013",
+   "paper_title": null,
+   "date": "2026-11-04",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41885809817"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "crcns-hc-9-quattrocolo-2013",
+   "entry_title": "Firing patterns of hippocampal O-LM interneurons (Quattrocolo and Maccaferri 2013)",
+   "description": "Tests the findings of Quattrocolo and Maccaferri (2013) on CRCNS data set hc-9, which holds the current-step responses of the three O-LM interneurons of the paper's Figure 7. It measures the sag of their voltage response to hyperpolarizing current. The recordings from Cajal-Retzius cells behind the paper's main findings (Figures 1 to 6 and 8 to 12) are not in the data set.",
+   "notebooks": [
+    {
+     "path": "reproduce_quattrocolo_2013.ipynb",
+     "title": "Reproducing Quattrocolo and Maccaferri (2013), Figure 7, from CRCNS hc-9",
+     "executed": "notebooks/crcns-hc-9-quattrocolo-2013/reproduce_quattrocolo_2013.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig7a-olm-sag",
+     "statement": "O-LM interneurons recorded in CXCR4-EGFP slices show a sag in their voltage response to hyperpolarizing current pulses (pulses of -100 and +50 pA in Figure 7A), and the ChR2-expressing O-LM cell of Figure 7D has a similar firing pattern.",
+     "source": "Figure 7A and 7D legends",
+     "quote": "Firingpatternsoftheaboveshowncells.Noticethepresenceofasaginthehyperpolarizingresponse. ... Notice the similarity with the firing patterns shown in A.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_quattrocolo_2013.ipynb",
+     "notes": "On the -100 pA step all three cells show a sag under both readings of the criterion, with V_min from a 1 ms running mean. Reading (a), relaxation from the peak hyperpolarization to the mean of the step's last 100 ms, gives 17.5, 7.9 and 8.7 mV (1May2012_P3, 20Sept2011_P2, 24October2012_C2), 22 to 47 times the threshold of twice the pre-step SD (0.19 to 0.56 mV). Reading (b), the sag ratio, gives 0.448, 0.224 and 0.208, above 0.1. Both give 3 of 3 cells. Across all variants (raw or 1 ms running-mean V_min, end windows of 50 to 200 ms) the smallest sag is 42.4 baseline SDs and the smallest ratio 0.200, both from the running mean with a 200 ms end window (with raw V_min, 42.7 and 0.201); the outcome holds up to a 10 SD threshold or a ratio threshold of 0.15, and at 0.2 two of three cells pass. The 2 SD threshold of reading (a) does not separate a sag from noise in these recordings. Each cell's 0 pA sweep gives 1.3 to 2.4 mV, 2.8 to 20.1 pre-step SDs, and so passes it, because the 75 ms pre-step baseline misses slow fluctuations over the 1 s step (SD 0.59 to 1.03 mV in the 0 pA step window). On a synthetic trace without sag the raw minimum passes reading (a) in 100 of 100 draws and the 1 ms running mean in none; reading (b) passes in none. Against the 0 pA sweep the -100 pA sags are 4.5 to 7.3 times larger, and 4.2 to 10.8 times twice the SD of the 0 pA step window, and the 0 pA \"sag\" is 0.038 to 0.061 of each cell's -100 pA hyperpolarization, below reading (b)'s 0.1, so the outcome holds on references that separate a sag from noise. Reading (b) applied to a 0 pA sweep alone passes in all three cells (0.71 to 4.94), since with no hyperpolarization the ratio divides noise by noise. The cell the old description places in Figure 7D (24October2012_C2, P15, Sst-Cre;ChR2) has a ratio of 0.208, close to the 0.224 of 20Sept2011_P2 and below the 0.448 of 1May2012_P3. The firing at +50 pA (15, 15 and 18 spikes in 1 s) is shown as a description only. The claim's firing-pattern similarity is judged by the sag, as the criterion says; whether the whole firing pattern of the 7D cell is similar is not tested. The deposited traces were not compared with the printed Figure 7 traces, since the PDF could not be rendered here; the notebook plots the first 300 ms of each -100 pA step for that comparison. The question of how the paper judged a sag is recorded as a methods_unavailable finding for the paper's authors.",
+     "deviations": [
+      "The paper shows the sag in example traces and defines no measure; the claims file's two readings are run, both give 3 of 3, and the outcome rests on that assumed measure, as the criterion says.",
+      "The pre-step baseline for both readings is all of each sweep before the step (0 to 75 ms); the criterion names no window, and this is a standard choice. V_min is the minimum of a 1 ms running mean during the step, a standard choice, with the raw minimum as a variant; neither changes the outcome. The raw minimum was the main measure in the first version, but it picks the most negative noise sample and passes reading (a) on a trace without sag, so the running mean replaced it after round 1 of verification.",
+      "Reading (a)'s threshold, as the criterion states it, is passed by the 0 pA sweeps of all three cells. The comparison with the 0 pA sweep (same measure, and twice the SD of the voltage in the 0 pA step window) is shown as a reference; it is not part of the criterion and does not change the outcome.",
+      "Which cell is in which panel of Figure 7 is taken from the superseded description in the bucket's hc-9/old/ folder (ages P13, P14 and P15 and the mouse lines, which match the Figure 7 legends); the files and the current description do not say. The criterion judges every cell alike, so the outcome does not depend on it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-spontaneous-amplitude",
+     "statement": "Pharmacologically isolated spontaneous GABAergic currents in Cajal-Retzius cells have an average amplitude of 113 pA, with large variability.",
+     "source": "Results, paragraph 1; Figure 1C",
+     "quote": "spontaneous GABAergic events had an average amplitude of 113 \ufffd12 pA (n \ufffd14 cells from n \ufffd5 mice of 12.6 \ufffd0.4 postnatal days of age), with a large variability (Fig. 1)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs voltage-clamp recordings of spontaneous GABAergic currents in 14 Cajal-Retzius cells. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-upsc-amplitude",
+     "statement": "Unitary PSCs from stratum lacunosum-moleculare interneurons onto Cajal-Retzius cells are small, 5 pA for the first response and 11 pA at the peak of the third response of a three-spike train.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 2; Figure 4C",
+     "quote": "The amplitude of unitary postsynaptic currents (uPSCs) was 5 \ufffd1 pA (n \ufffd26) for the first response and 11 \ufffd2 pA (n \ufffd26) at the peak of the third response (Fig. 4)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paired interneuron to Cajal-Retzius cell recordings (26 pairs). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-upsc-kinetics",
+     "statement": "Unitary PSCs from stratum lacunosum-moleculare interneurons are slow, with a 20-80% rise time of 3.4 ms and a decay time constant of the compound response of 30.3 ms.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 2; Figure 4C",
+     "quote": "Overall, kinetic properties were slow. The average rise time of the first response was 3.4 \ufffd0.4 ms (n \ufffd17), and the decay time constant of the compound response was 30.3 \ufffd2.9 ms (n \ufffd23).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paired interneuron to Cajal-Retzius cell recordings. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "paired-presynaptic-neurogliaform",
+     "statement": "Of the presynaptic stratum lacunosum-moleculare interneurons in connected pairs, 14 were anatomically identified as neurogliaform-like cells; the others were partly recovered, identified by firing pattern, or not identified.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 1; Figures 2 and 3A",
+     "quote": "In 14 cases, anatomical recovery was sufficient to define them as neurogliaform-like cells based on their dendritic and axonal structures.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the anatomical reconstructions of the presynaptic interneurons, which are not in the data set. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "upsc-gabazine-block",
+     "statement": "Gabazine fully blocks the unitary responses, so they are mediated by GABAA receptors.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 2 (data not shown)",
+     "quote": "Application of gabazine fully blocked unitary responses, indicating that they were mediated by GABAA receptors (n \ufffd4; data not shown).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paired recordings before and after gabazine (4 pairs). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-no-gabab-component",
+     "statement": "With QX-314-free pipettes, no outward (GABAB receptor-mediated) current is seen in Cajal-Retzius cells after interneuron trains, either in control or in gabazine.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 2; Figure 5",
+     "quote": "under these experimental conditions, no outward current was detectable either in control conditions or after application of gabazine (n \ufffd4 pairs from 4 animals of 11.8 \ufffd0.5 postnatal days of age)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paired recordings with QX-314-free pipettes in control and gabazine (4 pairs). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-spontaneous-larger-than-unitary",
+     "statement": "In the Cajal-Retzius cells of connected pairs, the largest spontaneous event (237 pA) is much larger than the first unitary response (5 pA), a ratio of 66.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 3; Figure 6D",
+     "quote": "The amplitude of the largest spontaneous events observed was 237 \ufffd41 pA, which compared with 5 \ufffd1 pA for the unitary response to the first spike (p \ufffd0.05, Wilcoxon's matched-pairs signed-rank test, n \ufffd23). The ratio between these amplitudes was 66 \ufffd12 (n \ufffd23).",
+     "statistics": [
+      {
+       "test": "Wilcoxon matched-pairs signed-rank test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "23 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the spontaneous and unitary events of the paired recordings (23 pairs). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-spontaneous-faster-than-unitary",
+     "statement": "The largest spontaneous event rises much faster (0.7 ms) than the first unitary response (3.4 ms), a ratio of 0.2.",
+     "source": "Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic input, paragraph 3; Figure 6D",
+     "quote": "the rise time of the observed largest spontaneous event was much faster than the one measured for the first unitary response (0.7 \ufffd0.3 ms compared with 3.4 \ufffd0.4 ms, respectively; p \ufffd0.05, Wilcoxon's matched-pairs signed-rank test, n \ufffd17). The ratio of these values was 0.2 \ufffd0.1 (n \ufffd17).",
+     "statistics": [
+      {
+       "test": "Wilcoxon matched-pairs signed-rank test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "17 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the spontaneous and unitary events of the paired recordings (17 pairs). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-chr2-olm-light-firing",
+     "statement": "In Sst-IRES-Cre;ChR2(H134R)-EYFP mice, short light pulses trigger action potentials in all nine O-LM-like stratum oriens interneurons tested, and light-activated currents in every interneuron tested in voltage clamp.",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3; Figure 7C, 7D",
+     "quote": "In nine of nine cells, we could trigger action potentials with short light pulses, and in all interneurons tested, we could record light-activated currents in voltage-clamp configuration (Fig. 7).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The data set holds the current-step responses of one ChR2-expressing O-LM cell (24October2012_C2) but no light-evoked firing or currents, for it or for the other eight cells. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-light-evoked-psc",
+     "statement": "Light stimulation of Sst-expressing axons in stratum lacunosum-moleculare evokes PSCs in Cajal-Retzius cells of 106 pA amplitude and 1.6 ms rise time, fully blocked by TTX and by gabazine.",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3; Figure 8",
+     "quote": "The events had an amplitude of 106 \ufffd15 pA, a rise time of 1.6 \ufffd0.3 ms (n \ufffd9), and were fully blocked by TTX (n \ufffd4) and gabazine (n \ufffd4).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the light-evoked PSCs in 9 Cajal-Retzius cells, with TTX and gabazine. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9-opsc-rise-time",
+     "statement": "PSCs evoked by stratum oriens stimulation rise fast (1.0 ms), like light-evoked PSCs (1.6 ms) and unlike neurogliaform unitary PSCs (3.4 ms).",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3; Figure 9D",
+     "quote": "we observed events with rise-time kinetics similar to the ones obtained with optogenetic stimulation but very different from what found in unitary connections mediated by neurogliaform cells. The rise time of stratum oriens-evoked ... postsynaptic currents (oPSCs) was 1.0 \ufffd 0.2 ms (n \ufffd14)",
+     "statistics": [
+      {
+       "about": "oPSC against light-evoked PSC rise time",
+       "test": "Kruskal-Wallis with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "14 oPSC and 9 light-evoked recordings"
+      },
+      {
+       "about": "oPSC against neurogliaform uPSC rise time",
+       "test": "Kruskal-Wallis with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "14 oPSC and 17 uPSC recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the stratum oriens-evoked PSCs (14 cells), the light-evoked PSCs and the unitary PSCs. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9-opsc-amplitude-decay",
+     "statement": "Stratum oriens-evoked PSCs are GABAA receptor-mediated, with amplitudes of 43 pA to the first pulse and 69 pA to the third, and a decay time of 23.7 ms after the third pulse.",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3; Figure 9C, 9D",
+     "quote": "The amplitude of the response to the first pulse of oPSCs was 43 \ufffd 12 pA (n \ufffd14) and 69 \ufffd14 pA (n \ufffd14) to the third. The decay time at the end of the third pulse was 23.7 \ufffd2.4 ms (n \ufffd14).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the stratum oriens-evoked PSCs in 14 Cajal-Retzius cells. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-dhpg-increases-frequency",
+     "statement": "DHPG increases the frequency of spontaneous GABAergic events in Cajal-Retzius cells from 154 to 657 mHz.",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 4; Figure 10A",
+     "quote": "DHPG application increased the frequency of synaptic events from 154 \ufffd56 mHz in control conditionsto657\ufffd147mHzinthepresenceof the drug (n \ufffd9, p \ufffd0.05, Wilcoxon's matched-pairs signed-rank test).",
+     "statistics": [
+      {
+       "test": "Wilcoxon matched-pairs signed-rank test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "9 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the spontaneous event recordings before and during DHPG (9 cells). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-dhpg-amplitude-unchanged",
+     "statement": "DHPG does not significantly change the amplitude of spontaneous events (133 against 89 pA).",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 4; Figure 10A",
+     "quote": "the amplitude of the spontaneous currents did not change significantly (133 \ufffd22 pA during the baseline vs 89 \ufffd9 pA during DHPG application, n \ufffd9, p \ufffd0.05, Wilcoxon's matched-pairs signed-rank test).",
+     "statistics": [
+      {
+       "test": "Wilcoxon matched-pairs signed-rank test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "9 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the spontaneous event recordings before and during DHPG (9 cells). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-reduced-slice-no-effect",
+     "statement": "In reduced slices with stratum oriens cut away, DHPG changes neither the frequency (100 against 160 mHz) nor the amplitude (148 against 123 pA) of spontaneous events.",
+     "source": "Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 4; Figure 10B",
+     "quote": "the control frequency was 100 \ufffd22 mHz, which compared with 160 \ufffd51 mHz in the presence of DHPG (n \ufffd8, p \ufffd0.05, Wilcoxon's matched-pairs signed-rank test). Under the same conditions, no significant effects were seen on event amplitudes (148 \ufffd10 pA in control vs 123 \ufffd16 pA during drug application",
+     "statistics": [
+      {
+       "about": "frequency, control against DHPG",
+       "test": "Wilcoxon matched-pairs signed-rank test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 cells"
+      },
+      {
+       "about": "amplitude, control against DHPG",
+       "test": "Wilcoxon matched-pairs signed-rank test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the reduced-slice recordings before and during DHPG (8 cells). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11-slm-inhibition",
+     "statement": "In 12 of 21 Cajal-Retzius cells, stratum lacunosum-moleculare stimulation stops spontaneous firing (9.7 to 0.0 Hz), which then returns to baseline (9.7 Hz).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraphs 1 and 2; Figure 11A",
+     "quote": "stimulation of stratum lacunosum-moleculare decreased spontaneous firing frequency from 9.7 \ufffd1.9 to 0.0 \ufffd0.0 Hz (n \ufffd12, p \ufffd0.05, Friedman's test with Dunn's post hoc test; ... and then returned to baseline values (9.7 \ufffd1.7 Hz, n \ufffd12, p \ufffd0.05",
+     "statistics": [
+      {
+       "about": "prestimulus against early poststimulus",
+       "test": "Friedman's test with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "12 cells"
+      },
+      {
+       "about": "prestimulus against late poststimulus",
+       "test": "Friedman's test with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "12 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the cell-attached recordings of 21 Cajal-Retzius cells with stratum lacunosum-moleculare stimulation. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11-slm-inhibition-gabazine",
+     "statement": "In gabazine, stratum lacunosum-moleculare stimulation no longer inhibits spontaneous firing of the inhibited group (12.5 Hz before, 7.5 Hz after, 11 Hz recovery).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 2; Figure 11A, bottom",
+     "quote": "in the presence of gabazine, stimulation was ineffective and did not inhibit spontaneous firing. Under these experimental conditions, the frequency of spontaneous action currents was 12.5 \ufffd1.6 Hz before versus 7.5 \ufffd2.7 Hz after stimulation (n \ufffd5, p \ufffd0.05",
+     "statistics": [
+      {
+       "about": "prestimulus against early poststimulus, gabazine",
+       "test": "Friedman's test with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "5 cells"
+      },
+      {
+       "about": "prestimulus against late poststimulus, gabazine",
+       "test": "Friedman's test with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "5 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the cell-attached recordings in gabazine (5 cells). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11-slm-excitation",
+     "statement": "In 9 of 21 Cajal-Retzius cells, stratum lacunosum-moleculare stimulation transiently increases firing (3.7 to 25.2 Hz), which then returns to 3.0 Hz; in gabazine no action current is recorded.",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 3; Figure 11B, 11C",
+     "quote": "Stimulation of stratum lacunosummoleculare transiently increased the frequency of action currents ... from 3.7 \ufffd1.6 to 25.2 \ufffd6.0 Hz (n \ufffd9, p \ufffd0.05, Friedman's test with Dunn's post hoc test), which then returned to a frequency of 3.0 \ufffd1.4 Hz, similar to before stimulation",
+     "statistics": [
+      {
+       "about": "prestimulus against early poststimulus",
+       "test": "Friedman's test with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "9 cells"
+      },
+      {
+       "about": "prestimulus against late poststimulus",
+       "test": "Friedman's test with Dunn's post hoc test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "9 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the cell-attached recordings of 21 Cajal-Retzius cells, with and without gabazine. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11d-baseline-frequency-dichotomy",
+     "statement": "Cells inhibited by stimulation fire faster at baseline (10.6 Hz) than cells excited by it (2.8 Hz), giving an L-shaped plot of effect against baseline frequency without intermediate responses.",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 4; Figure 11D; for the absence of intermediate responses, Discussion, Implications for the network functions of Cajal-Retzius cells, paragraph 4",
+     "quote": "Cells that were inhibited had a higher frequency of basal spontaneous activity compared with cells that were excited by stimulation. The value of action current frequency for the former group was 10.6 \ufffd1.4 Hz compared with 2.8 \ufffd1.2 Hz for the latter (Mann-Whitney test, p \ufffd0.05, n \ufffd21).",
+     "statistics": [
+      {
+       "test": "Mann-Whitney test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "21 cells (12 inhibited, 9 excited)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the cell-attached recordings of 21 Cajal-Retzius cells. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "gabazine-baseline-firing",
+     "statement": "Gabazine does not change baseline firing of the cells inhibited by stimulation (10.6 against 12.3 Hz) but abolishes baseline firing of the cells excited by it (2.8 against 0.0 Hz).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 4",
+     "quote": "In this group, baseline frequency was 10.6 \ufffd1.4 Hz in control conditions (n \ufffd 12) compared with 12.3 \ufffd1.9 Hz (n \ufffd5) in the presence of gabazine (p \ufffd0.05, Mann-Whitney U test; ... Baseline frequency of spontaneous action currents was 2.8 \ufffd1.2 Hz (n \ufffd9) in the absence of the drug versus 0.0 \ufffd0.0 (n \ufffd5) after its application (p \ufffd0.05, Mann-Whitney U test).",
+     "statistics": [
+      {
+       "about": "inhibited group, control against gabazine",
+       "test": "Mann-Whitney U test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "12 control and 5 gabazine recordings"
+      },
+      {
+       "about": "excited group, control against gabazine",
+       "test": "Mann-Whitney U test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "9 control and 5 gabazine recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the cell-attached recordings in control and gabazine. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig12a-slow-conductance-depolarized",
+     "statement": "At about -45 mV, injecting a slow synaptic conductance does not increase firing immediately (7.2 against 8.2 Hz) but inhibits it later (0.3 Hz).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 5; Figure 12A, top",
+     "quote": "the injection of a synaptic waveform did not lead to immediate increased firing (basal frequency before the conductance injection was 7.2 \ufffd0.6 vs 8.2 \ufffd0.6 Hz immediately after, n \ufffd17, p \ufffd0.05, ... However, a clear inhibition of spiking was evident at later times (0.3 \ufffd0.3 Hz, n \ufffd17, p \ufffd0.05",
+     "statistics": [
+      {
+       "about": "before against immediately after",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "17 recordings"
+      },
+      {
+       "about": "before against later",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "17 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the dynamic-clamp recordings (17 recordings). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig12a-slow-conductance-hyperpolarized",
+     "statement": "At about -50 mV, the same slow conductance excites the cell immediately (8.6 to 35.8 Hz), followed by inhibition (0.0 Hz).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 5; Figure 12A, bottom",
+     "quote": "Basal frequency before the conductance injection was 8.6 \ufffd0.4 versus 35.8 \ufffd3.7 Hz immediately after (n \ufffd14, p \ufffd 0.05, ... Excitation was followed by inhibition at later times (0.0 \ufffd0.0 Hz, n \ufffd14, p \ufffd0.05",
+     "statistics": [
+      {
+       "about": "before against immediately after",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "14 recordings"
+      },
+      {
+       "about": "before against later",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "14 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the dynamic-clamp recordings (14 recordings). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig12b-fast-conductance-depolarized",
+     "statement": "At about -45 mV, a fast conductance derived from stratum oriens stimulation excites the cell (7.0 to 45.5 Hz), then inhibits it (0.7 Hz).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 6; Figure 12B",
+     "quote": "prestimulation frequency of firing was 7.0 \ufffd0.8 Hz, immediately followed by excitation (as indicated by a frequency of 45.5 \ufffd5.8 Hz, n \ufffd17, p \ufffd0.05, ... later inhibition (0.7 \ufffd0.3 Hz, n \ufffd17, p \ufffd0.05",
+     "statistics": [
+      {
+       "about": "before against immediately after",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "17 recordings"
+      },
+      {
+       "about": "before against later",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "17 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the dynamic-clamp recordings (17 recordings). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig12b-fast-conductance-hyperpolarized",
+     "statement": "At about -50 mV, the fast conductance also excites the cell (7.9 to 74.1 Hz), then inhibits it (1.3 Hz).",
+     "source": "Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 6; Figure 12B",
+     "quote": "basal frequency (7.9 \ufffd0.7 Hz) was followed by immediate excitation (74.1 \ufffd7.5 Hz, n \ufffd15, p \ufffd0.05, ... and later inhibition (01.3 \ufffd0.5 Hz, n \ufffd15, p \ufffd0.05",
+     "statistics": [
+      {
+       "about": "before against immediately after",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "15 recordings"
+      },
+      {
+       "about": "before against later",
+       "test": "Friedman's test with Dunn's multiple comparison post hoc correction",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "15 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the dynamic-clamp recordings (15 recordings). The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "no-age-dependence",
+     "statement": "Within the P10 to P19 range, postnatal age does not correlate significantly with the amplitude or kinetics of synaptic events, nor with the responses to stimulation or the voltage dependence of the conductance-clamp results.",
+     "source": "Materials and Methods, Animals, paragraph 3",
+     "quote": "Within our datasets, we did not find any significant correlation between the postnatal age of the animals used to prepare slices and the measured amplitude/kinetics of synaptic events (spontaneous, evoked, or unitary).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the synaptic event, stimulation and conductance-clamp measures with each animal's age; the data set's three O-LM cells hold none of these measures. The data set (live/Maccaferri_data.zip, three ATF files of O-LM current steps, and its live/ and old/ documentation in the CRCNS bucket) holds no recordings from Cajal-Retzius cells. The paper gives no data availability statement and names no other archive, and no other CRCNS data set of this paper was found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds only the current-step recordings of the three O-LM interneurons of Figure 7. None of the Cajal-Retzius cell recordings behind the paper's main findings (Figures 1 to 6 and 8 to 12) are in it, nor the light-evoked responses of Figure 7C and 7D, so 25 of the 26 claims cannot be tested. The data set's title and description say it holds only the O-LM firing patterns.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The description gives the current steps as -100:30:+250 pA. All three files hold 15 steps from -100 to +250 pA in 25 pA increments, as the current channel shows.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The description says the current injection usually starts about half a second into the sweep. In all three files it starts at 75 ms and ends at 1.075 s.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The current description (version 0.7) does not give each cell's animal, age or mouse line, or the panel of Figure 7 that shows it. The superseded description under hc-9/old/ does (1May2012_P3 P13 and 20Sept2011_P2 P14, CXCR4-EGFP; 24October2012_C2 P15, Sst-IRES-Cre;ChR2(H134R)-EYFP), and these match the Figure 7 legends. That old description also calls the files ABF; they are ATF text files.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. The Figure 7A and 7D legends point to a sag in the hyperpolarizing response at -100 pA, but the paper defines no measure of sag or criterion for its presence. Was it judged by eye, or by a measure such as the sag ratio (V_end - V_min) / (V_baseline - V_min)? This attempt used two standard readings, which agree for all three cells (sag ratios 0.21 to 0.45).",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-04",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first author run, the executed notebook with the conclusions and summary removed, the helper module and the claims file, with the paper under paper/ and the CRCNS bucket listing.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-04",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the round-1 revision, with its conclusion and summary, the helper module, the claims file, the README and the attempt record, with the paper under paper/.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "crcns-hc-9-quattrocolo-2013",
+   "type": "reproduction",
+   "title": "Firing patterns of hippocampal O-LM interneurons (Quattrocolo and Maccaferri 2013)",
+   "description": "Tests the findings of Quattrocolo and Maccaferri (2013) on CRCNS data set hc-9, which holds the current-step responses of the three O-LM interneurons of the paper's Figure 7. It measures the sag of their voltage response to hyperpolarizing current. The recordings from Cajal-Retzius cells behind the paper's main findings (Figures 1 to 6 and 8 to 12) are not in the data set.",
+   "datasets": [
+    "crcns:hc-9"
+   ],
+   "papers": [
+    "10.1523/jneurosci.5680-12.2013"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_quattrocolo_2013.ipynb",
+     "title": "Reproducing Quattrocolo and Maccaferri (2013), Figure 7, from CRCNS hc-9",
+     "executed": "notebooks/crcns-hc-9-quattrocolo-2013/reproduce_quattrocolo_2013.html"
+    }
+   ]
+  }
+ ]
+}
