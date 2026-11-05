@@ -73,26 +73,28 @@ outcomes:
     paper's notebook 18. Every model claim is fitted to the trial set with pinches, and the code's
     trial set is fitted as a variant.
 - claim: figs3-neutral-unmodulated
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: evoked.ipynb
   output: claim:figs3-neutral-unmodulated
-  measured: [36, 76, 77]
+  measured: [32, 67, 68]
   notes: >-
-    NEUTRAL activity shows no change at either event under any reading. The test is spikes in the
-    2 s after the event against the 2 s before, Wilcoxon over trials. With all 36 NEUTRAL units the
-    median change is 0 Hz and p is 0.14 to 0.23 at withdrawal and 0.49 to 0.65 at heat onset. As a
-    positive control, ON and OFF trials at withdrawal give p = 5e-15 and 2e-16. The counts do not all
-    match under the criterion's selection, all NEUTRAL units of all files. That selection gives 36
-    cells against 32 +- 3.2, and 76 withdrawal-aligned trials against 69 +- 6.9 (window from -30 s,
-    with pinches). It gives 77 heat-aligned trials against 70 +- 7, which is within. Four of the 36
-    are units of 'evoked' files labelled "NEUT"; the other 32 are labelled "Neutral". The paper's
-    code selects units named exactly "Neutral". With that selection the counts are exactly 32, 69 and
-    70 (window from -30 s, without pinches), and p is 0.24 and 0.70. Whether the criterion should
-    take these 32 cells is asked of a reader (questions/001708.yaml).
+    Re-run after a reader's answer (questions/001708.yaml) amended the criterion. It first took all
+    NEUTRAL units of all files; it now takes the NEUTRAL units of the 'evoked/ongoing' and 'ongoing'
+    files, which Table S11 shows to be the paper's n = 32 (20 + 12). The outcome before the answer
+    was partially_reproduced, with measured 36, 76 and 77. Under the amended criterion there are 32
+    cells, with 67 withdrawal-aligned and 68 heat-aligned trials (window from -30 s or -10 s, with
+    pinches), within tolerance of 32, 69 and 70. Without pinches, as the code runs, the counts are
+    exactly 69 and 70. These 32 are the same units as those named "Neutral", the code's selection.
+    NEUTRAL activity shows no change at either event under any reading. The test is spikes in the 2 s
+    after the event against the 2 s before, Wilcoxon over trials. The median change is 0 Hz and p is
+    0.24 to 0.31 at withdrawal and 0.52 to 0.70 at heat onset. As a positive control, ON and OFF
+    trials at withdrawal give p = 5e-15 and 2e-16. With all 36 NEUTRAL units, still reported, the
+    counts are 36 cells and 76 to 79 withdrawal-aligned trials, outside tolerance, and 77 to 80
+    heat-aligned trials, and p is 0.14 to 0.23 at withdrawal and 0.49 to 0.65 at heat onset.
   deviations:
   - >-
-    The criterion's selection was run as written. The paper's selection (32 cells), shown as a
-    variant, gives exactly the paper's counts.
+    Trials follow the criterion's rule with pinches truncating windows (as in fig1c-psth-counts).
+    The code's rule never sees a pinch and gives the paper's 69 and 70 exactly; both are shown.
 - claim: figs8-null-model-worse
   outcome: reproduced
   notebook: evoked.ipynb
@@ -529,8 +531,9 @@ findings:
   statement: >-
     The four NEUTRAL units of 'evoked' files (sub-rat-6, 7, 9 and 15) are named "NEUT", while the
     32 others are named "Neutral". The paper's code selects NEUTRAL units by the exact name
-    "Neutral" (Spike2Tools.spiketrain_iterator), so its NEUTRAL analyses (Figure S3, n = 32) leave
-    these four out, although the Methods count 24 NEUTRAL cells in the evoked protocol.
+    "Neutral" (Spike2Tools.spiketrain_iterator), so its NEUTRAL analyses leave these four out. This
+    agrees with Figure S3, whose n = 32 Table S11 shows to be the NEUTRAL cells of the
+    'evoked/ongoing' and 'ongoing' files, but the label is spelt two ways for one class.
 - kind: code_mismatch
   statement: >-
     The code builds its trial-exclusion event list from an event named "Keyboard"
