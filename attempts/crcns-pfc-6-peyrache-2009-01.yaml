@@ -133,7 +133,8 @@ outcomes:
   deviations:
   - The data set does not give the bounds of the rest epochs. Assumed, as the claim's criterion
     directs, from the data set's epoch times, pre from the start of the recording to the start of
-    the awake interval and post from its end to the end of the position record; this makes pre 23
+    the awake interval and post from its end to the end of the position record, or to the end of
+    the last post SWS interval if that is later; this makes pre 23
     to 58 min and post 22 to 59 min in the included sessions, where the Methods give 20 to 30 min. A 30 min variant is shown.
   - Non-SWS bins are z-transformed with the whole rest epoch.
   - The ANOVA is a repeated-measures ANOVA with the signal component as subject, since the four means
@@ -221,7 +222,8 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_peyrache_2009.ipynb
   output: claim:supp11-shuffle-control
-  notes: Shuffled reactivation is 5.3% to 5.9% of the actual in each signal group, more than an
+  notes: Shuffled reactivation is 5.3% to 5.9% of the actual in each signal group with z over the
+    epoch, and 5.1% to 5.7% with z over SWS bins, more than an
     order of magnitude smaller. It does not differ between pre and post for Phi 1 to 1.4 (paired t p
     = 0.85 and 0.76) or 1.4 to 1.8 by t-test (p = 0.13 and 0.067), but for Phi above 1.8 post is higher
     (0.0204 against 0.0162, paired t p = 0.031; 0.034 with z over SWS), and by Wilcoxon the two highest
@@ -270,7 +272,7 @@ outcomes:
   assumed: true
   notes: In post SWS the signal components' event-triggered reactivation rises above baseline 0.5
     to 0.3 s before DOWN to UP transitions (three bins at p < 0.001 over 285 components, 15415
-    transitions), as the paper reports for delta waves (about 400 ms before), and nonsignal
+    transitions; a fourth significant bin is a dip below baseline at 0 s, -0.059), as the paper reports for delta waves (about 400 ms before), and nonsignal
     components have no significant bin. In pre SWS there is one significant bin, and the rise over
     -0.5 to -0.3 s is lower (0.063 against 0.107; per component post minus pre 0.043, p = 0.15); the
     pre average's largest value above baseline (0.145 at +0.2 s) is not lower than the post one
@@ -282,10 +284,12 @@ outcomes:
     times), and the comparison with delta waves rests on the paper's reported 400 ms, as
     fig6a-delta-waves is blocked.
   deviations:
-  - Assumed that "the pre average is lower" compares the rise above baseline in the window where
-    post is significant (-0.5 to -0.3 s), following the paper's wording for delta waves ("the
-    modulation was smaller for pre epoch SWS"); compared by the largest value of the whole average,
-    pre is not lower. Both are shown.
+  - Assumed that "the pre average is lower" holds only if pre is lower both by the rise above
+    baseline in the window where post is significant (-0.5 to -0.3 s) and by the largest value of
+    the whole average, or if the per-component difference is significant. Pre is lower in the
+    window (0.063 against 0.107) but its largest value is higher (0.145 against 0.132), and the
+    per-component difference is not significant (p = 0.15), so this part is not established.
+    Comparing by the window alone would make the claim reproduced. Both comparisons are shown.
   - Event-triggered averages use R over all bins of the rest epoch with Q z-transformed over the
     whole epoch, since the -4 to 4 s windows reach outside SWS; transitions are taken inside SWS.
 - claim: fig6c-spindles
@@ -598,3 +602,178 @@ verifications:
     response: No change of outcome. Added a variant with the learning points of learning-sessions
       reading (a) in the same ten sessions (p = 0.19), the Bonferroni p of each speed bin (bin 0,
       0.34), and text on the test's power, the source of the sessions and the bins.
+- date: 2026-11-05
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the first revision, the helper module, the claims file and
+    the attempt record, with the paper under paper/.
+  results:
+  - claim: sessions-and-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: rules-learned
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: learning-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: The fixed reading (b) gives 22 and 14 sessions; neither is in 9 to 11. The Summary's "16
+      to 34 sessions" is wrong, as cell 15 prints 34, 16, 22 and 14, so the range is 14 to 34; this
+      was left over from before reading (b) was fixed.
+    response: The Summary now says 14 to 34 sessions.
+  - claim: fig1b-signal-components
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2b-post-greater-than-pre
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp5-sws-only
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now agrees. The repeated-measures ANOVA gives state p = 0.0019 and epoch p = 4.9e-08,
+      and outside SWS post still exceeds pre under both readings (t p = 0.042, Wilcoxon p = 0.018);
+      two of the three parts hold. The rest-epoch assumption is stated, follows the criterion, and
+      the 30-min variant gives the same result. The deviation and notebook cell 0 bound post at the
+      end of the position record, but rest_epochs also extends it to the last post SWS interval if
+      that is later; no included session appears to be affected.
+    response: The deviation and notebook cell 0 now give the full bound, including the extension to
+      the last post SWS interval.
+  - claim: supp6-pre-post-sws-alike
+    agrees: true
+    outcome: reproduced
+    reason: Withdraws its round-1 disagreement. The criterion includes the SPWR, delta and LFP
+      measures only "where the data hold them" and judges each measure on its own; every measure the
+      data set holds shows no difference by paired t-test, so reproduced is consistent with the
+      criterion as written.
+    response: No change.
+  - claim: fig2b-encoding-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2b-pre-weaker
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp8-other-tetrode-pairs
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig2e-skewness
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2f-tail-contribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp10-no-coactivation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp11-shuffle-control
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The notes' "5.3% to 5.9% of the actual" is the epoch-z range only; with z over
+      SWS bins it is 5.1%. The conclusion does not change.
+    response: The notes and the result cell now give both ranges, 5.3% to 5.9% with z over the epoch
+      and 5.1% to 5.7% with z over SWS bins.
+  - claim: fig5a-spwr-bins
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5b-spwr-triggered
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5c-peak-40ms
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5d-population-asymmetric
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5e-autocorrelogram
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: replay-in-delta-spindle-periods
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6a-delta-waves
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6b-down-up
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees on the outcome, but the stated assumption does not support it. Under the
+      comparison over -0.5 to -0.3 s pre is lower (0.063 against 0.107), so the criterion as written
+      would give reproduced. The partial outcome rests on two other facts, that the two ways of
+      comparing disagree (pre's peak 0.145 is above post's 0.132) and that the per-component
+      difference is not significant (p = 0.15); the deviation and the summary should say this. The
+      result's "three bins at p < 0.001" is incomplete, as cell 50 prints four significant bins; the
+      fourth is probably the dip at 0 s.
+    response: The deviation now states the assumption the outcome rests on, that pre is lower only
+      if both comparisons agree or the per-component difference is significant, and says that the
+      window comparison alone would give reproduced. The Summary and README rows say why the claim
+      holds in part. The notebook now prints the significant bins with their values; the fourth is
+      the dip at 0 s (-0.059 below baseline), and the result cell and notes mention it.
+  - claim: fig6c-spindles
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6d-reactivation-spwr-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7b-post-spwr-after-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7b-controls
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7c-choice-point
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7d-two-factors
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: supp12-behavior-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.

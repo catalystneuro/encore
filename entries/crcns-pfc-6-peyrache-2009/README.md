@@ -21,7 +21,7 @@ Figures 5 to 7 and the same-tetrode control cannot be repeated.
 | 40 to 50% of net reactivation above the 99th percentile | Partially reproduced |
 | Patterns do not coactivate in sleep, do awake | Reproduced |
 | Shuffle control | Partially reproduced |
-| Reactivation before DOWN to UP transitions | Partially reproduced, resting on an assumption |
+| Reactivation before DOWN to UP transitions | Partially reproduced (pre lower before the transition, not at its peak, and not significantly) |
 | Behaviour unchanged by learning | Reproduced |
 | SPWR, delta, spindle and same-tetrode analyses (14 claims) | Blocked: data missing |
 
