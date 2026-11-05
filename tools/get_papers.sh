@@ -17,7 +17,8 @@ git clone -q --depth 1 --filter=blob:none --sparse git@github.com:catalystneuro/
 git -C "$store" sparse-checkout set "$dandiset"
 git -C "$store" lfs pull --include "$dandiset/*" || true
 rm -f "$key"
-if ! ls "$store/$dandiset"/*.txt >/dev/null 2>&1; then
+# A data descriptor (<id>.data-description.txt, the dataset's own documentation) is not the paper's text.
+if ! ls "$store/$dandiset"/*.txt 2>/dev/null | grep -qv '\.data-description\.txt$'; then
   echo "::error::No full text for $dandiset in the paper store: supply the paper (docs/pipeline.md)"; exit 1
 fi
 mkdir -p "$dest" && cp "$store/$dandiset"/* "$dest/"

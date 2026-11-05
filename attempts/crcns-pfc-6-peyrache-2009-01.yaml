@@ -1,0 +1,779 @@
+schema_version: 2
+id: crcns-pfc-6-peyrache-2009-01
+dataset:
+  archive: crcns
+  id: pfc-6
+  version: unversioned
+  doi: 10.6080/K0KH0KH5
+paper: doi:10.1038/nn.2337
+date: 2026-11-05
+entry: crcns-pfc-6-peyrache-2009
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41957873333
+outcomes:
+- claim: sessions-and-cells
+  outcome: not_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:sessions-and-cells
+  measured:
+  - 1499
+  - 56
+  notes: Measured values are those of reading (b), the inclusion rule, which the Figure 2b legend
+    supports. Reading (a), all sessions, gives 86 sessions and 2155 cells; reading (b) gives 56
+    sessions and 1499 cells, against 63 (57 to 69) and 1692 (1523 to 1861). Under (b) rats 18 and 20
+    match the paper's per-rat counts (11 and 24), rat 19 has 11 against 12 and rat 15 has 10 against
+    16. The data set holds only 14 sessions of rat 15 in all, so at least two of the paper's rat-15
+    sessions are not in it. With a 3.5 min SWS threshold the totals match (63 sessions, 1682 cells)
+    but the per-rat counts do not (11, 12, 11, 29).
+  deviations:
+  - SWS time per rest epoch is the summed length of the data set's SWS intervals; the paper's own
+    SWS detection, from the LFP, cannot be repeated.
+- claim: rules-learned
+  outcome: not_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:rules-learned
+  measured:
+  - 3
+  - 4
+  - 3
+  - 1
+  notes: Both readings (within a session, and across consecutive sessions with the same rule) give
+    right arm 3 rats (15, 19, 20), lit arm 4, left arm 3 (15, 18, 20) and dark arm 1 (20), against 4,
+    4, 2 and 1. Rat 18 never reaches criterion on the right-arm rule in the recorded trials (9 and
+    13 trials in sessions 181011 and 181012), though its rule was then changed. Counting instead
+    the rules after which the rule was changed, a variant outside the criterion, gives 4, 3, 3 and
+    1. The recorded trials may not include every trial run. Over the right-arm trials rat 18 has 22
+    trials, a longest correct run of 9 and at most 10 correct in 12, one trial short of either form
+    of the criterion; on the left-arm rule rats 15 and 18 pass clearly (runs of 14 and 13).
+  deviations:
+  - Sessions are ordered by the month and day in their ids, with rat 20's December sessions put
+    before its January to March ones; the data set gives no year.
+- claim: learning-sessions
+  outcome: not_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:learning-sessions
+  measured: 34
+  notes: The measured value is reading (a)(i). No reading gives 9 to 11 sessions over four rats.
+    (a)(i) 34 sessions, (a)(ii) 16, (b)(i) 22 and (b)(ii) 14, each over four rats. Under reading (b)
+    a block of correct trials that runs to the end of the session leaves no trials after it and
+    counts as passing. The data set's description lists ten learning sessions from four rats with
+    their learning trials, the paper's count. The definition under reading (a) gives the listed
+    trial in 6 of the 10 (150628, 150630, 181012, 190214, 190228, 201229), and reading (b) in 4
+    (150628, 150707, 181012, 190228). Neither recovers 181020 (trial 4 against 10), 201222 (37 or none
+    against 23) or 201227 (31 or 40 against 23).
+  deviations:
+  - The learning point is computed over all trials of the session, as the definition says, even
+    where the rule changed within the session.
+  - All 86 sessions are searched, not only those passing the inclusion rule; the table shows
+    which of the listed sessions are included.
+- claim: fig1b-signal-components
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig1b-signal-components
+  measured:
+  - 285
+  - 730
+  notes: Over the 56 included sessions, 285 signal components (expected 291 to 355) and 730
+    nonsignal (730 to 892); 484 components lie below lambda_min. Per session this is 5.09 signal and
+    13.04 nonsignal, against 5.13 and 12.87 for the paper's totals over 63 sessions, so the
+    shortfall in the signal total follows the missing sessions. 45 of 56 sessions have 1 to 6
+    signal components and 11 have 7 to 11. Over all 86 sessions there are 411 and 1050. Leaving out
+    the 12 cells silent in the awake epoch gives 287 and 727. With a 3.5 min SWS threshold, a
+    variant outside the criterion that matches the paper's total of sessions but not its counts per
+    rat, the totals are 315 and 820, both within tolerance, with 51 of 63 sessions at 1 to 6 signal
+    components.
+  deviations:
+  - The criterion takes the session selection from the matching reading of sessions-and-cells;
+    neither matches, so the paper's stated inclusion rule, reading (b), is used.
+  - The awake epoch is the data set's single awake interval, binned whole in 100 ms bins.
+- claim: fig2b-post-greater-than-pre
+  outcome: reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig2b-post-greater-than-pre
+  measured:
+  - 9
+  - 35
+  - 241
+  notes: Post exceeds pre in all three signal groups under all four readings. With z over the
+    whole rest epoch, paired t p = 0.0015, 0.00014 and 0.00023 for Phi above 1.8, 1.4 to 1.8 and 1 to
+    1.4 (Wilcoxon 0.0039, 9.2e-05, 8.6e-06); with z over SWS bins, 0.00071, 2.2e-06 and 5.2e-07.
+    Nonsignal components do not differ (p 0.10 to 0.31). The group sizes, 9, 35 and 241 against 10,
+    40 and 273, are within tolerance only for the first; each is about 88% of the paper's, as the
+    included sessions are 56 of 63. The opposite order of sizes matches none. By rat the effect is
+    found in rats 15, 18 and 20 and not in rat 19 (mean difference -0.003, p = 0.87). Under the 3.5
+    min SWS variant of fig1b the group sizes are 11, 39 and 265, all within tolerance.
+  deviations:
+  - The outcome follows the criterion, which tests post against pre; two of the three group sizes
+    listed as expected values fall outside tolerance, because the data set holds fewer sessions
+    that pass the inclusion rule.
+- claim: supp5-sws-only
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:supp5-sws-only
+  assumed: true
+  notes: Repeated-measures ANOVA over the per-component means of the 285 signal components
+    (component as subject), state effect p = 0.0019, epoch effect p = 4.9e-08, interaction p =
+    1.6e-05, so both main effects pass p < 0.01; an ordinary two-way ANOVA, treating the four means
+    as independent, gives state p = 0.014 and epoch p = 0.0005. SWS means pre 0.1005 and post 0.1469,
+    non-SWS 0.0985 and 0.1088. In non-SWS bins post exceeds pre by 0.0103 (paired t
+    p = 0.042, Wilcoxon p = 0.018), against 0.0464 in SWS, so the claim's third part fails under both
+    readings, though within each signal group the non-SWS difference is not significant (p 0.13 to
+    0.49). With rest epochs limited to the 30 min next to the awake epoch the non-SWS result is the
+    same (non-SWS t p = 0.044; ordinary ANOVA state p = 0.018, epoch p = 0.00047). Two of the three
+    parts hold and the absence outside SWS fails.
+  deviations:
+  - The data set does not give the bounds of the rest epochs. Assumed, as the claim's criterion
+    directs, from the data set's epoch times, pre from the start of the recording to the start of
+    the awake interval and post from its end to the end of the position record, or to the end of
+    the last post SWS interval if that is later; this makes pre 23
+    to 58 min and post 22 to 59 min in the included sessions, where the Methods give 20 to 30 min. A 30 min variant is shown.
+  - Non-SWS bins are z-transformed with the whole rest epoch.
+  - The ANOVA is a repeated-measures ANOVA with the signal component as subject, since the four means
+    of a component are not independent; the legend names only an ANOVA. The ordinary two-way ANOVA
+    is shown.
+- claim: supp6-pre-post-sws-alike
+  outcome: reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:supp6-pre-post-sws-alike
+  notes: Paired t-tests over 56 sessions find no difference in total SWS time (630 against 623 s,
+    p = 0.87), mean SWS episode duration (203 against 222 s, p = 0.41) or session mean SWS firing
+    rate (3.58 against 3.58 Hz, p = 0.93); over 1499 cells, rates do not differ by paired t-test (p =
+    0.65), while a Wilcoxon test over cells, a variant, gives p = 0.0013 for a 0.8% difference. SPWR
+    rate, delta-wave counts and delta and spindle power cannot be tested, as the data set holds no
+    LFP and no event times; the outcome covers the SWS duration and firing-rate parts only.
+  deviations:
+  - SWS episodes are the data set's SWS intervals; their merging rule (gaps under 1 min) is the
+    paper's, applied before deposit.
+- claim: fig2b-encoding-correlation
+  outcome: not_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig2b-encoding-correlation
+  measured: 0.384
+  notes: Over 285 signal components, r = 0.620 (r squared 0.384, p = 1.2e-31) with z over the
+    epoch and r = 0.646 (r squared 0.417, p = 4.5e-35) with z over SWS bins; the expected r squared
+    is 0.549 to 0.671. The correlation is positive and its p-value is below 1e-30, but r squared is
+    too low. The r itself is close to the 0.61 the paper prints as r squared. By rat r squared is
+    0.20, 0.43, 0.03 and 0.50 (rats 15, 18, 19, 20). Reading (b), inter-SPWR bins, cannot be run.
+- claim: fig2b-pre-weaker
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig2b-pre-weaker
+  notes: Pre slope 0.168 against post 0.434, pre r = 0.283 against post 0.620 (z over the epoch;
+    0.150, 0.398, 0.319 and 0.646 with z over SWS). The correlation is lower with p < 1e-5 under both
+    readings (Fisher z p = 2.5e-07 and 1.9e-07, Steiger p = 6.2e-13 and 2.5e-15). The slope is lower
+    but with p of 2.4e-08 to 3.3e-13 (interaction in a linear model, or bootstrap of the slope
+    difference with a normal approximation), not below 1e-20 under any reading.
+  deviations:
+  - The bootstrap p-value uses a normal approximation from the bootstrap standard error, since
+    2000 resamples cannot resolve p below 5e-4; no resample gave a slope difference of zero or less.
+- claim: supp8-other-tetrode-pairs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the tetrode of each cell. The spike file gives only a cell number per session, and
+    neither the data description nor any other file of the data set maps cells to tetrodes.
+- claim: fig2e-skewness
+  outcome: not_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig2e-skewness
+  notes: Post minus pre skewness of R over SWS bins is positive and significant only for Phi 1.4 to
+    1.8 (3.44, p = 0.0092, n = 35, z over the epoch; 3.25, p = 0.0023 with z over SWS). For Phi above
+    1.8 it is negative (-1.19, p = 0.62, n = 9; -1.52, p = 0.54), and for 1 to 1.4 near zero (p = 0.79
+    and 0.40). Under neither grouping reading is every tested group positive with p < 0.05, and the
+    difference does not rise with Phi. Skewness values are large (5 to 11), set by rare extreme
+    bins.
+- claim: fig2f-tail-contribution
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig2f-tail-contribution
+  measured: 52.2
+  notes: The measured value is reading (a), z over the epoch, for Phi above 1.8. Reading (a) gives
+    52.2%, 56.1% and 16.1% for Phi above 1.8, 1.4 to 1.8 and 1 to 1.4 with z over the epoch, and
+    51.0%, 60.6% and 36.6% with z over SWS bins (one and two of three groups in 36 to 55%). Reading
+    (b) gives two of three in range with z over SWS (46.3%, 45.8%, and an extreme mean for 1 to 1.4)
+    and none with z over the epoch, as components whose net reactivation is near zero give extreme
+    ratios (99 of 241 in the lowest group have a negative net). Per-component medians, not a reading
+    of the criterion, are 38.8% to 51.7%. The extreme reading (b) means (5459%, one ratio above 10^6
+    %) are not well defined; the count of groups in range rests on reading (a) and on the two
+    highest groups of reading (b) with z over SWS, whose per-component ratios stay within 149%.
+- claim: supp10-no-coactivation
+  outcome: reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:supp10-no-coactivation
+  notes: Under reading (a), Pearson cross-correlation averaged over 704 pairs of signal components
+    from 56 sessions, the post SWS average has its minimum at zero lag, below chance (-0.0035, p = 0.29
+    against 0, with z over the epoch; -0.0099, p = 0.00045, with z over SWS) and below its mean at 200
+    to 500 ms (0.0017 and 0.0016). In the awake epoch the zero-lag value is above chance (0.0329, p =
+    8.5e-16). Reading (b) is unstable because mean R over SWS is near zero for many components; its
+    sleep averages are not compared with chance (zero-lag s.e.m. 33 and 430). The trough is
+    significant under one z-transform reading only.
+  deviations:
+  - Cross-correlations are computed within each SWS interval and pooled, so that no pair of bins
+    spans a gap between intervals; lags of -1 to 1 s (a standard choice).
+- claim: supp11-shuffle-control
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:supp11-shuffle-control
+  notes: Shuffled reactivation is 5.3% to 5.9% of the actual in each signal group with z over the
+    epoch, and 5.1% to 5.7% with z over SWS bins, more than an
+    order of magnitude smaller. It does not differ between pre and post for Phi 1 to 1.4 (paired t p
+    = 0.85 and 0.76) or 1.4 to 1.8 by t-test (p = 0.13 and 0.067), but for Phi above 1.8 post is higher
+    (0.0204 against 0.0162, paired t p = 0.031; 0.034 with z over SWS), and by Wilcoxon the two highest
+    groups differ (p 0.012 to 0.023). The absence holds in two of three groups by the t-test reading
+    and one by the Wilcoxon reading. The differences are under 0.005, against 0.27 for the actual
+    patterns in the highest group.
+  deviations:
+  - The mean over shuffles is computed in closed form, as the mean over all permutations of the
+    cells within each bin, instead of 1000 random shuffles per bin; on one session it agrees with
+    1000 shuffles (-0.0082 against -0.0086).
+- claim: fig5a-spwr-bins
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SPWR times or the hippocampal LFP, neither of which is in the data set (its files
+    are spikes, cell types, behaviour, position, and awake and SWS intervals) or published elsewhere
+    that the paper or the data set names.
+- claim: fig5b-spwr-triggered
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SPWR times; see fig5a-spwr-bins.
+- claim: fig5c-peak-40ms
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SPWR times; see fig5a-spwr-bins.
+- claim: fig5d-population-asymmetric
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SPWR times; see fig5a-spwr-bins.
+- claim: fig5e-autocorrelogram
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SPWR times for the SPWR autocorrelogram and the time constant it is compared with;
+    see fig5a-spwr-bins.
+- claim: replay-in-delta-spindle-periods
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the prefrontal LFP for delta and spindle power, which is not in the data set.
+- claim: fig6a-delta-waves
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs delta-wave times from the prefrontal LFP, which is not in the data set.
+- claim: fig6b-down-up
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:fig6b-down-up
+  assumed: true
+  notes: In post SWS the signal components' event-triggered reactivation rises above baseline 0.5
+    to 0.3 s before DOWN to UP transitions (three bins at p < 0.001 over 285 components, 15415
+    transitions; a fourth significant bin is a dip below baseline at 0 s, -0.059), as the paper reports for delta waves (about 400 ms before), and nonsignal
+    components have no significant bin. In pre SWS there is one significant bin, and the rise over
+    -0.5 to -0.3 s is lower (0.063 against 0.107; per component post minus pre 0.043, p = 0.15); the
+    pre average's largest value above baseline (0.145 at +0.2 s) is not lower than the post one
+    (0.132), and that value is at +0.2 s after the transition, pre's one significant bin. The post
+    rise before the transition holds, and the pre average is lower only in the window where post is
+    significant, without a significant difference, so the claim holds in part. Both definitions of
+    DOWN states give the same transitions, since the mean population count per 10 ms SWS bin is 0.21
+    to 2.22 spikes and a fifth of it is below one spike in every session. The SPWR part of the claim is not tested (no ripple
+    times), and the comparison with delta waves rests on the paper's reported 400 ms, as
+    fig6a-delta-waves is blocked.
+  deviations:
+  - Assumed that "the pre average is lower" holds only if pre is lower both by the rise above
+    baseline in the window where post is significant (-0.5 to -0.3 s) and by the largest value of
+    the whole average, or if the per-component difference is significant. Pre is lower in the
+    window (0.063 against 0.107) but its largest value is higher (0.145 against 0.132), and the
+    per-component difference is not significant (p = 0.15), so this part is not established.
+    Comparing by the window alone would make the claim reproduced. Both comparisons are shown.
+  - Event-triggered averages use R over all bins of the rest epoch with Q z-transformed over the
+    whole epoch, since the -4 to 4 s windows reach outside SWS; transitions are taken inside SWS.
+- claim: fig6c-spindles
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs spindle times from the prefrontal LFP, which is not in the data set.
+- claim: fig6d-reactivation-spwr-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SPWR times and the delta-wave and spindle times; see fig5a-spwr-bins.
+- claim: fig7b-post-spwr-after-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The templates are computed from SWS bins at SPWRs, and the data set holds no SPWR times.
+    The learning sessions and trials it needs are in the data set's description.
+- claim: fig7b-controls
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every control uses templates from SPWR or inter-SPWR bins, and the data set holds no SPWR
+    times.
+- claim: fig7c-choice-point
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-post-spwr-after-learning, blocked for want of SPWR times.
+- claim: fig7d-two-factors
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7c-choice-point, blocked for want of SPWR times.
+- claim: supp12-behavior-unchanged
+  outcome: reproduced
+  notebook: reproduce_peyrache_2009.ipynb
+  output: claim:supp12-behavior-unchanged
+  notes: In the ten learning sessions, trial length does not differ before and after the learning
+    trial, by session means (5.48 against 8.23 s, paired t p = 0.16, n = 10) or by trials (5.35 against
+    6.81 s, unpaired t p = 0.28; medians 4.30 s both). Speed along the path does not differ in 9 of 10
+    bins; the first bin is faster after learning (24.9 against 23.3 units/s, p = 0.034 uncorrected,
+    0.34 after Bonferroni over the ten bins). The test has little power (a 2.7 s difference over ten
+    sessions is not significant). With the learning points of learning-sessions reading (a) in the
+    same ten sessions, session means give p = 0.19.
+  deviations:
+  - The learning sessions and trials are those listed in the data set's description, since the
+    paper's definition does not recover them (learning-sessions).
+  - Speed is shown in ten bins of the fraction of the trial's path length, as the data set holds no
+    maze geometry for the paper's linearization; it is reported, and does not decide the outcome.
+findings:
+- kind: data_missing
+  statement: The data set holds no LFP, no SPWR, delta-wave or spindle times, and no tetrode of each
+    cell. The paper's analyses of hippocampal sharp-wave ripples, cortical delta waves and spindles
+    (Figures 5 to 7) and its same-tetrode control cannot be repeated, 14 of 29 claims.
+- kind: data_missing
+  statement: The data set holds 14 sessions of rat 15, where the paper reports 16 analysed. With the
+    paper's inclusion rule (at least ten cells and 4 min of SWS in each rest epoch) 56 sessions and
+    1499 cells remain, against 63 and 1,692 in the paper; rats 18 and 20 match the paper's counts,
+    rat 19 has one fewer and rat 15 six fewer.
+- kind: selection_undocumented
+  statement: The data set holds 86 sessions, including 23 of rat 20 that fail the 4 min SWS rule,
+    and does not say which sessions the paper analysed.
+- kind: metadata_insufficient
+  statement: The bounds of the pre and post rest epochs are not given; only the awake interval and
+    the SWS intervals are. Position units and the maze's coordinates are not stated.
+- kind: other
+  statement: Two of the ten learning sessions the description lists (201227 and 201229) have less
+    than 4 min of SWS in one rest epoch by the data set's SWS intervals (2.2 min pre, and 3.3 min
+    post), so they would fail the paper's inclusion rule, though the paper's Figure 7 uses ten
+    learning sessions.
+- kind: other
+  statement: Sessions without SWS in a rest epoch store a single [0, 0] interval (four sessions) or an
+    empty file (150704 SwsPRE), not a documented empty value.
+- kind: other
+  statement: Cell types are all 0 (unknown) in 200107 and all 1 (interneuron) in 200209, and mostly
+    unknown in 200131, 200224 and 200301, which is unlikely for prefrontal recordings.
+- kind: other
+  statement: In five sessions spikes continue 12 to 176 min after the position record ends (200106
+    by 176 min), and in 200213 the position record ends before the awake interval does.
+- kind: other
+  statement: In the recorded trials rat 18 never reaches the rule-change criterion on the right-arm
+    rule, yet its rule was changed, and three rats, not two, reach criterion on the left-arm rule.
+- kind: methods_unavailable
+  statement: For the authors. Is the match epoch z-transformed over the whole rest epoch or over its
+    SWS bins alone? The Methods say "For all epochs, spike trains ... were z transformed", and
+    analyses are restricted to SWS. Both were run here and no outcome changes, but the values differ
+    (for example r squared 0.384 against 0.417 for Figure 2b).
+- kind: methods_unavailable
+  statement: For the authors. How were the pre and post rest epochs bounded in the deposited
+    sessions, and how were DOWN states detected for Figure 6b (beyond the 80 ms minimum) and the pre
+    epoch's smaller modulation judged? Here DOWN states are 80 ms without spikes, and the pre
+    modulation is compared over the window where post is significant; compared by the largest value,
+    pre is not smaller.
+- kind: methods_unavailable
+  statement: For the authors. The tests behind Figure 2b, Figure 2e and Supplementary Figure 11D are
+    not named, and the r squared of 0.61 for Figure 2b is near the r found here (0.62, r squared 0.38).
+    Which tests were used, and is 0.61 an r or an r squared?
+verifications:
+- date: 2026-11-05
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper under paper/.
+  results:
+  - claim: sessions-and-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Neither reading falls within tolerance. All sessions gives 86 sessions and 2155 cells; the
+      inclusion rule gives 56 and 1499 (need 57 to 69 and 1523 to 1861). Per rat under the rule
+      10/11/11/24, against the paper's 16/11/12/24. The 3.5 min SWS variant gives 63 sessions and
+      1682 cells, matching the totals but not the per-rat counts, and two of the description's
+      learning sessions (201227, 201229) fail the 4 min rule, which suggests the deposited SWS
+      intervals or the inclusion rule differ from the paper's; the notebook does not mention it.
+    response: No change of outcome. The result cell now says that 201227 and 201229 fail the 4 min
+      rule and that the deposited SWS intervals, or the rule as applied, differ from the paper's.
+  - claim: rules-learned
+    agrees: true
+    outcome: not_reproduced
+    reason: Both readings give right 3, lit 4, left 3, dark 1, against 4/4/2/1. Rat 18 never reaches
+      the criterion under the right-arm rule. It asked, for each rat and rule, for the longest correct
+      run and the best 12-trial window, to show whether a missing session or the criterion causes the
+      mismatch.
+    response: No change of outcome. The table was added. On the right-arm rule rat 18 has 22 trials,
+      a longest run of 9 and at most 10 correct in 12, one trial short of either form of the
+      criterion; on the left-arm rule rats 15 and 18 pass clearly (runs of 14 and 13).
+  - claim: learning-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading gives 9 to 11 sessions over four rats. Reading (b) is computed wrongly,
+      learning_point with include_block=False returns None when the qualifying block runs to the end
+      of the session, because an empty remainder fails len(rest) (confirmed on [0,0,1,1,1,1,1]), so 7
+      of the description's 10 sessions are NaN under (b) and the claim is not settled under reading
+      (b).
+    response: Fixed. Under reading (b) an empty remainder now counts as passing, with a test on the
+      synthetic input in the notebook that fails on the earlier code. Reading (b) now gives 22
+      sessions under (i) and 14 under (ii), each over four rats, so no reading gives 9 to 11 and the
+      outcome stays not_reproduced.
+  - claim: fig1b-signal-components
+    agrees: true
+    outcome: partially_reproduced
+    reason: Signal total is 285, outside 291 to 355; nonsignal is 730, exactly at the lower bound; 45
+      of 56 sessions have 1 to 6 signal components; per session the rates match the paper. The 12
+      cells silent in the awake epoch are counted in n, which lowers q and raises lambda_max slightly
+      and biases the signal count down a little. fig1b was not run under the 3.5 min variant.
+    response: No change of outcome. Both variants were added. Leaving out the silent cells gives 287
+      and 727. The 3.5 min SWS variant, outside the criterion since it is not a reading of
+      sessions-and-cells, gives 315 and 820, both within tolerance, with 51 of 63 sessions at 1 to 6.
+  - claim: fig2b-post-greater-than-pre
+    agrees: true
+    outcome: reproduced
+    reason: Post exceeds pre in all three groups with p < 0.005 under both tests and both z readings.
+      Group sizes are 9/35/241, so two of the three expected counts are outside tolerance, a
+      shortfall that comes from fig1b. It asked for the group sizes under the 3.5 min variant.
+    response: No change of outcome. Under the 3.5 min variant the group sizes are 11, 39 and 265, all
+      within tolerance.
+  - claim: supp5-sws-only
+    agrees: false
+    outcome: not_reproduced
+    reason: The state main effect has p = 0.0138, above the required 0.01, and in non-SWS bins post
+      exceeds pre significantly (paired t p = 0.042, Wilcoxon p = 0.018); the 30 min variant gives the
+      same result. The ordinary two-way ANOVA on four non-independent means per component could be
+      replaced by a repeated-measures form, which could bring the state effect below 0.01, but the
+      non-SWS result still fails the claim.
+    response: The ANOVA is now a repeated-measures ANOVA with the component as subject, since the
+      four means are not independent; it gives state p = 0.0019 and epoch p = 4.9e-08, both below
+      0.01, and the ordinary ANOVA is shown. The outcome stays partially_reproduced, as two of the
+      claim's three parts hold and the absence of a post-pre effect outside SWS fails under both
+      readings. The disagreement is recorded. The helper module's docstring now gives the rest-epoch
+      bounds that rest_epochs uses (0 to the awake epoch, and its end to the end of the position
+      record), where it had said the first and last spike.
+  - claim: supp6-pre-post-sws-alike
+    agrees: false
+    outcome: partially_reproduced
+    reason: No difference by paired t-test in total SWS (p = 0.87), episode duration (0.41),
+      session-mean rate (0.93) or cell rate (0.65). SPWR rate, delta waves and LFP power are blocked
+      (data_missing).
+    response: The outcome stays reproduced. The criterion lists the SPWR, delta and LFP measures
+      "where the data hold them", and every measure the data set holds shows no difference by the
+      paper's test; the notes say that the outcome covers these measures only. The disagreement is
+      recorded.
+  - claim: fig2b-encoding-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: r squared is 0.384 (epochz) or 0.417 (swsz), outside 0.549 to 0.671. p < 1e-30 and r > 0
+      do hold. r itself is 0.620, close to the paper's "r squared = 0.61", which the claims file
+      cannot settle.
+    response: No change.
+  - claim: fig2b-pre-weaker
+    agrees: true
+    outcome: partially_reproduced
+    reason: The pre slope and correlation are lower in both z readings. The correlation test passes
+      1e-5 (Steiger p = 6e-13). The best slope p is 3e-13, which misses 1e-20, so this falls under the
+      criterion's partial clause.
+    response: No change.
+  - claim: supp8-other-tetrode-pairs
+    agrees: true
+    outcome: blocked
+    reason: There is no tetrode per cell; confirmed against the archive's listing.
+    response: No change.
+  - claim: fig2e-skewness
+    agrees: true
+    outcome: not_reproduced
+    reason: Only the 1.4 to 1.8 group is significant (p = 0.009). The above 1.8 group has a negative
+      mean difference (-1.19, p = 0.62), and there is no rise with Phi under either z reading.
+    response: No change.
+  - claim: fig2f-tail-contribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: At best 2 of 3 groups fall in 36 to 55%. Reading (b) divides by near-zero means, giving
+      values like 5459%; the count rests on values that are well defined.
+    response: No change of outcome. The notebook prints the largest per-component ratio of each group
+      and its result cell and the notes say the extreme reading (b) means are not well defined and
+      which values the count rests on.
+  - claim: supp10-no-coactivation
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (a) the post-SWS zero lag is below 0 and below the 200 to 500 ms mean, with
+      its minimum at 0 ms, in both z readings; the awake zero lag is 0.033, above chance with p =
+      8.5e-16. Reading (b) divides by near-zero means (zero-lag ratio -337 with s.e.m. 430), and the
+      printout calling it "below chance True" is meaningless.
+    response: No change of outcome. The printout no longer compares reading (b) with chance in sleep,
+      and says why.
+  - claim: supp11-shuffle-control
+    agrees: true
+    outcome: partially_reproduced
+    reason: Shuffled values are about 1/20 of actual in every group, so the magnitude part holds. They
+      differ between pre and post in the above 1.8 group (t p = 0.031, Wilcoxon p = 0.012) and in 1.4
+      to 1.8 by Wilcoxon (p = 0.023), so the absence part fails.
+    response: No change.
+  - claim: fig5a-spwr-bins
+    agrees: true
+    outcome: blocked
+    reason: No ripple times or hippocampal LFP in the archive.
+    response: No change.
+  - claim: fig5b-spwr-triggered
+    agrees: true
+    outcome: blocked
+    reason: No ripple times or hippocampal LFP in the archive.
+    response: No change.
+  - claim: fig5c-peak-40ms
+    agrees: true
+    outcome: blocked
+    reason: No ripple times or hippocampal LFP in the archive.
+    response: No change.
+  - claim: fig5d-population-asymmetric
+    agrees: true
+    outcome: blocked
+    reason: No ripple times or hippocampal LFP in the archive.
+    response: No change.
+  - claim: fig5e-autocorrelogram
+    agrees: true
+    outcome: blocked
+    reason: No ripple times or hippocampal LFP in the archive.
+    response: No change.
+  - claim: replay-in-delta-spindle-periods
+    agrees: true
+    outcome: blocked
+    reason: No prefrontal LFP in the archive.
+    response: No change.
+  - claim: fig6a-delta-waves
+    agrees: true
+    outcome: blocked
+    reason: No prefrontal LFP in the archive.
+    response: No change.
+  - claim: fig6b-down-up
+    agrees: false
+    outcome: partially_reproduced
+    reason: Post signal components have significant bins at -0.5 to -0.3 s, nonsignal components have
+      none, and pre is lower in that window (0.063 against 0.107). Pre's peak is higher than post's
+      (0.145 against 0.132), and the per-component post-minus-pre difference is not significant (p =
+      0.15). With 10 ms bins the mean count per bin is below 5, so reading (b) is the same as (a), and
+      the notebook does not say so. It asked for the lag of the one significant pre bin and the full
+      pre profile.
+    response: Outcome changed to partially_reproduced, for the verifier's reason. The notebook now
+      prints why reading (b) equals (a) (mean count 0.21 to 2.22 per 10 ms bin), the lag of pre's
+      significant bin (+0.2 s, after the transition) and the pre and post profiles from -1 to 1 s.
+  - claim: fig6c-spindles
+    agrees: true
+    outcome: blocked
+    reason: No prefrontal LFP in the archive.
+    response: No change.
+  - claim: fig6d-reactivation-spwr-correlation
+    agrees: true
+    outcome: blocked
+    reason: Needs ripple times.
+    response: No change.
+  - claim: fig7b-post-spwr-after-learning
+    agrees: true
+    outcome: blocked
+    reason: All templates come from SPWR or inter-SPWR bins, and there are no ripple times.
+    response: No change.
+  - claim: fig7b-controls
+    agrees: true
+    outcome: blocked
+    reason: All templates come from SPWR or inter-SPWR bins, and there are no ripple times.
+    response: No change.
+  - claim: fig7c-choice-point
+    agrees: true
+    outcome: blocked
+    reason: All templates come from SPWR or inter-SPWR bins, and there are no ripple times.
+    response: No change.
+  - claim: fig7d-two-factors
+    agrees: true
+    outcome: blocked
+    reason: All templates come from SPWR or inter-SPWR bins, and there are no ripple times.
+    response: No change.
+  - claim: supp12-behavior-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Trial length shows no difference ((b) paired p = 0.158, (a) p = 0.278). The test has
+      little power (+2.7 s, n = 10), and the sessions come from the data set's description, not from
+      learning-sessions. The speed difference in path bin 0 (p = 0.034, uncorrected) is shown without
+      comment, and the path-fraction bins are not the paper's linearized maze.
+    response: No change of outcome. Added a variant with the learning points of learning-sessions
+      reading (a) in the same ten sessions (p = 0.19), the Bonferroni p of each speed bin (bin 0,
+      0.34), and text on the test's power, the source of the sessions and the bins.
+- date: 2026-11-05
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the first revision, the helper module, the claims file and
+    the attempt record, with the paper under paper/.
+  results:
+  - claim: sessions-and-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: rules-learned
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: learning-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: The fixed reading (b) gives 22 and 14 sessions; neither is in 9 to 11. The Summary's "16
+      to 34 sessions" is wrong, as cell 15 prints 34, 16, 22 and 14, so the range is 14 to 34; this
+      was left over from before reading (b) was fixed.
+    response: The Summary now says 14 to 34 sessions.
+  - claim: fig1b-signal-components
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2b-post-greater-than-pre
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp5-sws-only
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now agrees. The repeated-measures ANOVA gives state p = 0.0019 and epoch p = 4.9e-08,
+      and outside SWS post still exceeds pre under both readings (t p = 0.042, Wilcoxon p = 0.018);
+      two of the three parts hold. The rest-epoch assumption is stated, follows the criterion, and
+      the 30-min variant gives the same result. The deviation and notebook cell 0 bound post at the
+      end of the position record, but rest_epochs also extends it to the last post SWS interval if
+      that is later; no included session appears to be affected.
+    response: The deviation and notebook cell 0 now give the full bound, including the extension to
+      the last post SWS interval.
+  - claim: supp6-pre-post-sws-alike
+    agrees: true
+    outcome: reproduced
+    reason: Withdraws its round-1 disagreement. The criterion includes the SPWR, delta and LFP
+      measures only "where the data hold them" and judges each measure on its own; every measure the
+      data set holds shows no difference by paired t-test, so reproduced is consistent with the
+      criterion as written.
+    response: No change.
+  - claim: fig2b-encoding-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2b-pre-weaker
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp8-other-tetrode-pairs
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig2e-skewness
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2f-tail-contribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp10-no-coactivation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp11-shuffle-control
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The notes' "5.3% to 5.9% of the actual" is the epoch-z range only; with z over
+      SWS bins it is 5.1%. The conclusion does not change.
+    response: The notes and the result cell now give both ranges, 5.3% to 5.9% with z over the epoch
+      and 5.1% to 5.7% with z over SWS bins.
+  - claim: fig5a-spwr-bins
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5b-spwr-triggered
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5c-peak-40ms
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5d-population-asymmetric
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5e-autocorrelogram
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: replay-in-delta-spindle-periods
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6a-delta-waves
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6b-down-up
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees on the outcome, but the stated assumption does not support it. Under the
+      comparison over -0.5 to -0.3 s pre is lower (0.063 against 0.107), so the criterion as written
+      would give reproduced. The partial outcome rests on two other facts, that the two ways of
+      comparing disagree (pre's peak 0.145 is above post's 0.132) and that the per-component
+      difference is not significant (p = 0.15); the deviation and the summary should say this. The
+      result's "three bins at p < 0.001" is incomplete, as cell 50 prints four significant bins; the
+      fourth is probably the dip at 0 s.
+    response: The deviation now states the assumption the outcome rests on, that pre is lower only
+      if both comparisons agree or the per-component difference is significant, and says that the
+      window comparison alone would give reproduced. The Summary and README rows say why the claim
+      holds in part. The notebook now prints the significant bins with their values; the fourth is
+      the dip at 0 s (-0.059 below baseline), and the result cell and notes mention it.
+  - claim: fig6c-spindles
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6d-reactivation-spwr-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7b-post-spwr-after-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7b-controls
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7c-choice-point
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig7d-two-factors
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: supp12-behavior-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
