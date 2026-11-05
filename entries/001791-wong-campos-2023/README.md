@@ -29,9 +29,9 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 Several outcomes rest on a stated assumption: the site set of Fig. 2, the pair set of Fig. 3d, the
-timing of peaks below one frame, the pulse times of Fig. 1, and which column of the anesthetized
-recordings is the soma (Fig. S12). The
-paper does not settle these. The attempt record, with the reasons and the differences from the
+timing of peaks below one frame and the pulse times of Fig. 1. The paper does not settle these.
+In the anesthetized recordings of Fig. S12 no column is shown to be a soma, so that half of the
+claim is not tested. The attempt record, with the reasons and the differences from the
 paper's method, is
 [`attempts/001791-wong-campos-2023-01.yaml`](../../attempts/001791-wong-campos-2023-01.yaml).
 
