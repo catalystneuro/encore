@@ -384,6 +384,33 @@ def bin_means(sig, noise, edges):
     return pd.DataFrame(rows)
 
 
+def bin_means_clustered(sig, noise, cluster, edges):
+    """As bin_means, with the 95% interval of each bin's mean from a cluster-robust standard
+    error, rows of the same cluster (a pair of units) counted as one sample: the code variant
+    of Fig. 2d gives a pair up to 18 rows and the Ring pairs are ordered, so each pair appears
+    twice (run_compute_ring.py loops over unit_0 and unit_1). A standard choice for the
+    interval, which the paper does not give."""
+    sig, noise, cluster = np.asarray(sig), np.asarray(noise), np.asarray(cluster)
+    ok = np.isfinite(sig) & np.isfinite(noise)
+    sig, noise, cluster = sig[ok], noise[ok], cluster[ok]
+    k = np.clip(np.digitize(sig, edges[1:-1]), 0, len(edges) - 2)
+    rows = []
+    for b in range(len(edges) - 1):
+        v, c = noise[k == b], cluster[k == b]
+        n = len(v)
+        if n < 2:
+            m = lo = hi = np.nan; g = len(set(c))
+        else:
+            m = v.mean()
+            _, ci = np.unique(c, return_inverse=True)
+            g = ci.max() + 1
+            res = np.bincount(ci, weights=v - m)
+            se = np.sqrt((res ** 2).sum() * g / max(g - 1, 1)) / n
+            lo, hi = m - 1.96 * se, m + 1.96 * se
+        rows.append(dict(bin=b, n_rows=n, n_pairs=g, mean_noise=m, ci_lo=lo, ci_hi=hi))
+    return pd.DataFrame(rows)
+
+
 def triangle_noise_methods(x, min_rate=MIN_RATE_HZ):
     """Methods, Noise Correlations: signal correlation across the 9 1-object condition means
     (each unit at least 3 trials in each), noise correlation the mean over the 18 2-object
@@ -456,7 +483,7 @@ def triangle_noise_code(x, rng, min_rate=MIN_RATE_HZ, n_shuffle=10, min_trials=5
                         sigs.append(s)
                     sig = np.nanmean(np.stack(sigs), 0) if len(cols) else np.full_like(noise, np.nan)
                     ok = (n0[iu] > min_trials) & (n1[iu] > min_trials) & (nc[iu] > min_trials)
-                    out.append(pd.DataFrame(dict(signal=sig[iu][ok], noise=noise[iu][ok])))
+                    out.append(pd.DataFrame(dict(unit_0=iu[0][ok], unit_1=iu[1][ok], signal=sig[iu][ok], noise=noise[iu][ok])))
     return pd.concat(out, ignore_index=True)
 
 
@@ -566,13 +593,15 @@ def get_simultaneous(presence, keep_units_weight=1.0):
     return np.array(unit_idx, int), np.array(trial_idx, int)
 
 
-def decoding_data(x, units, phase, kind, feature, min_trials_per_unit=50, min_units_per_trial=5):
+def decoding_data(x, units, phase, kind, feature, min_trials_per_unit=50, min_units_per_trial=5, info=False):
     """Neural matrix (trials x units) and labels as dataset.py and labelers.py build them.
     kind "1": 1-object Triangle trials, one-hot location or identity; "complement": 2-object
     Triangle trials, the location or identity absent; "2obj": 2-object trials with one label
     per object (Triangle one-hot location, Ring 2x - 1 and 2y - 1 in arena coordinates).
     Triangle trials are on the triangle; all trials are completed. `units` are the indices of
-    the units entering the models (T7)."""
+    the units entering the models (T7). The rates are not normalised: dataset.py has the per-unit
+    z-scoring commented out ("# Normalize neural data"), so the code's decoders get rates in Hz.
+    With info=True also returns the units and trials left after each of the code's filters."""
     tr = x["trials"]
     m = tr.completed.values.copy()
     if x["task"] == "triangle":
@@ -593,11 +622,16 @@ def decoding_data(x, units, phase, kind, feature, min_trials_per_unit=50, min_un
             Y = np.stack([np.stack([2 * tr[f"x{i}"].values[idx], 2 * tr[f"y{i}"].values[idx]], 1)
                           for i in range(2)], 1)
     X = x["rates"][phase][units][:, idx].T
+    counts = dict(units_in=X.shape[1], trials_in=X.shape[0])
     ku = np.isfinite(X).sum(0) >= min_trials_per_unit
     X = X[:, ku]
     kt = np.isfinite(X).sum(1) >= min_units_per_trial
     X, Y = X[kt], Y[kt]
+    counts.update(units_min_trials=X.shape[1], trials_min_units=X.shape[0])
     u_keep, t_keep = get_simultaneous(np.isfinite(X))
+    counts.update(units_simultaneous=len(u_keep), trials_simultaneous=len(t_keep))
+    if info:
+        return X[t_keep][:, u_keep], Y[t_keep], counts
     return X[t_keep][:, u_keep], Y[t_keep]
 
 
@@ -683,13 +717,17 @@ def train_linear(Xtr, Ytr, rng, opt="sgd", lr=0.01, l1=0.003, steps=10000, batch
     return W, b
 
 
-def train_linear_2obj(Xtr, Ytr, rng, lr=0.001, l1=0.003, steps=10000, batch=512):
+def train_linear_2obj(Xtr, Ytr, rng, lr=0.001, l1=0.003, steps=10000, batch=512, output="sigmoid"):
     """LinearModel2Objects of models.py, batched over F fits: two sigmoid linear decoders and a
     per-trial logit choosing which decoder reads which object (loss weighted by the sigmoid of
     the logit, as in the code), MSE per decoder and object, L1 on both decoders. Config
     config_2_triangle.py / config_2_ring.py: Adam, lr 0.001, L1 0.003, 10,000 steps. Ytr is
-    (F, n, 2, K)."""
+    (F, n, 2, K). models.py applies the sigmoid for the Ring too, whose targets 2x - 1, 2y - 1
+    (labelers.py) lie in [-0.7, 0.7]; output="linear" drops it, a variant that is not the
+    code's, for checking how much the angles depend on it."""
     F, n, U = Xtr.shape; K = Ytr.shape[-1]
+    act = _sig if output == "sigmoid" else (lambda z: z)
+    dact = (lambda o: o * (1 - o)) if output == "sigmoid" else (lambda o: 1.0)
     bound = 1 / np.sqrt(U)
     W0 = rng.uniform(-bound, bound, (F, U, K)).astype(np.float32)
     b0 = rng.uniform(-bound, bound, (F, 1, K)).astype(np.float32)
@@ -701,14 +739,14 @@ def train_linear_2obj(Xtr, Ytr, rng, lr=0.001, l1=0.003, steps=10000, batch=512)
     for _ in range(steps):
         idx = rng.integers(0, n, (F, batch))
         xb, yb = Xtr[fi, idx], Ytr[fi, idx]
-        o0 = _sig(xb @ W0 + b0); o1 = _sig(xb @ W1 + b1)
+        o0 = act(xb @ W0 + b0); o1 = act(xb @ W1 + b1)
         l00 = ((o0 - yb[:, :, 0]) ** 2).mean(-1); l11 = ((o1 - yb[:, :, 1]) ** 2).mean(-1)
         l10 = ((o1 - yb[:, :, 0]) ** 2).mean(-1); l01 = ((o0 - yb[:, :, 1]) ** 2).mean(-1)
         ps = _sig(lg[fi, idx])
         # d loss / d outputs
         g0 = (ps[..., None] * 2 * (o0 - yb[:, :, 0]) + (1 - ps)[..., None] * 2 * (o0 - yb[:, :, 1])) / (batch * K)
         g1 = (ps[..., None] * 2 * (o1 - yb[:, :, 1]) + (1 - ps)[..., None] * 2 * (o1 - yb[:, :, 0])) / (batch * K)
-        gz0 = g0 * o0 * (1 - o0); gz1 = g1 * o1 * (1 - o1)
+        gz0 = g0 * dact(o0); gz1 = g1 * dact(o1)
         xt = np.transpose(xb, (0, 2, 1))
         gW0 = xt @ gz0 + l1 * np.sign(W0); gb0 = gz0.sum(1, keepdims=True) + l1 * np.sign(b0)
         gW1 = xt @ gz1 + l1 * np.sign(W1); gb1 = gz1.sum(1, keepdims=True) + l1 * np.sign(b1)
