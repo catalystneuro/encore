@@ -1,0 +1,1070 @@
+schema_version: 2
+id: 001710-plitt-2023-01
+dataset:
+  archive: dandi
+  id: '001710'
+  version: 0.260213.0329
+  doi: 10.48324/dandi.001710/0.260213.0329
+paper: doi:10.1101/2023.11.20.567978
+date: '2026-11-05'
+entry: 001710-plitt-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42021004584
+inputs:
+- what: Across-session ROI matches of every control and Cre mouse (roi_aligners.zip), used to track cells
+    across days and to merge the two split days.
+  source: doi:10.6084/m9.figshare.31286365.v5
+- what: The session order of the ROI matches (ravel_ind in mouse_metadata.py), and the authors' choices
+    cited as assumptions (dF/F as activity, decoder input, per-bin PV correlation, block baseline).
+  source: https://github.com/GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit f2ab24db8709a321d38576a1fa674f95035a2fec
+outcomes:
+- claim: link-roi-alignment
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:link-roi-alignment
+  notes: Every matched ROI index exists in the dataset's files. After removing each day pair's median
+    displacement, all matched centroids lie within 10 px (median residual 0.5 to 1.6 px per mouse), against
+    a median of 247 px for random pairs. Between 70 and 562 cells per mouse are tracked over all six days.
+    Ctrl-4 loses 32 tracked cells because they are not among the ROIs matched between the two files of
+    its split day 2.
+  deviations:
+  - The session order of each mouse's matches is read from the authors' mouse_metadata.py at commit f2ab24d
+    (ravel_ind); the dataset holds no such index.
+- claim: fig1c-novelty-preference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The freely moving T-maze, open field and elevated plus maze tracking (Viewer III) is not in the
+    dandiset, which holds only head-fixed VR imaging sessions; it was not found on the Figshare record
+    the dandiset names (shuffles and ROI matches only).
+- claim: figs1c-training-occupancy-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The freely moving T-maze, open field and elevated plus maze tracking (Viewer III) is not in the
+    dandiset, which holds only head-fixed VR imaging sessions; it was not found on the Figshare record
+    the dandiset names (shuffles and ROI matches only).
+- claim: figs1e-open-field-distance-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The freely moving T-maze, open field and elevated plus maze tracking (Viewer III) is not in the
+    dandiset, which holds only head-fixed VR imaging sessions; it was not found on the Figshare record
+    the dandiset names (shuffles and ROI matches only).
+- claim: figs1f-epm-closed-arm-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The freely moving T-maze, open field and elevated plus maze tracking (Viewer III) is not in the
+    dandiset, which holds only head-fixed VR imaging sessions; it was not found on the Figshare record
+    the dandiset names (shuffles and ROI matches only).
+- claim: figs1f-epm-distance-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The freely moving T-maze, open field and elevated plus maze tracking (Viewer III) is not in the
+    dandiset, which holds only head-fixed VR imaging sessions; it was not found on the Figshare record
+    the dandiset names (shuffles and ROI matches only).
+- claim: fig2ab-example-cell-counts
+  outcome: partially_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig2ab-example-cell-counts
+  measured:
+  - 1208
+  - 120
+  - 1568
+  - 20
+  - 1087
+  - 82
+  - 936
+  - 17
+  notes: 'Seven of the eight counts match exactly: the four cell counts (1208, 1568, 1087, 936) and the
+    trial counts for Ctrl-3 (120 familiar, 20 novel) and Cre-3 day 1 (17 novel). Cre-3 day 5 has 82 familiar
+    trials, not 17; that day also has 11 novel trials and 7 familiar trials in block 6.'
+  deviations:
+  - Familiar and novel trials are counted over the whole session, as the legend's numbers for Ctrl-3 match
+    that count.
+- claim: fig1f-anticipatory-licking-familiar
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig1f-anticipatory-licking-familiar
+  notes: 'On familiar trials, control mice lick more in the 30 cm before the zone than Cre mice under
+    both rate readings: virus F(1,14)=21.0, p=0.0004 for (i) and F(1,14)=21.2, p=0.0004 for (ii). Control
+    means are 2.9 to 3.8 licks/s on each day, Cre means 1.2 to 2.7. Only Cre-1 to Cre-7 are in the dataset,
+    so the paper''s 8-Cre reading (df 15) cannot be run.'
+  deviations:
+  - Cre-8 is not in the dataset, so the claims file's reading (b), Cre-1 to Cre-8, cannot be run; every
+    test uses Cre-1 to Cre-7.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+  - Licks are the full-resolution non-consummatory lick series; the imaging-rate lick series says it must
+    not be used for comparisons between groups.
+- claim: fig1g-anticipatory-licking-novel
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig1g-anticipatory-licking-novel
+  notes: 'On novel trials control mice lick more: virus F(1,14)=25.0, p=0.0002 for (i) and F(1,14)=25.6,
+    p=0.0002 for (ii).'
+  deviations:
+  - Cre-8 is not in the dataset, so the claims file's reading (b), Cre-1 to Cre-8, cannot be run; every
+    test uses Cre-1 to Cre-7.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+- claim: vr-reward-location-learning
+  outcome: partially_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:vr-reward-location-learning
+  notes: Under speed reading (ii), the day-6 spatial pattern holds in both groups on both arms. Normalized
+    lick rate in the 30 cm before the zone is 1.69 to 3.50, above every bin outside the zone, where the
+    maximum is 0.84 to 1.65. Normalized speed there is 0.47 to 0.57. Under reading (i), the Cre speed
+    ratio is 1.10, so the pattern holds for control only. The day effect of the familiar-trial licking
+    ANOVA is significant (p=0.007 and p=0.0006). But the day-6 mean (2.67 and 2.38 licks/s) is below the
+    day-1 mean (3.22 and 3.17), and the criterion asks for day 6 above day 1. So the day part fails.
+  deviations:
+  - Cre-8 is not in the dataset, so the claims file's reading (b), Cre-1 to Cre-8, cannot be run; every
+    test uses Cre-1 to Cre-7.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+  - The Methods do not say how the animal's average running speed is taken; readings (i) time-weighted
+    mean and (ii) mean of the binned speeds are both run, and the pattern holds in both groups only under
+    (ii).
+- claim: figs2f-novelty-slowing-familiar
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs2f-novelty-slowing-familiar
+  notes: 'With the first two familiar trials of block 6 and the binned speed, control mice slow more than
+    Cre mice: virus F(1,14)=4.89, p=0.044 (paper F(1,14)=4.82, p=0.045). Control means are -0.08 to -0.14
+    log units, Cre means -0.03 to -0.08. On day 1, Holm p=0.007 (Student) and 0.006 (Welch), t=-3.98 (paper
+    t=4.43, p=0.007). Reading (a,ii) has a virus effect (p=0.006) but no day-1 effect (Holm p=0.108).
+    Readings (b,i) and (b,ii), all block-6 familiar trials, show no effect (p=0.56, 0.27).'
+  deviations:
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - Speed is the full-resolution speed series used as cm/s (see findings).
+- claim: figs2g-novel-arm-slowing-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs2g-novel-arm-slowing-no-difference
+  notes: On the first two novel trials of block 6 (binned speed), the virus main effect is F(1,14)=1.11,
+    p=0.309 (paper F(1,14)=1.12, p=0.308). The variant (a,ii) gives p=0.048.
+  deviations:
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+- claim: figs2i-reward-approach-speed-cv
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs2i-reward-approach-speed-cv
+  notes: The speed CV in the 30 cm before the zone is higher in Cre mice on familiar trials (virus F(1,14)=8.33,
+    p=0.012) and on novel trials (F(1,14)=6.32, p=0.025). On day 6 the Cre mean is 0.57 and the control
+    mean 0.29 (familiar).
+  deviations:
+  - Cre-8 is not in the dataset, so the claims file's reading (b), Cre-1 to Cre-8, cannot be run; every
+    test uses Cre-1 to Cre-7.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+- claim: fig2cd-decoding-no-group-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig2cd-decoding-no-group-difference
+  notes: 'Decoding error does not differ between groups: virus F(1,14)=0.995, p=0.335 on familiar trials
+    and F(1,14)=0.257, p=0.62 on novel trials. Errors range from 6 to 121 cm per mouse and day.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - The decoder input follows the authors' naive_bayes.py (dF/F x 10, minus its minimum over cells, plus
+    1e-3) so that rates are positive; the likelihood is the Poisson log likelihood of the claims file.
+  assumed: true
+- claim: fig2cd-decoding-improves-over-days
+  outcome: partially_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig2cd-decoding-improves-over-days
+  notes: The day effect is significant on familiar trials (F(5,70)=6.97, p=2.5e-5) and on novel trials
+    (F(5,70)=8.93, p=1.3e-6). On novel trials, day 1 error is above days 2, 3, 4 and 6 (Holm p 0.002 to
+    2e-5) but not day 5 (Holm p=0.066). On familiar trials, none of the five day-1 contrasts survives
+    Holm correction (p 0.12 to 0.29), though all have t > 2.4.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  assumed: true
+- claim: figs3a-spatial-information-fraction-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs3a-spatial-information-fraction-no-difference
+  notes: 'With the deposited place-cell masks there is no virus effect on the place-cell fraction: F(1,14)=0.182,
+    p=0.676 (familiar) and F(1,14)=0.118, p=0.736 (novel). With the recomputed masks (variant), the novel
+    fraction differs (p=0.036). The fractions are high: 0.88 to 0.89 familiar and 0.66 to 0.68 novel.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  assumed: true
+- claim: figs3b-within-day-stability-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs3b-within-day-stability-no-difference
+  notes: Under all four readings and both trial types, the virus main effect has p >= 0.897. Group means
+    are 0.39 to 0.45 in both groups.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  assumed: true
+- claim: figs3c-familiar-novel-remapping
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs3c-familiar-novel-remapping
+  notes: The readings disagree, and reading (b), the per-bin correlation of the authors' code (`calc_pv_corr`),
+    is adopted. Under (b) the virus effect has p=0.314 (cells i) and p=0.316 (ii). Under the flattened
+    reading (a), Cre mice have a higher familiar-to-novel correlation (p=0.018 and 0.020; 0.32 against
+    0.25). The familiar-to-novel correlation, 0.30 (control) and 0.33 (Cre) under (b,i), is lower than
+    the within-type trial-by-trial correlation, 0.40 in both groups. It is not near zero, as the stem
+    is shared.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - The PV correlation readings disagree (flattened, virus p=0.018; per-bin, p=0.314). The per-bin correlation,
+    reading (b), is adopted as an assumption because it is the authors' calc_pv_corr (spatial_analyses.py
+    at commit f2ab24d). Reading (ii) uses the union of familiar and novel place cells (Methods, 'we considered
+    the union of place cells in both conditions').
+  assumed: true
+- claim: fig2gh-across-day-pv-correlation-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig2gh-across-day-pv-correlation-no-difference
+  notes: 'Under every reading and both trial types, the across-day PV correlation does not differ between
+    groups: p=0.30 to 0.56 (Welch 0.29 to 0.58). Means are 0.52 to 0.58 (control) and 0.49 to 0.55 (Cre).'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  assumed: true
+- claim: figs3eg-across-day-decoding-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs3eg-across-day-decoding-no-difference
+  notes: 'The across-day decoding error does not differ between groups under either reading: p=0.63 to
+    0.66. Control is 22 to 27 cm, Cre 24 to 29 cm.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  - The across-day decoder is fit on the mean map of all trials of the training day, without cell subsampling,
+    as all tracked cells are used (Methods, Naive Bayes decoding).
+  assumed: true
+- claim: figs4-morph-task-context-discrimination
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The morph task sessions (Fig S4) are not in the dandiset; the paper also gives no measure or
+    test for this finding (claims file criterion).
+- claim: figs5-ca3-dg-place-fields
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Cre-8 (CA2/3 imaging) and the extra Cre-7 dentate gyrus session are not in the dandiset; Cre-7
+    has only its six CA1 Y-maze days.
+- claim: fig3bc-model-stable-place-cells
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: A simulation, not a test on data; the claims file records that the paper's text omits the weight
+    update equation, the input tuning function, the number of trials and the measures of place selectivity,
+    width and field count. The authors' later code (wta.py and notebooks/fig_4/kwta_model.ipynb at commit
+    f2ab24d) holds a model; it is not linked by the preprint and was not run in this attempt.
+- claim: fig3d-model-wider-fields-with-plasticity
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: A simulation, not a test on data; the claims file records that the paper's text omits the weight
+    update equation, the input tuning function, the number of trials and the measures of place selectivity,
+    width and field count. The authors' later code (wta.py and notebooks/fig_4/kwta_model.ipynb at commit
+    f2ab24d) holds a model; it is not linked by the preprint and was not run in this attempt.
+- claim: fig3e-model-more-fields-without-plasticity
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: A simulation, not a test on data; the claims file records that the paper's text omits the weight
+    update equation, the input tuning function, the number of trials and the measures of place selectivity,
+    width and field count. The authors' later code (wta.py and notebooks/fig_4/kwta_model.ipynb at commit
+    f2ab24d) holds a model; it is not linked by the preprint and was not run in this attempt.
+- claim: fig3f-narrower-fields-cre-familiar
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig3f-narrower-fields-cre-familiar
+  notes: 'Familiar-trial fields of Cre mice are narrower on average (all days, all candidate fields: 63
+    against 68 cm). But no reading has a significant virus effect over days 1 to 5 (p=0.089 to 0.214)
+    or on day 6 (p=0.060 to 0.209).'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - In the 1000 within-trial shuffles one random shift per trial is applied to all cells at once; each
+    cell's null is still a within-trial circular shift of its own series (standard choice).
+  - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
+    against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
+    choice).
+  assumed: true
+- claim: fig3g-narrower-fields-cre-novel
+  outcome: partially_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig3g-narrower-fields-cre-novel
+  notes: 'On novel trials Cre fields are narrower. With all candidate fields, day 6 differs: t=2.49, p=0.026
+    (Welch 0.050) for the field average, and t=2.54, p=0.024 for the cell average. The days 1 to 5 virus
+    effect is not significant under any reading (p=0.051 to 0.082). With formation-lap fields only, neither
+    test is significant.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - In the 1000 within-trial shuffles one random shift per trial is applied to all cells at once; each
+    cell's null is still a within-trial circular shift of its own series (standard choice).
+  - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
+    against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
+    choice).
+  assumed: true
+- claim: fig3h-more-fields-per-cell-cre-familiar
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig3h-more-fields-per-cell-cre-familiar
+  notes: On familiar trials Cre cells have more fields per cell under all four readings. Over days 1 to
+    5 the virus p is 0.0009 to 0.043. On day 6, p is 9e-5 to 0.041 (Welch up to 0.051). With all fields
+    and cells with a field, the means are 1.57 (Cre) and 1.39 (control).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - In the 1000 within-trial shuffles one random shift per trial is applied to all cells at once; each
+    cell's null is still a within-trial circular shift of its own series (standard choice).
+  - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
+    against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
+    choice).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  assumed: true
+- claim: fig3i-more-fields-per-cell-cre-novel
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig3i-more-fields-per-cell-cre-novel
+  notes: On novel trials Cre cells have more fields per cell under three of four readings, with days 1
+    to 5 virus p=0.002 to 0.008 and day 6 p=2e-5 to 0.0002. The fourth reading (formation-lap fields,
+    place cells) gives p=0.071 and 0.056.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - In the 1000 within-trial shuffles one random shift per trial is applied to all cells at once; each
+    cell's null is still a within-trial circular shift of its own series (standard choice).
+  - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
+    against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
+    choice).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  assumed: true
+- claim: fig4e-block6-familiar-activity-lower-cre
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig4e-block6-familiar-activity-lower-cre
+  notes: 'Block-6 familiar-trial activity relative to baseline is lower in Cre mice: virus F(1,14)=22.4,
+    p=0.0003. Daily means are 0.068 to 0.085 (control) and 0.004 to 0.036 (Cre). Posthoc Holm p is 0.013
+    on day 1 and 0.018 on day 5. The variants agree (v1 p=0.003, v2 p=0.015). No cell had a baseline at
+    or below zero.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  assumed: true
+- claim: fig4e-block6-novel-activity-lower-cre
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig4e-block6-novel-activity-lower-cre
+  notes: 'Novel-trial activity is lower in Cre mice: virus F(1,14)=39.9, p=1.9e-5. Posthoc Holm p is 0.004
+    on day 1 and 0.001 on day 5. The variants agree (v1 p=0.002, v2 p=0.002).'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  assumed: true
+- claim: fig4e-novel-minus-familiar-larger-control
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig4e-novel-minus-familiar-larger-control
+  notes: 'Novel minus familiar activity is larger in control mice (0.044 against 0.028): virus F(1,14)=5.16,
+    p=0.040. The variants v1 and v2 do not show it (p=0.28, 0.12).'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  assumed: true
+- claim: fig4-block6-activity-increase-pattern
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig4-block6-activity-increase-pattern
+  notes: In both groups, familiar and novel values are above 0 (control 0.077 and 0.122, Cre 0.023 and
+    0.051), and novel exceeds familiar. With the stem as the first 150 cm, arm exceeds stem for both types
+    in both groups. With a 100 cm stem, Cre familiar trials do not show it (arm 0.020, stem 0.029).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  assumed: true
+- claim: fig4e-novel-increase-grows-over-days
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig4e-novel-increase-grows-over-days
+  notes: The day main effect on novel-trial activity is F(4,56)=4.47, p=0.003 (paper F(4,56)=4.13, p=0.005).
+    The pooled mean rises from 0.078 on day 1 to 0.108 on day 5. Variant v1 gives p=0.067.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  assumed: true
+- claim: fig4d-activity-increase-spread-across-cells
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig4d-activity-increase-spread-across-cells
+  notes: 'On day 5 novel trials, the across-animal mean quantile of the per-cell ratio is higher in control
+    than in Cre mice at every decile from 0.2 to 0.9: 1.08 against 0.97 at the median and 2.62 against
+    1.94 at 0.9. So the shift is not confined to the top tail. Familiar trials show the same at every
+    decile.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  assumed: true
+- claim: figs6b-block4-activity-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs6b-block4-activity-no-difference
+  notes: 'Block-4 normalized activity does not differ between groups: virus F(1,14)=0.118, p=0.736 (paper
+    F(1,14)=0.139, p=0.715). The variants give p=0.95 and 0.55.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Block 4 is the fourth block of each day, its baseline the 10 trials before it.
+  assumed: true
+- claim: figs6e-familiar-activity-trials-since-novel
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs6e-familiar-activity-trials-since-novel
+  notes: Under every reading, the trials-since-novel effect is significant in control mice (9 mice, F(2,16)=4.75
+    to 6.86, p=0.024 to 0.007; paper F(2,16)=6.46, p=0.009). It is also significant in Cre mice (4 mice
+    with complete data, as the paper's df imply; F(2,6)=9.7 to 22.4, p=0.013 to 0.002; paper F(2,6)=15.2,
+    p=0.004). Activity is highest on the trial just after a novel trial and falls with the trials since.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - On two days the session has 4 or 5 blocks and the novel trials are in the last one; that block is
+    used as block 6.
+  - The baseline of each cell is its mean binned dF/F over the 10 trials before the block, as baseline_avg_act
+    in the authors' novel_activity_rate.py; no cell had a baseline at or below 0.
+  - Familiar trials of block 6 before its first novel trial have no 'trials since novel' and are left
+    out; the two-way repeated measures ANOVA keeps mice with every day and level (9 control, 4 Cre).
+  assumed: true
+- claim: figs7b-reward-overrepresentation
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs7b-reward-overrepresentation
+  notes: Among deposited place cells, control mice have a larger proportion with peaks in the 50 cm before
+    the zone. On familiar trials this is 0.219 against 0.192 (virus F(1,14)=5.57, p=0.033). On novel trials
+    it is 0.217 against 0.174 (F(1,14)=9.27, p=0.009). With recomputed place cells, the familiar effect
+    is p=0.052.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+  assumed: true
+- claim: fig5d-reward-cells-fewer-in-cre
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig5d-reward-cells-fewer-in-cre
+  notes: Control mice have more reward cells under all four readings (virus p=0.0004 to 0.038). The proportion
+    changes over days under readings (a,i) and (b,i) (day p=0.016 and 6e-5) but not (a,ii) and (b,ii)
+    (p=0.56 and 0.062).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+  assumed: true
+- claim: fig5d-reward-cells-increase-over-days-control
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig5d-reward-cells-increase-over-days-control
+  notes: The day main effect is F(5,70)=3.01, p=0.016. The control mean rises from 0.034 on day 1 to 0.054
+    on day 6. Reading (b,i) agrees (p=6e-5, 0.097 to 0.169). The day effect is not significant under the
+    denominators of significant cells (p=0.56, 0.062), though the control means still rise.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+  assumed: true
+- claim: fig5d-reward-cells-above-chance-control-only
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig5d-reward-cells-above-chance-control-only
+  notes: 'With the analytic chance (b) and window (a): control mice exceed chance (0.046 against 0.035,
+    t=5.32, p=0.0007); Cre mice do not (0.029 against 0.029, p=0.925). The same holds with denominator
+    (ii). With the permutation chance (a), Cre mice also exceed chance (p=0.002 and 0.002), which the
+    criterion counts as partial. With the wider window (b), the analytic chance exceeds the observed fraction
+    in both groups.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - The paper gives no coordinates for the reward zones; each arm's zone front is the 1st percentile of
+    the positions where rewards were given (left 31.92, right 39.38 spline units), so the 30 cm before
+    the zone are bins 16 to 18 (left) and 23 to 25 (right).
+  - The chance level is computed under the claims file's two readings; the stem is the first 150 cm (Methods,
+    stem and arms of equal length). Reading (b), the analytic chance, is the one under which the criterion
+    holds; under (a) Cre mice are also above chance.
+  assumed: true
+- claim: fig5h-extinction-group-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Days 7 and 8 (reward reversal) are not in the dandiset; each mouse has only the six Y-maze days.
+- claim: fig5i-extinction-intercept-not-slope
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Days 7 and 8 (reward reversal) are not in the dandiset; each mouse has only the six Y-maze days.
+- claim: fig6c-pv-backward-shift-day1-control
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig6c-pv-backward-shift-day1-control
+  notes: With negative cross-correlation set to zero, all cells, the virus main effect is F(1,14)=16.2,
+    p=0.001. On day 1, control is more negative than Cre (-16.5 against 2.9 cm, Holm p=0.019). The control
+    day-1 shift is below 0 (t=-4.50, Holm p=0.020), and control days 2 to 5 are not (Holm p >= 0.81).
+    Place cells only (b,ii) gives the same (day 1 Holm p=0.023, control vs 0 p=0.009). With the raw COM
+    (i), the virus effect holds (p=0.001 for all cells) but the day-1 tests do not (Holm p=0.118 and 0.41).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - The PV correlation at each lag is the Pearson correlation of the overlapping bins x cells (the claims
+    file's PV shift method; the paper's ref 60 is not read).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  assumed: true
+- claim: fig6c-no-pv-shift-cre
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig6c-no-pv-shift-cre
+  notes: 'No Cre one-sample test against 0 is significant on any day under any reading: Holm p >= 0.88.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - The PV correlation at each lag is the Pearson correlation of the overlapping bins x cells (the claims
+    file's PV shift method; the paper's ref 60 is not read).
+  - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
+    deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  assumed: true
+- claim: figs8h-across-day-pv-shift
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs8h-across-day-pv-shift
+  notes: 'Across days, the control novel-arm shift is not below 0 under any reading: means -9.3 to 2.4
+    cm, p=0.15 to 0.83. Control and Cre do not differ (p=0.065 to 0.31). Cre means are positive, 8.7 to
+    17.4 cm, with p=0.10 to 0.26 against 0.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - The PV correlation at each lag is the Pearson correlation of the overlapping bins x cells (the claims
+    file's PV shift method; the paper's ref 60 is not read).
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  assumed: true
+- claim: figs8d-pv-shift-not-explained-by-speed
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs8d-pv-shift-not-explained-by-speed
+  notes: 'The day-1 initial PV shift is not correlated with running speed over the first five novel trials:
+    r=-0.109, p=0.689, 16 mice (paper r=-0.317, p=0.231). The other PV readings give r=-0.15 to -0.39,
+    p >= 0.135.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - The PV correlation at each lag is the Pearson correlation of the overlapping bins x cells (the claims
+    file's PV shift method; the paper's ref 60 is not read).
+  assumed: true
+- claim: fig6d-field-com-shift-larger-control
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig6d-field-com-shift-larger-control
+  notes: 'Under no reading is there a virus effect on day 1. With the formation lap relative to the field
+    mean, Wald chi2=0.05, p=0.815. With the next lap, p=0.984. In variant (c), next lap minus formation
+    lap, p=0.956. Both groups show a small backward step after the formation lap in variant (c): -0.74
+    cm (control) and -0.68 cm (Cre) on day 1. The only significant virus terms are on day 4 (p=0.036 and
+    0.032), where Cre fields shift more.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - In the 1000 within-trial shuffles one random shift per trial is applied to all cells at once; each
+    cell's null is still a within-trial circular shift of its own series (standard choice).
+  - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
+    against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
+    choice).
+  - COM is from imaging frames with dF/F clipped at 0; speed through the field is the imaging-rate speed
+    series. A variant (c), next lap minus formation lap, is added because under the claims file's measure
+    a backward move after formation is positive; it also shows no virus effect on day 1.
+  assumed: true
+- claim: fig6e-width-speed-correlation
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig6e-width-speed-correlation
+  notes: 'On day 1 novel trials, field width rises with formation-lap speed in both groups: 0.43 cm per
+    cm/s in control (p=9e-78) and 0.46 in Cre (p=7e-45). Neither the virus term (p=0.688) nor the speed
+    by virus term (p=0.409) is significant. Pooling days 1 to 6 (reading b), the speed by virus term is
+    significant (p=0.001).'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - In the 1000 within-trial shuffles one random shift per trial is applied to all cells at once; each
+    cell's null is still a within-trial circular shift of its own series (standard choice).
+  - Significant activity for the formation lap is judged on the trial's binned rate in the field bins
+    against 20% of the cell's maximum binned rate in the field (the Methods' rule on binned rates, a standard
+    choice).
+  assumed: true
+- claim: figs9a-hse-trial-proportion-no-difference
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs9a-hse-trial-proportion-no-difference
+  notes: 'Cre mice have more trials with HSEs under both shuffle readings: S, 0.26 against 0.02, virus
+    F(1,14)=13.1, p=0.003; O, 0.46 against 0.20, F(1,14)=9.3, p=0.009. Under reading S, 19 of the 54 control
+    mouse-days have no HSE.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  assumed: true
+- claim: figs9b-hse-size-no-difference
+  outcome: reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:figs9b-hse-size-no-difference
+  notes: 'The fraction of cells per HSE does not differ between groups. Under reading O, 7 control and
+    7 Cre mice have HSEs on every day: virus F(1,12)=0.135, p=0.72, means 0.020 and 0.022. Under reading
+    S, only 1 control mouse has HSEs every day, so the ANOVA has 1 control mouse (p=0.985). The per-mouse
+    t-test variant gives p=0.67 (S) and 0.65 (O).'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  assumed: true
+- claim: fig7e-reactivated-cells-more-stable-across-days-control
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig7e-reactivated-cells-more-stable-across-days-control
+  notes: In control mice, reactivated tracked cells are not more stable across days under any reading.
+    The differences are -0.067 to 0.005, and none is positive and significant. Under reading O with all
+    day pairs, they are significantly lower (familiar -0.067, Holm p=0.020; novel -0.056, p=0.015).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  assumed: true
+- claim: fig7e-cre-reactivation-boost-novel-only
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig7e-cre-reactivation-boost-novel-only
+  notes: In Cre mice, reactivated cells are less stable across days on novel trials (differences -0.014
+    to -0.116; significant and negative under the O readings, Holm p=0.003 to 0.008). On familiar trials
+    they are also less stable (-0.016 to -0.156), not just equal.
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  assumed: true
+- claim: fig7e-reactivation-effect-virus-and-novelty
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig7e-reactivation-effect-virus-and-novelty
+  notes: The virus main effect is significant under six of eight readings (p=0.004 to 0.045), with control
+    less negative than Cre. The trial-type main effect is not significant under any reading (p=0.08 to
+    0.98), and the novelty comparison is not either (p=0.20 to 0.84).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  assumed: true
+- claim: fig7h-reactivated-cells-higher-trial-correlation-control
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig7h-reactivated-cells-higher-trial-correlation-control
+  notes: In control mice, reactivated cells do not have a higher trial-by-trial correlation under any
+    reading. The differences are -0.049 to 0.008. Under reading O:b,ii they are significantly lower (familiar
+    -0.049, Holm p=0.017; novel -0.031, p=0.046).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  - Reading (a, ii) is not run, as HSEs on other days are defined only for tracked cells; it equals (b,
+    ii).
+  assumed: true
+- claim: fig7h-no-trial-correlation-boost-cre
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig7h-no-trial-correlation-boost-cre
+  notes: 'The paper''s tests do find an effect in Cre mice, but in the other direction. Reactivated cells
+    have a lower trial-by-trial correlation: differences -0.022 to -0.121, Holm p=0.0006 to 0.044 under
+    five of six readings. Under reading S:b,ii, familiar p=0.115 and novel p=0.033. They are not higher
+    in any reading, which is the paper''s statement. But the claim of absence is judged on the tests,
+    which find a difference.'
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  - Reading (a, ii) is not run, as HSEs on other days are defined only for tracked cells; it equals (b,
+    ii).
+  assumed: true
+- claim: fig7h-reactivation-effect-virus-and-novelty
+  outcome: not_reproduced
+  notebook: reproduce_plitt_2023.ipynb
+  output: claim:fig7h-reactivation-effect-virus-and-novelty
+  notes: The virus main effect is significant under every reading (p=0.011 to 0.036), with control higher,
+    that is, less negative. The trial-type main effect is not significant under any reading (p=0.05 to
+    0.74).
+  deviations:
+  - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
+    (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
+    Assumed because the authors' code for these files (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1 at commit
+    f2ab24d, session.py and every analysis module, ts_key 'F_dff') uses this dF/F; the paper does not
+    give the kernel.
+  - Ctrl-2 day 4 and Ctrl-4 day 2 are split over two files; each is merged on the ROIs the authors matched
+    between its two files (1048 and 1036 cells).
+  - HSE stopping periods use a speed from the change of the spline position smoothed over 15 frames (1
+    s), as the speed series jitters by about 7 cm/s while the position is constant (a standard choice
+    the paper does not state). The HSE null is run under two readings, shifting each cell's activity series
+    in the period (S, the Methods' words) or only its onsets that began in the period (O); the paper does
+    not say whether transients that began before the stop enter the null. Coactivity within 500 ms is
+    taken as 8 frames.
+  - Cells tracked across days come from the authors' ROI matches (Figshare doi 10.6084/m9.figshare.31286365.v5),
+    checked by link-roi-alignment; reading (b) of tracked place cells takes cells that are place cells
+    of the type on at least one day, as the paper does not say which days.
+  - Reading (a, ii) is not run, as HSEs on other days are defined only for tracked cells; it equals (b,
+    ii).
+  assumed: true
+findings:
+- kind: data_missing
+  statement: The dandiset holds the head-fixed VR imaging of Ctrl-1 to Ctrl-9 and Cre-1 to Cre-7 on days
+    1 to 6. The freely moving T-maze, open field and elevated plus maze data (Fig 1B-C, S1), the reward
+    reversal days 7 and 8 (Fig 5E-I), the Cre-8 CA2/3 and Cre-7 dentate gyrus sessions (Fig S5) and the
+    morph task (Fig S4) are not in it, so 9 of the paper's findings cannot be tested.
+- kind: data_missing
+  statement: The deconvolved activity rates that the preprint's Methods use for every imaging analysis
+    are not deposited; the files hold dF/F, raw fluorescence and neuropil only, and the deconvolution
+    kernel is not given.
+- kind: metadata_error
+  statement: The speed series ('Speed along Y maze', at imaging and full resolution) is labelled in 10
+    cm/s, but its integral over a trial is about 288 for the 300 cm track (median trial 10 s), so it is
+    in cm/s.
+- kind: identifier_missing
+  statement: The NWB files do not say which ROIs are the same cell across days. The authors' matches are
+    on Figshare (doi 10.6084/m9.figshare.31286365.v5), indexed by a session order that is only in their
+    code's mouse_metadata.py; with them, matched cells lie within 1 to 2 pixels after the field of view's
+    shift.
+- kind: metadata_insufficient
+  statement: The reward zone positions are not in the files or the dandiset metadata; the paper names
+    them only as the beginning of the left arm and the end of the right arm. They were estimated from
+    where rewards were given.
+- kind: other
+  statement: The dandiset also holds seven SparseKO mice (multiplexed two-channel files, SparseKO-4 without
+    day 3), which are not in the preprint; the dandiset's name gives 2026 and its linked code describes
+    a later version of the paper. Two days (Ctrl-2 day 4, Ctrl-4 day 2) are split over two files.
+- kind: other
+  statement: Fig 2B gives 17 familiar trials for Cre-3 on day 5; the file has 82 familiar trials (11 novel,
+    7 familiar in block 6). The other seven counts of Fig 2A-B match exactly.
+- kind: code_mismatch
+  statement: The authors' code at commit f2ab24d takes the anticipatory window as the 5 bins before the
+    zone front plus the front bin (behavior.py, rzone_ledge=5), where the Methods say 30 cm, and normalizes
+    block-6 activity over the first 5 trials (novel_activity_rate.py, max_trial=5), where the Methods
+    use the whole block. The code describes the later version of the paper.
+- kind: other
+  statement: Imaging and VR traces are consistent with a shared clock. The split-half reliability of familiar-trial
+    maps peaks at zero shift for Ctrl-1 day 3 (0.962) and at -0.52 s for Cre-1 day 3 (0.956 against 0.953
+    at zero), falling at larger shifts in both directions; only these two days were checked.
+- kind: other
+  statement: The Methods give an imaging rate of 15.46 Hz; the 36 files of Ctrl-6 to Ctrl-9, Cre-6 and
+    Cre-7 (the mice the Methods say were imaged at 920 nm) are at 15.51 Hz, the others at 15.46 Hz.
+- kind: methods_unavailable
+  statement: Question for the authors. Were the preprint's imaging figures made from deconvolved activity
+    rates (which kernel and time constant) or from the dF/F deposited here, as the published code does?
+    Every imaging outcome of this attempt uses the deposited dF/F.
+- kind: methods_unavailable
+  statement: Question for the authors. How is the population vector correlation defined (Fig 2G-H, S3B-C)?
+    The flattened and the per-bin readings give different group results for the familiar to novel correlation
+    (p=0.018 against p=0.31); the per-bin reading of the published code was adopted.
+- kind: methods_unavailable
+  statement: Question for the authors. In the HSE null, does the circular shift move a cell's whole activity
+    series within the stopping period (so that transients that began before the stop can enter the null)
+    or only the transients that began in the period? And which speed and smoothing define 'stationary
+    (<2 cm/s)'? Under both null readings tried, Cre mice have more HSE trials than control mice, against
+    Fig S9A.
+- kind: methods_unavailable
+  statement: Question for the authors. Where are the reward zones in spline coordinates, and how is the
+    animal's average running speed taken for normalized speed (time-weighted or over bins)? The day-6
+    spatial pattern of vr-reward-location-learning holds for Cre mice only with the bin mean.
