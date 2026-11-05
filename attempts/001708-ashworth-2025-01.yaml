@@ -1,0 +1,586 @@
+schema_version: 2
+id: 001708-ashworth-2025-01
+dataset:
+  archive: dandi
+  id: "001708"
+  version: 0.260604.1023
+  doi: 10.48324/dandi.001708/0.260604.1023
+paper: doi:10.64898/2025.12.15.693905
+date: 2026-11-05
+entry: 001708-ashworth-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42010736321
+inputs:
+- what: >-
+    Reference values only, never data. The stored period scan of the paper's code
+    (notebooks/gpytorch_models/PERIOD_SCOPE_RESULTS_200.npz), compared with the scan run here for
+    fig4-nlml-minima, and the code's stored Gaussian-process fits
+    (notebooks/gpytorch_models/results/gen_pois_no_exp/combined_data.csv), whose class medians are
+    printed next to the fits run here. Method details cited in the notebooks and the helper come
+    from the same repository.
+  source: https://github.com/nox-lab/multi-timescale-rhythmic-dynamics-in-rvm-neurons at commit e12f3ee771f4b5506e5db0bac09762ba6044a4d6
+outcomes:
+- claim: dataset-composition
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:dataset-composition
+  measured: [104, 53, 62, 30]
+  notes: >-
+    Under reading (a), the Methods, the counts are exact. The evoked set ('evoked' and
+    'evoked/ongoing' files) has 104 cells (45 ON, 35 OFF, 24 NEUTRAL) in 53 animals and 53 files. The
+    ongoing set has 62 cells (25 ON, 25 OFF, 12 NEUTRAL) in 30 animals and 48 files (12 rats with two
+    sessions, 3 with three). Under reading (b), Table S11's three sets, the cells match (45/35/4,
+    0/0/20, 25/25/12) but the animals are 35, 18 and 30, not 35, 18 and 50. The archive lists 83
+    subjects, 77 male and 6 female, weighing 191 to 348 g, as the Methods say. No recording is
+    deposited twice. No two units have the same spike count and first and last spike, no two files
+    share heat-onset times, and identifiers and start times are unique.
+- claim: fig1c-psth-counts
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig1c-psth-counts
+  measured: [68, 60, 180, 151, 177, 147]
+  notes: >-
+    The criterion's first reading (window from -30 s, pinches truncating windows) gives 180 ON and
+    151 OFF withdrawal-aligned trials and 177 and 147 heat-aligned trials, from 68 ON and 60 OFF
+    cells (the dataset has 70 ON and 60 OFF units). All are within 10%. With pinches left out of the
+    rule, as the code runs, the counts are exactly the paper's: 185, 155, 182 and 151. From -10 s
+    they are 182, 153, 183 and 157 with pinches and 187, 157, 188 and 161 without. All are within 10%.
+  deviations:
+  - >-
+    The code builds its event list from events named "Keyboard", while its NWB loader renames
+    pinches "keyboard" (Spike2Tools.get_tail_to_heat_lengths, data_loaders.rename_blocks_to_old_labels),
+    so its trial rule never sees a pinch. Both rules are shown. Only the rule without pinches gives
+    the paper's counts exactly.
+- claim: fig2-trial-counts
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig2-trial-counts
+  measured: [190, 168, 192, 169]
+  notes: >-
+    From -10 to +100 s, with pinches in the rule, there are 190 ON and 168 OFF withdrawal-aligned
+    trials and 192 and 169 heat-aligned trials, from all 70 ON and 60 OFF cells. All are within 10%.
+    Without pinches the counts are exactly the paper's: 195, 170, 197 and 172. The summed ON
+    withdrawal counts without pinches begin 33, 26, 27, 26, 31, the first counts printed by the
+    paper's notebook 18. Every model claim is fitted to the trial set with pinches, and the code's
+    trial set is fitted as a variant.
+- claim: figs3-neutral-unmodulated
+  outcome: partially_reproduced
+  notebook: evoked.ipynb
+  output: claim:figs3-neutral-unmodulated
+  measured: [36, 76, 77]
+  notes: >-
+    NEUTRAL activity shows no change at either event under any reading. The test is spikes in the
+    2 s after the event against the 2 s before, Wilcoxon over trials. With all 36 NEUTRAL units the
+    median change is 0 Hz and p is 0.14 to 0.23 at withdrawal and 0.49 to 0.65 at heat onset. As a
+    positive control, ON and OFF trials at withdrawal give p = 5e-15 and 2e-16. The counts do not all
+    match under the criterion's selection, all NEUTRAL units of all files. That selection gives 36
+    cells against 32 +- 3.2, and 76 withdrawal-aligned trials against 69 +- 6.9 (window from -30 s,
+    with pinches). It gives 77 heat-aligned trials against 70 +- 7, which is within. Four of the 36
+    are units of 'evoked' files labelled "NEUT"; the other 32 are labelled "Neutral". The paper's
+    code selects units named exactly "Neutral". With that selection the counts are exactly 32, 69 and
+    70 (window from -30 s, without pinches), and p is 0.24 and 0.70. Whether the criterion should
+    take these 32 cells is asked of a reader (questions/001708.yaml).
+  deviations:
+  - >-
+    The criterion's selection was run as written. The paper's selection (32 cells), shown as a
+    variant, gives exactly the paper's counts.
+- claim: figs8-null-model-worse
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:figs8-null-model-worse
+  notes: >-
+    The ELPD-LOO of the constant-mean model is -11704.9 for ON cells, against -7192.7 (double
+    exponential) and -7439.2 (single exponential). The differences are 4512 (dse 204) and 4266
+    (dse 193). For OFF cells the null is -9241.4, and every piecewise model is above it by 2736 to
+    2988, with z = 24 to 25. Both readings of "significantly" (more than 1 or 2 dse) hold under LOO
+    and under WAIC. The paper's notebooks print -11683 and -9237 for the nulls.
+- claim: fig2g-switch-times
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig2g-switch-times
+  measured: [-0.191, 1.35]
+  assumed: true
+  notes: >-
+    The ON switch time is -0.191 s (97% HDI -0.283 to -0.106), inside the paper's HDI. The OFF
+    switch time from the linear plus exponential model with the code's priors (on log k and log k2)
+    is 1.350 s (0.836 to 1.887), inside the paper's HDI. With the Methods' priors read literally on
+    k and k2 (half-normal), the OFF fit does not converge: 1121 divergences, r_hat up to 1.69, and
+    t_switch -0.636 s (-1.126 to 0.620), outside the HDI. On the code's trial set (no pinches) the
+    switch times are -0.183 and 1.326 s.
+  deviations:
+  - >-
+    Assumed: the OFF priors are the code's, N(0, 1) on log k and log k2 (bayesian_cell_models.py,
+    build_linear_slope_recovery_off_model). The Methods (Piecewise Bayesian modeling) write k, k2 ~
+    N(0, 1). The criterion runs the Methods' prior as the main reading. That prior had to be
+    truncated at 0 to keep the sigmoid slope and the recovery rate positive, and it gives no
+    converged posterior. The code's prior converges (r_hat 1.003, no divergence) and reproduces
+    every OFF number of Table S7. This choice applies to every claim that uses the OFF fit, and it is
+    asked of the paper's authors.
+- claim: fig2g-on-double-exponential
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig2g-on-double-exponential
+  notes: >-
+    The double exponential beats the single exponential by 246.5 in ELPD (dse 22.7), under LOO and
+    under WAIC (-7192.7 against -7439.2). The paper's notebook prints a difference of 238 (dse 23).
+    The single exponential's peak is 101 counts per bin against 127 for the double and 149 in the
+    data. Its mean count over 5 to 20 s is 83.0, against 78.0 for the double and 78.7 in the data.
+- claim: fig2c-on-time-constants
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig2c-on-time-constants
+  measured: [0.655, 4.239, 165.064]
+  notes: >-
+    tau_pre is 0.655 s (97% HDI 0.558 to 0.756), tau_fast 4.239 s (3.595 to 4.889) and tau_slow
+    165.06 s (128.0 to 196.0). All three means lie inside the paper's HDIs. One variant fit, on the
+    code's trial set without pinches, did not converge (r_hat 1.53). One of its four chains swapped
+    the fast and slow components (4.1 and 164 s in three chains; 146 and 4.2 s in the fourth), so its
+    pooled means are not interpretable.
+- claim: fig2h-off-linear-exponential
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig2h-off-linear-exponential
+  assumed: true
+  notes: >-
+    Among the OFF sigmoid models, the linear plus exponential model with the code's priors has the
+    highest ELPD. It beats the double exponential by 4.87 (dse 3.57) under LOO and WAIC (-6253.75
+    against -6258.62). The paper's notebook gives 2.4 (dse 3.5). Over 80 to 100 s the data average
+    35.4 counts per bin against 36.4 for the model. The double exponential's asymptote is 44.2,
+    against a pre-withdrawal level of 47.2. With the Methods' priors on k and k2 the linear model
+    does not converge, and its ELPD (-6505) is the lowest.
+  deviations:
+  - >-
+    Assumed: the code's priors on log k and log k2, as in fig2g-switch-times.
+- claim: fig2d-off-parameters
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig2d-off-parameters
+  measured: [2.863, 4.415, 0.191]
+  assumed: true
+  notes: >-
+    With the code's priors, k is 2.863 (97% HDI 2.270 to 3.490), tau = 1/k2 is 4.415 s (3.261 to
+    5.685) and k3 is 0.191 (0.178 to 0.203). All three are inside the paper's HDIs. On the code's
+    trial set the values are 2.861, 4.795 and 0.185. With the Methods' priors (not converged) none of
+    the three is inside: 2.099, 0.414 and 0.241.
+  deviations:
+  - >-
+    Assumed: the code's priors on log k and log k2, as in fig2g-switch-times.
+- claim: tables9-s10-sigmoid-over-erf
+  outcome: not_reproduced
+  notebook: evoked.ipynb
+  output: claim:tables9-s10-sigmoid-over-erf
+  notes: >-
+    The Gaussian CDF does not fit significantly worse. With double-exponential recovery the sigmoid
+    is higher by 0.45 (dse 1.57). With linear plus exponential recovery the erf model is higher by
+    0.53 (dse 1.84; code's priors). WAIC gives the same. The erf fits have 194 and 259 divergences
+    (r_hat up to 1.09). The paper's own notebook 29 also prints a higher ELPD for the linear erf
+    model (-6263.78 against -6264.95). The result therefore matches the paper's computation, and not
+    its text.
+- claim: figs1-departure-timing
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:figs1-departure-timing
+  measured: [-1.488, -1.69, -0.715, -0.636]
+  assumed: true
+  notes: >-
+    OFF firing falls 10% at -1.488 s (97% HDI -1.691 to -1.306) and 50% at -0.715 s (-0.810 to
+    -0.645). ON firing rises 10% at -1.690 s (-1.861 to -1.513) and 50% at -0.636 s (-0.693 to
+    -0.590). All four are inside the paper's HDIs. With the OFF fit under the Methods' priors, the
+    two OFF times (-1.845 and -0.896 s) fall outside.
+  deviations:
+  - >-
+    Assumed: the code's priors on log k and log k2 for the OFF fit, as in fig2g-switch-times.
+- claim: figs1-completion-asymmetry
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:figs1-completion-asymmetry
+  measured: [-0.251, 0.048]
+  assumed: true
+  notes: >-
+    ON reaches 90% at -0.251 s (97% HDI -0.324 to -0.180). OFF suppression reaches 90% at 0.048 s
+    (-0.095 to 0.180). Both are inside the paper's HDIs, and the ON HDI ends before the OFF HDI
+    begins. ON is earlier in all paired draws (fraction 1.000). With the OFF fit under the Methods'
+    priors, OFF reaches 90% at -0.378 s and the order reverses.
+  deviations:
+  - >-
+    Assumed: the code's priors on log k and log k2 for the OFF fit, as in fig2g-switch-times.
+- claim: recovery-timing
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:recovery-timing
+  measured: [17.009, 224.807, 19.438, 83.653]
+  assumed: true
+  notes: >-
+    ON cells recover 50% by 17.0 s (97% HDI 10.7 to 23.7) and 90% by 224.8 s (192.6 to 247.6), on a
+    grid to 400 s. OFF cells recover 50% by 19.4 s (16.2 to 22.9) and 90% by 83.7 s (82.7 to 84.5).
+    All four means are inside the paper's HDIs. On a grid ending at 100 s the ON times are 5.8 and
+    67.1 s, so the ON values depend on extrapolating the fit to 400 s, as the code does. With the
+    Methods' OFF priors the OFF times are 49.6 and 89.9 s.
+  deviations:
+  - >-
+    Assumed: the code's priors on log k and log k2 for the OFF fit, as in fig2g-switch-times.
+- claim: tables3-s7-withdrawal-steeper
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:tables3-s7-withdrawal-steeper
+  measured: [1.764, 1.308]
+  assumed: true
+  notes: >-
+    ON tau_pre is 0.655 s (0.558 to 0.756) aligned to withdrawal against 1.308 s (1.147 to 1.486)
+    aligned to heat onset. The heat-aligned value is inside the paper's HDI, and the two HDIs are
+    disjoint. The heat-aligned OFF fit with target_accept 0.8 did not converge (r_hat 1.74, chain
+    means of k 1.754 to 1.772, other parameters disagreeing). Its k is 1.763 (1.213 to 2.419), whose HDI overlaps the
+    withdrawal-aligned one (2.270 to 3.490). Sampled with target_accept 0.95 and another seed, it
+    converges (r_hat 1.002, no divergence), with k 1.764 (1.476 to 2.152). That value is inside the
+    paper's HDI and disjoint from the withdrawal-aligned one. With the Methods' priors (heat fit not
+    converged, r_hat 1.54) k is 1.748 heat-aligned and 2.099 withdrawal-aligned, with overlapping
+    HDIs.
+  deviations:
+  - >-
+    Assumed: the code's priors on log k and log k2. For the heat-aligned OFF fit, the outcome rests
+    on the converged posterior sampled with target_accept 0.95, a sampler setting, not a method. The
+    code's setting of 0.8 gave chains that disagree. The supplement mentions r_hat problems for
+    heat-aligned fits.
+- claim: fig1c-withdrawal-locked
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:fig1c-withdrawal-locked
+  assumed: true
+  notes: >-
+    For ON cells the heat-aligned switch time, 8.708 s (8.528 to 8.877), lies wholly after the
+    withdrawal-aligned one, -0.191 s (-0.283 to -0.106). For OFF cells the heat-aligned switch time,
+    10.152 s (8.213 to 12.217, code's priors), lies wholly after the withdrawal-aligned one, 1.350 s
+    (0.836 to 1.887). The paper gives 8.694 and 11.718 s. The OFF heat-aligned switch time was printed
+    from the fit at target_accept 0.8, which did not converge (r_hat 1.74). Its HDI starts 6 s after
+    the withdrawal-aligned HDI ends. tables3-s7-withdrawal-steeper is reproduced, so both parts
+    hold. The withdrawal-aligned ON rate per trial ranges from 2.96 to 13.17 Hz (1 s bins, -30 to 150
+    s).
+  deviations:
+  - >-
+    The lag is read as the switch times of the fits, as the criterion says. The outcome rests on the
+    assumptions of tables3-s7-withdrawal-steeper.
+- claim: methods-withdrawal-latency
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:methods-withdrawal-latency
+  measured: 8.69
+  notes: >-
+    334 heat onsets of all 101 files are followed by a withdrawal before the next onset. Their
+    latency is 8.69 +- 1.31 s (range 3.30 to 13.16) under reading (a). The mean of 83 per-animal means
+    is 8.66 +- 1.10 s. The withdrawal temperature is not tested, because the files hold no
+    temperature series.
+- claim: methods-heart-rate
+  outcome: reproduced
+  notebook: evoked.ipynb
+  output: claim:methods-heart-rate
+  measured: 397.1
+  notes: >-
+    90 of 101 files hold EKG beats, from 72 animals. The 11 'evoked' files of rats 25 to 35 have
+    none. Per recording, the rate is 397.1 +- 34.2 bpm (reading a). Per animal it is 395.7 +- 32.9
+    bpm (reading b). Both are within 391.1 +- 34.4. 20546 of 1105713 inter-beat intervals are under
+    50 ms. Dropping beats that follow the previous one by less than 50 ms gives 392.4 +- 34.8 bpm.
+- claim: ongoing-cell-counts
+  outcome: reproduced
+  notebook: ongoing.ipynb
+  output: claim:ongoing-cell-counts
+  measured: [25, 25, 32]
+  notes: >-
+    The counts are 25 ON, 25 OFF and 32 NEUTRAL (12 ongoing and 20 evoked/ongoing). All 50 ON and
+    OFF cells have a 1500 s segment free of heat onsets, withdrawals and pinches. The longest gaps
+    between heat onsets are 1726.5 to 2054.9 s. Over all 62 ongoing-file cells the buffer after the
+    preceding heat onset is 226.5 to 621.1 s. Four ON cells in two files (sub-rat-70 ses-1 and sub-rat-72 ses-1) have 228.6 and
+    226.5 s, below the Methods' minimum of 230 s.
+- claim: fig3bc-psd-peaks
+  outcome: partially_reproduced
+  notebook: ongoing.ipynb
+  output: claim:fig3bc-psd-peaks
+  measured: [286.86, 90.22, 298.33, 102.71]
+  notes: >-
+    The peaks of the class-mean spectra match: 286.86 s for ON and 298.33 s for OFF, the paper's
+    values to the second decimal. The FFT length of 50 times the spike count of the first ON cell,
+    in archive order, gives the paper's frequency grid. The FWHMs match under no reading. Mean
+    per-cell FWHM is 1.10e-3 Hz (ON) and 1.15e-3 Hz (OFF), that is 90.2 and 102.7 s under (a), 92.5
+    and 105.8 s under (b). The FWHM of the class mean is 83.9 and 104.2 s (c). The code's peak_widths
+    call gets the index within the masked band, not the peak's own index. With that index the
+    widths are 1.23e-4 and 9.0e-5 Hz (10.2 and 8.0 s). The supplement's rat-level bootstrap gives
+    periods of 240.7 s (ON, sd 66.5) and 291.0 s (OFF) and FWHMs of 57.8 and 97.9 s (a). The paper
+    gives 16.92 and 16.12 s. The ON and OFF means have a local maximum at 146.2 s (a harmonic) and
+    none within 10% of 600 s.
+  deviations:
+  - >-
+    How the paper converts the FWHM to seconds, and where it measures the width, are open. Every
+    reading in the criterion was run. The question is for the paper's authors.
+- claim: fig3d-neutral-psd
+  outcome: reproduced
+  notebook: ongoing.ipynb
+  output: claim:fig3d-neutral-psd
+  assumed: true
+  notes: >-
+    Over 220 to 400 s, the NEUTRAL mean spectrum's highest local maximum is 1.43 times its median
+    over 0.001 to 0.01 Hz. The ON spectrum gives 7.82 and the OFF 4.15. 1.43 is below the bound of
+    7.82/2 = 3.91. The NEUTRAL spectrum's highest low-frequency peak is at 2486 s, the record length.
+    On spectra averaged in 0.5 Hz bins, NEUTRAL has local maxima above 10 Hz at 11.8, 17.8 and
+    33.8 Hz with prominence over 10% of its median 10 to 100 Hz power. ON and OFF have one each, at
+    26.2 and 25.2 Hz. At 20% NEUTRAL has two and ON and OFF none. At 5% all three have five or six.
+    The NEUTRAL spectrum's maximum is 1.17 times its median over 10 to 100 Hz, against 1.09 (ON) and
+    1.06 (OFF).
+  deviations:
+  - >-
+    Assumed: "local maxima above 10 Hz that the ON and OFF mean PSDs lack" is read on spectra
+    averaged in 0.5 Hz bins, with a prominence threshold of 10% of the median 10 to 100 Hz power.
+    The claims file gives neither. The result holds at 10% and 20% and not at 5%.
+- claim: fig3e-cv-isi
+  outcome: reproduced
+  notebook: ongoing.ipynb
+  output: claim:fig3e-cv-isi
+  measured: [0.348, 3.699, 4.909, 0.165, 0.835, 1.248]
+  notes: >-
+    Over the 82 whole recordings, the class means and SDs of the CV and the mean ISI equal the
+    paper's to the third decimal. CV is 0.348 +- 0.264 (NEUTRAL), 3.699 +- 3.087 (OFF) and 4.909 +-
+    4.319 (ON). Mean ISI is 0.165 +- 0.250, 0.835 +- 1.357 and 1.248 +- 4.799 s. All six are within
+    10% as well as within the stated spread.
+- claim: fig4-nlml-minima
+  outcome: partially_reproduced
+  notebook: ongoing.ipynb
+  output: claim:fig4-nlml-minima
+  notes: >-
+    ON and OFF hold. Every ON cell (25 of 25) and 23 of 25 OFF cells have a local minimum within 10%
+    of 300 s, and the class means have local minima near 300, 600 and 900 s. The median global
+    minimum is at 294.1 s (ON) and 580.5 s (OFF). The NEUTRAL part fails: 25 of 32 NEUTRAL cells
+    also have a local minimum within 10% of 300 s, against at most 4, and so does their class mean.
+    Their profiles are flatter (normalized NLML 0.64 to 1.0, against 0.28 to 1.0 for ON). Each of
+    the code's 82 stored NLML profiles correlates at 1.0000 with a profile computed here, so the scan
+    is the paper's. The outcome comes from applying the criterion's local-minimum rule to it. The
+    Methods' 0.1 to 500 s scan gives minima near 300 s for 25 ON and 23 OFF cells. Removing one
+    sample at each end changes the OFF count to 24.
+- claim: fig6c-coherence-counts
+  outcome: partially_reproduced
+  notebook: ongoing.ipynb
+  output: claim:fig6c-coherence-counts
+  measured: [3, 6, 9]
+  notes: >-
+    On the cells' ongoing segments (the first reading), significant coherence with heart rate is
+    found in 3 of 32 NEUTRAL, 6 of 25 OFF and 9 of 25 ON cells, against 5, 4 and 8. Each is within 2.
+    Over whole recordings it is 6, 5 and 12. With other surrogate seeds (2, 3, 4) it is 4 to 6, 6 to
+    7 and 8 to 9. Below 0.01 Hz the counts are 1, 3 and 4 on segments.
+- claim: fig6d-heart-rate-peaks
+  outcome: not_reproduced
+  notebook: ongoing.ipynb
+  output: claim:fig6d-heart-rate-peaks
+  notes: >-
+    The mean heart-beat spectrum over 48 animals has its highest peak below 0.01 Hz at 1243 s on the
+    1500 s segments, and at 2486 s over whole recordings. Neither is a multiple of 300 s. The other
+    peaks include 286.9 s and harmonics at 149.2 s (segments), and 497.2, 286.9, 143.4 and 100.8 s
+    (whole recordings). There is none within 10% of 600 or 900 s. The coherent ON cells peak in
+    coherence at a median of 0.010 Hz, OFF at 0.010 Hz and NEUTRAL at 0.014 Hz, against 1/300 =
+    0.0033 Hz. So the first part of the statement holds.
+  deviations:
+  - >-
+    No code for Figure 6d was found. The reading (beat trains with the spike-train spectrum method,
+    mean over animals) and the rule "highest peak below 0.01 Hz" are the criterion's.
+- claim: fig5b-train-r2
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:fig5b-train-r2
+  assumed: true
+  notes: >-
+    Median training pseudo-R2 is 0.0478 (ON), 0.0497 (OFF) and 0.0216 (NEUTRAL). The paper's stored
+    fits give 0.0448, 0.0479 and 0.0281. 23, 24 and 30 cells are above 0. Sign-flip p by animal is
+    0.0079, 0.0021 and 0.0001, and by file 0.0028, 0.0006 and 0.0000. With ongoing NEUTRAL cells
+    on the code's 1500 s segments the NEUTRAL median is 0.0303.
+  deviations:
+  - >-
+    Assumed for every Gaussian-process claim: the code's settings were run, with 100 inducing points
+    and p_noise 0.01, for 5000 iterations. Every loss history the code saved has 5000 steps. The
+    Methods give 200 inducing points and p_noise 0.001, and params.json gives 10000 iterations. Those
+    were estimated, on 50 to 100 timed iterations, at about 90 min, over the 60 min notebook limit,
+    and were not run. Results at 2500 iterations are shown and differ little.
+  - >-
+    The model is written in plain torch, as a batch of independent GPs, for speed. On 100 iterations
+    it gave the same class medians as the gpytorch classes ported from the code (checked while
+    preparing, not run here). Expected log likelihoods use draws from each bin's marginal, where
+    gpytorch draws jointly. The expectation is the same.
+- claim: fig5b-train-no-difference
+  outcome: not_reproduced
+  notebook: gp.ipynb
+  output: claim:fig5b-train-no-difference
+  assumed: true
+  notes: >-
+    The main reading is the paper's test, permuting class labels within recording files, on the
+    main inputs (ongoing NEUTRAL cells over their whole recordings). It finds a difference. ON against
+    NEUTRAL has U = 568 and p = 0.012, which is 0.036 after Bonferroni. Kruskal-Wallis has H = 8.46
+    and p = 0.034. ON against OFF has p = 0.52, and OFF against NEUTRAL has corrected p = 0.138. Two
+    variants find no difference. With blocks by animal, the corrected pairs give 1, 0.111 and 0.207
+    and Kruskal-Wallis gives p = 0.075. With ongoing NEUTRAL cells on the code's 1500 s segments,
+    blocks by file give 1, 0.108 and 0.414, and Kruskal-Wallis gives p = 0.098. The paper reports
+    p = 0.117. The outcome depends on which NEUTRAL data are fitted.
+  deviations:
+  - >-
+    Rests on the Gaussian-process settings assumed in fig5b-train-r2.
+- claim: fig5b-test-r2
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:fig5b-test-r2
+  assumed: true
+  notes: >-
+    ON has median test pseudo-R2 0.0406, with 21 of 25 cells above 0 and p = 0.0079 by animal (0.0050
+    by file). OFF has median 0.0197 and p = 0.373 (0.321), with 16 of 25 above 0. NEUTRAL has median
+    -0.0108, with 6 of 32 above 0 and p = 0.012 (0.012). The paper's stored medians are 0.0372,
+    0.0187 and -0.0128.
+  deviations:
+  - >-
+    Rests on the Gaussian-process settings assumed in fig5b-train-r2.
+- claim: fig5b-test-group-differences
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:fig5b-test-group-differences
+  assumed: true
+  notes: >-
+    Permuting labels within files, Bonferroni-corrected, NEUTRAL against ON gives p below 0.001
+    (U = 675) and NEUTRAL against OFF gives p = 0.015 (U = 576). ON against OFF gives p = 0.79.
+    Kruskal-Wallis gives H = 19.96 and p = 0.001. Blocks by animal give the same conclusions (0.000,
+    0.045, 0.92; p below 0.001). The code's other scheme, shuffling labels within each file, gives
+    p = 1.0 for both NEUTRAL pairs, as the paper's notebook printed.
+  deviations:
+  - >-
+    Rests on the Gaussian-process settings assumed in fig5b-train-r2.
+- claim: table1-hyperparameters
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:table1-hyperparameters
+  measured: [296.6, 303.8, 318.0, 0.724, 0.736, 0.74]
+  assumed: true
+  notes: >-
+    Periods are 296.6 +- 22.5 s (ON), 303.8 +- 27.2 s (OFF) and 318.0 +- 52.6 s (NEUTRAL).
+    Lengthscales are 0.724, 0.736 and 0.740. All six are within the stated spread. Each period
+    changed from its initial 300 s by a median of -9.9 s (ON), -4.1 s (OFF) and +1.5 s (NEUTRAL),
+    with ranges of -62 to +171 s across all cells.
+  deviations:
+  - >-
+    Rests on the Gaussian-process settings assumed in fig5b-train-r2.
+- claim: fig5c-dispersion
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:fig5c-dispersion
+  measured: [0.623, 0.342, -0.786]
+  assumed: true
+  notes: >-
+    Alpha is 0.623 +- 0.259 for ON (median 0.731, sign-flip p 0.0045 by animal), 0.342 +- 0.547 for
+    OFF (median 0.433, p 0.0104) and -0.786 +- 0.596 for NEUTRAL (median -0.768, p below 0.0001).
+    All means are within the stated spread. Grouped by file, p is 0.0010, 0.0117 and below 0.0001.
+  deviations:
+  - >-
+    Rests on the Gaussian-process settings assumed in fig5b-train-r2.
+- claim: table1-latent-variance-order
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:table1-latent-variance-order
+  measured: [32.1, 5.92, 0.126]
+  assumed: true
+  notes: >-
+    Mean outputscale is 32.1 +- 44.1 for ON, 5.92 +- 9.88 for OFF and 0.126 +- 0.274 for NEUTRAL.
+    Each is within the stated spread (17 +- 26, 3.1 +- 4, 0.1 +- 0.2), and the order is ON > OFF >
+    NEUTRAL. The medians (8.20, 1.55, 0.046) have the same order. At 2500 iterations the ON mean was
+    22.7, so the ON outputscales were still growing.
+  deviations:
+  - >-
+    Rests on the Gaussian-process settings assumed in fig5b-train-r2.
+- claim: fig5d-phase-profiles
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:fig5d-phase-profiles
+  assumed: true
+  notes: >-
+    Over one fitted cycle the median modulation depth, (max - min)/mean, is 1.346 for ON, 1.134 for
+    OFF and 0.079 for NEUTRAL. NEUTRAL profiles stay between 0.64 and 1.73 times their mean, while ON
+    and OFF profiles span 0 to 3.3 and 0 to 6.4 times theirs.
+  deviations:
+  - >-
+    The depth measure and the comparison of medians are the criterion's named reading, not the
+    paper's, which gives no measure. The outcome also rests on the Gaussian-process settings assumed
+    in fig5b-train-r2.
+- claim: figs2-phase-latency
+  outcome: reproduced
+  notebook: gp.ipynb
+  output: claim:figs2-phase-latency
+  assumed: true
+  notes: >-
+    44 ON and OFF cells contribute 155 trials (74 ON, 81 OFF). Six of the 50 cells are dropped, those
+    whose fit varies by 1 count per bin or less (as the code drops them) or with fewer than two
+    paired trials; the notebook does not print the split. Latency against normalized predicted rate gives Spearman rho 0.023 (p 0.85) for ON and
+    0.189 (p 0.090) for OFF. Latency against phase (the code's get_phase, without 2 pi) gives a
+    circular-linear R of 0.126 (p 0.56) for ON and 0.114 (p 0.59) for OFF. With 2 pi, p is 0.21 and
+    0.19. None of the four tests is significant.
+  deviations:
+  - >-
+    The tests (Spearman, circular-linear) are the criterion's named reading. The paper only shows
+    plots. The outcome also rests on the Gaussian-process settings assumed in fig5b-train-r2.
+findings:
+- kind: metadata_error
+  statement: >-
+    The four NEUTRAL units of 'evoked' files (sub-rat-6, 7, 9 and 15) are named "NEUT", while the
+    32 others are named "Neutral". The paper's code selects NEUTRAL units by the exact name
+    "Neutral" (Spike2Tools.spiketrain_iterator), so its NEUTRAL analyses (Figure S3, n = 32) leave
+    these four out, although the Methods count 24 NEUTRAL cells in the evoked protocol.
+- kind: code_mismatch
+  statement: >-
+    The code builds its trial-exclusion event list from an event named "Keyboard"
+    (Spike2Tools.get_tail_to_heat_lengths), while its NWB loader renames the dataset's pinch events
+    "keyboard" (data_loaders.rename_blocks_to_old_labels). Pinches therefore never truncate a trial
+    window, although the Methods exclude trials truncated by the next event. The paper's trial
+    counts (185, 155, 182, 151; 195, 170, 197, 172) are reproduced exactly only without pinches.
+    With pinches they are 2 to 5% lower.
+- kind: other
+  statement: >-
+    The EKG beat series contain 20546 inter-beat intervals under 50 ms (of 1105713), double
+    detections at heart rates of about 400 bpm. They raise the mean heart rate per recording from
+    392.4 to 397.1 bpm. The 11 'evoked' files of sub-rat-25 to sub-rat-35 hold no EKG series.
+- kind: metadata_insufficient
+  statement: >-
+    The pinch events carry labels that are not described: 'ignore', ' ignore', 'l_hpaw_onset_approx',
+    'tail_release_post_pinch_slip', ear, tail and paw onsets and releases, some with a leading space.
+    Nothing says which pinches were delivered, or what 'ignore' marks.
+- kind: paper_inconsistency
+  statement: >-
+    Table S11 gives 35, 18 and 50 animals for the Evoked, Evoked/Ongoing and Ongoing sets. The
+    dataset has 35, 18 and 30 subjects, matching the Methods' 53 and 30 animals, and its Ongoing set
+    has 48 files.
+- kind: paper_inconsistency
+  statement: >-
+    The text says a Gaussian CDF response fits OFF cells significantly worse than the sigmoid with
+    either recovery model. The fits here, and the paper's own notebook 29, give the linear plus
+    exponential erf model a slightly higher ELPD than the sigmoid model (here by 0.53, dse 1.84).
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. The Methods give the OFF priors as k, k2 ~ N(0, 1); the code places
+    N(0, 1) on log k and log k2. Read on k and k2 (truncated at 0), the linear plus exponential
+    model does not converge (r_hat 1.69) and misses Table S7. On log k it reproduces Table S7 and S2.
+    Which prior did the paper use?
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. How were the spectral FWHMs (16.92 and 16.12 s) measured and converted
+    to seconds? The peaks are reproduced exactly, but widths at half height of the per-cell or
+    class-mean spectra give 84 to 106 s. The code's peak_widths call uses the index within the masked
+    band, which measures the width about ten bins from the peak and gives 8 to 10 s. The
+    supplement's rat-level bootstrap gives 58 to 98 s.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. The Gaussian-process settings differ between the Methods (200 inducing
+    points, p_noise 0.001), the code (100 inducing points, p_noise fixed at 0.01, params.json 10000
+    iterations) and the saved fits (5000 iterations). Which produced the reported results? Here the
+    code's settings at 5000 iterations reproduce Table 1 and Figure 5b except the training-R2
+    "no difference" test.
+- kind: other
+  statement: >-
+    Four ON cells in two files (sub-rat-70 ses-1, sub-rat-72 ses-1) have 228.6 and 226.5 s between
+    the preceding heat onset and the start of their 1500 s ongoing segment, under the Methods'
+    stated minimum buffer of 230 s.
