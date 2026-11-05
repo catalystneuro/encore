@@ -9,7 +9,8 @@ version 0.260604.1023, the version the paper cites.
 - `ongoing.ipynb`: the ongoing segments, spike-train spectra, CV and ISI, the periodic GP period scan,
   and the coherence with heart rate.
 - `gp.ipynb`: the generalized Poisson periodic Gaussian-process fits and their tests (Figure 5, Table 1,
-  Figure S2).
+  Figure S2), with the code's settings, compared cell by cell with the code's stored fits.
+- `gp_methods.ipynb`: the same fits with the Methods' 200 inducing points and p_noise 0.001, a variant.
 - `rvm.py`: loading (streamed with remfile and h5py), trial rules, models and measures, with the source
   of each parameter.
 
@@ -17,5 +18,5 @@ The claims are in `claims/001708/`, the outcomes in `attempts/001708-ashworth-20
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
 
-Run with `python tools/entry.py all entries/001708-ashworth-2025` (about 65 minutes on 4 cores, most of
-it in the Gaussian-process and period-scan cells).
+Run with `python tools/entry.py all entries/001708-ashworth-2025` (about two hours on 4 cores: about 27
+minutes for each of evoked.ipynb, ongoing.ipynb and gp_methods.ipynb and 35 for gp.ipynb).

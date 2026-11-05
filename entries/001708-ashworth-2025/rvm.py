@@ -21,6 +21,7 @@ import h5py
 import numpy as np
 import pandas as pd
 import remfile
+from scipy import stats
 
 DANDISET = "001708"
 VERSION = "0.260604.1023"  # the version the paper cites (reference 72) and the only published one
@@ -172,14 +173,16 @@ def _next_event(i, ev, t_stop, ignore_flick):
     return (t_stop, "end")
 
 
-def trial_times(s, t_stop, event, pre, post, with_pinch):
+def trial_times(s, t_stop, event, pre, post, with_pinch, prev_gap=None):
     """Event times kept for one cell. event 'flick' (withdrawal) or 'heat'; pre < 0, post > 0 (s).
 
     For withdrawal alignment the previous event ignores heats and the next event is any event; for
     heat alignment the previous event is any event and the next event ignores withdrawals (the
     code's ignore_heat / ignore_flick flags). The trial is dropped when the next event is less than
     `post` after the event, or the window start falls before the previous event (or before 0), or
-    the window end passes the recording end.
+    the window end passes the recording end. prev_gap (s), when given, replaces -pre as the
+    distance the previous event (or the recording start) must be before the event: the criterion
+    of fig1c-psth-counts asks 30 s before a withdrawal under both of its window readings.
     """
     ev = combined_events(s, with_pinch)
     kept = []
@@ -191,7 +194,7 @@ def trial_times(s, t_stop, event, pre, post, with_pinch):
         nxt = _next_event(i, ev, t_stop, ignore_flick=not ignore_heat)
         if nxt[0] - t < post:
             continue
-        if t + pre < prev[0]:
+        if t - (-pre if prev_gap is None else prev_gap) < prev[0]:
             continue
         if t + post > t_stop:
             continue
@@ -199,12 +202,12 @@ def trial_times(s, t_stop, event, pre, post, with_pinch):
     return kept
 
 
-def all_trials(sessions, cells, cls, event, pre, post, with_pinch):
+def all_trials(sessions, cells, cls, event, pre, post, with_pinch, prev_gap=None):
     """List of (cell index, event time) for every kept trial of the class."""
     out = []
     for ci, c in cells[cells.cls == cls].iterrows():
         s = sessions[c.session]
-        for t in trial_times(s, c.t_stop, event, pre, post, with_pinch):
+        for t in trial_times(s, c.t_stop, event, pre, post, with_pinch, prev_gap):
             out.append((ci, t))
     return out
 
@@ -380,15 +383,67 @@ def build_off_erf_linear(X, Y, p=OFF_LINERF_PRIORS):
     return m
 
 
-def sample(model, seed, draws=1000, tune=1000, chains=4, target_accept=0.8):
-    """NUTS, 4 chains, 1000 tuning steps, 1000 draws (Methods, Piecewise Bayesian modeling);
-    target_accept 0.8 (sample_model of the code). The seed is a standard choice."""
+def map_start(model, n_starts=9):
+    """Multi-start MAP (pymc.find_MAP from n_starts values of t_switch evenly spaced inside its
+    uniform prior, every other variable at the model's initial point). Returns the highest of the
+    local maxima, and all of them as (t_switch start, log posterior, t_switch at the maximum).
+    The posteriors of these models have local modes far below the main one (an OFF chain
+    started at the default point can stay in a mode whose log posterior is about 240 lower), so
+    chains are started at the highest maximum found. This is a sampler setting (where the chains
+    start), not a method of the paper, which does not say how its chains were started."""
     import pymc as pm
+    lo, hi = _t_bounds(model)
+    starts = lo + (np.arange(n_starts) + 0.5) * (hi - lo) / n_starts
+    best, found = None, []
+    with model:
+        logp = model.compile_logp()
+        names = list(model.initial_point())
+        for ts in starts:
+            mp = pm.find_MAP(start={"t_switch": ts}, progressbar=False)
+            lp = float(logp({k: mp[k] for k in names}))
+            if not np.isfinite(lp):
+                continue
+            found.append((round(float(ts), 2), round(lp, 1), round(float(mp["t_switch"]), 3)))
+            if best is None or lp > best[0]:
+                best = (lp, {v.name: mp[v.name] for v in model.free_RVs})
+    return best[1], found
+
+
+def _t_bounds(model):
+    import pytensor
+    rv = model["t_switch"]
+    lo, hi = rv.owner.inputs[-2], rv.owner.inputs[-1]
+    return float(pytensor.function([], lo)()), float(pytensor.function([], hi)())
+
+
+def sample(model, seed, draws=1000, tune=1000, chains=4, target_accept=0.8, init_map=True):
+    """NUTS, 4 chains, 1000 tuning steps, 1000 draws (Methods, Piecewise Bayesian modeling);
+    target_accept 0.8 (sample_model of the code). The seed is a standard choice. With init_map,
+    every chain starts at the multi-start MAP of map_start (with pymc's default jitter); without
+    it, at the model's default initial point, as the code does. The local maxima found are kept
+    in idata.attrs["map_starts"]."""
+    import pymc as pm
+    kw, found = {}, []
+    if init_map and "t_switch" in model.named_vars:
+        start, found = map_start(model)
+        kw["initvals"] = start
     with model:
         idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=chains, target_accept=target_accept,
                           random_seed=seed, progressbar=False, idata_kwargs={"log_likelihood": True},
-                          compute_convergence_checks=False)
+                          compute_convergence_checks=False, **kw)
+    idata.attrs["map_starts"] = str(found)
     return idata
+
+
+def chain_report(idata):
+    """Mean log posterior (sample_stats lp) and divergences per chain, the largest r_hat and the
+    smallest bulk ESS over the free variables: a chain whose mean lp is far below the others has
+    stayed in a lower local mode."""
+    import arviz as az
+    lp = idata.sample_stats["lp"].mean("draw").values
+    div = idata.sample_stats["diverging"].sum("draw").values
+    return dict(lp=np.round(lp, 1).tolist(), div=div.astype(int).tolist(),
+                rhat=float(az.rhat(idata).to_array().max()), ess=float(az.ess(idata).to_array().min()))
 
 
 def post(idata, name):
@@ -500,7 +555,7 @@ def bin_split(train, t_stop, cut_time, bin_width=5.0):
 
 
 def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05, seed=0, max_count=200,
-                snapshots=(), n_mc=30, threads=4, dtype="float64"):
+                snapshots=(), n_mc=30, threads=4, dtype="float64", null_same=False):
     """The periodic GP and the constant-mean null GP of the code (PeriodicGPModel, MeanGPModel,
     PoissonUniformMixtureLikelihood, compare_log_liks), written out in plain torch as a batch of
     independent GPs (one per cell), for speed. The pseudo-R2 is 1 minus the summed expected log
@@ -517,6 +572,15 @@ def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05
     Defaults are the Methods' (200 inducing points, p_noise 0.001) with params.json's 10000
     iterations; gp.ipynb passes the code's 100 inducing points, p_noise 0.01 and 5000 iterations
     (an assumption, said there). `snapshots` adds results at earlier iteration counts.
+    The null model's uniform contamination runs over 0 to the cell's largest training count, as
+    the code's Poisson_GP_main_fit_notebook.ipynb creates it (create_mean_model(T_max,
+    max_count=train_y.max(), ...)), while the periodic model's runs over 0 to max_count (200).
+    With null_same, a second null model with the periodic model's range (0 to max_count, "the
+    same likelihood" of the criterion) is also fitted, after the main results are drawn, and
+    its pseudo-R2 values are returned as train_r2_same and test_r2_same. The null model's
+    inducing values have zero covariance with the data, so they enter its ELBO only through
+    their KL term, which is minimized separately; one inducing point is used for it, which
+    gives the same fit as any number.
     """
     import torch
     torch.set_num_threads(threads)
@@ -570,8 +634,9 @@ def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05
         return 1.0 - sp(-P["raw_alpha"])  # gpytorch LessThan(1.0)
 
     def new_params(periodic):
+        Mv = M if periodic else 1
         P = {"const": ((ymax + ymin) / 2 / 10.0).clone(), "raw_alpha": isp(torch.ones(B, dtype=dt)) * -1.0,
-             "vm": torch.zeros(B, M, dtype=dt), "vL": torch.eye(M, dtype=dt).repeat(B, 1, 1)}
+             "vm": torch.zeros(B, Mv, dtype=dt), "vL": torch.eye(Mv, dtype=dt).repeat(B, 1, 1)}
         # LessThan(1): alpha = 1 - softplus(-raw); alpha 0 means softplus(-raw) = 1, raw = -isp(1)
         if periodic:
             P.update(raw_os=isp(yvar / 100), raw_ls=isp(torch.full((B,), 0.1, dtype=dt)),
@@ -599,7 +664,7 @@ def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05
     def kl(P):
         Ls = torch.tril(P["vL"])
         diag = torch.diagonal(Ls, dim1=-2, dim2=-1)
-        return 0.5 * ((Ls ** 2).sum((-1, -2)) + (P["vm"] ** 2).sum(-1) - M - 2 * torch.log(diag.abs()).sum(-1))
+        return 0.5 * ((Ls ** 2).sum((-1, -2)) + (P["vm"] ** 2).sum(-1) - Ls.shape[-1] - 2 * torch.log(diag.abs()).sum(-1))
 
     def ell(P, x, y, mask, periodic, ulog, n_s=n_mc):
         mean, var, _ = marg(P, x, periodic)
@@ -614,9 +679,7 @@ def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05
             lprior = lprior + torch.distributions.Normal(0.1, 0.1).log_prob(P["raw_ls"])
         return -((e - kl(P) + lprior) / nt).sum()
 
-    snaps_all = {}
-    for periodic in (True, False):
-        ulog = torch.log(1.0 / ((torch.full((B,), float(max_count), dtype=dt) if periodic else ymax) + 1))[:, None]
+    def train(periodic, ulog):
         P = new_params(periodic)
         opt = torch.optim.Adam(list(P.values()), lr=lr)
         snaps = {}
@@ -627,7 +690,10 @@ def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05
             opt.step()
             if it in snapshots or it == n_iter:
                 snaps[it] = {k: v.detach().clone() for k, v in P.items()}
-        snaps_all[periodic] = (snaps, ulog)
+        return snaps, ulog
+
+    u_max = torch.log(1.0 / (torch.full((B,), float(max_count), dtype=dt) + 1))[:, None]
+    snaps_all = {True: train(True, u_max), False: train(False, torch.log(1.0 / (ymax + 1))[:, None])}
 
     results = {}
     with torch.no_grad():
@@ -643,7 +709,15 @@ def fit_gp_fast(cells_xy, n_iter=10000, num_inducing=200, p_noise=0.001, lr=0.05
                                outputscale=sp(P1["raw_os"]).numpy(), alpha=alpha_of(P1).numpy(),
                                const=P1["const"].numpy(),
                                train_r2=(1 - e_tr / m_tr).numpy(), test_r2=(1 - e_te / m_te).numpy(),
+                               train_ell=e_tr.numpy(), train_null_ell=m_tr.numpy(), test_null_ell=m_te.numpy(),
                                grid=grid.numpy(), mean_rate=fr.numpy(), params=P1, Z=Z)
+    if null_same:
+        snaps_same = train(False, u_max)[0]
+        with torch.no_grad():
+            for it in sorted(snaps_all[True][0]):
+                P1 = snaps_all[True][0][it]; P0 = snaps_same[it]
+                results[it]["train_r2_same"] = (1 - ell(P1, tx, ty, tm, True, u_max) / ell(P0, tx, ty, tm, False, u_max)).numpy()
+                results[it]["test_r2_same"] = (1 - ell(P1, vx, vy, vm, True, u_max) / ell(P0, vx, vy, vm, False, u_max)).numpy()
     return results
 
 
@@ -798,8 +872,9 @@ def coherence_test(spikes, beats, start, end, seed=1, n_surr=1000, bin_size=2.0,
     """Spike counts and heart-beat counts in 2 s bins over [start, end]; 500 s segments with 50%
     overlap; multitaper coherence (NW 3.5, K 6); 1000 surrogates with each heart-rate segment
     phase-randomized (rng seeded per cell, as the code); threshold the 99.9th percentile of the
-    surrogates' maximum coherence over all frequencies. Returns f, C, threshold, heart-beat
-    spectrum."""
+    surrogates' maximum coherence over all frequencies. Returns f, C, the threshold, the number of
+    segments, and the threshold from the surrogates' maximum over f > 0 only (a variant that
+    leaves out the f = 0 bin, as the significance count of ongoing.ipynb does)."""
     nb = int(np.floor((end - start) / bin_size))
     edges = start + bin_size * np.arange(nb + 1)
     x = np.histogram(spikes, edges)[0].astype(float)
@@ -808,9 +883,141 @@ def coherence_test(spikes, beats, start, end, seed=1, n_surr=1000, bin_size=2.0,
     xs, ys = segments(x, L, L // 2), segments(y, L, L // 2)
     f, C, Syy = mt_coherence(xs, ys, 1 / bin_size)
     rng = np.random.default_rng(seed)
-    mx = np.empty(n_surr)
+    mx, mx_pos = np.empty(n_surr), np.empty(n_surr)
     for b in range(n_surr):
         _, Cs, _ = mt_coherence(xs, phase_randomize(ys, rng), 1 / bin_size)
         mx[b] = Cs.max()
+        mx_pos[b] = Cs[f > 0].max()
     thr = float(np.percentile(mx, 100 * (1 - alpha)))
-    return f, C, thr, xs.shape[0]
+    return f, C, thr, xs.shape[0], float(np.percentile(mx_pos, 100 * (1 - alpha)))
+
+
+def clean_beats(beats, min_ibi=0.05):
+    """EKG beat times without the beats that follow the previous kept beat by less than min_ibi
+    (50 ms; double detections, since at about 400 bpm beats are about 150 ms apart). A variant:
+    the paper does not say whether its beat series were cleaned."""
+    beats = np.asarray(beats)
+    if len(beats) == 0:
+        return beats
+    keep = [0]
+    for i in range(1, len(beats)):
+        if beats[i] - beats[keep[-1]] >= min_ibi:
+            keep.append(i)
+    return beats[keep]
+
+
+# ----------------------------------------------------------------------------------------------
+# Tests of the Gaussian-process claims (bootstrap_R2_across_animals.ipynb of the code; criteria of
+# fig5b-train-r2 and fig5b-train-no-difference): d is a table with one row per cell and columns
+# cls, subject, file and the metric.
+# ----------------------------------------------------------------------------------------------
+def signflip(d, metric, group, n_perm=10000, seed=0):
+    """Two-sided sign-flip permutation test of the class median: all cells of a group (animal or
+    file) flipped together; p is the fraction of null medians at least as far from 0 as observed."""
+    rng = np.random.default_rng(seed)
+    obs = float(np.median(d[metric]))
+    groups = [g[metric].values for _, g in d.groupby(group)]
+    flips = rng.choice([1, -1], size=(n_perm, len(groups)))
+    vals = np.concatenate(groups)
+    sizes = [len(g) for g in groups]
+    rep = np.repeat(np.arange(len(groups)), sizes)
+    null = np.median(flips[:, rep] * vals[None, :], axis=1)
+    return obs, float(np.mean(np.abs(null) >= abs(obs)))
+
+def permute_blocks(labels, blocks, label_set, rng):
+    out = labels.copy()
+    for b in np.unique(blocks):
+        m = blocks == b
+        orig = pd.unique(labels[m])
+        perm = rng.permutation(label_set)
+        mp = dict(zip(orig, perm[:len(orig)]))
+        out[m] = [mp[x] for x in labels[m]]
+    return out
+
+def mw_blockwise(d, metric, g1, g2, block, n_perm=1000, seed=42):
+    dd = d[d.cls.isin([g1, g2])]
+    y, lab, blk = dd[metric].values, dd.cls.values.astype(object), dd[block].values
+    u_obs = stats.mannwhitneyu(y[lab == g1], y[lab == g2]).statistic
+    rng = np.random.default_rng(seed)
+    us = []
+    for _ in range(n_perm):
+        l = permute_blocks(lab, blk, np.array([g1, g2], dtype=object), rng)
+        if (l == g1).sum() == 0 or (l == g2).sum() == 0:
+            continue
+        us.append(stats.mannwhitneyu(y[l == g1], y[l == g2]).statistic)
+    us = np.array(us)
+    med = np.median(us)
+    return float(u_obs), float(np.mean(np.abs(us - med) >= abs(u_obs - med)))
+
+def kw_blockwise(d, metric, block, n_perm=1000, seed=42):
+    y, lab, blk = d[metric].values, d.cls.values.astype(object), d[block].values
+    h_obs = stats.kruskal(*[y[lab == g] for g in ["ON", "OFF", "NEUTRAL"]]).statistic
+    rng = np.random.default_rng(seed)
+    hs = []
+    for _ in range(n_perm):
+        l = permute_blocks(lab, blk, np.array(["ON", "OFF", "NEUTRAL"], dtype=object), rng)
+        try:
+            hs.append(stats.kruskal(*[y[l == g] for g in ["ON", "OFF", "NEUTRAL"]]).statistic)
+        except ValueError:
+            continue
+    return float(h_obs), float(np.mean(np.array(hs) >= h_obs)), len(hs)
+
+def mw_within_file(d, metric, g1, g2, n_perm=1000, seed=42):
+    """Variant: clustered_mannwhitney_u of the code, labels shuffled within each file."""
+    dd = d[d.cls.isin([g1, g2])].copy()
+    y = dd[metric].values
+    u_obs = stats.mannwhitneyu(y[dd.cls == g1], y[dd.cls == g2]).statistic
+    rng = np.random.default_rng(seed)
+    us = []
+    for _ in range(n_perm):
+        lab = dd.groupby("file").cls.transform(lambda s: rng.permutation(s.values)).values
+        if (lab == g1).sum() and (lab == g2).sum():
+            us.append(stats.mannwhitneyu(y[lab == g1], y[lab == g2]).statistic)
+    us = np.array(us); med = np.median(us)
+    return float(u_obs), float(np.mean(np.abs(us - med) >= abs(u_obs - med)))
+
+def r2_tests(d, metric, label):
+    print(f"--- {label}")
+    for k, seed in [("ON", 1), ("OFF", 2), ("NEUTRAL", 3)]:
+        dk = d[d.cls == k]
+        o, p = signflip(dk, metric, "subject", seed=seed)
+        o2, p2 = signflip(dk, metric, "file", seed=seed)
+        print(f"  {k}: n {len(dk)}, median {o:.4f}, cells above 0: {(dk[metric] > 0).sum()}; sign-flip p by animal {p:.4f}, by file {p2:.4f}")
+
+def group_tests(d, metric, label):
+    print(f"--- {label}")
+    out = {}
+    for block in ["file", "subject"]:
+        ps = []
+        for g1, g2 in [("ON", "OFF"), ("ON", "NEUTRAL"), ("OFF", "NEUTRAL")]:
+            u, p = mw_blockwise(d, metric, g1, g2, block)
+            ps.append(p)
+            print(f"  blocks by {block}: {g1} vs {g2}: U {u:.0f}, p {p:.4f}, Bonferroni {min(1, 3 * p):.4f}")
+        h, p, n = kw_blockwise(d, metric, block)
+        print(f"  blocks by {block}: Kruskal-Wallis H {h:.3f}, p {p:.4f} ({n} relabellings)")
+        out[block] = ([min(1, 3 * p_) for p_ in ps], p)
+    return out
+
+
+def match_to_code(d, ref, kind_code=True):
+    """Match the cells fitted here to the rows of the code's stored fits (combined_data.csv) of the
+    same class, by the null model's expected log likelihood on the training and on the test bins
+    (which depend only on a cell's counts and its constant-mean fit), with a minimum-cost
+    assignment (scipy linear_sum_assignment) on the summed relative differences. Returns one row
+    per matched pair with both sets of values."""
+    from scipy.optimize import linear_sum_assignment
+    out = []
+    for k in ["ON", "OFF", "NEUTRAL"]:
+        a = d[d.cls == k].reset_index(drop=True)
+        b = ref[ref.cls == k].reset_index(drop=True)
+        ca = np.abs(a.train_null_ell.values[:, None] - b["Train Mean Model ELPD"].values[None, :]) / np.abs(b["Train Mean Model ELPD"].values[None, :]) \
+            + np.abs(a.test_null_ell.values[:, None] - b["Test Mean Model ELPD"].values[None, :]) / np.abs(b["Test Mean Model ELPD"].values[None, :])
+        i, j = linear_sum_assignment(ca)
+        for ii, jj in zip(i, j):
+            out.append(dict(cls=k, ci=a.ci[ii], code_id=b.model_id[jj], cost=ca[ii, jj],
+                            null_train=a.train_null_ell[ii], code_null_train=b["Train Mean Model ELPD"][jj],
+                            period=a.period[ii], code_period=b.period_length[jj], outputscale=a.outputscale[ii],
+                            code_outputscale=b.outputscale[jj], alpha=a.alpha[ii], code_alpha=b.w[jj],
+                            train_r2=a.train_r2[ii], code_train_r2=b["Train Pseudo-R2"][jj],
+                            test_r2=a.test_r2[ii], code_test_r2=b["Test Pseudo-R2"][jj]))
+    return pd.DataFrame(out)
