@@ -31,7 +31,8 @@ reasoning and the differences from the paper's method.
 The data set has no isolation measures or waveforms, so every sorted cluster is used in place of the
 paper's well-isolated cells; this bears on every tested claim. The overdispersion claims read the
 paper's pass rule literally, as the claims file does; a reading of it as a count changes the
-overdispersion result and is asked of a reader in
+overdispersion-passes result in R2, and on the code's 32 x 32 grid the result of
+fig4b-covariance-40-passes, and is asked of a reader in
 [`questions/crcns-hc-16.yaml`](../../questions/crcns-hc-16.yaml). The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/crcns-hc-16-talbot-2018-01.yaml`](../../attempts/crcns-hc-16-talbot-2018-01.yaml).
