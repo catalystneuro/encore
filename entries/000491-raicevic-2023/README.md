@@ -11,7 +11,7 @@ points), which is run for the cross-section counts only.
 
 | Claim | Outcome |
 |---|---|
-| 54 to 451 cross sections per segment, 0.8 um apart | Not reproduced (change to reproduced proposed) |
+| 54 to 451 cross sections per segment, 0.8 um apart | Not reproduced (a proposed change to reproduced was not accepted) |
 | 2D and 3D segmentations overlap by at least 70% | Blocked: data missing |
 | PVS area on vessel area, slope 1.05, R2 0.158 | Not reproduced |
 | Area ratio peak 1.12, median 1.88, IQR 1.79 | Not reproduced |
@@ -42,9 +42,10 @@ file names; the centerline, slicing and resistance solver are equivalents of the
 functions. After the first verification the centerline is cleaned of points off the vessel and
 of repeats, and the PVS of each cross section is the two lobes beside the vessel. The ellipse fit surrounds the vessel, fit to the PVS and vessel together, as a reader
 settled in answer to a question on the claims file
-([`questions/000491.yaml`](../../questions/000491.yaml)). After the second verification no outcome changed. A path along the fitted centerline would give
-counts inside the claim's range, so a change of cross-section-counts to reproduced is proposed for a
-third round. The cleaned path of location E follows a side branch; without E,
+([`questions/000491.yaml`](../../questions/000491.yaml)). After the second verification no outcome changed. Counts estimated for a path along the fitted
+centerline fall inside the claim's range, and a change of cross-section-counts to reproduced was
+proposed; the third verification did not agree, since no slices were taken along such a path and its
+step was not measured, so the outcome stays not reproduced. The cleaned path of location E follows a side branch; without E,
 fig8-ellipse-parameters and fig9a-heights-taper would both be partially reproduced. Among the findings about the data: the deposited vessel and PVS masks still overlap in
 11 of 14 files; at E and F the PVS mask fills every plane below a depth; the vessel mask of E still holds its
 branching vessels; the first published

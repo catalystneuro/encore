@@ -37,7 +37,9 @@ outcomes:
     um at every location but E. Counted along the fitted centerline (a diagnostic in the notebook, with the share
     kept under P4 b), the segments would give 223 to 427 cross sections at each segment's own mean step (mean
     0.876 um), 241 to 492 at the paper's 0.8 um, 219 to 447 at 0.88 um and 267 to 546 at 0.72 um; the first three
-    are inside 48.6 to 496.1. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest
+    are inside 48.6 to 496.1. The third verification did not accept these estimated counts as a test of the claim
+    (no slices were taken along that path and its step was not measured), so the outcome stays not reproduced.
+    Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest
     path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.
   deviations:
   - 'Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage''s
@@ -98,7 +100,14 @@ outcomes:
       0.8 um, both inside 48.6 to 496.1 with the spacing within tolerance, so the claim holds; P1 b still fails on
       its spacing (1.345 um). The margin is small: at a step of 0.72 um the most would be 546, and the counts are
       estimated from the kept share, not from slices taken along the fitted curve. The fewest, 223, is far above the
-      paper''s 54, which the criterion allows.'
+      paper''s 54, which the criterion allows. The verifier of round 3 did not agree and would keep not reproduced:
+      the counts come from scaling the kept share by the fitted arc over an assumed step, not from slices taken along
+      a new path; a centerline that follows the fitted curve is a reading outside the claims file, which the Methods
+      (points "manually removed" from the bwskel output) do not support; and the step of 0.876 um that passes is the
+      mean step of the meandering path, not measured on a path along the vessel, while an average 26-connected step
+      of about 0.73 um would give a most of about 539. The change could be considered if slices were taken along a
+      path that follows the vessel, its own mean step met 0.72 to 0.88 um and the counts fell within 48.6 to 496.1;
+      that analysis was not run and waits for a new attempt.'
 - claim: segmentation-validation-overlap
   outcome: blocked
   blocked_by: data_missing
@@ -1882,3 +1891,27 @@ verifications:
       pooled outcome giving its effect: unchanged without E. The lobes deviation now quotes the Methods correctly
       (the segmentation removed all but the two largest PVS regions, so it kept the two largest), here and in
       pvs.pvs_lobes.'
+- date: '2026-11-05'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome on cross-section-counts and the analysis behind it (cells 9 to
+    13 of the full executed notebook), against the claims file and the paper's Methods; nothing else.
+  results:
+  - claim: cross-section-counts
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The proposed counts (223 to 427, and 241 to 492) are not counts of slices; cell 12 computes each segment''s
+      count as (share kept under P4 b) times (arc of the fitted quadratic divided by an assumed step), and no centerline
+      was built along the fitted curve. The claims file names two readings of P2, and under every combination of P1,
+      P2 and P4 the claim fails. The proposal relies on a third reading, a centerline that follows the fitted curve,
+      which the Methods do not support; they say only that erroneous points were "manually removed", and removing
+      points does not move the rest onto a fitted curve. The quadratic is also smoother than the vessel, so the arc
+      may understate the length of a correct centerline. The mean spacing of 0.876 um that passes is the mean step
+      of the meandering path, which is circular; a 26-connected path at 0.648 um has an average in-plane step of
+      about 0.73 um, which would give a most of about 539, above the limit. The change could be considered only if
+      slices were taken along a path that follows the vessel, that path''s own mean step met 0.72 to 0.88 um, and the
+      counts then fell within 48.6 to 496.1.'
+    response: 'Outcome kept as not reproduced, with the proposal left in place and the verifier''s view added to its
+      reason. The notes, the conclusion of cross-section-counts, the notebook summary and the README now say the third
+      round did not accept the change. Taking slices along a path that follows the vessel and measuring its step is a
+      new analysis and waits for a new attempt.'
