@@ -46,7 +46,9 @@ outcomes:
     bin. p = 0.0076, 0.0037 and 0.0070 in the 10-15, 15-20 and 20-25 min bins, p = 0.039 in 35-40 (paper
     0.039), p = 0.052 in 30-35 (not significant, as stated). The bins the text does not state, 0-5 p =
     0.51, 5-10 p = 0.073, 25-30 p = 0.018. 21 or 22 mice per bin and condition. The per-bin fraction correct
-    variant is significant only in 5-10 and 10-15 min.
+    variant is significant only in 5-10 and 10-15 min. Whether the criterion should also require the
+    25-30 min bin, which the paper's sentence covers, is asked of a reader in questions/001863.yaml; the
+    bin is higher on saline at p = 0.018, so the outcome would not change.
   deviations:
   - Statistics are computed in Python with R's defaults reproduced (exact signed-rank and rank-sum tests
     below 50 values without ties, otherwise the normal approximation with continuity correction).
@@ -107,6 +109,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2b-median-port-duration-correct
   outcome: blocked
   blocked_by: data_missing
@@ -115,6 +119,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2b-supp-odor-trials-longer
   outcome: blocked
   blocked_by: data_missing
@@ -123,6 +129,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2b-supp-omission-no-difference
   outcome: blocked
   blocked_by: data_missing
@@ -131,6 +139,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2c-incorrect-port-duration
   outcome: blocked
   blocked_by: data_missing
@@ -139,6 +149,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2c-supp-no-sex-difference
   outcome: blocked
   blocked_by: data_missing
@@ -147,6 +159,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2d-median-incorrect-no-difference
   outcome: blocked
   blocked_by: data_missing
@@ -155,6 +169,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig2d-supp-omission-longer
   outcome: blocked
   blocked_by: data_missing
@@ -163,6 +179,8 @@ outcomes:
     the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd
     reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt)
     that are not in the code repository either.
+  notebook: reproduce_welch_2025.ipynb
+  output: sanity
 - claim: fig3a-odor-trial-duration-longer
   outcome: reproduced
   notebook: reproduce_welch_2025.ipynb
@@ -191,7 +209,11 @@ outcomes:
     the criterion's p < 0.05 is not met, and it names no partial outcome. The rank-sum test the Results
     name gives p = 0.51. With the fitted clock, which aligns frames with trials, median difference -0.49
     cm/s, p = 0.75 (10 mice with good fits in both sessions p = 0.92). By sex (code clock), males p =
-    0.027, females p = 0.52. 1125 of 8.3 million frames are above 160 cm/s.
+    0.027, females p = 0.52. 1125 of 8.3 million frames are above 160 cm/s. The signed-rank p is the
+    same under an exact null distribution counted directly (0.0634). The cleaning follows CleanTracking
+    in fig3_cleaned.Rmd and the Methods' thresholds (likelihood < 0.95 or delta > 8 px interpolated),
+    which interpolate a median 80% of nose frames; the p-value depends on them (likelihood cutoff 0.90
+    p = 0.013, 0.99 p = 0.13; jump limit 10 px p = 0.043, 6 px p = 0.068).
   deviations:
   - The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not
     align the tracking with the trial table (median nose displacement over a trial about 0 px), while
@@ -206,7 +228,9 @@ outcomes:
   notes: ITI speed lower on DOI in 15 of 22 mice, median 5.57 against 5.76 cm/s, median difference -0.60
     cm/s, p = 0.079 with the claims file's method (paper 0.036); the criterion's p < 0.05 is not met,
     and it names no partial outcome. Fitted clock p = 0.054 (10 mice with good fits p = 0.084). Rank-sum
-    variant p = 0.57. The direction is as stated.
+    variant p = 0.57. The direction is as stated. The signed-rank p is the same under an exact null
+    distribution counted directly (0.0794). With the Methods' cleaning thresholds replaced, likelihood
+    cutoff 0.90 gives p = 0.043 and 0.99 p = 0.13; jump limits of 6 to 16 px give 0.079 to 0.092.
   deviations:
   - The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not
     align the tracking with the trial table (median nose displacement over a trial about 0 px), while
@@ -232,7 +256,7 @@ outcomes:
   notebook: reproduce_welch_2025.ipynb
   output: claim:fig3supp-doi-iti-slower-than-odor
   notes: On DOI the ITI is slower than odor trials in 19 of 22 mice, median 5.57 against 6.53 cm/s, median
-    difference -0.83 cm/s, p = 0.0002 (paper p < 0.001). Fitted clock -3.54 cm/s, p < 0.0001. Rank-sum
+    difference -0.83 cm/s, p = 0.0002 (paper p < 0.001). Fitted clock -3.57 cm/s, p < 0.0001. Rank-sum
     variant p = 0.16.
   deviations:
   - The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not
@@ -395,8 +419,8 @@ outcomes:
   measured: 22
   notes: 22 mice in the map, the expected 22. With trial and ITI frames combined the rate rises with x,
     r = 0.149, none of 10000 permutations as extreme (p < 0.0001), under every timestamp reading (r =
-    0.122 to 0.149); the grand-mean rate rises from 1.97 HTR/min in the first x bin to about 6.5 at the
-    odor end. It needs no trial clock.
+    0.122 to 0.149); the grand-mean rate rises from 1.97 HTR/min in the first x bin to a peak of 6.76
+    in the bin at 800 px, and is 5.65 in the last bin (1100 px). It needs no trial clock.
   deviations:
   - The later-cohort timestamps' last field is a frame count at 80 frames/s (it never exceeds 79); the
     file stores it as hundredths and the code reads it as thousandths. The code's reading is used, as
@@ -471,10 +495,10 @@ findings:
 - kind: metadata_error
   statement: In the 27 later-cohort sessions the HTR timestamps came as HH:MM:SS:FF video timecodes whose
     last field is a frame count at 80 frames/s (never above 79); the conversion stored it as hundredths
-    of a second, so the stored times are late or early by up to 0.2 s.
+    of a second (FF / 100 against FF / 80), so the stored times are early by up to 0.2 s.
 - kind: code_mismatch
   statement: fig5_cleaned.Rmd reads the last field of the later cohort's HTR timecodes as thousandths
-    of a second, while it is a frame count at 80 frames/s, shifting the HTR times by up to 0.9 s; the
+    of a second, while it is a frame count at 80 frames/s, making the HTR times early by up to 0.9 s; the
     outcomes here do not change with the reading.
 - kind: metadata_error
   statement: The subject sex of the saline session of mouse 2182 (sub-2182_ses-2182-31) is female, while
@@ -783,4 +807,319 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: Cell 81, p = 0.307 (paper 0.31); female median 3.61, male median 3.99 HTR/min.
+    response: No change of outcome.
+- date: '2026-11-05'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary,
+    the helper module, the claims file and the attempt record, with the paper under paper/. Points not
+    tied to one claim: the README said a clock fitted to each session lines the frames up, while cell
+    8 gives a good fit in only 30 of 44 sessions (the Summary states this caveat, but the README leaves
+    it out); the README now says the fit is good in 30 of 44 sessions. The verifier''s round-1 tally was
+    corrected in its own report. Round-1 points 2 to 7 are resolved; problem 1 (the clocks) and R parity
+    remain, and are answered under the claims they bear on.'
+  results:
+  - claim: fig1b-accuracy-lower-doi
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig1c-accuracy-time-bins
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The claims file misreads the paper here (reported, not corrected): the paper''s ''higher...
+      after the first 10 min, except for the 30-35 min bin'' implies the 25-30 min bin is higher too,
+      and the criterion leaves that bin out of its requirements. It makes no difference to the outcome,
+      since cell 24 gives p = 0.018 for that bin.'
+    response: No change of outcome. The point is added to questions/001863.yaml as a question for a reader,
+      and the claim's notes say it is asked; the claim is unchanged.
+  - claim: fig1d-fewer-trials
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig1d-fewer-trials-females-only
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig1e-repoke-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: iti-false-report-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig2a-correct-port-duration-doi-odor
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Round-1 point 4 is resolved: cell 39 lists the groups of all 44 files, and no path
+      names a port, poke, reward, lick, beam or drink, apart from the trial table''s repoke column. Minor:
+      only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. The other eight blocked Figure 2 outcomes now have notebook and output
+      fields too.
+  - claim: fig2a-supp-no-sex-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2b-median-port-duration-correct
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2b-supp-odor-trials-longer
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2b-supp-omission-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2c-incorrect-port-duration
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2c-supp-no-sex-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2d-median-incorrect-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig2d-supp-omission-longer
+    agrees: true
+    outcome: blocked
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Minor: only fig2a of the nine blocked Figure 2 outcomes has notebook and output fields.'
+    response: No change of outcome. All nine blocked Figure 2 outcomes now have notebook and output fields.
+  - claim: fig3a-odor-trial-duration-longer
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig3a-omission-duration-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig3b-iti-duration-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig3c-speed-within-trial-lower
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Now not_reproduced; cell 53 gives signed-rank p = 0.063, and the criterion has no
+      partial outcome. Problem 1, which clock the trial table is on, is still open; the speed outcomes
+      that split frames by period depend on the same unresolved clock. The outcomes correctly follow the
+      claims file's clock, and the record states this. R parity is still unchecked, both for the tests
+      and for clean_nose against the authors' CleanTracking. This matters most for the two not_reproduced
+      outcomes, whose p-values (0.063 and 0.079) are near the cut; a small difference in tracking cleaning
+      could move them.
+    response: 'No change of outcome. R is not available in this environment, so R itself was not run.
+      Added a check cell after fig3d. The signed-rank p-values are recomputed from an exact null distribution
+      counted directly, as R''s psignrank does, and agree with r_signrank (V = 69, p = 0.0634; V = 72,
+      p = 0.0794). clean_nose was compared with CleanTracking in fig3_cleaned.Rmd at the paper''s commit
+      and matches it line for line: likelihood below 0.95 or a jump above 8 px from the raw positions
+      set missing, then linear interpolation with the ends held, as imputeTS::na_interpolation. The thresholds
+      were then varied. About 80% of nose frames are interpolated, and the p-values depend on the thresholds:
+      a likelihood cutoff of 0.90 gives p = 0.013 within trials and 0.043 in the ITI, 0.99 gives 0.13
+      for both, and jump limits of 6 to 16 px give 0.028 to 0.068 within trials and 0.079 to 0.092 in
+      the ITI. The Methods state 0.95 and 8 px (''points with likelihood < 0.95 or delta > 8 pixels were
+      interpolated''), so the outcome stays as tested with them and no change is proposed. The notes and
+      the result cell now give this dependence. The clock question stays with the authors, as the record
+      already asks.'
+  - claim: fig3d-speed-iti-lower
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Now not_reproduced; cell 56 gives signed-rank p = 0.079, and the criterion has no
+      partial outcome. Problem 1, which clock the trial table is on, is still open; the speed outcomes
+      that split frames by period depend on the same unresolved clock. The outcomes correctly follow the
+      claims file's clock, and the record states this. R parity is still unchecked, both for the tests
+      and for clean_nose against the authors' CleanTracking. This matters most for the two not_reproduced
+      outcomes, whose p-values (0.063 and 0.079) are near the cut; a small difference in tracking cleaning
+      could move them.
+    response: 'No change of outcome. R is not available in this environment, so R itself was not run.
+      Added a check cell after fig3d. The signed-rank p-values are recomputed from an exact null distribution
+      counted directly, as R''s psignrank does, and agree with r_signrank (V = 69, p = 0.0634; V = 72,
+      p = 0.0794). clean_nose was compared with CleanTracking in fig3_cleaned.Rmd at the paper''s commit
+      and matches it line for line: likelihood below 0.95 or a jump above 8 px from the raw positions
+      set missing, then linear interpolation with the ends held, as imputeTS::na_interpolation. The thresholds
+      were then varied. About 80% of nose frames are interpolated, and the p-values depend on the thresholds:
+      a likelihood cutoff of 0.90 gives p = 0.013 within trials and 0.043 in the ITI, 0.99 gives 0.13
+      for both, and jump limits of 6 to 16 px give 0.028 to 0.068 within trials and 0.079 to 0.092 in
+      the ITI. The Methods state 0.95 and 8 px (''points with likelihood < 0.95 or delta > 8 pixels were
+      interpolated''), so the outcome stays as tested with them and no change is proposed. The notes and
+      the result cell now give this dependence. The clock question stays with the authors, as the record
+      already asks.'
+  - claim: fig3supp-odor-trial-speed-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Problem 1, which clock the trial table is on, is still open; the speed outcomes that
+      split frames by period depend on the same unresolved clock. The outcomes correctly follow the claims
+      file's clock, and the record states this.
+    response: No change of outcome. The clock question stays with the authors, as the record already asks.
+  - claim: fig3supp-doi-iti-slower-than-odor
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Every other outcome follows its criterion from the printed numbers. The numbers are
+      unchanged from round 1. The record''s ''Fitted clock -3.54 cm/s'' is not supported: cell 62 prints
+      -3.5697, and cell 63''s ''-3.5 cm/s'' should round to -3.6. Problem 1, which clock the trial table
+      is on, is still open; the speed outcomes that split frames by period depend on the same unresolved
+      clock. The outcomes correctly follow the claims file''s clock, and the record states this.'
+    response: No change of outcome. The record now says -3.57 cm/s and the result cell -3.6 cm/s.
+  - claim: fig3supp-doi-omission-no-difference
+    agrees: true
+    outcome: partially_reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Problem 1, which clock the trial table is on, is still open; the speed outcomes that
+      split frames by period depend on the same unresolved clock. The outcomes correctly follow the claims
+      file's clock, and the record states this.
+    response: No change of outcome. The clock question stays with the authors, as the record already asks.
+  - claim: fig3supp-saline-iti-slower
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Problem 1, which clock the trial table is on, is still open; the speed outcomes that
+      split frames by period depend on the same unresolved clock. The outcomes correctly follow the claims
+      file's clock, and the record states this.
+    response: No change of outcome. The clock question stays with the authors, as the record already asks.
+  - claim: fig3supp-saline-odor-omission-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Problem 1, which clock the trial table is on, is still open; the speed outcomes that
+      split frames by period depend on the same unresolved clock. The outcomes correctly follow the claims
+      file's clock, and the record states this.
+    response: No change of outcome. The clock question stays with the authors, as the record already asks.
+  - claim: fig4abc-sniff-frequency-higher
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig4supp-ks-every-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Now partially_reproduced on reading (a); cell 79 gives 11 of 13 mice at p < 0.001,
+      at least the criterion''s two thirds. The assumption that the percentile exclusion is applied per
+      session is stated and reasonable: the Methods quote the record gives does put the exclusion in the
+      per-recording MATLAB step. The outcome would be the same under the code''s computation, which applies
+      no further exclusion (11 of 13). Only reading (b) gives 13 of 13. The question is also put to the
+      authors.'
+    response: No change of outcome.
+  - claim: fig4d-sniff-frequency-by-period
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig4e-median-sniff-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig5ab-occupancy-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption of an arena box from the pooled 0.5-99.5 percentile nose positions
+      is stated and reasonable, given that entropy p = 0.063 and the corner measures have p = 0.25 and
+      0.70. The record says plainly that other boxes were not run.
+    response: No change of outcome.
+  - claim: htr-event-link
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
+    response: No change of outcome.
+  - claim: fig5supp-htr-within-trial-x-not-y
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Problem 1 is still open, and the new HTR check sharpens it. HTR time t sits at frame
+      t x 80 (cell 14), and the code compares t directly with trial times, so the code''s split is right
+      only if the trial table is on the frame/80 clock, which cell 8 contradicts. This means the reproduced
+      outcomes of fig5f and fig5supp-htr-within-trial-x-not-y probably come from the misaligned clock.
+      Under the fitted clock fig5f reverses (p < 1e-4), and the within-trial x effect goes to p = 0.96.
+      The outcomes correctly follow the claims file''s clock, and the record states this. Settling it
+      needs the authors'' answer, which is already asked in the record. Cell 13''s ''the code, which reads
+      the field as thousandths, by up to 0.7 s'' contradicts the record''s 0.9 s: htr_times reads the
+      field as FF/1000 where the true value is FF/80, an error of up to 0.91 s; 0.7 s is only the code''s
+      error relative to the stored times. The finding that the stored times ''are late or early by up
+      to 0.2 s'' is wrong as well: FF/100 is always below FF/80, so the stored times are always early.'
+    response: No change of outcome. The clock question stays with the authors, as the record already asks.
+      Cell 13 now says the stored times are early by up to 0.2 s and the code's times early by up to 0.9
+      s (0.7 s earlier than the stored times). The timecode findings now say the stored times are early
+      by up to 0.2 s and the code's early by up to 0.9 s.
+  - claim: fig5e-htr-combined-x
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other outcome follows its criterion from the printed numbers. The numbers are
+      unchanged from round 1. Cell 101 and the fig5e note say the rate rises 'to about 6.5 at the odor
+      end', but cell 100 shows the rate peaks at 6.76 (x bin 800) and falls to 5.65 in the last bin (1100).
+    response: No change of outcome. The result cell and the note now give the peak of 6.76 HTR/min at
+      the 800 px bin and 5.65 in the last bin (1100 px).
+  - claim: fig5supp-htr-iti-x
+    agrees: true
+    outcome: reproduced
+    reason: 'Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1. Cell 13''s ''the code, which reads the field as thousandths, by up to 0.7 s'' contradicts
+      the record''s 0.9 s: htr_times reads the field as FF/1000 where the true value is FF/80, an error
+      of up to 0.91 s; 0.7 s is only the code''s error relative to the stored times. The finding that
+      the stored times ''are late or early by up to 0.2 s'' is wrong as well: FF/100 is always below FF/80,
+      so the stored times are always early.'
+    response: No change of outcome. Cell 13 now says the stored times are early by up to 0.2 s and the
+      code's times early by up to 0.9 s (0.7 s earlier than the stored times). The timecode findings now
+      say the stored times are early by up to 0.2 s and the code's early by up to 0.9 s.
+  - claim: fig5f-htr-rate-trial-vs-iti
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Problem 1 is still open, and the new HTR check sharpens it. HTR time t sits at frame
+      t x 80 (cell 14), and the code compares t directly with trial times, so the code''s split is right
+      only if the trial table is on the frame/80 clock, which cell 8 contradicts. This means the reproduced
+      outcomes of fig5f and fig5supp-htr-within-trial-x-not-y probably come from the misaligned clock.
+      Under the fitted clock fig5f reverses (p < 1e-4), and the within-trial x effect goes to p = 0.96.
+      The outcomes correctly follow the claims file''s clock, and the record states this. Settling it
+      needs the authors'' answer, which is already asked in the record. Cell 13''s ''the code, which reads
+      the field as thousandths, by up to 0.7 s'' contradicts the record''s 0.9 s: htr_times reads the
+      field as FF/1000 where the true value is FF/80, an error of up to 0.91 s; 0.7 s is only the code''s
+      error relative to the stored times. The finding that the stored times ''are late or early by up
+      to 0.2 s'' is wrong as well: FF/100 is always below FF/80, so the stored times are always early.'
+    response: No change of outcome. The clock question stays with the authors, as the record already asks.
+      Cell 13 now says the stored times are early by up to 0.2 s and the code's times early by up to 0.9
+      s (0.7 s earlier than the stored times). The timecode findings now say the stored times are early
+      by up to 0.2 s and the code's early by up to 0.9 s.
+  - claim: fig5supp-htr-no-sex-difference
+    agrees: true
+    outcome: reproduced
+    reason: Every other outcome follows its criterion from the printed numbers. The numbers are unchanged
+      from round 1.
     response: No change of outcome.

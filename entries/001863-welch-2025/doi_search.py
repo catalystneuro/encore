@@ -181,12 +181,16 @@ def _interp_nan(v: np.ndarray) -> np.ndarray:
     return np.interp(idx, idx[ok], v[ok])   # ends held at the nearest value
 
 
-def clean_nose(s: dict) -> tuple[np.ndarray, np.ndarray, dict]:
-    """Nose x, y after the code's CleanTracking (likelihood < 0.95 or delta > 8 px interpolated)."""
+def clean_nose(s: dict, likelihood_min: float = LIKELIHOOD_MIN,
+               max_delta_px: float | None = MAX_DELTA_PX) -> tuple[np.ndarray, np.ndarray, dict]:
+    """Nose x, y after the code's CleanTracking (likelihood < 0.95 or delta > 8 px interpolated).
+
+    The defaults are the code's; other values are for checking how much the results depend on them.
+    max_delta_px None applies no jump rule, as CleanTracking with maxdelta = NULL."""
     x, y = s["nose_xy"][:, 0].astype(float), s["nose_xy"][:, 1].astype(float)
     delta = np.r_[np.nan, np.hypot(np.diff(x), np.diff(y))]
-    low = s["nose_conf"] < LIKELIHOOD_MIN
-    jump = delta > MAX_DELTA_PX
+    low = s["nose_conf"] < likelihood_min
+    jump = delta > max_delta_px if max_delta_px is not None else np.zeros(len(x), bool)
     bad = low | jump | np.isnan(x) | np.isnan(y)
     x[bad] = np.nan
     y[bad] = np.nan

@@ -21,7 +21,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The tracking has no frame times, and the paper's code places frame i at i / 80 s, which does not
-line the frames up with the trial table; a clock fitted to each session does. The claims are
+line the frames up with the trial table; a clock fitted to each session does in 30 of 44 sessions
+(the other 14 fail its quality check). The claims are
 tested with the code's clock, as the claims file fixes it, and the notebook shows the fitted clock
 as a variant: with it the within-trial speed difference and the within-trial HTR preference vanish,
 and HTRs are rarer within trials than in the ITI. The attempt record, with the reasons and the
