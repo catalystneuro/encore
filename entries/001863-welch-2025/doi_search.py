@@ -38,8 +38,9 @@ aa80af0a153c6bf099e5668d27c9d88e2bfc033f, which the claims file cites.
   and the values (0 to 79) look like a frame count at 80 frames/s. `htr_times` returns each
   reading; "code" (thousandths) is the one the paper's numbers were computed with.
 - Statistical tests follow R's defaults as the code calls them (`r_signrank`, `r_ranksum`):
-  exact when there are fewer than 50 values and no ties, otherwise the normal approximation with
-  continuity correction, zero differences dropped.
+  exact when there are fewer than 50 values and no ties (and, for the signed-rank test, no zero
+  differences), otherwise the normal approximation with continuity correction, zero differences
+  dropped.
 """
 
 from __future__ import annotations
@@ -94,14 +95,18 @@ def _text(value) -> str:
 
 
 def load_session(path: str, url: str) -> dict:
-    """One session: metadata, trial table, nose track, sniff cycles and event times."""
+    """One session: metadata, trial table, nose track, sniff cycles and event times, and the path of
+    every group and dataset in the file (the format's `specifications` left out)."""
     with h5py.File(remfile.File(url), "r") as f:
         mouse, session = (int(v) for v in _text(f["general/session_id"]).split("_"))
         tr = f["intervals/trials"]
         cols = [c.decode() if isinstance(c, bytes) else str(c) for c in tr.attrs["colnames"]]
         trials = pd.DataFrame({c: tr[c][:] for c in cols})
         nose = f["processing/behavior/PoseEstimation/nose"]
+        names = []
+        f.visit(names.append)
         s = {
+            "hdf5_paths": sorted(n for n in names if not n.startswith("specifications")),
             "path": path, "mouse": mouse, "session": session,
             "drug": _text(f["scratch/drug_condition"]),
             "sex_file": _text(f["general/subject/sex"]),
@@ -237,6 +242,7 @@ def r_signrank(a, b) -> tuple[float, float]:
     Returns (V, p); V is the sum of positive ranks of a - b."""
     d = np.asarray(a, float) - np.asarray(b, float)
     d = d[~np.isnan(d)]
+    zeros = bool((d == 0).any())   # R drops zeros and then uses the normal approximation
     d = d[d != 0]
     n = len(d)
     if n == 0:
@@ -244,7 +250,7 @@ def r_signrank(a, b) -> tuple[float, float]:
     r = stats.rankdata(np.abs(d))
     v = float(r[d > 0].sum())
     ties = len(np.unique(np.abs(d))) < n
-    if n < 50 and not ties:
+    if n < 50 and not ties and not zeros:
         p = stats.wilcoxon(d, method="exact").pvalue
     else:
         mu = n * (n + 1) / 4

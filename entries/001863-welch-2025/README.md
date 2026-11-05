@@ -10,9 +10,9 @@ tracking, thermistor sniff cycles and head-twitch (HTR) times.
 | Accuracy, trial counts, repokes and false reports (Figure 1, six claims) | Reproduced |
 | Reward-port duration (Figure 2, nine claims) | Blocked: data missing |
 | Trial and ITI duration (Figure 3A, 3B, three claims) | Reproduced |
-| Speed: lower within trials and in the ITI on DOI (Figure 3C, 3D) | Partially reproduced |
+| Speed: lower within trials and in the ITI on DOI (Figure 3C, 3D) | Not reproduced (p = 0.063 and 0.079) |
 | Speed by trial type (Figure 3 supplement, five claims) | Four reproduced, one partially |
-| Sniff frequency (Figure 4, four claims) | Reproduced |
+| Sniff frequency (Figure 4, four claims) | Three reproduced; the per-mouse KS test partially (11 of 13 mice at p < 0.001, an assumed reading) |
 | Occupancy (Figure 5A, 5B) | Reproduced |
 | The event series is the HTR times (link claim) | Reproduced |
 | HTR location, timing and sex (Figure 5, five claims) | Reproduced |
@@ -28,7 +28,7 @@ and HTRs are rarer within trials than in the ITI. The attempt record, with the r
 differences from the paper's method, is
 [`attempts/001863-welch-2025-01.yaml`](../../attempts/001863-welch-2025-01.yaml).
 
-- `reproduce_welch_2025.ipynb`: the analysis. It takes about six minutes, one of them streaming the
+- `reproduce_welch_2025.ipynb`: the analysis. It takes about seven minutes, one of them streaming the
   files and most of the rest the permutation tests.
 - `doi_search.py`: loading the files, the measures of the paper's code (tracking cleaning, speed,
   rolling accuracy, sniff frequency, HTR maps), R-style tests and the clock check. Other notebooks
