@@ -1,0 +1,48 @@
+questions:
+- claim: overdispersion-passes
+  asked: 2026-11-05
+  question: >-
+    The claims file reads the pass rule literally, a 5 s interval is a pass when exp, the
+    expected spike count in the interval, is at least the cell's average rate in AP/s. Is the
+    threshold meant as the count expected at the average rate over the interval (exp at least
+    the average rate x 5 s), so that a pass is an interval in which the expected firing is at
+    least the cell's average? The same rule selects the joint passes of
+    fig4b-covariance-30-passes and fig4b-covariance-40-passes, and the passes of
+    overdispersion-cells.
+  passage: >-
+    Only 5 s intervals when the mouse sampled a cell's firing field well were studied. These
+    were identified by exp >= average rate for the cell (Fenton et al., 2010). To study
+    discharge covariations between pairs of cells, we selected 5 s epochs when the mouse crossed
+    the firing fields of both cells as epochs when expected spatial firing (exp) of each cell
+    was above the individual cell's average rate. (STAR Methods, Overdispersion; the extracted
+    text prints the sign as "R")
+  why: >-
+    The literal rule compares a count with a rate. Here it passes a median 76% of a cell's 5 s
+    intervals, gives about twice the paper's passes (12,802 and 18,521 against 6,776 and 9,102),
+    and every place cell pair has at least 39 joint passes, so the 30 and 40 pass minimums of
+    the fig4b claims select nothing. The count reading passes 33% of intervals and gives 5,442
+    and 8,250 passes. With it, overdispersion-passes meets its criterion in R2 (variances 5.28
+    and 4.66, within 5.81 +/- 0.58 and 4.89 +/- 0.49; F test one-sided p < 0.0001, Levene p =
+    0.0006), where the literal rule gives 3.69 and 3.55 with Levene p = 0.998. On the 1.25 cm
+    maps the fig4b and overdispersion-cells outcomes do not change with it; on the code's 32 x 32
+    grid fig4b-covariance-40-passes meets its criterion with it (r 0.182 against 0.056, both
+    within tolerance, p = 0.0004). Raised by the round-1 verifier.
+- claim: figs4-remapping-similar
+  asked: 2026-11-05
+  question: >-
+    The criterion says that Table S2 lists box and arena sessions of a mouse on different dates,
+    and so leaves open whether the square and circular recordings were made the same day. Table
+    S2 lists, for M32, a small box session on 04-17-15, the day of that mouse's stationary and
+    rotating arena sessions. Should the criterion take the comparison to be between a small box
+    session and a stationary arena session of the same day (reading a), and drop the statement
+    about different dates?
+  passage: >-
+    Table S2, M32, WT: 04-17-15 small box; 04-17-15 stationary arena 1; 04-17-15 rotating arena;
+    04-17-15 stationary arena 2 (paper/10.1016-j.neuron.2017.12.043.txt, about lines 2698 to
+    2749).
+  why: >-
+    The statement about different dates is what leaves reading (b), any box and arena sessions
+    of a mouse, open. It does not change this attempt's outcome, which is blocked as data_missing
+    because the data set holds no small box sessions and none of its large box sessions is on
+    the day of an arena session of the same mouse; it would decide which recordings a later
+    attempt compares. Raised by the round-2 verifier.
