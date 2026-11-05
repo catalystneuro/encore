@@ -48,7 +48,10 @@ not there, or lacks the Methods or a supplement the results rest on, stop:
 write no claims, and end with a report that names what is missing, so that it
 can be supplied. Never write claims from the abstract. Do not copy figures.
 Do not look at the dataset's data: its title and description on the archive
-are enough to know which paper and which experiments it is meant to hold.
+are enough to know which paper and which experiments it is meant to hold. A
+data descriptor under `paper/` (`<id>.data-description.txt`, the dataset's own
+documentation) is a longer description, to be read for that alone; it is not
+the paper, and no claim comes from it.
 
 ### 2. Read the paper's code
 
