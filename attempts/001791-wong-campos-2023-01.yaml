@@ -1,0 +1,343 @@
+schema_version: 2
+id: 001791-wong-campos-2023-01
+dataset:
+  archive: dandi
+  id: "001791"
+  version: 0.260424.0313
+  doi: 10.48324/dandi.001791/0.260424.0313
+paper: doi:10.1101/2023.05.25.542363
+date: 2026-11-05
+entry: 001791-wong-campos-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42028166486
+outcomes:
+- claim: fig1d-light-intensity-spike-rate
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig1d-light-intensity-spike-rate
+  notes: The Fig. 1 file has no record of the light pulses. Nine 0.5 s depolarizing steps recur
+    every 1 s from 0.52 s, and their on-off contrast grows from 0.49 to 2.32 z. Somatic spikes per
+    pulse rise with pulse order under both readings; with K = 5, 0 in the first pulse and 1 in the
+    last (Spearman rho 0.56, p = 0.11; means of 1.00 in the first three pulses and 4.33 in the last
+    three); with K = 4, 0 and 8 (rho 0.86, p = 0.003). Dendrites 1 to 3 show an event within 5 ms
+    after 72% to 100% of somatic spikes, dendrite 4 after only 14% (K = 5) or 33% (K = 4). The rate
+    part holds and the bAP part holds in three of four dendrites. Question for the paper's authors,
+    when were the light pulses given and at what intensities? The file records neither.
+  deviations:
+  - The pulse windows are inferred from the light-evoked depolarization of the traces, as a 1 s
+    period square wave with the paper's 0.5 s pulses (Results, Dendritic voltage mapping, "0.5 s
+    pulses of widefield blue light at increasing intensity"); the period is read from the trace.
+    This is an assumption, as the file records no stimulus.
+  - The traces are the deposited z-scored PCA traces, not dF/F.
+  - Spike and dendritic event detection use a 10 Hz high-pass filter and a 4 ms minimum separation,
+    standard choices the paper does not give.
+- claim: fig1fg-dendrite-peaks-after-soma
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig1fg-dendrite-peaks-after-soma
+  notes: Timed by the sample of the maximum, all four dendritic STAs peak in the same frame as the
+    soma (delay 0.0 ms, both K), so no delay is positive. Timed by a parabola through the maximum,
+    three of four dendrites peak after the soma (0.03 to 0.66 ms) and dendrite 4 before it (-0.27
+    to -0.28 ms); bootstrap intervals are above 0 for dendrites 2 and 3 only. The delays are far
+    below the 1.5 to 4 ms of Fig. 2. Question for the paper's authors, how were STA peaks timed
+    below one frame at 500 Hz?
+  deviations:
+  - Assumed sub-frame peak timing by a parabola (reading (b) of fig2f-delay-range), since the
+    dandiset's own Fig. 2 delays are given to 0.01 ms at 2 ms frames; under the sample reading no
+    dendrite qualifies.
+- claim: fig2c-no-trial-variation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The traces of the Fig. 2 mapping recordings (40 pulses, 8 ms, 5 Hz) are not in the
+    dandiset. It holds per-site amplitudes and delays, and the figure2h file holds per-event
+    normalized amplitudes (spike amplitude divided by the STA amplitude) for soma and dendrite
+    pairs, without the baseline noise either reading of the criterion needs.
+- claim: fig2e-half-amplitude-distance
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig2e-half-amplitude-distance
+  measured:
+  - 238.9
+  - 0.491
+  notes: On the 30 LR sites the linear fit of amplitude on contour distance falls to half its value
+    at 0 at 238.9 μm (bootstrap 95% interval 203 to 318) with R2 = 0.491, both within tolerance.
+    The exponential reading gives 203.6 μm (R2 0.514), outside. On the other site sets the linear
+    distance is within tolerance and R2 is not; all 53 sites of the amplitude file 226.4 μm and R2
+    0.631, 70 sites 216.2 μm and 0.558, ST alone 230.9 μm and 0.682. Reading (c) could not be run,
+    as the somatic amplitudes are not deposited. Question for the paper's authors, were the
+    preprint's 30 sites those of the Lucy-Rho (LR) construct, and was the 50% distance taken from a
+    linear fit?
+  deviations:
+  - The amplitudes are the deposited per-site values (peak -dF/F of the STA), not recomputed from
+    traces, which are not in the dandiset.
+  - Assumed that the preprint's 30 sites are the 30 LR sites of the dandiset's 12-neuron table; the
+    preprint describes only the Lucy-Rho CheRiff construct (Fig. 1a) and gives n = 30, which equals
+    the LR count. No neuron identifiers allow selecting the paper's 5 neurons.
+- claim: fig2f-delay-range
+  outcome: not_reproduced
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig2f-delay-range
+  measured:
+  - 0.0
+  - 3.92
+  notes: Of the 32 LR sites between 50 and 280 μm, 23 have delays below 1.35 ms; delays there range
+    from 0.00 to 3.92 ms (median 0.96). Over all 61 sites in that range, 48 are below 1.35 ms (0.00
+    to 4.13 ms). The upper end matches the paper's 4 ms and the lower end does not. The pooled
+    linear fit gives -0.43 ms at 50 μm and 2.18 ms at 280 μm (LR).
+  deviations:
+  - The delays are the deposited ones; the criterion's two peak-timing readings cannot be run
+    without the traces.
+  - The measured values are for the 32 LR sites of the dandiset's 12-neuron table, not the paper's
+    30 sites of 5 neurons.
+- claim: fig2f-conduction-speed
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig2f-conduction-speed
+  measured:
+  - 0.088
+  - 0.462
+  notes: On the 32 LR sites beyond 50 μm the pooled linear fit gives 0.088 m/s (bootstrap 95%
+    interval 0.063 to 0.131) with R2 = 0.462, both within tolerance. On the 30 LR sites shared with
+    the amplitude file, 0.085 m/s and R2 0.427. Over all 65 sites, 0.081 m/s with R2 0.563, and on
+    ST alone 0.075 m/s with R2 0.655, so the speed is within tolerance on every set and R2 only on
+    LR. Reading (b), per-neuron fits, could not be run.
+  deviations:
+  - Deposited delays; the files do not say which neuron a site belongs to, so only the pooled fit
+    (reading (a)) is run.
+  - Assumed the LR site set, as for fig2e-half-amplitude-distance.
+- claim: fig3d-dendrite-cross-correlation
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig3d-dendrite-cross-correlation
+  measured:
+  - 0.903
+  - 0.732
+  notes: For the Fig. 3 neuron (10 pairs of five dendrites) the mean zero-lag correlation is 0.903 ±
+    0.013 anesthetized and 0.732 ± 0.034 awake (peak within 10 ms 0.904 and 0.735; with spikes
+    removed the same, as the neuron's files have no soma column); both are within tolerance under
+    every measure and anesthetized exceeds awake. Over the three neurons recorded in both states,
+    the paper's count, the means are 0.863 (14 pairs) and 0.803 (21 pairs) with column 1 as soma,
+    or 0.821 and 0.808 with it as a dendrite; anesthetized still exceeds awake but neither mean is
+    within tolerance. Over every recording, 0.750 anesthetized and 0.804 awake. The deposited Fig.
+    3d table (peak within 2 s, 7 neurons) gives 0.792 and 0.583. Question for the paper's authors,
+    which recordings and branch pairs make the 23 pairs of Fig. 3d?
+  deviations:
+  - The paper's 23 pairs of 3 neurons cannot be identified. The values match for the Fig. 3 neuron
+    (the barrel1 files) and not for the three neurons the dandiset records in both states; the
+    outcome rests on that choice of pairs.
+  - In the figure3i recordings, whether column 1 is the soma is not stated; both readings are
+    shown.
+- claim: figs9-shot-noise-bound
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The checkerboard split needs pixel-level movies. The dandiset holds only per-branch traces;
+    its pixel masks are placeholders ("traces only deposit") and its image files are structural
+    z-stacks.
+- claim: fig3i-coupling-vs-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No recording of round-robin dendrite-targeted stimulation is in the dandiset (no file has
+    dendrite-targeted stimulus times), and there are no morphology reconstructions for the
+    interbranch distances. The file named figure3i holds spontaneous z-scored traces.
+- claim: figs11-dendritic-spikes-rare
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No recording of strong dendrite-targeted stimulation is in the dandiset.
+- claim: fig4a-doublet-isi
+  outcome: not_reproduced
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig4a-doublet-isi
+  measured:
+  - 36.6
+  - 20.4
+  - 36
+  notes: Isolated doublets number 36 with K = 5 (36.6 ± 20.4 ms, given as measured), 107 with
+    K = 4 (28.1 ± 15.6 ms) and 144 with the deposited spike times (25.2 ± 13.7 ms); with reading
+    (b), 55, 210 and 427 (38.6 ± 20.8, 30.5 ± 17.3 and 25.9 ± 15.5 ms). Only K = 4, reading (b),
+    gives a count within tolerance, with ISIs far from 18 ± 7 ms. The closest mouse is mouse 5 with
+    the deposited times, reading (b), 18.5 ± 12.8 ms over 109 doublets, whose s.d. is outside
+    tolerance. The dandiset has 11 recordings of 5 mice where the paper has 3 neurons. Question for
+    the paper's authors, how were spikes detected and doublets defined?
+  deviations:
+  - The recordings are the 11 of the dandiset's Fig. 4a-d file (5 mice), which follows a later
+    version of the paper; the paper's 3 neurons cannot be identified.
+  - Spike detection by the claims' readings (5 and 4 robust s.d. of the 10 Hz high-pass soma
+    trace); the deposited spike times are shown as a variant.
+- claim: fig4bc-doublet-first-fails
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig4bc-doublet-first-fails
+  notes: With K = 4 the second bAP exceeds the first in 97% (isolated doublets) or 100% (any doublet)
+    of 31 branches, median ratios 1.34 to 1.48, in both windows, and in both branches with an STA
+    delay above 3 ms (ratios 1.58 to 1.71). The deposited spike times give 97% to 100% and 1.37 to
+    1.59. With K = 5 isolated doublets pass (81% and 77%) and any doublet gives 68% in both windows,
+    below the 70% bound. Measured from its own baseline the second bAP is smaller, median ratios
+    1.07 to 1.15 with K = 4 (84% to 90% of branches), so part of the effect in the criterion's
+    measure is the first bAP's tail. The second bAP is larger but the first is not absent. Question
+    for the paper's authors, what threshold detected spikes?
+  deviations:
+  - Assumed the 4 robust s.d. detection threshold where the two readings disagree, because it
+    recovers more of the spike times deposited with these recordings (mean recall 0.72 against
+    0.41, precision 0.95 against 0.98).
+  - Amplitudes are measured per doublet and averaged per branch, not read off an average waveform,
+    since the second spike's time varies between doublets.
+  - Branches are the 31 dendrite columns of 11 recordings, not the paper's 10 branches; the file
+    does not say which columns are the same branch.
+- claim: fig4d-accelerating-amplifies
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig4d-accelerating-amplifies
+  notes: With K = 4 (144 accelerating and 140 decelerating trios), the third bAP exceeds the second
+    in accelerating trios (median +0.140, p = 8.5e-16) and falls below it in decelerating ones
+    (-0.124, p = 7e-12); reading (b) gives +0.277 (p = 0.0062, 31 branches); reading (c) 1.083 and
+    0.953 (p < 1.2e-05); both windows pass. The deposited spike times (238 accelerating trios, the
+    dandiset's own count, against the paper's 186) and the deposited amplitudes pass every reading.
+    With K = 5 (44 and 43 trios) the accelerating effect holds (p = 8.8e-05) and the decelerating one
+    does not reach p < 0.05 (-0.043, p = 0.097; reading (c) 1.027). By mouse (K = 4) accelerating
+    trios are amplified in all five mice and decelerating ones lower in four.
+  deviations:
+  - Assumed the 4 robust s.d. threshold, as for fig4bc-doublet-first-fails.
+  - Each spike's bAP amplitude is measured from the 5 ms before that spike, in the criterion's
+    windows, and normalized by the branch mean (Methods, Analysis of bAP failures during spontaneous
+    activity).
+  - 31 dendrite columns of 5 mice, not the paper's 10 branches of 3 neurons.
+- claim: fig4fg-opto-first-bap-attenuated
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig4fg-opto-first-bap-attenuated
+  notes: Too few dendrites under the claim's own rule. The criterion tests distal dendrites, with a
+    conduction delay above 3 ms (Methods). No deposited delay exceeds 3 ms (46 dendrites of 17
+    recordings, up to 2.26 ms); by the STA, 1 dendrite (K = 5) or 2 (K = 4), all in recording 14,
+    whose stimulus onsets are 0.5 s apart for a 518 ms stimulus. One recording cannot carry a test
+    over trials. Over all dendrites, not deciding, the first bAP of a train normalized by the 200
+    to 400 ms mean has median 0.90 (K = 5) or 0.85 (K = 4), later bAPs in the first 150 ms 1.07 or
+    1.05.
+- claim: fig4h-biphasic-bap-amplitude
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4fg-opto-first-bap-attenuated, blocked because no more than two dendrites,
+    in one recording, have the delay above 3 ms that defines the distal dendrites the claim tests.
+- claim: figs13-distal-more-modulated
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4h-biphasic-bap-amplitude; the split at 3 ms leaves at most two distal
+    dendrites, in one recording.
+- claim: fig4ijk-sensory-first-fails
+  outcome: partially_reproduced
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig4ijk-sensory-first-fails
+  notes: The 13 air-puff trials match the paper's n = 13. No dendrite has a delay above 3 ms (0.34
+    to 1.48 ms), so the distal reading is empty and the claim is tested on all dendrites. The first
+    bAP of the burst is smaller than the later ones on average (4.32 against 6.31 with K = 5, 3.92
+    against 6.85 with K = 4) and in 18 of 20 or 20 of 22 trial and dendrite pairs; per dendrite in
+    8 and 10 of 13 trials (K = 5) and 9 and 11 (K = 4); 3 (K = 5) and 2 (K = 4) trials have fewer
+    than two somatic spikes. Not every dendritic spike follows a somatic spike, 5 of 40 (K = 5) and
+    8 or 9 of 76 (K = 4) have none in the bAP window before them. The same holds with bursts of
+    200 or 500 ms.
+  deviations:
+  - The burst is taken as the somatic spikes in the 300 ms after puff onset, a window the paper
+    does not give; 200 and 500 ms are shown.
+- claim: fig4l-sensory-plateau
+  outcome: not_reproduced
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:fig4l-sensory-plateau
+  measured: 264
+  notes: The average of the two dendrites reaches half its 50 to 150 ms plateau 46 ms after the puff
+    and stays above it until 310 ms, a full width at half plateau of 264 ms (236 to 270 ms over
+    dendrites and smoothing), outside 360 to 440 ms. It then stays above the 1 s.d. baseline band
+    (mean -0.85, s.d. 0.30) for the 2 s after onset, so reading (a) has no return time. The
+    depolarization outlasts the 100 ms stimulus under both readings. Question for the paper's
+    authors, how was the duration of the plateau measured?
+  deviations:
+  - The average is smoothed over 10 ms and must stay within the band for 50 ms to count as
+    returned; standard choices, shown with no smoothing and 20 ms.
+  - The traces are the deposited Delta F, not dF/F.
+- claim: figs12-spontaneous-failures-both-states
+  outcome: reproduced
+  notebook: reproduce_wong_campos_2023.ipynb
+  output: claim:figs12-spontaneous-failures-both-states
+  notes: Failures occur in both states under every reading; anesthetized, 10 of 26 spike and
+    dendrite pairs in 3 recordings (K = 5) and 30 of 77 in 4 (K = 4); awake, 22 of 1187 in 7
+    recordings (K = 5) and 83 to 88 of 2469 in 15 (K = 4). A variant against the 95th percentile of
+    the measure at spike-free times gives 46% to 55% anesthetized and 4% to 8% awake. The
+    anesthetized somatic spikes are few (26 at K = 5 over 6 recordings).
+  deviations:
+  - Column 1 of the figure3i recordings is taken as the soma, which the file leaves open ("soma (if
+    present)"); the Fig. 4a-d recordings are counted as awake, as the Results record them.
+  - The noise is the robust s.d. of the 10 Hz high-pass dendritic trace and the amplitude is
+    measured on the same trace; the claims' rule does not say on which trace.
+findings:
+- kind: data_missing
+  statement: The dandiset holds the pipeline's per-branch traces and summary tables, not the imaging
+    movies, so the background-robust dF/F and the shot-noise bound (Fig. S9) cannot be computed. It
+    holds no recordings of dendrite-targeted stimulation (Figs. 3e-i, S11), no traces of the Fig. 2
+    mapping recordings, no record of the Fig. 1 light pulses, and no morphology reconstructions
+    (only HiLo z-stacks). Four claims are blocked for this.
+- kind: other
+  statement: Every one of the 44 assets is one of 22 pairs of byte-identical files (same SHA-256),
+    deposited once under a figure name at the top level and once under a sub- folder. The figure3e
+    file is also a third copy of recording 3 of the figure3i file.
+- kind: paper_inconsistency
+  statement: The files follow a later version of the paper than the one the dandiset names. They name
+    panels the preprint does not have (Figs. 2h and 2i/2j) and count 12 neurons for Fig. 2, 7 for
+    Fig. 3d and 238 triplets in 5 neurons for Fig. 4d, where the preprint has 5, 3 and 186 in 3. No
+    identifier marks the preprint's subsets.
+- kind: metadata_error
+  statement: In figure2g_bAP_propagation_delay.nwb the delay series are named LR_amplitude_vs_distance
+    and ST_amplitude_vs_distance with the unit -dF/F, and branch_order_vs_amplitude holds delays; the
+    values (-0.20 to 4.17) are delays in ms. Its all_amplitude_vs_distance series holds the 53
+    amplitudes of the amplitude file followed by 17 more rows repeated three times (104 rows).
+- kind: format_error
+  statement: The deposited Fig. 3d table (figure3d_voltage_correlation.nwb) holds 30 correlation
+    values above 1 (up to 1.24), which a correlation cannot take.
+- kind: metadata_error
+  statement: Both files of the Fig. 3 neuron (barrel1_20220711) have the session description
+    "Simultaneous voltage imaging ... in awake mouse", including the one named anesthetized at 1%
+    isoflurane. The archive counts 19 subjects, which include pooled pseudo-subjects and one neuron
+    under two spellings (Barrel500-2 and barrel500_2).
+- kind: metadata_insufficient
+  statement: The figure3i recordings say "Column 1 = soma (if present)" without saying where a soma
+    is present, and the Fig. 4a-d file has 31 dendrite columns while its own tables list 19 dendrite
+    distances and 19 STA dendrites, so which columns are the same branch is not stated. No file names
+    the neuron each Fig. 2 site belongs to.
+- kind: metadata_error
+  statement: The Fig. 4a-d file notes say spike times are in frame indices; they are in seconds, and
+    each sits one frame (2 ms) after the soma's peak in all 11 recordings. Its per-recording
+    accelerating and decelerating tables repeat one value in every column (soma and dendrites), and
+    its pooled summary tables have 6 rows for a stated 238 triplets.
+- kind: metadata_error
+  statement: In the Fig. 4e-h file, recordings 14 and 15 list stimulus onsets 0.5 s apart for a stated
+    stimulus length of 259 frames (518 ms), while the traces step every second.
+- kind: format_error
+  statement: The deposited spike times of recordings 2 and 3 of the Fig. 4i-l file are not sorted.
+- kind: methods_unavailable
+  statement: The paper gives no spike detection method and no definition of a doublet; these decide
+    the doublet ISIs (Fig. 4a), and the thresholds of 5 and 4 robust s.d. disagree on Figs. 4b-d. The
+    authors could say how spikes were detected and doublets defined.
+- kind: methods_unavailable
+  statement: The paper does not say which sites make its Fig. 2 n = 30, what curve gives the 50%
+    distance, how peaks were timed below one frame, which branch pairs make the 23 pairs of Fig. 3d,
+    or how the plateau duration of Fig. 4l was measured. The outcomes of fig2e, fig2f, fig1fg and
+    fig3d rest on choices made here; the authors could confirm or correct them.
+- kind: other
+  statement: By the deposited delays no dendrite of the Fig. 4e-h recordings has the conduction delay
+    above 3 ms that the Methods use to define distal dendrites (46 dendrites, at most 2.26 ms), and no
+    Fig. 4i-l dendrite does by its STA (at most 1.48 ms), so the distal analyses of Figs. 4e-h and
+    S13 cannot be selected as the paper describes.
