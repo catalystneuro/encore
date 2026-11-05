@@ -198,8 +198,8 @@ outcomes:
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig2cd-decoding-improves-over-days
   notes: The day effect is significant on familiar trials (F(5,70)=6.97, p=2.5e-5) and on novel trials
-    (F(5,70)=8.93, p=1.3e-6). On novel trials, day 1 error is above days 2, 3, 4 and 6 (Holm p 0.002 to
-    2e-5) but not day 5 (Holm p=0.066). On familiar trials, none of the five day-1 contrasts survives
+    (F(5,70)=8.93, p=1.3e-6). On novel trials, day 1 error is above days 2, 3, 4 and 6 (Holm p 2e-5 to
+    0.005) but not day 5 (Holm p=0.066). On familiar trials, none of the five day-1 contrasts survives
     Holm correction (p 0.12 to 0.29), though all have t > 2.4.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
@@ -349,9 +349,9 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_plitt_2023.ipynb
   output: claim:fig3f-narrower-fields-cre-familiar
-  notes: 'Familiar-trial fields of Cre mice are narrower on average (all days, all candidate fields: 63
-    against 68 cm). But no reading has a significant virus effect over days 1 to 5 (p=0.089 to 0.214)
-    or on day 6 (p=0.060 to 0.209).'
+  notes: 'Familiar-trial fields of Cre mice are narrower on average (all days, all candidate fields: 61
+    against 68 cm; on day 6, 63.4 against 68.4 cm). But no reading has a significant virus effect over
+    days 1 to 5 (p=0.089 to 0.214) or on day 6 (p=0.060 to 0.209).'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -417,7 +417,10 @@ outcomes:
   output: claim:fig3i-more-fields-per-cell-cre-novel
   notes: On novel trials Cre cells have more fields per cell under three of four readings, with days 1
     to 5 virus p=0.002 to 0.008 and day 6 p=2e-5 to 0.0002. The fourth reading (formation-lap fields,
-    place cells) gives p=0.071 and 0.056.
+    place cells) gives p=0.071 and 0.056. The criterion's rule makes the claim reproduced when it holds
+    under any listed reading; the failing reading counts formation-lap fields over place cells, which
+    is close to the paper's words ("place cells ... had more place fields"), so the outcome is weaker
+    than three of four readings suggests.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -433,6 +436,10 @@ outcomes:
     choice).
   - Place cells are the deposited per-arm masks (place_cell_info), which equal shuffle p < 0.05 of the
     deposited spatial information; masks recomputed from the attempt's 1000 shuffles are a variant.
+  - Which fields and which cells are counted is open in the paper; the criterion lists two field readings
+    (all candidate fields, fields with a formation lap) and two cell readings (cells with a field, place
+    cells), and the claim is reproduced when it holds under any of them (reader, step 3). Three of four
+    hold; the fourth (formation-lap fields, place cells) does not (days 1 to 5 p=0.071, day 6 p=0.056).
   assumed: true
 - claim: fig4e-block6-familiar-activity-lower-cre
   outcome: reproduced
@@ -575,9 +582,11 @@ outcomes:
   notebook: reproduce_plitt_2023.ipynb
   output: claim:figs6b-block4-activity-no-difference
   notes: 'Block-4 normalized activity does not differ between groups: virus F(1,14)=0.118, p=0.736 (paper
-    F(1,14)=0.139, p=0.715). The variants give p=0.95 and 0.55. Before the block numbers of the split
-    days were continued across their files (round 1), Ctrl-4 day 2''s ''block 4'' was its novel block;
-    the group means and the test are unchanged to the printed precision.'
+    F(1,14)=0.139, p=0.715). The variants give p=0.964 (v1) and p=0.536 (v2). Before the block numbers
+    of the split days were continued across their files (round 1), Ctrl-4 day 2''s ''block 4'' was its
+    novel block; with that numbering, now printed beside the continued one, the group means (0.032 and
+    0.024) and the virus test (F(1,14)=0.118, p=0.736) are the same, and only the interaction changes
+    (p=0.615 against 0.698).'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -882,9 +891,11 @@ outcomes:
     0.38 to 0.40 (O) of trials. The ANOVA of figs9a on the data with synchrony removed also finds Cre
     higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4 s against 1.5 s). By the rule
     fixed before the null was run on all sessions (more than half the real fraction in a group under both
-    readings), the detector as read from the Methods does not pick out synchronous events, and the two
-    null readings give 3.2 and 36 HSEs per control day; the paper does not settle the null, so the claim
-    is blocked.'
+    readings), the detector as read from the Methods does not pick out synchronous events. In the real
+    data it finds 3.2 (S) and 36 (O) HSEs per control day, and in the data with synchrony removed 0.43
+    (S) and 30 (O). The paper does not settle the null, so the claim is blocked. The two readings would
+    give different outcomes if the null were settled: under S, the Methods'' words, real minus null still
+    has Cre higher (p=0.003), and the claim would be not reproduced; under O, real minus null gives p=0.61.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -918,8 +929,9 @@ outcomes:
     ANOVA of figs9a on the data with synchrony removed also finds Cre higher (O p=0.0014, S p=0.029);
     Cre stopping periods are longer (5.4 s against 1.5 s). By the rule fixed before the null was run on
     all sessions (more than half the real fraction in a group under both readings), the detector as read
-    from the Methods does not pick out synchronous events, and the two null readings give 3.2 and 36 HSEs
-    per control day; the paper does not settle the null, so the claim is blocked.'
+    from the Methods does not pick out synchronous events. In the real data it finds 3.2 (S) and 36 (O)
+    HSEs per control day, and in the data with synchrony removed 0.43 (S) and 30 (O). The paper does not
+    settle the null, so the claim is blocked.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -955,8 +967,9 @@ outcomes:
     of figs9a on the data with synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping
     periods are longer (5.4 s against 1.5 s). By the rule fixed before the null was run on all sessions
     (more than half the real fraction in a group under both readings), the detector as read from the Methods
-    does not pick out synchronous events, and the two null readings give 3.2 and 36 HSEs per control day;
-    the paper does not settle the null, so the claim is blocked.'
+    does not pick out synchronous events. In the real data it finds 3.2 (S) and 36 (O) HSEs per control
+    day, and in the data with synchrony removed 0.43 (S) and 30 (O). The paper does not settle the null,
+    so the claim is blocked.'
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -993,8 +1006,9 @@ outcomes:
     synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
     s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
     fraction in a group under both readings), the detector as read from the Methods does not pick out
-    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
-    not settle the null, so the claim is blocked.
+    synchronous events. In the real data it finds 3.2 (S) and 36 (O) HSEs per control day, and in the
+    data with synchrony removed 0.43 (S) and 30 (O). The paper does not settle the null, so the claim
+    is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -1031,8 +1045,9 @@ outcomes:
     ANOVA of figs9a on the data with synchrony removed also finds Cre higher (O p=0.0014, S p=0.029);
     Cre stopping periods are longer (5.4 s against 1.5 s). By the rule fixed before the null was run on
     all sessions (more than half the real fraction in a group under both readings), the detector as read
-    from the Methods does not pick out synchronous events, and the two null readings give 3.2 and 36 HSEs
-    per control day; the paper does not settle the null, so the claim is blocked.
+    from the Methods does not pick out synchronous events. In the real data it finds 3.2 (S) and 36 (O)
+    HSEs per control day, and in the data with synchrony removed 0.43 (S) and 30 (O). The paper does not
+    settle the null, so the claim is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -1069,8 +1084,9 @@ outcomes:
     synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
     s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
     fraction in a group under both readings), the detector as read from the Methods does not pick out
-    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
-    not settle the null, so the claim is blocked.
+    synchronous events. In the real data it finds 3.2 (S) and 36 (O) HSEs per control day, and in the
+    data with synchrony removed 0.43 (S) and 30 (O). The paper does not settle the null, so the claim
+    is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -1110,8 +1126,9 @@ outcomes:
     synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
     s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
     fraction in a group under both readings), the detector as read from the Methods does not pick out
-    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
-    not settle the null, so the claim is blocked.
+    synchronous events. In the real data it finds 3.2 (S) and 36 (O) HSEs per control day, and in the
+    data with synchrony removed 0.43 (S) and 30 (O). The paper does not settle the null, so the claim
+    is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -1150,8 +1167,9 @@ outcomes:
     synchrony removed also finds Cre higher (O p=0.0014, S p=0.029); Cre stopping periods are longer (5.4
     s against 1.5 s). By the rule fixed before the null was run on all sessions (more than half the real
     fraction in a group under both readings), the detector as read from the Methods does not pick out
-    synchronous events, and the two null readings give 3.2 and 36 HSEs per control day; the paper does
-    not settle the null, so the claim is blocked.
+    synchronous events. In the real data it finds 3.2 (S) and 36 (O) HSEs per control day, and in the
+    data with synchrony removed 0.43 (S) and 30 (O). The paper does not settle the null, so the claim
+    is blocked.
   deviations:
   - Activity is the deposited dF/F (processing/ophys/dF), not the deconvolved activity rates of the Methods
     (In vivo imaging, 'deconvolved with a canonical calcium kernel'), which the dataset does not hold.
@@ -1572,6 +1590,522 @@ verifications:
       reading S; by the rule fixed before the null was run on all sessions, the outcome is changed to
       blocked, methods_underspecified. The verifier would give partially_reproduced; the block replaces
       both. The claim depends on figs9a and is blocked with it.'
+- date: '2026-11-05'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the run recorded after the round-1 revision, with its
+    conclusions and summary, the helper module stx3.py, the claims file, this record and the README; the
+    verifier also read the paper under paper/. It could not check questions/001710.yaml, which was not
+    among its materials.
+  results:
+  - claim: link-roi-alignment
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig1c-novelty-preference
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs1c-training-occupancy-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs1e-open-field-distance-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs1f-epm-closed-arm-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs1f-epm-distance-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig2ab-example-cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig1f-anticipatory-licking-familiar
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig1g-anticipatory-licking-novel
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: vr-reward-location-learning
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Possible claims-file misreading,
+      reported and not corrected: the criterion requires an increase over days where the paper says licking
+      only "changed". It is pending with a reader; under the paper''s wording the outcome would be reproduced.'
+    response: No change; the question is already in questions/001710.yaml and the claim is tested as the
+      claims file has it.
+  - claim: figs2f-novelty-slowing-familiar
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs2g-novel-arm-slowing-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs2i-reward-approach-speed-cv
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig2cd-decoding-no-group-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig2cd-decoding-improves-over-days
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors. The text says "Holm p 0.002 to 2e-5"; the printed values are 0.00183,
+      0.00485, 1.86e-5 and 0.00485, so the range is 2e-5 to 0.005.'
+    response: The range is corrected to 2e-5 to 0.005 in the notebook and the notes.
+  - claim: figs3a-spatial-information-fraction-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors. Deposited against recomputed place cells is partly resolved: the
+      masks use another spatial-information scale and a stricter null, the function that made them is
+      unavailable, and the recomputed masks flip the novel fraction (p=0.036). This bears on the conclusion.'
+    response: No change; the variant and the methods_unavailable finding stand.
+  - claim: figs3b-within-day-stability-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs3c-familiar-novel-remapping
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees (now reproduced, resting on per-bin PV reading (b)). The assumption is stated and
+      rests on the authors'' calc_pv_corr. Caveats: that code describes a later version of the paper (the
+      attempt''s own code_mismatch finding), and the flattened reading gives Cre higher (p=0.018). The
+      like-for-like single-trial variant (p=0.174 and 0.303) supports the absence of a group difference.
+      Remains a point that bears on the conclusion.'
+    response: No change of outcome. The README now names this adopted reading beside the dF/F assumption.
+  - claim: fig2gh-across-day-pv-correlation-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs3eg-across-day-decoding-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs4-morph-task-context-discrimination
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: figs5-ca3-dg-place-fields
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig3bc-model-stable-place-cells
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig3d-model-wider-fields-with-plasticity
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig3e-model-more-fields-without-plasticity
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig3f-narrower-fields-cre-familiar
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors. The text says "all days, all candidate fields: 63 against 68 cm";
+      over all fields the printed means are 60.985 (Cre) and 67.884 (control); 63.4 and 68.4 are the day-6
+      means.'
+    response: Corrected to 61 against 68 cm over all fields, with the day-6 means 63.4 and 68.4 given
+      as such, in the notebook and the notes.
+  - claim: fig3g-narrower-fields-cre-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig3h-more-fields-per-cell-cre-familiar
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig3i-more-fields-per-cell-cre-novel
+    agrees: true
+    outcome: reproduced
+    reason: Accepts reproduced, with a reservation. The outcome counts as reproduced if the claim holds
+      under any reading of which cells are counted, and 3 of 4 readings hold. The failing reading (b,b),
+      formation-lap fields over place cells, is arguably closest to the paper's "place cells ... had more
+      place fields". Unlike figs3c, fig4 and fig6e, this choice is not recorded as an adopted assumption.
+      All four contested readings were resolved towards reproduction.
+    response: 'No change of outcome: the readings are the criterion''s own, and the claims file makes
+      a claim reproduced when it holds under any of them (reader, step 3), so no reading is adopted. The
+      notes and the notebook now say that the failing reading is the one closest to the paper''s words,
+      and a deviation records the ambiguity of the readings with the result of each.'
+  - claim: fig4e-block6-familiar-activity-lower-cre
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig4e-block6-novel-activity-lower-cre
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig4e-novel-minus-familiar-larger-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors. Remains fragile: the v1 and v2 normalisations give p=0.28 and 0.12.'
+    response: No change; the notes already give the variants.
+  - claim: fig4-block6-activity-increase-pattern
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (now reproduced with a 150 cm stem). The Methods say the stem and arms are of equal
+      length, and the assumption is stated.
+    response: No change of outcome. The README now names this adopted reading.
+  - claim: fig4e-novel-increase-grows-over-days
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig4d-activity-increase-spread-across-cells
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs6b-block4-activity-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors. The text says "The variants give p=0.95 and 0.55"; the printed values
+      are v1 p=0.964 and v2 p=0.536. The notes say "the group means and the test are unchanged to the
+      printed precision", but no before/after comparison is printed.'
+    response: 'The variant p-values are corrected. The figs6b cell now also runs the test with the block
+      numbers of the split days restarting in their second file and prints both: the means (0.032 and
+      0.024) and the virus test (F(1,14)=0.118, p=0.736) are the same, the interaction changes (p=0.615
+      against 0.698). The helper keeps the trials per file (scan_trials) for this.'
+  - claim: figs6e-familiar-activity-trials-since-novel
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs7b-reward-overrepresentation
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors. The recomputed place-cell masks flip the familiar trials (p=0.052);
+      this bears on the conclusion.'
+    response: No change; the variant and the methods_unavailable finding stand.
+  - claim: fig5d-reward-cells-fewer-in-cre
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig5d-reward-cells-increase-over-days-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig5d-reward-cells-above-chance-control-only
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig5h-extinction-group-difference
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig5i-extinction-intercept-not-slope
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, and the verifier still agrees.
+    response: No change.
+  - claim: fig6c-pv-backward-shift-day1-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig6c-no-pv-shift-cre
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs8h-across-day-pv-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: figs8d-pv-shift-not-explained-by-speed
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig6d-field-com-shift-larger-control
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Unchanged since round 1, and the verifier still agrees. Each assumed outcome states its assumption
+      as a deviation, and the verifier finds them reasonable: dF/F stands in for the deconvolved rates
+      (the F_dff line of the authors'' code now printed), the decoder input follows the authors'' code,
+      the deposited place-cell masks are used, the baseline follows baseline_avg_act, and block numbers
+      continue across split files. dF/F against deconvolved rates bears on every imaging outcome and cannot
+      be settled without the authors.'
+    response: No change.
+  - claim: fig6e-width-speed-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (now reproduced on day 1). The day-1 choice is justified by Fig 6D/S8F. The pooled
+      interaction (p=0.001) disappears with a random slope per mouse (p=0.585) or per-mouse slopes (p=0.586),
+      which supports the round-1 pseudo-replication concern.
+    response: No change of outcome. The README now names this adopted reading.
+  - claim: figs9a-hse-trial-proportion-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In
+      the Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading
+      O, and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims. The record should state
+      the consequence of the two readings more plainly: under S (the Methods'' words), real minus null
+      still shows Cre higher (p=0.003), so if the null were settled as S, figs9a would be not_reproduced;
+      under O, real minus null gives p=0.61.'
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed. The notes
+      and the notebook conclusion now say that under S the claim would be not reproduced (real minus null
+      p=0.003) and under O it would hold (p=0.61) if the null were settled.
+  - claim: figs9b-hse-size-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
+  - claim: fig7e-reactivated-cells-more-stable-across-days-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
+  - claim: fig7e-cre-reactivation-boost-novel-only
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
+  - claim: fig7e-reactivation-effect-virus-and-novelty
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
+  - claim: fig7h-reactivated-cells-higher-trial-correlation-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
+  - claim: fig7h-no-trial-correlation-boost-cre
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
+  - claim: fig7h-reactivation-effect-virus-and-novelty
+    agrees: true
+    outcome: blocked
+    reason: Agrees (now blocked, methods_underspecified). The decision rule is applied correctly. In the
+      Cre group the data with synchrony removed give 0.43 of trials against 0.46 real under reading O,
+      and 0.15 against 0.26 under reading S; with planted synchronous events the synthetic check barely
+      changes the flagged fraction (O 0.40 to 0.40). The notes say "the two null readings give 3.2 and
+      36 HSEs per control day"; these are real-data counts under detector readings S and O, not counts
+      from the synchrony-removed data (0.43 and 30), and the wording invites that misreading. The HSE
+      null definition (S against O) remains a point that gates all 8 HSE claims.
+    response: No change of outcome. The notes now say that 3.2 and 36 are the real-data counts, and give
+      the counts in the data with synchrony removed (0.43 and 30). The Summary row now says the detector
+      still flags more than half as many trials in the Cre group when synchrony is removed.
 findings:
 - kind: data_missing
   statement: The dandiset holds the head-fixed VR imaging of Ctrl-1 to Ctrl-9 and Cre-1 to Cre-7 on days

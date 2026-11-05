@@ -522,7 +522,8 @@ def session_summary(asset_ids: list[str], mapping: np.ndarray | None = None, see
     fam_arm = "right" if novel == -1 else "left"
     out = dict(R=R, occ=occ, tmean=tmean, speed_bins=spd, LR=LR, block=block, novel_arm=novel,
                n_cells=s["dff"].shape[1], full=s["full_trials"], centroid=s["centroid"],
-               dep_pc={"fam": dep[fam_arm], "nov": dep[nov_arm]}, n_scans=len(scans))
+               dep_pc={"fam": dep[fam_arm], "nov": dep[nov_arm]}, n_scans=len(scans),
+               scan_trials=ntr_scans)
     # shuffles, fields, SI recomputed, per trial type
     rng = np.random.default_rng(seed)
     out["fields"], out["si_p"], out["si_obs"], out["field_laps"] = {}, {}, {}, {}
