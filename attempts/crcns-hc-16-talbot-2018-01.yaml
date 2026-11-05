@@ -1,0 +1,516 @@
+schema_version: 2
+id: crcns-hc-16-talbot-2018-01
+dataset:
+  archive: crcns
+  id: hc-16
+  version: unversioned
+  doi: 10.6080/K01V5C44
+paper: doi:10.1016/j.neuron.2017.12.043
+date: '2026-11-05'
+entry: crcns-hc-16-talbot-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41965946011
+outcomes:
+- claim: fig1ab-baseline-transmission
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds in vivo CA1 spike trains only; the ex vivo slice fEPSP recordings are not
+    in it, and the paper names no other deposit for them.
+- claim: fig1cd-potentiation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds in vivo CA1 spike trains only; the ex vivo slice fEPSP recordings are not
+    in it, and the paper names no other deposit for them.
+- claim: figs1-avoidance-equal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The avoidance sessions of the slice cohort are not in the data set, nor deposited elsewhere as
+    far as the paper says.
+- claim: unit-and-cell-counts
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:unit-and-cell-counts
+  measured:
+  - 490
+  - 557
+  - 203
+  - 238
+  - 8
+  - 7
+  notes: The data set holds 8 WT mice (M1, M3, M11, M16, M28, M32, M35, M36) and 7 Fmr1-null mice (M9,
+    M10, M18, M29, M33, M34, M37), where the criterion needs exactly 12 (or 11) and 9. The well-isolated
+    cells cannot be counted, as no isolation measure is given; no count of clusters other than cluster
+    0 is within tolerance of both 226 and 334. The cluster counts match only when every session is counted
+    on its own with cluster 0 included, 490 WT and 557 Fmr1-null (499 and 616 within 10%); counted once
+    per cut file without cluster 0 they are 203 and 294.
+  deviations:
+  - Clusters are counted from the file names; the paper's isolation criterion cannot be applied.
+- claim: interneuron-proportion
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:interneuron-proportion
+  measured:
+  - 33.5
+  - 44.5
+  notes: Interneurons (rate above 2 AP/s) are 68 of 203 WT clusters (33.5%) and 106 of 238 Fmr1-null clusters
+    (44.5%) in R1, and 35.4% and 48.5% in R2; with the classified cells as denominator 38.6% to 41.4%
+    and 51.7% to 55.7%. Every percentage is far outside 12.4 +/- 1.24 and 29.3 +/- 2.93. The direction
+    holds (R1 z = -2.36, p = 0.018; R2 z = -3.33, p = 0.0009).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+  - Rate alone and rate with bursting give the same interneurons, as the rate decides it.
+- claim: place-cell-proportion
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:place-cell-proportion
+  measured:
+  - 48
+  - 51
+  - 23.6
+  - 21.4
+  notes: Place cells are 48 of 203 WT (23.6%) and 51 of 238 Fmr1-null (21.4%) clusters in R1, and 55 (18.9%)
+    and 70 (20.5%) in R2, against 108 (47.8%) and 141 (42.2%). As a share of principal cells, WT 44.4%
+    and Fmr1-null 51.5% (R1), 37.7% and 53.0% (R2). No one-sided test finds Fmr1-null lower (smallest
+    one-sided p 0.27); with principal cells in R2 Fmr1-null is higher (two-sided p = 0.010).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - Rate maps are unsmoothed on 1.25 cm pixels, with any occupancy, as the claims file sets.
+- claim: figs3-nonspatial-properties-similar
+  outcome: partially_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:figs3-nonspatial-properties-similar
+  notes: Two-way genotype x class ANOVA on 381 classified clusters (R1). No genotype effect for burst
+    probability (p = 0.13) or the interspike interval (mean p = 0.40, median p = 0.63), but one for the
+    overall rate (F = 8.28, p = 0.0042, partial eta squared 0.022), from faster Fmr1-null interneurons
+    (11.5 against 7.3 AP/s). In R2 (547 clusters) burst probability also differs (p = 0.029) and the rate
+    (p = 0.0005). Waveform width is not in the data set and is not tested.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+  - Waveform width cannot be measured; the claim is judged on three of its four measures.
+- claim: fig2-spatial-quality-similar
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig2-spatial-quality-similar
+  notes: Large box, 213 classified clusters. Genotype effects for coherence (F = 9.01, p = 0.0030), active
+    pixels (F = 18.7, p < 0.0001), information (F = 7.27, p = 0.0076) and the number of fields above the
+    mean rate (p = 0.011), with interactions for coherence and active pixels (p = 0.0077, 0.0098), mostly
+    from interneurons. In-field rate (p = 0.11, 0.42) and the count of fields above 20% of the peak (p
+    = 0.48) show none. The class effect is significant for every measure (p <= 0.0004).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - Only the large box is in the data set; the small-box and both-box readings cannot be run.
+- claim: tables1-place-cell-properties-similar
+  outcome: partially_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:tables1-place-cell-properties-similar
+  measured:
+  - 0.65
+  - 0.62
+  - 2.32
+  - 2.27
+  - 0.24
+  - 0.26
+  - 0.97
+  - 0.89
+  - 4.53
+  - 3.95
+  - 5.4
+  - 10.34
+  notes: Large-box place cells, 34 WT and 36 Fmr1-null. No place cell measure differs (rate p = 0.49,
+    in-field rate p = 0.15 and 0.69, coherence p = 0.39, information p = 0.47, active pixels p = 0.44,
+    by t test or Mann-Whitney as Shapiro-Wilk chooses). The interneuron rates differ (WT 5.40, Fmr1-null
+    10.34 AP/s, Mann-Whitney p = 0.0105). No mean is within the Table S1 SEMs (information 2.32 and 2.27
+    bits/spike against 1.57 and 1.5; active pixels 0.24 and 0.26 against 0.45 and 0.46).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - Only the large box is in the data set.
+- claim: tables1-nonspatial-active-pixels
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:tables1-nonspatial-active-pixels
+  measured:
+  - 0.152
+  - 0.222
+  notes: Large-box non-spatial pyramidal clusters discharge in 0.152 (WT, n = 29) and 0.222 (Fmr1-null,
+    n = 35) of the visited pixels; Fmr1-null is higher but Mann-Whitney p = 0.10 (both fail Shapiro-Wilk),
+    and neither value is within tolerance. R1 and R2 give p = 0.09 to 0.23.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+- claim: figs4-remapping-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The square enclosure of the paper's comparison is not recorded with the arena here. The data
+    set has no small box sessions, and its large box sessions are on other days than the arena sessions
+    of the same mice (for example M16 on 09-12-14 against 09-04-14), with other cut files, so no cell
+    can be followed from a square to a circular enclosure. Table S2 lists small box sessions on the day
+    of arena sessions (M32, 04-17-15), which fits the paper's comparison being on small box recordings.
+- claim: fig3b-place-cell-modulation-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds spike times and positions only (TS files); it has no LFP, so spike phases
+    cannot be computed. The data descriptor lists no LFP, and the bucket holds only data.zip and its documentation.
+- claim: fig3bc-weaker-modulation-nonspatial-interneurons
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds spike times and positions only (TS files); it has no LFP, so spike phases
+    cannot be computed. The data descriptor lists no LFP, and the bucket holds only data.zip and its documentation.
+- claim: fig3b-phase-preference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds spike times and positions only (TS files); it has no LFP, so spike phases
+    cannot be computed. The data descriptor lists no LFP, and the bucket holds only data.zip and its documentation.
+- claim: fig3d-stereotypy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds spike times and positions only (TS files); it has no LFP, so spike phases
+    cannot be computed. The data descriptor lists no LFP, and the bucket holds only data.zip and its documentation.
+- claim: overdispersion-passes
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:overdispersion-passes
+  measured:
+  - 3.69
+  - 3.55
+  - 12802
+  - 18521
+  notes: R2, consecutive 5 s intervals. 12,802 WT and 18,521 Fmr1-null passes, variance of z 3.69 and
+    3.55 (expected 5.81 and 4.89). The F test finds WT larger (F = 1.04, one-sided p = 0.008) but Levene's
+    test does not (p = 0.998). In R1 the Fmr1-null variance is the larger (3.83 against 3.53). With a
+    1 s step, F one-sided p = 0.007 and Levene p = 0.61.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+  - Levene's test is centred on the mean, as the original test is.
+- claim: overdispersion-cells
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:overdispersion-cells
+  measured:
+  - 3.68
+  - 3.53
+  notes: Every place cell has at least 30 passes, so the three minimums give one sample. R2, WT 3.68 +/-
+    0.24 (n = 55) and Fmr1-null 3.53 +/- 0.21 (n = 70), one-tailed t p = 0.32; R1, 3.56 against 3.72 (p
+    = 0.67). Neither mean is within tolerance.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+- claim: fig4b-covariance-30-passes
+  outcome: partially_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig4b-covariance-30-passes
+  measured:
+  - 0.061
+  - 0.021
+  - 122
+  - 210
+  notes: R2. 122 WT and 210 Fmr1-null pairs with at least 30 joint passes; WT r = 0.061 +/- 0.020, Fmr1-null
+    0.021 +/- 0.010, t on Fisher z = 2.29, p = 0.023 (Mann-Whitney p = 0.26). WT is within tolerance,
+    Fmr1-null is not (0.04 +/- 0.01). After one permutation per pair the difference is gone (p = 0.21;
+    100 permutations p = 0.22). R1 gives p = 0.033.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+- claim: fig4b-covariance-40-passes
+  outcome: partially_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig4b-covariance-40-passes
+  measured:
+  - 0.061
+  - 0.02
+  notes: The fewest joint passes of any pair is 39, so the sample hardly changes, 122 WT and 209 Fmr1-null
+    pairs; r = 0.061 against 0.020, t = 2.33, p = 0.021. The difference holds but is not larger, and both
+    averages are outside tolerance (0.19 +/- 0.04, 0.06 +/- 0.01).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+- claim: fig4cd-kendall-place-cells
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig4cd-kendall-place-cells
+  measured:
+  - 0.029
+  - 0.0067
+  - 0.032
+  - 0.0084
+  - 0.037
+  - 0.0082
+  - 122
+  - 210
+  notes: Eight readings (K1, K2 x whole session, first 5 min x R1, R2); none gives p < 0.05 at 25, 40
+    or 125 ms (smallest p 0.24). K1, whole session, R2 (122 WT, 210 Fmr1-null pairs) gives mean tau at
+    25 ms 0.029 against 0.0067, Mann-Whitney p = 0.87, 0.67 and 0.60 at 25, 40 and 125 ms, and p = 0.049
+    at 1 s and 0.0012 at 5 s, the reverse of the claimed pattern.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+  - Bins are placed on the spike clock; positions per bin come from sample times estimated from the spikes,
+    since the files' nominal sample times drift.
+- claim: fig4d-network-state-recurrence
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig4d-network-state-recurrence
+  notes: Readings H1 and H2 with K1 and K2, pairs per session (R2) and R1. No reading has five significant
+    Fmr1-null paired tests; under H1 none of the six reaches p < 0.05, under H2 at most one. Under H2
+    with K1 the WT intervals differ at 25 and 40 ms (p = 0.035, 0.016). PCo is higher in WT at all six
+    timescales in six readings and at five in the other two (K1, H1, R2, 25 ms 0.991 against 0.827).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+- claim: kendall-nonspatial-pyramidal
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:kendall-nonspatial-pyramidal
+  measured:
+  - 0.0089
+  - 0.0099
+  - 0.0152
+  - 0.0155
+  - 380
+  - 146
+  notes: 380 WT and 146 Fmr1-null non-spatial pairs (R2). With K1 over the session the distributions differ
+    at 25, 40 and 125 ms (p = 0.0084, 0.0024, 0.0054) but Fmr1-null mean tau is not lower (0.0099 against
+    0.0089 at 25 ms), and 1 s does not differ (p = 0.12). No reading gives Fmr1-null lower at p < 0.05
+    on more than one of the four timescales.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - The session that classifies a cell ('standard recordings') is open; R1 (each cell from its first stationary
+    session) and R2 (each stationary session on its own) are both run, and a cluster name within a day's
+    cut file is taken as one cell.
+- claim: kendall-quiet-states
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:kendall-quiet-states
+  measured:
+  - 122
+  - 210
+  notes: No recording is labelled sleep or rest, so only the reading of periods below 2 cm/s runs (21%
+    of a session's samples, median). 25 and 40 ms do not differ (K1, R2, p = 0.76, 0.47) as claimed, but
+    neither do 125 ms, 250 ms and 1 s (p = 0.39, 0.92, 0.78); only 5 s does (p = 0.0026). Pairs are 122
+    WT and 210 Fmr1-null (expected 125 and 195).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - Sleep and quiet wakefulness recordings are not in the data set; the low-speed reading is the only
+    one run.
+  - Speed from room-frame positions smoothed over 1 s, a standard choice.
+- claim: locomotion-similar
+  outcome: reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:locomotion-similar
+  notes: 34 stationary recordings. Recordings as units, genotype F(1,32) = 0.24, p = 0.63, interaction
+    F = 0.18, p = 0.67, half F = 22.8, p < 0.0001 (WT 6.63 to 5.86, Fmr1-null 6.31 to 5.66 cm/s). Mice
+    as units, genotype p = 0.44, interaction p = 0.32, half p = 0.0058. Within each environment alone
+    the interaction is significant (box p = 0.021, arena p = 0.0076), in opposite directions. Linearity
+    is not judged.
+  deviations:
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - Speed from room-frame positions smoothed over 1 s, a standard choice.
+  - The recordings are all stationary sessions of the data set, which the paper does not list.
+- claim: fig5b-frame-specific-ipos
+  outcome: reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig5b-frame-specific-ipos
+  measured:
+  - 0.064
+  - 0.103
+  assumed: true
+  notes: Reading B (place cells classified in the stationary session of the same day, 10 WT, 8 Fmr1-null)
+    gives room-frame Ipos 0.103 (Fmr1-null) against 0.064 (WT) bits, Mann-Whitney U = 12, p = 0.012, and
+    arena-frame 0.092 against 0.060, p = 0.021, where the paper finds the arena difference only marginal.
+    Reading A (place cells classified in the rotating session, 9 WT, 7 Fmr1-null) gives the same direction
+    without significance (0.100 against 0.080, p = 0.21). Which session classifies the rotating-arena
+    place cells is a question for the paper's authors (see findings).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - Assumption. The place cells are those classified in the same-day stationary session (reading B), as
+    the Results classify cells in standard recordings (Results, Non-spatial and Spatial Single-Cell Discharge
+    Features, paragraph 1); the paper does not say which session classifies the cells of Figure 5, and
+    reading A gives p = 0.21.
+  - An Ipos interval is four position samples (133 ms at 30 Hz), located at its first sample, a standard
+    choice.
+  - 20 WT and 31 Fmr1-null place cells in the paper; 10 and 8 here.
+- claim: fig5c-ensemble-coordination
+  outcome: not_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:fig5c-ensemble-coordination
+  notes: Under every reading Fmr1-null cells correlate with the ensemble at least as well as WT cells.
+    |delta Ipos| with all other clusters as the ensemble gives r = 0.026 against 0.016 (reading A, p =
+    0.56) and 0.029 against -0.003 (reading B, p = 0.088); delta Ipos with the other place cells (reading
+    B) gives Fmr1-null higher, 0.080 against 0.026 (p = 0.0088).
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - Both place cell readings (A, B) and both ensembles (all clusters, as the Results say, and place cells)
+    are run.
+- claim: figs6-room-frame-preference
+  outcome: partially_reproduced
+  notebook: reproduce_talbot_2018.ipynb
+  output: claim:figs6-room-frame-preference
+  assumed: true
+  notes: Reading B, 10 WT and 7 Fmr1-null place cells with all four maps. Coherence has an environment
+    effect (F(3,45) = 6.24, p = 0.0012) and no interaction (p = 0.58); Tukey puts the rotating arena frame
+    below stationary arena I (0.29, adjusted p = 0.011) but not below stationary arena II (0.12, p = 0.53;
+    paired t p = 0.056). Log information has an environment effect (p = 0.0009), no interaction (p = 0.13).
+    In reading A (9 and 6 cells) the coherence environment effect is p = 0.067.
+  deviations:
+  - The data set has no isolation measures (IsoIBG, IsoINN) or waveforms, so every sorted cluster other
+    than cluster 0 is used in place of the paper's well-isolated cells, and cells are classified by rate
+    and bursting without waveform width.
+  - The spatial scale is assumed from the extent of the tracked positions and the enclosure sizes of the
+    STAR Methods (large box 50 cm, arena 40 cm); the data set gives none.
+  - Assumption. Place cells as in fig5b-frame-specific-ipos (reading B).
+  - Tukey's HSD is applied across the four environments without the repeated structure; paired t tests
+    are shown as a variant.
+  - M29 drops out, as its stationary arena 1 has another cut file, so its cells cannot be matched across
+    the four maps.
+- claim: fig6-covariance-sem-predicts-errors
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no active place avoidance sessions (no shock zone entries or avoidance tracking);
+    its environments are the large box and the stationary and rotating arena. The bucket holds only data.zip
+    and its documentation, and the paper names no other deposit.
+- claim: fig6-kendall-predicts-errors
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no active place avoidance sessions (no shock zone entries or avoidance tracking);
+    its environments are the large box and the stationary and rotating arena. The bucket holds only data.zip
+    and its documentation, and the paper names no other deposit.
+- claim: discussion-single-cell-measures-no-relation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no active place avoidance sessions (no shock zone entries or avoidance tracking);
+    its environments are the large box and the stationary and rotating arena. The bucket holds only data.zip
+    and its documentation, and the paper names no other deposit.
+- claim: fig6-avoidance-behavior
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no active place avoidance sessions (no shock zone entries or avoidance tracking);
+    its environments are the large box and the stationary and rotating arena. The bucket holds only data.zip
+    and its documentation, and the paper names no other deposit.
+- claim: figs5a-power-spectra-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds spike times and positions only (TS files); it has no LFP, so spike phases
+    cannot be computed. The data descriptor lists no LFP, and the bucket holds only data.zip and its documentation.
+findings:
+- kind: data_missing
+  statement: The data set holds part of the paper's data. It has 8 of 12 WT and 7 of 9 Fmr1-null mice,
+    the large box and the stationary and rotating arena, but no small box or ring sessions, no sleep or
+    quiet-wakefulness recordings, no LFP, no slice recordings and no avoidance sessions. Thirteen of the
+    32 claims cannot be tested.
+- kind: metadata_insufficient
+  statement: No isolation measures (IsoIBG, IsoINN), waveforms or cell classes are given, and the files
+    hold every sorted cluster, including cluster 0 (the unsorted spikes of each tetrode). The paper's
+    226 WT and 334 Fmr1-null well-isolated cells cannot be selected; Table S2 lists fewer cells per session
+    than the files hold clusters (15 against 50 for M16 in stationary arena 1).
+- kind: metadata_insufficient
+  statement: Positions are in tracker pixels (0 to 255) with no spatial scale in the data descriptor or
+    the files. The tracked extent of the large box is about 186 pixels in most sessions and about 218
+    in four (M1, M9, M10, M11), so the scale also differs between sessions.
+- kind: metadata_error
+  statement: The header's SAMPLING_INTERVAL and FIRST_TIMESTAMP do not give the times of the position
+    samples. Spikes lie up to 118 samples (about 4 s) after the nominal time of the sample they are filed
+    under, as the stated rate drifts against the spike clock and frames are dropped. The data descriptor's
+    example header gives 58.3 samples/s, where every file has 30.0.
+- kind: format_error
+  statement: Six spike trains have one backward step in their spike times, of 0.2 to 1.4 s (M34 041015
+    blackbox P0C2 and P2C2, M37 051115 stationary1 P2C2 and P8C2, M16 090414 rotating P1C1, M35 040215
+    stationary2 P0C2).
+- kind: identifier_missing
+  statement: Nothing identifies a cell across sessions. Sessions of a day mostly share a cut file and
+    cluster names, which the attempt takes to be the same cells, but M29 stationary arena 1 and M34 stationary
+    arena 2 have their own cut files, and box and arena sessions are on different days with different
+    cut files.
+- kind: other
+  statement: The _0-15min and _15-30min files repeat the full-session files; for one of five spike trains
+    checked, the two parts together hold one spike fewer than the full file. The .times files repeat the
+    TS spike times (107 of 107 checked).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which recording classifies a cell as a place cell, interneuron
+    or non-spatial cell ('standard recordings')? For the rotating-arena cells of Figures 5 and S6, are
+    place cells those classified in the stationary session of the same day or in the rotating session's
+    room frame? With same-day stationary classification room-frame Ipos is greater in Fmr1-null (p = 0.012);
+    with rotating-session classification it is not (p = 0.21). The attempt assumed the stationary session.
