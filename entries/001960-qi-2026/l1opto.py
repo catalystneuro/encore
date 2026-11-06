@@ -279,15 +279,30 @@ def spike_train_matrix(spike_frames_list, n_frames):
     return S
 
 
-def p_spk_given_v(V, spike_frames_list, mask, edges, offset=0):
+def p_spk_given_v(V, spike_frames_list, mask, edges, offset=0, window=0):
     """P(spk|V) per cell: histogram of V at spike frames over histogram of all V in the mask,
     divided by the 1.27 ms exposure (paper, Methods, P(spk|V); code Figure 4E-F). Spike frames
     are kept when the frame is in the mask; with ``offset`` the voltage is read ``offset``
-    frames before the spike (the Methods' "10 ms before" reading)."""
+    frames before the spike. With ``window`` > 0 the voltage of every frame, spike frames and
+    all frames alike, is the mean over the ``window`` frames before it (the Results' and Fig. 4E
+    legend's "10 ms interval before" reading, 8 frames = 10.2 ms)."""
     nb = len(edges) - 1
     allc = np.zeros((V.shape[1], nb))
     spkc = np.zeros((V.shape[1], nb))
+    if window:
+        mask = mask.copy()
+        mask[:window] = False
     for k in range(V.shape[1]):
+        if window:
+            cs = np.concatenate([[0.0], np.cumsum(V[:, k], dtype=np.float64)])
+            vk = np.full(V.shape[0], np.nan)
+            vk[window:] = (cs[window:-1] - cs[:-window - 1]) / window  # frames t - window .. t - 1
+            v = vk[mask]
+            fr = spike_frames_list[k]
+            fr = fr[mask[fr]]
+            allc[k] = np.histogram(v, edges)[0]
+            spkc[k] = np.histogram(vk[fr], edges)[0]
+            continue
         v = V[mask, k]
         allc[k] = np.histogram(v, edges)[0]
         fr = spike_frames_list[k]
@@ -507,12 +522,19 @@ class CrossedLMM:
 def bootstrap_variances(model, fit, n_boot, seed):
     """Parametric bootstrap of the variance components (code, bootstrapVarianceComponents.m:
     simulate from the fitted model, refit by REML, n_boot times). Returns rows of
-    (s2_pre, s2_post, s2_resid, converged)."""
+    (s2_pre, s2_post, s2_resid, converged, s2_pre2, s2_post2, converged2), where the last three
+    come from a second refit of the same simulated data started from the grid search, made
+    only when the first did not report convergence (NaN otherwise)."""
     rng = np.random.default_rng(seed)
     out = []
     for _ in range(n_boot):
-        f = model.fit(model.simulate(fit, rng), reml=True, start=fit["lg"])
-        out.append((f["s2_pre"], f["s2_post"], f["s2_resid"], f["converged"]))
+        ys = model.simulate(fit, rng)
+        f = model.fit(ys, reml=True, start=fit["lg"])
+        row = [f["s2_pre"], f["s2_post"], f["s2_resid"], f["converged"], np.nan, np.nan, np.nan]
+        if not f["converged"]:
+            g = model.fit(ys, reml=True)
+            row[4:] = [g["s2_pre"], g["s2_post"], g["converged"]]
+        out.append(row)
     return np.array(out, dtype=float)
 
 
@@ -670,3 +692,279 @@ def matlab_prctile(x, p):
     lo = int(np.floor(pos))
     hi = min(lo + 1, n)
     return x[lo - 1] + (pos - lo) * (x[hi - 1] - x[lo - 1])
+
+
+# ------------------------------------------------------------------ wave propagation (Supplementary Fig. 21)
+def wave_events(V, x_um, y_um, quiet, whisk, segment="extrema"):
+    """Wave propagation events (paper, Methods, Wave propagation analysis): peaks of the first
+    derivative of the population-average subthreshold voltage above 3.5 times its s.d. over the
+    whisking frames, in quiet frames. ``quiet`` and ``whisk`` are the frames analysed in each state.
+
+    The Methods leave open the parts that set the count and the speed, so each is a reading
+    (assumption, the notebook runs them all): the derivative is the centred difference of the
+    population average, which is already smooth (the stored subthreshold voltage is smoothed);
+    each event spans the voltage minimum and maximum flanking the peak, read as ``"extrema"``, the
+    adjacent turning points of the average (the run of positive derivative holding the peak), or
+    ``"window"``, the minimum in the 250 ms before and the maximum in the 250 ms after the peak.
+    Events are counted per derivative peak and per distinct span (peaks sharing a span merged).
+
+    Returns the threshold and a list of events (peak frame, first and last frame of the span)."""
+    from scipy.signal import find_peaks
+    pop = V.mean(1, dtype=np.float64)
+    d = np.gradient(pop)
+    thr = 3.5 * np.std(d[whisk])
+    pk, _ = find_peaks(d, height=thr)
+    pk = pk[quiet[pk]]
+    n = len(pop)
+    w = int(round(0.25 / DT))
+    pos = d > 0
+    ev = []
+    for p in pk:
+        if segment == "extrema":
+            lo = p
+            while lo > 0 and pos[lo - 1]:
+                lo -= 1
+            hi = p
+            while hi < n - 1 and pos[hi + 1]:
+                hi += 1
+        else:
+            a, b = max(0, p - w), min(n, p + w + 1)
+            lo = a + int(np.argmin(pop[a:p + 1]))
+            hi = p + int(np.argmax(pop[p:b]))
+        if quiet[lo:hi + 1].all():
+            ev.append((p, lo, hi))
+    return thr, ev
+
+
+def event_lags(X):
+    """Lag (frames, signed: positive when the second cell lags the first) of the maximum of the
+    cross-correlation of every pair of columns of an event snippet X (frames x cells), over all
+    lags the snippet allows (Methods: "the lag-time with the maximum correlation for each pair")."""
+    X = X - X.mean(0)
+    L_ = X.shape[0]
+    nf = 2 * L_
+    F = np.fft.rfft(X, nf, axis=0)
+    nc = X.shape[1]
+    lag = np.zeros((nc, nc))
+    lags = np.r_[np.arange(0, L_), np.arange(-L_ + 1, 0)]
+    idx = np.r_[np.arange(0, L_), np.arange(nf - L_ + 1, nf)]
+    for i in range(nc):
+        cc = np.fft.irfft(np.conj(F[:, i:i + 1]) * F, nf, axis=0)[idx]
+        lag[i] = lags[np.argmax(cc, axis=0)]
+    return lag
+
+
+def wave_speed(lag, x_um, y_um):
+    """Speeds of one event from its pair lags (frames) and the cell positions: (a) distance
+    regressed on absolute lag, (b) absolute lag regressed on distance, inverted (the claims file's
+    two readings of "the slope of the line relating lag-time to separation"), and (c) a plane-wave
+    fit of signed lag on the displacement vector, which also gives a direction (a variant). Speeds
+    in mm/s, direction in radians in the image frame (x, y of the units table)."""
+    iu = np.triu_indices(len(x_um), 1)
+    dx = (x_um[None, :] - x_um[:, None])[iu]
+    dy = (y_um[None, :] - y_um[:, None])[iu]
+    dist = np.hypot(dx, dy)
+    tl = lag[iu] * DT  # s
+    at = np.abs(tl)
+    out = {}
+    if np.ptp(at) > 0:
+        out["a"] = np.polyfit(at, dist, 1)[0] * 1e-3  # um/s -> mm/s
+        sl = np.polyfit(dist, at, 1)[0]
+        out["b"] = (1 / sl) * 1e-3 if sl > 0 else np.nan
+    else:
+        out["a"] = out["b"] = np.nan
+    s, *_ = np.linalg.lstsq(np.column_stack([dx, dy]), tl, rcond=None)
+    ns = np.hypot(*s)
+    out["c"] = (1 / ns) * 1e-3 if ns > 0 else np.nan
+    out["c_dir"] = np.arctan2(s[1], s[0])
+    return out
+
+
+def phase_direction(Z, x_um, y_um, grid_um=160.0, fwhm_um=325.0):
+    """Propagation direction of one event from the phase gradient (Methods, Wave propagation
+    analysis): Z is the analytic (Hilbert) signal of each cell averaged over the event (cells),
+    smoothed with a Gaussian of 325 um full width at half maximum (assumption: "325 um wide" read as
+    the FWHM) onto a 160 um grid; the flow field is the phase gradient, and the wave travels down
+    it. Returns the circular mean direction (radians, image frame) of the flow vectors."""
+    sig = fwhm_um / 2.355
+    gx = np.arange(x_um.min(), x_um.max() + grid_um, grid_um)
+    gy = np.arange(y_um.min(), y_um.max() + grid_um, grid_um)
+    GX, GY = np.meshgrid(gx, gy)
+    w = np.exp(-((GX[..., None] - x_um) ** 2 + (GY[..., None] - y_um) ** 2) / (2 * sig ** 2))
+    Zg = (w * Z).sum(-1) / w.sum(-1)
+    dzy, dzx = np.gradient(Zg, grid_um)
+    a2 = np.abs(Zg) ** 2
+    phx = np.imag(np.conj(Zg) * dzx) / a2
+    phy = np.imag(np.conj(Zg) * dzy) / a2
+    u = -(phx + 1j * phy)
+    u = u[np.isfinite(u) & (np.abs(u) > 0)]
+    return float(np.angle(np.mean(u / np.abs(u))))
+
+
+# ------------------------------------------------------------------ per-pulse responses (Supplementary Fig. 16)
+PULSE_FRAMES = 16  # 20 ms blue pulses (Methods; 16 frames in blue_stimulation_per_cell, data check)
+
+
+def pulse_responses(mouse, resp_window=(16, 48), base_window=(-20, 0), spike_window=(0, 20)):
+    """One row per 20 ms blue pulse of the sparse_pulse_synaptic_mapping trials of a
+    sparsePulseHad session, for the lasso correction of off-target spiking (paper, Methods,
+    Analysis for mapping synaptic connections, paragraph 3; Supplementary Fig. 16).
+
+    Pulses are the rising edges of ``blue_stimulation_per_cell``; the cells lit at an onset are its
+    targets. Per pulse and cell: the response, mean normalized voltage over frames
+    ``resp_window`` after onset (20 to 60 ms, around the IPSP peak of about 30 ms and its decay,
+    Results and Fig. 3F; assumption) minus the mean over ``base_window`` (the 25 ms before onset);
+    and the evoked spikes, spikes in frames ``spike_window`` (the pulse and 5 ms after) minus spikes
+    in the 20 frames before onset (a standard choice). Returns onset frames, the target mask
+    (pulses x cells), responses and evoked spike counts (pulses x cells, float32)."""
+    f = open_file(mouse, "sparsePulseHad")
+    ts = series_timestamps(mouse, "sparsePulseHad")
+    tt = f["intervals/trials/trial_type"][:]
+    st = np.searchsorted(ts, f["intervals/trials/start_time"][:])
+    sp = np.searchsorted(ts, f["intervals/trials/stop_time"][:], side="right")
+    pulse_trial = np.zeros(len(ts), bool)
+    for t in np.nonzero(tt == b"sparse_pulse_synaptic_mapping")[0]:
+        pulse_trial[st[t]:sp[t]] = True
+    u = units(mouse, "sparsePulseHad")
+    sfr = [np.sort(spike_frames(x, ts)) for x in u["spike_times"]]
+    blue = f["stimulus/presentation/blue_stimulation_per_cell/data"]
+    volt = f["processing/optical_voltage/normalized_voltage/data"]
+    n = len(ts)
+    pad_lo, pad_hi = -min(base_window[0], -20), max(resp_window[1], spike_window[1])
+    onsets, targets, resp = [], [], []
+    block = 100_000
+    for a in range(0, n, block):
+        b = min(n, a + block)
+        a0, b0 = max(0, a - pad_lo - 1), min(n, b + pad_hi)
+        x = blue[a0:b0] > 0
+        rise = x[1:] & ~x[:-1]
+        on_rows = np.nonzero(rise.any(1))[0] + 1 + a0
+        on_rows = on_rows[(on_rows >= a) & (on_rows < b) & (on_rows - pad_lo >= 0) & (on_rows + pad_hi <= n)]
+        on_rows = on_rows[pulse_trial[on_rows]]
+        if len(on_rows) == 0:
+            continue
+        V = volt[a0:b0]
+        for o in on_rows:
+            k = o - a0
+            onsets.append(o)
+            targets.append(rise[k - 1])
+            r_ = V[k + resp_window[0]:k + resp_window[1]].mean(0) - V[k + base_window[0]:k + base_window[1]].mean(0)
+            resp.append(r_.astype(np.float32))
+    onsets = np.array(onsets)
+    evoked = np.zeros((len(onsets), len(sfr)), np.float32)
+    for c, fr in enumerate(sfr):
+        inn = np.searchsorted(fr, onsets + spike_window[1]) - np.searchsorted(fr, onsets + spike_window[0])
+        pre = np.searchsorted(fr, onsets) - np.searchsorted(fr, onsets - (spike_window[1] - spike_window[0]))
+        evoked[:, c] = inn - pre
+    return onsets, np.array(targets), np.array(resp), evoked
+
+
+def lasso_correction(targets, resp, evoked, dist_um, spikes_per_pulse, offtarget_um=100.0, seed=0):
+    """Off-target correction of the IPSP matrix (paper, Methods, Analysis for mapping synaptic
+    connections, paragraph 3; Supplementary Fig. 16A: R = S W, W by lasso).
+
+    For each postsynaptic cell j, over the pulses that do not target j: the response of j is
+    regressed on the spikes each candidate presynaptic cell k (within 400 um of j, k != j) fired
+    in the pulse, with an intercept (the blue-flash response, which the Methods subtract as the
+    mean response to faraway stimulation). Spikes of a targeted cell are its stored
+    ``estimated_spikes_per_blue_pulse`` (Methods: the evoked count of bursting cells is estimated
+    from the spectrum); spikes of a non-targeted cell are its detected evoked spikes when it lies
+    within ``offtarget_um`` of a target (4 off-target firing length constants of 25 um, Results),
+    and zero elsewhere (assumption: detected counts far from any target are spontaneous noise).
+    Penalty by 10-fold cross-validation (scikit-learn LassoCV, 40 penalties, unstandardized
+    predictors): (a) the penalty of least error, (b) the largest within one standard error of it
+    (the claims file's readings); ordinary least squares is shown as a variant.
+
+    The raw matrix ("assuming only on-target stimulation") is the mean response of j over pulses
+    targeting i, minus its mean over pulses with no target within 400 um of j, divided by the spikes
+    per pulse of i. All matrices are [pre, post] in SH per presynaptic spike."""
+    from sklearn.linear_model import Lasso, LassoCV, LinearRegression
+    T = np.asarray(targets, bool)
+    n_cells = T.shape[1]
+    Tf = T.astype(float)
+    off = ((Tf @ (dist_um <= offtarget_um).astype(float)) > 0) & ~T
+    S = np.where(T, spikes_per_pulse[None, :], np.where(off, evoked, 0.0)).astype(float)
+    near400 = (Tf @ (dist_um <= 400).astype(float)) > 0
+    raw, wa, wb, wo = (np.full((n_cells, n_cells), np.nan) for _ in range(4))
+    alphas = np.zeros((n_cells, 2))
+    for j in range(n_cells):
+        cand = np.nonzero((dist_um[:, j] <= 400) & (np.arange(n_cells) != j))[0]
+        rows = ~T[:, j]
+        y = resp[rows, j].astype(float)
+        art = resp[~near400[:, j], j].mean()
+        for i in cand:
+            raw[i, j] = (resp[T[:, i] & rows, j].mean() - art) / spikes_per_pulse[i]
+        X = S[rows][:, cand]
+        cv = LassoCV(cv=10, alphas=40, fit_intercept=True, random_state=seed).fit(X, y)
+        mse = cv.mse_path_.mean(1)
+        se = cv.mse_path_.std(1) / np.sqrt(cv.mse_path_.shape[1])
+        k = int(np.argmin(mse))
+        a1 = cv.alphas_[np.nonzero(mse <= mse[k] + se[k])[0][0]]  # alphas_ run from large to small
+        wa[cand, j] = cv.coef_
+        wb[cand, j] = Lasso(alpha=a1, fit_intercept=True).fit(X, y).coef_
+        wo[cand, j] = LinearRegression().fit(X, y).coef_
+        alphas[j] = cv.alpha_, a1
+    return dict(raw=raw, cv_min=wa, one_se=wb, ols=wo, alphas=alphas, offtarget=off, S=S)
+
+
+# ------------------------------------------------------------------ scattered fluorescence (Supplementary Fig. 17)
+def scatter_sta(mouse="M-YQ0201-29", n_frames=32_000, start=0, bin_px=4, block=1600):
+    """Cross-STA fluorescence of interstitial pixels in the raw-movie excerpt (paper, Methods,
+    Analysis for mapping gap junction connections, paragraph 4), on a subset of frames.
+
+    The movie is read for frames ``start`` to ``start + n_frames`` (a subset: the whole excerpt is
+    1,152,000 frames) and averaged in ``bin_px`` x ``bin_px`` pixel bins (26 um; a computational
+    choice, the scatter varies over tens of um). Interstitial bins are those holding no pixel of
+    any cell's footprint (``image_mask`` > 0; Supplementary Fig. 17A: "Regions containing other
+    cells were excluded"). For each cell (trigger), the STA of every interstitial bin over lags -6
+    to 6 frames, and the STA of the trigger's own footprint (mask-weighted mean of its pixels).
+    The STA fluorescence is normalized by the trigger's spike fluorescence, frame 0 minus frame
+    -2 of its own STA, and the scatter amplitude is extracted as a spikelet: the mean of frames
+    {0, 1} minus the mean of frames {-4, -3, -2, 4, 5, 6} (Methods). Returns per trigger cell and
+    interstitial bin the normalized scatter amplitude, the distance (um), and spike counts."""
+    from scipy import sparse
+    f = open_file(mouse, "behavior-rawexcerpt")
+    mov = f["acquisition/raw_voltage_movie/data"]
+    ts = f["acquisition/raw_voltage_movie/timestamps"][:]
+    H, Wd = mov.shape[1:]
+    masks = f["processing/ophys/ImageSegmentation/plane_segmentation/image_mask"][:]
+    u = units(mouse, "behavior-rawexcerpt")
+    n_cells = masks.shape[0]
+    hb, wb = H // bin_px, Wd // bin_px
+    cellpix = (masks > 0).any(0)[:hb * bin_px, :wb * bin_px]
+    inter = ~cellpix.reshape(hb, bin_px, wb, bin_px).any((1, 3)).ravel()
+    gy, gx = np.meshgrid((np.arange(hb) + 0.5) * bin_px - 0.5, (np.arange(wb) + 0.5) * bin_px - 0.5, indexing="ij")
+    gx, gy = gx.ravel()[inter], gy.ravel()[inter]
+    dist = np.hypot(u["x_pixel"][:, None] - gx[None, :], u["y_pixel"][:, None] - gy[None, :]) * PIXEL_UM
+    Mw = sparse.csr_matrix(masks.reshape(n_cells, -1).astype(np.float64))
+    Mw = sparse.diags(1 / np.asarray(Mw.sum(1)).ravel()) @ Mw
+    lags = np.arange(-6, 7)
+    stop = start + n_frames
+    sfr = [spike_frames(x, ts) for x in u["spike_times"]]
+    sfr = [s_[(s_ >= start + 6) & (s_ < stop - 6)] for s_ in sfr]
+    sta_pix = np.zeros((n_cells, len(lags), inter.sum()))
+    sta_own = np.zeros((n_cells, len(lags)))
+    for a in range(start, stop, block):
+        a0, b0 = max(start, a - 6), min(stop, a + block + 6)
+        X = mov[a0:b0].astype(np.float32)
+        own = (Mw @ X.reshape(len(X), -1).T.astype(np.float64)).T  # frames x cells
+        Xb = X[:, :hb * bin_px, :wb * bin_px].reshape(len(X), hb, bin_px, wb, bin_px).mean((2, 4)).reshape(len(X), -1)[:, inter]
+        for k, l in enumerate(lags):
+            rows, cols = [], []
+            for c, s_ in enumerate(sfr):
+                s_ = s_[(s_ >= a) & (s_ < min(a + block, stop))]
+                rows.append(np.full(len(s_), c)); cols.append(s_ + l - a0)
+            rows, cols = np.concatenate(rows), np.concatenate(cols)
+            P = sparse.csr_matrix((np.ones(len(rows)), (rows, cols)), shape=(n_cells, len(X)))
+            sta_pix[:, k] += P @ Xb
+            sta_own[:, k] += np.asarray(P.multiply(own.T).sum(1)).ravel()
+    n_spk = np.array([len(s_) for s_ in sfr])
+    with np.errstate(invalid="ignore", divide="ignore"):
+        sta_pix /= n_spk[:, None, None]
+        sta_own /= n_spk[:, None]
+    z = 6
+    spike_f = sta_own[:, z] - sta_own[:, z - 2]
+    ext = lambda S: S[:, [z, z + 1]].mean(1) - S[:, [z - 4, z - 3, z - 2, z + 4, z + 5, z + 6]].mean(1)
+    amp = ext(sta_pix) / spike_f[:, None]
+    return dict(amp=amp, dist=dist, n_spikes=n_spk, spike_f=spike_f, own_sta=sta_own, n_bins=int(inter.sum()),
+                qc=u["passed_qc"])
