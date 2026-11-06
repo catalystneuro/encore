@@ -60,30 +60,32 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
 - claim: kmeans-elbow
   outcome: reproduced
   notebook: reproduce_moaddab_2021.ipynb
   output: claim:kmeans-elbow
-  notes: With the code's runs (rng(1) before each k, repeated exactly) and the code's measure, the mean
-    over clusters of the summed squared distances that the code plots for Figure 1E (8224 at k = 1), the
-    curve falls at every step and every drop after 8 clusters (largest 78.9) is smaller than the drop
-    from 7 to 8 (128.2). With the Methods' measure (mean squared distance per unit) the same runs rise
-    once, from 12 to 13 clusters (by 0.151), and the drops after 8 clusters are all below the 7 to 8 drop
-    (0.538). Over the 45 readings in the notebook (three normalizations, three outcome starts, five ways
-    to run k-means) 30 meet the whole criterion. The claims file's own readings (z-a or z-b, start 12 or
-    12.5 s, best of 10 or mean of 10) disagree; z-b meets it in 4 of 4 with scikit-learn and 3 of 4 with
-    10 runs of the MATLAB stream, z-a in 3 of 4 and 0 of 4.
+  notes: Under the claims file's reading z-b with scikit-learn's k-means, the criterion is met in all
+    4 combinations of outcome start (12 or 12.5 s) and runs (best of 10, mean of 10); the outcome rests
+    on these. The other readings of the claims file are mixed, z-b with 10 runs of the MATLAB stream
+    3 of 4 and z-a 3 of 4 with scikit-learn and 0 of 4 with the MATLAB stream; over the 45 readings
+    in the notebook (three normalizations, three outcome starts, five ways to run k-means) 30 meet it.
+    The code's own runs (rng(1) before each k) meet it with the measure the code plots, mean(sumd) (8224
+    at k = 1; drops after 8 clusters at most 78.9 against 128.2 from 7 to 8), but that measure is a sum
+    at k = 2, and its drop from 2 to 3 (4848) is larger than from 1 to 2 (1216). With the Methods' measure
+    (mean squared distance per unit) the same runs rise once, from 12 to 13 clusters (by 0.151).
   deviations:
   - "The k-means matrix is the code's: outcome epochs from 13 s after cue onset (rrfAnalysis.m), not 12\
     \ or 12.5 s (the claims file's readings e-a, run as variants). The code runs k-means once per k, not\
     \ 10 times as the Methods say; the claims file's readings e-b (best of 10, mean of 10 runs) are run\
     \ as variants, with 10 runs continuing the MATLAB stream after rng(1) (an assumption about how MATLAB\
     \ draws replicates) and with scikit-learn."
-  - Assumed that the curve the paper judged is the code's mean(sumd), which differs from the Methods'
-    wording (mean squared distance between each point and its centroid); the Figure 1E axis (0 to 9000)
-    fits only the code's measure.
+  - The outcome rests on reading z-b with scikit-learn's k-means++ standing for the Methods' 10 runs (an
+    assumption; with 10 runs of the MATLAB stream z-b meets the criterion in 3 of 4 combinations). The
+    code plots mean(sumd) as a bar plot on a 0 to 9000 axis (rrfAnalysis.m 952 to 986, printed), not
+    the Methods' mean squared distance per unit; mean(sumd) is shown as a variant.
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
     \ (Z-score normalization) describe z-scoring the trial-type means across trial types. The claims file\
@@ -194,7 +196,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - Intervals from the code's bins (k1 0-1 s, k3 0-12 s, k5 5-12 s, k7 10-12 s after cue onset), as the
     claims file gives them.
@@ -229,7 +232,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
@@ -260,7 +264,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
@@ -326,8 +331,9 @@ outcomes:
   - 0.0337
   - 0.0167
   notes: r = 0.378, -0.183 and -0.129 (R2 0.143, 0.0337, 0.0167), p = 8.0e-16, 1.5e-4 and 0.0077, the
-    paper's p values. Signs and significance hold under z-a and z-b; their late cue and delay R2 are outside
-    the tolerance of 0.005.
+    paper's p values. Signs and significance hold under z-a and z-b. Under z-a the late cue and delay R2
+    (0.0222, 0.0106) are outside the tolerance of 0.005; under z-b all three are outside (onset 0.1215
+    against 0.14 +/- 0.014, late cue 0.059, delay 0.0277).
   deviations:
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
@@ -415,7 +421,7 @@ outcomes:
     \ All three are significant under every reading."
   deviations:
   - The within effect uses unweighted group means with the harmonic mean group size (type III, as SPSS);
-    the weighted version gives F = 21.87 for assignment.
+    the weighted version gives F(8, 2856) = 21.87 for assignment, p = 1.3e-32 (printed in the notebook).
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
     \ (Z-score normalization) describe z-scoring the trial-type means across trial types. The claims file\
@@ -471,7 +477,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - Both betas of k4, k6 and k8 are multiplied by -1, as rrfAnalysis.m does (settles the claims file's
     reading s-a).
@@ -601,7 +608,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - Window as the claims file reads it from the Figure 6 gray boxes. For k1, k3, k5 and k6 the Table S4
     means are reproduced to within 0.008 by the window 0 to 4 s after shock offset, not 0 to 8 s (window
@@ -636,7 +644,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
@@ -666,7 +675,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - Window as the claims file reads it from the Figure 6 gray boxes. For k1, k3, k5 and k6 the Table S4
     means are reproduced to within 0.008 by the window 0 to 4 s after shock offset, not 0 to 8 s (window
@@ -705,7 +715,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - Window as the claims file reads it from the Figure 6 gray boxes. For k1, k3, k5 and k6 the Table S4
     means are reproduced to within 0.008 by the window 0 to 4 s after shock offset, not 0 to 8 s (window
@@ -735,14 +746,16 @@ outcomes:
     0.253 above; shock - danger -0.132, omission - safety -0.203 and danger - safety -0.400 all below zero,
     four means within tolerance. In the claim's own draw all seven CIs agree, but over 20 draws the omission
     CI includes zero, as the paper's does, in 10% (20% with nested standard errors), so six of seven CIs
-    agree under the majority rule. The partial condition holds, shock - danger below zero in every draw and
+    agree under the majority rule, a convention of this attempt that the claims file does not set and
+    the stricter choice here. The partial condition holds, shock - danger below zero in every draw and
     safety the largest mean. Over the whole 17.5 s safety is still the largest mean (0.247) and danger and
     shock stay below zero (-0.141, -0.235). The window is asked of a reader (questions/crcns-rrf-1.yaml);
     in 0 to 4 s the single draw also gives seven of seven.
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - Window as the claims file reads it from the Figure 6 gray boxes. For k1, k3, k5 and k6 the Table S4
     means are reproduced to within 0.008 by the window 0 to 4 s after shock offset, not 0 to 8 s (window
@@ -770,11 +783,13 @@ outcomes:
   - -0.278
   notes: Over the 17.5 s, danger 0.290, shock 0.423, omission 0.079 above zero, safety -0.278 below, the
     Table S4 means; all three differences above zero (shock - danger 0.133). Seven of seven CIs agree.
-    Under z-a and z-b the CIs mostly agree but the means are larger than Table S4's.
+    Under z-a and z-b the CIs agree in 6 and 7 of 7, and all four means are larger in absolute value than
+    Table S4's (z-a 0.459, 0.678, 0.098, -0.532; z-b 0.610, 0.896, 0.188, -0.516).
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
@@ -802,7 +817,8 @@ outcomes:
   deviations:
   - CIs are studentized bootstrap intervals with 1,000 resamples and standard errors s / sqrt(n); MATLAB's
     bootci, called as in rrfAnalysis.m 1744 with no StdErr, estimates them from 100 nested bootstrap samples
-    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws (notebook, bootstrap section);
+    (NBootStd). Each CI is judged by the sign it gives in most of 20 draws, a convention of this attempt
+    that the claims file does not set (notebook, bootstrap section);
     the nested standard errors give the same majority sign for every CI.
   - "Normalized firing is the code's (cubeScriptPR25.m): single-trial differential rates, floored to integer\
     \ Hz, z-scored over all 16 trials and all bins of a unit, then averaged by trial type. The Methods\
@@ -1087,3 +1103,198 @@ verifications:
     reason: 7/7 CIs and 4/4 means.
     response: The danger - safety CI keeps the paper's sign in all 20 draws with s / sqrt(n) and 18 with
       nested standard errors. Outcome kept.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook from the round-1 revision, with its conclusions and summary,
+    the helper module, the attempt record, the README and the claims file, with the paper. The verifier agreed
+    with all 30 outcomes and reported statements the outputs did not support.
+  results:
+  - claim: units-and-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: cue-responsive-units
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: behavior-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: kmeans-elbow
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but the record gives a weaker basis than it needs: it rests the outcome on the code''s
+      single run and the code''s mean(sumd), which is a sum at k = 2 and drops more from 2 to 3 (4848) than
+      from 1 to 2 (1216); with the Methods'' measure the same runs are not monotone (cell 20). With scikit-learn,
+      z-b meets the criterion in 4 of 4 combinations, so the outcome holds on the claims file''s own terms,
+      and the record should cite that reading. No printed output shows that the Figure 1E axis (0 to 9000)
+      fits only the code''s measure.'
+    response: The notes, deviation and conclusion now rest the outcome on z-b with scikit-learn (4 of 4) and
+      give the code's measure, with its 2 to 3 drop, as a variant. The notebook now prints the code's bar plot
+      lines (rrfAnalysis.m 980 to 986, y axis 0 to 9000); the record says only that the code plots mean(sumd)
+      on that axis. Outcome kept.
+  - claim: kmeans-clusters
+    agrees: true
+    outcome: reproduced
+    reason: The README's 'gives the paper's eight clusters exactly' goes beyond the outputs, which show that
+      the sizes match and the pattern map agrees (cell 23); with no label file, membership cannot be confirmed.
+    response: README and summary now say the run gives clusters of the paper's sizes with the described patterns,
+      and that membership cannot be checked without a label file. Outcome kept.
+  - claim: cluster-firing-characteristics
+    agrees: true
+    outcome: reproduced
+    reason: Cell 27 says the characteristics differ between clusters under both readings of the inter-spike
+      intervals, but in the variant skewness has p = 0.0511 (cell 26), which is not significant.
+    response: 'Cell 27 corrected: with CV and skewness averaged over trials, skewness is not significant (p
+      = 0.051). Outcome kept.'
+  - claim: k1-k3-low-baseline
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: table1-cue-interaction
+    agrees: true
+    outcome: reproduced
+    reason: Cell 33 says that for k1 the degrees of freedom are those of Table 1, F(110, 3520), but Table 1
+      prints no df; the df are the claims file's inference from the printed partial eta squared. The k4 cue
+      F (8.09 against 7.93) is one of the values not recovered to the printed digits.
+    response: Cell 33 corrected to say Table 1 prints no df and the claims file infers 110 and 3520 from the
+      partial eta squared, which the k1 test here matches (0.111). The k4 F is now listed among the values
+      not recovered in the summary. Outcome kept.
+  - claim: fig3b-excitatory-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig3d-inhibitory-clusters
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but the outcome holds on an 11-of-20 majority for the k8 uncertainty - safety CI. Cell
+      86 wrongly counts k8 as changing a count against the single draws: the single draw [-0.002, 0.131] (cell
+      38) already includes zero.'
+    response: 'Cell 86 corrected: only the k6 omission CI changes a count; the k8 CI includes zero in the claim''s
+      own draw and in 11 of 20 draws. The 11 of 20 is in the notes. Outcome kept.'
+  - claim: figs4-onset-and-ramp
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig4abc-threat-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Still open: whether k4 counts in part (2) is with a reader. Even with k4 excluded, k7 still fails,
+      so the outcome would probably stay partial.'
+    response: No change; the question stays with a reader. Outcome kept.
+  - claim: fig4def-danger-uncertainty-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 49 states R2 0.479, 0.209 and 0.210; cells 47 and 48 print 0.483, 0.214 and 0.210.
+    response: Cell 49 corrected to 0.483, 0.214 and 0.210. Outcome kept.
+  - claim: fig4ghi-danger-safety-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 'The notes (''their late cue and delay R2 are outside the tolerance'') are incomplete: under z-b
+      the onset R2 (0.1215 against 0.14 +/- 0.014) is outside too (cell 50).'
+    response: Notes now give the z-a and z-b R2 separately, with all three outside tolerance under z-b. Outcome
+      kept.
+  - claim: fig4-correlations-differ
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig5a-tuning-peaks-exaggerated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig5a-tuning-peaks-inhibited
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig5a-tuning-anova
+    agrees: true
+    outcome: reproduced
+    reason: The deviation 'the weighted version gives F = 21.87' is not printed by any output.
+    response: The helper's mixed_anova takes type3=False for the weighted within effect, and the notebook prints
+      F(8, 2856) = 21.87, p = 1.3e-32. Outcome kept.
+  - claim: fig5e-peak-probability-over-fear-output
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig5-regressor-cluster
+    agrees: true
+    outcome: reproduced
+    reason: 'The summary''s claim that every F value was recovered does not hold here: regressor x cluster
+      is 2.40 against 2.15.'
+    response: Summary now says most values were recovered and lists this one among those that were not. Outcome
+      kept.
+  - claim: table-s3-cluster-regression
+    agrees: true
+    outcome: partially_reproduced
+    reason: Table S3 for k3 and k5 is among the values not recovered, against the summary's 'every count, F
+      value and correlation ... was recovered'.
+    response: Summary corrected as for fig5-regressor-cluster. Outcome kept.
+  - claim: fig5f-fear-output-vs-peak-probability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: table1-outcome-anova
+    agrees: true
+    outcome: reproduced
+    reason: 'Table 1 outcome F values are not all recovered: k4 47.5 against 46.62, k7 94.8 against 95.16,
+      k1 1.21 against 1.23 (cell 79), against the summary''s claim.'
+    response: Summary corrected to list them. Outcome kept.
+  - claim: fig6a-k1-shock
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under the claims file''s window of 0 to 8 s; the second reader confirmed the gray boxes
+      from the rendered page, so the claims file reads the figure as drawn, and the mismatch with Table S4
+      is correctly recorded as a paper inconsistency. Still open: which interval the paper analysed decides
+      this claim (0 to 4 s would reproduce it).'
+    response: No change; the window stays a question for a reader and the authors. Outcome kept.
+  - claim: fig6b-k2-anti-ppe
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Still open: the outcome depends on draws where the CI lands just past zero (5 to 20% agreement)
+      and on the majority convention, which the claims file does not set.'
+    response: The record and notebook now say the majority rule is this attempt's convention, not the claims
+      file's. Outcome kept.
+  - claim: fig6c-k3-continued-threat
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.
+  - claim: fig6de-k4-k5-persistent-threat
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Still open: the Figure 6 window also decides the k5 omission mean.'
+    response: No change; part of the reader question. Outcome kept.
+  - claim: fig6f-k6-ppe-then-valence
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the change to partially reproduced: it comes from the 20-draw majority rule (omission
+      CI excludes zero in 18 of 20 draws, cell 85) and the partial condition holds (cell 100). The majority
+      rule is the author''s convention, not the claims file''s, and the record should say so; it is applied
+      to all judged CIs alike and is the stricter choice here.'
+    response: Notes, the bootstrap deviation of every claim, cells 86 and 101 and the summary now say the majority
+      rule is this attempt's convention, not set by the claims file. Outcome kept.
+  - claim: fig6g-k7-valence-then-ppe
+    agrees: true
+    outcome: reproduced
+    reason: The notes say 'the means are larger than Table S4's', but cell 103 prints only how many means are
+      within tolerance, not their direction.
+    response: The notebook now prints the z-a and z-b means of every fig6 cluster; for k7 all four are larger
+      in absolute value than Table S4's, and the notes give them. Outcome kept.
+  - claim: fig6h-k8-ppe-then-unsigned
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (all 30 agreed); everything else checks against the outputs.
+    response: No change needed. Outcome kept.

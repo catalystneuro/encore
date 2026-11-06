@@ -17,8 +17,9 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The data set holds the paper's code, and the analysis follows it where the claims file left a
-method open. The code's k-means run is repeated outside MATLAB and gives the paper's eight clusters
-exactly, and most of the paper's counts, F values and correlations are recovered to the printed
+method open. The code's k-means run is repeated outside MATLAB and gives clusters of the paper's eight
+sizes, each with the firing pattern the paper describes (the data set has no label file, so
+membership cannot be checked), and most of the paper's counts, F values and correlations are recovered to the printed
 digits. The Methods describe a different normalization from the code's; outcomes that use
 normalized firing rest on the code's. For k1, k3, k5 and k6 the Table S4 values fit a window of 0
 to 4 s after shock offset, not the 0 to 8 s of the Figure 6 gray boxes the claims file uses, which

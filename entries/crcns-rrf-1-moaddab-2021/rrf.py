@@ -257,13 +257,14 @@ def ci_sign(ci):
     return 1 if ci[1] > 0 else (-1 if ci[2] < 0 else 0)
 
 
-def mixed_anova(y, groups=None):
+def mixed_anova(y, groups=None, type3=True):
     """ANOVA with subjects on axis 0, one or two within factors on the next axes, and an
     optional between factor (`groups`, one label per subject). Sums of squares from the
     per-subject centred data; within effects are tested against effect x subject (within
     group); with groups of unequal size, the within main effect uses the unweighted mean of the
     group means and the harmonic mean group size (type III, as SPSS reports it). Uncorrected
     degrees of freedom; the Greenhouse-Geisser epsilon and p are added as a variant.
+    type3=False gives the weighted within main effect (grand mean over all subjects).
     Returns {effect: (F, df1, df2, p, partial eta2, GG epsilon, GG p)}."""
     y = np.asarray(y, float)
     n = y.shape[0]
@@ -290,7 +291,7 @@ def mixed_anova(y, groups=None):
         eps = gg_epsilon(r.reshape(n, -1), g, r.shape[1:])
         rm = r.mean(0)
         ss = reps * n * (rm ** 2).sum()
-        if ng > 1:
+        if ng > 1 and type3:
             # SPSS (type III): the within main effect uses the unweighted mean of the group
             # means and the harmonic mean group size
             gmeans = np.array([r[g == k].mean(0) for k in range(ng)])
