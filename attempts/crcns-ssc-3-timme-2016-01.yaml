@@ -1,0 +1,408 @@
+schema_version: 2
+id: crcns-ssc-3-timme-2016-01
+dataset:
+  archive: crcns
+  id: ssc-3
+  version: unversioned
+  doi: 10.6080/K07D2S2F
+paper: doi:10.1371/journal.pcbi.1004858
+date: '2026-11-06'
+entry: crcns-ssc-3-timme-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42206111011
+inputs:
+- what: The displayed equations of the paper (Eqs 1 to 24), missing from the flattened text under paper/,
+    read from the version of record's JATS XML. Methods only; no data.
+  source: doi:10.1371/journal.pcbi.1004858 (PMC4861348, Europe PMC fullTextXML)
+- what: The TE procedure the paper reuses (bin sizes, delay windows, past states, jitter window, surrogates,
+    sub-network procedure), from the paper's reference [44]. Methods only; no data.
+  source: doi:10.1371/journal.pone.0115764 (PMC4275261)
+outcomes:
+- claim: data-recordings
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:data-recordings
+  measured:
+  - 25
+  - 7735
+  - 309.4
+  - 2.132
+  notes: 25 recordings, 7735 neurons, 309.4 per recording, every neuron with at least 100 spikes, so the
+    deposit already applies the 100-spike threshold. Mean rate 2.103 Hz with spikes over 60 min (reading
+    b), 2.132 Hz over each recording's own length (reading a); both within tolerance. Rates range from
+    0.028 to 77.5 Hz.
+  deviations:
+  - The rate can be read two ways (criterion), spikes over each recording's length (a, 2.132 Hz) or over
+    60 min (b, 2.103 Hz); both match, and the measured value is (a), the first reading the criterion lists.
+- claim: fig4ac-te-lognormal
+  outcome: partially_reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig4ac-te-lognormal
+  notes: Significant TE values span several orders of magnitude at both time scales and under both readings;
+    the 99th percentile is 8.0e4 to 2.93e5 times the 1st for raw TE and 1.84e3 to 5.43e3 times for normalized
+    TE. Fits of Eq 21 to single recordings have a median R2 of 0.86 to 0.96, but fits to the distribution
+    averaged over recordings have R2 of 0.08 to 0.61, below the criterion's 0.9 in all eight cases (two
+    scales, raw and normalized, readings f and s). The averaged distribution is broad because the recordings'
+    distributions sit at different places on the log axis. The spread part of the criterion holds; the
+    log-normal fit on the average does not.
+  deviations:
+  - The TE networks are rebuilt from the deposited spike times; the paper reused the networks of its reference
+    [44] (Timme et al. 2014, PLoS One 9 e115764), which are not deposited. Bins of 1.6 and 3.5 ms, past
+    states the OR of two bins, a 7-bin uniform jitter, 5000 surrogates and fewer than 5 exceeding are
+    taken from [44], Table 1 and Transfer Entropy Analysis, paragraphs 3 and 6, as the paper directs (Methods,
+    Effective Connectivity Detection, paragraphs 1 and 4).
+  - Assumed which two bins form the past state. [44]'s text writes bins t-d and t-d-1 (with d = 1, bins
+    t-1 and t-2, delays of 0 to 2 bins), while its Table 1 and the paper give a delay window of 1 to 4
+    bins (1.6 to 6.4 ms and 3.5 to 14 ms), which bins t-2 and t-3 give. Bins t-2 and t-3 are used, the
+    version both papers state in numbers. The other reading was not run.
+  - For pairs whose jitter moves more than 50 relevant sender spikes, the surrogate counts are drawn from
+    a normal distribution with their exact mean and covariance (merged groups of close spikes from 50
+    joint draws), not by jittering every spike, to fit the time limit. On DataSet1 and DataSet7 at 1.6
+    ms, the full jitter finds 2937 and 3530 significant connections and the approximation 2946 and 3542,
+    with 2930 and 3512 in common. The number of past states equal to 1 is held at its real value in each
+    surrogate, as [44] states the jitter preserved it.
+  - The fit starts from the moments of the binned distribution; the paper gives no starting values. 100
+    log-spaced bins span the pooled range of each panel.
+- claim: fig4bd-heavy-tailed-degree
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig4bd-heavy-tailed-degree
+  notes: 'Full networks: 20.9% (1.6 to 6.4 ms) and 21.1% (3.5 to 14 ms) of neurons have a total degree
+    above the 99.9th percentile of matched random networks (100 per recording), 209 and 210 times 0.001;
+    largest real total degree 886 and 929 against 223 and 162. Sub-networks: 5.9% and 6.4% of neuron slots
+    above the random 99.9th percentile (one random network per sub-network); largest 53 and 54 against
+    13 and 14. Both readings meet the criterion.'
+  deviations:
+  - The TE networks are rebuilt from the deposited spike times; the paper reused the networks of its reference
+    [44] (Timme et al. 2014, PLoS One 9 e115764), which are not deposited. Bins of 1.6 and 3.5 ms, past
+    states the OR of two bins, a 7-bin uniform jitter, 5000 surrogates and fewer than 5 exceeding are
+    taken from [44], Table 1 and Transfer Entropy Analysis, paragraphs 3 and 6, as the paper directs (Methods,
+    Effective Connectivity Detection, paragraphs 1 and 4).
+  - Assumed which two bins form the past state. [44]'s text writes bins t-d and t-d-1 (with d = 1, bins
+    t-1 and t-2, delays of 0 to 2 bins), while its Table 1 and the paper give a delay window of 1 to 4
+    bins (1.6 to 6.4 ms and 3.5 to 14 ms), which bins t-2 and t-3 give. Bins t-2 and t-3 are used, the
+    version both papers state in numbers. The other reading was not run.
+  - For pairs whose jitter moves more than 50 relevant sender spikes, the surrogate counts are drawn from
+    a normal distribution with their exact mean and covariance (merged groups of close spikes from 50
+    joint draws), not by jittering every spike, to fit the time limit. On DataSet1 and DataSet7 at 1.6
+    ms, the full jitter finds 2937 and 3530 significant connections and the approximation 2946 and 3542,
+    with 2930 and 3512 in common. The number of past states equal to 1 is held at its real value in each
+    surrogate, as [44] states the jitter preserved it.
+  - 'Sub-networks follow [44], Topology Analysis - Sub-Networks, paragraph 2: 50 random neurons, unconnected
+    ones replaced from the pool, then the 75 strongest connections by normalized TE kept (reading (a)
+    of the claims file''s M-SUB).'
+- claim: fig4bd-out-tail-longer
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig4bd-out-tail-longer
+  assumed: true
+  notes: 'Sub-networks (s): pooled 99th percentile of out-degree 19 and 23 against in-degree 8 and 7;
+    largest 46 and 48 against 45 and 46; out-degree 99th percentile higher in 21 and 25 of 25 recordings
+    (one-sided Wilcoxon p = 0.0001 and below 0.0001). Full networks (f): 99th percentiles 242 against
+    234 and 228.7 against 179 (Wilcoxon p = 0.0015 and below 0.0001), but at 3.5 to 14 ms the largest
+    in-degree (480) exceeds the largest out-degree (449), so (f) fails the criterion''s second part. The
+    outcome rests on reading (s).'
+  deviations:
+  - The TE networks are rebuilt from the deposited spike times; the paper reused the networks of its reference
+    [44] (Timme et al. 2014, PLoS One 9 e115764), which are not deposited. Bins of 1.6 and 3.5 ms, past
+    states the OR of two bins, a 7-bin uniform jitter, 5000 surrogates and fewer than 5 exceeding are
+    taken from [44], Table 1 and Transfer Entropy Analysis, paragraphs 3 and 6, as the paper directs (Methods,
+    Effective Connectivity Detection, paragraphs 1 and 4).
+  - Assumed which two bins form the past state. [44]'s text writes bins t-d and t-d-1 (with d = 1, bins
+    t-1 and t-2, delays of 0 to 2 bins), while its Table 1 and the paper give a delay window of 1 to 4
+    bins (1.6 to 6.4 ms and 3.5 to 14 ms), which bins t-2 and t-3 give. Bins t-2 and t-3 are used, the
+    version both papers state in numbers. The other reading was not run.
+  - For pairs whose jitter moves more than 50 relevant sender spikes, the surrogate counts are drawn from
+    a normal distribution with their exact mean and covariance (merged groups of close spikes from 50
+    joint draws), not by jittering every spike, to fit the time limit. On DataSet1 and DataSet7 at 1.6
+    ms, the full jitter finds 2937 and 3530 significant connections and the approximation 2946 and 3542,
+    with 2930 and 3512 in common. The number of past states equal to 1 is held at its real value in each
+    surrogate, as [44] states the jitter preserved it.
+  - 'Sub-networks follow [44], Topology Analysis - Sub-Networks, paragraph 2: 50 random neurons, unconnected
+    ones replaced from the pool, then the 75 strongest connections by normalized TE kept (reading (a)
+    of the claims file''s M-SUB).'
+  - Assumed that the degree and synergy analyses use the sub-networks (reading s of M-SUB), as the paper
+    says they were made 'to reduce bias associated with average degree and network size' (Methods, Effective
+    Connectivity Detection, paragraph 5) and the Fig 4 legend matches the random networks' 'sampling statistics
+    to the real data'. Both readings are shown.
+- claim: fig5a-in-degree-uncorrelated
+  outcome: partially_reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig5a-in-degree-uncorrelated
+  assumed: true
+  notes: Under (s, Pearson) 41 of 50 correlations between receiver in-degree and synergy are negative,
+    median r = -0.14, binomial probability of a negative skew this large 2.8e-6 (1.6 to 6.4 ms alone 22
+    of 25 negative, p = 7.8e-5; 3.5 to 14 ms 19 of 25, p = 0.0073). Under (s, Spearman) 40 of 50 negative
+    (p = 1.2e-5), under (f, Pearson) 40 of 50 (p = 1.2e-5), under (f, Spearman) 30 of 50 (p = 0.10, not
+    significant). Three of four readings give a significant negative skew (partial by the criterion);
+    (f, Spearman) would give reproduced. The skew is in the direction the paper reports ('slight negative
+    skew') but significant, so the statement's 'computation is independent of in-degree' does not hold
+    under the adopted reading.
+  deviations:
+  - The TE networks are rebuilt from the deposited spike times; the paper reused the networks of its reference
+    [44] (Timme et al. 2014, PLoS One 9 e115764), which are not deposited. Bins of 1.6 and 3.5 ms, past
+    states the OR of two bins, a 7-bin uniform jitter, 5000 surrogates and fewer than 5 exceeding are
+    taken from [44], Table 1 and Transfer Entropy Analysis, paragraphs 3 and 6, as the paper directs (Methods,
+    Effective Connectivity Detection, paragraphs 1 and 4).
+  - Assumed which two bins form the past state. [44]'s text writes bins t-d and t-d-1 (with d = 1, bins
+    t-1 and t-2, delays of 0 to 2 bins), while its Table 1 and the paper give a delay window of 1 to 4
+    bins (1.6 to 6.4 ms and 3.5 to 14 ms), which bins t-2 and t-3 give. Bins t-2 and t-3 are used, the
+    version both papers state in numbers. The other reading was not run.
+  - For pairs whose jitter moves more than 50 relevant sender spikes, the surrogate counts are drawn from
+    a normal distribution with their exact mean and covariance (merged groups of close spikes from 50
+    joint draws), not by jittering every spike, to fit the time limit. On DataSet1 and DataSet7 at 1.6
+    ms, the full jitter finds 2937 and 3530 significant connections and the approximation 2946 and 3542,
+    with 2930 and 3512 in common. The number of past states equal to 1 is held at its real value in each
+    surrogate, as [44] states the jitter preserved it.
+  - 'Sub-networks follow [44], Topology Analysis - Sub-Networks, paragraph 2: 50 random neurons, unconnected
+    ones replaced from the pool, then the 75 strongest connections by normalized TE kept (reading (a)
+    of the claims file''s M-SUB).'
+  - Assumed that the degree and synergy analyses use the sub-networks (reading s of M-SUB), as the paper
+    says they were made 'to reduce bias associated with average degree and network size' (Methods, Effective
+    Connectivity Detection, paragraph 5) and the Fig 4 legend matches the random networks' 'sampling statistics
+    to the real data'. Both readings are shown.
+  - Assumed Pearson correlations (reading p of M-CORR), the default correlation of the Matlab the paper
+    used for its fits; Spearman is shown.
+  - Under reading (f) the triples of each full network are sampled, 3000 per recording and time scale
+    (the full networks hold up to 2.8 million triples), for time.
+  - The panels hold 50 correlations (25 recordings, two time scales), where the Fig 5 legend gives N data
+    = 40; which 40 the paper used is not stated.
+  - Synergy is normalized by H(I_F) (paper, paragraph after Eq 10); the receiver's past state is the same
+    two OR'ed bins as in the TE.
+- claim: fig5b-out-degree-positive
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig5b-out-degree-positive
+  assumed: true
+  notes: Under (s, Pearson) 44 of 50 correlations between transmitter out-degree and synergy are positive,
+    median r = 0.19, binomial p = 1.6e-8 (21 of 25 and 23 of 25 at each time scale). (s, Spearman) 39
+    of 50, p = 4.5e-5; (f, Pearson) 35 of 50, p = 0.0033; (f, Spearman) 26 of 50, p = 0.44, a majority
+    without significance (partial by the criterion).
+  deviations:
+  - The TE networks are rebuilt from the deposited spike times; the paper reused the networks of its reference
+    [44] (Timme et al. 2014, PLoS One 9 e115764), which are not deposited. Bins of 1.6 and 3.5 ms, past
+    states the OR of two bins, a 7-bin uniform jitter, 5000 surrogates and fewer than 5 exceeding are
+    taken from [44], Table 1 and Transfer Entropy Analysis, paragraphs 3 and 6, as the paper directs (Methods,
+    Effective Connectivity Detection, paragraphs 1 and 4).
+  - Assumed which two bins form the past state. [44]'s text writes bins t-d and t-d-1 (with d = 1, bins
+    t-1 and t-2, delays of 0 to 2 bins), while its Table 1 and the paper give a delay window of 1 to 4
+    bins (1.6 to 6.4 ms and 3.5 to 14 ms), which bins t-2 and t-3 give. Bins t-2 and t-3 are used, the
+    version both papers state in numbers. The other reading was not run.
+  - For pairs whose jitter moves more than 50 relevant sender spikes, the surrogate counts are drawn from
+    a normal distribution with their exact mean and covariance (merged groups of close spikes from 50
+    joint draws), not by jittering every spike, to fit the time limit. On DataSet1 and DataSet7 at 1.6
+    ms, the full jitter finds 2937 and 3530 significant connections and the approximation 2946 and 3542,
+    with 2930 and 3512 in common. The number of past states equal to 1 is held at its real value in each
+    surrogate, as [44] states the jitter preserved it.
+  - 'Sub-networks follow [44], Topology Analysis - Sub-Networks, paragraph 2: 50 random neurons, unconnected
+    ones replaced from the pool, then the 75 strongest connections by normalized TE kept (reading (a)
+    of the claims file''s M-SUB).'
+  - Assumed that the degree and synergy analyses use the sub-networks (reading s of M-SUB), as the paper
+    says they were made 'to reduce bias associated with average degree and network size' (Methods, Effective
+    Connectivity Detection, paragraph 5) and the Fig 4 legend matches the random networks' 'sampling statistics
+    to the real data'. Both readings are shown.
+  - Assumed Pearson correlations (reading p of M-CORR), the default correlation of the Matlab the paper
+    used for its fits; Spearman is shown.
+  - Under reading (f) the triples of each full network are sampled, 3000 per recording and time scale
+    (the full networks hold up to 2.8 million triples), for time.
+  - The panels hold 50 correlations (25 recordings, two time scales), where the Fig 5 legend gives N data
+    = 40; which 40 the paper used is not stated.
+- claim: fig5ab-correlations-beyond-null
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig5ab-correlations-beyond-null
+  assumed: true
+  notes: Ten permutations per correlation (500 null values for 50 correlations). Under (s) the null absolute
+    correlations have median 0.002 to 0.003 and 99th percentile 0.008 to 0.013; beyond it are 100% (in)
+    and 96% (out) of the Pearson correlations and 94% and 96% of the Spearman ones. Under (f) 84% and
+    92% (Pearson, in-degree below 90%) and 90% and 98% (Spearman).
+  deviations:
+  - Assumed that the degree and synergy analyses use the sub-networks (reading s of M-SUB), as the paper
+    says they were made 'to reduce bias associated with average degree and network size' (Methods, Effective
+    Connectivity Detection, paragraph 5) and the Fig 4 legend matches the random networks' 'sampling statistics
+    to the real data'. Both readings are shown.
+  - Assumed Pearson correlations (reading p of M-CORR), the default correlation of the Matlab the paper
+    used for its fits; Spearman is shown.
+  - The panels hold 50 correlations (25 recordings, two time scales), where the Fig 5 legend gives N data
+    = 40; which 40 the paper used is not stated.
+- claim: fig5cd-pooled-trends
+  outcome: not_reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig5cd-pooled-trends
+  notes: 'Pooled over recordings, per-degree median synergy (degrees with at least 20 groups) against
+    degree. Out-degree: Spearman rho = 0.57 (p = 4e-5) at 1.6 to 6.4 ms and 0.14 (p = 0.34) at 3.5 to
+    14 ms under (s); -0.51 (p = 3e-20) and 0.34 (p = 1.2e-8) under (f). In-degree: rho = -0.96 and -0.94
+    under (s), -0.51 and -0.81 under (f), all with p below 1e-17; not significantly positive, as the criterion
+    requires, but a strong falling trend where the paper reports none. No reading has a significant rise
+    with out-degree at both time scales.'
+  deviations:
+  - Assumed that the degree and synergy analyses use the sub-networks (reading s of M-SUB), as the paper
+    says they were made 'to reduce bias associated with average degree and network size' (Methods, Effective
+    Connectivity Detection, paragraph 5) and the Fig 4 legend matches the random networks' 'sampling statistics
+    to the real data'. Both readings are shown.
+  - Under reading (f) the triples of each full network are sampled, 3000 per recording and time scale
+    (the full networks hold up to 2.8 million triples), for time.
+  - The criterion's Spearman correlation of per-degree medians is a reading fixed by the claims file;
+    the paper gives no test.
+- claim: fig6-information-gain-not-rising
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig6-information-gain-not-rising
+  notes: 'Median information gain against the number of inputs n, fit with A exp(k n). k is negative at
+    both time scales under all four readings (normalized or in bits, n from 1 or 2), from -0.037 to -0.115,
+    and every 95% interval lies below zero. The statement''s detail that one of the two intervals overlaps
+    zero does not hold: none does. 626 to 750 neurons contribute per n.'
+  deviations:
+  - The TE networks are rebuilt from the deposited spike times; the paper reused the networks of its reference
+    [44] (Timme et al. 2014, PLoS One 9 e115764), which are not deposited. Bins of 1.6 and 3.5 ms, past
+    states the OR of two bins, a 7-bin uniform jitter, 5000 surrogates and fewer than 5 exceeding are
+    taken from [44], Table 1 and Transfer Entropy Analysis, paragraphs 3 and 6, as the paper directs (Methods,
+    Effective Connectivity Detection, paragraphs 1 and 4).
+  - Assumed which two bins form the past state. [44]'s text writes bins t-d and t-d-1 (with d = 1, bins
+    t-1 and t-2, delays of 0 to 2 bins), while its Table 1 and the paper give a delay window of 1 to 4
+    bins (1.6 to 6.4 ms and 3.5 to 14 ms), which bins t-2 and t-3 give. Bins t-2 and t-3 are used, the
+    version both papers state in numbers. The other reading was not run.
+  - For pairs whose jitter moves more than 50 relevant sender spikes, the surrogate counts are drawn from
+    a normal distribution with their exact mean and covariance (merged groups of close spikes from 50
+    joint draws), not by jittering every spike, to fit the time limit. On DataSet1 and DataSet7 at 1.6
+    ms, the full jitter finds 2937 and 3530 significant connections and the approximation 2946 and 3542,
+    with 2930 and 3512 in common. The number of past states equal to 1 is held at its real value in each
+    surrogate, as [44] states the jitter preserved it.
+  - 30 receivers sampled per recording and time scale, and at most 20 combinations of inputs per receiver
+    and n, where the paper uses every receiver and up to 100 combinations (Methods, paragraph after Eq
+    11); for time.
+  - Inputs are the significant inputs of the full network (reading f); reading (s) was not run, although
+    sub-network receivers with six or more inputs exist (19205 and 14814 over the sub-networks).
+- claim: table1-pid-examples
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:table1-pid-examples
+  notes: Synergy is 1.000 bit in the synergistic and 0.457 bits in the synergistic and redundant example
+    and zero (below 0.001) in the other six. Hidden self interaction, MI(J_P; I_F) = 1 bit with TE and
+    every PID term 0. Synergistic and redundant, II = 0.0001 bits with synergy and redundancy 0.457 bits
+    each. Single and redundant, unique J = 0.750 bits and II = -0.250 bits, equal in size to the redundancy
+    (0.250).
+  deviations:
+  - Table 1's printed values are typed into the notebook and each column renormalized to sum to 1, as
+    the criterion says.
+- claim: fig7b-connectivity-patterns
+  outcome: reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig7b-connectivity-patterns
+  notes: 'Fraction of connections from the upper half of the input layer, averaged over 100 models: Hebbian
+    0.988, firing-rate-modified 0.792, degree-modified 0.505, random 0.502. Ordered as required, with
+    the degree-modified rule within 0.5 +- 0.1.'
+  deviations:
+  - The model follows the Methods and Eqs 13 to 24 of the version of record (read from its JATS XML).
+    The firing probabilities of Eqs 16 to 19 are turned into the binary signal's current by inverting
+    Eq 13; output current adds I_con = 10 per active connected input. Each rewiring step uses 500 fresh
+    runs; 100 models per type.
+- claim: fig7c-degree-modified-rule-matches
+  outcome: partially_reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig7c-degree-modified-rule-matches
+  assumed: true
+  notes: 'Real data (s, Pearson): in-degree -0.132 +- 0.155, out-degree 0.195 +- 0.170. Model means (in,
+    out): degree-modified 0.017, 0.114 (match), firing-rate-modified -0.061, 0.280 (match), Hebbian 0.321,
+    0.022 (no match), random 0.128, -0.009 (no match). The firing-rate rule is closer to the real data
+    (distance 0.111) than the degree rule (0.169), so the criterion''s last part fails. Under (s, Spearman)
+    and (f, Pearson) the same part fails (and under (f, Pearson) the degree rule does not match); under
+    (f, Spearman) the whole criterion holds. The qualitative match of the two modified rules and the mismatch
+    of the Hebbian and random models hold; that the degree-modified rule is closer does not.'
+  deviations:
+  - The model follows the Methods and Eqs 13 to 24 of the version of record (read from its JATS XML).
+    The firing probabilities of Eqs 16 to 19 are turned into the binary signal's current by inverting
+    Eq 13; output current adds I_con = 10 per active connected input. Each rewiring step uses 500 fresh
+    runs; 100 models per type.
+  - The model's synergy is the PID of the states of two connected input neurons about the output neuron's
+    state in the same run, without conditioning on a past, which the model's independent runs do not have
+    (the claims file's reading); 2000 fresh runs per model. Correlations per model as for the data; models
+    whose output in-degrees are all equal have no in-degree correlation (56 of 100 degree-modified models).
+  - The real data's reference is the mean and standard deviation of the 50 per-recording correlations
+    under (s, Pearson); the other three readings are shown.
+  - Assumed that the degree and synergy analyses use the sub-networks (reading s of M-SUB), as the paper
+    says they were made 'to reduce bias associated with average degree and network size' (Methods, Effective
+    Connectivity Detection, paragraph 5) and the Fig 4 legend matches the random networks' 'sampling statistics
+    to the real data'. Both readings are shown.
+  - Assumed Pearson correlations (reading p of M-CORR), the default correlation of the Matlab the paper
+    used for its fits; Spearman is shown.
+- claim: fig7d-degree-rule-highest-conditioned-mi
+  outcome: not_reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:fig7d-degree-rule-highest-conditioned-mi
+  notes: 'Mean MI between connected neurons over 100 models: Hebbian 0.090 bits (highest, as the paper
+    says), firing-rate 0.071, degree 0.030, random 0.023. Conditioned on the binary signal: random 0.00230
+    (highest), Hebbian 0.00168, firing-rate 0.00166, degree 0.00153 (lowest). The degree-modified rule
+    differs from each other rule at FDR-corrected p < 0.001 (Mann-Whitney) but lies below them. The conditioned
+    values are small, so the ordering rests on small differences.'
+  deviations:
+  - The model follows the Methods and Eqs 13 to 24 of the version of record (read from its JATS XML).
+    The firing probabilities of Eqs 16 to 19 are turned into the binary signal's current by inverting
+    Eq 13; output current adds I_con = 10 per active connected input. Each rewiring step uses 500 fresh
+    runs; 100 models per type.
+  - MI is estimated from 2000 fresh runs per model, a count the paper does not give (the claims file's
+    reading).
+- claim: figs1-larger-model
+  outcome: not_reproduced
+  notebook: reproduce_timme_2016.ipynb
+  output: claim:figs1-larger-model
+  notes: 40 neurons per layer, 320 connections and rewirings, Eq 24 and Eq 23. Connectivity ordering holds
+    (upper-half fractions 0.991, 0.769, 0.502 with alpha and beta recomputed from Eq 15; 0.999, 0.798,
+    0.501 with them kept). Under (s, Pearson) the degree-modified rule does not match the real correlations
+    with alpha and beta recomputed (it does with them kept, where the firing-rate rule does not); its
+    conditioned MI is below the random model's under both readings (0.00094 against 0.00112; 0.00100 against
+    0.00206); the Hebbian and firing-rate rules' conditioned MI is smaller than in the 20-neuron model
+    (0.00096 and 0.00097, or 0.00147 and 0.00146, against 0.00168 and 0.00166). Under the Spearman readings
+    the correlation match holds for both alpha and beta readings, but the MI parts fail under every reading.
+  deviations:
+  - The model follows the Methods and Eqs 13 to 24 of the version of record (read from its JATS XML).
+    The firing probabilities of Eqs 16 to 19 are turned into the binary signal's current by inverting
+    Eq 13; output current adds I_con = 10 per active connected input. Each rewiring step uses 500 fresh
+    runs; 100 models per type.
+  - The model's synergy is the PID of the states of two connected input neurons about the output neuron's
+    state in the same run, without conditioning on a past, which the model's independent runs do not have
+    (the claims file's reading); 2000 fresh runs per model. Correlations per model as for the data; models
+    whose output in-degrees are all equal have no in-degree correlation (56 of 100 degree-modified models).
+  - The real data's reference is the mean and standard deviation of the 50 per-recording correlations
+    under (s, Pearson); the other three readings are shown.
+  - Both readings of alpha and beta named in the criterion are run (recomputed from Eqs 14 and 15 with
+    N = 40, alpha = 0.0115; kept at 0.023); neither meets the criterion.
+findings:
+- kind: data_missing
+  statement: The paper analysed the TE networks of its reference [44] (Timme et al. 2014), at time scales
+    2 and 3 of that study. The networks, the TE values and the sub-networks are not in the data set, which
+    holds spike times only, so the paper's networks cannot be checked; they have to be rebuilt, and a
+    rebuilt network may differ from the paper's.
+- kind: other
+  statement: DataSet19 (2013-01-06-1) lasts 2887498 ms (48 min), where the paper describes 60 minute recordings;
+    the data description says most recordings are 3600000 ms. The first ten recordings (2012) have no
+    spike in their first 8 s.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: which bins form the past states of the TE? [44] writes
+    the past as bins t-d and t-d-1 (d = 1), which gives delays of 0 to 2 bins, while its Table 1 and this
+    paper give delay windows of 1.6 to 6.4 ms and 3.5 to 14 ms (1 to 4 bins), which bins t-2 and t-3 give.
+    This attempt used t-2 and t-3.'
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: were the weight distributions (Fig 4A, C), degree distributions
+    (Fig 4B, D) and the degree and synergy correlations (Fig 5) computed on the 500 sub-networks per recording
+    or on the full networks, and were the correlations Pearson or Spearman? The outcomes differ: the out-degree
+    tail (Fig 4B, D) is longer than the in-degree tail on the sub-networks but not in every comparison
+    on the full networks, and the out-degree correlations (Fig 5B) are significantly positive under three
+    of four readings but not under full networks with Spearman. This attempt assumed sub-networks and
+    Pearson.'
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: Fig 5 gives N data = 40 correlations per panel; with
+    25 recordings and two time scales there are 50. Which 40 were used?'
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: how was the synergy of the feedforward model computed,
+    given that its runs are independent and have no past to condition on, and from how many runs were
+    the model''s synergy and mutual information estimated?'
