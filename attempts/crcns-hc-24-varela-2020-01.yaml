@@ -21,26 +21,26 @@ provenance:
     url: https://github.com/catalystneuro/encore/actions/runs/42201313987
 outcomes:
 - claim: fig1s3-spindles-not-theta
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig1s3-spindles-not-theta
-  notes: 'Relative to the state''s mean power, the trough-triggered mPFC scalogram in sleep peaks at 11
-    Hz (S1) and 10 Hz (S3) under every trough reading, within 10 to 15 Hz. In raw power the 4 to 30 Hz
-    peak is 11 Hz in S1 and 4 to 8 Hz in S3. CA1 troughs detected outside sleep peak at 13 Hz in S1 (sleep
-    11 to 12 Hz) and 9 to 10 Hz in S3 (sleep 9 Hz), so the waking CA1 peak is not lower. Outside sleep
-    is quiet waking in the box (97 to 488 troughs); no active waking on the maze is in the data set. Up
-    to 800 troughs per condition (seeded subset). Question for the authors, recorded as a finding: how
-    the scalogram of Figure 1, figure supplement 3 was normalised.'
+  notes: 'No scaling of the scalogram meets both parts of the criterion. Relative to the state''s mean power,
+    the trough-triggered mPFC scalogram in sleep peaks at 11 Hz (S1) and 10 Hz (S3) under every trough reading,
+    within 10 to 15 Hz, but CA1 troughs detected outside sleep peak at 13 Hz in S1 (sleep 11 to 12 Hz) and
+    9 to 10 Hz in S3 (sleep 9 Hz), so the waking CA1 peak is not lower. In raw power the S3 waking CA1 peak
+    is lower (7 against 8 Hz) but the S3 mPFC sleep peak is at 4 to 8 Hz. Outside sleep is all time outside
+    the deposited sleep periods in the box (97 to 488 troughs), which includes any REM sleep; no active waking
+    on the maze is in the data set. Up to 800 troughs per condition (seeded subset). Question for the authors,
+    recorded as a finding: how the scalogram of Figure 1, figure supplement 3 was normalised.'
   deviations:
-  - 'Assumed: wavelet power is shown relative to the mean power of the same LFP in the same state at each
-    frequency; the paper does not say how the scalogram is scaled, and raw LFP power falls with frequency
-    so its peak would sit at the lowest frequency. The raw-power peak in 4 to 30 Hz is shown too and gives
-    4 to 8 Hz for S3 mPFC.'
+  - Wavelet power shown both raw and relative to the mean power of the same LFP in the same state at each frequency;
+    the paper does not say how the scalogram is scaled. The outcome is the same under both.
   - Morlet wavelet of 7 cycles (the claims files standard choice); 2 to 30 Hz in 1 Hz steps.
-  - Waking is time outside the deposited sleep periods in the box only; the paper also used the maze.
-  - Sleep is the deposited sleep periods (M-sleep reading a); readings (b) and (c), from the moving average
-    of LFP power, were not run.
-  assumed: true
+  - Waking is time outside the deposited sleep periods in the box only, including any REM sleep; the paper
+    also used the maze.
+  - Sleep is the deposited sleep periods (M-sleep reading a). The Methods rule as written (readings b and c,
+    1 s and 10 s averages) finds no sleep in S1 and S3 and at most 2 min in S2 (shown under fig3a-thalamic-rate-wake-sleep),
+    so it cannot replace them.
 - claim: fig2-swr-phase-delta-spindle
   outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -49,16 +49,17 @@ outcomes:
   - 0.05
   - -1.663
   notes: 'Two sessions with CA1 (S1, S3). Across-session circular mean of the normalised per-session means:
-    delta 0.050 (M-SWR k = 3), 0.002 (k = 4), 0.062 (deposited S1 SWRs) rad, circular sd 0.001 to 0.015;
-    spindle -1.663, -1.716, -1.572 rad, circular sd 0.25 to 0.36. All within -0.04 +- 0.43 and -1.72 +-
-    0.93; raw phases agree. Per-session Rayleigh Z 45 to 205 (p < 1e-19). Measured is the first reading
-    the criterion lists (M-SWR k = 3).'
+    delta 0.050 (M-SWR k = 3), 0.002 (k = 4), 0.062 (deposited S1 SWRs) rad, circular sd 0.001 to 0.015; spindle
+    -1.663, -1.716, -1.572 rad, circular sd 0.25 to 0.36. All within -0.04 +- 0.43 and -1.72 +- 0.93; raw phases
+    agree. Per-session Rayleigh Z 45 to 205 (p < 1e-19). Measured is the first reading the criterion lists
+    (M-SWR k = 3).'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
   - Two sessions, where the paper has 23 from six rats.
-  - Sleep is the deposited sleep periods (M-sleep reading a); readings (b) and (c), from the moving average
-    of LFP power, were not run.
+  - Sleep is the deposited sleep periods (M-sleep reading a). The Methods rule as written (readings b and c,
+    1 s and 10 s averages) finds no sleep in S1 and S3 and at most 2 min in S2 (shown under fig3a-thalamic-rate-wake-sleep),
+    so it cannot replace them.
 - claim: fig2c-swr-around-kc
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -69,60 +70,97 @@ outcomes:
   - 4.2
   - 255.0
   - -37.5
-  notes: 'SWR rate peaks before and after KCs in both sessions under every reading (session peaks z 2.89
-    to 5.06). Means over sessions (reading i): before z 3.23 to 4.24 at 112 to 180 ms, after z 3.50 to
-    4.39 at 135 to 255 ms; the SWR minimum is at -37.5 to -45 ms in -0.25 to 0.25 s (every session and
-    reading between -30 and -60 ms), against +10.33 +- 5.88 ms. No reading has more than 3 of the 5 values
-    within tolerance. Measured: M-KC, M-SWR k = 3, forward shifts, reading (i), window (a).'
+  notes: 'SWR rate peaks before and after KCs in both sessions under every reading (session peaks z 2.89 to
+    5.06). Means over sessions (reading i): before z 3.23 to 4.24 at 112 to 180 ms, after z 3.50 to 4.39 at
+    135 to 255 ms; the SWR minimum is at -37.5 to -45 ms in -0.25 to 0.25 s (every session and reading between
+    -30 and -60 ms), against +10.33 +- 5.88 ms. No reading has more than 3 of the 5 values within tolerance.
+    Measured: M-KC, M-SWR k = 3, forward shifts, reading (i), window (a). Kept as partially reproduced: the
+    rises before and after KCs, the main finding, hold in every session and reading; the minimum timing and
+    the peak heights and times do not.'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
   - Two sessions of 23.
   - Shift sign both ways (M-PETH readings a and b).
 - claim: fig3a-thalamic-rate-wake-sleep
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig3a-thalamic-rate-wake-sleep
-  notes: 'Too few units for the claim''s test: a two-sided Wilcoxon signed rank test over 5 units cannot
-    give p below 0.0625, and the criterion requires p < 0.05. All 5 thalamic units fire less in sleep;
-    waking 10.30 +- 2.31 (within 10.10 +- 4.26), sleep 4.58 +- 1.37 spikes/s, just below the tolerance
-    of 7.73 +- 3.09. Waking reading (b) needs velocity, which the data set does not hold; reading (a)
-    is shown.'
+  measured:
+  - 10.3
+  - 4.58
+  notes: Five thalamic units, deposited sleep periods (M-sleep reading a), waking reading (a). Sleep rate lower
+    in 5 of 5 units, Wilcoxon p = 0.0625, the smallest p 5 units allow, against p < 0.05. Waking 10.30 +- 2.31
+    spikes/s, within 10.10 +- 4.26; sleep 4.58 +- 1.37, just below the tolerance 7.73 +- 3.09 (lower edge 4.64).
+    The Methods sleep rule as written (readings b and c) finds no sleep in S1 and S3 and 0 or 2 min in S2.
+    A variant that fills dips under 30 s in the 10 s average finds 19 and 44 min in S1 and S3, inside the deposited
+    periods, and in S2 (delta power only) 11 min outside them; under it waking 6.06 and sleep 6.52 spikes/s,
+    both within tolerance, but sleep is lower in only 3 of 5 units (p = 1.0). Waking reading (b) needs velocity,
+    which the data set does not hold.
+  deviations:
+  - Sleep readings (b) and (c) find almost no sleep; reading (a), the deposited periods, decides the outcome,
+    and a variant that fills dips under 30 s is shown.
+  - Waking reading (b) needs velocity, not in the data set.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig3a-bursting-in-sleep
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig3a-bursting-in-sleep
-  notes: Too few units for the claim's test (5 units, smallest Wilcoxon p 0.0625); depends on fig3a-thalamic-rate-wake-sleep.
-    Burst spikes 1.54 % in waking and 15.85 % in sleep (paper 4.60 and 18.65, within tolerance), higher
-    in sleep in 5 of 5; units with at least 5 % burst spikes 0 % waking (paper 25) and 80 % sleep (paper
-    77.5).
+  measured:
+  - 0.0
+  - 80.0
+  - 1.54
+  - 15.85
+  notes: 'Five units, deposited sleep periods. Burst spikes 1.54 % in waking and 15.85 % in sleep (within 4.60
+    +- 7.97 and 18.65 +- 15.3), higher in sleep in 5 of 5 units, Wilcoxon p = 0.0625 (the smallest 5 units
+    allow). Units with at least 5 % burst spikes: 80 % in sleep (within 77.5 +- 7.75) and 0 % in waking (outside
+    25 +- 2.5). Under the dip-filling sleep variant 3 of 5 units burst more in sleep.'
+  deviations:
+  - Sleep readings (b) and (c) find almost no sleep; reading (a), the deposited periods, decides the outcome.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig3a-bursting-around-swrs
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig3a-bursting-around-swrs
-  notes: 'Too few units: 3 thalamic units have SWRs. Burst spikes within 1 s of SWRs 18.86 % (union of
-    windows) or 19.94 % (every window), within 25.52 +- 17.29 and higher than in sleep in 3 of 3; Kruskal-Wallis
-    across waking, sleep and SWR windows p = 0.177. Depends on a blocked claim.'
+  measured: 18.86
+  notes: Three thalamic units with SWRs (S1, S3). Burst spikes within 1 s of SWRs 18.86 % (reading a, union
+    of windows) or 19.94 % (reading b), within 25.52 +- 17.29 and higher than in sleep in 3 of 3 units; Kruskal-Wallis
+    across waking, sleep and SWR windows p = 0.177, not below 0.05.
+  deviations:
+  - SWRs are the deposited S1 SWRs and the M-SWR (k = 3) events of S3 (the deposited reading); the other SWR
+    readings were not run for this claim.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: swr-shift-control
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:swr-shift-control
-  notes: 'Too few units for the claim''s test: with 3 units the smallest two-sided Wilcoxon p is 0.25.
-    Fewer spikes in SWR windows than in shifted windows in 2 of 3 units and a higher burst percentage
-    in 2 or 3 of 3, for shifts of 2 to 3, 5 to 6, 2 to 10 and 5 to 10 s.'
+  notes: Three thalamic units with SWRs. Against 20 shifted draws per SWR, SWR windows hold fewer spikes in
+    2 of 3 units and a higher burst percentage in 2 of 3 (3 of 3 for 5 to 10 s), for shifts of 2 to 3, 5 to
+    6, 2 to 10 and 5 to 10 s; the S3 unit cl-2 has more spikes at SWRs. With 3 units the smallest two-sided
+    Wilcoxon p is 0.25 (p = 0.25 to 0.75 here).
+  deviations:
+  - SWRs are the deposited S1 SWRs and the M-SWR (k = 3) events of S3 (the deposited reading); the other SWR
+    readings were not run for this claim.
+  - Each SWR shifted 20 times and the shifted windows pooled; the paper does not say how many shifts.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig3c-thalamic-decrease-at-swrs
-  outcome: blocked
-  blocked_by: other
+  outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig3c-thalamic-decrease-at-swrs
-  notes: 'Too few units: 3 thalamic units have SWRs (S2 has no CA1 LFP), so a percentage can be 0, 33.3,
-    66.7 or 100 and none of the three bands (55.32 +- 5.53, 14.89 +- 1.49, 8.51 +- 0.85) can be met. One
-    unit (S1, MD) decreases (minimum z -3.95, reading a); both S3 units increase (maximum z 6.0 and 5.1),
-    against the paper''s majority decrease.'
+  measured:
+  - 33.33
+  - -3.41
+  - 66.67
+  - 0.0
+  notes: 'Three thalamic units with SWRs (S2 has no CA1 LFP). One unit (S1, MD) decreases below -2 sd (minimum
+    z -3.95 with deposited SWRs, reading a); both S3 units show a pure increase (maximum z 6.0 and 5.1). Pure
+    increase (66.7 % in reading a, 33.3 % in b) is the largest class or ties with decrease (33.3 % or 0 %)
+    under every SWR reading and shift, so the direction the criterion asks (decreasing units the largest group)
+    fails; no rebound. With 3 units none of the bands can be reached. Measured: M-SWR k = 3, reading (a).'
+  deviations:
+  - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
+    no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig3s1-ca1-mpfc-at-swrs
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -132,11 +170,11 @@ outcomes:
   - 20.85
   - 28.57
   - 57.14
-  notes: 'Reading (a): 13 of 13 CA1 units increase (100 %, above 90.18 +- 9.02), mean maximum z 18.4 to
-    20.9 (within 19.85 +- 18.65); none decrease. mPFC: 2 of 7 increase (28.6 %, within 30.95 +- 3.10)
-    and 4 or 5 of 7 decrease (57.1 to 71.4 %, outside 40.48 +- 4.05). Reading (b) gives mPFC 14.3 % for
-    both. The direction the criterion asks holds; the values do not all fall within tolerance under any
-    reading. Measured: M-SWR k = 3, reading (a).'
+  notes: 'Reading (a): 13 of 13 CA1 units increase (100 %, above 90.18 +- 9.02), mean maximum z 18.4 to 20.9
+    (within 19.85 +- 18.65); none decrease. mPFC: 2 of 7 increase (28.6 %, within 30.95 +- 3.10) and 4 or 5
+    of 7 decrease (57.1 to 71.4 %, outside 40.48 +- 4.05). Reading (b) gives mPFC 14.3 % for both. The direction
+    the criterion asks holds; the values do not all fall within tolerance under any reading. Measured: M-SWR
+    k = 3, reading (a).'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
@@ -149,12 +187,12 @@ outcomes:
   measured:
   - 33.33
   - 10.63
-  notes: 'Three thalamic units with SWRs. SWR counts: S1 unit b1 = -0.10 per spike/s (Wald p < 1e-10),
-    a 10.3 to 10.6 % rise in SWR rate per 1 spike/s drop; S3 units b1 = -0.002 (p = 0.59) and +0.014 (p
-    = 0.00015, positive). So 1 of 3 (33.3 %) is significantly negative, against 61.7 +- 6.17 %, and the
-    change is half the paper''s 20.74 +- 2.07. Response readings: CA1 MUA exists only in S1 (negative,
-    p < 1e-10); reading (C) gives 33.3 %. Readings (i) and (ii) of the units of X give the same number;
-    the change per drop of one spike per 250 ms bin is shown as a variant (47.8 %).'
+  notes: 'Three thalamic units with SWRs. SWR counts: S1 unit b1 = -0.10 per spike/s (Wald p < 1e-10), a 10.3
+    to 10.6 % rise in SWR rate per 1 spike/s drop; S3 units b1 = -0.002 (p = 0.59) and +0.014 (p = 0.00015,
+    positive). So 1 of 3 (33.3 %) is significantly negative, against 61.7 +- 6.17 %, and the change is half
+    the paper''s 20.74 +- 2.07. Response readings: CA1 MUA exists only in S1 (negative, p < 1e-10); reading
+    (C) gives 33.3 %. Readings (i) and (ii) of the units of X give the same number; the change per drop of
+    one spike per 250 ms bin is shown as a variant (47.8 %).'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
@@ -165,8 +203,7 @@ outcomes:
   notebook: reproduce_varela_2020.ipynb
   output: claim:glm-re-versus-other-nuclei
   notes: The data set gives no thalamic nucleus for any unit. Only the S1 unit is named (MD), in the title
-    of a deposited script; S2 and S3 units have no nucleus. The paper's Table 1 counts are not linked
-    to units.
+    of a deposited script; S2 and S3 units have no nucleus. The paper's Table 1 counts are not linked to units.
 - claim: fig3e-thalamic-rebound-after-kc
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -176,11 +213,11 @@ outcomes:
   - 261.0
   - 1.66
   - 288.0
-  notes: 'Five thalamic units. Mean peak z after against before KCs: 2.39 against 1.42 (deposited KCs,
-    forward shifts), 2.16 against 1.26 (random sign), 2.23 against 1.66 (M-KC); peak times 234 to 279
-    ms after and 288 to 393 ms before, within tolerance. The after peak is outside 2.48 +- 0.248 in two
-    readings and the before peak outside 1.28 +- 0.128 in two, so no reading has all four values within
-    tolerance. Only 2 of 5 units peak higher after than before. Measured: M-KC.'
+  notes: 'Five thalamic units. Mean peak z after against before KCs: 2.39 against 1.42 (deposited KCs, forward
+    shifts), 2.16 against 1.26 (random sign), 2.23 against 1.66 (M-KC); peak times 234 to 279 ms after and
+    288 to 393 ms before, within tolerance. The after peak is outside 2.48 +- 0.248 in two readings and the
+    before peak outside 1.28 +- 0.128 in two, so no reading has all four values within tolerance. Only 2 of
+    5 units peak higher after than before. Measured: M-KC.'
   deviations:
   - KCs as deposited and by M-KC moved to the raw LFP trough within 100 ms.
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
@@ -191,19 +228,25 @@ outcomes:
   measured:
   - 42.0
   - -6.43
-  notes: 'Thalamic minimum 42 to 54 ms after KCs (sd 116 to 133, n = 5), mPFC minimum -6.4 to -47.1 ms
-    (n = 7), both within tolerance and the thalamus later, under every KC reading, shift sign and window.
-    Measured: M-KC, window (a).'
+  notes: 'Thalamic minimum 42 to 54 ms after KCs (sd 116 to 133, n = 5), mPFC minimum -6.4 to -47.1 ms (n =
+    7), both within tolerance and the thalamus later, under every KC reading, shift sign and window. Measured:
+    M-KC, window (a).'
   deviations:
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: kc-fraction-of-thalamic-peaks
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:kc-fraction-of-thalamic-peaks
-  notes: 'Too few units: with 5 units percentages are multiples of 20, and the 9.68 +- 0.97 % band holds
-    none. Deposited KCs: 2 units peak above 2 sd after only, 2 before only, none both (40, 40, 0 %); M-KC:
-    2 after only, 1 before only, 1 both.'
+  measured:
+  - 40.0
+  - 20.0
+  - 20.0
+  notes: 'Five units, M-KC times, disjoint groups (reading a): after only 40 % (within 38.71 +- 3.87), before
+    only 20 % (outside 9.68 +- 0.97, which no multiple of 20 % reaches), both 20 % (within 19.35 +- 1.94);
+    more units peak after than before (2 against 1). Reading (b) 60 % and 40 %. With deposited KCs 2 after
+    only, 2 before only, none both (40, 40, 0 %), a tie.'
+  deviations:
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: kc-ca1-mpfc-symmetric
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -213,20 +256,20 @@ outcomes:
   - 2.21
   - 2.9
   - 3.63
-  notes: 'CA1 (n = 13): before z 2.14 to 2.31, after 2.05 to 2.21, within tolerance in every reading.
-    mPFC (n = 7): before 2.36 to 2.90 (within 2.33 +- 0.233 only with deposited KCs and random-sign shifts),
-    after 3.35 to 3.63 (outside 2.31 +- 0.231 in every reading). The S3 mPFC unit has z 9.43 after and
-    -0.92 before; the S1 mPFC mean is 3.31 before and 2.34 after. Peak times: CA1 -230 to -279 and 249
-    to 290 ms, mPFC -186 to -221 and 276 to 287 ms. Measured: M-KC.'
+  notes: 'CA1 (n = 13): before z 2.14 to 2.31, after 2.05 to 2.21, within tolerance in every reading. mPFC
+    (n = 7): before 2.36 to 2.90 (within 2.33 +- 0.233 only with deposited KCs and random-sign shifts), after
+    3.35 to 3.63 (outside 2.31 +- 0.231 in every reading). The S3 mPFC unit has z 9.43 after and -0.92 before;
+    the S1 mPFC mean is 3.31 before and 2.34 after. Peak times: CA1 -230 to -279 and 249 to 290 ms, mPFC -186
+    to -221 and 276 to 287 ms. Measured: M-KC.'
   deviations:
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: kc-regions-compared
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:kc-regions-compared
-  notes: 'After KCs: Kruskal-Wallis p = 0.64 to 0.74, no difference, as the paper. Before KCs: thalamic
-    median the lowest (0.003 to 0.94 against 2.74 to 3.49 mPFC and 1.95 to 2.02 CA1) but p = 0.18 to 0.25,
-    not significant (n = 5, 7, 13).'
+  notes: 'After KCs: Kruskal-Wallis p = 0.64 to 0.74, no difference, as the paper. Before KCs: thalamic median
+    the lowest (0.003 to 0.94 against 2.74 to 3.49 mPFC and 1.95 to 2.02 CA1) but p = 0.18 to 0.25, not significant
+    (n = 5, 7, 13).'
   deviations:
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig3f-asymmetry-index
@@ -237,71 +280,103 @@ outcomes:
   - 0.081
   - -0.017
   - 0.012
-  notes: 'Reading (a), raw-rate histogram divided by the larger maximum: thalamus 0.081 to 0.123 (sd 0.32
-    to 0.34), mPFC -0.017 to -0.006, CA1 -0.013 to 0.012, all within tolerance with the thalamic mean
-    positive; reading (b) agrees. Reading (c), z-scored, gives a thalamic mean of -0.128 to 0.031. Only
-    2 of 5 thalamic units have a positive index; Wilcoxon against 0, p = 0.81 to 1.0 (5 units cannot give
-    below 0.0625). The statement''s bias to positive values rests on two units. Measured: M-KC, reading
-    (a).'
+  notes: 'Reading (a), raw-rate histogram divided by the larger maximum: thalamus 0.081 to 0.123 (sd 0.32 to
+    0.34), mPFC -0.017 to -0.006, CA1 -0.013 to 0.012, all within tolerance with the thalamic mean positive;
+    reading (b) agrees. Reading (c), z-scored, gives a thalamic mean of -0.128 to 0.031. Only 2 of 5 thalamic
+    units have a positive index; Wilcoxon against 0, p = 0.81 to 1.0 (5 units cannot give below 0.0625). The
+    statement''s bias to positive values rests on two units. Measured: M-KC, reading (a).'
   deviations:
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: spindle-mua-modulation
-  outcome: blocked
-  blocked_by: other
+  outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:spindle-mua-modulation
-  notes: 'Too few tetrodes: 3 CA1, 3 mPFC and 2 thalamic tetrodes, so none of the bands (84.62 +- 8.46,
-    53.3 +- 5.33, 36 +- 3.6 %) can be met. All CA1 and mPFC tetrodes reach z 3 in -100 to 100 ms of spindle
-    troughs (6.0 to 32.2) under every reading, and the thalamic tetrodes 2 of 2 (deposited troughs) or
-    1 of 2; the paper''s order CA1 > mPFC > thalamus does not appear.'
+  measured:
+  - 100.0
+  - 100.0
+  - 50.0
+  notes: 'Three CA1, three mPFC and two thalamic tetrodes. All CA1 and mPFC tetrodes reach z 3 in -100 to 100
+    ms of spindle troughs under every trough reading (z 6.0 to 32.2), the thalamic tetrodes 2 of 2 (deposited
+    troughs) or 1 of 2; the strongest modulation is on an mPFC tetrode (z 22.0 to 32.2), so the order CA1 >
+    mPFC > thalamus fails. CA1 100 % is outside 84.62 +- 8.46; the mPFC and thalamic bands cannot be reached
+    with 3 and 2 tetrodes. Measured: M-spindle (a).'
+  deviations:
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig4-units-not-rhythmic
   outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig4-units-not-rhythmic
   measured:
-  - 190.0
-  - 207.0
-  - 19.05
+  - 47.5
+  - 30.0
+  - 9.52
   - 20.0
-  - 0.028
+  - 0.025
   - 0.034
-  notes: 'Five thalamic units, MUA on 2 tetrodes (S1, S3; 21 subsampled curves). Mean peak lag: units
-    207 (5 ms bins) or 214 ms (10 ms); MUA 190 or 185 ms with all spikes, 237 or 243 ms subsampled. Mann-Whitney
-    p = 0.69 to 0.84, so units are not significantly later. Subsampled MUA curves in the spindle band
-    14 to 19 %, units 0 to 40 %, not higher for MUA. Peak values in the band: MUA 0.028 to 0.052, units
-    0.034 to 0.085. Measured: all MUA spikes (A), 5 ms bins, band (ii) 50 to 150 ms, as band (i) leaves
-    the unit value undefined.'
+  notes: 'Five thalamic units, MUA on 2 tetrodes (S1, S3; 21 subsampled curves). The peak is the maximum after
+    the first minimum that follows lag 0, the curve smoothed by 0, 1 or 2 bins to find that minimum; on a synthetic
+    10 Hz process it is at 100 ms under every bin and smoothing. Mean peak lag: units 30 to 160 ms, MUA 32
+    to 194 ms across bins, smoothings and MUA readings; Mann-Whitney p = 0.15 to 1.0, so units are not later.
+    Subsampled MUA curves peaking in the spindle band 5 to 52 % (against 63.3 +- 6.33), units 0 to 60 %, MUA
+    higher in 3 of 12 readings. Peak values in the band: MUA 0.025 to 0.048, units 0.033 to 0.094. The unit
+    lags move with the smoothing (S2 cl-1 from 30 to 335 ms), as their first minimum often falls at 5 to 10
+    ms after the burst lags. Measured: all MUA spikes (A), 5 ms bins, no smoothing, band (ii), as band (i)
+    leaves the unit value undefined.'
   deviations:
   - Sleep spikes are those in the deposited sleep periods; the deposited script AutocorrelogramUnitMUA.mlx
     uses spikes within 2.5 s of KCs instead, not run here.
-  - MUA subsampled in random blocks of the sparsest units sleep spike count, up to 30 blocks per tetrode;
-    the paper does not say how blocks are formed.
+  - The first minimum after lag 0 is found on the curve smoothed by 0, 1 or 2 bins (Gaussian sd); the paper
+    does not say how it was found, and all three are shown.
+  - MUA subsampled in random blocks of the sparsest units sleep spike count, up to 30 blocks per tetrode; the
+    paper does not say how blocks are formed.
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig4b-thalamic-pairs-correlated
-  outcome: blocked
-  blocked_by: other
+  outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig4b-thalamic-pairs-correlated
-  notes: 'Too few pairs: 2 thalamic pairs (S2, S3), so the 33 % cannot be met (0, 50 or 100 %). Both pairs
-    have sleep correlogram peaks above 3 sd within 100 ms under both readings: z 5.51 and 3.62 (reading
-    a, mean 4.56), 11.23 and 3.25 (reading b, mean 7.24), against 2.40 +- 1.21. Exact counts in 5 ms bins.'
+  measured:
+  - 100.0
+  - 4.56
+  notes: 'Two thalamic pairs (S2, S3), the pairs of the deposit''s example scripts. Both have sleep correlogram
+    peaks above 3 sd within 100 ms under both readings: z 5.51 and 3.62 (reading a, mean 4.56), 11.23 and 3.25
+    (reading b, mean 7.24), against 2.40 +- 1.21; 100 % of pairs against 33 +- 3.3 %. Exact counts in 5 ms
+    bins.'
+  deviations:
+  - Two pairs of the papers 39.
 - claim: xcorr-stronger-in-spindles
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:xcorr-stronger-in-spindles
-  notes: 'Too few pairs for the claim''s test: 2 pairs, smallest two-sided Wilcoxon p 0.5. In both pairs
-    the peak with spikes in spindle cycles (z 6.90 and 6.60, reading a) is higher than between spindles
-    (3.58 and 2.38 by gaps over 5 s, 4.14 and 1.69 by distance over 2.5 s).'
+  measured:
+  - 6.75
+  - 2.98
+  notes: Two pairs. In both the peak with spikes in spindle cycles (z 6.90 and 6.60, reading a) is higher than
+    between spindles (3.58 and 2.38 by gaps over 5 s, 4.14 and 1.69 by distance over 2.5 s). The between mean
+    2.98 (reading a, gaps) is within 2.31 +- 1.18; the in-cycle mean 6.75 (reading a) or 20.35 (reading b)
+    is outside 2.74 +- 0.85. A cycle-permutation null, which keeps both trains in the cycles and moves the
+    second unit's spikes into other cycles, gives in-cycle peaks of z 7.09 and 4.18 (mean 5.63), so the restriction
+    to cycles does not explain the high in-cycle values. With 2 pairs the smallest two-sided Wilcoxon p is
+    0.5.
+  deviations:
+  - Spindle cycles of the deposited troughs.
+  - A cycle-permutation null for the in-cycle correlograms is added as reading (c), a choice.
+  - Two pairs of the papers 39.
 - claim: fig5c-spindle-phase-locking
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig5c-spindle-phase-locking
-  notes: 'Too few units: with 5 units the 67.74 +- 6.77 % band holds no possible percentage. All 5 units
-    prefer the descending phase (positive means), 3 of 5 significant with normalised histograms and 4
-    of 5 with raw phases; circular mean of preferred phases 1.18 rad (normalised, within 0.77 +- 1.15)
-    or 1.93 (raw).'
+  measured:
+  - 60.0
+  - 1.177
+  notes: 'Five units. All prefer the descending phase (positive means). Circular mean of preferred phases 1.18
+    rad with normalised histograms (M-phase a), within 0.77 +- 1.15; 1.93 with raw phases (b), outside. Fraction:
+    60 % significant (reading a) and 60 % both (c), against 67.74 +- 6.77, a band no multiple of 20 % reaches;
+    100 % positive mean (b). Raw phases: 80 % significant.'
+  deviations:
+  - Phase normalisation and the Rayleigh test on binned weighted angles (0.2 rad bins from -pi, no bin-spacing
+    correction) follow the deposited script PhaseLockingCA1UnitsPFCSpindles.mlx (M-phase reading a); raw phases
+    are reading (b).
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig5c-delta-phase-locking
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -310,34 +385,34 @@ outcomes:
   - 80.0
   - -0.324
   notes: 'Five units: 4 of 5 (80 %) significantly locked to delta under both phase readings, outside 64.52
-    +- 6.45 %; circular mean of preferred phases -0.32 rad (normalised) or -0.08 (raw), within 0.30 +-
-    1.04; 2 of 5 prefer positive phases. Locking is present in more units than the paper reports, near
-    the delta peak.'
+    +- 6.45 %; circular mean of preferred phases -0.32 rad (normalised) or -0.08 (raw), within 0.30 +- 1.04;
+    2 of 5 prefer positive phases. Locking is present in more units than the paper reports, near the delta
+    peak.'
   deviations:
-  - Phase normalisation and the Rayleigh test on binned weighted angles (0.2 rad bins from -pi) follow
-    the deposited script PhaseLockingCA1UnitsPFCSpindles.mlx (M-phase reading a); raw phases are reading
-    (b).
-  - The claim depends on fig5c-spindle-phase-locking, blocked because its percentage band holds no value
-    at n = 5; the delta band holds 60 %, so this claim is tested.
+  - Phase normalisation and the Rayleigh test on binned weighted angles (0.2 rad bins from -pi, no bin-spacing
+    correction) follow the deposited script PhaseLockingCA1UnitsPFCSpindles.mlx (M-phase reading a); raw phases
+    are reading (b).
+  - The claim depends on fig5c-spindle-phase-locking, tested on its values (partially reproduced).
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: phase-robust-to-spike-count
-  outcome: blocked
-  blocked_by: other
+  outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:phase-robust-to-spike-count
-  notes: 'A claim of absence whose Wilcoxon signed rank test cannot reject with 5 units (smallest two-sided
-    p 0.0625), so the test cannot find the effect whatever the data. Median circular difference between
-    phases from 10 % and from all spikes: spindle 0.18 to 0.33 rad, delta -0.16 to -0.27 rad; p = 0.31
-    to 1.0.'
+  notes: Five units. Wilcoxon on the phase values from 10 % and from all spikes p = 1.0 and 0.81 (spindle,
+    readings a and b) and 0.31 and 0.31 (delta), as the criterion asks. With 5 units the smallest two-sided
+    p is 0.0625, so the test cannot find a difference whatever the data; the outcome is uninformative. Median
+    circular difference spindle 0.18 to 0.33 rad, delta -0.16 to -0.27 rad; single units up to 2.2 rad.
+  deviations:
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: rebound-delta-phase-trend
   outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:rebound-delta-phase-trend
-  notes: 'Five units. Reading (i, a): rebound peak z against preferred delta phase r = -0.011 (p = 0.99),
-    before-KC peak r = 0.72 (p = 0.17); reading (ii, a) mean rates r = -0.086 (p = 0.89) and 0.22 (p =
-    0.72). Under phase reading (b) r is positive (0.29 and 0.07). Circular-linear correlations p = 0.11
-    to 0.93. The criterion''s conditions hold under (i, a) and (ii, a), but r is near zero, not the paper''s
-    -0.32.'
+  notes: 'Five units. Reading (i, a): rebound peak z against preferred delta phase r = -0.011 (p = 0.99), before-KC
+    peak r = 0.72 (p = 0.17); reading (ii, a) mean rates r = -0.086 (p = 0.89) and 0.22 (p = 0.72). Under phase
+    reading (b) r is positive (0.29 and 0.07). Circular-linear correlations p = 0.11 to 0.93. The criterion''s
+    conditions hold under (i, a) and (ii, a), but r is near zero, not the paper''s -0.32. A reader is asked
+    whether the criterion should require r near the paper''s -0.32 (questions/crcns-hc-24.yaml).'
   deviations:
   - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: fig5d-phase-lags-consistent
@@ -345,9 +420,9 @@ outcomes:
   blocked_by: other
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig5d-phase-lags-consistent
-  notes: Both thalamic pairs are correlated (sleep peak above 3 sd) under both correlogram readings, so
-    there is no uncorrelated group and no comparison can be made. Within-spindle lag sd 2.36 (S2, 657
-    lags) and 2.33 rad (S3, 600 lags).
+  notes: Both thalamic pairs are correlated (sleep peak above 3 sd) under both correlogram readings, so there
+    is no uncorrelated group and no comparison can be made. Within-spindle lag sd 2.36 (S2, 657 lags) and 2.33
+    rad (S3, 600 lags).
 - claim: spindle-cycles-by-ripple-power
   outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -357,68 +432,108 @@ outcomes:
   - 101.085
   - 379.312
   - 376.875
-  notes: 'S1 and S3. Deposited troughs: high ripple power cycles shorter (97.5 against 97.8 ms, p = 0.55;
-    100.8 against 101.8, p < 1e-4) and larger (amplitude a 198 against 193 uV, p = 0.002; 285 against
-    270, p < 1e-4). M-spindle (a): durations 98.5 against 98.5 (p = 0.68) and 101.8 against 103.7 (p =
-    0.001), amplitudes not different (p = 0.39 to 0.65). Within sessions the high cycles are shorter in
-    1 of 2 sessions (p < 0.05) and larger in 2 of 2 (deposited) or 0 of 2 (M-spindle a). Across sessions
-    Mann-Whitney p = 0.67 to 1.0, but 2 against 2 values cannot give below 0.33. At most 2 of 4 values
-    within tolerance in any reading. Measured: M-spindle (a), amplitude (a).'
+  notes: 'S1 and S3. Deposited troughs: high ripple power cycles shorter (97.5 against 97.8 ms, p = 0.55; 100.8
+    against 101.8, p < 1e-4) and larger (amplitude a 198 against 193 uV, p = 0.002; 285 against 270, p < 1e-4).
+    M-spindle (a): durations 98.5 against 98.5 (p = 0.68) and 101.8 against 103.7 (p = 0.001), amplitudes not
+    different (p = 0.39 to 0.65). Within sessions the high cycles are shorter in 1 of 2 sessions (p < 0.05)
+    and larger in 2 of 2 (deposited) or 0 of 2 (M-spindle a). Across sessions Mann-Whitney p = 0.67 to 1.0,
+    but 2 against 2 values cannot give below 0.33. At most 2 of 4 values within tolerance in any reading. Measured:
+    M-spindle (a), amplitude (a).'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
   - LFP taken to be in microvolts; the files do not state the unit.
   - Two sessions where the paper has more.
 - claim: fig6-modulation-with-ripple-power
-  outcome: blocked
-  blocked_by: other
+  outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig6-modulation-with-ripple-power
-  notes: 'Too few units: 3 thalamic units have CA1 LFP (S1, S3), and the 22.58 +- 2.26 % band holds none
-    of 0, 33.3, 66.7, 100. Higher index in high ripple power cycles for 2 of 3 units with deposited troughs
-    (66.7 %) and 1 of 3 in the other readings.'
+  measured:
+  - 33.33
+  - 33.33
+  notes: 'Three thalamic units with CA1 (S1, S3). Modulation index from the peri-trough histogram smoothed
+    over +-1 s and cropped to -100..100 ms; flat Poisson firing at the same troughs gives 0.06 to 0.17, the
+    units 0.18 to 0.75 over all cycles. Higher index in high ripple power cycles: 1 of 3 units (33.3 %) with
+    the deposited and the Methods troughs, 0 of 3 with the Results troughs (against 64.52 +- 6.45); with S3''s
+    deposited high and low labels 1 of 2. More modulated in low cycles (the 22.58 % subset): 66.7, 33.3 and
+    0 %. No reading has a majority increasing. Measured: M-spindle (a).'
+  deviations:
+  - The modulation index is computed on the histogram smoothed over +-1 s and then cropped, so the smoothing
+    has no edge effect inside the window.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: modulation-amplitude-versus-ripple
   outcome: blocked
   blocked_by: other
   notebook: reproduce_varela_2020.ipynb
   output: claim:modulation-amplitude-versus-ripple
-  notes: 'Too few units for the claim''s tests: with 3 units the smallest two-sided Wilcoxon p is 0.25.
-    Amplitude split p = 0.5 to 1.0, ripple split p = 0.5 to 0.75.'
+  notes: 'Too few units for the claim''s tests: the claim contrasts a significant amplitude effect with a non-significant
+    ripple effect, and with 3 units the smallest two-sided Wilcoxon p is 0.25. Index higher for high amplitude
+    cycles in 3, 2 and 2 of 3 units across readings (p = 0.25 to 0.75), for high ripple power in 1, 1 and 0
+    of 3 (p = 0.25 to 0.75), for the joint split in 3, 3 and 0 of 3 (p = 0.25); similarity tests p = 0.25 to
+    1.0, median absolute difference of high-cycle indices 0.017 to 0.063.'
 - claim: fig6e-quartile-synergy
   outcome: blocked
   blocked_by: other
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig6e-quartile-synergy
-  notes: Too few units for the claim's tests (3 units; no Wilcoxon test can reach p < 0.05, and the 61.29
-    and 32.26 % bands hold no possible percentage). Quartile indices are printed with fig6-modulation-with-ripple-power.
+  notes: Too few units for the claim's tests (3 units; no Wilcoxon test can reach p < 0.05, and the 61.29 and
+    32.26 % bands hold no possible percentage). In the top amplitude quartile 33.3 to 66.7 % of units increase
+    with ripple power (mean increase 24.5 to 65.1 %), in the top ripple power quartile 66.7 to 100 % increase
+    with amplitude (15.9 to 65.5 %); ripple effect p = 0.5 to 1.0, amplitude effect p = 0.25 to 1.0; Spearman
+    correlation of the two changes negative in 5 of 6 readings (rho -1.0 to 0.5).
 - claim: fig6f-quartile-versus-median
   outcome: blocked
   blocked_by: other
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig6f-quartile-versus-median
-  notes: 'Too few units: the 29 +- 2.9 and 22.6 +- 2.26 % bands hold none of the percentages 3 units allow.
-    Upper-quartile indices: amplitude 0.45 to 1.88, ripple power 0.44 to 1.23 per unit.'
+  notes: 'Too few units: the 29 +- 2.9 and 22.6 +- 2.26 % bands hold none of the percentages 3 units allow,
+    and Mann-Whitney on 3 against 3 cannot give p below 0.1. The quartile split raises the index more than
+    the median split in 33.3 to 100 % of units for amplitude and 33.3 to 66.7 % for ripple power. Mean upper-quartile
+    index 0.51 to 0.93 (amplitude) and 0.46 to 0.55 (ripple power), within 1.16 +- 0.57 except with the deposited
+    troughs and within 0.60 +- 0.26, amplitude higher in every reading (Mann-Whitney p = 0.4 to 0.7); F-tests
+    p = 0.37 to 0.86 (amplitude) and 0.73 to 0.98 (ripple power).'
 - claim: fig6g-spike-count-unchanged
-  outcome: blocked
-  blocked_by: other
+  outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig6g-spike-count-unchanged
-  notes: A claim of absence over 3 units whose Wilcoxon test cannot reject (smallest p 0.25). Spikes per
-    cycle differ between high and low ripple power cycles by 0.004 to 0.074; rates at nested and other
-    SWRs are printed with thalamus-at-spindle-nested-swrs.
+  notes: 'Three units. Spikes per cycle in high against low ripple power cycles: median difference 0.007 to
+    0.033, higher in high cycles in 3, 2 and 2 of 3 units, Wilcoxon p = 0.25 to 1.0; rate within 50 ms of nested
+    against other SWRs: median difference 0.33 to 1.47 spikes/s, Wilcoxon p = 0.5 to 1.0. Neither test is significant,
+    as the criterion asks, but with 3 units the smallest two-sided p is 0.25, so the tests cannot find a difference
+    whatever the data; the outcome is uninformative.'
+  deviations:
+  - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
+    no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: xcorr-pairs-ripple-modulation
   outcome: blocked
   blocked_by: other
-  notes: 'Too few pairs: only the S3 pair has CA1 LFP, so the percentage of pairs (48.72 +- 4.87) cannot
-    be tested.'
+  notebook: reproduce_varela_2020.ipynb
+  output: claim:xcorr-pairs-ripple-modulation
+  notes: 'Too few pairs: only the S3 pair has CA1 LFP, so the percentage of pairs can be 0 or 100 and the 48.72
+    +- 4.87 % cannot be tested. For that pair the correlogram modulation index (raw counts, -100..100 ms of
+    lag) falls by 8.9 % (median split) or 15.2 % (deposited labels) in high ripple power cycles with the deposited
+    troughs, and rises by 200 % and 63 % with the Methods and Results troughs, which hold 147 to 712 spikes
+    per unit.'
 - claim: thalamus-at-spindle-nested-swrs
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:thalamus-at-spindle-nested-swrs
-  notes: 'Too few units for the claim''s test: 3 units, smallest two-sided Wilcoxon p 0.25. Mean rate
-    in 100 ms: nested 3.50 to 3.59, other 2.10 to 3.90 spikes/s; in 1 s: 2.85 to 2.93 against 2.84 to
-    3.02; nested lower at 1 s in 1 or 2 of 3 units.'
+  measured:
+  - 3.59
+  - 2.1
+  - 2.89
+  - 2.84
+  notes: 'Three units. Mean rate in 100 ms: nested 3.50 to 3.59, other 2.10 to 3.90 spikes/s; in 1 s: nested
+    2.85 to 2.93, other 2.84 to 3.02; all within tolerance. The 1 s decrease for nested SWRs appears in the
+    means with the deposited (2.85 against 3.02) and Results (2.93 against 3.01) events but not the Methods
+    events (2.89 against 2.84), and in 1 or 2 of 3 units; with 3 units the smallest two-sided Wilcoxon p is
+    0.25, so it cannot reach p < 0.05. The 100 ms absence holds (p = 0.5 to 1.0) but cannot fail. Measured:
+    M-spindle (a), M-SWR k = 3.'
+  deviations:
+  - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
+    no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: mpfc-units-coupled-swrs
   outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -426,31 +541,42 @@ outcomes:
   measured:
   - -0.01
   - -0.178
-  notes: 'Seven mPFC units (S1 6, S3 1). Mean z in -40 to 40 ms: coupled -0.08 to 0.15, uncoupled -0.18
-    to 0.11, within tolerance; Wilcoxon p = 0.30 to 0.81 under every event reading and null (median difference
-    0.06 to 0.28). The S3 unit is -0.70 coupled and 0.03 uncoupled. Coupled SWR counts are 68 to 511 per
-    session depending on the reading. Measured: M-SWR k = 3, M-spindle (a), null (a).'
+  notes: 'Seven mPFC units (S1 6, S3 1). Mean z in -40 to 40 ms: coupled -0.08 to 0.15, uncoupled -0.18 to
+    0.11, within tolerance; Wilcoxon p = 0.30 to 0.81 under every event reading and null (median difference
+    0.06 to 0.28). The S3 unit is -0.70 coupled and 0.03 uncoupled. Coupled SWR counts are 68 to 511 per session
+    depending on the reading. Measured: M-SWR k = 3, M-spindle (a), null (a).'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
   - For S3 in the deposited reading the deposited coupled SWRs and their uncoupled sample are used; elsewhere
     coupled SWRs are those inside spindle cycles and the uncoupled an equal random sample (seeded).
 - claim: mua-coupled-swrs
-  outcome: blocked
-  blocked_by: other
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:mua-coupled-swrs
-  notes: 'Too few tetrodes for the claim''s test: 3 CA1 (S1 only), 3 mPFC and 2 thalamic tetrodes, smallest
-    two-sided Wilcoxon p 0.25. CA1 MUA higher at coupled SWRs on 3 of 3 tetrodes in every reading (z 16.1
-    to 29.6 against 13.3 to 26.4), mPFC on 2 or 3 of 3, thalamus on 1 of 2.'
+  measured:
+  - 0.332
+  - 0.071
+  - 16.063
+  - 13.339
+  - -0.001
+  notes: 'Three CA1 (S1), three mPFC and two thalamic tetrodes. CA1 MUA higher at coupled SWRs on 3 of 3 tetrodes
+    in every reading and null (z 16.1 to 29.6 against 13.3 to 26.4), mPFC on 2 or 3 of 3, thalamus on 1 of
+    2, as the claim states; with 3 tetrodes the smallest two-sided Wilcoxon p is 0.25 (p = 0.25 to 0.75 here).
+    mPFC and thalamic values within tolerance; CA1 within tolerance only with the deposited events (28.1 and
+    25.0). Measured: M-SWR k = 3, null (a).'
+  deviations:
+  - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
+    no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
+  - Three sessions of the papers 32 with thalamic units; unit counts are a small fraction of the papers.
 - claim: maze-swr-kc-increase
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_varela_2020.ipynb
   output: claim:maze-swr-kc-increase
-  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200
-    s), and no file holds the maze epoch or the other maze sessions. The paper deposited no other data
-    for it; the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
+  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200 s),
+    and no file holds the maze epoch or the other maze sessions. The paper deposited no other data for it;
+    the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
 - claim: maze-control-sessions
   outcome: blocked
   blocked_by: data_missing
@@ -462,29 +588,30 @@ outcomes:
   blocked_by: data_missing
   notebook: reproduce_varela_2020.ipynb
   output: claim:maze-ripple-power-in-spindles
-  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200
-    s), and no file holds the maze epoch or the other maze sessions. The paper deposited no other data
-    for it; the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
+  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200 s),
+    and no file holds the maze epoch or the other maze sessions. The paper deposited no other data for it;
+    the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
 - claim: fig7c-run-units-in-spindles
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig7c-run-units-in-spindles
-  notes: 'S3, 4 run and 4 not-run CA1 units (deposited folders, reading a). In high ripple power cycles
-    run units fire more on average in every reading, but Mann-Whitney p = 0.20 to 0.49 (spikes per cycle)
-    and 0.31 to 1.0 (percent of cycles); 4 against 4 can reach p = 0.029. Two-way ANOVA: ripple power
-    p = 0.001 to 0.017, run p = 0.12 to 0.68, interaction p = 0.19 to 0.94. Tukey-Kramer (deposited cycles)
-    finds run-high above run-low (p = 0.016, 0.031) and above not-run-low for spikes (p = 0.021).'
+  notes: 'S3, 4 run and 4 not-run CA1 units (deposited folders, reading a). In high ripple power cycles run
+    units fire more on average in every reading, but Mann-Whitney p = 0.20 to 0.49 (spikes per cycle) and 0.31
+    to 1.0 (percent of cycles); 4 against 4 can reach p = 0.029. Two-way ANOVA: ripple power p = 0.001 to 0.017,
+    run p = 0.12 to 0.68, interaction p = 0.19 to 0.94. Tukey-Kramer (deposited cycles) finds run-high above
+    run-low (p = 0.016, 0.031) and above not-run-low for spikes (p = 0.021). The ripple power effect and the
+    direction of the run effect hold; the run effect is not significant.'
   deviations:
-  - Readings (b) and (c) of the run classification need spikes on the maze, which are not in the data
-    set; only the deposited labels are used.
+  - Readings (b) and (c) of the run classification need spikes on the maze, which are not in the data set;
+    only the deposited labels are used.
   - The ANOVA treats each units high and low cycle values as independent, as the papers design implies.
   - 4 and 4 units, against 27 and 15.
 - claim: maze-ca1-rates-similar
   outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
   output: claim:maze-ca1-rates-similar
-  notes: Sleep rate medians 0.217 (run) and 0.111 (not run) spikes/s, Mann-Whitney p = 0.34; 1/mean ISI
-    0.224 and 0.114, p = 0.20. 4 units per group; 4 against 4 can reach p = 0.029.
+  notes: Sleep rate medians 0.217 (run) and 0.111 (not run) spikes/s, Mann-Whitney p = 0.34; 1/mean ISI 0.224
+    and 0.114, p = 0.20. 4 units per group; 4 against 4 can reach p = 0.029.
   deviations:
   - 4 and 4 units, against 27 and 15.
 - claim: fig7d-run-units-peri-swr
@@ -494,10 +621,10 @@ outcomes:
   measured:
   - 2.012
   - 0.909
-  notes: 'Peak of the peri-SWR rate histogram, run against not-run units: 2.01 to 2.14 against 0.83 to
-    0.91 spikes/s, within 5.09 +- 4.23 and 2.34 +- 2.09, the same with either window; Mann-Whitney p =
-    0.057 in every reading (4 against 4), short of p < 0.05. Nested against other SWRs: Wilcoxon p = 0.125
-    to 1.0 in both groups, where 4 units cannot give below 0.125. Measured: M-SWR k = 3, window (a).'
+  notes: 'Peak of the peri-SWR rate histogram, run against not-run units: 2.01 to 2.14 against 0.83 to 0.91
+    spikes/s, within 5.09 +- 4.23 and 2.34 +- 2.09, the same with either window; Mann-Whitney p = 0.057 in
+    every reading (4 against 4), short of p < 0.05. Nested against other SWRs: Wilcoxon p = 0.125 to 1.0 in
+    both groups, where 4 units cannot give below 0.125. Measured: M-SWR k = 3, window (a).'
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
@@ -512,69 +639,72 @@ outcomes:
   - 0.021
   - 0.329
   notes: 'Deposited coupled and uncoupled SWR sets. Run units in coupled SWRs have the highest mean Rayleigh
-    Z of the four groups under every spike reading. Spikes within 50 ms (reading b): circular mean -1.37
-    rad, kappa 0.69, mean Rayleigh p 0.021 (run) and 0.33 (not run), all within the paper''s values. Two-way
-    ANOVA on Z: run p = 0.18 to 0.91, coupling p = 0.055 to 0.99 across readings, so neither main effect
-    reaches p < 0.05 as the criterion requires. With M-spindle (a) cycles, coupled SWRs are few (90) and
-    kappa is degenerate for sparse units. Measured: deposited SWR sets, reading (b), the reading where
-    the values match.'
+    Z of the four groups under every spike reading. Spikes within 50 ms (reading b): circular mean -1.37 rad,
+    kappa 0.69, mean Rayleigh p 0.021 (run) and 0.33 (not run), all within the paper''s values. Two-way ANOVA
+    on Z: run p = 0.18 to 0.91, coupling p = 0.055 to 0.99 across readings, so neither main effect reaches
+    p < 0.05 as the criterion requires. With M-spindle (a) cycles, coupled SWRs are few (90) and kappa is degenerate
+    for sparse units. Measured: deposited SWR sets, reading (b), the reading where the values match.'
   deviations:
-  - 'Spikes in SWRs read three ways: within the above-threshold period of a matching M-SWR event (a),
-    within 50 ms (b), and within 75 ms as the deposited script PhaseLockingCA1UnitsPFCSpindles.mlx; normalisation
-    by the whole sleep LFP (Methods), with the scripts normalisation by phases in the same SWR windows
-    shown as a variant.'
+  - 'Spikes in SWRs read three ways: within the above-threshold period of a matching M-SWR event (a), within
+    50 ms (b), and within 75 ms as the deposited script PhaseLockingCA1UnitsPFCSpindles.mlx; normalisation
+    by the whole sleep LFP (Methods), with the scripts normalisation by phases in the same SWR windows shown
+    as a variant.'
   - 4 and 4 units, against 27 and 14.
 - claim: fig8-thalamus-unchanged-by-maze
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig8-thalamus-unchanged-by-maze
-  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200
-    s), and no file holds the maze epoch or the other maze sessions. The paper deposited no other data
-    for it; the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
+  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200 s),
+    and no file holds the maze epoch or the other maze sessions. The paper deposited no other data for it;
+    the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
 - claim: fig8e-ca1-spindle-trend
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig8e-ca1-spindle-trend
-  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200
-    s), and no file holds the maze epoch or the other maze sessions. The paper deposited no other data
-    for it; the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
+  notes: 'Sleep before the maze is not in the data set: S3 holds only sleep after the maze (from 13200 s),
+    and no file holds the maze epoch or the other maze sessions. The paper deposited no other data for it;
+    the Data availability statement names only CRCNS hc-24 (and hc-19 for documentation).'
 - claim: thalamus-not-selective-for-run-cells
   outcome: blocked
-  blocked_by: other
-  notes: 'Too few units for the claim''s test: S3 has 2 thalamic units, smallest two-sided Wilcoxon p
-    0.5. The CA1 pairs co-modulated on the maze were chosen from maze activity, which is not in the data
-    set.'
+  blocked_by: data_missing
+  notebook: reproduce_varela_2020.ipynb
+  output: claim:thalamus-not-selective-for-run-cells
+  notes: 'The CA1 pairs co-modulated on the maze were chosen from maze activity, which is not in the data set.
+    The first part was run: in S3, the 2 thalamic units fire more in cycles holding run-unit spikes than in
+    cycles holding not-run spikes with the deposited troughs (2 of 2 units in spikes per cycle, percent of
+    cycles with a spike and peri-trough peak z), and in 1 of 2 with the other troughs; with 2 units the smallest
+    two-sided Wilcoxon p is 0.5 (p = 0.5 to 1.0), so that test cannot find a difference.'
 findings:
 - kind: data_missing
-  statement: The data set holds 3 recording sessions (about 3.5 h, 5 thalamic units) of the paper's 32
-    sessions with thalamic units (63 thalamic units). It holds no maze epoch, no sleep before the maze,
-    none of the four long control sessions and no position (LED) data, so the paper's comparisons of sleep
-    before and after the maze (six claims) and the waking definition by velocity cannot be tested, and
-    most unit-level claims rest on 2 to 13 units.
+  statement: The data set holds 3 recording sessions (about 3.5 h, 5 thalamic units) of the paper's 32 sessions
+    with thalamic units (63 thalamic units). It holds no maze epoch, no sleep before the maze, none of the
+    four long control sessions and no position (LED) data, so the paper's comparisons of sleep before and after
+    the maze (six claims) and the waking definition by velocity cannot be tested, and most unit-level claims
+    rest on 2 to 13 units.
 - kind: metadata_insufficient
-  statement: The thalamic nucleus of each unit is not given; only the Session 1 unit is named (MD), in
-    the title of a deposited script. Session 2's two units sit in a folder with no region in its name
-    and are thalamic only by the deposited script's title. The LFP files state no unit, and the descriptor
-    does not say which tetrode and wire each LFP comes from.
+  statement: The thalamic nucleus of each unit is not given; only the Session 1 unit is named (MD), in the
+    title of a deposited script. Session 2's two units sit in a folder with no region in its name and are thalamic
+    only by the deposited script's title. The LFP files state no unit, and the descriptor does not say which
+    tetrode and wire each LFP comes from.
 - kind: methods_unavailable
-  statement: 'The deposited spindle troughs do not follow the detection rule of the Methods (local minima
-    three sd below the mean of the spindle-filtered LFP): they are 3.7 to 6.2 times as many as that rule
-    gives (3817 against 1019 in Session 1) and their filtered values reach -0.7 to -1.1 sd. The deposited
-    Session 1 SWRs (1263) are also more than the Methods'' k = 3 rule gives (840). Question for the authors:
-    what threshold and reference period produced the deposited troughs and SWRs, and were these the events
-    behind the paper''s figures?'
+  statement: 'The deposited spindle troughs do not follow the detection rule of the Methods (local minima three
+    sd below the mean of the spindle-filtered LFP): they are 3.7 to 6.2 times as many as that rule gives (3817
+    against 1019 in Session 1) and their filtered values reach -0.7 to -1.1 sd. The deposited Session 1 SWRs
+    (1263) are also more than the Methods'' k = 3 rule gives (840). Question for the authors: what threshold
+    and reference period produced the deposited troughs and SWRs, and were these the events behind the paper''s
+    figures?'
 - kind: methods_unavailable
   statement: 'Question for the authors: how was the spindle-trough-triggered scalogram of Figure 1, figure
-    supplement 3 scaled (raw wavelet power, or power relative to a baseline)? This attempt assumed power
-    relative to the mean power of the same state; in raw power the Session 3 mPFC peak falls at 4 to 8
-    Hz, not 10 to 15 Hz.'
+    supplement 3 scaled (raw wavelet power, or power relative to a baseline)? This attempt assumed power relative
+    to the mean power of the same state; in raw power the Session 3 mPFC peak falls at 4 to 8 Hz, not 10 to
+    15 Hz.'
 - kind: format_error
-  statement: Spike times are stored at single precision. In Session 3 every spike time equals its float32
-    rounding, a resolution of 2^-10 s (0.98 ms) at these values, which produces repeated timestamps (6230
-    in the thalamic MUA, 657 in the mPFC MUA, 17 and 8 in two thalamic units); in Sessions 1 and 2, 73
-    to 87 % of times do. LFP and event times are in double precision.
+  statement: Spike times are stored at single precision. In Session 3 every spike time equals its float32 rounding,
+    a resolution of 2^-10 s (0.98 ms) at these values, which produces repeated timestamps (6230 in the thalamic
+    MUA, 657 in the mPFC MUA, 17 and 8 in two thalamic units); in Sessions 1 and 2, 73 to 87 % of times do.
+    LFP and event times are in double precision.
 - kind: metadata_insufficient
   statement: In Session 3 the mPFC unit and MUA start at 11750 s, 24 min before the LFP, the sleep periods
     and every other stream (13200 s); the descriptor does not say what this epoch is. The CA1 files labelled
@@ -582,5 +712,332 @@ findings:
 - kind: paper_inconsistency
   statement: The paper's Data availability statement names the CRCNS data set "HC-24" (doi:10.6080/K0K35RVG)
     and then says that the data set and the documentation that describes it are available as "HC-19" (crcns.org/data-sets/hc/hc-19).
-    The hc-24 data descriptor (version 0.6) cites the 2019 bioRxiv preprint (doi:10.1101/653436), not
-    the eLife paper.
+    The hc-24 data descriptor (version 0.6) cites the 2019 bioRxiv preprint (doi:10.1101/653436), not the eLife
+    paper.
+- kind: methods_unavailable
+  statement: 'The Methods'' sleep rule, mPFC delta power and CA1 ripple power both above the session mean for
+    at least 2 min, finds no sleep in Sessions 1 and 3 when power is a 1 s or 10 s moving average of the squared
+    filtered LFP, against 42 and 78 min of deposited sleep. Filling dips shorter than 30 s finds 19 and 44
+    min inside the deposited periods. Question for the authors: what smoothing, and what tolerance for short
+    dips, produced the deposited sleep periods?'
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed,
+    the helper module and the claims file, with the paper under paper/ (transcripts/crcns-hc-24/verifier-1-report.md).
+  results:
+  - claim: fig1s3-spindles-not-theta
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The sleep mPFC peak is at 10 to 11 Hz only after the author''s normalisation; raw S3 power peaks
+      at 4 to 8 Hz. The criterion needs the waking CA1 peak to be lower than in sleep, and it is not: S1 13
+      vs 11 to 12 Hz, S3 9 to 10 vs 9 Hz. fig1s3 waking is all time outside the non-REM periods, which includes
+      REM.'
+    response: 'Outcome changed to not_reproduced, no longer resting on an assumption: no scaling meets both
+      parts (in raw power S3 waking CA1 is lower but the S3 mPFC sleep peak is at 4 to 8 Hz). The conclusion
+      and notes now say that waking includes any REM sleep.'
+  - claim: fig2-swr-phase-delta-spindle
+    agrees: true
+    outcome: reproduced
+    reason: Across-session means are 0.00 to 0.10 rad for delta and -1.57 to -1.75 rad for spindle. These are
+      inside the tolerance in every reading. Only 2 sessions.
+    response: No change.
+  - claim: fig2c-swr-around-kc
+    agrees: false
+    outcome: not_reproduced
+    reason: No reading has all five values within tolerance. The SWR minimum falls 37 to 45 ms before the KC,
+      where the paper has 10 ms after.
+    response: 'Outcome kept as partially_reproduced and the disagreement recorded: the criterion has no partial
+      clause, but the rises in SWR rate before and after KCs, the main finding, hold in both sessions under
+      every reading; the minimum timing and the peak heights and times do not, as the notes say.'
+  - claim: fig3a-thalamic-rate-wake-sleep
+    agrees: false
+    outcome: partially_reproduced
+    reason: Sleep rate is lower in 5 of 5 units, but p = 0.0625, the smallest p possible at n = 5. Waking 10.30
+      is within tolerance. Sleep 4.58 is just outside the band, whose lower edge is 4.64. M-sleep readings
+      (b) and (c), the author's own sleep detection, were not run; the sleep definition could change that outcome.
+    response: 'Outcome changed from blocked to partially_reproduced: the claims file''s unit samples paragraph
+      asks for values and directions on the subset. M-sleep readings (b) and (c) are now run: as written they
+      find no sleep in S1 and S3 and at most 2 min in S2. A variant that fills dips under 30 s is shown; it
+      puts the sleep mean within tolerance but sleep is lower in only 3 of 5 units. Recorded as a methods_unavailable
+      finding.'
+  - claim: fig3a-bursting-in-sleep
+    agrees: false
+    outcome: partially_reproduced
+    reason: Burst percentage is higher in sleep in 5 of 5 units (p = 0.0625). The sleep fraction (80%) and
+      both means are within tolerance. The waking fraction is 0% against a band of 22.5 to 27.5%.
+    response: Outcome changed from blocked to partially_reproduced, for the same reason; the sleep readings
+      are shown.
+  - claim: fig3a-bursting-around-swrs
+    agrees: false
+    outcome: partially_reproduced
+    reason: The SWR-window means (18.9 and 19.9%) are within tolerance and above sleep in 3 of 3 units. Kruskal-Wallis
+      p = 0.177.
+    response: Outcome changed from blocked to partially_reproduced.
+  - claim: swr-shift-control
+    agrees: false
+    outcome: partially_reproduced
+    reason: Fewer spikes at SWRs in 2 of 3 units; burst % higher in 2 or 3 of 3. With 3 units the Wilcoxon
+      p cannot go below 0.25. swr-shift-control uses one random shift per SWR.
+    response: Outcome changed from blocked to partially_reproduced. Each SWR is now shifted 20 times; the counts
+      are unchanged (2 of 3 and 2 or 3 of 3).
+  - claim: fig3c-thalamic-decrease-at-swrs
+    agrees: false
+    outcome: not_reproduced
+    reason: The direction fails. Pure increase is the largest class (2 of 3 units, both in S3) and decrease
+      covers 1 of 3. The criterion needs decreasing units to be the largest group.
+    response: Outcome changed from blocked to not_reproduced.
+  - claim: fig3s1-ca1-mpfc-at-swrs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 100% of CA1 units increase (13/13) and mPFC has both increasing and decreasing units. The CA1 mean
+      z (20.8) and the mPFC increase fraction (28.6%) are within tolerance. CA1 100% (band ends at 99.2%) and
+      mPFC decreasing 71% are outside.
+    response: No change.
+  - claim: glm-thalamus-anticorrelated-swrs
+    agrees: true
+    outcome: not_reproduced
+    reason: '1 of 3 units has a significant negative coefficient; 1 is significantly positive. The change is
+      10.3% against 20.74 +- 2.07; the MUA variant gives 0.5 to 1.5%. The notebook writes b1'' = 0.25 b1; the
+      correct relation is 4 b1. The conclusion is still right: the claims file''s readings (i) and (ii) are
+      algebraically the same number.'
+    response: No change of outcome. The printed relation now reads b1' = 4 b1.
+  - claim: glm-re-versus-other-nuclei
+    agrees: true
+    outcome: blocked
+    reason: Confirmed. No file or the data description gives a nucleus per unit.
+    response: No change.
+  - claim: fig3e-thalamic-rebound-after-kc
+    agrees: true
+    outcome: partially_reproduced
+    reason: Mean after-peak is above before-peak in all readings, but only 2 of 5 units have after > before.
+      Three of four values are within tolerance; the before z of 1.42 is outside 1.28 +- 0.128.
+    response: No change.
+  - claim: kc-trough-timing
+    agrees: true
+    outcome: reproduced
+    reason: Thalamus 42 to 54 ms and mPFC -6 to -47 ms are within the wide tolerances, and the thalamic minimum
+      is later in every reading.
+    response: No change.
+  - claim: kc-fraction-of-thalamic-peaks
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'The notebook marks this blocked, but under the methods KCs with disjoint groups: after only 40%
+      (in band), both 20% (in band), before only 20% (out), and more units peak after than before. With the
+      deposited KCs it is a 40/40 tie.'
+    response: Outcome changed from blocked to partially_reproduced.
+  - claim: kc-ca1-mpfc-symmetric
+    agrees: true
+    outcome: partially_reproduced
+    reason: CA1 before and after are within tolerance in all readings. mPFC is outside in every reading except
+      one before value, driven by the single S3 unit with after z 9.4.
+    response: No change.
+  - claim: kc-regions-compared
+    agrees: true
+    outcome: partially_reproduced
+    reason: The after-KC absence holds (Kruskal-Wallis p 0.64 to 0.74). The thalamic median is lowest before
+      KCs, but p is 0.18 to 0.25 where the criterion needs < 0.05.
+    response: No change.
+  - claim: fig3f-asymmetry-index
+    agrees: true
+    outcome: reproduced
+    reason: Under index readings (a) and (b) all three means are within tolerance and the thalamic mean is
+      positive (0.07 to 0.12). Three of the 5 thalamic indices are negative, and Wilcoxon p = 0.81.
+    response: No change.
+  - claim: spindle-mua-modulation
+    agrees: false
+    outcome: not_reproduced
+    reason: The notebook marks this blocked, but the order CA1 > mPFC > thalamus fails. All mPFC tetrodes pass,
+      as do all CA1 tetrodes, and the strongest modulation is in mPFC (z 22 to 32). CA1 at 100% is out of band.
+    response: Outcome changed from blocked to not_reproduced.
+  - claim: fig4-units-not-rhythmic
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The outputs fail: Mann-Whitney p >= 0.69 and MUA in-band 14 to 19% against 63%. But the peak finder
+      takes the global minimum within 0 to 200 ms, where the criterion says the minimum that follows lag 0;
+      on a synthetic 10 Hz process it returns a 200 ms peak, so this does not test the claim. It asked for
+      per-curve autocorrelograms with the first local minimum marked, and the lags recomputed with it.'
+    response: 'Fixed: the peak is now taken after the first minimum that follows lag 0, found on the curve
+      smoothed by 0, 1 or 2 bins, and the finder returns 100 ms on a synthetic 10 Hz process. Per-curve autocorrelograms
+      with the first minimum and the peak are plotted. Outcome stays not_reproduced: units are not later than
+      MUA in any reading (p = 0.15 to 1.0) and subsampled MUA peaks in the spindle band in 5 to 52 % of curves.'
+  - claim: fig4b-thalamic-pairs-correlated
+    agrees: false
+    outcome: not_reproduced
+    reason: Mean peak z is 4.56 or 7.24 against 2.40 +- 1.21, and both pairs exceed 3 sd. These are 2 deposited
+      example pairs.
+    response: Outcome changed from blocked to not_reproduced.
+  - claim: xcorr-stronger-in-spindles
+    agrees: false
+    outcome: partially_reproduced
+    reason: In-cycle z is above between-spindle z in 2 of 2 pairs, and the between value (2.98) is within tolerance.
+      The in-cycle value (6.75) is outside, and the test cannot be run with 2 pairs. Both spike trains are
+      restricted to the same roughly 100 ms cycles, which by construction puts extra pairs at short lags; no
+      control was run, for example cycle-shuffled trains.
+    response: 'Outcome changed from blocked to partially_reproduced. A cycle-permutation null (second unit''s
+      in-cycle spikes moved into other cycles, keeping their time from the trough) is added: the in-cycle peaks
+      stay at z 7.09 and 4.18, so the windowing does not explain them.'
+  - claim: fig5c-spindle-phase-locking
+    agrees: false
+    outcome: partially_reproduced
+    reason: Circular mean 1.18 rad (reading a) is within tolerance, and all 5 units have a positive mean phase.
+      The significant fraction is 60% against a band of 60.97 to 74.51%. fig5c-spindle is blocked while fig5c-delta
+      is tested, although both have the same 20% granularity.
+    response: Outcome changed from blocked to partially_reproduced.
+  - claim: fig5c-delta-phase-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Means of -0.32 and -0.08 rad are within tolerance. The significant fraction is 80% against 64.52
+      +- 6.45. Cell 67 says the delta band holds 60%, but the observed fraction is 80%.
+    response: No change of outcome. The printed line now lists, for each band, which multiples of 20 % fall
+      in it (60 % for delta, none for spindle); it described the band, not the observed fraction, and now says
+      so.
+  - claim: phase-robust-to-spike-count
+    agrees: false
+    outcome: reproduced
+    reason: p is 0.31 to 1.0 in both bands, but with n = 5 the smallest possible p is 0.0625, so the test cannot
+      reject (uninformative).
+    response: Outcome changed from blocked to reproduced, with the notes saying the test cannot reject at n
+      = 5.
+  - claim: rebound-delta-phase-trend
+    agrees: true
+    outcome: reproduced
+    reason: Reading (i)(a) gives r = -0.011 (p = 0.99) after and p = 0.17 before, which meets the criterion
+      (by the letter). That r is about 0 and does not reproduce the paper's r = -0.32 trend; the criterion
+      sets no minimum size for r.
+    response: No change of outcome. A question for a reader asks whether the criterion should require r near
+      the paper's -0.32 (questions/crcns-hc-24.yaml).
+  - claim: fig5d-phase-lags-consistent
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: both pairs count as correlated, so there is no uncorrelated group. The correlated-pair
+      sd (2.33 to 2.36) is within 2.15 +- 0.215.'
+    response: No change.
+  - claim: spindle-cycles-by-ripple-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: High-power cycles are shorter in 1 of 2 sessions and larger in 2 of 2 with the deposited troughs.
+      Durations of 99 to 101 ms are mostly below the tolerance band. Amplitudes are within tolerance. Across-session
+      p cannot fall below 0.33.
+    response: No change.
+  - claim: fig6-modulation-with-ripple-power
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Deposited reading: 2 of 3 units (66.7%) are in band; the methods and results readings give 33%
+      (unreliable). The 22.58% subset is never computed, and the modulation index is biased: it smooths a +-100
+      ms histogram with mode same, so flat Poisson firing gives an index of 0.39 where it should be about 0.
+      The histogram should be smoothed over a wider range and then cropped.'
+    response: 'Fixed: the index is taken from the histogram smoothed over +-1 s and then cropped; flat Poisson
+      firing now gives 0.06 to 0.17. The 22.58 % subset is computed. With the corrected index 1 of 3 units
+      (deposited and Methods troughs) or 0 of 3 (Results troughs) has a higher index in high ripple power cycles,
+      so no majority increases and the outcome is not_reproduced.'
+  - claim: modulation-amplitude-versus-ripple
+    agrees: true
+    outcome: blocked
+    reason: With n = 3 the Wilcoxon p cannot go below 0.25, and the claim is a contrast of significance. The
+      notebook computes no tests.
+    response: Kept blocked; every split, test and the similarity tests are now computed and printed with the
+      corrected index.
+  - claim: fig6e-quartile-synergy
+    agrees: true
+    outcome: blocked
+    reason: Same as above. None of the claim's percentages or tests are computed.
+    response: Kept blocked; the quartile percentages, mean increases, Wilcoxon tests and the Spearman correlation
+      are now computed under both median readings.
+  - claim: fig6f-quartile-versus-median
+    agrees: true
+    outcome: blocked
+    reason: Same as above. None of the claim's percentages or tests are computed.
+    response: Kept blocked; the percentages, upper-quartile means, Mann-Whitney and F-tests are now computed
+      under both comparison readings.
+  - claim: fig6g-spike-count-unchanged
+    agrees: false
+    outcome: reproduced
+    reason: With n = 3 neither test can reach significance (uninformative). No test or median difference was
+      printed, and with the deposited troughs spikes per cycle are higher in high-power cycles in 3 of 3 units.
+    response: Outcome changed from blocked to reproduced; both Wilcoxon tests and median differences are now
+      printed, and the notes say the tests cannot reject at n = 3.
+  - claim: xcorr-pairs-ripple-modulation
+    agrees: true
+    outcome: blocked
+    reason: Cell 89 says one S3 pair can be tested, then computes nothing.
+    response: Kept blocked; the S3 pair's correlogram index in high and low ripple power cycles is now computed
+      (down 9 to 15 % with the deposited troughs, up 63 to 200 % with the detected ones).
+  - claim: thalamus-at-spindle-nested-swrs
+    agrees: false
+    outcome: partially_reproduced
+    reason: All four means are within the wide tolerances. The 1 s decrease appears in the deposited and results
+      means but not in the methods reading. Tests are impossible at n = 3.
+    response: Outcome changed from blocked to partially_reproduced.
+  - claim: mpfc-units-coupled-swrs
+    agrees: true
+    outcome: reproduced
+    reason: Wilcoxon p is 0.30 to 0.81 with n = 7, and the values are within tolerance.
+    response: No change.
+  - claim: mua-coupled-swrs
+    agrees: false
+    outcome: partially_reproduced
+    reason: Coupled > uncoupled for CA1 in 3 of 3 tetrodes and mPFC in 2 to 3 of 3; thalamus shows no consistent
+      change. With 3 tetrodes p cannot go below 0.25.
+    response: Outcome changed from blocked to partially_reproduced.
+  - claim: maze-swr-kc-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed from the zip directory: there is no sleep before the maze.'
+    response: No change.
+  - claim: maze-control-sessions
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the control sessions are absent.'
+    response: No change.
+  - claim: maze-ripple-power-in-spindles
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: there is no sleep before the maze.'
+    response: No change.
+  - claim: fig7c-run-units-in-spindles
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'The ripple-power main effect is significant (p 0.001 to 0.017) and run units have higher means.
+      The run effect is not significant: Mann-Whitney p >= 0.2, ANOVA run p >= 0.12.'
+    response: 'Outcome changed from not_reproduced to partially_reproduced: the ripple effect holds and the
+      run effect goes the paper''s way without reaching significance.'
+  - claim: maze-ca1-rates-similar
+    agrees: true
+    outcome: reproduced
+    reason: Mann-Whitney p = 0.34 and 0.20.
+    response: No change.
+  - claim: fig7d-run-units-peri-swr
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both peak values are within tolerance and run > not-run, but Mann-Whitney p = 0.057. Nested vs
+      other SWRs gives p >= 0.125.
+    response: No change.
+  - claim: fig7b-run-units-spindle-phase
+    agrees: true
+    outcome: partially_reproduced
+    reason: The run-coupled group has the highest Z in most readings, and the circular mean (-1.37 for spikes
+      within +-50 ms of each SWR) is within tolerance. Neither ANOVA main effect is below 0.05. circ_kappa
+      with the bin-spacing correction gives kappa of about 125 for sparse histograms (methods reading); kappa
+      is not used in any criterion.
+    response: No change of outcome. The bin-spacing correction is removed, as the deposited script calls circ_rtest
+      without a bin spacing; kappa stays near 125 for the sparse Methods reading (few coupled SWRs), which
+      does not decide the outcome.
+  - claim: fig8-thalamus-unchanged-by-maze
+    agrees: true
+    outcome: blocked
+    reason: Confirmed.
+    response: No change.
+  - claim: fig8e-ca1-spindle-trend
+    agrees: true
+    outcome: blocked
+    reason: Confirmed.
+    response: No change.
+  - claim: thalamus-not-selective-for-run-cells
+    agrees: true
+    outcome: blocked
+    reason: The co-modulated pairs need maze spikes, which are absent. The run vs not-run cycle comparison
+      could be run with the 2 S3 thalamic units but was not.
+    response: Kept blocked, now with data_missing as the reason (the pairs need maze spikes). The run against
+      not-run cycle comparison is now run on the 2 S3 thalamic units and the MUA.

@@ -48,9 +48,19 @@ Where the parameters come from (the claims file's labels, M-..., cite the paper)
   script PhaseLockingCA1UnitsPFCSpindles.mlx (Session 3) settles how the normalisation enters
   the Rayleigh test, the claims file's reading (a): the corrected histogram, rescaled to the spike
   count, is tested with circ_rtest on the bin angles as weights, with bins of 0.2 rad from -pi
-  (31 bins; the script uses the left edges as the bin angles). `rayleigh_binned` follows it,
-  including the circular statistics toolbox's bin-spacing correction. Reading (b) tests the raw
-  spike phases. The von Mises kappa is estimated from the mean resultant length (circ_kappa).
+  (31 bins; the script uses the left edges as the bin angles). `rayleigh_binned` follows it; the
+  script passes no bin spacing to circ_rtest, so no bin-spacing correction is applied. Reading
+  (b) tests the raw spike phases. The von Mises kappa is estimated from the mean resultant length
+  (circ_kappa). `script_text` returns the code of a deposited live script, so the notebook can
+  quote the lines it relies on.
+- Sleep (M-sleep readings b and c; Methods, paragraph 2, and Figure 1C legend): mPFC delta power
+  and CA1 ripple power, each the moving average of the squared filtered LFP over 1 s (b) or 10 s
+  (c), both above their session mean for at least 2 min. The windows are the claims file's
+  choices. Session 2 has no CA1 LFP, so there the rule uses delta power alone (a choice).
+- Modulation index (fig6 family; Results, Spindle activation, paragraph 2): (max - min) / mean of
+  the raw-rate peri-trough histogram (M-PETH bins and smoothing) in -100 to 100 ms. The
+  histogram is built and smoothed over +-1 s (the M-PETH window) and then cropped, so that the
+  smoothing has no edge effect inside the window.
 - Bursts (M-burst): spikes with inter-spike intervals under 5 ms whose first spike follows at
   least 70 ms of silence; the leading spike counts.
 - Statistics (M-stats): two-sided tests at alpha 0.05.
@@ -59,6 +69,7 @@ Where the parameters come from (the claims file's labels, M-..., cite the paper)
 from __future__ import annotations
 
 import hashlib
+import html
 import io
 import re
 import zipfile
@@ -102,6 +113,15 @@ def members():
 def _mat(name):
     d = sio.loadmat(io.BytesIO(_zip().read(name)))
     return {k: v for k, v in d.items() if not k.startswith("__")}
+
+
+def script_text(name):
+    """Code and text of a deposited MATLAB live script (.mlx, itself a zip holding
+    matlab/document.xml), one line per list item."""
+    xml = zipfile.ZipFile(io.BytesIO(_zip().read(name))).read("matlab/document.xml").decode()
+    xml = re.sub(r"<!\[CDATA\[(.*?)\]\]>", lambda m: html.escape(m.group(1)), xml, flags=re.S)
+    text = html.unescape(re.sub(r"<[^>]+>", "\n", xml))
+    return [ln.rstrip() for ln in text.splitlines() if ln.strip()]
 
 
 def verify_md5(chunk=8 * 2**20):
@@ -210,6 +230,24 @@ def complement(periods, start, end):
     if cur < end:
         out.append((cur, end))
     return np.array(out)
+
+
+def detect_sleep(t, powers, window, min_dur=120.0, bridge=0.0, fs=FS):
+    """Periods where every trace in `powers` (filtered LFPs) has moving-average power above its
+    session mean for at least `min_dur` s (M-sleep readings b and c). `bridge` > 0 first fills
+    dips shorter than `bridge` s (a variant, not the rule as written)."""
+    n = max(int(round(window * fs)), 1)
+    above = np.ones(len(t), bool)
+    for x in powers:
+        p = np.convolve(x ** 2, np.ones(n) / n, mode="same")
+        above &= p > p.mean()
+    d = np.diff(np.r_[0, above.astype(int), 0])
+    st, en = np.where(d == 1)[0], np.where(d == -1)[0]
+    if bridge > 0 and len(st) > 1:
+        keep = np.r_[True, (st[1:] - en[:-1]) / fs >= bridge]
+        st, en = st[keep], np.r_[en[:-1][keep[1:]], en[-1]]
+    keep = (en - st) / fs >= min_dur
+    return np.c_[t[st[keep]], t[en[keep] - 1]]
 
 
 # ----------------------------------------------------------------------------- events
@@ -358,6 +396,16 @@ def window(centres, lo, hi):
     return (centres >= lo - 1e-9) & (centres <= hi + 1e-9)
 
 
+def modulation_index(counts_fn, half=0.1, win=PETH_WIN, bin=PETH_BIN, sd=PETH_SD):
+    """(max - min) / mean of a histogram in -half..half, the histogram smoothed (Gaussian, M-PETH)
+    over +-win and then cropped. `counts_fn(edges)` returns the counts in the given bin edges."""
+    nb = int(round(win / bin))
+    edges = (np.arange(-nb, nb + 2) - 0.5) * bin
+    c = (edges[:-1] + edges[1:]) / 2
+    h = np.convolve(counts_fn(edges), _gauss_kernel(sd / bin), mode="same")[window(c, -half, half)]
+    return float((h.max() - h.min()) / h.mean()) if h.mean() > 0 else np.nan
+
+
 def autocorr(spikes, bin, maxlag):
     """Autocorrelogram (spike counts at each lag, lag 0 removed), lags in bins to maxlag."""
     nb = int(round(maxlag / bin))
@@ -435,12 +483,14 @@ def rayleigh(alpha, w=None, d=0.0):
 
 
 def rayleigh_binned(hist):
-    return rayleigh(PHASE_ANGLES, hist, PHASE_BIN)
+    """As the deposited script: circ_rtest(bins(1:end-1), hist), with no bin spacing given, so the
+    toolbox applies no bin-spacing correction (d = 0)."""
+    return rayleigh(PHASE_ANGLES, hist)
 
 
 def circ_kappa(r, n=None):
-    """Concentration from mean resultant length, as circ_kappa (Fisher 1993). The bin-spacing
-    correction can push r of a sparse histogram above 1; r is capped just below 1."""
+    """Concentration from mean resultant length, as circ_kappa (Fisher 1993); r is capped just
+    below 1."""
     r = min(float(r), 0.999)
     if r < 0.53:
         k = 2 * r + r ** 3 + 5 * r ** 5 / 6
@@ -459,7 +509,7 @@ def phase_summary(spike_ph, ref_ph):
     h = normalized_hist(spike_ph, ref_ph)
     pa, za = rayleigh_binned(h)
     ma = circ_mean(PHASE_ANGLES + PHASE_BIN / 2, h)
-    ka = circ_kappa(circ_r(PHASE_ANGLES + PHASE_BIN / 2, h, PHASE_BIN))
+    ka = circ_kappa(circ_r(PHASE_ANGLES + PHASE_BIN / 2, h))
     pb, zb = rayleigh(spike_ph)
     mb = circ_mean(spike_ph)
     return {"n": len(spike_ph), "mean_a": ma, "kappa_a": ka, "p_a": pa, "z_a": za,
