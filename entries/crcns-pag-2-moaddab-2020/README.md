@@ -20,9 +20,9 @@ script. The body weights and pre-surgery sessions of Figure 1 are not in it.
 | Temporal pattern of cue-inhibited firing (Fig. 4D, E) | Partially reproduced (bregma part not testable) |
 | Greater danger decrease in EAA cue-inhibited neurons (Fig. 4F) | Reproduced |
 | Danger and uncertainty discrimination in EAA cue-inhibited neurons (Fig. 4F) | Reproduced |
-| Reduced threat probability signaling in EAA cue-excited neurons (Fig. 5A to C) | Partially reproduced, on an assumption |
+| Reduced threat probability signaling in EAA cue-excited neurons (Fig. 5A to C) | Partially reproduced |
 | Threat tuning curve (Fig. 5D) | Reproduced, on an assumption |
-| Same pattern with the peak assignment (Fig. S4) | Reproduced, on an assumption |
+| Same pattern with the peak assignment (Fig. S4) | Reproduced |
 | Fear output signaling in cue-inhibited neurons (Fig. 5E to G) | Reproduced |
 | Firing and threat signaling decoupled in EAA (Fig. 6) | Partially reproduced |
 | Firing and fear output unrelated in cue-excited neurons (Fig. S5) | Reproduced |

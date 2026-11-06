@@ -48,6 +48,7 @@ import fsspec
 import numpy as np
 import requests
 import scipy.io as sio
+import scipy.linalg
 from scipy import stats
 
 DATASET = "crcns:pag-2/unversioned"
@@ -156,13 +157,23 @@ def load_unit(zf, name):
     pcs = np.searchsorted(pokes, on - SHIFT_S + CUE_S) - np.searchsorted(pokes, on - SHIFT_S)
     return dict(name=name, rat=name[:4], session=name[:10], group=group_of(name[:4]),
                 onset=on, type=np.array([r[1] for r in rows]), shock=np.array([r[2] for r in rows]),
-                counts=counts, poke_base=pb, poke_cue=pc, n_spikes=len(spk),
+                counts=counts, poke_base=pb, poke_cue=pc, n_spikes=len(spk), spikes=spk,
                 counts_shift=counts_shift, poke_base_shift=pbs, poke_cue_shift=pcs,
                 n_events={k: len(v) for k, v in ev.items()}, events=ev)
 
 
 def load_all(zf, names):
     return [load_unit(zf, n) for n in names]
+
+
+def time_from_onsets(t, onsets):
+    """For each time in t, the time since the latest cue onset before it and the time to the next
+    one (inf where there is none)."""
+    on = np.sort(onsets)
+    k = np.searchsorted(on, t, side="right") - 1
+    after = np.where(k >= 0, t - on[np.maximum(k, 0)], np.inf)
+    before = np.where(k + 1 < len(on), on[np.minimum(k + 1, len(on) - 1)] - t, np.inf)
+    return after, before
 
 
 # ---------- behaviour ----------
@@ -273,15 +284,27 @@ def trial_firing(u, reading, cube_z=None):
     return (r - base[:, None] - mu) / sd
 
 
-def regress_betas(y, sr, prob):
-    """OLS with a constant (Matlab regress); y trials x k. Returns (fear output, threat) betas."""
+def regress_betas(y, sr, prob, basic=False):
+    """OLS with a constant (Matlab regress); y trials x k. Returns (fear output, threat) betas.
+
+    A design not of full rank gets the minimum-norm solution, or with `basic` the solution Matlab
+    regress returns: QR with column pivoting, the coefficients of the dependent columns set to 0.
+    """
     X = np.column_stack([np.ones_like(sr), sr, prob])
     ok = ~np.isnan(sr)
-    b, *_ = np.linalg.lstsq(X[ok], y[ok], rcond=None)
+    X, y = X[ok], y[ok]
+    if basic:
+        Q, R, perm = scipy.linalg.qr(X, mode="economic", pivoting=True)
+        tol = max(X.shape) * np.finfo(float).eps * abs(R[0, 0])
+        r = int(np.sum(np.abs(np.diag(R)) > tol))
+        b = np.zeros((X.shape[1],) + y.shape[1:])
+        b[perm[:r]] = scipy.linalg.solve_triangular(R[:r, :r], Q[:, :r].T @ y)
+    else:
+        b, *_ = np.linalg.lstsq(X, y, rcond=None)
     return b[1], b[2]
 
 
-def interval_betas(u, reading, empty, unc_value=0.375, cube_z=None):
+def interval_betas(u, reading, empty, unc_value=0.375, cube_z=None, basic=False):
     """Fear output and threat probability betas for each 1 s interval of the cue (10 each).
 
     The response is the trial-wise normalized firing in each 1 s interval (Results, "Diminished
@@ -296,7 +319,7 @@ def interval_betas(u, reading, empty, unc_value=0.375, cube_z=None):
     tf = trial_firing(u, reading, cube_z)
     y = tf[:, WIN["cue"]].reshape(len(tf), 10, 4).mean(axis=2)
     prob = np.array([unc_value if t == "uncertainty" else PROB[t] for t in u["type"]])
-    return regress_betas(y, suppression_ratio(u, empty), prob)
+    return regress_betas(y, suppression_ratio(u, empty), prob, basic)
 
 
 # ---------- statistics ----------
