@@ -13,7 +13,7 @@ behaviour scoring of the paper are not in it.
 | Arena gamma unrelated to movement (Fig. 3B) | Reproduced |
 | Home-cage gamma increases with movement (Fig. 3B) | Not reproduced |
 | Suppression holds for movement-matched epochs (Fig. 3B) | Not reproduced |
-| Home cage above both arena sessions, second session 5.6% above the first (Fig. 3C) | Not reproduced |
+| Home cage above both arena sessions, second session 5.6% above the first (Fig. 3C) | Partially reproduced (session order not in the data set) |
 | Arena gamma rises with time in the arena, r = 0.72 (Fig. 3D) | Partially reproduced |
 | Delta, beta higher and theta lower in the home cage (Fig. S2) | Reproduced |
 | Theta and gamma power unimodal within each condition (Fig. S3) | Reproduced |

@@ -187,8 +187,11 @@ def epoch_table(recordings: list[dict], epoch_s: int = 2, artifact: str = "asis"
 
 
 def boxcar(x: np.ndarray, length: int = 3) -> np.ndarray:
-    """Running mean of the given length, same size as x (SI, "Analysis of Excursions")."""
-    return np.convolve(x, np.ones(length) / length, mode="same")
+    """Running mean of the given length, same size as x (SI, "Analysis of Excursions").
+
+    At the ends the mean is over the values that exist (two of three), not padded with zeros."""
+    kernel = np.ones(length)
+    return np.convolve(x, kernel, mode="same") / np.convolve(np.ones(len(x)), kernel, mode="same")
 
 
 def histogram_intersection(home: np.ndarray, arena: np.ndarray, bins: int = 20) -> float:
@@ -196,7 +199,8 @@ def histogram_intersection(home: np.ndarray, arena: np.ndarray, bins: int = 20) 
 
     The crossing searched is between the arena median and the home-cage median: the centre of the
     first bin, going up from the arena median, where the home-cage count reaches the arena count
-    (bins: the claims file's standard choice of 20 equal bins)."""
+    (bins: the claims file's standard choice of 20 equal bins). With few epochs a noisy bin can cross
+    early, below the crossing of the underlying densities; kde_intersection is run alongside."""
     edges = np.linspace(min(home.min(), arena.min()), max(home.max(), arena.max()), bins + 1)
     h, _ = np.histogram(home, edges, density=True)
     a, _ = np.histogram(arena, edges, density=True)
