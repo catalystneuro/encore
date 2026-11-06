@@ -32,7 +32,9 @@ excerpt. Of the 56 claims, 47 are tested and 9 blocked.
 Of the 56 claims, 47 are tested (36 reproduced, 5 partially reproduced, 6 not reproduced) and 9
 blocked. Six outcomes rest on an assumption about a method the paper leaves open
 (two-mice-intrinsic-distributions, hadamard-stimulation-rates, voltage-to-spike-sigmoid,
-npy-ipsp-duration, lasso-off-target-correction, traveling-waves).
+npy-ipsp-duration, lasso-off-target-correction, traveling-waves). For voltage-to-spike-sigmoid a
+change to blocked (methods underspecified) is proposed, since the readings its criterion names give
+different outcomes; a third verification round reviews it.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -43,9 +45,9 @@ differences from the paper's method, is
 [`attempts/001960-qi-2026-01.yaml`](../../attempts/001960-qi-2026-01.yaml).
 
 - `qi2026_excitability_connectivity.ipynb`: the data check, Figures 2 and 3, Figure 5D to G and the
-  Figure 6 excitability and connectivity claims, the lasso correction and the scatter control (about 40 minutes).
+  Figure 6 excitability and connectivity claims, the lasso correction and the scatter control (about 30 to 40 minutes).
 - `qi2026_spontaneous.ipynb`: the spontaneous sessions, for the SNR claims, Figure 4 and the Figure 6
-  behaviour claims and the wave analysis (about 27 minutes; it holds one session's voltage, 3 GB, in memory at a time).
-- `qi2026_excitability_spontaneous.ipynb`: Figure 5A to C and Supplementary Figure 22 (about 13 minutes).
+  behaviour claims and the wave analysis (about 20 to 30 minutes; it holds one session's voltage, 3 GB, in memory at a time).
+- `qi2026_excitability_spontaneous.ipynb`: Figure 5A to C and Supplementary Figure 22 (about 10 to 15 minutes).
 - `l1opto.py`: streaming the files, the masks and measures of the paper's code, and the crossed
   random-effects model. Other notebooks on this dandiset can import it.
