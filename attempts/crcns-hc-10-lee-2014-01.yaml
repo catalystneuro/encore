@@ -231,24 +231,24 @@ outcomes:
   output: claim:fig4d-model-feedforward
   notes: The claim needs 39 simulations of the network model (13 conditions in three networks,
     5,000 ms each at 0.05 ms steps). The model's code is public (ModelDB 153280, mirrored on GitHub
-    at the commit listed under inputs) and compiles with NEURON 9.0.2. In the notebook a 20 ms run
-    of one network on one core took 808 s, 537 s to build the cells and then 12.39 s per simulated
-    millisecond; a 5 s run is so about 17.4 hours, and the 39 runs about 677 core-hours, far over
-    the notebook's limit of 60 minutes and the run's time. The model's own job scripts ran each
-    simulation on 64 cores. The simulation results, which the README says are available on
-    request, are not public.
+    at the commit listed under inputs) and compiles and runs with NEURON 9.0.2. In the notebook a
+    20 ms run of one network on one core took 694 s, 509.9 s to build the cells and then 8.20 s per
+    simulated millisecond; a 5 s run is so about 11.5 hours, and the 39 runs about 450 core-hours,
+    far over the notebook's limit of 60 minutes and the run's time. The model's 75 job scripts each
+    run a simulation on 64 cores (mpiexec -np 64), as the notebook prints. The simulation results,
+    which the README says are available on request, are not public.
 - claim: fig4ef-model-pvbc-rates
   outcome: blocked
   blocked_by: too_large
   notebook: reproduce_lee_2014.ipynb
   output: claim:fig4ef-model-pvbc-rates
   notes: Needs the same simulations as fig4d-model-feedforward, which are too large to run here
-    (about 677 core-hours, estimated from the 20 ms run timed in the notebook).
+    (about 450 core-hours, estimated from the 20 ms run timed in the notebook).
 - claim: fig5-cckbc-nonselective
   outcome: blocked
   blocked_by: data_missing
   notes: The CCKBC paired recordings are not in the data set. Its one CCK+ basket cell file
-    (sh108_BC) is a current-step sweep from Lee et al. (2010).
+    (sh108_BC) is a current-step sweep of a cell from another paper.
 - claim: fig6c-parallel-projections
   outcome: blocked
   blocked_by: data_missing
@@ -284,8 +284,8 @@ findings:
     temporal) or soma distance from the Pyr/Rad border of a cell, so the sublayer assignment rests
     on the file names alone and results cannot be grouped by animal.
 - kind: other
-  statement: In PVBC PV37 the sweep order breaks between the first three sweeps (steady-state
-    deflection -13.1 mV at the first, -8.7 at the second and -9.1 at the third); its later sweeps
+  statement: In PVBC PV37 the sweep order breaks between the sweeps the descriptor gives as -250 and
+    -200 pA (steady-state deflection -8.7 then -9.1 mV; -13.1 mV at -300 pA); its other sweeps
     rise with the step as in every other cell.
 verifications:
 - date: 2026-11-06
@@ -304,7 +304,8 @@ verifications:
       within tolerance. The ANOVA treats each cell-by-step value as independent, which inflates the
       degrees of freedom; that is the paper's test as written, and the mixed ANOVA variant (p =
       0.759 and 0.951) gives the same. Under rate reading (b) a sweep with one spike gets 0 Hz but
-      two close spikes give a high rate, so the reading is unreliable near rheobase.
+      two close spikes give a high rate (PV34 at +350 pA, 14.9 Hz under (b) against 2.0 Hz under
+      (a)), so the reading is unreliable near rheobase.
     response: No change of outcome. The notebook now prints the PC sweeps with one or two spikes (2
       sweeps with one spike, none with two), and the conclusion and notes say reading (b) bears
       little on this test.
@@ -353,7 +354,8 @@ verifications:
     reason: Reading (a) on PV34 with rate reading (a) gives silence from 0 to +300 pA, then 2.0,
       17.0, 36.0 and 52.0 Hz at +350 to +500 pA, matching all four values exactly. Choosing the
       best-matching of six cells is permissive; PV34 matches exactly at four steps, so the match is
-      not a chance hit, but its identity as the figure's cell is never stated.
+      not a chance hit, but its identity as the figure's cell is never stated. Rate reading (b) is
+      unreliable near rheobase (PV34 at +350 pA, 14.9 Hz under (b) against 2.0 Hz under (a)).
     response: No change of outcome. The conclusion and notes now say the paper does not name the
       figure's cell and that taking the best of six is permissive.
   - claim: fig1e-euipsc-dpc-larger
@@ -556,3 +558,237 @@ verifications:
       compiles it and times a 20 ms run of one network on one core. It took 537 s to build the cells and
       12.39 s per simulated millisecond, about 17.4 hours per 5 s run and 677 core-hours for the 39
       runs. The notes give these numbers.
+- date: 2026-11-06
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, with its conclusion cells and
+    summary, the helper module hc10.py, the README, the attempt record and the claims file, with the
+    paper and the data descriptor under paper/.
+  results:
+  - claim: figs1e-if-curves
+    agrees: true
+    outcome: reproduced
+    reason: Two-way ANOVA group p = 0.411 under reading (a) and 0.866 under (b); the mixed ANOVA
+      gives 0.759 and 0.951. At +550 pA the rates are 31.62 / 30.56 Hz (a) and 33.63 / 31.24 Hz (b),
+      all within tolerance (cell 12). The round-1 reason in the record filed the rate reading (b)
+      problem here without its example, PV34 at +350 pA (14.9 against 2.0 Hz).
+    response: No change of outcome. The PV34 example is added to the round-1 reason here and under
+      figs3f-pvbc-firing. The re-run gives the same numbers.
+  - claim: figs1f-input-resistance
+    agrees: true
+    outcome: reproduced
+    reason: 118.7 / 124.9 MOhm, Mann-Whitney p = 1.000 (cell 16).
+    response: No change. The re-run gives the same numbers.
+  - claim: figs1g-resting-potential
+    agrees: true
+    outcome: blocked
+    reason: No PC file has a current channel, and every baseline is within 2.6 mV of the -70 mV
+      holding level (cell 19).
+    response: No change.
+  - claim: figs1h-sag
+    agrees: true
+    outcome: reproduced
+    reason: 8.71 / 5.69 mV, p = 0.0020 (cell 22).
+    response: No change. The re-run gives the same numbers.
+  - claim: tables1-rheobase
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a), the median, gives 200 / 150 pA; reading (b), the rounded mean, gives 200 pA
+      for both. No cell's rheobase changes under any threshold or under the CellData definition
+      (cell 25).
+    response: No change. The re-run gives the same numbers.
+  - claim: figs3f-pvbc-firing
+    agrees: true
+    outcome: reproduced
+    reason: PV34 gives 2.0, 17.0, 36.0 and 52.0 Hz and is silent up to +300 pA (cell 28). The claims
+      file's assumption of 1 s steps in 50 pA increments is stated as a deviation and is reasonable.
+      The round-1 reason in the record left out the rate reading (b) example, PV34 at +350 pA (14.9
+      against 2.0 Hz).
+    response: No change of outcome. The PV34 example is added to the round-1 reason.
+  - claim: fig1e-euipsc-dpc-larger
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1-uipsc-successes
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1f-connection-probability
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1g-somatic-distance
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1-common-pvbc
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1i-distance-correlation
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1-kmeans-large-small
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1j-axon-terminals
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1-release-properties
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1k-somatic-dendritic-ratio
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1l-pv-boutons
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig1n-optogenetic-ipsc
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig2c-fullfield-running
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig2e-bouton-roi-running
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig2f-bouton-density
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: figs2-ais-correction
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig2gi-pvbc-axon-sublayers
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig3c-spc-excite-pvbc
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig3-epsc-release-properties
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig3ef-reciprocal-motifs
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig4b-pvbc-inhibit-firing
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig4d-model-feedforward
+    agrees: true
+    outcome: blocked
+    reason: The printed timing (cell 31) supports the block, but the record's numbers for it (808 s,
+      537 s, 12.39 s/ms, 17.4 h, 677 core-hours) and cell 32 and the summary (about 12 s, 17 hours,
+      670 core-hours) do not match that output; they come from a different run. The NEURON version
+      and the 64-core job scripts are not printed in the notebook.
+    response: No change of outcome. The timing varies between runs, so cell 32, the summary and the
+      notes now use the numbers printed in cell 31 of the final run (509.9 s to build the cells,
+      8.20 s per simulated ms, about 11.5 h per 5 s run, about 450 core-hours; the two runs before
+      it gave 8.01 and 8.24 s per ms), and cell 32 rounds them (about 8 s per ms, 11 to 12 hours,
+      about 450 core-hours). Cell 31 now prints the NEURON version (9.0.2) and the cores in the
+      model's 75 job scripts (mpiexec -np 64). The round-1 responses keep the numbers of the run
+      they described.
+  - claim: fig4ef-model-pvbc-rates
+    agrees: true
+    outcome: blocked
+    reason: The printed timing (cell 31) supports the block, but the record's numbers for it (808 s,
+      537 s, 12.39 s/ms, 17.4 h, 677 core-hours) and cell 32 and the summary (about 12 s, 17 hours,
+      670 core-hours) do not match that output; they come from a different run. The NEURON version
+      and the 64-core job scripts are not printed in the notebook.
+    response: No change of outcome. The timing varies between runs, so cell 32, the summary and the
+      notes now use the numbers printed in cell 31 of the final run (509.9 s to build the cells,
+      8.20 s per simulated ms, about 11.5 h per 5 s run, about 450 core-hours; the two runs before
+      it gave 8.01 and 8.24 s per ms), and cell 32 rounds them (about 8 s per ms, 11 to 12 hours,
+      about 450 core-hours). Cell 31 now prints the NEURON version (9.0.2) and the cores in the
+      model's 75 job scripts (mpiexec -np 64). The round-1 responses keep the numbers of the run
+      they described.
+  - claim: fig5-cckbc-nonselective
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree. The record's note that sh108_BC is from Lee et al. (2010) is not shown in
+      the notebook; cell 30 says only from other papers.
+    response: No change of outcome. The note now says only that sh108_BC is a cell from another
+      paper.
+  - claim: fig6c-parallel-projections
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig6e-amg-larger-ipsc
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: fig6g-mpfc-excite-pvbc
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
+  - claim: figs1-pc-morphology
+    agrees: true
+    outcome: blocked
+    reason: The claims on paired recordings, anatomy, imaging and optogenetics are blocked as
+      data_missing; agree.
+    response: No change.
