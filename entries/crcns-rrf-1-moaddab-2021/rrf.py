@@ -47,8 +47,11 @@ and line (as in data.zip, MD5 bf5cb2951c928394084d7b67c6b4663b):
 - Waveform half duration and amplitude ratio (rrfAnalysis.m, after "Find mean and SEM firing
   for cue-responsive units"); the code's sample rate, 40 points per ms, matches the data
   descriptor (32 points over 0.8 ms). Bregma level per rat (rrfAnalysis.m, "bregma for each id").
-- Bootstrap: studentized 95% CI of the mean, 1,000 resamples (STAR Methods; bootci 'student' in
-  the code). For the mean, the jackknife standard error MATLAB uses equals s / sqrt(n).
+- Bootstrap: studentized 95% CI of the mean, 1,000 resamples (STAR Methods; `bootci(1000,
+  {@mean, x}, 'type', 'student')` in the code, e.g. rrfAnalysis.m 1744). Called this way, with no
+  'StdErr', bootci estimates each standard error from 'NBootStd' = 100 nested bootstrap samples
+  (MATLAB documentation of bootci). The main reading uses s / sqrt(n) for every standard error,
+  a deterministic choice; `boot_ci(..., n_boot_std=100)` gives the nested version as a variant.
 """
 
 from __future__ import annotations
@@ -109,6 +112,12 @@ PAPER_PEAK = {"k1": 0.375, "k3": 0.375, "k4": 0.875, "k5": 0.375, "k6": 0.625, "
 def open_zip():
     f = fsspec.open(ZIP_URL, block_size=2**20).open()
     return zipfile.ZipFile(f)
+
+
+def code_lines(z, member, first, last):
+    """Lines first..last (1-based, inclusive) of one of the code files in data.zip, numbered."""
+    text = z.read(member).decode("latin-1").splitlines()
+    return "\n".join(f"{i:5d}  {text[i - 1]}" for i in range(first, last + 1))
 
 
 def _walk(o, prefix, out):
@@ -209,15 +218,29 @@ def z_methods(raw, n_types=3, base_bins=slice(72, 80)):
 
 # ---------------------------------------------------------------- statistics
 
-def boot_ci(x, rng, n_boot=1000, alpha=0.05):
-    """Studentized bootstrap CI of the mean (bootci 'student'). Returns mean, low, high."""
+def _nested_se(xb, rng, n_boot_std):
+    """Standard error of the mean of each row of xb from n_boot_std bootstrap samples of it."""
+    n = xb.shape[1]
+    out = np.empty(len(xb))
+    for i, row in enumerate(xb):
+        out[i] = row[rng.integers(0, n, size=(n_boot_std, n))].mean(1).std(ddof=1)
+    return out
+
+
+def boot_ci(x, rng, n_boot=1000, alpha=0.05, n_boot_std=0):
+    """Studentized bootstrap CI of the mean (bootci 'student'). Standard errors are s / sqrt(n),
+    or with n_boot_std > 0 from that many nested bootstrap samples, as bootci does by default.
+    Returns mean, low, high."""
     x = np.asarray(x, float)
     x = x[np.isfinite(x)]
     n = len(x)
     m, se = x.mean(), x.std(ddof=1) / np.sqrt(n)
+    if n_boot_std:
+        se = _nested_se(x[None], rng, n_boot_std)[0]
     idx = rng.integers(0, n, size=(n_boot, n))
     xb = x[idx]
-    mb, seb = xb.mean(1), xb.std(1, ddof=1) / np.sqrt(n)
+    mb = xb.mean(1)
+    seb = _nested_se(xb, rng, n_boot_std) if n_boot_std else xb.std(1, ddof=1) / np.sqrt(n)
     with np.errstate(invalid="ignore", divide="ignore"):
         t = (mb - m) / seb
     t = t[np.isfinite(t)]
@@ -427,14 +450,23 @@ def match_clusters(means, labels):
 CODE_IDX = {"k1": 5, "k2": 6, "k3": 7, "k4": 1, "k5": 4, "k6": 8, "k7": 3, "k8": 2}
 
 
-def matlab_kmeans(X, k, seed=1, max_iter=100):
+def matlab_kmeans(X, k, seed=1, max_iter=100, replicates=1, all_runs=False):
     """MATLAB `rng(seed); kmeans(X, k)` with its defaults: k-means++ seeding (the first centre
     drawn uniformly, the others by distance-weighted sampling with one uniform draw each, as
     datasample does), then batch Lloyd updates until no assignment changes (OnlinePhase off).
     MATLAB's default generator is the Mersenne Twister, whose doubles from seed s equal
     numpy's RandomState(s).random_sample(). Returns 1-based labels, as MATLAB's idx, and the
-    summed squared distances of each cluster (sumd)."""
+    summed squared distances of each cluster (sumd). With `replicates`, the runs continue one
+    stream and the run of least total sumd is returned (an assumption about how
+    'Replicates' draws, which the code never uses); `all_runs` returns every run."""
     rs = np.random.RandomState(seed)
+    runs = [_kmeans_once(X, k, rs, max_iter) for _ in range(replicates)]
+    if all_runs:
+        return runs
+    return min(runs, key=lambda r: r[1].sum())
+
+
+def _kmeans_once(X, k, rs, max_iter):
     n = len(X)
     centres = [X[int(np.floor(rs.random_sample() * n))]]
     md = np.full(n, np.inf)
