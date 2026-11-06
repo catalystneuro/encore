@@ -1,0 +1,685 @@
+schema_version: 2
+id: 001960-qi-2026-01
+dataset:
+  archive: dandi
+  id: "001960"
+  version: 0.261013.2016
+  doi: 10.48324/dandi.001960/0.261013.2016
+paper: doi:10.64898/2026.10.05.756595
+date: 2026-11-06
+entry: 001960-qi-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42156468378
+inputs:
+- what: The paper's analysis code, read for method details the claims file cites or lacks (the
+    figure_reproduction scripts for Figures 2 to 6 and tutorial 5, the mixed model). It was read, not
+    run; its README's published numbers are quoted in the notebooks only as references.
+  source: https://github.com/adamcohenlab/Qi2026WideAreaL1 at commit 181ad475520224c44d27903e7522d3e2aa76857d
+outcomes:
+- claim: jf608-brighter
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no recordings of the same cells with JF585-HTL and then JF608-HTL; its
+    seven assets are the three sessions of each mouse and one raw-movie excerpt. The paper names no
+    other archive for these data.
+- claim: targeting-signal-to-background
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No wide-field and targeted images of one field are deposited. The raw-movie excerpt holds a
+    segmentation reference image and GFP and RFP maximum projections only, and its movie was taken
+    under targeted illumination.
+- claim: spike-snr-and-detection-errors
+  outcome: not_reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:spike-snr-and-detection-errors
+  measured: 3.33
+  notes: The stored voltage is normalized by each cell's spike height, so the SNR is 1 over the
+    shot noise (1.4826 x MAD of the 1-frame difference). It is 3.33 over the 505 QC cells of the
+    behavior sessions (3.18 over all 640) and 3.0 to 3.9 per mouse and session under every reading,
+    below 4.5 +/- 0.7. With the spike heights found in the traces (median 0.88 to 0.96 SH) it is 2.8
+    to 3.0. The false-discovery and false-negative rates were not computed, since no matched-filter
+    output or fitted mixture is stored; the SNR alone decides the outcome under every reading.
+  deviations:
+  - SNR from the stored normalized voltage, not from the raw fluorescence; the noise is the median
+    over 3 min chunks (behavior sessions) or over 25 s samples of every fourth chunk (other
+    sessions).
+  - The error rates of the mixture model were not tested.
+- claim: snr-decay-one-hour
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:snr-decay-one-hour
+  measured: 72.9
+  notes: The behavior sessions are 61 min of continuous imaging. The SNR of the 20th 3 min chunk is
+    72.9 +/- 15.6% of the first (mean of per-cell ratios, 505 QC cells; ratio of means 69.8%), and
+    77.3 +/- 17.7% over all 640 cells (73.4%), within 76 +/- 13%. The decline is in spike height
+    (0.68 and 0.77) with the noise unchanged (0.96 and 1.02). The illumination intensity is not in
+    the files.
+  deviations:
+  - Spike height per chunk is the normalized voltage at the spike frame minus the mean of frames -6
+    to -3 (a standard choice); the paper's height is the mean of the fitted spike Gaussian.
+  - Which session and which 520 cells the paper used is not given; the behavior sessions are the only
+    sessions of an hour of continuous imaging, and QC cells and all cells are both shown.
+- claim: fig1d-stimulation-fold-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The periodic 76-cell stimulation session of Figure 1D is not in the dandiset.
+- claim: off-target-length-constants
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The lattice off-target experiment (Supplementary Figure 9) is not in the dandiset.
+- claim: l1-sampling-density
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The spinning-disk z-stack is not deposited. The raw-movie excerpt holds only a 47-plane GFP
+    maximum projection and a 21-plane RFP projection of the field, which cannot give the cell count
+    in the cylinder.
+- claim: adaptation-vadp-correlation
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:adaptation-vadp-correlation
+  measured: 0.232
+  notes: Over the 543 QC cells of the two sparseOpto sessions R = 0.232, p = 4.5e-8 (reading (a));
+    all 640 cells give R = 0.186. No selection gives the paper's n = 564.
+- claim: fig2c-three-bins
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig2c-three-bins
+  measured:
+  - 94
+  - 116
+  - 110
+  notes: Ward clustering of the column-wise z-scored five properties of the 320 cells of
+    M-YQ0201-29 gives clusters of 110, 94 and 116 cells, the paper's counts as a set.
+- claim: fig2gk-bin-profiles
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig2gk-bin-profiles
+  notes: All eight orderings hold with maximum rate (bin medians 39.0, 19.7, 30.9 Hz) and with the
+    Figure 2F trial-average rate (23.1, 9.5, 16.3 Hz). Rheobase 0.386, 0.326, 0.102 SH; adaptation
+    0.278, -0.167, 0.484; membrane time constant 15.3, 18.9, 14.9 ms. Two membrane time constants are
+    removed as outliers by the code's 6 s.d. rule.
+  deviations:
+  - The Figure 2F rate is the mean over the trial of the code's trial-average firing rate in each
+    cell's blue-stimulated trials.
+- claim: two-mice-intrinsic-distributions
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:two-mice-intrinsic-distributions
+  notes: With the QC cells (reading (b), 286 and 257) all five calls match, rheobase p = 1.0e-4,
+    membrane time constant p = 0.048, V_adp 0.84, maximum rate 0.93, adaptation 0.48. With all 320
+    cells per mouse (reading (a), the legend's n) four match; the membrane time constant gives
+    p = 0.10.
+  deviations:
+  - The legend's n = 320 per mouse matches reading (a), which matches four of five calls; the
+    outcome rests on reading (b), which the claims file lists.
+- claim: synaptic-connection-counts
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:synaptic-connection-counts
+  measured:
+  - 802
+  - 7280
+  - 667
+  - 7032
+  - 2.55
+  - 24.8
+  - 10.7
+  notes: In the 60 to 400 um band of ordered QC pairs the counts are 802 of 7,280 and 667 of 7,032,
+    the paper's numbers exactly; within 400 um they are 828 of 7,426 and 679 of 7,150. Per cell (576
+    cells) 2.55 +/- 2.87 outgoing, 2.55 +/- 2.61 incoming, 24.8 +/- 8.5 tested, probability 10.7 +/-
+    11.6%. Measured values are for the band, the reading that matches.
+- claim: ipsp-median-amplitude
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:ipsp-median-amplitude
+  measured:
+  - -0.0297
+  - 0.217
+  notes: The pooled median IPSP of connected pairs is -0.0297 SH (-0.0303 and -0.0292 per mouse), within
+    0.0028 of -0.028. The cross-STA depolarization, the claims file's chosen reading for the 20%, is
+    0.217 SH in M-YQ0201-27 (within tolerance) and 0.250 in M-YQ0201-29 (mean 0.234); the criterion
+    accepts a per-mouse value.
+- claim: detection-limits
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Neither the paper nor the code says how the 50% detection point was estimated or which "100
+    neuron-pairs near the detection cutoff" were used. Either reading needs the per-pair null
+    distributions (10,000 resampled pulse sets per synaptic pair, 5,000 spike sets per gap-junction
+    pair), which the dandiset does not store and which would have to be rebuilt from the full
+    voltage of the connectivity sessions with the paper's IPSP fitting. No reading was run.
+- claim: gap-junction-connection-counts
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:gap-junction-connection-counts
+  measured:
+  - 3553
+  - 2199
+  - 9.99
+  - 9.99
+  - 40.9
+  - 0.012
+  notes: In the 60 to 400 um band the counts are 3,553 and 2,199, the paper's numbers; per cell 9.99 +/-
+    5.74 outgoing and 9.99 +/- 5.09 incoming, probability 40.9 +/- 19.1%; pooled median spikelet
+    0.0120 SH. Within 400 um the counts are 3,697 and 2,309.
+- claim: hadamard-stimulation-rates
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:hadamard-stimulation-rates
+  assumed: true
+  measured:
+  - 26.5
+  - 3.6
+  - 650
+  - 12929
+  notes: Over the 576 QC cells in the 160 Hadamard trials, 26.5 +/- 16.6 Hz with blue on and 3.6 +/-
+    4.2 Hz with it off; 12,929 evoked spikes per cell; 650 stimuli per cell counted as 750 ms code
+    steps with blue on (reading (b)), and 360 counted as on blocks (reading (a)), since consecutive on
+    steps merge into one block.
+  deviations:
+  - The paper does not say how stimuli are counted, and the two readings differ. Assumed is reading
+    (b), one stimulus per 750 ms code step with blue on, since the Methods describe the stimulation as
+    Hadamard-Walsh codes of 750 ms steps; reading (a), on blocks, gives 360. Asked of the authors
+    (findings).
+- claim: spikelet-not-scatter
+  outcome: blocked
+  blocked_by: too_large
+  notes: The interstitial pixels exist only in the raw-movie excerpt, 1,152,000 frames of 328 x 448
+    uint16 pixels (338 GB); its stored pixel subset holds only the 5,712 pixels of the cell disks.
+    Streaming the movie at the rate measured in this run (about 45 MB/s, 128 MB in 2.9 s) would take
+    over two hours, beyond the 60 min notebook limit. Nothing was run.
+- claim: highmag-footprint
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 7.5x high-magnification recordings are not in the dandiset.
+- claim: lasso-off-target-correction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The lasso penalty, the selection of the 1755 pairs and the per-trial evoked spike counts of
+    non-targeted cells are not given; the dandiset stores only trial-average IPSP waveforms and one
+    mean spike count per cell, so the regression would have to be rebuilt from the full voltage with
+    choices the paper does not make. No reading was run.
+- claim: connection-distance-structure
+  outcome: partially_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:connection-distance-structure
+  measured:
+  - 23.5
+  - 175.8
+  - 83.0
+  - 156.2
+  notes: Synaptic probability under 150 um 23.5% and gap-junction 83.0%, both within tolerance. The
+    gap-junction length constant is 156 um (log-linear, 30 um bins) or 161 um (60 um bins), within
+    159 +/- 15.9; least squares gives 184 um. The synaptic length constant is 176 to 180 um
+    (log-linear) or 285 to 288 um (least squares), against 105 +/- 10.5 um, under every reading and
+    in each mouse (151 to 362 um); the synaptic probability rises from 17% under 30 um to 29% at 90
+    to 120 um before it falls. The exponential degree fit is better for 3 of 4 degree distributions.
+    Measured values are reading (b) with 30 um bins.
+- claim: fig3eg-amplitude-falls-with-distance
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig3eg-amplitude-falls-with-distance
+  notes: In both mice and both measures the nearest-bin median exceeds the farthest (IPSP 0.0196 vs
+    0.0068 and 0.0147 vs 0.0097 SH; spikelet 0.0281 vs 0.0021 and 0.0217 vs 0.0018), and Spearman rho
+    is -0.12 to -0.58 with p below 1e-19. Connected pairs alone give rho -0.34 to -0.61.
+- claim: fig3h-conduction-speed
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig3h-conduction-speed
+  measured: 0.265
+  notes: With the code's twelve 30 um bins (60 to 420 um) the pooled speed is 0.265 m/s (0.255 and
+    0.291 per mouse). The caption's ten bins give 0.248 m/s pooled, outside tolerance.
+- claim: amplitudes-log-normal
+  outcome: partially_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:amplitudes-log-normal
+  notes: IPSP amplitudes of connected pairs have skewness 2.21 raw and 0.10 on the log scale (1,753
+    pairs), meeting the chosen reading. Spikelet amplitudes are skewed (4.64 raw) but their log
+    skewness is 0.73 (0.73 and 0.86 per mouse), outside -0.5 to 0.5.
+  deviations:
+  - The paper shows a Gaussian fit to log histograms with no test; the skewness bounds are the claims
+    file's reading.
+- claim: interaction-kernel
+  outcome: not_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:interaction-kernel
+  measured:
+  - 22.7
+  - 33.0
+  - 39.4
+  - 72
+  notes: The population IPSP minimum is 33.0 ms after pulse onset (13 ms after its end), within 30 +/-
+    3 ms under reading (a); the decay after the peak is 39.4 ms with an offset and 47.9 ms without,
+    against 35 +/- 3.5. The population spikelet waveform has a FWHM of 22.7 ms, not about 2 ms, and
+    the length constant of probability times mean spikelet amplitude is 72 um (least squares) or 96
+    um (log-linear), against 160 +/- 16. Two of four values are outside tolerance under every
+    reading.
+  deviations:
+  - The paper gives no method for Supplementary Movie 3; every measure is the claims file's reading.
+    The FWHM is measured on the population Hadamard cross-spike STA with the median of lags beyond
+    +/-50 frames as baseline, a standard choice.
+- claim: fig3jk-presynaptic-sets-amplitude
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig3jk-presynaptic-sets-amplitude
+  measured:
+  - 0.609
+  - 0.263
+  notes: On M-YQ0201-29, R = 0.609 (p = 1.05e-51, 497 pairs) for the presynaptic mean and R = 0.263
+    (p = 4.3e-9, 482 pairs) for the postsynaptic mean, mask n = 561, the code README's values and the
+    paper's n. On M-YQ0201-27 the values are 0.42 and 0.36.
+- claim: fig3mn-postsynaptic-sets-decay
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig3mn-postsynaptic-sets-decay
+  measured:
+  - 0.330
+  - 0.075
+  notes: On M-YQ0201-27, R = 0.330 (p = 4.7e-18, 651 pairs) for the postsynaptic mean and R = 0.075
+    (p = 0.056, 653 pairs) for the presynaptic mean, not significant, as the paper reports; mask
+    n = 706. On M-YQ0201-29 the presynaptic correlation is significant (R = 0.12, p = 0.008).
+- claim: fig3lo-variance-components
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig3lo-variance-components
+  notes: Log distance is chosen by 6.2 (amplitude) and 9.2 (decay) AIC units, and the decay weights
+    give s0^2 = 0.661 and effective n 1,364, all as the tutorial reports. Amplitude (1,467 pairs) has
+    presynaptic variance 0.1445 against postsynaptic 0.0579, presynaptic larger in all 1,971 converged
+    refits. Decay (1,469 pairs) has postsynaptic 0.1111 against presynaptic 0.0213, postsynaptic
+    larger in 99.95% of 1,969 converged refits (one the other way). 29 and 31 of the 2,000 refits did
+    not report convergence and are left out.
+  deviations:
+  - The model is fitted with a Python REML implementation of fitlme's crossed-intercept model, and
+    the bootstrap uses numpy's generator with the published seeds, so replicates differ from
+    MATLAB's.
+- claim: gap-junction-no-identity-effect
+  outcome: not_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:gap-junction-no-identity-effect
+  notes: Leave-one-out correlations of spikelet amplitude are R = 0.214 (outgoing) and 0.298
+    (incoming) in M-YQ0201-27 and 0.268 and 0.314 in M-YQ0201-29, every p below 1e-36; three of four
+    exceed the 0.26 bound of the claims file's reading.
+  deviations:
+  - The paper gives no number; the 0.26 bound is the claims file's reading.
+- claim: subthreshold-correlation-length
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:subthreshold-correlation-length
+  measured:
+  - 0.638
+  - 2.42
+  - 0.518
+  - 4.03
+  notes: Mean of the two mice, from the stored state-dependent cross-correlations with the code's
+    binning and fits. Per mouse 0.645 and 0.630 (quiet), 0.497 and 0.539 (whisking); 2.22 and 2.63 mm,
+    3.71 and 4.35 mm.
+- claim: subthreshold-low-dimensional
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:subthreshold-low-dimensional
+  measured:
+  - 70.7
+  - 67.5
+  notes: Reading (a), stored subthreshold voltage averaged over mice, 70.7% quiet and 67.5% whisking,
+    quiet above whisking. Per mouse 70.8 and 63.0% (M-YQ0201-27), 70.6 and 72.0% (M-YQ0201-29, the
+    ordering reversed). Reading (b) gives 75.2 and 69.1%, the whisking value outside tolerance.
+  deviations:
+  - Running frames (within 1000 frames of running) are excluded from both states, as in the code's
+    Figures 4 to 6; the Methods do not say.
+- claim: quiet-state-oscillations
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:quiet-state-oscillations
+  notes: The mean power from 1 to 10 Hz over QC cells is 4.9 (M-YQ0201-27) and 2.9 (M-YQ0201-29) times
+    higher in quiet than in whisking, from 436 and 531 quiet and 243 and 107 whisking 2 s segments.
+  deviations:
+  - 2 s Welch segments wholly inside a state (a standard choice, as the claims file allows).
+- claim: traveling-waves
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The Methods describe the steps but not the parameters that decide the event count and the
+    speed, which are this claim's numbers. Open are how peaks of the derivative are separated and
+    whether the derivative is smoothed, the window in which the flanking voltage minimum and maximum
+    are sought, the lag range of the per-event cross-correlations, and whether lag is signed or
+    absolute against separation. No reading was run in the time available.
+- claim: spike-synchrony-localized
+  outcome: partially_reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:spike-synchrony-localized
+  measured:
+  - 277.1
+  - 270.7
+  - 71.1
+  - 2.54
+  notes: Under reading (a) the synchrony length constants are 277 and 271 um and the spike
+    correlogram's half-width 2.54 ms (whisking and quiet), within tolerance. The quiet voltage FWHM,
+    the median over bins averaged over mice, is 71.1 ms (78.7 and 63.5 ms per mouse), outside 80 +/-
+    8. Reading (b) gives 2.3 and 5.7 mm.
+- claim: voltage-to-spike-sigmoid
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:voltage-to-spike-sigmoid
+  assumed: true
+  notes: With V at the spike frame (the code) a four-parameter logistic explains at least 90% of the
+    variance for 262 of 505 cells (52%), with CV 0.82 of the midpoints and 4.54 of the maxima. With V
+    10 ms before the spike (the Methods' wording) 121 cells (24%) pass.
+  deviations:
+  - The readings give different outcomes. Assumed is the code's, V at the spike frame, since the
+    code's Figure 4 script records that the author confirmed this computation behind the published
+    panel and kept the caption's wording. The Methods' "10 ms before" was run as V 8 frames (10.2 ms)
+    before the spike and does not meet the criterion. Asked of the authors (findings).
+- claim: fig4g-private-depolarizations
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:fig4g-private-depolarizations
+  notes: Pooled over 3,104 ordered pairs 60 to 200 um, the slope of the conditional mean is 0.61 over
+    -0.5 to 0.2 SH and 0.21 over 0.5 to 1 SH, ratio 2.89 (3.57 and 2.62 per mouse).
+  deviations:
+  - Every fourth analysis frame is used (the voltage is smoothed over 17 frames).
+- claim: fig4hi-self-sta-diverges
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:fig4hi-self-sta-diverges
+  notes: Self minus cross STA rises from -30 to -5 ms by 0.176 and 0.182 SH, against spreads of 0.015
+    and 0.007 over -140 to -30 ms, and the self-STA is above the cross-STA at -30 ms in both mice
+    (0.102 vs -0.035 and 0.047 vs -0.067 SH).
+- claim: fig5a-rheobase-predicts-spontaneous-excitability
+  outcome: reproduced
+  notebook: qi2026_excitability_spontaneous.ipynb
+  output: claim:fig5a-rheobase-predicts-spontaneous-excitability
+  notes: In M-YQ0201-27 (280 cells, the code's bins) the rate at V = 0.5 SH falls from 8.9 to 1.4 Hz
+    (spontaneous) and 28.6 to 7.2 Hz (ramp) across rheobase bins, Spearman rho -1.0 for both. Caption
+    quintiles give -0.90 and -1.0, and M-YQ0201-29 -0.90 and -1.0.
+  deviations:
+  - The rate at V = 0.5 SH is read from the bin [0.50, 0.55) SH.
+- claim: supp22-rheobase-correlations
+  outcome: reproduced
+  notebook: qi2026_excitability_spontaneous.ipynb
+  output: claim:supp22-rheobase-correlations
+  measured:
+  - -0.573
+  - -0.311
+  notes: Over the 543 QC cells (the paper's n) R = -0.573 (p = 1.3e-48) evoked and -0.311
+    (p = 1.2e-13) spontaneous; reading (b), 531 cells, gives -0.559 and -0.305.
+- claim: fig5b-adaptation-dvdt
+  outcome: reproduced
+  notebook: qi2026_excitability_spontaneous.ipynb
+  output: claim:fig5b-adaptation-dvdt
+  measured: 0.274
+  notes: Methods reading R = 0.274 (p = 8.3e-11, 543 cells), code reading R = 0.262. In M-YQ0201-27, the
+    session of the code's panel B, the highest-adaptation bin has the highest rate at dV/dt = 0.35
+    under both readings; in M-YQ0201-29 the fourth bin is highest.
+  deviations:
+  - dV/dt is the code's 8-frame centred difference (SH per 8 frames) in both readings; the Methods do
+    not define it. The Methods reading uses the stored quiet mask.
+- claim: fig5c-adp-bursting
+  outcome: reproduced
+  notebook: qi2026_excitability_spontaneous.ipynb
+  output: claim:fig5c-adp-bursting
+  measured: 0.546
+  notes: With triggers in any state (the Results' reading) R = 0.546 (p = 1.4e-43, 543 cells); with the
+    code's quiet-only triggers R = 0.593, outside tolerance.
+  deviations:
+  - Lags 2.5 to 15 ms are frames 2 to 11 of the autocorrelogram; triggers are the no-blue spikes in
+    chunks without blue on any QC cell within 80 um, in frames 5000 to 2e6 away from chunk edges.
+- claim: fig5e-inhibition-in-spontaneous-voltage
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig5e-inhibition-in-spontaneous-voltage
+  measured:
+  - -0.0189
+  - -0.0095
+  - 0.012
+  notes: Under reading (a) the top quintile (294 pairs) gives -0.0189 SH and all 1,467 connected pairs
+    -0.0095 SH; (b) -0.0188 and -0.0099; (c) -0.0213 and -0.0095. Rank-sum p = 2.4e-31 and 6.4e-39
+    one-sided against the controls. The controls' own change is +0.012 (mean over the top-quintile
+    controls; +0.019 over all, medians 0.003 and 0.007), outside 0.01 +/- 0.001; the criterion does
+    not test it.
+  deviations:
+  - Quintiles are formed per mouse, as in the code, and pooled; the paper's two-mouse numbers come
+    from a script that is not public.
+- claim: fig5e-inhibition-in-spontaneous-rate
+  outcome: partially_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig5e-inhibition-in-spontaneous-rate
+  measured:
+  - 0.190
+  - 0.0029
+  - 0.083
+  - 0.0049
+  notes: Rate decreases match under reading (a), 0.190 Hz (top quintile) and 0.083 Hz (all connected
+    pairs). Spikes lost do not match under any reading or window, 2.9e-3 and 4.9e-3 under (a) over 0
+    to 100 ms against 7e-3 and 2.7e-3, and other readings give values of the wrong sign or size.
+  deviations:
+  - The spikes lost are the control-subtracted rate minus its pre-spike baseline summed over 0 to
+    100 ms or to its first return to zero; the paper says only "the entire IPSP duration".
+- claim: fig5g-gap-junction-synchrony
+  outcome: partially_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:fig5g-gap-junction-synchrony
+  measured:
+  - 0.80
+  - 0.0022
+  - 0.29
+  - 0.00093
+  notes: Under reading (a) the synchrony enhancement is 0.80 Hz (top quintile, 1,147 pairs with
+    controls) and 0.29 Hz (5,718 pairs), within tolerance, with rank-sum p below 1e-300. Spikes
+    gained, 2.2e-3 and 9.3e-4 over frames -1 to 1, are outside 1.7e-3 and 7e-4 +/- 10%; 34 pairs have
+    no control.
+- claim: inhibition-gap-balance
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:inhibition-gap-balance
+  notes: The ratio depends on the integration windows of spikes lost and gained, which the paper does
+    not fix. Over 0 to 100 ms and frames -1 to 1 (reading (a)) it is 1.37, inside 0.5 to 2; the other
+    readings give 6.96, -0.19 or no value. The inputs themselves do not match the paper under any
+    reading (fig5e-inhibition-in-spontaneous-rate and fig5g-gap-junction-synchrony, both partially
+    reproduced), so no reading has a defensible basis.
+- claim: npy-fraction-and-similarity
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:npy-fraction-and-similarity
+  measured:
+  - 156
+  - 135
+  notes: NPY+ counts are 156, 171, 171 (M-YQ0201-27) and 135, 144, 157 (M-YQ0201-29) over the behavior,
+    sparseOpto and sparsePulseHad sessions, all within tolerance; measured values are the behavior
+    sessions. Over 505 behavior QC cells (257 NPY-, 248 NPY+) SNR medians differ by 5.5% (p = 0.011)
+    and rate medians by 0.3% (p = 0.80); KS p for x and y 0.08 to 0.96 in every session.
+- claim: npy-intrinsic-differences
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:npy-intrinsic-differences
+  notes: Over 543 sparseOpto QC cells (253 NPY-, 290 NPY+) all five differences hold in the stated
+    direction at p <= 0.001 (V_adp 1.8e-34, rheobase 3.5e-16, adaptation 2.1e-8, maximum rate 2.0e-4,
+    membrane time constant 2.6e-8). Per mouse, maximum rate (M-YQ0201-27) and membrane time constant
+    (M-YQ0201-29) are not significant.
+  deviations:
+  - Reading (b), the behavior-session cells, cannot be formed, since unit ids do not refer to the same
+    cells across sessions and the properties are stored only for the sparseOpto cells.
+- claim: npy-classifier
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:npy-classifier
+  measured:
+  - 76.8
+  - 50.0
+  notes: Pooled z-scored features give 76.8% balanced accuracy (69.3 to 83.9% over 10,000 80/20
+    splits) and 50.0% with shuffled labels; V_adp has the largest coefficient and the largest drop
+    when left out. Raw features give 73.1%; each mouse alone 76.3 to 76.7%.
+  deviations:
+  - Stratified splits and scikit-learn's default L2 penalty are standard choices the Methods do not
+    fix; the printed intervals are wider than the paper's.
+- claim: npy-connection-probability
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:npy-connection-probability
+  measured:
+  - 13.7
+  - 7.4
+  - 307
+  - 269
+  notes: NPY+ 13.7 +/- 12.9% (307 cells) and NPY- 7.4 +/- 9.0% (269 cells) within 400 um, rank-sum
+    p = 1.4e-9; the cell counts are the paper's.
+- claim: npy-ipsp-amplitude
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:npy-ipsp-amplitude
+  measured:
+  - -0.0372
+  - -0.0311
+  - 977
+  - 490
+  notes: Connected QC pairs 60 to 400 um, NPY+ presynaptic -0.0372 +/- 0.0266 SH (977 pairs) and NPY-
+    -0.0311 +/- 0.0227 SH (490), the paper's means and counts; p = 8.2e-7.
+- claim: npy-ipsp-duration
+  outcome: reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:npy-ipsp-duration
+  measured:
+  - 77.4
+  - 65.2
+  - 760
+  - 709
+  notes: Decay of connected QC pairs 60 to 400 um, NPY+ postsynaptic 77.4 +/- 101.2 ms (760 pairs) and
+    NPY- 65.2 +/- 102.3 ms (709), p = 3.1e-13; means and counts within tolerance, the counts near its
+    edge (699 +/- 70 and 646 +/- 65). All flagged pairs give 873 and 882.
+  deviations:
+  - The decay is taken in seconds; the file gives no unit, and the code's fit bounds (0.006 to 0.4)
+    are in seconds.
+- claim: npy-gap-junction-no-difference
+  outcome: not_reproduced
+  notebook: qi2026_excitability_connectivity.ipynb
+  output: claim:npy-gap-junction-no-difference
+  notes: The paper's test finds a systematic subtype effect. NPY+ presynaptic cells have a higher
+    gap-junction probability onto both target types (medians 0.45 vs 0.36, p = 9.1e-4; 0.42 vs 0.36,
+    p = 0.030), and spikelet amplitudes differ in the same direction in both matched comparisons by
+    presynaptic subtype (p = 5e-8, 1.7e-7) and by postsynaptic subtype (p = 0.0012, 7.3e-4). The
+    effects are small.
+- claim: npy-subthreshold-similar
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:npy-subthreshold-similar
+  measured:
+  - 0.973
+  - 0.933
+  notes: M-YQ0201-29, first 2000 s, R = 0.973 and slope 0.933 (NPY+ on NPY-; reverse 1.015);
+    non-running frames R = 0.979, slope 0.920; M-YQ0201-27 R = 0.98.
+- claim: npy-umap-groups
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:npy-umap-groups
+  measured:
+  - 158.5
+  - 205
+  - 201
+  - 300
+  notes: Medians over 10 seeds, 158.5 NPY- of 205 group 1 cells and 201 NPY+ of 300 group 2 cells; every
+    seed is within tolerance; Fisher p below 1e-21.
+  deviations:
+  - umap-learn replaces the MATLAB UMAP package and scikit-learn's k-means MATLAB's; both are seeded
+    here (0 to 9), where the code is unseeded.
+- claim: npy-whisking-onset-rates
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:npy-whisking-onset-rates
+  measured:
+  - 1.06
+  - 2.20
+  - 1.27
+  - 1.50
+  notes: Over 1,238 onsets, NPY+ (248 cells) 1.06 +/- 1.26 to 2.20 +/- 3.36 Hz, rank-sum p = 5.9e-8; NPY-
+    (257 cells) 1.27 +/- 1.47 to 1.50 +/- 1.94 Hz, p = 0.76.
+  deviations:
+  - Onsets are put on the voltage clock by timestamp, not by the code's bilinear resize (551 onsets in
+    M-YQ0201-29 against the code's 547).
+- claim: npy-oscillation-peak-rates
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:npy-oscillation-peak-rates
+  assumed: true
+  notes: At the peak frame (reading (b)) NPY- cells fire at 1.10 Hz and NPY+ at 0.74 Hz (medians,
+    p = 7.5e-6) and the voltages do not differ (p = 0.22). Over +/-300 frames (reading (a)) the rate
+    difference holds (p = 1.5e-4) but the voltages differ (p = 0.022). 4,279 and 5,886 peaks (code
+    5,888 for M-YQ0201-29).
+  deviations:
+  - The readings give different outcomes. Assumed is reading (b), the value at the peak, since the
+    claim and Supplementary Figure 26A compare the subtypes at the oscillation peaks; reading (a)
+    averages over a window of more than a full cycle of the 1.5 to 10 Hz band. Asked of the authors
+    (findings).
+- claim: npy-state-dependent-excitability
+  outcome: reproduced
+  notebook: qi2026_spontaneous.ipynb
+  output: claim:npy-state-dependent-excitability
+  notes: For V in [0.4, 0.6) SH, NPY- quiet above whisking (3.75 vs 2.28 Hz, p = 0.018), NPY+ whisking
+    above quiet (3.51 vs 2.37, p = 0.010), NPY- above NPY+ in quiet (p = 0.032), NPY+ above NPY- after
+    onset (p = 0.0064).
+findings:
+- kind: identifier_missing
+  statement: Unit ids are per session and nothing links the cells of a mouse's three sessions. Cells
+    with the same id lie a median 1.1 to 1.3 mm apart, and only 6 to 26 of 320 cells have a cell of
+    the other session within 10 um, so either the sessions image different cells or their
+    coordinates are in different frames; the files do not say which. The gfp_positive flags of a
+    mouse also differ between sessions (156, 171 and 171 NPY+ cells in M-YQ0201-27; 135, 144 and 157
+    in M-YQ0201-29), so the paper's per-mouse counts (166 and 145 of 320) cannot be traced to a session.
+- kind: data_missing
+  statement: The tool-development experiments of Figure 1 and Supplementary Figures 1, 5, 6, 9 and 18
+    (JF585 against JF608, wide-field against targeted images, the 76-cell stimulation, the lattice
+    off-target test, the spinning-disk z-stack, the 7.5x recordings) are not in the dandiset, and
+    the raw-movie excerpt holds only projections of the structural stacks.
+- kind: selection_undocumented
+  statement: The paper's connection and pair counts (802 of 7,280, 667 of 7,032, 3,553 and 2,199) are
+    those of ordered pairs of passed_qc cells 60 to 400 um apart, and the passed_qc flag differs by
+    session (the code documents its two rules); neither the band nor the rules are stated in the
+    files.
+- kind: metadata_insufficient
+  statement: ipsp_decay_source_units and its standard error carry no unit (the file says so); the values
+    are consistent with seconds (median 0.035, capped at 0.4). membrane_time_constant_ms is exactly 0
+    for 7 cells of M-YQ0201-27, with no flag marking a failed fit. The x and y origin is undocumented.
+- kind: code_mismatch
+  statement: The code's Figure 3 loader says the pairwise table's presynaptic and postsynaptic id
+    columns vary in the opposite order to its metric columns. In this version they agree (row k is
+    presynaptic k mod 320, postsynaptic k // 320), as the stored presynaptic spike times per row
+    confirm.
+- kind: methods_unavailable
+  statement: For the authors. Single-spike SNR; how is the spike height entering the SNR of 4.5 measured?
+    The stored normalized voltage gives 3.3 (1 over 1.4826 x MAD of the 1-frame difference), and
+    3.0 to 3.9 per session.
+- kind: methods_unavailable
+  statement: For the authors. Supplementary Movie 3 (interaction-kernel); how were the 2 ms pulse
+    duration, the 30 ms peak, the 35 ms decay and the 160 um length constant measured? The
+    population spikelet waveform has a 22.7 ms FWHM and probability times amplitude falls with 72 to
+    96 um.
+- kind: methods_unavailable
+  statement: For the authors. Spikes lost and gained (Figure 5E, 5G); over which window is the rate
+    integrated ("the entire IPSP duration", "the entire spikelet duration"), and against which
+    baseline? Readings give 2.9e-3 to 1.6e-2 spikes lost for the top quintile and ratios of the
+    balance from -0.19 to 6.96.
+- kind: methods_unavailable
+  statement: For the authors. Wave propagation analysis; how were peaks of the derivative separated,
+    was the derivative smoothed, in what window were the flanking minimum and maximum sought, and is
+    lag signed or absolute against separation? These decide the 3,858 events and the 18.2 mm/s.
+- kind: methods_unavailable
+  statement: For the authors. Hadamard stimulation; are the "640 stimuli" per cell the 750 ms code
+    steps with blue on? Counting steps gives 650, counting contiguous on blocks gives 360.
+- kind: methods_unavailable
+  statement: For the authors. P(spk|V) (Figure 4E, F); is V the sample at the spike frame (as the code
+    computes) or the voltage in the 10 ms before the spike (Methods)? With the spike frame 52% of
+    cells have a sigmoid fit with R^2 >= 0.9, with V 10 ms before 24%.
+- kind: methods_unavailable
+  statement: For the authors. Supplementary Figure 26A; is a cell's spike rate and voltage at
+    oscillation peaks the value at the peak or a mean over a window? At the peak the voltages do not
+    differ (p = 0.22), over +/-300 frames they do (p = 0.022).
+- kind: methods_unavailable
+  statement: For the authors. Detection limits and the lasso correction; which 100 pairs near the
+    cutoff, how the 50% point was estimated, the lasso penalty and the 1755 pairs. Neither the per-pair
+    null distributions nor per-trial responses are stored.
