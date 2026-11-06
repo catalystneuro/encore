@@ -18,7 +18,10 @@ Where the parameters come from:
   `rewarded_historyR`. Switch is a responded trial whose choice differs from the previous
   responded trial (`SWITCH_PREV_RESPONDED`, as the paper's code makeSessionDF builds it from
   the responded trials only); the variant compares with the previous trial and leaves the
-  trial out when that trial was not responded.
+  trial out when that trial was not responded. For the count of trials per session
+  (`choice_trials`), the claims file, as amended after a reader's answer, takes the code's
+  session_len: go cues with a choice in the longest stretch without manual or extra water
+  (makeSessionDF with cut_interruptions=True, F_behavior_w_FP.ipynb cell 19).
 - Unit selection (`select_units`) follows the criteria file metrics/beh_all.json of the
   paper's code (github.com/AllenNeuralDynamics/aind-beh-ephys-analysis at 971c1ca), cited by
   the claims file: maximum increase of p(response | laser) 0.55 to 1, latency at that maximum
@@ -74,7 +77,7 @@ SWITCH_PREV_RESPONDED = True
 TRIAL_COLUMNS = ["start_time", "stop_time", "goCue_start_time", "reward_outcome_time",
                  "animal_response", "rewarded_historyL", "rewarded_historyR", "trial_type",
                  "auto_waterL", "auto_waterR", "reward_delay", "response_duration",
-                 "ITI_duration", "laser_on_trial"]
+                 "ITI_duration", "laser_on_trial", "auto_manual_trial", "extra_reward"]
 
 UNIT_SCALARS = ["unit_id", "default_qc", "peak", "isi_violations_ratio", "location_along_probe",
                 "maximum_increase_of_p(response_cond_laser)",
@@ -162,7 +165,57 @@ def read_trials(f: h5py.File) -> pd.DataFrame:
     df["rewarded"] = (df.rewarded_historyL.astype(bool) | df.rewarded_historyR.astype(bool)) & df.responded
     df["choice_right"] = np.where(df.responded, (df.animal_response == 1).astype(float), np.nan)
     df["auto_water"] = (df.get("auto_waterL", 0) + df.get("auto_waterR", 0)) > 0
+    for c in ("auto_manual_trial", "extra_reward"):
+        df[c] = df[c].astype(bool) if c in df else False
     return df
+
+
+def recompute_interruptions(trials: pd.DataFrame, deliveries: dict) -> pd.DataFrame:
+    """auto_manual_trial and extra_reward as get_session_tbl (utils/beh_functions.py of
+    aind-beh-ephys-analysis at 971c1ca) derives them from the reward delivery times: a
+    delivery between the go cue and reward_outcome_time + reward_delay + 0.1 s is manual or
+    automatic water when it comes before the choice, and extra water when that side's
+    rewarded_history is False. Used to check the table's own columns."""
+    go = trials.goCue_start_time.values
+    hi = trials.reward_outcome_time.values + trials.reward_delay.values + 0.1
+    choice_t = trials.reward_outcome_time.values - go
+    am = np.zeros(len(trials), bool)
+    ex = np.zeros(len(trials), bool)
+    for side, rew in (("right", trials.rewarded_historyR.values), ("left", trials.rewarded_historyL.values)):
+        d = np.sort(deliveries[side])
+        for i in range(len(trials)):
+            t = d[(d > go[i]) & (d <= hi[i])] - go[i]
+            if len(t):
+                am[i] |= bool(np.any(t < choice_t[i]))
+                ex[i] |= not bool(rew[i])
+    return pd.DataFrame({"auto_manual_trial": am, "extra_reward": ex}, index=trials.index)
+
+
+def longest_zero_chunk(flags) -> tuple[int, int]:
+    """First and last index of the longest run of False (beh_functions.longest_zero_chunk; the
+    first run wins a tie)."""
+    best, start, best_se = 0, None, (None, None)
+    for i, v in enumerate(list(flags) + [True]):
+        if not v and start is None:
+            start = i
+        elif v and start is not None:
+            if i - start > best:
+                best, best_se = i - start, (start, i - 1)
+            start = None
+    return best_se
+
+
+def choice_trials(trials: pd.DataFrame, cut_interruptions: bool = True) -> pd.DataFrame:
+    """The rows makeSessionDF (beh_functions.py at 971c1ca) keeps: go cues with a choice, and
+    with cut_interruptions the longest stretch of them without manual or extra water
+    (auto_manual_trial | extra_reward), the session_len of Figure S12a
+    (F_behavior_w_FP.ipynb cell 19; claim figs12-trials-per-session). The code filters
+    animal_response != 2 over every row; no-go cues are left out here as the claim says."""
+    r = trials[trials.responded]
+    if not cut_interruptions or len(r) == 0:
+        return r
+    a, b = longest_zero_chunk((r.auto_manual_trial | r.extra_reward).tolist())
+    return r.iloc[0:0] if a is None else r.iloc[a:b + 1]
 
 
 def go_trials(trials: pd.DataFrame) -> pd.DataFrame:
@@ -348,7 +401,11 @@ def load_session(asset: dict) -> dict:
     peak-channel mean waveforms. Other units keep only their scalar columns."""
     f = open_nwb(asset["asset_id"])
     out = {"path": asset["path"], "kind": asset["kind"], "subject": asset["subject"],
-           "trials": read_trials(f), "licks": read_licks(f), "units": None, "spikes": None,
+           "trials": read_trials(f), "licks": read_licks(f),
+           "deliveries": {side: f[f"acquisition/{side}_reward_delivery_time/timestamps"][:]
+                          if f"acquisition/{side}_reward_delivery_time" in f else np.array([])
+                          for side in ("left", "right")},
+           "units": None, "spikes": None,
            "waveforms": None, "pupil": None, "fp": None}
     if "processing/behavior/pupil_diameter" in f:
         p = f["processing/behavior/pupil_diameter"]

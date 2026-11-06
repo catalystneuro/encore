@@ -111,21 +111,37 @@ outcomes:
     holds no anatomy, transcriptomics or slice data, so the claim cannot be tested on pinned public data
     here. The data were not fetched.
 - claim: figs12-trials-per-session
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_su_2026.ipynb
   output: claim:figs12-trials-per-session
   measured:
-  - 380.3
-  - 176
-  - 586
-  notes: Counting go cues as the criterion defines a trial, reading (a) the 112 sessions of the selected
-    units average 380.3 go cues (176 to 586) and reading (b) all 383 sessions with a trial table 433.4
-    (94 to 857); both means are above 342 +- 34.2, and only (a) has its range within 84.6 to 613.8. Counting
-    responded go cues, (a) averages 360.6 (128 to 558), within tolerance and with the paper's maximum
-    exactly, and (b) 404.2 (9 to 851). Whether the paper counts responded trials is asked of a reader
-    (questions/001950.yaml).
+  - 334.3
+  - 94
+  - 558
+  notes: Re-run after a reader's answer (questions/001950.yaml), which amended the criterion. A trial
+    is now a go cue with a choice, counted as the code counts session_len for Figure S12a (makeSessionDF
+    with cut_interruptions=True, the longest stretch of choice trials without manual or extra water),
+    and the session sets are (a) the sessions passing beh_only.json, (b) the sessions of the recorded
+    neurons and (c) all sessions. Under reading (b) the 112 sessions of the selected units average
+    334.3 trials with a range of 94 to 558, the paper's range exactly and the mean within 342 +- 34.2.
+    Reading (a), with the three computable criteria, gives 372 sessions averaging 393.0 (52 to 851), and
+    reading (c) 383 sessions averaging 389.8 (4 to 851), both outside; so do the variants of (a) with
+    the refitted model's aN and bias criteria (261 sessions, 39 mice, 387.1, 74 to 804; the code has
+    259 sessions and 32 mice) and with the 90-trial bound on the cut count (368 sessions, 396.4, 94
+    to 851). For reading (b) the count without the cut gives 360.6 (128 to 558) and all go cues 380.3
+    (176 to 586). Before the answer the claim was not reproduced, with a trial counted as a go cue, and under that
+    count no reading had its mean within tolerance (reading (b), then called (a), 380.3). The table's
+    auto_manual_trial and extra_reward columns agree in every row with their recomputation from the
+    reward deliveries, as get_session_tbl derives them. The version of record gives the range as 94 to
+    800 (Extended Data Fig. 9); the claims file follows the preprint's 94 to 558, which reading (b) matches.
   deviations:
-  - The session set of reading (a) is this attempt's 112 sessions, not the code's 106 (see the unit selection).
+  - The session set of reading (b) is this attempt's 112 sessions, not the code's 106 (see the unit selection);
+    reading (a) applies the three computable criteria of beh_only.json (session_len, p_sw_L, diff_1), with
+    the model-based aN and bias shown as a variant from the per-session refit.
+  - With a model name, makeSessionDF first trims each session to the model's session_cut from the code's
+    session curation table, which is not in the dandiset; no such trim is applied here.
+  - The code keeps rows with animal_response != 2 over the whole trial table; no-go cues are left out
+    here as the criterion says. No no-go cue in the dandiset has a response, so the counts are the same.
 - claim: iti-mean
   outcome: partially_reproduced
   notebook: reproduce_su_2026.ipynb
@@ -294,11 +310,13 @@ outcomes:
   measured:
   - 0.167
   - 0.165
-  notes: Along the axes printed by F_spatial-axis-comparison.ipynb, r = 0.165 (p = 0.076) for [-0.248,
-    0.499, 0.830] and 0.167 (p = 0.074) for [0.024, 0.332, 0.943]; the code regressors and the stand-in
-    give 0.157 to 0.170, p = 0.068 to 0.093. Positive as in the paper, below 0.23 +- 0.023 and not significant.
-    The notebook labels the first axis MERFISH and the second retrograde, the reverse of the claims file;
-    asked of a reader. Here both r are equal, so the mapping does not change the outcome.
+  notes: Re-run after a reader's answer (questions/001950.yaml), which corrected the criterion's pairing
+    of axes; the notebook now labels b_z = [0.024, 0.332, 0.943] the retrograde (LDA) axis, the legend's
+    left value, and b_y = [-0.248, 0.499, 0.830] the MERFISH (CCA) axis, the right value. Along b_z r =
+    0.167 (p = 0.074) and along b_y r = 0.165 (p = 0.076); the code regressors and the stand-in give 0.157
+    to 0.170, p = 0.068 to 0.093. Positive as in the paper, below 0.23 +- 0.023 and not significant. Both
+    expected values are 0.23, so the answer changes neither the measured values nor the outcome, which
+    was not reproduced before it too.
   deviations:
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with
     metrics/beh_all.json and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca
@@ -334,10 +352,13 @@ outcomes:
   measured:
   - 0.211
   - 0.203
-  notes: With switches against the previous trial and the code's regressors, r = 0.203 (p = 0.022) and
-    0.211 (p = 0.017) on the two axes, positive and significant but outside 0.32 +- 0.032 and 0.30 +-
-    0.030. The other readings give r = -0.055 to 0.138, p >= 0.12. The axis mapping question of fig5d-ignore-on-anatomy-axes
-    applies; under either mapping neither r is within tolerance.
+  notes: Re-run after a reader's answer (questions/001950.yaml) on the pairing of the axes in the criterion
+    of fig5d-ignore-on-anatomy-axes, which this claim uses. Under the corrected pairing, with switches against
+    the previous trial and the code's regressors, r = 0.211 (p = 0.017) along the retrograde (LDA) axis
+    b_z, against 0.32 +- 0.032, and r = 0.203 (p = 0.022) along the MERFISH (CCA) axis b_y, against 0.30
+    +- 0.030; positive and significant but outside tolerance. The other readings give r = -0.055 to 0.138,
+    p >= 0.12. The earlier record held the same two values, with the axes named the other way round;
+    under either pairing neither r is within tolerance, so the outcome stays partially reproduced.
   deviations:
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with
     metrics/beh_all.json and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca
