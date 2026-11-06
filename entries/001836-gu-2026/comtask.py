@@ -22,6 +22,8 @@ Where the parameters come from:
   outer-well poke after it. The trial is rewarded when that well's pump turns on within
   ``REWARD_WINDOW_S`` of the poke (claims file, opening comment, point 4: rewardNum == 2). The
   window is a standard choice: pumps turn on within milliseconds of the poke or not at all.
+  Leaving the well (``poke_out``, for figs7b-no-swr) is the last beam release at the final well
+  before a poke at any other well.
 - Sessions with fewer than ``MIN_TRIALS`` trials are left out where a claim says so (claims file,
   opening comment, point 2, behavior.determine_if_include_session).
 - Linearized position: the 500 Hz Spyglass linearization (Methods, Change of mind time detection,
@@ -30,10 +32,14 @@ Where the parameters come from:
 - COM detection (Methods, Change-of-mind trial detection and Change of mind time detection; claims
   file, fig1e-trial-counts): in a trial, every entry into an outer arm other than the final one
   whose depth exceeds the threshold (``THETA_CM`` = 10 cm, or ``THETA_PROP`` = 0.1 of the arm's
-  length, the two readings of the claims file), and in which the head moves in the negative
-  direction along the arm for more than ``REVERSAL_MS`` after binary closing, is a COM event,
-  provided the second before the reversal holds at least ``MIN_POS_S`` s of position samples
-  (claims file, findProportion). The Methods name scipy's ``binary_closing`` without parameters;
+  length, the two readings of the claims file; the arm length is the 96 cm of the Methods,
+  Behavioral apparatus, so 9.6 cm), and in which the head moves in the negative direction along the
+  arm for more than ``REVERSAL_MS`` after binary closing, is a COM event, provided the second before
+  the reversal holds at least ``MIN_POS_S`` s of position samples (claims file, findProportion). The
+  COM time is the start of the first such reversal that ends after the head has passed the
+  threshold: the Methods define it as "the moment the rat stops advancing forward in a choice arm",
+  so a short backward wiggle near the arm's entrance, before the rat advances further, is not it.
+  Each event also keeps the times the head entered and left the arm's segment. The Methods name scipy's ``binary_closing`` without parameters;
   its default structure (three neighbouring samples in one dimension) is used.
 - Side transitions: arms 1-2 and 3-4 are on the same side (claims file, point 5).
 - Nearby control trial: drawn at random from trials t-3 to t+3 of the same session that are not
@@ -44,7 +50,7 @@ from __future__ import annotations
 
 import json
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 import h5py
 import numpy as np
@@ -61,6 +67,7 @@ REWARD_WINDOW_S = 2.0
 MIN_TRIALS = 20
 THETA_CM = 10.0
 THETA_PROP = 0.1
+ARM_LEN_CM = 96.0          # outer arm length (Methods, Behavioral apparatus)
 REVERSAL_MS = 100.0
 MIN_POS_S = 0.8
 LIN_RATE_MIN = 100.0       # the 500 Hz linearization, as against the 23 Hz one
@@ -104,6 +111,13 @@ def _rising(ts, data):
     return ts[(data > 0) & (prev == 0)]
 
 
+def _falling(ts, data):
+    data = np.asarray(data)
+    ts = np.asarray(ts)
+    prev = np.concatenate([[0], data[:-1]])
+    return ts[(data == 0) & (prev > 0)]
+
+
 def load_raw_events(url):
     """Epochs and digital events of a day's raw file (no voltage is read)."""
     f = open_nwb(url)
@@ -116,6 +130,8 @@ def load_raw_events(url):
         for kind in ("poke", "milk_pump"):
             g = be[f"{w}_{kind}"]
             ev[(w, kind)] = _rising(g["timestamps"][:], g["data"][:])
+            if kind == "poke":
+                ev[(w, "poke_off")] = _falling(g["timestamps"][:], g["data"][:])
     scripts = {}
     af = f["processing/associated_files"]
     for k in af:
@@ -168,7 +184,13 @@ def build_trials(ev, start, stop):
         t1, well = outer[j]
         pump = ev[(f"Arm{well}", "milk_pump")]
         rew = bool(np.any((pump >= t1) & (pump <= t1 + REWARD_WINDOW_S)))
-        rows.append({"start": t0, "end": t1, "final": well, "rewarded": rew})
+        # leaving the well: the last beam release at this well before a poke at any other well
+        other = np.concatenate([ev[(w, "poke")] for w in WELLS if w != f"Arm{well}"])
+        nxt_other = other[other > t1].min() if np.any(other > t1) else stop
+        off = ev[(f"Arm{well}", "poke_off")]
+        off = off[(off > t1) & (off <= min(nxt_other, stop))]
+        poke_out = off[-1] if len(off) else np.nan
+        rows.append({"start": t0, "end": t1, "final": well, "rewarded": rew, "poke_out": poke_out})
     return pd.DataFrame(rows)
 
 
@@ -187,7 +209,7 @@ def arm_segments(lin, ev, start, stop):
     return out
 
 
-def detect_com(trials, lin, seg_of_arm, arm_start, arm_len, theta="cm"):
+def detect_com(trials, lin, seg_of_arm, arm_start, theta="cm"):
     """COM events per trial. Returns trials with com columns and a list of events."""
     t = lin.time.values
     lp = lin.lin.values
@@ -212,16 +234,20 @@ def detect_com(trials, lin, seg_of_arm, arm_start, arm_len, theta="cm"):
                 if arm is None or arm == tr.final:
                     continue
                 depth = d[a:b] - arm_start[arm]
-                thr = THETA_CM if theta == "cm" else THETA_PROP * arm_len[arm]
+                thr = THETA_CM if theta == "cm" else THETA_PROP * ARM_LEN_CM
                 if np.nanmax(depth) <= thr:
                     continue
+                i_thr = int(np.flatnonzero(depth > thr)[0])
                 neg = np.diff(depth) < 0
                 neg = ndimage.binary_closing(neg)
                 lab, nlab = ndimage.label(neg)
                 if nlab == 0:
                     continue
                 sizes = ndimage.sum(neg, lab, range(1, nlab + 1))
-                ok = np.flatnonzero(sizes > rev_n)
+                # a reversal counts once the head has passed the threshold: the COM time is where
+                # the rat stops advancing in the arm (Methods, Change of mind time detection)
+                last = ndimage.maximum(np.arange(len(neg)), lab, range(1, nlab + 1))
+                ok = np.flatnonzero((sizes > rev_n) & (np.asarray(last) >= i_thr))
                 if len(ok) == 0:
                     continue
                 first = np.flatnonzero(lab == ok[0] + 1)[0]
@@ -229,11 +255,12 @@ def detect_com(trials, lin, seg_of_arm, arm_start, arm_len, theta="cm"):
                 w = (t >= t_rev - 1) & (t < t_rev)
                 if np.sum(np.isfinite(lp[w])) * dt < MIN_POS_S:
                     continue
-                visits.append((arm, t_rev, float(np.nanmax(depth))))
+                visits.append((arm, t_rev, float(np.nanmax(depth)), ts[a], ts[b - 1]))
                 if arm not in arms_entered:
                     arms_entered.append(arm)
-        for arm, t_rev, depth in visits:
-            events.append({"trial_start": tr.start, "arm": arm, "t_rev": t_rev, "depth": depth})
+        for arm, t_rev, depth, t_enter, t_exit in visits:
+            events.append({"trial_start": tr.start, "arm": arm, "t_rev": t_rev, "depth": depth,
+                           "t_enter": t_enter, "t_exit": t_exit})
         n_arm.append(len(arms_entered))
         n_time.append(len(visits))
         first_arm.append(visits[0][0] if visits else np.nan)
@@ -319,8 +346,8 @@ def load_day(assets_day):
         if len(tr) == 0:
             checks.append({"epoch": tag, "lin_files": 1, "trials": 0})
             continue
-        trp, evp = detect_com(tr, lin, seg_of_arm, starts, lens, theta="prop")
-        tr, evs = detect_com(tr, lin, seg_of_arm, starts, lens, theta="cm")
+        trp, evp = detect_com(tr, lin, seg_of_arm, starts, theta="prop")
+        tr, evs = detect_com(tr, lin, seg_of_arm, starts, theta="cm")
         for x in (tr, trp):
             x["epoch"] = tag
             x["trial"] = np.arange(len(x))
@@ -369,10 +396,16 @@ def statescript_counts(content):
             "ss_outerCount": max(oc) if oc else 0, "ss_goalCount": max(gc) if gc else 0}
 
 
-def load_all(assets, workers=5):
+def processes(fn, items, workers=12):
+    """Map over items in separate processes (h5py serializes reads across threads)."""
+    with ProcessPoolExecutor(workers) as ex:
+        return list(ex.map(fn, items))
+
+
+def load_all(assets, workers=12):
     """load_day for every rat-day; adds rat and day columns and the day index per rat."""
     days = sorted(assets.day.unique())
-    res = dict(zip(days, parallel(lambda d: load_day(assets[assets.day == d]), days, workers=workers)))
+    res = dict(zip(days, processes(load_day, [assets[assets.day == d] for d in days], workers=workers)))
     for d, r in res.items():
         rat = d.split("-")[0]
         for k in ("trials", "events", "trials_prop", "events_prop", "checks"):
@@ -380,3 +413,562 @@ def load_all(assets, workers=5):
                 r[k]["rat"] = RATS[rat]
                 r[k]["day"] = d
     return res
+
+
+# ---------------------------------------------------------------------------------------------
+# Sharp-wave ripples (figs7b-no-swr)
+#
+# Where the parameters come from. Ripple band 150 to 250 Hz, with 140 and 260 Hz stop edges
+# (Methods, Electrophysiology, "band-pass filters to produce SWR LFP (150-250Hz pass, 140-260Hz
+# stop)"); the paper uses ghostipy's FIR design, here an equiripple FIR of the same edges
+# (scipy.signal.remez, a standard choice), applied with zero phase. Envelope by the Hilbert transform.
+# Consensus trace: squared envelopes summed over tetrodes, smoothed by a 4 ms Gaussian; an event is
+# a run of the consensus trace above 2 SD of its session baseline for at least 15 ms in which more
+# than one tetrode's envelope exceeds 3 SD of its own baseline; baselines are taken where the
+# head speed is above 4 cm/s and events are kept only below 4 cm/s (Methods, SWR detection). The
+# "session" of the baseline is a run epoch; the baseline is estimated from BASE_N windows of
+# BASE_S seconds spread evenly over the epoch, not the whole epoch, to keep the streaming small
+# (an assumption, stated in the notebook). One channel per tetrode, the first good one (Methods,
+# Electrophysiology, "the first functioning channel from each tetrode").
+# The electrode table gives no locations, so the tetrodes are those of the LFP file with more than
+# one channel in it (an assumption). The reference: the Methods subtract an ipsilateral corpus
+# callosum channel; the electrode table names each channel's reference (`ref_elect_id`), which is
+# in the LFP file for some rats and days only. Two readings: the LFP as deposited, and the LFP
+# minus its `ref_elect_id` channel where that channel is in the file.
+# Speed: the Spyglass head velocity at the camera rate (`scratch/BehavioralTimeSeries/
+# head_velocity`, third column, in cm/s by its conversion of 0.01 to m/s).
+# ---------------------------------------------------------------------------------------------
+
+from scipy import signal  # noqa: E402
+
+SWR_BAND = (150.0, 250.0)
+SWR_STOP = (140.0, 260.0)
+SWR_TAPS = 401
+SWR_SMOOTH_MS = 4.0
+SWR_CONS_SD = 2.0
+SWR_IND_SD = 3.0
+SWR_MIN_MS = 15.0
+SWR_MIN_CH = 2
+SPEED_CM_S = 4.0
+BASE_N = 20
+BASE_S = 4.0
+PAD_S = 0.5
+LFP_FS = 1000.0
+
+
+def _ripple_fir(fs=LFP_FS):
+    return signal.remez(SWR_TAPS, [0, SWR_STOP[0], SWR_BAND[0], SWR_BAND[1], SWR_STOP[1], fs / 2],
+                        [0, 1, 0], fs=fs)
+
+
+def lfp_layout(f):
+    """Detection channel (column) per tetrode and the column of its reference, or -1."""
+    e = f["general/extracellular_ephys/electrodes"]
+    tab = pd.DataFrame({"id": e["id"][:], "nt": e["ntrode_id"][:], "ref": e["ref_elect_id"][:],
+                        "bad": e["bad_channel"][:], "pe": e["probe_electrode"][:]}).set_index("id")
+    ids = f["scratch/filtered data/electrodes"][:]
+    col = {int(i): k for k, i in enumerate(ids)}
+    sub = tab.loc[ids].assign(col=range(len(ids)))
+    nper = sub.nt.value_counts()
+    det = []
+    for nt, g in sub[sub.nt.isin(nper.index[nper > 1])].groupby("nt"):
+        g = g[~g.bad].sort_values("pe")
+        if len(g) == 0:
+            continue
+        r = g.iloc[0]
+        ref_col = col.get(int(r.ref), -1)
+        if ref_col == int(r.col):
+            ref_col = -1
+        det.append({"ntrode": int(nt), "col": int(r.col), "ref_col": ref_col})
+    det = pd.DataFrame(det)
+    # a tetrode whose reference channel is the tetrode's own (the reference electrode) is left out
+    ref_nts = set(sub.loc[[i for i in set(sub.ref) if i in col], "nt"])
+    det = det[~det.ntrode.isin(ref_nts)]
+    return det, ids
+
+
+def _find_index(ts, t, n):
+    """Index of the first sample at or after t in a timestamps dataset, by interpolation search."""
+    lo, hi = 0, n - 1
+    tlo, thi = float(ts[lo]), float(ts[hi])
+    if t <= tlo:
+        return 0
+    for _ in range(60):
+        if hi - lo <= 1:
+            return hi
+        g = int(lo + (t - tlo) / (thi - tlo) * (hi - lo))
+        g = min(max(g, lo + 1), hi - 1)
+        tg = float(ts[g])
+        if tg < t:
+            lo, tlo = g, tg
+            # close enough: finish with a local block
+            if t - tg < 2.0:
+                blk = ts[g:min(g + 4000, n)]
+                return g + int(np.searchsorted(blk, t))
+        else:
+            hi, thi = g, tg
+    return hi
+
+
+class LFP:
+    """Streams windows of one day's LFP file."""
+
+    def __init__(self, url):
+        self.f = open_nwb(url)
+        self.es = self.f["scratch/filtered data"]
+        self.ts = self.es["timestamps"]
+        self.n = self.ts.shape[0]
+        self.det, self.ids = lfp_layout(self.f)
+        self.fir = _ripple_fir()
+
+    def read(self, t0, t1):
+        i0 = _find_index(self.ts, t0, self.n)
+        i1 = min(i0 + int((t1 - t0) * LFP_FS * 1.01) + 2, self.n)
+        tt = self.ts[i0:i1]
+        k = int(np.searchsorted(tt, t1))
+        x = self.es["data"][i0:i0 + k, :]
+        return tt[:k], x
+
+    def envelopes(self, x):
+        """Ripple envelopes per detection tetrode, as deposited (r0) and minus the reference (r1)."""
+        x = x.astype(float)
+        out = {}
+        for name in ("r0", "r1"):
+            sig = x[:, self.det.col.values].copy()
+            if name == "r1":
+                has = self.det.ref_col.values >= 0
+                sig[:, has] -= x[:, self.det.ref_col.values[has]]
+            filt = signal.oaconvolve(sig, self.fir[:, None], mode="same", axes=0)
+            env = np.abs(signal.hilbert(filt, axis=0))
+            sd = SWR_SMOOTH_MS / 1000 * LFP_FS
+            out[name] = ndimage.gaussian_filter1d(env, sd, axis=0)
+        return out
+
+
+def _speed_at(speed, t):
+    return np.interp(t, speed[0], speed[1], left=np.nan, right=np.nan)
+
+
+def load_speed(url):
+    g = open_nwb(url)["scratch/BehavioralTimeSeries/head_velocity"]
+    return g["timestamps"][:], g["data"][:, 2]
+
+
+def swr_baseline(lfp, speed, start, stop):
+    """Mean and SD of the consensus trace and of each tetrode's envelope at speed > 4 cm/s."""
+    stats = {"r0": ([], []), "r1": ([], [])}
+    edges = np.linspace(start + PAD_S, stop - BASE_S - PAD_S, BASE_N)
+    kept = []
+    for a in edges:
+        tt, x = lfp.read(a - PAD_S, a + BASE_S + PAD_S)
+        if len(tt) < BASE_S * LFP_FS:
+            continue
+        env = lfp.envelopes(x)
+        kept.append((a, tt, env))
+        keep = (tt >= a) & (tt < a + BASE_S) & (_speed_at(speed, tt) > SPEED_CM_S)
+        for name, e in env.items():
+            stats[name][0].append(e[keep])
+            stats[name][1].append((e[keep] ** 2).sum(1))
+    out = {}
+    for name, (envs, cons) in stats.items():
+        envs = np.concatenate(envs) if envs else np.empty((0, len(lfp.det)))
+        cons = np.concatenate(cons) if cons else np.empty(0)
+        out[name] = {"env_mu": envs.mean(0), "env_sd": envs.std(0), "cons_mu": cons.mean(),
+                     "cons_sd": cons.std(), "n": len(cons)}
+    # a check: SWRs per second of immobility in the same windows
+    for name in out:
+        n_ev, imm = 0, 0.0
+        for a, tt, env in kept:
+            on = detect_swr(tt, env[name], out[name], speed)
+            n_ev += int(((on >= a) & (on < a + BASE_S)).sum())
+            inside = (tt >= a) & (tt < a + BASE_S)
+            imm += float(np.sum(_speed_at(speed, tt[inside]) < SPEED_CM_S)) / LFP_FS
+        out[name]["imm_events"], out[name]["imm_s"] = n_ev, imm
+    return out
+
+
+def detect_swr(tt, env, base, speed):
+    """Onset times of SWRs in one window (see the section comment)."""
+    cons = (env ** 2).sum(1)
+    cz = (cons - base["cons_mu"]) / base["cons_sd"]
+    iz = (env - base["env_mu"]) / base["env_sd"]
+    above = cz > SWR_CONS_SD
+    lab, nlab = ndimage.label(above)
+    onsets = []
+    min_n = SWR_MIN_MS / 1000 * LFP_FS
+    sp = _speed_at(speed, tt)
+    for k, sl in enumerate(ndimage.find_objects(lab), start=1):
+        s = sl[0]
+        if s.stop - s.start < min_n:
+            continue
+        nch = int(((iz[s] > SWR_IND_SD).any(0)).sum())
+        if nch < SWR_MIN_CH:
+            continue
+        if not (sp[s.start] < SPEED_CM_S):
+            continue
+        onsets.append(tt[s.start])
+    return np.array(onsets)
+
+
+def swr_day(lfp_url, speed_by_epoch, epochs, windows):
+    """Ripple counts in each window of one day.
+
+    ``windows``: rows with ``epoch``, ``read0``, ``read1`` (the span to stream) and any number of
+    ``w0_<x>``/``w1_<x>`` pairs (the windows to count in). Returns the windows with ``n_<x>_<r>``
+    counts for the two reference readings, and the baselines per epoch.
+    """
+    lfp = LFP(lfp_url)
+    base = {}
+    for e in epochs.itertuples():
+        if e.tag in speed_by_epoch and (windows.epoch == e.tag).any():
+            base[e.tag] = swr_baseline(lfp, speed_by_epoch[e.tag], e.start, e.stop)
+    names = sorted({c[3:] for c in windows.columns if c.startswith("w0_")})
+    rows = []
+    for w in windows.itertuples(index=False):
+        row = w._asdict()
+        b = base.get(w.epoch)
+        if b is None:
+            rows.append(row)
+            continue
+        tt, x = lfp.read(w.read0 - PAD_S, w.read1 + PAD_S)
+        if len(tt) < 10:
+            rows.append(row)
+            continue
+        env = lfp.envelopes(x)
+        for r, e in env.items():
+            on = detect_swr(tt, e, b[r], speed_by_epoch[w.epoch])
+            for nm in names:
+                a0, a1 = row[f"w0_{nm}"], row[f"w1_{nm}"]
+                row[f"n_{nm}_{r}"] = int(((on >= a0) & (on < a1)).sum()) if np.isfinite(a0) and np.isfinite(a1) else np.nan
+        rows.append(row)
+    bt = pd.DataFrame([{"epoch": k, "ref": r, "n_base": v[r]["n"], "cons_mu": v[r]["cons_mu"],
+                        "cons_sd": v[r]["cons_sd"], "imm_events": v[r]["imm_events"], "imm_s": v[r]["imm_s"]}
+                       for k, v in base.items() for r in v])
+    return pd.DataFrame(rows), bt, lfp.det.assign(n_ref=int((lfp.det.ref_col >= 0).sum()))
+
+
+def speed_by_epoch(assets_day, epochs):
+    """Head speed (cm/s) of each run epoch, from the camera-rate Spyglass position file."""
+    objs = assets_day[assets_day.kind == "obj_behavior"]
+    pr = pd.DataFrame(parallel(probe_obj, list(objs.url), workers=8), index=objs.index)
+    objs = objs.join(pr)
+    objs = objs[(objs.obj_kind == "position") & (objs.rate <= LIN_RATE_MIN)]
+    out = {}
+    for e in epochs[epochs.tag.str.contains("Session")].itertuples():
+        cand = objs[(objs.t0 >= e.start - 1) & (objs.t1 <= e.stop + 1)]
+        if len(cand):
+            out[e.tag] = load_speed(cand.iloc[0].url)
+    return out
+
+
+def triggered_rows(url):
+    """Trigger time, window and trial info of each row of a `scratch/triggered` table."""
+    g = open_nwb(url)["scratch/triggered"]
+    ta = g["time_abs"][:]
+    tr = g["time_triggered"][:]
+    info = g["triggered_trial_info"][:]
+    if ta.ndim == 2:            # one row per trigger, fixed length
+        ta, tr = ta.ravel(), tr.ravel()
+        idx = np.arange(1, info.shape[0] + 1) * (len(ta) // info.shape[0])
+        layout = "fixed"
+    else:                       # ragged rows with an index
+        idx = g["time_abs_index"][:].astype(int)
+        layout = "ragged"
+    rows = []
+    for k, (a, b) in enumerate(zip(np.concatenate([[0], idx[:-1]]), idx)):
+        if b <= a:
+            continue
+        off = ta[a:b] - tr[a:b]
+        rows.append({"row": k, "t_trig": float(np.median(off)), "off_spread": float(np.ptp(off)),
+                     "rel_min": float(tr[a:b].min()), "rel_max": float(tr[a:b].max()), "n": int(b - a),
+                     "info0": int(info[k, 0]), "info1": int(info[k, 1]), "layout": layout})
+    return pd.DataFrame(rows)
+
+
+def triggered_day(assets_day):
+    objs = assets_day[assets_day.kind == "obj"]
+    pr = pd.DataFrame(parallel(probe_obj, list(objs.url), workers=8), index=objs.index)
+    objs = objs.join(pr)
+    objs = objs[objs.obj_kind == "triggered"]
+    out = parallel(lambda u: triggered_rows(u), list(objs.url), workers=8)
+    for o, p in zip(out, objs.path):
+        o["file"] = p
+    return pd.concat(out, ignore_index=True) if out else pd.DataFrame()
+
+
+def swr_job(args):
+    """swr_day for one day, with its speed; for ``processes``."""
+    lfp_url, assets_day, epochs, windows = args
+    sp = speed_by_epoch(assets_day, epochs)
+    return swr_day(lfp_url, sp, epochs, windows)
+
+
+# ---------------------------------------------------------------------------------------------
+# Triggered decode tables (Figure 3)
+#
+# The `scratch/triggered` tables are written by the paper's code
+# (Gu2026 at commit 0f0c9a7, changeOfMind_triggered_position.save_triggered_position_decode_day and
+# changeOfMind_triggered.find_triggered_session): per row, a window of the 500 Hz linearized head
+# position and the decoded position, as `triggered_positions` (position minus the position at the
+# trigger, or absolute when the window is not restricted to the arm), `triggered_positions_baseoff`
+# (indexed by absolute time), `triggered_decodes_baseoff` (decode minus the arm's base) and
+# `triggered_decodes_abs`; `triggered_trial_info` is (trial, arm). The decode is the MAP when the
+# table was made with max_flag (turnaround_triggered_decode); restricted to the arm, moments with
+# 0.2 or less of the causal posterior in the arm are NaN. Which parameter set made a file is kept in
+# the lab's database, not in the file; here each file is identified by aligning its trigger times
+# with this entry's COM times and outer pokes, and by its window.
+# Arm regions on the linearization: the base and outer end of the home arm and the four outer arms,
+# as the code gives them (changeOfMind_remote_interval.loc1d_to_baseoff); checked against the
+# deposited linearization in the notebook.
+# ---------------------------------------------------------------------------------------------
+
+ARM_REGIONS = np.array([[0.0, 57.63896252], [165.66041604, 252.64353221], [331.10211383, 418.29227956],
+                        [496.49241045, 583.18763812], [657.72023142, 743.03215907]])
+FIG3_MAX_CM = 80.0     # head within the first 80 cm of the arm (figure4c.maze_distance)
+TRIG_TOL_S = 0.02
+
+
+def loc_baseoff(x):
+    """(arm, distance from the arm's base toward its outer end) of linear positions; NaN off arms
+    (changeOfMind_remote_interval.loc1d_to_baseoff; the home arm, 0, is measured from its end)."""
+    x = np.asarray(x, dtype=float)
+    arm = np.full(x.shape, np.nan)
+    d = np.full(x.shape, np.nan)
+    for k, (a, b) in enumerate(ARM_REGIONS):
+        m = (x >= a) & (x < b)
+        arm[m] = k
+        d[m] = (b - x[m]) if k == 0 else (x[m] - a)
+    return arm, d
+
+
+def maze_distance_max(pos, dec):
+    """Largest maze distance between head and decode, through the centre when on different arms
+    (figure4c.maze_distance_max)."""
+    if len(pos) == 0:
+        return np.nan
+    ap, dp = loc_baseoff(pos)
+    ad, dd = loc_baseoff(dec)
+    dist = np.where(ap == ad, np.abs(dp - dd), dp + dd)
+    return np.nanmax(dist) if np.any(np.isfinite(dist)) else np.nan
+
+
+def read_triggered(url):
+    g = open_nwb(url)["scratch/triggered"]
+    cols = ["time_abs", "time_triggered", "triggered_positions", "triggered_positions_baseoff",
+            "triggered_decodes_baseoff", "triggered_decodes_abs"]
+    info = g["triggered_trial_info"][:]
+    rows = [{} for _ in range(info.shape[0])]
+    for c in cols:
+        data = g[c][:]
+        if f"{c}_index" in g:       # ragged rows, each column with its own index
+            idx = g[f"{c}_index"][:].astype(int)
+            b0 = np.concatenate([[0], idx[:-1]])
+            for k, (a, b) in enumerate(zip(b0, idx)):
+                rows[k][c] = data[a:b]
+        elif data.ndim == 2:        # one row per trigger, fixed length
+            for k in range(len(rows)):
+                rows[k][c] = data[k]
+        else:                       # one value per row
+            for k in range(len(rows)):
+                rows[k][c] = np.atleast_1d(data[k])
+    for k, r in enumerate(rows):
+        r["trial"], r["arm"] = int(info[k, 0]), int(info[k, 1])
+        n = len(r["time_abs"])
+        for c in cols:              # a decode the code could not align is stored empty: NaN here
+            if len(r[c]) != n:
+                r[c] = np.full(n, np.nan)
+    return rows
+
+
+def _nearest(v, x):
+    v = np.sort(np.asarray(v))
+    if len(v) == 0:
+        return np.full(len(x), np.inf)
+    j = np.clip(np.searchsorted(v, x), 1, max(len(v) - 1, 1))
+    return np.minimum(np.abs(x - v[j - 1]), np.abs(x - v[np.minimum(j, len(v) - 1)]))
+
+
+def classify_triggered(rows, com_times, poke_times):
+    """What a file holds: trigger (COM time, outer poke, other), window and whether restricted to the arm."""
+    rows = [r for r in rows if len(r["time_abs"])]
+    trig = np.array([np.median(r["time_abs"] - r["time_triggered"]) for r in rows])
+    rel_min = np.array([np.nanmin(r["time_triggered"]) for r in rows])
+    rel_max = np.array([np.nanmax(r["time_triggered"]) for r in rows])
+    d_com = _nearest(com_times, trig)
+    d_poke = _nearest(poke_times, trig)
+    trigger = ("com" if np.mean(d_com < TRIG_TOL_S) > 0.5 else
+               "poke" if np.mean(d_poke < TRIG_TOL_S) > 0.5 else "other")
+    window = ("pre" if np.all(rel_max <= 0.01) else "post" if np.all(rel_min >= -0.01) else "both")
+    # restricted to the arm: positions are relative to the trigger position (0 at the trigger)
+    at0 = [r["triggered_positions"][np.argmin(np.abs(r["time_triggered"]))] for r in rows]
+    segment = bool(np.nanmax(np.abs(at0)) < 1e-6)
+    return {"trigger": trigger, "window": window, "segment": segment, "rows": len(rows),
+            "frac_com": float(np.mean(d_com < TRIG_TOL_S)), "frac_poke": float(np.mean(d_poke < TRIG_TOL_S)),
+            "median_d_com": float(np.median(d_com)), "median_d_poke": float(np.median(d_poke)),
+            "rel_min": float(np.median(rel_min)), "rel_max": float(np.median(rel_max)),
+            "nan_decode": float(np.mean(np.concatenate([np.isnan(r["triggered_decodes_abs"]) for r in rows])))}
+
+
+def _speed_rows(rows, speeds):
+    """Head speed at each sample of each row, from the run epoch whose speed covers it."""
+    out = []
+    for r in rows:
+        t = r["time_abs"]
+        s = np.full(len(t), np.nan)
+        for ts, sp in speeds.values():
+            if len(ts) and t[0] >= ts[0] - 1 and t[-1] <= ts[-1] + 1:
+                s = np.interp(t, ts, sp)
+                break
+        out.append(s)
+    return out
+
+
+def segment_metrics(rows, speeds):
+    """Per row, at head speed of 4 cm/s or more: the max |head - decode| within the arm (both from the
+    arm base), the range of head positions and the number of samples (figure4c.return_distance_max and
+    make_distance_plot)."""
+    sp = _speed_rows(rows, speeds)
+    out = []
+    for r, s in zip(rows, sp):
+        pos = np.array(r["triggered_positions_baseoff"], dtype=float)
+        dec = np.array(r["triggered_decodes_baseoff"], dtype=float)
+        slow = ~(s >= SPEED_CM_S)
+        pos[slow] = np.nan
+        dec[slow] = np.nan
+        out.append({"trial": r["trial"], "arm": r["arm"], "t_trig": float(np.median(r["time_abs"] - r["time_triggered"])),
+                    "pos": pos, "dec": dec, "n": len(pos),
+                    "pos_min": np.nanmin(pos) if np.any(np.isfinite(pos)) else np.nan,
+                    "pos_max": np.nanmax(pos) if np.any(np.isfinite(pos)) else np.nan,
+                    "speed_known": float(np.mean(np.isfinite(s)))})
+    return out
+
+
+def max_dist(pos, dec, fix_range=None):
+    if fix_range is not None:
+        m = (pos >= fix_range[0]) & (pos <= fix_range[1])
+        if not np.any(m):
+            return np.nan
+        pos, dec = pos[m], dec[m]
+    d = np.abs(pos - dec)
+    return np.nanmax(d) if np.any(np.isfinite(d)) else np.nan
+
+
+def prepost_maze(rows, speeds):
+    """Per row of a whole-track table around COM time: max maze distance before and after stopping,
+    head within the first 80 cm of the arm and at 4 cm/s or more (figure4c.maze_distance)."""
+    sp = _speed_rows(rows, speeds)
+    out = []
+    for r, s in zip(rows, sp):
+        base = ARM_REGIONS[r["arm"]][0]
+        pos = np.asarray(r["triggered_positions_baseoff"], dtype=float)
+        dec = np.asarray(r["triggered_decodes_baseoff"], dtype=float) + base
+        rel = np.asarray(r["time_triggered"])
+        inarm = (pos - base >= 0) & (pos - base <= FIG3_MAX_CM)
+        fast = s >= SPEED_CM_S
+        row = {"trial": r["trial"], "arm": r["arm"], "t_trig": float(np.median(r["time_abs"] - rel))}
+        if not np.any(inarm):
+            continue
+        t0 = np.argmin(np.abs(rel[inarm]))
+        p, d_, f = pos[inarm], dec[inarm], fast[inarm]
+        pre, post = np.arange(len(p)) < t0, np.arange(len(p)) >= t0
+        if not pre.any() or not post.any() or not (pre & f).any() or not (post & f).any():
+            continue
+        row["d_pre"] = maze_distance_max(p[pre & f], d_[pre & f])
+        row["d_post"] = maze_distance_max(p[post & f], d_[post & f])
+        row["post_min"] = float(np.min(p[post & f] - base))
+        row["post_max"] = float(np.max(p[post & f] - base))
+        out.append(row)
+    return out
+
+
+def segment_maze_post(rows, speeds, fix_ranges, rng):
+    """Max maze distance on an arm-restricted table (decode NaN off the arm), at 4 cm/s or more,
+    over a head range drawn from ``fix_ranges`` (figure4c.maze_distance_max with fix_range)."""
+    sp = _speed_rows(rows, speeds)
+    out = []
+    for r, s in zip(rows, sp):
+        base = ARM_REGIONS[r["arm"]][0]
+        pos = np.asarray(r["triggered_positions_baseoff"], dtype=float) + base
+        dec = np.asarray(r["triggered_decodes_baseoff"], dtype=float) + base
+        m = (s >= SPEED_CM_S) & (pos >= base) & (pos <= ARM_REGIONS[r["arm"]][1])
+        fr = fix_ranges[rng.integers(len(fix_ranges))] if len(fix_ranges) else None
+        if fr is not None:
+            m &= (pos - base >= fr[0]) & (pos - base <= fr[1])
+        out.append({"trial": r["trial"], "arm": r["arm"], "d_post": maze_distance_max(pos[m], dec[m]) if m.any() else np.nan})
+    return out
+
+
+def fig3_day(args):
+    """All triggered tables of one day: what each holds, and the Figure 3 measures."""
+    assets_day, epochs, com_times, poke_times, seed = args
+    rng = np.random.default_rng(seed)
+    speeds = speed_by_epoch(assets_day, epochs)
+    objs = assets_day[assets_day.kind == "obj"]
+    pr = pd.DataFrame([probe_obj(u) for u in objs.url], index=objs.index)
+    objs = objs.join(pr)
+    objs = objs[objs.obj_kind == "triggered"]
+    files, rows_by_file = [], {}
+    for p, u in zip(objs.path, objs.url):
+        try:
+            rows = [r for r in read_triggered(u) if len(r["time_abs"])]
+        except Exception as e:      # reported in the notebook
+            files.append({"file": p, "trigger": "unreadable", "window": "", "segment": False, "rows": 0, "error": repr(e)})
+            continue
+        if not rows:
+            continue
+        c = classify_triggered(rows, com_times, poke_times)
+        c["file"] = p
+        files.append(c)
+        rows_by_file[p] = rows
+    files = pd.DataFrame(files)
+    res = {"files": files, "com_pre": [], "poke_pre": [], "com_both": {}, "poke_post": []}
+    if len(files) == 0:
+        return res
+    sel = lambda trig, win, seg: files[(files.trigger == trig) & (files.window == win) & (files.segment == seg)].file
+    for f in sel("com", "pre", True):
+        res["com_pre"] += [dict(m, file=f) for m in segment_metrics(rows_by_file[f], speeds)]
+    for f in sel("poke", "pre", True):
+        res["poke_pre"] += [dict(m, file=f) for m in segment_metrics(rows_by_file[f], speeds)]
+    for f in sel("com", "both", False):
+        res["com_both"][f] = prepost_maze(rows_by_file[f], speeds)
+    post_ranges = [(r["post_min"], r["post_max"]) for v in res["com_both"].values() for r in v]
+    for f in sel("poke", "post", True):
+        res["poke_post"] += [dict(m, file=f) for m in segment_maze_post(rows_by_file[f], speeds, post_ranges, rng)]
+    # fig3b control: each control row's distance over a head range drawn from the day's COM ranges
+    ranges = [(m["pos_min"], m["pos_max"]) for m in res["com_pre"] if np.isfinite(m["pos_min"])]
+    for m in res["poke_pre"]:
+        fr = ranges[rng.integers(len(ranges))] if ranges else None
+        m["d_matched"] = max_dist(m["pos"], m["dec"], fr) if fr else np.nan
+        m["d_all"] = max_dist(m["pos"], m["dec"])
+    for m in res["com_pre"]:
+        m["d_all"] = max_dist(m["pos"], m["dec"])
+        m["speed"] = ((m["pos_max"] - m["pos_min"]) / (m["n"] * 0.002)) if m["n"] >= 250 else np.nan
+    for m in res["poke_pre"]:
+        m["speed"] = ((m["pos_max"] - m["pos_min"]) / (m["n"] * 0.002)) if m["n"] >= 250 else np.nan
+    for k in ("com_pre", "poke_pre"):
+        for m in res[k]:
+            m.pop("pos"), m.pop("dec")
+    return res
+
+
+def theta_speed_check(args):
+    """Clock check of the LFP against the head speed: correlation of theta (6-10 Hz) amplitude on the
+    first detection tetrode with speed, over 300 s of a run epoch, at shifts of the speed trace."""
+    lfp_url, speed, start, shifts = args
+    lfp = LFP(lfp_url)
+    tt, x = lfp.read(start + 60, start + 360)
+    sos = signal.butter(4, [6, 10], btype="band", fs=LFP_FS, output="sos")
+    th = np.abs(signal.hilbert(signal.sosfiltfilt(sos, x[:, lfp.det.col.values[0]].astype(float))))
+    th = ndimage.uniform_filter1d(th, int(LFP_FS))[::100]
+    t = tt[::100]
+    out = {}
+    for sh in shifts:
+        s = np.interp(t + sh, speed[0], speed[1])
+        ok = np.isfinite(s)
+        out[sh] = stats_spearman(th[ok], s[ok])
+    return out
+
+
+def stats_spearman(a, b):
+    from scipy.stats import spearmanr
+    return float(spearmanr(a, b)[0])
