@@ -1,0 +1,434 @@
+schema_version: 2
+id: crcns-pfc-1-rodgers-2014-01
+dataset:
+  archive: crcns
+  id: pfc-1
+  version: unversioned
+  doi: 10.6080/K0W66HPJ
+paper: doi:10.1016/j.neuron.2014.04.031
+date: '2026-11-06'
+entry: crcns-pfc-1-rodgers-2014
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42227342397
+inputs:
+- what: Unit table metadata/unit_db.csv (which spike-file clusters are well-sorted units, include flag, region,
+    auditory response class and window), session table metadata/sessions_df.csv and figure index metadata/figures_generated_by_each_script.csv
+    of the paper's analysis code; the code's scripts are the source of the methods the claims file names.
+  source: https://github.com/cxrodgers/Rodgers2014 at commit 390b6089c429877dfea9c56de153bbea0380c20f
+outcomes:
+- claim: unit-table-link
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:unit-table-link
+  measured:
+  - 220
+  - 121
+  - 99
+  - 55
+  notes: All 220 units with include True in unit_db.csv have spikes in their session's klusters0 spike file, 121
+    mPFC and 99 A1. The region column agrees with the data descriptor's unit-number rule for all 220. All 55 sessions
+    of sessions_df.csv are session folders of the data set, and each session's n_trials equals its trial_timings
+    rows less munged trials (55 of 55). The spike files hold 2977 clusters, 2616 of which unit_db.csv does not list.
+- claim: fig2a-above-chance
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig2a-above-chance
+  measured:
+  - 736.0
+  - 87.6
+  notes: None of the 54 analysed sessions (55 less the catch-trial session) fails the two-sided binomial test in
+    either block (largest p 0.039; lowest performance 59.6%), so the bound of at most 4 failures holds, and reading
+    (b) of the session count (no analysed session fails) holds too. Median trials per session 736 under reading
+    (a), trials performed, and 699.5 under reading (b), munged and nonrandom dropped; both within 698 +/- 69.8.
+    Median performance over sessions is within 8.5 points of 85% in both blocks for CR20B (87.6, 81.6), CR21A (88.3,
+    90.6) and CR24A (87.2, 86.2). The paper's four discarded sessions are not in the data set.
+  deviations:
+  - The best rat's typical performance is read, as the claims file's check notes, as the median over a rat's sessions;
+    the value recorded is CR20B localization, the first rat meeting the criterion.
+- claim: figs1a-go-better-than-nogo
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs1a-go-better-than-nogo
+  notes: Go performance exceeds nogo performance in 12 of 12 rat and block pairs (differences 6.8 to 30.6 points).
+- claim: fig2d-block-switch
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig2d-block-switch
+  notes: Hit fraction on the first trial of the block is 0.560 (localization) and 0.496 (pitch discrimination),
+    below the non-cue means of 0.833 and 0.785; both reach the mean at the sixth trial of the block, within 10.
+    The within-5 variant does not hold in either block.
+- claim: iti-median
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:iti-median
+  measured:
+  - 3.99
+  - 2.65
+  - 5.23
+  notes: 'Reading (a), consecutive stimulus onsets over the 47 sessions with included units: median 3.99 s, IQR
+    2.65 to 5.23 s (35741 intervals). Reading (b), center-poke starts, gives 3.99, 2.65 and 5.23 s. Dropping munged
+    trials changes the values by at most 0.01 s.'
+  deviations:
+  - Intervals are taken between consecutive rows of trial_timings, including intervals that span a munged or skipped
+    trial; the variant with munged trials dropped is shown.
+- claim: fig3c-pfc-rule-encoding
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig3c-pfc-rule-encoding
+  measured:
+  - 76
+  - 36
+  - 40
+  notes: 'Reading (a), BH over all 220 units as the code: 76 of 121 mPFC units encode the rule, 36 prefer localization
+    and 40 pitch discrimination, binomial p = 0.73. Reading (b), BH within region: 81, 37 and 44 (binomial p = 0.51),
+    the first outside tolerance. The paper''s code is ported to Python 3; R''s wilcox.test (exact=FALSE) is reproduced
+    with scipy''s normal approximation with continuity correction, and R''s p.adjust BH with statsmodels.'
+- claim: fig4c-a1-rule-encoding
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig4c-a1-rule-encoding
+  measured:
+  - 36
+  - 13
+  - 23
+  notes: 'Reading (a): 36 of 99 A1 units, 13 localization and 23 pitch discrimination, binomial p = 0.13. Reading
+    (b): 35, 12 and 23 (p = 0.09), also within tolerance.'
+- claim: a1-rule-encoding-not-audresp-dependent
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:a1-rule-encoding-not-audresp-dependent
+  measured:
+  - 14
+  - 22
+  notes: 14 of 49 responsive and 22 of 50 nonresponsive A1 units encode the rule; Fisher's exact p = 0.144, odds
+    ratio 0.51. With M4 reading (b) (recomputed responsiveness, a variant) the test also finds no difference (p
+    = 0.39 and 0.21).
+- claim: rule-encoding-effect-size
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:rule-encoding-effect-size
+  measured:
+  - 74.7
+  - 99.8
+  notes: Median increase 74.7% over 76 mPFC units and 99.8% over 36 A1 units.
+- claim: fig3ab-pfc-example-units
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig3ab-pfc-example-units
+  measured:
+  - 12.07
+  - 7.19
+  - 5.41
+  - 2.66
+  - 483
+  - 295
+  notes: 'Unit 257: 12.07 Hz localization against 7.19 Hz pitch discrimination over 483 and 295 trials, p = 2.0e-21.
+    Unit 259: 5.41 Hz pitch discrimination against 2.66 Hz localization, p = 2.8e-13.'
+- claim: fig4ab-a1-example-units
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig4ab-a1-example-units
+  measured:
+  - 2.0
+  - 10.07
+  - 4.76
+  - 8.01
+  notes: With the units as the criterion names them (4A unit 612, 4B unit 712 of CR20B_120602), unit A fires 2.00
+    Hz in localization and 10.07 Hz in pitch discrimination and unit B 4.76 Hz in pitch discrimination and 8.01
+    Hz in localization, so none of the four rates is within tolerance. With the units swapped, as the legends describe
+    them (4A the localization-preferring unit), all four match (8.01, 4.76, 10.07, 2.00 Hz), both p are below 0.001
+    (3.9e-12 and 2.4e-62), and the trial counts are 312 localization and 253 pitch discrimination. The code's figure
+    index labels the two panels the other way from the legends. A question to a reader asks whether the claim should
+    identify the units by the legends (questions/crcns-pfc-1.yaml).
+- claim: fig3d-pfc-interference
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig3d-pfc-interference
+  measured:
+  - 57
+  notes: 57 mPFC units with at least 3 trials in each category. Interference minus hit, non-preferred block +3.42
+    Hz (37 of 57 higher, signed-rank p = 0.0012); preferred block -2.05 Hz (16 of 57 higher, p = 0.0011).
+- claim: fig4d-a1-interference
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig4d-a1-interference
+  measured:
+  - 16
+  notes: 16 A1 units. Interference in the non-preferred block exceeds interference in the preferred block by 4.55
+    Hz (14 of 16 units), signed-rank p = 0.0011, below 0.01.
+- claim: figs2c-s3c-hold-by-trial-type
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs2c-s3c-hold-by-trial-type
+  notes: 57 mPFC and 16 A1 units with at least 3 trials in each of the 8 categories. In each region all six comparisons
+    among correct go, correct nogo and go-on-nogo errors have Bonferroni-corrected p = 1, and all six comparisons
+    of interference with another category have corrected p below 0.05 (0.0029 to 0.035).
+- claim: figs2f-s3f-bidirectional-vs-spont
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs2f-s3f-bidirectional-vs-spont
+  notes: In all four region and preference groups (mPFC 36 and 40, A1 13 and 23 units) the preferred-block rate
+    is above and the non-preferred-block rate below the spontaneous rate, signed-rank p from 0.0001 to 0.025. The
+    pooled variant gives p of 0.0002 or less in both regions.
+- claim: fig5ab-single-unit-onset
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig5ab-single-unit-onset
+  measured:
+  - 0.55
+  - 0.625
+  notes: With the code's smoother, median onset 0.550 s before stimulus in A1 (36 units) and 0.625 s in mPFC (76
+    units), for W = 3 s and W = 5 s alike; both above 0.35 s. With exact spike times in place of the code's grid
+    (variant) the medians are 0.575 s and 0.750 s, the mPFC value outside tolerance.
+  deviations:
+  - 'The smoothing follows kkpandas.base.GaussianSmoother as 5-2-timecourse_exemplars/main1.py and main2.py use
+    it: each spike is moved to the nearest 50 ms sample point and a Gaussian of one sample s.d., truncated at 3
+    s.d. and normalized to sum to one, is added there (modules/kkpandas/base.py, modules/DiscreteAnalyze/PointProc.py).
+    The paper says only that spike trains were smoothed with a 50 ms Gaussian; the result in mPFC depends on this
+    discretization.'
+  - R's wilcox.test with fix_float=10000 (rounding of values) is not reproduced; scipy's test is applied to the
+    smoothed values directly.
+- claim: fig5c-population-onset
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig5c-population-onset
+  measured:
+  - 2.725
+  - 0.875
+  notes: First significant bin with positive mean, 2.725 s before onset in mPFC (76 units) and 0.875 s in A1 (36
+    units); mPFC earlier. Smoothing with exact spike times gives the same bins.
+- claim: fig5d-go-nogo
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig5d-go-nogo
+  notes: 'Reading (a): mPFC nogo +0.437 (p < 0.0001), go -0.163 (p = 0.021); A1 nogo +0.264 (p = 0.0007), go -0.421
+    (p = 0.0001). Reading (b) holds in mPFC (96% of nogo bins and 56% of go bins from 0.5 to 3 s significant in
+    the claimed direction) but not in A1 (nogo 28%).'
+- claim: audresp-prevalence
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:audresp-prevalence
+  measured:
+  - 31
+  - 49
+  notes: 'Reading (a): 31 of 121 mPFC and 49 of 99 A1 units responsive, Fisher''s exact p = 0.0004. These counts
+    are the code''s unit table. Reading (b), recomputed from the spikes as the Supplement describes (a variant):
+    46 of 121 and 61 of 99 (p = 0.00067), or 46 and 58 when windows that run to the end of the 50 ms are excluded
+    (p = 0.0028); outside tolerance, so the claim holds under reading (a) only.'
+  deviations:
+  - 'Reading (b) uses choices the Supplement leaves open: all trials of all stimuli, 0 to 50 ms after onset, p <
+    0.05 uncorrected per bin, the code''s discretized 1 ms smoother on a 0.5 ms grid; the 4 atypical units the Supplement
+    discards cannot be identified and are not discarded.'
+- claim: figs5cd-evoked-strength
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs5cd-evoked-strength
+  measured:
+  - 0.116
+  - 0.019
+  - 209.1
+  - 170.7
+  notes: Medians A1 0.116 and mPFC 0.019 extra spikes per trial (Mann-Whitney p = 1.3e-09), A1 209.1% and mPFC 170.7%
+    of baseline (p = 0.00061), over 49 and 31 units. Under M4 reading (b), a variant, A1 is also stronger (0.064
+    against 0.005 extra spikes, 198% against 145%).
+- claim: figs5e-latency
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs5e-latency
+  measured:
+  - 19.75
+  - 16.75
+  notes: Median latency 19.75 ms in mPFC and 16.75 ms in A1, Mann-Whitney p = 0.010. Under M4 reading (b), a variant,
+    the medians are 16.38 and 16.25 ms and do not differ (p = 0.41), so the result rests on the code's response
+    windows.
+- claim: fig6cd-baseline-evoked-correlation
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig6cd-baseline-evoked-correlation
+  measured:
+  - 43
+  - 17
+  notes: After the weak-response filter (6 A1 and 14 mPFC units dropped), 43 A1 and 17 mPFC units. A1 slope 0.977
+    (95% CI 0.478 to 1.477, contains 1), r = 0.525, p = 0.0003; mPFC slope 1.455, r = 0.848, p = 1.7e-05.
+  deviations:
+  - The bootstrap draws (10000, seed fixed) differ from the paper's, so the evoked change of each unit differs by
+    sampling error.
+- claim: evoked-beyond-baseline-rare
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:evoked-beyond-baseline-rare
+  measured:
+  - 6
+  - 4
+  notes: 6 of 43 A1 units significant after BH within region; 4 from CR12B (Rat 1), all 4 higher in pitch discrimination;
+    the other 2 (CR17B) higher in localization. Unadjusted variant 12 of 43, 9 from CR12B. mPFC 1 of 17.
+  deviations:
+  - The code's bootstrap draws the same number of trials for both blocks (it reuses the localization labels for
+    the pitch discrimination draw); this is kept.
+- claim: fig6e-decoding
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig6e-decoding
+  measured:
+  - 21
+  - 17
+  notes: '21 A1 ensembles of 49 units and 17 mPFC ensembles of 31 units. Region main effect F = 39.3, p < 0.001,
+    A1 higher (mean score 0.570 against 0.521). The four paired t-tests between blocks give adjusted p 0.35 to 0.59
+    (unadjusted 0.088 to 0.59). Leave-one-out variant: region F = 21.6, p < 0.001; block comparisons adjusted p
+    0.57 to 0.83.'
+  deviations:
+  - scikit-learn's LogisticRegression with the liblinear solver (the default of the code's version) and class_weight
+    balanced (the code's 'auto').
+- claim: figs5fg-tuning-vs-rule
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs5fg-tuning-vs-rule
+  notes: 23 A1 and 9 mPFC units pass the code's minimums (10 evoked spikes, 25 cue trials per block). The four regressions
+    give r = 0.156, 0.037 (A1) and -0.214, 0.513 (mPFC), p = 0.48, 0.87, 0.58, 0.16. The mPFC test rests on 9 units.
+- claim: figs5hi-stimulus-pairs
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs5hi-stimulus-pairs
+  notes: 'None of 24 tests has p < 0.05: Kruskal-Wallis p from 0.061 (A1, absolute raw) to 0.92; Wilcoxon against
+    zero, adjusted p from 0.12 to 0.99 (49 A1 and 31 mPFC units).'
+- claim: figs2gh-s3gh-rt-mt
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs2gh-s3gh-rt-mt
+  notes: Mean r against 0, one-sample t-test p from 0.052 (A1 localization reaction time, mean r 0.016) to 0.90
+    over the eight region, block and measure sets; 0 to 5 units individually significant after BH. Movement time
+    from center-port exit (variant) gives p from 0.49 to 0.98. One unit-block fit for movement time had a constant
+    count and was dropped.
+- claim: figs2i-head-angle
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs2i-head-angle
+  measured:
+  - 24.07
+  - 26.92
+  - 36.6
+  notes: 'Localization minus pitch discrimination mean head angle: -26.92 (CR24A_121022), -36.60 (CR20B_120602)
+    and -24.07 degrees (CR17B_110803), on 768, 565 and 207 trials of the hold analysis.'
+- claim: figs2kl-s3kl-fev
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs2kl-s3kl-fev
+  measured:
+  - 94.1
+  - 83.0
+  - 5.9
+  - 17.0
+  - 3
+  notes: 'mPFC (16 units): median FEV block 94.1%, head angle 5.9%, 3 units above 50% head angle. A1: one of 8 units
+    has overall F p = 0.129 and is left out; of the 7, median 83.0% and 17.0%, one unit above 50%.'
+- claim: posture-equalized-sign
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:posture-equalized-sign
+  measured:
+  - 0.471
+  - 0.318
+  - 1
+  - 0
+  notes: Posture-equalized trials per block 103 (CR24A), 33 (CR20B) and 39 (CR17B). PRE (MAD about the median, statsmodels'
+    robust.mad) 0.471 in mPFC and 0.318 in A1; shuffle p = 0.0001 in both. 1 of 16 mPFC and 0 of 8 A1 cells switch,
+    binomial p = 0.0005 and 0.0078. The uncentered MAD (variant, which the code's comment says its statsmodels computed)
+    gives 0.327 and 0.343.
+  deviations:
+  - 10000 shuffles with a fixed seed of their own; the shuffle p is limited to 1/10000 resolution.
+- claim: posture-equalized-magnitude
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:posture-equalized-magnitude
+  notes: 'Signed-rank test of |log10 ratio| on posture-equalized against other trials: p = 0.059 in mPFC (16 cells;
+    0.308 against 0.418) and 0.141 in A1 (8 cells; 0.218 against 0.401). The magnitude is lower on posture-equalized
+    trials in both regions, without significance. The code''s per-preference variant gives p from 0.09 to 0.36.'
+- claim: fig7-disruption-by-block
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig7-disruption-by-block
+  measured:
+  - 6
+  - 8
+  - 8
+  notes: 'Sessions with control above disruption: pitch discrimination 6 of 6 (Z1, p = 0.031), 8 of 8 (Z2, p = 0.0078),
+    8 of 8 (Z3, p = 0.0078); localization 5 of 6 (Z1, p = 0.22), 8 of 8 and 8 of 8 (p = 0.0078). Session counts
+    6, 8 and 8. Dropping nonrandom trials changes nothing.'
+- claim: fig7c-disruption-nogo
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig7c-disruption-nogo
+  notes: 'Significant nogo impairment: Z1 pitch discrimination (6 of 6, p = 0.031), Z2 pitch discrimination (8 of
+    8, p = 0.0078), Z3 localization (8 of 8, p = 0.0078). The only significant go impairment is Z2 localization
+    (8 of 8, p = 0.0078).'
+- claim: figs1bc-catch
+  outcome: reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:figs1bc-catch
+  notes: All eight Fisher's exact tests give p > 0.05 (0.11 to 1.0). Catch performance 0.75 to 1.00 against standard
+    0.79 to 0.98. CR20B's file holds one session (390 trials, 51 catch); CR21A's 663 trials (99 catch).
+- claim: fig8-model
+  outcome: partially_reproduced
+  notebook: reproduce_rodgers_2014.ipynb
+  output: claim:fig8-model
+  measured:
+  - 0.0625
+  notes: N = 320. At SNR 0.0625 (noise level 16) the best positive task signal gives 93.2% correct in task 1 and
+    in task 2, above 80%. At SNR 0.25 performance reaches 100%, but it is at least 99% for 25% of the simulated
+    positive task signals (gains 0.001 to 1000) and 30% of those in Figure 8B's plotted range (task signal over
+    noise up to 10, 8-1-model/main1.py set_xlim); it is 100% for task signal over noise from 0.3 to 10, about 0.63
+    to 0.77 below 0.3, and 0.52 at a gain of 84. The SNR is 1 / noise level, the code's label (gain/noise with sensory
+    gain 1); gain/sqrt(noise) does not give the printed grid. The first part of the claim holds and the second holds
+    only over part of the range.
+  deviations:
+  - Which positive task signals count is not stated; the simulated broad gains and the plotted range are both shown,
+    and neither gives most.
+findings:
+- kind: metadata_insufficient
+  statement: The spike files hold 2977 sorted clusters, good units and bad clusters alike, with nothing in the data
+    set that says which are the 220 well-sorted units the paper analysed, or gives their auditory response class
+    and window. These come only from metadata/unit_db.csv in the paper's code repository; the scripts that made
+    the table are not published.
+- kind: selection_undocumented
+  statement: The auditory response classes of unit_db.csv apply rules the paper does not state (classes too brief,
+    lasts to end, lasts too long). Recomputing responsiveness as the Supplement describes gives 46 mPFC and 61 A1
+    responsive units in place of the paper's 31 and 49, and, of 67 units responsive under both, 17 whose window
+    starts at a different time.
+- kind: other
+  statement: The spike files (*.kkp) and the miscellaneous pickles are pandas 0.10 pickles written under Python
+    2. Current pandas cannot open them (module pandas.core.index no longer exists); the descriptor's pandas.load
+    no longer exists either. They can be read with a custom unpickler.
+- kind: metadata_error
+  statement: Two sessions, CR21A_120503_004 and CR21A_120504_004, hold a second spike file at the session level
+    besides klusters0/. It has the same spike times, but its column is named spike_time, tetrode groups run 0 to
+    7 in place of 1 to 8, and the unit numbers differ, so the descriptor's unit-number rule may assign units differently.
+    The descriptor does not mention these files.
+- kind: metadata_error
+  statement: The data descriptor names the stimulus column stimulus_name; the files call it stim_name. The descriptor
+    numbers the stimuli starting with le_lc_go as 1; in the files le_lc_go is 3, ri_lc_no 4, lo_pc_go 1 and hi_pc_no
+    2.
+- kind: other
+  statement: Three sessions (CR20B_120613, CR21A_120502, CR21A_120506) have no spike file; their klusters0/ holds
+    a README.txt, where the descriptor says the directory is empty. The data set holds the 55 sessions the paper
+    reports after its four discarded sessions; the discarded ones are not in it.
+- kind: code_mismatch
+  statement: 'metadata/figures_generated_by_each_script.csv names CR20B_120602_001_behaving-612 as Figure 4A and
+    -712 as Figure 4B. The legends'' values fit the reverse: 712 prefers localization (8.01 against 4.76 Hz) and
+    612 pitch discrimination (10.07 against 2.00 Hz).'
+- kind: paper_inconsistency
+  statement: The Figure 4B legend gives the trial counts of the simultaneously recorded pair with the blocks swapped
+    (pitch discrimination 312, localization 253) relative to the 4A legend (localization 312, pitch discrimination
+    253); the data have 312 localization and 253 pitch discrimination trials for both units.
+- kind: code_mismatch
+  statement: 3-5-vidtrack/main5.py says statsmodels' stand_mad does not subtract the median, but the paper's PRE
+    values (0.471 and 0.318) are reproduced exactly by the MAD about the median; the uncentered MAD gives 0.327
+    and 0.343.
