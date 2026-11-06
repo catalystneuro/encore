@@ -1,0 +1,400 @@
+schema_version: 2
+id: crcns-stc-1-gu-2011-01
+dataset:
+  archive: crcns
+  id: stc-1
+  version: unversioned
+  doi: 10.6080/K07P8WKF
+paper: doi:10.1016/j.neuron.2011.06.015
+date: 2026-11-06
+entry: crcns-stc-1-gu-2011
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42256343726
+inputs:
+- what: Training group of each monkey, from the per-animal pair counts of the paper's Figure S2B
+    legend (trained 35, 26, 18, 8 and 2 pairs, naive 22, 11 and 5). The paper itself, used to label
+    the monkeys the data set names; no measurement comes from it.
+  source: doi:10.1016/j.neuron.2011.06.015 (Supplemental Information, Figure S2 legend)
+outcomes:
+- claim: training-group-link
+  outcome: reproduced
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:training-group-link
+  notes: Monkeys are matched by their number of pairs. The eight counts in the data (35, 26, 22, 18,
+    11, 8, 5, 2) equal the eight of the Figure S2B legend, all distinct, so the match is one to one,
+    with monkeys 19, 18, 2, 5 and 24 trained and 17, 1 and 3 naive. It gives 89 trained and 38 naive
+    pairs, and 146 trained and 64 naive units (units told apart within a recording by their
+    preferred headings), as the paper and the Figure 3 legend state. Monkeys 2 and 5, whose
+    heading discrimination thresholds the data set holds in experiment 2, are trained.
+  deviations:
+  - The data set has no training-group label; the groups come from the paper's per-animal counts.
+- claim: fig2b-trained-lower-noise-correlation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig2b-trained-lower-noise-correlation
+  measured:
+  - 0.0241
+  - 0.119
+  - 89
+  - 38
+  notes: Trained 0.0241 +- 0.0174 SEM (n = 89), naive 0.1190 +- 0.0316 (n = 38), both within the
+    reported SEMs; Student t test p = 0.0056 (paper 0.006), Welch p = 0.0108. Visual rnoise alone
+    gives p = 0.0047, vestibular alone p = 0.071. Without the trained animal with two pairs, p =
+    0.0032.
+  deviations:
+  - Assumed that the pooled rnoise is the mean of the vestibular and visual rnoise. The data set
+    holds only the per-condition values; the Experimental Procedures (Noise and Signal Correlations,
+    paragraph 2) pool the z-scored responses across conditions, and the correlation of pooled
+    z-scores is the trial-weighted mean of the per-condition correlations, with equal weights when
+    the conditions are interleaved with equal repetitions (Experimental Protocol and Task). Outlier
+    removal could make the weights differ slightly.
+  - Whether the stored values include the renormalization in blocks of 20 trials cannot be told,
+    and the reading with the other choice cannot be run, as the data set holds no trial responses.
+  - Training groups from the link claim.
+- claim: figs2b-individual-animals
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:figs2b-individual-animals
+  measured:
+  - 35
+  - 22
+  notes: Pair counts 35, 26, 18, 8 (trained shown) and 22, 11, 5 (naive) match the legend. Every
+    naive animal mean (0.0876 to 0.2545) exceeds every trained animal mean among those shown (-0.0449
+    to 0.0484). The trained animal with two pairs, not shown in the paper, has a mean of 0.2708. The
+    per-animal time courses of Figure S2B need spike times and are not tested.
+  deviations:
+  - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b).
+  - Means over the middle 1 s only; the figure shows time courses.
+- claim: fig1-example-pair
+  outcome: reproduced
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig1-example-pair
+  measured:
+  - 0.828
+  - 0.786
+  - 0.291
+  - 0.142
+  notes: Pair m2c338r1 (monkey 2, trained) has all four values within tolerance; no other pair has
+    more than two. The per-pair p values (0.04 and 0.3) need trial counts, which the data set does
+    not hold, so that part of the statement is not tested.
+- claim: fig1f-modality-correlated
+  outcome: partially_reproduced
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig1f-modality-correlated
+  measured: 0.449
+  notes: Spearman R = 0.449, p = 1.2e-07, over 127 pairs; positive and significant, but outside 0.342
+    to 0.418. Trained 0.395 (n = 89), naive 0.480 (n = 38).
+  deviations:
+  - The 127 pairs under 1 mm, the criterion's second reading; the paper's 179 are not in the data
+    set.
+- claim: fig1f-modality-means-equal
+  outcome: reproduced
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig1f-modality-means-equal
+  measured:
+  - 0.0559
+  - 0.0491
+  notes: Paired t = 0.346, p = 0.730, n = 127; mean difference 0.0068, 95% CI -0.032 to 0.046. The
+    vestibular mean (0.0559 +- 0.0173) is outside 0.035 +- 0.014; the visual mean (0.0491 +- 0.0199)
+    is inside 0.039 +- 0.015.
+  deviations:
+  - The 127 pairs under 1 mm, not the paper's 179.
+- claim: fig5-noise-signal-positive
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig5-noise-signal-positive
+  notes: With pooled rnoise the rsignal term has vestibular p = 0.00017 and visual p = 0.00070 (Type
+    II, model with interaction; the additive model gives 0.00016 and 0.00066), slopes 0.130 and
+    0.105. With the same-condition rnoise p = 0.00009 and 0.017. Per monkey, the slopes are
+    positive in 12 of 14 monkey and condition cells; the two negative ones are monkey 3 (5 pairs).
+  deviations:
+  - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b).
+  - The paper does not say how the ANCOVA sums of squares are formed; Type II tests with and
+    without the interaction are shown and agree.
+- claim: fig5-slope-unchanged
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig5-slope-unchanged
+  notes: Interaction p = 0.830 (vestibular) and 0.962 (visual) with pooled rnoise; 0.630 and 0.894
+    with the same-condition rnoise. Slopes, vestibular, naive 0.119 (95% CI -0.021 to 0.259) and
+    trained 0.135 (0.060 to 0.210); visual, naive 0.107 (-0.026 to 0.240) and trained 0.104 (0.038
+    to 0.170).
+  deviations:
+  - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b).
+- claim: fig5-intercept-lower-trained
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig5-intercept-lower-trained
+  notes: The training main effect holds with pooled rnoise (vestibular p = 0.0184, visual p =
+    0.0074; paper 0.02 and 0.008), with higher naive intercepts (0.095 against 0.015, 0.096 against
+    0.009). The 95% intervals of the intercepts overlap under every reading. Vestibular, separate
+    fits give naive 0.026 to 0.163 and trained -0.018 to 0.048; the ANCOVA model gives 0.036 to 0.153
+    and -0.020 to 0.050. Visual is alike, as is the additive model. With the same-condition rnoise
+    the vestibular main effect is not significant (p = 0.183).
+  deviations:
+  - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b).
+  - The paper does not say how the intercept intervals of Figure 5D were computed; separate
+    per-group fits, the ANCOVA model with interaction (Figure 5 legend, "regression fits (ANCOVA)")
+    and the additive model are all shown, and all overlap.
+- claim: fig5-regression-coefficients
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig5-regression-coefficients
+  measured:
+  - 0.1191
+  - 0.0838
+  - 0.0769
+  - 0.0034
+  notes: Reading (a) gives slopes 0.119 and 0.084 and naive intercept 0.077, within tolerance, and
+    trained intercept 0.0034, outside 0.005 +- 0.0005 (bootstrap 95% interval -0.026 to 0.035).
+    Reading (b) gives 0.132, 0.085, 0.074 and 0.0024; reading (c) puts the visual slope (0.106)
+    outside tolerance. No reading has all four within tolerance; the slopes match and the naive
+    intercept exceeds the trained one under (a) and (b). Separate orthogonal fits per group give
+    naive 0.123, 0.106 and 0.071 and a trained intercept of 0.0046, close to the paper's
+    equations but with different slopes per group, which is not a reading of the criterion.
+  deviations:
+  - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b).
+- claim: fig6a-population-thresholds
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig6a-population-thresholds
+  measured: 5.41
+  notes: At 2000 neurons the naive threshold is 5.41 times the independent one, and trained is
+    within 0.01% of naive, under both rsignal readings, which give the same values. The ratio is
+    4.32 to 5.90 over the amplitude and baseline variants, and 9.18 without the trace term of
+    equation 3. With the coefficients fitted here (reading c) it is 5.47.
+  deviations:
+  - Tuning amplitude 30 spikes/s, baseline 10 spikes/s and a 1 s count are the claims file's
+    readings; the paper does not give them, and the ratio depends on them.
+  - Preferences evenly spaced on the circle, a standard choice for the legend's "uniformly
+    distributed".
+- claim: fig6b-slope-not-intercept
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig6b-slope-not-intercept
+  notes: At 256 neurons a slope change of 0.2 around the measured 0.211 changes the threshold by
+    1.97 degrees (naive intercept) and 1.93 (trained), an intercept change over 0 to 0.2 at the
+    measured slope by 0.11. The threshold falls as the intercept rises from 0.02 to 0.2 (7.254 to
+    7.107) and from the trained to the naive intercept (7.251 to 7.217), with a small rise from 0
+    to 0.02 (7.220 to 7.254).
+  deviations:
+  - Tuning parameters as in fig6a (claims file readings, not from the paper).
+  - The slope axis is taken as the sum of the two slopes, the slope on rsignal when tuning is
+    congruent, as the Results assume for the simulations.
+- claim: fig7a-pair-sign-of-effect
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig7a-pair-sign-of-effect
+  notes: Trained is lower than naive for all 88 pairs with positive rsignal and higher for 92 of 93
+    with negative rsignal. The exception, at rsignal = -0.011, has trained 0.09% below naive; the
+    sign changes just below rsignal = 0. The criterion asks for every pair.
+  deviations:
+  - Tuning parameters as in fig6a (claims file readings, not from the paper).
+- claim: fig7c-narrow-preferences
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig7c-narrow-preferences
+  measured:
+  - 4.83
+  - 48.6
+  - 73.1
+  - 92.4
+  notes: The proportions of positive rsignal are within tolerance. The trained improvement grows
+    from -0.48% to 4.83% as the range narrows and then levels off (4.58% to 4.83%); its maximum,
+    4.83%, is below 8 +- 0.8%. The maximum is 3.6% to 6.0% under the amplitude and baseline
+    variants and 11.75% without the trace term of equation 3.
+  deviations:
+  - Tuning parameters as in fig6a (claims file readings, not from the paper); the result depends on
+    them and on the trace term.
+  - Ranges centred on 90 degrees with widths 360 to 10 degrees, containing the legend's [0, 180] and
+    [30, 150]; the figure's other ranges are not given in the text.
+- claim: fig8ab-choice-probability-lateral
+  outcome: not_reproduced
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig8ab-choice-probability-lateral
+  notes: On 258 values from 129 units of monkeys 2 and 5, fore-aft units do not have smaller
+    choice probabilities. With spline-peak preferences, fore-aft 0.527 against lateral 0.542, p =
+    0.136. With the vector sum, 0.546 against 0.511, p = 0.0006, the opposite direction. Leftward
+    and rightward units do not differ under any reading (p = 0.27 to 0.56), as the paper says.
+    Variants, the vector sum over the 8 evenly spaced headings gives p = 0.691, and the distance of
+    CP from 0.5 gives p = 0.10 to 0.85. The vector sum and spline readings put 64% of values in the
+    same group.
+  deviations:
+  - A subset of the paper's data. The data set holds the choice probabilities of 129 units of two
+    trained monkeys from Gu et al. (2008), 258 values over the two conditions, against the paper's
+    311; whether they are among the 311 cannot be checked.
+  - Preferred headings from the experiment 1 tuning curves of the same cells, by the two readings of
+    the claims file; the data set does not say how its CPs are signed.
+- claim: fig8cd-noise-not-preference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig8cd-noise-not-preference
+  notes: Over the 178 points of the trained pairs under 1 mm, lateral against fore-aft p = 0.434
+    with visual preferences (0.033 against 0.014) and p = 0.170 with vestibular preferences (0.011
+    against 0.045). Lateral is lower only with vestibular preferences. Variant with all 127 pairs
+    (254 points), vestibular preferences give a significant difference (0.022 against 0.096, p =
+    0.0009), visual do not (p = 0.623).
+  deviations:
+  - Of the claims file's readings only the trained pairs under 1 mm can be formed (178 points, the
+    legend has 328 and 55); the other trained pairs, the pairs over 1 mm and the task points are not
+    in the data set.
+  - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b); preferred headings
+    as stored in the data set, whose method is not described.
+- claim: fig2c-timecourse-naive-higher
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs spike times in 500 ms windows. The data set (stc-1/live, MSTd.mat, VIP.mat, demo.m and
+    the docs) holds one noise correlation per pair and condition, no spike times or trial responses.
+- claim: figs2a-difference-decreases
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2c-timecourse-naive-higher; no spike times in the data set.
+- claim: fig3-mean-response-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs spike times of the pair units; the data set holds none.
+- claim: fig3-fano-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs spike counts per trial and window; the data set holds none.
+- claim: figs8c-renormalization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs trial-ordered responses to renormalize; the data set holds one value per pair and
+    condition, without saying whether it includes the renormalization.
+- claim: discussion-stimulus-reduces-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs prestimulus spike counts; the data set holds none.
+- claim: figs1-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only the 127 pairs under 1 mm, none of the 52 pairs over 1 mm, and no
+    distance or electrode label, so neither the third group nor the split of the first two can be
+    formed.
+- claim: methods-single-vs-multiple-electrodes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No pair carries an electrode label. Ten file_ids of monkey 17 end in "s", which the data
+    descriptor does not explain; the paper's 67 single-electrode pairs cannot be identified. The 52
+    pairs over 1 mm, needed for the reading over all 179 pairs, are not in the data set either.
+- claim: fig2a-behavioral-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The training histories are not in the data set. Experiment 2 holds one threshold per
+    animal for two of the five trained monkeys (vestibular 1.2 and 3.1 degrees, both inside 0.9 to
+    3.3), not the thresholds over sessions the criterion fits.
+- claim: fig4-tuning-width-visual
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-electrode database of 992 and 556 neurons is not in the data set. Experiment 1
+    holds the tuning curves of 129 units of two trained monkeys only, so naive and trained cannot be
+    compared.
+- claim: fig4-tuning-width-vestibular
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4-tuning-width-visual.
+- claim: fig4-amplitude-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4-tuning-width-visual.
+- claim: fig4dh-lateral-more-sensitive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion's factorial ANOVA needs naive and trained neurons from the single-electrode
+    database; the data set holds 129 units of two trained monkeys only.
+- claim: fig4dh-training-no-sensitivity-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4dh-lateral-more-sensitive; no naive single units in the data set.
+- claim: figs4-population-sensitivity-any-reference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the naive and trained single-electrode database; only 129 trained units are in the
+    data set.
+- claim: fig7b-msdt-pairs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the tuning curves of each pair's units; the pairs carry only rsignal and preferred
+    headings. Seven pair recordings share a cell id with experiment 1 units, but the data set does
+    not say which pair unit, if any, those curves belong to.
+- claim: figs5-congruency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The congruency index is the correlation of each unit's visual and vestibular tuning
+    curves, which the data set does not hold for the pair units.
+- claim: figs6-task-independent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Noise correlations during the discrimination task are not in the data set.
+- claim: figs8ab-eye-movements
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Eye position records are not in the data set.
+findings:
+- kind: data_missing
+  statement: The data set holds derived values only. For the paper's pairs there are no spike times
+    or trial responses, no interneuronal distances, none of the 52 pairs over 1 mm, no
+    discrimination-task correlations and no eye records; the single-electrode database of Figures
+    4, S4 and 8A is represented only by 129 units of two trained monkeys, and the training histories
+    of Figure 2A by one threshold for each of two monkeys. Nineteen of the paper's 34 claims
+    cannot be tested.
+- kind: metadata_insufficient
+  statement: No pair or monkey carries a naive or trained label, which every comparison in the
+    paper needs. The groups can be recovered here only because the paper's per-animal pair counts
+    are all distinct and match the counts per monkey in the file_ids.
+- kind: metadata_insufficient
+  statement: No pair carries an electrode or distance label, and ten file_ids of monkey 17 end in
+    "s" without explanation, so the single-electrode and multi-electrode pairs cannot be told
+    apart.
+- kind: metadata_insufficient
+  statement: The data descriptor does not say how heading_pref was computed, how cp is signed
+    (relative to the unit's preferred direction or to a fixed choice), or the units of resp_global
+    (demo.m labels them spikes/s).
+- kind: metadata_error
+  statement: The data descriptor lists monkeys 1, 2, 3, 5, 17, 18 and 19 for the 127 MSTd pairs; the
+    file_ids name an eighth, monkey 24, with two pairs, the trained animal with two pairs of the
+    paper's Figure S2B.
+- kind: other
+  statement: Recording m19c21r1 holds six pairs from four units, where the paper states a maximum of
+    five pairs in an experiment (Experimental Procedures, Electrophysiological Recordings).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Is the pooled rnoise of Figure 2B and Figure 5 the
+    correlation of z-scores pooled over both conditions (which the mean of the two per-condition
+    values in the data set approximates, matching 0.023 and 0.116 to the third decimal), and do the
+    stored per-condition values include the renormalization in blocks of 20 trials?
+- kind: methods_unavailable
+  statement: Question for the paper's authors. What tuning amplitude, baseline and counting window
+    were used in the simulations of Figures 6 and 7, and was the trace term of equation 3 included?
+    With amplitude 30 and baseline 10 spikes/s over 1 s and the trace term, the naive threshold is
+    5.4 times the independent one at 2000 neurons, but the best trained improvement in Figure 7C is
+    4.8%, not 8%; without the trace term it is 9.2 times and up to 11.8%.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the 95% intervals of the intercepts in
+    Figure 5D computed? Separate per-group fits, the ANCOVA model with interaction and the
+    common-slope model all give overlapping intervals on the 127 pairs of the data set.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For Figure 8A and 8B, how was each unit's preferred
+    heading computed, which units entered the 311 values, and how was CP signed? On the 129 units of
+    the data set the fore-aft and lateral CPs differ in opposite directions under the vector sum and
+    the spline peak.
