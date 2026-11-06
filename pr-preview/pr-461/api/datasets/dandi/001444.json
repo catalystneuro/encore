@@ -1,0 +1,1145 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001444",
+  "label": "DANDI:001444"
+ },
+ "page": "datasets/dandi/001444/",
+ "generated": "2026-11-06T01:57:00+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 18,
+  "partially_reproduced": 3,
+  "not_reproduced": 13,
+  "blocked": 6
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001444-doherty-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001444",
+    "version": "0.250805.2002",
+    "doi": "10.48324/dandi.001444/0.250805.2002"
+   },
+   "key": "dandi:001444",
+   "label": "DANDI:001444",
+   "dataset_version": "0.250805.2002",
+   "paper": "10.1038/s41531-025-01070-4",
+   "paper_title": null,
+   "date": "2026-11-02",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41486399888"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001444-doherty-2025",
+   "entry_title": "Simulated parkinsonian mouse M1 (Doherty et al. 2025)",
+   "description": "Tests the findings of Doherty, Chen, Smith, Wichmann, Chu and Lytton (2025) on dandiset 001444, which holds four sets of four NetPyNE simulations of mouse primary motor cortex in the control and parkinsonian conditions, at rest and activated. It compares firing rates, ISI variability, dominant frequencies, duty cycles, LFP spectrograms, PT5B coincident firing and membrane potentials between conditions, on the set the paper reports.",
+   "notebooks": [
+    {
+     "path": "reproduce_doherty_2025.ipynb",
+     "title": "Reproducing Doherty et al. (2025) from dandiset 001444",
+     "executed": "notebooks/001444-doherty-2025/reproduce_doherty_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1-network-size",
+     "statement": "The simulated M1 network is composed of 10,073 neurons of seven excitatory pyramidal cell types (IT, PT5B, CT) and two interneuron cell types (PV, SOM).",
+     "source": "Figure 1 legend; Methods, Microcircuit composition, paragraph 1",
+     "quote": "Simulated primary motor cortex (M1) is composed of 10,073 neurons.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The four files of set sM1_12-12-2023 hold 4,480, 3,231, 2,919 and 2,917 M1 units, against 10,073, because the units table stores only cells that fired. No stored M1 unit is silent (0 in each file), and 5,593 to 7,156 of the M1 gids 0 to 10072 have no row. All 15 M1 populations are present and the input generators start at gid 10073, so the gid numbering is consistent with 10,073 M1 cells; the smallest gid blocks seen in all 16 files and the 24 gids never seen between them sum to 10,073. The units table has only the name, segment, block, spike times and observation intervals of each unit and no row for a silent cell, so the silent cells the criterion counts are not in the dataset and the claim cannot be tested from these files. The data do not contradict the paper's 10,073. The outcome was not reproduced until the third verification round, which agreed with the change to blocked (data_missing).",
+     "deviations": [
+      "The claims file's count assumes the files hold every cell, as the dandiset description says; they do not, so the gid range is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "model-pt5b-excitability-decrease",
+     "statement": "In the parkinsonian condition the PT5B neuron model was changed (BK and NaT conductances) so that its spike count across current injections fell by 64%, as in 6-OHDA mouse slices.",
+     "source": "Methods, paragraph 2 and Morphology and physiology of neuron classes, paragraph 3; Supplementary Fig. 1 (not read)",
+     "quote": "In the simulated parkinsonian mouse M1 PT5B currents (BK and NaT) were modified so that they showed a 64% decrease in excitability as reported by Chen et al.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The dandiset holds only the 16 network simulations (and one duplicate); no single-cell current-injection simulations of the control or parkinsonian PT5B model are in it, and the supplement that gives the protocol (Supplementary Fig. 1) was not available.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "robustness-four-sets",
+     "statement": "The results hold across four sets of four simulations with different random seeds; set sM1_12-12-2023 is a typical example and the other three sets are analysed in Supplementary Table 2.",
+     "source": "Methods, paragraph 2; Supplementary Table 2 and Supplementary Figs. 2 to 5 (not read)",
+     "quote": "To demonstrate robustness, we ran 4 sets of 4 simulations (Supplementary Table 2 ), each set including the control and parkinsonian conditions in rest state and in the activated (movement) state.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The claims file gives no measures, values or rule for this claim (Supplementary Table 2 was not available), so it is blocked as its criterion says. The measures are reported per set without an outcome. In the other three sets, PT5B rates are 11.3 to 13.4 spikes/s at control rest, 19.1 to 24.6 at parkinsonian rest, 25.7 to 26.6 control activated and 29.1 to 30.7 parkinsonian activated; the PT5B SCH peaks at 17 to 19 Hz at control rest, 15 to 16 Hz at parkinsonian rest, 40 to 42 Hz control activated and 28 to 31 Hz parkinsonian activated; the parkinsonian over control ratio of 14 to 16 Hz LFP power at rest (S1) is 65.5, 11.5 and 7.0, against 111.0 in the paper's set.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-control-rest-beta",
+     "statement": "In the control condition at rest, M1 activity is dominated by beta-band activity of about 20 Hz, particularly clear in the PT5B spike count histogram.",
+     "source": "Figure 2A legend; Results, Control simulations, paragraph 1",
+     "quote": "Resting state (250 ms at midpoint of 4.3 s simulation) displayed dominant beta-band activity (~20 Hz; particularly clear in the PT5B spike count histogram).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The PT5B SCH spectrum in W peaks at 19 Hz searched above 0 Hz and above 5 Hz. The LFP variant peaks at 1 Hz above 0 Hz and at 19 Hz above 5 Hz.",
+     "deviations": [
+      "The files hold one LFP trace (\"LFP 0\"), taken as electrode 0 (reading E1); the mean over 11 electrodes (E2) cannot be computed. The LFP is a variant here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-control-activated-gamma",
+     "statement": "In the control condition, the activated state shifts M1 activity to gamma-band activity of about 44 Hz.",
+     "source": "Figure 2B legend; Results, Control simulations, paragraph 1",
+     "quote": "Activated state showed change to high-frequency gamma-band activity (~44 Hz).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The PT5B SCH spectrum in W peaks at 44 Hz under both search ranges. The LFP variant peaks at 1 Hz and 13 Hz.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-control-pt5b-rate-activated",
+     "statement": "In the control condition PT5B neurons fire more in the activated state than at rest (11.7 +/- 9.4 against 26.8 +/- 18.2 spikes/s, p < 0.001).",
+     "source": "Figure 2C legend; Results, Control simulations, paragraph 5",
+     "quote": "Pyramidal tract neurons had the highest spike rate of any neuron population during the rest state, and increased further in the activated state (rest: 11.7 \u00b1 9.4 spikes/s; activated: 26.8 \u00b1 18.2 spikes/s; p < 0.001; Fig. 2C ).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "PT5B neurons of the control rest and activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under R1, 11.69 +/- 9.40 spikes/s at rest and 26.76 +/- 18.17 activated, all within tolerance; T1 to T4 give p from 2.7e-116 down to 5.4e-147 (Mann-Whitney 2.2e-99). Under R2 the activated values (30.60 +/- 16.13) are outside tolerance. All 1,435 PT5B cells are in every file. The answer of 2026-11-02 added R3 to the readings; it equals R1 here, every PT5B cell having fired, so the outcome is unchanged.",
+     "deviations": [
+      "R1 needs the population size, which the files do not state; PT5B is the gid block 5130 to 6564 (1,435 cells), bounded exactly by the gids seen."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-control-it23-rate-activated",
+     "statement": "In the control condition IT2/3 neurons fire more in the activated state than at rest (1.2 +/- 1.6 against 6.7 +/- 8.9 spikes/s, p < 0.001).",
+     "source": "Figure 2C legend; Results, Control simulations, paragraph 5",
+     "quote": "IT2/3 neurons significantly increased their firing rate (rest: 1.2 spikes/s; activated: 6.6 spikes/s; p < 0.001).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "IT2/3 neurons of the control rest and activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under R3 IT2 rates are 1.203 +/- 1.649 spikes/s at rest (137 cells) and 6.662 +/- 8.858 activated (68 cells), all four within tolerance. The unpaired tests find the increase at p below 0.001 (Mann-Whitney 3.5e-05, Welch 3.6e-06). With the paired tests on the 25 cells kept in both files, the pairing this record adopts for pd-it6-rate-unchanged and fig5c-pd-it23-rate-activated, they find it at 0.016 (Wilcoxon) and 0.011 (paired t), so every test finds the increase and two of four miss the criterion's 0.001. That is the pattern graded partially reproduced for activated-pt5b-rate-pd-vs-control, though weaker here - two tests miss the bound, not one, and the paired p-values come from 25 cells. On the 180 cells kept in either file, at 0 where absent, the paired tests give 0.69 and 0.0013. Under R1 (0.095 +/- 0.565 and 0.262 +/- 2.172) and R2 (1.555 +/- 1.723 and 8.883 +/- 9.220) the values are outside tolerance. The outcome was partially reproduced before the first verification and not reproduced after it; the third verification round agreed with the change back to partially reproduced, resting on R3 and on the pairing of the cells kept in both files.",
+     "deviations": [
+      "R1 uses the IT2 gid block bounded from the data (1,729 or 1,730 cells); both bounds give the same values to three decimals.",
+      "The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both pairings were run, the cells kept in both files and the cells kept in either file at 0 where absent. The criterion's p < 0.001 under every test fails under both, but they grade differently. With the cells kept in both every test finds the increase (largest p 0.016) and two of four miss 0.001; with the cells kept in either the Wilcoxon test finds no increase (0.69). The outcome rests on pairing the cells kept in both files, as for pd-it6-rate-unchanged, which keeps each paired rate inside the R3 group whose mean is tested."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-control-it6-rate-activated",
+     "statement": "In the control condition IT6 neurons fire less in the activated state than at rest (5.8 +/- 5.8 against 3.5 +/- 5.2 spikes/s, p < 0.001).",
+     "source": "Figure 2C legend; Results, Control simulations, paragraph 5",
+     "quote": "IT6 firing rates decreased from 5.8 spikes/s at rest to 3.5 spikes/s in the activated state ( p < 0.001).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "IT6 neurons of the control rest and activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT6 rates are 5.82 +/- 5.78 (914 cells) and 3.47 +/- 5.19 spikes/s (341 cells), all four within tolerance, and every test finds the decrease at p below 1e-10 (largest 1.2e-11, Welch), under both pairings of the paired tests (cells kept in both files, or in either at 0; union 5.6e-87 and 2.8e-72). Under R1 (4.28 +/- 5.58 and 0.95 +/- 3.13) and R2 (6.27 +/- 5.75 and 4.87 +/- 5.57) some values are outside tolerance, though every test finds the decrease at p below 0.001 under both.",
+     "deviations": [
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.",
+      "The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both pairings were run, the cells kept in both files and the cells kept in either file at 0 where absent; they give the same outcome here."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "control-it5-silenced-activated",
+     "statement": "In the control condition IT5A and IT5B neurons fire at about 3 spikes/s at rest (3.3 and 3.1 spikes/s) and stop firing (0 spikes/s) in the activated state.",
+     "source": "Results, Control simulations, paragraph 5; Figure 2B",
+     "quote": "In contrast, IT5A and IT5B firing rates decreased from 3 Hz (IT5A... 3.3 spikes/s; IT5B... 3.1 spikes/s) at rest, to 0 spikes/s in the activated state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) made the criterion's readings R1 and R3, and this changed the outcome from not reproduced. Under R3 the rest rates are 3.25 (IT5A, 239 cells) and 3.08 spikes/s (IT5B, 816 cells), within tolerance, and the activated rates are 0 (the one IT5A and two IT5B units of the activated file fired before 0.05 s, none in W). Under R1 the zeros hold but the rest rates are 1.21 and 1.75; under R2 they are 3.57 and 3.58 and the activated means are undefined.",
+     "deviations": [
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "control-it4-rate-activated",
+     "statement": "In the control condition the IT4 population rate rises from 2.6 spikes/s at rest to 4.7 spikes/s in the activated state.",
+     "source": "Results, Control simulations, paragraph 5",
+     "quote": "The IT4 neuron population firing rate increased from 2.6 Hz during rest to 4.7 Hz during the activated state.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 IT4 rates are 2.57 (11 cells) at rest and 4.74 spikes/s (95 cells) activated, within tolerance; the paper reports no test. R1 gives 0.037 and 0.586, R2 3.14 (9 cells) and 8.18 (55 cells).",
+     "deviations": [
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt5b-highest-rate",
+     "statement": "PT5B neurons have the highest mean spike rate of any population in the control rest state and in both the parkinsonian rest and activated states.",
+     "source": "Results, Control simulations, paragraph 5; Results, Parkinsonian condition, paragraph 5",
+     "quote": "Pyramidal tract neurons had the highest spike rate of any neuronal population during the rest and activated states in the parkinsonian condition",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The criterion blocks the claim when its two population readings disagree, and they do. The answer of 2026-11-02 added R3 to the rate readings; it does not change the outcome, since the population readings disagree under R3 too. Among the seven excitatory types PT5B has the highest mean in control rest, parkinsonian rest and parkinsonian activated under R1, R2 and R3. Among all 15 populations PV5A is higher in all three under every reading (R1 22.51, 22.79 and 42.10 spikes/s; R3 28.83, 32.08 and 58.53; against PT5B 11.69, 14.24 and 29.68 under both), and PV5B also under R1 (16.66, 17.37 and 36.16) and R3 (19.13, 26.03 and 41.71). The Results' context (rates of excitatory cell types in Figs. 2C and 5C) supports the excitatory reading, but the paper does not say which populations \"any\" covers; the question is for the authors (findings).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "control-cv-isi",
+     "statement": "In the control condition PT5B interspike-interval CV is highly variable at rest (0.59 +/- 0.37; 47.8% regular with CV <= 0.5, 52.2% irregular) and mainly irregular in the activated state (0.61 +/- 0.30; 25.7% regular, 74.3% irregular).",
+     "source": "Results, Control simulations, paragraph 2",
+     "quote": "The CV was found to be highly variable across the PT5B population during rest (0.59 + /\u22120.37), indicating the presence of both regular (CV < = 0.5; 47.8%) and irregular activity (CV > 0.5; 52.2%).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "In W, with cells of at least two ISIs, 0.611 +/- 0.354 (45.9% regular) at rest and 0.618 +/- 0.295 (24.7%) activated; with at least one ISI, 0.590 +/- 0.365 (47.8%) and 0.610 +/- 0.301 (25.7%), the paper's values to the printed decimal. Both readings in W have all six values within tolerance; over 0 to 4.3 s none is. NetPyNE's own statistic (cells with more than 10 spikes, a variant) misses one value (54.4% regular at rest).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "control-subthreshold-oscillations",
+     "statement": "In the control condition subthreshold membrane-potential oscillations appear in 57.4% of PT5B neurons in the activated state and not at rest.",
+     "source": "Results, Control simulations, paragraph 3; Figure 2A,B",
+     "quote": "Oscillations in subthreshold membrane potentials appeared frequently during the activated state (57.4% of PT5B neurons) but not during rest",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Neither the paper nor its code gives a rule for detecting a subthreshold oscillation or the cells over which the 57.4% is taken (claims file). The paper's set holds the potentials of 20 of the 1,435 PT5B cells per file; 57.4% of 20 is 11.48, not a whole number of cells, so the percentage was not taken over these 20. In W these potentials also do not match the stored spikes of the same cells (findings).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "control-duty-cycle",
+     "statement": "In the control condition the PT5B duty cycle, the share of each oscillation period with activity above half-height, is 31% at rest and 48% in the activated state.",
+     "source": "Results, Control simulations, paragraph 4; Figure 2A,B; Methods, Duty cycle",
+     "quote": "The duty cycle was 31% during rest (Fig. 2A ) and 48% during activated state (Fig. 2B ; dashed vertical lines not shown).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under none of the eight combinations are both values within tolerance. Measured is the first combination (global half-height, 2.0 to 2.25 s, mean of periods). The closest is global half-height in 2.0 to 2.25 s with the total summary, 27.88% at rest (tolerance from 27.9) and 46.49% activated (within). On the unsmoothed 2 ms SCH the half-height is crossed every 10 ms (median period over W), much shorter than a beta or gamma period, so the duty cycles depend on noise in the histogram; the paper does not say whether it smoothed it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-control-rest-spectrogram",
+     "statement": "In the control rest state the LFP spectrogram shows virtually continuous power around 2 Hz and 15 to 25 Hz beta bursts recurring every 600 ms (1.7 Hz).",
+     "source": "Figure 3A legend; Results, Control simulations, paragraph 6",
+     "quote": "The rest state simulation revealed virtually continuous power around 2 Hz, as well as 15\u201325 Hz beta-band bursts (Fig. 3A ), occurring every 600 ms (or with a burst-rate of 1.7 Hz).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under S1 the time-averaged power has no local maximum in 1 to 3 Hz (it falls from 1 Hz), and the 15 to 25 Hz burst rate is 1.30 Hz (S1, 3 bursts) and 0.87 Hz (S2), outside 1.53 to 1.87 Hz. S2 with its 250 ms window has no bin in 1 to 3 Hz; with 1 s and 2 s windows it has a maximum (1 and 2 Hz). The criterion fails under every reading, since S1 fails both parts and the burst rate fails under both. The paper does not define a burst; the half-height reading is the claims file's, and whether it should be used is asked of a reader (questions/001444.yaml).",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed.",
+      "S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz. Burst rates are bursts per 2.3 s (W) under both readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-control-activated-spectrogram",
+     "statement": "In the control activated state the 2 Hz activity disappears, 15 to 20 Hz power is no longer visible except 15 Hz bursts of about 100 to 500 ms at about 1.5 Hz, and brief (about 50 ms) 25 to 35 Hz bursts occur at about 1 Hz.",
+     "source": "Figure 3B legend; Results, Control simulations, paragraph 6",
+     "quote": "During the activated state the 2 Hz activity disappeared and beta bursts shifted to 15 Hz bursts ~100\u2013500 ms in duration or about 1.5 Hz. Beta-band power between 15\u201320 Hz was no longer visible (Fig. 3B ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Two parts hold under both readings with their burst windows, no 1 to 3 Hz maximum and lower 15 to 20 Hz power than at rest (ratio 0.42 under S1, 0.57 under S2); with a 1 s window S2 has a maximum at 1 Hz, with a 2 s window none. The 14 to 16 Hz burst rate is 1.30 (S1) and 2.61 Hz (S2), the 25 to 35 Hz burst rate 1.30 and 0.87 Hz, its median duration 66.9 and 100 ms against 50 +/- 5, and the 14 to 16 Hz bursts last 155 to 557 ms (S1) and 50 to 300 ms (S2), outside 90 to 550 ms. Measured values are under S1. The burst convention is asked of a reader, as for fig3a.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed.",
+      "S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz. Burst rates are bursts per 2.3 s (W) under both readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "control-coincident-spikes",
+     "statement": "In the control condition 1% of PT5B spikes are coincident with another PT5B spike within 1 ms at rest, and 3% in the activated state.",
+     "source": "Results, Control simulations, paragraph 7; Figure 4",
+     "quote": "PT5B spike coincident firing was observed in 1% of spikes at rest and increased to 3% during the activated state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under all six combinations 99.99% to 100% of PT5B spikes have a spike of another PT5B cell within 1 ms, against 1% and 3%. The 1,435 PT5B cells fire 17.0 (rest) and 42.3 (activated) spikes per ms together, so with the paper's definition over the whole population nearly every spike is coincident. Among the 20 cells with recorded potentials (a variant) the share is 24.8% to 72.8%. The paper's 1% to 3% must come from a smaller set of cells or another definition, which it does not state (findings). Whether the claims file reads the paper's measure correctly is asked of a reader (questions/001444.yaml); the outcome is as tested on the claims file.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-control-unitary-events",
+     "statement": "In the control condition, PT5B coincident firing above that expected from rate-matched Poisson processes occurs at rest in 100 to 275 ms clusters with 15 to 24 Hz periodicity (mean 19 Hz), totalling 0.7 of 4.0 s (17.5%), and in the activated state in more frequent 125 to 250 ms clusters totalling 1.1 of 4.0 s (27.5%).",
+     "source": "Figure 4B,D legends; Results, Control simulations, paragraph 7",
+     "quote": "The total duration of significant synchronous activity increased from 0.7 s out of 4.0 s (17.5%) at rest to 1.1 s out of 4.0 s (27.5%).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "No combination of count, window placement, span and periodicity reading meets the criterion. Counting coincident bins or their spikes, no window is significant (0 of 3,901 slid and 0 of 40 non-overlapping windows), since two or more PT5B cells fire in every 1 ms bin of 0.3 to 4.3 s and the bin count is at its maximum of 100 in 92% to 100% of control windows. Counting pairs of cells against independent cells, 0.8 to 1.65 s are significant at rest (against 0.63 to 0.77 s) and 1.0 to 1.43 s activated (within 0.99 to 1.21 s for two of four combinations), rest clusters last up to 552 ms (outside 90 to 302.5 ms), the activated state does not have more significant periods, and periodicity (x) is 18.0 to 19.8 Hz at rest (within). That count finds no significant window on independent cells and misses 20 added pair coincidences, so it is conservative. Against the null that keeps each cell's active bins, 3.2 to 3.99 s are significant at rest and 3.7 to 3.99 s activated; that count marks 1 or 2 of 40 windows on independent cells, but its slid windows cover 0.64 to 0.75 s by chance. The outcome is the one every reading gives. The paper does not say which cells it analysed or how it counted; the question is for the authors (findings) and the claims file's reading is asked of a reader (questions/001444.yaml).",
+     "deviations": [
+      "The claims file does not say how a window's coincidences are counted. Four counts were run (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al. 2002), the spikes in them, and pairs of cells firing in the same bin against independent cells at the window's rates or against a null that keeps each cell's active bins in the window. The last three take the normal tail with the exact mean and variance of their null, a stated choice. Each count's chance level was measured on independent Poisson cells."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-pd-rest-beta",
+     "statement": "In the parkinsonian condition at rest, M1 activity shows focused beta-band activity at 15 Hz.",
+     "source": "Figure 5A legend; Results, Parkinsonian condition, paragraph 1",
+     "quote": "Resting state (250 ms shown at midpoint of 4.3 s simulation) displayed focused 15 Hz beta-band activity.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The PT5B SCH spectrum peaks at 15 Hz under both search ranges; the LFP variant also at 15 Hz.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-pd-activated-gamma",
+     "statement": "In the parkinsonian condition the activated state shifts M1 activity to gamma-band activity of about 43 Hz.",
+     "source": "Figure 5B legend; Results, Parkinsonian condition, paragraph 1",
+     "quote": "Activated state showed change to high-frequency gamma-band activity (~43 Hz).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The parkinsonian activated PT5B SCH spectrum peaks at 27 Hz under both search ranges, outside 38.7 to 47.3 Hz; its next local maxima are 30 Hz (0.43 of the peak's power) and 21 Hz (0.39). The LFP variant also peaks at 27 Hz. In the other three sets the parkinsonian activated SCH peaks at 28 to 31 Hz.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-pd-pt5b-rate-activated",
+     "statement": "In the parkinsonian condition PT5B neurons fire more in the activated state than at rest (14.2 +/- 7.1 against 29.7 +/- 12.7 spikes/s, p < 0.001).",
+     "source": "Figure 5C legend; Results, Parkinsonian condition, paragraph 5",
+     "quote": "Pyramidal tract neurons had the highest spike rate of any neuronal population during the rest and activated states in the parkinsonian condition (rest: 14.2 \u00b1 7.1 spikes/s; activated: 29.7 \u00b1 12.7 spikes/s; p < 0.001; Fig. 5C ).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "PT5B neurons of the parkinsonian rest and activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under R1 14.24 +/- 7.13 and 29.68 +/- 12.67 spikes/s, under R2 14.70 +/- 6.76 and 30.57 +/- 11.75, all within tolerance under both; every test gives p below 1e-200. The answer of 2026-11-02 added R3, which equals R1 here (every PT5B cell fired); the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-pd-it23-rate-activated",
+     "statement": "In the parkinsonian condition IT2/3 neurons fire more in the activated state than at rest (0.78 +/- 1.1 against 4.3 +/- 7.1 spikes/s, p < 0.001).",
+     "source": "Figure 5C legend; Results, Parkinsonian condition, paragraph 5",
+     "quote": "In contrast, superficial layer IT2/3 neurons significantly increased their average firing rates with activation (rest: 0.8 spikes/s; activated: 4.3 spikes/s; p < 0.001).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "IT2/3 neurons of the parkinsonian rest and activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under R3 parkinsonian IT2 rates are 0.783 +/- 1.105 (55 cells) and 4.295 +/- 7.066 spikes/s (66 cells), all four within tolerance. The Welch test finds the increase at p = 1.7e-04, the Mann-Whitney test gives 0.0018, and the paired tests give 0.60 (Wilcoxon) and 0.21 (paired t) on the 22 cells kept in both files and 2.4e-04 and 2.2e-04 on the 99 cells kept in either, at 0 where absent. Under neither pairing do all four tests reach p < 0.001. With the cells kept in both the paired tests find no increase; with the cells kept in either every test finds the increase at p < 0.01 and only Mann-Whitney misses 0.001, the pattern graded partially reproduced for activated-pt5b-rate-pd-vs-control. The outcome rests on pairing the cells kept in both files, as for pd-it6-rate-unchanged. Under R1 (0.025 +/- 0.239 and 0.164 +/- 1.598) and R2 (1.163 +/- 1.173 and 6.163 +/- 7.769) the values are outside tolerance. The outcome was partially reproduced before the first verification; it is now not reproduced, since the criterion fails under every reading and pairing.",
+     "deviations": [
+      "Assumed - the paired tests under R3 pair the cells kept in both files, as for pd-it6-rate-unchanged. The claims file does not say which cells are paired. Pairing the cells kept in both keeps each paired rate inside the group whose mean the claim gives. Both pairings fail the criterion, but under the union pairing every test finds the increase (2.4e-04, 2.2e-04, 0.0018, 1.7e-04), which would grade as partially reproduced. Both are shown."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-it5-silenced-activated",
+     "statement": "In the parkinsonian condition IT5A and IT5B neurons fire at 2.2 and 1.2 spikes/s at rest and stop firing (0 spikes/s) in the activated state.",
+     "source": "Results, Parkinsonian condition, paragraph 5",
+     "quote": "IT5A and IT5B firing rates decreased from 2.2 and 1.2 spikes/s, respectively, at rest to 0 spikes/s in the activated state.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) made the readings of control-it5-silenced-activated, which this claim takes, R1 and R3, and this changed the outcome from not reproduced. Under R3 the rest rates are 2.17 (IT5A, 140 cells) and 1.25 spikes/s (IT5B, 541 cells), within tolerance, and the activated rates are 0 (one IT5A and eleven IT5B units, all firing before 0.05 s). Under R1 the rest rates are 0.47 and 0.47; under R2 2.57 and 2.19, with the activated means undefined.",
+     "deviations": [
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-it6-rate-unchanged",
+     "statement": "In the parkinsonian condition the IT6 firing rate does not change with activation (6.0 spikes/s at rest and in the activated state).",
+     "source": "Results, Parkinsonian condition, paragraph 5",
+     "quote": "The firing rates of IT6 neurons did not change (rest and activated: 6.0 spikes/s).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "A claim of absence. The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the means are 6.00 (275 cells) and 5.99 spikes/s (359 cells), within tolerance, and no test finds a difference at p < 0.05 with the paired tests on the 148 cells kept in both files (p 0.49 to 1.00; difference -0.012 spikes/s). With the paired tests on the 486 cells kept in either file, at 0 where absent, Wilcoxon gives 0.0025 and the paired t-test 0.0021, and the outcome would be not reproduced. Under R1 the means, 1.33 and 1.73, are outside tolerance and all four tests find a difference (0.00017 to 0.019); under R2 no test does (p 0.62 to 0.93) but the means, 6.79 and 6.64, are outside 5.4 to 6.6.",
+     "deviations": [
+      "The paper names no test or threshold for this absence; the claims file's p < 0.05 under T1 to T4 is used.",
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.",
+      "Assumed - the paired tests under R3 pair the cells kept in both files. The claims file does not say which cells are paired. Pairing the cells kept in both keeps each paired rate inside the group whose mean the claim gives; pairing the cells kept in either adds, in each file, cells outside its R3 group at 0 spikes/s. The two give different outcomes here and both are shown."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-cv-isi",
+     "statement": "In the parkinsonian condition PT5B spiking is mainly regular at rest (CV 0.34 +/- 0.27; 80.6% with CV <= 0.5) and more regular in the activated state (CV 0.18 +/- 0.19; 93.8% regular).",
+     "source": "Results, Parkinsonian condition, paragraph 2",
+     "quote": "In the activated state, PT5B population analysis showed regular spiking that included a small number of irregular spiking neurons (CV 0.18 + /- 0.19; 93.8% CV < = 0.5 regular; 6.2% CV > 0.5 irregular).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "In W with at least two ISIs 0.343 +/- 0.267 (80.4% regular) and 0.185 +/- 0.191 (93.8%); with at least one ISI 0.339 +/- 0.267 (80.6%) and 0.184 +/- 0.191 (93.8%). All six values are within tolerance under both readings in W.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-no-subthreshold-oscillations",
+     "statement": "No subthreshold membrane-potential oscillations are seen in PT5B neurons in the parkinsonian rest or activated states.",
+     "source": "Results, Parkinsonian condition, paragraph 3; Figure 5A,B",
+     "quote": "No subthreshold membrane potential oscillations were observed in the parkinsonian rest or active states.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Depends on control-subthreshold-oscillations, blocked for want of a detection rule; the same 20 PT5B potentials per file are available.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-activated-vm-more-negative",
+     "statement": "In the activated state, PT5B membrane potential is on average more negative in the parkinsonian than in the control condition, which the paper gives as the reason the EPSPs look larger.",
+     "source": "Results, Parkinsonian condition, paragraph 3",
+     "quote": "Activated state EPSPs appear larger in the parkinsonian in contrast with the control condition due to the greater driving force on EPSP since, on average, the membrane potential is more negative in the parkinsonian condition with its reduced excitability.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "In W the mean potential over the 20 recorded PT5B cells is -60.84 mV in the control and -66.46 mV in the parkinsonian activated file (difference -5.62 mV), and the median -63.98 and -71.11 mV (difference -7.13); all 20 cells are lower in the parkinsonian file under both readings (Wilcoxon p = 1.9e-06). The potentials of this set do not match the stored spikes in W (findings); in the three other sets, whose potentials do, the first 40 cells are lower in the parkinsonian file in 39, 39 and 40 of 40 by the mean (by 4.98 to 5.67 mV) and 40 of 40 by the median.",
+     "deviations": [
+      "The paper's set holds 20 PT5B potentials, not the 400 the dandiset describes."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-duty-cycle",
+     "statement": "In the parkinsonian condition the PT5B duty cycle is 29% at rest and 25% in the activated state.",
+     "source": "Results, Parkinsonian condition, paragraph 4; Figure 5A,B; Methods, Duty cycle",
+     "quote": "The duty cycle was 29% during the parkinsonian rest state (Fig. 5A ) and 25% during activated state (Fig. 5B ; dashed vertical lines not shown).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "No combination puts both values within tolerance. Measured is the first combination (global half-height, 2.0 to 2.25 s, mean of periods). Global half-height in 2.0 to 2.25 s with the total summary gives 26.42% at rest (within 26.1 to 31.9) and 36.45% activated (tolerance 22.5 to 27.5); every combination gives 36% or more for the activated state.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-pd-rest-spectrogram",
+     "statement": "In the parkinsonian rest state the LFP spectrogram shows continuous high-power 15 Hz beta with 25 to 35 Hz bursts of about 50 to 250 ms recurring about every 200 ms (about 5 Hz).",
+     "source": "Figure 6A legend; Results, Parkinsonian condition, paragraph 6",
+     "quote": "LFP spectrograms of resting oscillatory power displayed continuous high-power 15 Hz beta-band power with bursts of power in the ~25\u201335 Hz (~50\u2013250 ms duration) occurring about once every 200 ms (~5.0 Hz; Fig. 6A ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The 25 to 35 Hz burst rate is 1.74 Hz (S1) and 1.30 Hz (S2), against 4.5 to 5.5 Hz; burst durations run 42 to 160 ms (S1) and 50 to 425 ms (S2), each outside 45 to 275 ms at one end. The 14 to 16 Hz power is above its half-height 83% of the time under S1 and 36% under S2. The burst convention is asked of a reader, as for fig3a.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed.",
+      "S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz. Burst rates are bursts per 2.3 s (W) under both readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-pd-activated-spectrogram",
+     "statement": "In the parkinsonian activated state the LFP spectrogram shows 20 to 35 Hz bursts of about 25 to 100 ms recurring every 50 to 100 ms (about 10 to 20 Hz).",
+     "source": "Figure 6B legend; Results, Parkinsonian condition, paragraph 6",
+     "quote": "In the activated state, ~20\u201335 Hz bursts ~25\u2013100 ms in duration were seen that occurred every ~50\u2013100 ms (~10\u201320 Hz; Fig. 6B ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The 20 to 35 Hz burst rate is 2.61 Hz under both S1 and S2, outside 9 to 22 Hz; the median burst duration, 65.1 and 75 ms, is within 22.5 to 110 ms. The burst convention is asked of a reader, as for fig3a.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; E2 cannot be computed.",
+      "S2 uses a 250 ms Hann window with 90% overlap, a standard choice; NetPyNE's fft defaults (256 samples at 40 kHz) have a 156 Hz frequency step and cannot resolve the bands. The 2 Hz test of S2 is also run with 1 s and 2 s windows, since 250 ms has no bin between 1 and 3 Hz. Burst rates are bursts per 2.3 s (W) under both readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pd-coincident-spikes",
+     "statement": "In the parkinsonian condition 2% of PT5B spikes are coincident (2 or more spikes in 1 ms) at rest and 3% in the activated state.",
+     "source": "Results, Parkinsonian condition, paragraph 7; Figure 7",
+     "quote": "PT5B spike coincident firing (2 or more spikes firing in 1 ms) was observed in 2% of spikes at rest and increased to 3% during the activated state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under all six combinations 99.95% to 100% of parkinsonian PT5B spikes are coincident, against 2% and 3% (19.9 and 42.5 PT5B spikes per ms). Among the 20 recorded cells the share is 27.0% to 72.2%. See control-coincident-spikes; the reading is asked of a reader.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-pd-unitary-events",
+     "statement": "In the parkinsonian condition, significant PT5B coincident firing occurs at rest in 400 to 1100 ms clusters of 6 to 16 periods at 14 to 15 Hz (mean 15 Hz), totalling 3.1 of 4.0 s (77.5%), and in the activated state in 100 to 350 ms epochs totalling 1.4 of 4.0 s (35.0%).",
+     "source": "Figure 7B,D legends; Results, Parkinsonian condition, paragraph 7",
+     "quote": "The total duration of significant synchronous activity during rest was 3.1 s out of 4.0 s (77.5%). During the activated state, 1.4 s of 4.0 s (35.0%), was significantly synchronous.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "No combination meets the criterion. Counting bins or spikes, no window is significant (0 s against 3.1 and 1.4 s), with two or more PT5B cells in 99.1% (rest) and 100% (activated) of 1 ms bins. Counting pairs against independent cells, 3.8 to 3.98 s are significant at rest (against 2.79 to 3.41 s) in two clusters of 1,500 to 2,379 ms (outside 360 to 1,210 ms), and 0 to 0.43 s activated (against 1.26 to 1.54 s); periodicity (x) is 15.1 to 15.4 Hz at rest (within). Against the null that keeps each cell's active bins, all 4.0 s at rest and 3.7 to 4.0 s activated are significant. See fig4-control-unitary-events.",
+     "deviations": [
+      "The claims file does not say how a window's coincidences are counted. Four counts were run (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al. 2002), the spikes in them, and pairs of cells firing in the same bin against independent cells at the window's rates or against a null that keeps each cell's active bins in the window. The last three take the normal tail with the exact mean and variance of their null, a stated choice. Each count's chance level was measured on independent Poisson cells."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rest-pt5b-rate-pd-vs-control",
+     "statement": "At rest, PT5B firing rate is higher and less variable in the parkinsonian than in the control condition (14.2 +/- 7.1 against 11.7 +/- 9.4 spikes/s, p < 0.001), a paradoxical increase given the reduced PT5B excitability.",
+     "source": "Results, Control vs parkinsonian comparison, paragraph 1; Discussion, paragraph 1",
+     "quote": "The most substantial changes in firing between conditions were seen in the simulated rest state, where there was a significant increase in PT5B firing rate and a decrease in firing rate variability in the parkinsonian condition as compared with control condition (control: 11.7 \u00b1 9.4 spikes/s; parkinsonian: 14.2 \u00b1 7.1 spikes/s; p < 0.001).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "PT5B neurons of the control and parkinsonian rest simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under R1 11.69 +/- 9.40 (control) and 14.24 +/- 7.13 spikes/s (parkinsonian), all within tolerance, every test p below 1e-15 (paired by gid, 1,435 cells), and the standard deviation is lower in the parkinsonian file. R2 also meets the criterion. The answer of 2026-11-02 added R3, which equals R1 for PT5B; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rest-it4-rate-pd-vs-control",
+     "statement": "At rest, IT4 firing rate is higher in the parkinsonian than in the control condition (14.1 against 2.6 spikes/s, p < 0.05).",
+     "source": "Results, Control vs parkinsonian comparison, paragraph 1",
+     "quote": "There was also an increase in IT4 firing rate (control: 2.6 spikes/s; parkinsonian: 14.1 spikes/s; p < 0.05)",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "IT4 neurons of the control and parkinsonian rest simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings; the outcome is unchanged. Under R3 the means are 2.57 (11 cells) and 14.13 spikes/s (2 cells), both within tolerance, but no test finds the increase at p < 0.05 (Mann-Whitney 0.077, Welch 0.31, Wilcoxon 1.0 and paired t 0.68 on the 2 cells kept in both files, 0.098 and 1.0 on the 11 kept in either). Under R1 both means are 0.037 spikes/s, and under R2 3.14 (9 cells) and 14.13 (2 cells), the control value outside tolerance; no reading has every test below 0.05. The criterion fails under every reading, so the outcome does not rest on R3.",
+     "deviations": [
+      "The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both pairings were run, the cells kept in both files and the cells kept in either file at 0 where absent; they give the same outcome here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rest-it5a-rate-pd-vs-control",
+     "statement": "At rest, IT5A firing rate is lower in the parkinsonian than in the control condition (2.2 against 3.3 spikes/s, p < 0.01).",
+     "source": "Results, Control vs parkinsonian comparison, paragraph 1",
+     "quote": "a decrease in IT5A firing rate (control: 3.3 spikes/s; parkinsonian: 2.2 spikes/s; p < 0.01)",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "IT5A neurons of the control and parkinsonian rest simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the rest IT5A rates are 3.25 (239 cells) in the control and 2.16 spikes/s (140 cells) in the parkinsonian file, within tolerance, and every test finds the decrease at p below 0.01 (Wilcoxon 6.9e-19, paired t 2.0e-22 on 124 cells, Mann-Whitney 0.0019, Welch 0.0027); pairing the 255 cells kept in either file gives 5.7e-33 and 5.7e-30. Under R1 the rates are 1.21 and 0.47 (every test below 0.01); under R2 3.57 and 2.57, the parkinsonian value outside 1.98 to 2.42, unpaired tests 0.017 and 0.012.",
+     "deviations": [
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.",
+      "The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both pairings were run, the cells kept in both files and the cells kept in either file at 0 where absent; they give the same outcome here."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "activated-pt5b-rate-pd-vs-control",
+     "statement": "In the activated state, PT5B firing rate is higher and less variable in the parkinsonian than in the control condition (29.7 +/- 12.7 against 26.8 +/- 18.2 spikes/s, p < 0.001).",
+     "source": "Results, Control vs parkinsonian comparison, paragraph 1",
+     "quote": "Activated (movement-associated) cortical dynamics also showed a significant increase in PT5B firing rate and a decrease in firing rate variability in the parkinsonian condition as compared with control condition (control: 26.8 \u00b1 18.2 spikes/s; parkinsonian: 29.7 \u00b1 12.7 spikes/s; p < 0.001).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "PT5B neurons of the control and parkinsonian activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Under R1 26.76 +/- 18.17 (control) and 29.68 +/- 12.67 spikes/s (parkinsonian), all four within tolerance, standard deviation lower; Wilcoxon, paired t and Welch give p 3.2e-07, 1.6e-08 and 6.5e-07, but Mann-Whitney gives 0.0052, above the 0.001 the criterion asks under every test. The increase is present, with one of four tests weaker than the paper's bound. Under R2 the means are 30.60 and 30.57 and no test is below 0.05. The answer of 2026-11-02 added R3, which equals R1 for PT5B; the outcome is unchanged. The Discussion's statement of no significant change in the activated state holds under R2 and not under R1 or R3.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "activated-it6-rate-pd-vs-control",
+     "statement": "In the activated state, IT6 firing rate is higher in the parkinsonian than in the control condition (6.0 against 3.5 spikes/s, p < 0.001).",
+     "source": "Results, Control vs parkinsonian comparison, paragraph 1",
+     "quote": "The firing rate of IT6 neurons also increased in the parkinsonian condition (control: 3.5 spikes/s; parkinsonian: 6.0 spikes/s; p < 0.001).",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "IT6 neurons of the control and parkinsonian activated simulations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The answer of 2026-11-02 (questions/001444.yaml) added R3 to the criterion's rate readings, and this changed the outcome from not reproduced. Under R3 the activated IT6 rates are 3.47 (341 cells) in the control and 5.99 spikes/s (359 cells) in the parkinsonian file, within tolerance, and every test finds the increase at p below 1e-07 (largest 3.4e-08, Welch), under both pairings of the paired tests. Under R1 (0.95 and 1.73) and R2 (4.87 and 6.64) the values are outside tolerance, though the parkinsonian rate is higher under both.",
+     "deviations": [
+      "The outcome rests on rate reading R3, the neurons that fired at least once in the 4.3 s simulation with those silent in W counted at 0 (the cells the files hold). The claims file lists R3 beside R1 and R2 since the answer of 2026-11-02; the Fig. 2C and 5C legends fix the window (\"calculated from the last 2.3 s of 4.3 s simulation\") but not the neurons averaged over, and R1 and R2 do not meet the criterion, so the outcome is marked as assumed.",
+      "The claims file does not say which cells the paired tests T1 and T2 pair under R2 and R3. Both pairings were run, the cells kept in both files and the cells kept in either file at 0 where absent; they give the same outcome here."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rest-beta-power-order-of-magnitude",
+     "statement": "At rest, LFP beta power around 15 Hz is an order of magnitude larger in the parkinsonian than in the control condition.",
+     "source": "Discussion, paragraph 3; Figures 3A and 6A (colour bars x 10^-5 and x 10^-4)",
+     "quote": "In the resting state, an order of magnitude increase in beta power was observed around 15 Hz.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "The parkinsonian over control ratio of rest LFP power is 129 (S1, at 15 Hz), 111 (S1, 14 to 16 Hz) and 65 (S2, both measures), above the criterion's 3.16 to 31.6 under every reading. The criterion names a range for reproduced and one for not reproduced (below 3.16) and none for a larger increase; the increase is present and about two orders of magnitude, so the outcome is partially reproduced. The ratio of the spectrograms' maxima (the colour bars of Figs. 3 and 6), a variant, is 21.2 under S1 and 3.0 under S2. In the other three sets the S1 ratio at 14 to 16 Hz is 65.5, 11.5 and 7.0.",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a).",
+      "The criterion leaves ratios above 31.6 without an outcome; partially reproduced was chosen because the claimed direction holds and its size does not."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "activated-20-35hz-power-pd-vs-control",
+     "statement": "In the activated state, the parkinsonian condition shows more power at 20 to 35 Hz than the control condition.",
+     "source": "Discussion, paragraph 1; Figures 3B and 6B",
+     "quote": "Parkinsonism-associated changes were less marked in the activated (movement) state, where we found no significant change in PT5B population firing rate but did see a change in PT5B activity pattern with an increase in power of 20\u201335 Hz activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Mean 20 to 35 Hz power is higher in the parkinsonian activated file under every reading, by a factor of 4.55 (LFP, S1), 4.71 (LFP, S2) and 11.8 (PT5B SCH).",
+     "deviations": [
+      "Only one LFP trace (E1) is in the files; S2 uses a 250 ms window (see fig3a)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rest-synchrony-increase",
+     "statement": "At rest, PT5B spike synchrony is substantially larger in the parkinsonian than in the control condition (significant synchrony 3.1 against 0.7 of 4.0 s).",
+     "source": "Discussion, paragraphs 1 and 6; Figures 4B and 7B",
+     "quote": "We found a substantial increase in synchronous spiking in our simulations of the parkinsonian rest state.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_doherty_2025.ipynb",
+     "notes": "Counting pairs of coincident PT5B cells, the parkinsonian rest file has more significant synchrony than the control rest file under every window reading, 3.8 to 3.98 s against 0.8 to 1.65 s against independent cells, and 4.0 s against 3.2 to 3.99 s against the null that keeps each cell's active bins (a small difference for slid windows, 4.0 against 3.98 and 3.99 s). Counting coincident bins or their spikes, both files have 0 s, but those counts are at their ceiling in every file (every 1 ms bin of the control rest file holds two or more PT5B cells) and miss both synthetic synchrony cases, so they cannot test the claim. The outcome was not reproduced before the first verification, on the bin count alone; it rests on the pair count as an assumption. The durations themselves do not match fig4 and fig7 (both not reproduced). Two caveats bear on it. Under the count-preserving null the comparison is at its ceiling (4.0 against 3.98 and 3.99 s for slid windows), and on independent cells that null's slid windows cover 0.64 to 0.75 s by chance, so the comparison rests in effect on the rate null, which is conservative. Both pair nulls take each cell's spikes as spread evenly over its 100 ms window, so the excess partly measures how strongly the PT5B rhythm modulates firing within a window - the median observed over expected pair count is 1.38 to 1.41 at parkinsonian rest against 1.04 to 1.05 at control rest, and the largest PT5B SCH spectral power above 5 Hz is 31.5 times higher. The paper's own Poisson window null probably shares this property.",
+     "deviations": [
+      "The claims file does not say how a window's coincidences are counted. Four counts were run (m1sim.unitary_events) - coincident 1 ms bins with a Poisson joint-surprise test (Grun et al. 2002), the spikes in them, and pairs of cells firing in the same bin against independent cells at the window's rates or against a null that keeps each cell's active bins in the window. The last three take the normal tail with the exact mean and variance of their null, a stated choice. Each count's chance level was measured on independent Poisson cells.",
+      "Assumed - the pair count, the one count of the four that can exceed its expectation on these data. The Methods ask for \"synchronous spikes significantly above the expected number of synchronous spikes for the neuron population size and firing rates\", which a count capped at the window length cannot show. Grun's coincidence count is defined for given neurons, and summing it over all pairs of PT5B cells extends it to the population."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset description says each file holds spike trains of all 10,073 neurons. The units tables hold only the cells that fired, 2,917 to 4,480 M1 cells per file in set sM1_12-12-2023 and 2,765 to 4,714 in the others, and input generators that did not fire are missing too. The size of each population is not stated and can be recovered only from the gid blocks in the unit names (24 gids between blocks are never seen).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset description says each file holds membrane potentials of 400 PT5B neurons. The four files of the paper's set, sM1_12-12-2023, hold 20 each (gids 5201 to 6502); the other twelve hold 400 (gids 5130 to 5529).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In the paper's set the PT5B membrane potentials do not belong to the run whose spikes are stored. Their 0 mV crossings match the same gid's unit spikes in the first 0.5 s (94.8% to 100%) but only 1.5% to 5.6% of unit spikes in 2.0 to 4.3 s, while spike counts stay similar. In set sM1-04-22-2024 the potentials match the spikes throughout. The potentials of the paper's set seem to come from a run that diverged from the stored one.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "sub-001/sub-001.nwb is the same blob as sub-001/sub-001_ses-sM1-04-22-2024-01.nwb, so one simulation is deposited twice under two names.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Each file holds one LFP trace, \"Segment 0 LFP 0\", with no electrode position, where the model records 11 electrodes at 200 to 1200 um depth. Which electrode it is cannot be told from the files, and the mean over electrodes cannot be computed.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The files name the bioRxiv preprint as their related publication, the dandiset lists no related resource for the published paper, and the archive's summary gives \"spike sorting technique\" as the measurement technique of a simulation, with \"Units\" as the only variable measured though the files hold LFP and membrane potentials.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The single-cell current-injection simulations of the control and parkinsonian PT5B models behind the 64% decrease in excitability (Supplementary Fig. 1) are not in the dandiset.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Over which cells is a population's mean rate taken? The paper's IT rates match exactly when the cells are those that fired at least once in the 4.3 s simulation, with rates over the last 2.3 s (IT2 1.203 +/- 1.649 at control rest against 1.2 +/- 1.6), and not when all cells or only cells active in the last 2.3 s are counted; eight IT outcomes here rest on that reading. Which test gave the rate p-values? Under that reading the Welch t-test meets every printed bound except for IT4 at rest (two parkinsonian cells, p = 0.31), while paired tests do not for IT2. If paired tests were used, which cells were paired? For parkinsonian IT6 the paired tests find no change on the cells active in both simulations and a change (p = 0.002) on the cells active in either.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which PT5B cells, and what definition, gave 1% to 3% of spikes coincident within 1 ms and the unitary-event durations of Figs. 4 and 7? Over all 1,435 PT5B cells (17 to 42 spikes per ms) nearly every spike has another PT5B spike within 1 ms, two or more cells fire in 99.1% to 100% of 1 ms bins, and a joint-surprise test against rate-matched Poisson cells finds no significant 100 ms window. How were a window's coincidences counted (coincident bins, spikes, or pairs of cells) and against which null? Over all PT5B cells the significant duration runs from 0 s (bins, spikes) to 0 to 4.0 s (pairs) with the count.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How were LFP bursts (Figs. 3 and 6) defined, which spectrogram parameters and electrode were used, and was the PT5B spike count histogram smoothed before the duty cycle was measured? Unsmoothed 2 ms histograms cross half-height every 10 ms, and a half-height rule on band power gives burst rates of 1 to 3 Hz where the paper reports 5 Hz and 10 to 20 Hz.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Does \"highest spike rate of any neuron population\" cover interneurons? PV5A (22.5 to 42.1 spikes/s by all cells) fires faster than PT5B (11.7 to 29.7) in control rest and both parkinsonian states; among excitatory types PT5B is highest.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How were subthreshold membrane-potential oscillations detected, and over which cells is the 57.4% taken? The paper's set holds 20 PT5B potentials per file, and 57.4% of 20 is not a whole number.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results report a significant increase in PT5B rate from control to parkinsonian in the activated state (p < 0.001), while the Discussion says there was no significant change in PT5B population firing rate in the activated state. On the data, counting all PT5B cells, three tests give p below 1e-06 and the Mann-Whitney test 0.0052.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the first run (the executed notebook with the conclusions and summary removed, the helper module and the claims file), with the paper under paper/. Report transcripts/001444/verifier-1-report.md. The other points of the report, answered in the notebook - the starting times of the LFP and potential series are 0 s at 40 kHz, \"LFP 0\" carries no electrode or depth and the files have no electrode table (problem 6), the units table has no field listing silent cells (problems 9 and the stored-cells check), and the potentials of the paper's set still do not match their spikes in W, as the findings say (problem 8).",
+     "agreed": 33,
+     "of": 40,
+     "disagreements": [
+      {
+       "claim": "fig1-network-size",
+       "outcome": "partially_reproduced",
+       "reason": "Under the criterion as written, the unit count is 4,480, 3,231, 2,919 and 2,917, not 10,073, because the files store only cells that fired. The gids support 10,073 - the M1 gids lie in 0 to 10,072, inputs start at gid 10,073 and all 15 populations are present."
+      },
+      {
+       "claim": "fig2c-control-it23-rate-activated",
+       "outcome": "not_reproduced",
+       "reason": "R3 values are all within tolerance (1.20/1.65, 6.66/8.86). The paired tests fail - T1 p = 0.016 and T2 p = 0.011, on only 25 cells kept in both files. This depends on the pairing choice in problem 1."
+      },
+      {
+       "claim": "fig4-control-unitary-events",
+       "outcome": "blocked",
+       "reason": "The helper's coincidence count saturates - every 1 ms bin holds at least 2 spikes, and the median observed count equals the expected count, 100 of 100. The test cannot find significance, and only one count reading was run (problem 2)."
+      },
+      {
+       "claim": "fig7-pd-unitary-events",
+       "outcome": "blocked",
+       "reason": "Same as fig4."
+      },
+      {
+       "claim": "rest-synchrony-increase",
+       "outcome": "blocked",
+       "reason": "It rests on the saturated unitary-event output - 0 s against 0 s."
+      },
+      {
+       "claim": "fig5c-pd-it23-rate-activated",
+       "outcome": "not_reproduced",
+       "reason": "R3 values are within tolerance, but even the unpaired T3 fails (p = 0.0018), and T1 gives p = 0.60. This holds whatever pairing is used."
+      },
+      {
+       "claim": "activated-pt5b-rate-pd-vs-control",
+       "outcome": "not_reproduced",
+       "reason": "Values within tolerance under R1/R3, but Mann-Whitney gives p = 0.0052, which is not below 0.001. Under R2 no test reaches p < 0.05, which is what the Discussion says."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, with its conclusions and summary, the helper module, the attempt record, the README and the claims file, with the paper under paper/. Report transcripts/001444/verifier-2-report.md. The report's other text corrections, answered in the notebook, record and README - the summary and findings now say seven IT outcomes rest on R3, not nine; the finding on coincidences gives 99.1% to 100% of 1 ms bins and a pair-count range of 0 to 4.0 s; and the summary says the potentials of the paper's set seem to come from a diverged run, which the files cannot establish.",
+     "agreed": 39,
+     "of": 40,
+     "disagreements": [
+      {
+       "claim": "fig1-network-size",
+       "outcome": "blocked",
+       "reason": "The count of 4,480 measures what the files store, not the model's size; the gids support 10,073 (cell 7, input gids start at 10073; smallest blocks plus unseen gids sum to 10,073), and cell 13 shows the files cannot hold the silent cells the criterion counts. Blocked (data_missing), since the quantity cannot be counted from these files; this revises the round-1 partially reproduced. Not reproduced tells a reader the data contradict the paper, and they do not."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The two outcomes with a proposed change after round 2, fig1-network-size and fig2c-control-it23-rate-activated, and the analysis behind them in the full executed notebook of the second revision, with the attempt record and the claims file. Report transcripts/001444/verifier-3-report.md.",
+     "agreed": 2,
+     "of": 2,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001444-doherty-2025",
+   "type": "reproduction",
+   "title": "Simulated parkinsonian mouse M1 (Doherty et al. 2025)",
+   "description": "Tests the findings of Doherty, Chen, Smith, Wichmann, Chu and Lytton (2025) on dandiset 001444, which holds four sets of four NetPyNE simulations of mouse primary motor cortex in the control and parkinsonian conditions, at rest and activated. It compares firing rates, ISI variability, dominant frequencies, duty cycles, LFP spectrograms, PT5B coincident firing and membrane potentials between conditions, on the set the paper reports.",
+   "datasets": [
+    "dandi:001444"
+   ],
+   "papers": [
+    "10.1038/s41531-025-01070-4"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_doherty_2025.ipynb",
+     "title": "Reproducing Doherty et al. (2025) from dandiset 001444",
+     "executed": "notebooks/001444-doherty-2025/reproduce_doherty_2025.html"
+    }
+   ]
+  }
+ ]
+}
