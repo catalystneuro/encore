@@ -29,32 +29,46 @@ paragraph 4).
   the paper give a delay window of 1 to 4 bins (1.6 to 6.4 ms), which bins t-2 and t-3 give
   (a spike in bin t-3 and one in bin t are 2 to 4 bins apart, in t-2 and t 1 to 3 bins).
   `PAST_BINS = (2, 3)` follows the stated delay window, the version both papers give in numbers
-  (an assumption, recorded in the attempt). The future state is one bin, t.
+  (an assumption, recorded in the attempt); `PAST_READINGS` holds both, and the notebook runs
+  both. The future state is one bin, t.
 - Normalized TE is TE over the entropy of the receiver's future state (paper, Eq 4).
 - Significance (paper, paragraph 5, and [44], paragraph 6 of Transfer Entropy Analysis): the
   sender's spikes are jittered uniformly over a window of seven bins centred on each spike
-  (`JITTER_HALF_BINS = 3`); 5000 surrogates; significant when fewer than 5 surrogates give a TE
-  greater than the real one. [44] states that the jitter preserved the number of past states
-  equal to 1; `n(s'=1)` is held at its real value in each surrogate, as that sentence says. The
-  test stops early once 5 surrogates exceed the real TE, which cannot change the decision.
+  (`JITTER_HALF_BINS = 3`); 5000 surrogates; significant when fewer than 5 surrogates exceed the
+  real TE (p < 0.001). [44] takes as the p-value the percentage of surrogate TE values "larger
+  than" the real one; when the jitter cannot change a pair's counts every surrogate ties with
+  the real TE. `te_network` counts both, surrogates strictly above the real TE and those at or
+  above it, so that both rules can be applied: ties counted as exceeding (the standard
+  permutation p-value; an assumption, chosen because its false-positive rate on independent
+  trains is near the stated p < 0.001, as the notebook shows) and the literal strict rule.
+  [44] states that the jitter preserved the number of past states equal to 1; `n(s'=1)` is held
+  at its real value in each surrogate, as that sentence says. The test stops early once the
+  decision is settled, which cannot change it.
   For pairs whose jitter moves more than `exact_max` (50 in the notebook) relevant sender spikes,
   the surrogate counts are drawn from a normal distribution with their exact moments in place of
   jittering every spike: a deviation, made for the time limit, whose agreement with the full
   jitter the notebook shows on two recordings.
 - Sub-networks ([44], Topology Analysis - Sub-Networks, paragraph 2; paper, paragraph 5): 50
   neurons drawn at random; neurons without a connection inside the group are replaced from the
-  pool until all have one; then only the k*N/2 = 75 strongest connections by normalized TE are
-  kept. `SUBNET_N`, `SUBNET_K`, `N_SUBNETS`.
-- PID ("Williams and Beer"; paper, Eqs 5 to 10): redundancy is I_min conditioned on I_P in the
-  form of Eq 8 (specific information of R together with I_P minus that of I_P alone, minimum over
-  the two sources, weighted by p(i_F)); unique terms are the bivariate TE minus the redundancy;
+  pool until all have one; a group with fewer than k*N/2 = 75 significant connections is redrawn
+  (claims file, M-SUB); then the 75 strongest connections by normalized TE are kept (M-SUB
+  reading a, as [44]) or 75 at random (reading b). `SUBNET_N`, `SUBNET_K`, `N_SUBNETS`; at most
+  `SUBNET_MAX_DRAWS` draws per recording (a limit for time; the notebook reports where it binds).
+- PID ("Williams and Beer"; paper, Eqs 5 to 10): redundancy is I_min conditioned on I_P, in the
+  claims file's form (M-PID: within each state (i_F, i_P), the minimum over the two sources of
+  the specific information, weighted by p(i_F, i_P)); the form of Eq 8 of the version of record
+  (specific information of R together with I_P minus that of I_P alone, minimum over the two
+  sources, weighted by p(i_F)) is returned too, as a variant; unique terms are the bivariate TE
+  minus the redundancy;
   synergy is the TE of the pair minus the other three. Normalized by H(I_F) (paper, last
   sentence of the paragraph after Eq 10). The past states of the two senders are the same
   binned, OR'ed states as for the TE ("The binning and delay methods for the PID multivariate TE
   were identical to the bivariate TE analysis").
 - Information gain (paper, Eq 12): TE of n senders jointly minus the TE of n - 1 of them,
   averaged over the n choices of the sender left out; all combinations of n inputs or 100
-  sampled ones, whichever is fewer; n up to 6 (paper, Methods, paragraph after Eq 11).
+  sampled ones, whichever is fewer; n up to 6 (paper, Methods, paragraph after Eq 11). The
+  receivers are sampled (`N_GAIN_RECEIVERS`, for time), with their inputs in the full network
+  (reading f) or inside one sub-network (reading s).
 - Random seeds are standard choices; they cannot change a result beyond sampling noise.
 """
 
@@ -80,10 +94,12 @@ DATA_MD5 = "1a5bd3d304c5442290a7c9c1f1b5def6"   # ssc-3/live/checksums.md5
 
 TIME_SCALES = {"1.6-6.4 ms": 1.6, "3.5-14 ms": 3.5}   # bin size in ms ([44], Table 1)
 PAST_BINS = (2, 3)
+PAST_READINGS = {"t-2,t-3": (2, 3), "t-1,t-2": (1, 2)}
 JITTER_HALF_BINS = 3
 N_SURROGATES = 5000
 MAX_EXCEED = 5            # significant when fewer than 5 of 5000 surrogates exceed (p < 0.001)
 SUBNET_N, SUBNET_K, N_SUBNETS = 50, 3, 500
+SUBNET_MAX_DRAWS = 5000   # draws per recording before it is called not viable (time limit)
 
 
 # ---------------------------------------------------------------- loading
@@ -194,9 +210,14 @@ def _u7(bits32):
 
 
 @nb.njit(parallel=True, cache=True)
-def te_network(trains, T, n_surr, max_exceed, seed, exact_max):
+def te_network(trains, T, n_surr, max_exceed, seed, exact_max, p0, p1, ties_exceed):
     """TE from every sender (row) to every receiver (column), its normalized value, the number of
-    surrogates run and the number that exceeded the real TE.
+    surrogates run, the number with a TE greater than the real one, the number with a TE greater
+    than or equal to it, the number of the sender's spikes near receiver activity, and the number
+    of those whose jitter can change the counts. The past state is the OR of bins t - p0 and
+    t - p1. With `ties_exceed` the test stops once `max_exceed` surrogates reach the real TE
+    (ties count as exceeding; only that decision is complete); without it, once `max_exceed`
+    surrogates exceed it strictly (both decisions are complete, at more cost).
 
     In a surrogate each sender spike moves by u, uniform on -3..3 bins. A spike can change the
     counts a, b, c only if the receiver's future or past state is 1 somewhere in the bins it can
@@ -205,7 +226,6 @@ def te_network(trains, T, n_surr, max_exceed, seed, exact_max):
     spikes closer together are jittered together and their covered bins merged (the OR of the
     past state)."""
     n = len(trains)
-    p0, p1 = 2, 3                      # PAST_BINS
     J = 3                              # JITTER_HALF_BINS
     W = 2 * J + 1
     t0 = 3                             # first bin with a full past
@@ -214,6 +234,9 @@ def te_network(trains, T, n_surr, max_exceed, seed, exact_max):
     nte = np.zeros((n, n))
     ran = np.zeros((n, n), np.int32)
     exceed = np.zeros((n, n), np.int32)
+    exceed_ge = np.zeros((n, n), np.int32)
+    n_rel = np.zeros((n, n), np.int32)
+    n_mov = np.zeros((n, n), np.int32)
     S1 = np.zeros(n, np.int64)
     for s in range(n):
         tr = trains[s]
@@ -318,12 +341,15 @@ def te_network(trains, T, n_surr, max_exceed, seed, exact_max):
                         n_gp += 1
                 k = e + 1
             grp[n_g] = n_gp
+            n_rel[s, r] = m
+            n_mov[s, r] = n_iso + n_gp
             state = np.empty(1, np.uint64)
             state[0] = np.uint64(seed) * np.uint64(1000003) + np.uint64(s * 100003 + r + 1) * np.uint64(7919)
             for _ in range(10):
                 _rng(state)
             mask = np.uint64(0xFFFFFFFF)
             nex = 0
+            nge = 0
             k_run = 0
             if n_iso + n_gp > exact_max:
                 # Gaussian null: the jittered counts are a sum of many independent spike
@@ -401,12 +427,16 @@ def te_network(trains, T, n_surr, max_exceed, seed, exact_max):
                     a = min(a, S1[s])
                     c = min(c, a, b)
                     k_run += 1
-                    if te_from_counts(N, R1, P1, RP, S1[s], a, b, c) > real:
+                    v_s = te_from_counts(N, R1, P1, RP, S1[s], a, b, c)
+                    if v_s > real:
                         nex += 1
-                        if nex >= max_exceed:
-                            break
+                    if v_s >= real:
+                        nge += 1
+                    if (nge if ties_exceed else nex) >= max_exceed:
+                        break
                 ran[s, r] = k_run
                 exceed[s, r] = nex
+                exceed_ge[s, r] = nge
                 continue
             for it in range(n_surr):
                 tot = base
@@ -430,13 +460,17 @@ def te_network(trains, T, n_surr, max_exceed, seed, exact_max):
                                 b += rP[t]
                                 c += rF[t] & rP[t]
                 k_run += 1
-                if te_from_counts(N, R1, P1, RP, S1[s], a, b, c) > real:
+                v_s = te_from_counts(N, R1, P1, RP, S1[s], a, b, c)
+                if v_s > real:
                     nex += 1
-                    if nex >= max_exceed:
-                        break
+                if v_s >= real:
+                    nge += 1
+                if (nge if ties_exceed else nex) >= max_exceed:
+                    break
             ran[s, r] = k_run
             exceed[s, r] = nex
-    return te, nte, ran, exceed
+            exceed_ge[s, r] = nge
+    return te, nte, ran, exceed, exceed_ge, n_rel, n_mov
 
 
 def significant(exceed):
@@ -448,68 +482,79 @@ def significant(exceed):
 
 # ---------------------------------------------------------------- sub-networks
 
-def subnetworks(sig, nte, rng, n_sub=N_SUBNETS, size=SUBNET_N, k=SUBNET_K, max_tries=10**5):
+def subnetworks(sig, nte, rng, mode="strongest", n_sub=N_SUBNETS, size=SUBNET_N, k=SUBNET_K,
+                max_draws=SUBNET_MAX_DRAWS):
     """Sub-networks as in [44] (Topology Analysis - Sub-Networks): `size` neurons at random;
     a neuron with no significant connection (either direction) to the others is replaced by a
-    random neuron from the pool until all have one; then the k*size/2 strongest connections by
-    normalized TE are kept. Returns a list of (neurons, senders, receivers) in recording indices,
-    and the number of restarts."""
+    random pool neuron connected to the group until all have one. A draw whose group then holds
+    fewer than k*size/2 = 75 significant connections is redrawn (claims file, M-SUB). Of the
+    connections, the 75 strongest by normalized TE are kept (`mode="strongest"`, M-SUB reading a,
+    as [44]) or 75 at random (`mode="random"`, reading b). Stops after `max_draws` draws.
+    Returns a list of (neurons, senders, receivers) in recording indices, and a dict with the
+    number of draws, of draws whose replacement failed, of draws with too few connections, and
+    the connections in the group of every completed draw before trimming."""
     n = sig.shape[0]
     und = sig | sig.T
     out = []
-    restarts = 0
     n_keep = k * size // 2
-    while len(out) < n_sub:
-        if restarts > max_tries:
-            break
+    info = {"draws": 0, "unconnectable": 0, "too_few": 0, "edges": []}
+    if n < size:
+        return out, info
+    while len(out) < n_sub and info["draws"] < max_draws:
+        info["draws"] += 1
         perm = rng.permutation(n)
-        group, pool = list(perm[:size]), list(perm[size:])
+        group, in_group = perm[:size].copy(), np.zeros(n, bool)
+        in_group[group] = True
         ok = False
         for _ in range(10 * size):
-            g = np.array(group)
-            deg = und[np.ix_(g, g)].sum(1)
-            lone = np.flatnonzero(deg == 0)
+            lone = np.flatnonzero(~und[np.ix_(group, group)].any(1))
             if len(lone) == 0:
                 ok = True
                 break
             # replace one unconnected neuron by a pool neuron connected to the group, if any
-            cand = [p for p in pool if und[p, g].any()]
-            if not cand:
+            cand = np.flatnonzero(~in_group & und[:, group].any(1))
+            if len(cand) == 0:
                 break
             new = cand[rng.integers(len(cand))]
             old = lone[rng.integers(len(lone))]
-            pool.remove(new)
-            pool.append(group[old])
+            in_group[group[old]] = False
+            in_group[new] = True
             group[old] = new
         if not ok:
-            restarts += 1
+            info["unconnectable"] += 1
             continue
-        g = np.array(group)
-        s_idx, r_idx = np.nonzero(sig[np.ix_(g, g)])
-        w = nte[g[s_idx], g[r_idx]]
-        order = np.argsort(-w, kind="stable")[:n_keep]
-        out.append((g, g[s_idx[order]], g[r_idx[order]]))
-    return out, restarts
+        s_idx, r_idx = np.nonzero(sig[np.ix_(group, group)])
+        info["edges"].append(len(s_idx))
+        if len(s_idx) < n_keep:
+            info["too_few"] += 1
+            continue
+        if mode == "strongest":
+            w = nte[group[s_idx], group[r_idx]]
+            order = np.argsort(-w, kind="stable")[:n_keep]
+        else:
+            order = rng.choice(len(s_idx), n_keep, replace=False)
+        out.append((group, group[s_idx[order]], group[r_idx[order]]))
+    return out, info
 
 
 # ---------------------------------------------------------------- PID and multivariate TE
 
-def past_sets(trains, T):
+def past_sets(trains, T, past=PAST_BINS):
     """For each neuron the sorted bins t (t0 <= t < T) whose past state is 1."""
     out = nb.typed.List()
     for tr in trains:
-        s = np.unique(np.concatenate([tr + d for d in PAST_BINS]))
+        s = np.unique(np.concatenate([tr + d for d in past]))
         out.append(s[(s >= 3) & (s < T)])
     return out
 
 
 @nb.njit(cache=True)
-def _receiver_arrays(tr, T):
+def _receiver_arrays(tr, T, p0, p1):
     rF = np.zeros(T + 8, np.uint8)
     rP = np.zeros(T + 8, np.uint8)
     for k in range(len(tr)):
         rF[tr[k]] = 1
-        for d in (2, 3):
+        for d in (p0, p1):
             if tr[k] + d < T:
                 rP[tr[k] + d] = 1
     base = np.zeros((2, 2), np.int64)
@@ -576,7 +621,15 @@ def _joint_counts(rF, rP, base, sets, idx, code, touched):
 def pid_from_table(n):
     """Williams-Beer PID of the multivariate TE {J, K} -> I from counts n[iF, iP, x], x = j + 2k
     (paper, Eqs 5 to 10). Returns synergy, redundancy, unique J, unique K, TE(J), TE(K),
-    TE({J,K}), H(I_F), all in bits."""
+    TE({J,K}), H(I_F), synergy (Eq 8 form), redundancy (Eq 8 form), all in bits.
+
+    Two forms of the redundancy conditioned on I_P. The first (returned first, with the unique
+    terms built on it) is the claims file's M-PID: within each state (i_F, i_P), the specific
+    information of each source about i_F given i_P, the minimum over the two sources, weighted
+    by p(i_F, i_P). The second is Eq 8 of the version of record: per state i_F, the specific
+    information of the source together with I_P minus that of I_P alone (Eqs 9 and 10), the
+    minimum over the sources, weighted by p(i_F). The claims file was written without the
+    equations; the difference is asked of a reader (questions/crcns-ssc-3.yaml)."""
     N = n.sum()
     p = n / N
     pJ = np.zeros((2, 2, 2))
@@ -620,18 +673,38 @@ def pid_from_table(n):
             if v < best:
                 best = v
         red += pF[f] * best
+    syn8 = teJK - red - (teJ - red) - (teK - red)
+    red8 = red
+    # claims file form: min over sources within each (i_F, i_P)
+    red = 0.0
+    for f in range(2):
+        for q in range(2):
+            if pFP[f, q] <= 0:
+                continue
+            best = 1e300
+            for src in range(2):
+                pr = pJ if src == 0 else pK
+                v = 0.0
+                for x in range(2):
+                    pj = pr[f, q, x]
+                    if pj > 0:
+                        # p(x | i_F, i_P) log p(i_F | x, i_P) / p(i_F | i_P)
+                        v += pj / pFP[f, q] * math.log2(pj / (pr[0, q, x] + pr[1, q, x]) / (pFP[f, q] / pPp[q]))
+                if v < best:
+                    best = v
+            red += pFP[f, q] * best
     uJ = teJ - red
     uK = teK - red
     syn = teJK - red - uJ - uK
-    return syn, red, uJ, uK, teJ, teK, teJK, H
+    return syn, red, uJ, uK, teJ, teK, teJK, H, syn8, red8
 
 
 @nb.njit(parallel=True, cache=True)
-def pid_triples(trains, sets, T, recv, js, ks):
+def pid_triples(trains, sets, T, recv, js, ks, p0, p1):
     """PID of every triple (js[i], ks[i]) -> recv[i]; triples must be sorted by receiver.
-    Returns an array (n, 8) of pid_from_table's outputs."""
+    Returns an array (n, 10) of pid_from_table's outputs."""
     n = len(recv)
-    out = np.zeros((n, 8))
+    out = np.zeros((n, 10))
     starts = [0]
     for i in range(1, n):
         if recv[i] != recv[i - 1]:
@@ -641,7 +714,7 @@ def pid_triples(trains, sets, T, recv, js, ks):
     st = np.array(starts)
     for g in nb.prange(ng):
         r = recv[st[g]]
-        rF, rP, base = _receiver_arrays(trains[r], T)
+        rF, rP, base = _receiver_arrays(trains[r], T, p0, p1)
         code = np.zeros(T + 8, np.int64)
         touched = np.empty(T + 8, np.int64)
         idx = np.empty(2, np.int64)
@@ -650,7 +723,7 @@ def pid_triples(trains, sets, T, recv, js, ks):
             idx[1] = ks[i]
             tab = _joint_counts(rF, rP, base, sets, idx, code, touched)
             res = pid_from_table(tab)
-            for k in range(8):
+            for k in range(10):
                 out[i, k] = res[k]
     return out
 
@@ -671,7 +744,7 @@ def _te_drop(n, m, drop):
 
 
 @nb.njit(parallel=True, cache=True)
-def info_gain(trains, sets, T, recv, combos, n_in):
+def info_gain(trains, sets, T, recv, combos, n_in, p0, p1):
     """Information gain (paper, Eq 12) for each combination of senders: TE of all n_in senders
     minus the TE without one of them, averaged over the n_in senders left out; in bits and
     normalized by H(I_F). `combos` is (k, n_in), rows sorted by `recv`."""
@@ -685,7 +758,7 @@ def info_gain(trains, sets, T, recv, combos, n_in):
     st = np.array(starts)
     for g in nb.prange(len(st) - 1):
         r = recv[st[g]]
-        rF, rP, base = _receiver_arrays(trains[r], T)
+        rF, rP, base = _receiver_arrays(trains[r], T, p0, p1)
         code = np.zeros(T + 8, np.int64)
         touched = np.empty(T + 8, np.int64)
         for i in range(st[g], st[g + 1]):
@@ -705,8 +778,8 @@ def info_gain(trains, sets, T, recv, combos, n_in):
 # ---------------------------------------------------------------- per-recording analysis
 
 N_FULL_TRIPLES = 3000      # reading (f): triples sampled per recording and time scale (time limit)
-N_GAIN_RECEIVERS = 30      # Fig 6: receivers sampled per recording and time scale (time limit)
-N_GAIN_COMBOS = 20         # Fig 6: combinations per receiver and n (paper: 100; time limit)
+N_GAIN_RECEIVERS = 30      # Fig 6: receivers sampled per recording, time scale and reading (time limit)
+N_GAIN_COMBOS = 100        # Fig 6: combinations per receiver and n (paper, paragraph after Eq 11)
 MAX_INPUTS = 6             # Fig 6: up to six inputs (paper)
 
 
@@ -724,11 +797,38 @@ def _triples_from_edges(senders, receivers):
     return out
 
 
-def analyse_recording(trains, T, sig, nte, seed):
-    """Sub-networks, synergy of every triple (readings s and f) and information gains."""
+def _gains(trains, sets, T, past, inputs, rng, n_combos):
+    """Information gain per receiver and n for receivers with the given inputs (a list of
+    (receiver, input array)); all combinations of n inputs or n_combos sampled ones."""
+    gains = {}
+    for n_in in range(1, MAX_INPUTS + 1):
+        recv, combos, owner = [], [], []
+        for u, (r, ins) in enumerate(inputs):
+            if len(ins) < n_in:
+                continue
+            if math.comb(len(ins), n_in) <= n_combos:
+                cs = [list(c) for c in itertools.combinations(ins, n_in)]
+            else:
+                cs = [sorted(rng.choice(ins, n_in, replace=False)) for _ in range(n_combos)]
+            recv += [r] * len(cs)
+            combos += cs
+            owner += [u] * len(cs)
+        if not recv:
+            continue
+        order = np.argsort(recv, kind="stable")
+        recv, combos, owner = np.array(recv, np.int64)[order], np.array(combos, np.int64)[order], np.array(owner)[order]
+        g = info_gain(trains, sets, T, recv, combos, n_in, past[0], past[1])
+        gains[n_in] = {int(u): (g[owner == u, 0].mean(), g[owner == u, 1].mean()) for u in np.unique(owner)}
+    return gains
+
+
+def analyse_recording(trains, T, sig, nte, seed, past=PAST_BINS, sub_mode="strongest", gains=True,
+                      n_sub=N_SUBNETS, gain_combos=N_GAIN_COMBOS):
+    """Sub-networks, synergy of every triple (readings s and f) and information gains (s and f).
+    `n_sub` and `gain_combos` are lowered for the notebook's variants, for time."""
     rng = np.random.default_rng(seed)
-    sets = past_sets(trains, T)
-    subs, restarts = subnetworks(sig, nte, rng)
+    sets = past_sets(trains, T, past)
+    subs, sub_info = subnetworks(sig, nte, rng, mode=sub_mode, n_sub=n_sub)
     # reading (s): triples inside each sub-network, degrees counted inside it
     rows = []
     for si, (g, s_e, r_e) in enumerate(subs):
@@ -759,33 +859,25 @@ def analyse_recording(trains, T, sig, nte, seed):
     # PID of every distinct triple
     keys = set(map(tuple, sub_tr[:, 1:4].tolist())) | set(map(tuple, full_tr.tolist()))
     keys = np.array(sorted(keys), dtype=np.int64).reshape(-1, 3)
-    pid = pid_triples(trains, sets, T, keys[:, 0], keys[:, 1], keys[:, 2]) if len(keys) else np.zeros((0, 8))
+    pid = (pid_triples(trains, sets, T, keys[:, 0], keys[:, 1], keys[:, 2], past[0], past[1])
+           if len(keys) else np.zeros((0, 10)))
     syn = {tuple(k): (p[0] / p[7] if p[7] > 0 else 0.0) for k, p in zip(keys.tolist(), pid)}
-    # information gain, reading (f)
+    syn8 = {tuple(k): (p[8] / p[7] if p[7] > 0 else 0.0) for k, p in zip(keys.tolist(), pid)}
+    # information gain: reading (f), inputs in the full network; reading (s), inputs inside one
+    # sub-network; N_GAIN_RECEIVERS receivers sampled with at least one input
+    if not gains:
+        return {"subs": subs, "sub_info": sub_info, "sub_triples": sub_tr, "full_triples": full_tr,
+                "n_full_total": n_full_total, "syn": syn, "syn8": syn8, "pid": (keys, pid),
+                "gains": {"f": {}, "s": {}}, "indeg_f": indeg_f, "outdeg_f": outdeg_f}
     cand = np.flatnonzero(indeg_f >= 1)
     pick = np.sort(rng.choice(cand, min(N_GAIN_RECEIVERS, len(cand)), replace=False)) if len(cand) else cand
-    gains = {}
-    for n_in in range(1, MAX_INPUTS + 1):
-        recv, combos = [], []
-        for r in pick:
-            ins = np.flatnonzero(sig[:, r])
-            if len(ins) < n_in:
-                continue
-            if math.comb(len(ins), n_in) <= N_GAIN_COMBOS:
-                import itertools
-                cs = [list(c) for c in itertools.combinations(ins, n_in)]
-            else:
-                cs = [sorted(rng.choice(ins, n_in, replace=False)) for _ in range(N_GAIN_COMBOS)]
-            recv += [r] * len(cs)
-            combos += cs
-        if not recv:
-            continue
-        g = info_gain(trains, sets, T, np.array(recv, np.int64), np.array(combos, np.int64), n_in)
-        recv = np.array(recv)
-        gains[n_in] = {int(r): (g[recv == r, 0].mean(), g[recv == r, 1].mean()) for r in np.unique(recv)}
-    return {"subs": subs, "restarts": restarts, "sub_triples": sub_tr, "full_triples": full_tr,
-            "n_full_total": n_full_total, "syn": syn, "pid": (keys, pid), "gains": gains,
-            "indeg_f": indeg_f, "outdeg_f": outdeg_f}
+    gains_f = _gains(trains, sets, T, past, [(int(r), np.flatnonzero(sig[:, r])) for r in pick], rng, gain_combos)
+    slots = [(si, int(r)) for si, (g, s_e, r_e) in enumerate(subs) for r in np.unique(r_e)]
+    pick_s = [slots[i] for i in rng.choice(len(slots), min(N_GAIN_RECEIVERS, len(slots)), replace=False)] if slots else []
+    gains_s = _gains(trains, sets, T, past, [(r, subs[si][1][subs[si][2] == r]) for si, r in pick_s], rng, gain_combos)
+    return {"subs": subs, "sub_info": sub_info, "sub_triples": sub_tr, "full_triples": full_tr,
+            "n_full_total": n_full_total, "syn": syn, "syn8": syn8, "pid": (keys, pid),
+            "gains": {"f": gains_f, "s": gains_s}, "indeg_f": indeg_f, "outdeg_f": outdeg_f}
 
 
 # ---------------------------------------------------------------- feedforward model (Fig 7, S1 Fig)
