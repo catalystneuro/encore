@@ -372,12 +372,14 @@ outcomes:
   measured: 0.46
   notes: Length regressed on V0.5 (l-a) gives 0.46 um/mV on the lateral wall length of 64 Fig. 2 cells,
     0.45 um/mV on 83 cells, and 0.50 um/mV on the cell length of 35 cells; the inverse slope (l-b) gives
-    1.37 to 1.58 um/mV. None is within 0.63 to 0.77 um/mV.
+    1.37 to 1.58 um/mV. None is within 0.63 to 0.77 um/mV. The end-to-end gradient (difference in mean
+    length between turns 4 and 1 over the difference in mean V0.5), which the claims file does not list
+    and which is asked of a reader in questions/crcns-ear-1.yaml, gives 0.95 to 1.43 um/mV, also outside.
   deviations:
   - The data set has two length fields (lateral wall length for 83 cells, cell length for 35) and does
     not say which the paper used; both are run.
 - claim: xe991-voltage-clamp
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:xe991-voltage-clamp
   measured:
@@ -387,9 +389,11 @@ outcomes:
     voltages). The median drop without XE991 is 1.52 (at V0.5) and 1.51 (positive voltages) times the
     median with it, not twofold; the means give 2.15 and 1.66. The largest conductance at V0.5 among XE991
     cells is 8.53 nS (DC chord conductance, 12 cells) or 7.02 nS (admittance 1/Rm), about 25 times the
-    335 pS claimed. One cell without XE991 has a drop of 0.260 at positive voltages. The criterion names
-    no partial tier; the outcome is partial because the drop part holds and the twofold (by medians) and
-    conductance parts do not.
+    335 pS claimed. One cell without XE991 has a drop of 0.260 at positive voltages. The criterion needs
+    all three conditions and names no partial tier; two fail, so the outcome is not_reproduced (it was
+    partially_reproduced before the round 1 verification, which gave not_reproduced). The I-V steps are
+    in V and the currents in pA (about 37 nS between neighbouring steps in file 22), so the data set's
+    conductances are in the nS range.
   deviations:
   - The drop at V0.5 is taken from the admittance Rm and Rs at the ramp point nearest the raw V0.5, and
     for the 19 cells with DC steps from the DC chord conductance between the two steps around V0.5 (Methods,
@@ -481,21 +485,22 @@ outcomes:
   - 69 cells with 144 mM chloride and no XE991, both colonies.
   assumed: true
 - claim: fig3a-xe991-fit
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig3a-xe991-fit
   measured:
-  - 0.0847
-  - -42.9
-  - -0.038
-  - 0.062
-  notes: Under L-b, for the 17 XE991 cells with 144 mM chloride, Vd is 0.0847 V (0.0770 V on all 20),
-    outside 0.0499 +/- 0.005; the Eq. 3a R2 is -43 and the unconstrained slope -0.038 (R2 0.06). The first
-    5 pF bin holds two cells with mean dVmin 0.80 V; one (file 57, CL 5.93 pF, area 666 um2, CSB 0.35
-    pF) has CLW 0.48 pF and dVmin 1.33 V. The answer in questions/crcns-ear-1.yaml amended the shared
-    method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, Vd
-    was 0.0538 V (within) with slope -0.084, and the outcome was the same (not_reproduced); under L-b
-    Vd is also outside.
+  - 0.0505
+  - 0.847
+  - -0.377
+  - 0.921
+  notes: Under L-b and y-1 the first 5 pF XE991 bin (two cells, mean dVmin 0.80 V; file 57, CL 5.93 pF,
+    area 666 um2, CSB 0.35 pF, CLW 0.48 pF, dVmin 1.33 V) is left out. The other 4 bins (15 cells with
+    144 mM chloride) give Vd 0.0505 V with adjusted R2 0.847, and a weighted unconstrained slope of -0.377
+    with adjusted R2 0.921 (e-a, w-a, u-a), all within tolerance. All 20 cells give 0.0476 V, 0.745, -0.355
+    and 0.788 under e-b, also within; binning only the cells in range (y-2) passes under e-b (0.0522 V,
+    0.715, -0.336, 0.911). Keeping the bin (y-0) gives Vd 0.0847 V, an Eq. 3a R2 of -43 and a slope of
+    -0.038, and was the outcome (not_reproduced) before the round 1 verification, which showed that the
+    paper's values are matched without that bin. Under L-c with y-1, Vd is 0.0432 V, outside.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -510,6 +515,15 @@ outcomes:
     and decides nothing.
   - All 20 XE991 cells are stored as 60 uM, so reading k-b equals k-a; the 17 cells with 144 mM chloride
     are the first reading.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: fig3a-high-density-deviation
   outcome: reproduced
@@ -599,7 +613,7 @@ outcomes:
     et al. 2013, Gao et al. 2007, Cheatham et al. 2005), which are not under paper/ and were not fetched;
     the data set holds none of them.
 - claim: capacitance-asymmetry
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:capacitance-asymmetry
   measured:
@@ -608,12 +622,17 @@ outcomes:
   - 1.88
   - 0.154
   - 0.361
-  notes: The adopted plateau fraction 0.4 keeps 62 cells; mean dC 2.89 pF (SD 2.42); after dropping dC
+  notes: 'The adopted plateau fraction 0.4 keeps 62 cells; mean dC 2.89 pF (SD 2.42); after dropping dC
     > 5 pF (53 cells), 2.40 pF apical (35) and 1.88 pF basal (18), all within tolerance. As a share of
     CLW under L-b, apical 15.4% (m-a) or 14.1% (m-b, within 13 +/- 1.3%), basal 36.1% (m-a) or 29.9% (m-b),
     outside 21 +/- 2.1%. The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell
     CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the shares were 14.2%
-    and 28.6% (m-a) and the outcome was the same (partially_reproduced).
+    and 28.6% (m-a) and the outcome was the same (partially_reproduced). The first two ramp points show
+    no settling transient that would raise them: over 89 cells the median C - CL is 3.48 and 3.44 pF at
+    the first two points and 5.02 pF at the eighth, and the first two lie below the next six in 80 of
+    89 cells. The SD of dC (2.42 pF) is larger than the paper''s 1.32 pF. The criterion needs every value
+    within tolerance and names no partial tier, so the outcome is not_reproduced (it was partially_reproduced
+    before the round 1 verification, which gave not_reproduced).'
   deviations:
   - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
     V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
@@ -662,17 +681,19 @@ outcomes:
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig3b-negative-clw-fit
   measured:
-  - 0.0072
-  - -19.0
-  - 0.0297
-  - -0.0627
-  - -0.0965
-  notes: Under L-b, with CLWn = CLW + dC, the Eq. 3a fit gives Vd 0.0072 V (46 cells, dC > 5 pF kept;
-    Eq. 3a R2 -19) or 0.0110 V (38 cells, dropped); the unconstrained slope is +0.030 or +0.031, so V0.5
-    does not fall with dVmin^n. The data set has 46 such cells where the legend counts 44. The answer
-    in questions/crcns-ear-1.yaml amended the shared method to a per-cell CNLW (reading L-b used here,
-    see deviations). Before it, with CL - 4.82 pF, Vd was -0.036 V and the slope +0.008, and the outcome
-    was the same (not_reproduced).
+  - 0.0172
+  - 0.328
+  - -0.403
+  - 0.0027
+  - 0.217
+  notes: Under L-b, `first2` and dC > 5 pF kept, 46 cells qualify (the legend counts 44); 4 have dC <
+    0, and file 18 (dC -5.0 pF) has CLWn -0.95 pF, a bin of dVmin -0.70 V. Under y-1 that bin is left
+    out, and 7 bins (45 cells) give Vd 0.0172 V (outside 0.02 +/- 0.002), Eq. 3a R2 0.33, and an unconstrained
+    slope of -0.403 with intercept 0.0027 V and R2 0.22. Dropping dC > 5 pF gives Vd 0.0233 V with slope
+    -0.523 (e-a) or -0.703 (e-b); CLn at or below -0.15 V gives Vd 0.0133 V (kept) or 0.0214 V (dropped),
+    with slopes from -0.27 to -0.97 and adjusted R2 at most 0.74. No reading puts Vd and the slope within
+    tolerance together. Keeping all bins (y-0), as before the round 1 verification, the slope was +0.030.
+    Under L-c, Vd is 0.0117 V (y-1).
   deviations:
   - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
     V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
@@ -691,19 +712,32 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: mean-slope-half
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:mean-slope-half
-  measured: -0.15
-  notes: Under L-b the three slopes are -0.441, -0.038 and +0.030, mean -0.150, outside -0.48 +/- 0.048
-    (unweighted fits, -0.161). The answer in questions/crcns-ear-1.yaml amended the shared method to a
-    per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the mean was
-    -0.223 and the outcome was the same (not_reproduced).
+  measured: -0.407
+  notes: Under L-b and y-1, the three slopes are -0.441 (fig3a-eq3a-fit, e-a, u-a), -0.377 (XE991) and
+    -0.403 (Fig. 3b), mean -0.407, outside -0.48 +/- 0.048 (unweighted fits, -0.328). Over the 16 combinations
+    of edges, weighting, CLn reading and the dC > 5 pF rule the mean runs from -0.598 to -0.328 and is
+    within tolerance in 7, so the outcome rests on the choice of readings. With the slope of the reading
+    recorded for fig3a-eq3a-fit (e-b, -0.4245) the mean is -0.402. Keeping all bins (y-0), as before the
+    round 1 verification, the mean was -0.150. Under L-c with y-1 it is -0.515, within.
   deviations:
   - Each slope is the first reading of its claim (edges at multiples of 5 pF, weighted unconstrained fit;
-    XE991 cells with 144 mM chloride; dC > 5 pF kept).
+    XE991 cells with 144 mM chloride; CLn by `first2` with dC > 5 pF kept). Assumed, as the paper does
+    not say how each slope was fitted; the readings change the outcome (7 of 16 combinations give a mean
+    within tolerance), and all are shown.
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
     so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
@@ -715,19 +749,29 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: fig4a-vh-rises-vd-constant
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4a-vh-rises-vd-constant
   measured: 2.67
   notes: Under L-b, in the 5 pF bins without XE991 (o-a), Vh rises monotonically with V0.5 (Spearman 1.0,
-    no inversions), but the ratio of largest to smallest |Vh| is 2.67, outside 3 +/- 0.3. Vd varies over
-    0.010 V against 0.142 V for Vh (q-a holds) and its slope on V0.5 is -0.087 (p = 0.48, q-b holds).
-    Pooled bins (o-b) give a ratio of 5.61 with three inversions. The answer in questions/crcns-ear-1.yaml
-    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
-    CL - 4.82 pF, the ratio was 2.60 and q-b failed (p = 0.049); the outcome (partially_reproduced) is
-    unchanged.
+    no inversions), but the ratio of largest to smallest |Vh| is 2.67, below 2.7. Vd varies over 0.010
+    V against 0.142 V for Vh (q-a holds) and its slope on V0.5 is -0.087 (p = 0.48, q-b holds). Pooled
+    bins (o-b) under y-1 give a ratio of 2.76, within, with Vd constant (q-b p = 0.47), but 2 inversions
+    of Vh by V0.5 and 3 by CLW (Spearman 0.976), more than the one allowed; with all bins (y-0) the pooled
+    ratio is 5.61 with three inversions. No reading meets the criterion, which names no partial tier,
+    so the outcome is not_reproduced (it was partially_reproduced before the round 1 verification, which
+    gave not_reproduced). Under L-c the o-a ratio is 2.60.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -740,22 +784,32 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: fig4d-cleq-two-limits
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4d-cleq-two-limits
   measured:
-  - 0.56
+  - 0.6496
   - 1.048
-  notes: Under L-b, with the 5 pF groups (j-a), the lower limit is 0.560 aF (5 groups), within 0.584 +/-
-    0.065, and the upper 1.048 aF (3 groups), within 1.07 +/- 0.038; C_Leq rises with V0.5 (Spearman 0.85,
-    p = 0.001). The 0.01 V groups give 0.584 and 0.979 aF, per cell 0.686 and 0.894 aF; the split at -0.06
-    V gives 0.650 and 0.820 aF. The lower limit includes an XE991 group of two cells with mean dVmin 0.80
-    V and C_Leq 0.20 aF (one is file 57, CLW 0.48 pF); without groups above dVmin 0.4 V it is 0.6496 aF,
-    outside by 0.0006 aF, so the outcome rests on that group. The answer in questions/crcns-ear-1.yaml
-    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
-    CL - 4.82 pF, the j-a limits were 0.672 and 1.080 aF and the outcome was not_reproduced.
+  notes: Under L-b and y-1, the 5 pF groups (j-a) give a lower limit of 0.6496 aF (4 groups), outside
+    0.584 +/- 0.065 by 0.0006 aF, and an upper limit of 1.048 aF (3 groups, one of them a single cell
+    at 1.29 aF), within 1.07 +/- 0.038; C_Leq rises with V0.5 (Spearman 0.92, p = 0.0002). The 0.01 V
+    groups give 0.625 aF (within) and 0.979 aF (outside), per cell 0.704 and 0.894 aF; the split at -0.06
+    V gives 0.650 and 0.923 aF (j-a). No grouping puts both within tolerance. With every group (y-0) the
+    j-a lower limit is 0.560 aF and the claim passes, the outcome (reproduced) before the round 1 verification;
+    that value rests on the XE991 group of the two smallest cells (mean dVmin 0.80 V, C_Leq 0.20 aF),
+    which y-1 leaves out as it does for the Eq. 3a fits, so the outcome was changed for consistency. Under
+    L-c with y-1, j-a gives 0.748 and 1.080 aF.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -769,22 +823,31 @@ outcomes:
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
   - Guinea pig groups only; the paper's limits may include the rat and mouse values of Fig. 3a.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: fig4c-sensor-area
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4c-sensor-area
   measured:
-  - 21.3
+  - 63.8
   - 135.6
   - 64.8
-  notes: Under L-b the sensor areas of the 5 pF groups run from 21.3 to 135.6 nm2, beyond 45.9 to 133.1
-    nm2 at both ends (the low end is the XE991 group of the two smallest cells); the other groupings run
-    from 13.1 to 143.5 and 152.6 nm2. The power law over groups without XE991 has exponent -1.60 (j-a,
-    coefficient 64.8 in V and nm2), -1.04 (j-b, 5.54) or -0.69 (j-c, 1.21); the j-a exponent is within
-    10% of -1.5 but the coefficient is not 38.5. The answer in questions/crcns-ear-1.yaml amended the
-    shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82
-    pF, the range was 30.5 to 132.1 nm2 and the outcome was the same (not_reproduced).
+  notes: Under L-b and y-1 the sensor areas of the 5 pF groups run from 63.8 to 135.6 nm2; the upper end
+    is beyond 45.9 to 133.1 nm2. The other groupings run from 42.0 to 143.5 (j-b) and 42.0 to 152.6 nm2
+    (j-c). With all groups (y-0) the low end is 21.3 nm2 (the XE991 group of the two smallest cells).
+    The power law over groups without XE991 has exponent -1.60 (j-a, coefficient 64.8 in V and nm2), -1.09
+    (j-b, 6.92) or -0.68 (j-c, 1.15); the j-a exponent is within 10% of -1.5 but the coefficient is not
+    38.5. Under L-c with y-1, the 5 pF range is 72.2 to 132.1 nm2, within, but the exponent is -2.10 (coefficient
+    734).
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -797,21 +860,29 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: fig4e-sensor-charge
   outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4e-sensor-charge
   measured:
-  - 0.929
-  - 0.814
-  - 0.885
-  notes: Under L-b, with the 0.01 V groups (j-b), mean z is 0.929 at the lower limit, 0.814 at the upper
-    and 0.885 over all groups, all within tolerance, and the limits do not differ (Welch p = 0.12); per
-    cell (j-c), 0.880 and 0.823 (p = 0.054). With the 5 pF groups (j-a) z at the lower limit is 0.9325,
-    outside by 0.002. The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell
-    CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the 5 pF groups gave 0.927,
-    0.857 and 0.896 (all within) and the outcome was the same (reproduced).
+  - 0.913
+  - 0.883
+  - 0.875
+  notes: Under L-b and y-1, with the 5 pF groups (j-a), mean z is 0.913 at the lower limit, 0.883 at the
+    upper and 0.875 over all groups, all within tolerance, and the limits do not differ (Welch p = 0.34);
+    the 0.01 V groups give 0.911, 0.814 and 0.872 (p = 0.17) and per cell 0.872 and 0.823 (p = 0.097).
+    With all groups (y-0), j-a puts z at the lower limit at 0.9325, outside by 0.002, and j-b and j-c
+    pass. Under L-c (y-1, j-a), 0.905 and 0.857.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -824,26 +895,35 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: table3-pathway-energies
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:table3-pathway-energies
   measured:
-  - -0.0718
+  - -0.0749
   - -0.0253
-  - 4.4
-  - 2.7
-  - 2.35
-  - 1.11
+  - 3.69
+  - 2.65
+  - 2.29
+  - 1.09
   notes: The rebuilt Eqs. 6a and 7 give Table 3's values from its own inputs (3.953, 2.674 and 0.125 kB
-    T; 2.157, 1.185 and 0.145 kB T). Under L-b, from the 5 pF groups, pathway 1 has V0.5 -0.0718 V, lambda
-    4.40 kB T (outside 3.97 +/- 0.397) and forward barrier 2.70 kB T, pathway 2 -0.0253 V, 2.35 and 1.11
-    kB T; both V0.5 and the other energies are within. The 0.01 V groups put the pathway 2 V0.5 (-0.0217
-    V) outside; per cell, both lambdas are outside. Reverse barriers 0.208 and 0.231 kB T; forward rate
-    ratio 72.5 (paper 64). The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell
-    CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, all six were within (lambda
-    3.74 kB T for pathway 1) and the outcome was reproduced.
+    T; 2.157, 1.185 and 0.145 kB T). Under L-b and y-1, from the 5 pF groups, pathway 1 has V0.5 -0.0749
+    V, lambda 3.69 kB T and forward barrier 2.65 kB T, pathway 2 -0.0253 V, 2.29 and 1.09 kB T, all six
+    within tolerance. The 0.01 V groups put the pathway 2 V0.5 (-0.0217 V), lambda (2.43) and forward
+    barrier (1.03) outside; per cell both lambdas (3.22, 2.54) are outside. Reverse barriers 0.086 and
+    0.221 kB T (paper 0.125 and 0.145); forward rate ratio 67.3 (paper 64). With all groups (y-0), lambda
+    of pathway 1 is 4.40 kB T, outside, and the outcome was partially_reproduced before the round 1 verification.
+    Under L-c with y-1, lambda of pathway 1 is 3.25, outside.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -856,19 +936,27 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: alternative-limit
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:alternative-limit
   measured:
-  - 1.63
-  - 0.69
-  notes: Under L-b, with C_Leq 1.098 aF, the 5 pF groups give mean n 1.63 (0.79 to 5.49), within 1.7 +/-
-    0.17, and mean delta 0.690 (0.18 to 1.17), outside 0.535 +/- 0.054; neither range lies within the
-    paper's. The other groupings give n 1.69 and 1.41, delta 0.654 and 0.676. The answer in questions/crcns-ear-1.yaml
-    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
-    CL - 4.82 pF, the means were 1.43 and 0.730 and the outcome was the same (not_reproduced).
+  - 1.25
+  - 0.741
+  notes: Under L-b and y-1, with C_Leq 1.098 aF, the 5 pF groups give mean n 1.25 (0.79 to 1.74) and mean
+    delta 0.741 (0.55 to 1.17), both outside 1.7 +/- 0.17 and 0.535 +/- 0.054; the other groupings give
+    n 1.37 and 1.30, delta 0.683 and 0.686. With all groups (y-0), j-a gives n 1.63 (within) and delta
+    0.690; no range lies within the paper's under any reading. Under L-c (y-1, j-a), 1.18 and 0.777.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -881,6 +969,15 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: fig4f-all-rodents
   outcome: blocked
@@ -888,14 +985,15 @@ outcomes:
   notes: Needs the rat and mouse values of fig3a-other-rodents and the heterozygote values of Fig. 3c,
     from other papers that are not under paper/ and were not fetched.
 - claim: low-chloride-similar
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:low-chloride-similar
   notes: Under L-b all three 10 mM cells have z within 0.746 to 0.952 (0.763, 0.905, 0.921) and C_Leq
-    within range (0.64, 0.87, 1.09 aF), but none has V0.5 within 0.02 V of the XE991 Eq. 3a line (Vd 0.0847
-    V; residuals -0.040, -0.063, -0.051 V). No cell meets all three. The answer in questions/crcns-ear-1.yaml
-    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
-    CL - 4.82 pF (line Vd 0.0538 V), one cell met all three and the outcome was the same (not_reproduced).
+    within range (0.64, 0.87, 1.09 aF). The XE991 Eq. 3a line under y-1 has Vd 0.0505 V; cells 87 and
+    89 lie within 0.02 V of it (residuals -0.005 and -0.017 V) and cell 88 does not (-0.029 V). Two of
+    three cells meet all three conditions, the partial tier. With all bins (y-0) the line has Vd 0.0847
+    V, no cell meets the V0.5 condition, and the outcome was not_reproduced before the round 1 verification.
+    Under L-c one cell meets all three under either reading.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -908,6 +1006,15 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   assumed: true
 - claim: molecular-model
   outcome: blocked
@@ -941,14 +1048,12 @@ outcomes:
   assumed: true
 - claim: two-hyperpolarized-states
   outcome: partially_reproduced
-  notes: Under L-b, fig3a-eq3a-fit and fig4d-cleq-two-limits are reproduced, fig4a-vh-rises-vd-constant
-    is partially reproduced (Vh rises 2.67-fold) and mean-slope-half is not (mean -0.150). The main fit's
-    unconstrained slope is negative (-0.42), Vd is constant and C_Leq shows two limits (the lower resting
-    on one group of two XE991 cells). Neither the reproduced tier (all claims reproduced) nor the not-reproduced
-    tier (non-negative slope or varying Vd) holds; partial is the closest tier. The answer in questions/crcns-ear-1.yaml
-    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
-    CL - 4.82 pF, fig3a-eq3a-fit and fig4d-cleq-two-limits were not reproduced and the outcome was the
-    same (partially_reproduced).
+  notes: Under L-b, fig3a-eq3a-fit is reproduced, and fig4a-vh-rises-vd-constant (Vh rises 2.67-fold),
+    fig4d-cleq-two-limits (lower limit 0.6496 aF, outside by 0.0006 aF) and mean-slope-half (mean -0.407)
+    are not. The main fit's unconstrained slope is negative (-0.42), Vd is constant, Vh rises monotonically
+    without XE991, and C_Leq rises with V0.5 (0.650 to 1.048 aF). Neither the reproduced tier (all claims
+    reproduced) nor the not-reproduced tier (non-negative slope or varying Vd) holds; partial is the closest
+    tier, as the round 1 verifier also judged.
   deviations:
   - The criterion does not cover a negative slope whose mean over the three fits is far from -0.48; partially
     reproduced is the closest of its tiers.
@@ -963,6 +1068,15 @@ outcomes:
     pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
     is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
     and decides nothing.
+  - Bins and groups whose mean dVmin is not in (0, 0.4] V are left out of the Eq. 3a fits and of the groups
+    built on the Fig. 3a and Fig. S4 data (reading y-1). Assumed, from the Fig. S4 legend, which fits
+    only "Delta V min exp < 0.4 V", and the Discussion (Kinetic scheme, paragraph 2), which assumes "V
+    0.5 is constant and independent for Delta V min exp > 0.3 V (Fig. 3 a and Fig. S4)". Under the CSB
+    rule the two smallest XE991 cells form a 5 pF bin of mean dVmin 0.80 V (file 57, CLW 0.48 pF), which
+    gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
+    (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
+    limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
+    range binned again (y-2) are shown in the notebook.
   notebook: reproduce_farrell_2020.ipynb
   assumed: true
 findings:
@@ -1010,8 +1124,351 @@ findings:
     S1 legend's 25.94 pF, but the basal share of dC is 36.1%, not 21%. The CSB assumed here is the rule
     of Corbitt et al. (2012), bundle area min(0.07 AM, 140 um2) at 0.0075 pF/um2 with AM the stored cell
     surface area; it gives a root of 5.10 pF and the Fig. S1 cell CLW 18.30 pF (legend 18.56 pF). Was
-    this the rule, and which area was AM?
+    this the rule, and which area was AM? Were bins or groups with a large charge density left out of
+    the Fig. 3a fits and the Fig. 4 groups, as the Fig. S4 fit leaves out Delta V min exp >= 0.4 V? Under
+    the CSB rule assumed here, the two smallest XE991 cells form a bin of mean dVmin 0.80 V; with it the
+    XE991 fit has an adjusted R2 of -43, without it all four of the paper's values are matched, and the
+    lower C_Leq limit moves from 0.560 to 0.650 aF.
 - kind: other
   statement: The largest conductance at V0.5 among XE991 cells is 8.5 nS from the DC steps and 7.0 nS
     from the admittance, about 25 times the 335 pS the paper reports; the unit or the measure in the paper
     may differ from the data set's.
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write
+    the notebook)
+  reviewed: Round 1. The handover of the author-answers run, the executed notebook with the conclusions
+    and summary removed, the helper module ear1.py and the claims file, with the paper under paper/. Report
+    in transcripts/crcns-ear-1/verifier-1-report.md.
+  results:
+  - claim: cohort
+    agrees: true
+    outcome: reproduced
+    reason: All 8 group counts match. Totals 89, 42 albino and 47 pigmented. Also 3 cells at 10 mM chloride,
+      81 with Rs < 10 MOhm, recording times 47 to 182 min.
+    response: No change of outcome.
+  - claim: figs1-example-cell
+    agrees: true
+    outcome: reproduced
+    reason: All 6 recomputed values are within tolerance, and so are the stored ones.
+    response: No change of outcome.
+  - claim: nlw-capacitance
+    agrees: true
+    outcome: reproduced
+    reason: Root 5.104 pF is within 4.82 +/- 0.482 (reading n-ii). Pigmented/albino and adult/juvenile
+      95% intervals overlap. This holds only with the Corbitt CSB assumption; with CSB = 0 (n-c) the root
+      is 5.44 pF and fails. Six cells have an imputed CSB, the median of their turn; CSB only ranges from
+      0.35 to 1.05 pF, so the effect is small.
+    response: No change of outcome. The sanity cell now prints the root without the six cells whose CSB
+      is imputed (5.137 pF against 5.104 pF). The data check no longer says that the stored area 2 pi
+      r l is of the form 2 pi r (L + r); it says this holds only if the stored cell length equals L +
+      r, and that the recomputed area gives the same root.
+  - claim: clw-by-turn
+    agrees: true
+    outcome: reproduced
+    reason: Turn 1, 5.04 pF (SD 2.34); turn 4, 17.79 pF (SD 2.74). Both means and both SDs within tolerance.
+    response: No change of outcome.
+  - claim: fig1-charge-not-linear
+    agrees: true
+    outcome: reproduced
+    reason: Fit through the origin, centred R2 0.539, within 0.516 +/- 0.052. CLW < 10 pF slope is 2.0
+      times the other, with disjoint intervals. Only 1 of 6 R2 readings passes. The uncentred R2 of r2_origin
+      divides the total sum of squares by n but the residual sum by n - 1; that reading fails either way.
+    response: 'No change of outcome. The degrees of freedom are kept and a comment now explains them:
+      with one coefficient the residual has n - 1, and the uncentred total, about zero with no mean estimated,
+      has n.'
+  - claim: fig1-two-state-bounds
+    agrees: true
+    outcome: not_reproduced
+    reason: Reading b-a, 86% of cells in the band, below the 90% needed. Reading b-b, the CLW >= 10 pF
+      median is 0.167 V against 0.129 +/- 0.013 V.
+    response: No change of outcome.
+  - claim: alpha-pigmented-vs-albino
+    agrees: true
+    outcome: reproduced
+    reason: Means 9.00 and 7.81 V-1, ANOVA p = 0.00008.
+    response: No change of outcome.
+  - claim: alpha-gradient-pigmented
+    agrees: true
+    outcome: reproduced
+    reason: Region reading r-a, all four means within tolerance. Pigmented p = 0.00097; albino p = 0.586.
+    response: No change of outcome.
+  - claim: table1-pigmented-xe991
+    agrees: true
+    outcome: partially_reproduced
+    reason: Means and z within tolerance, p = 0.0027. But the counts are 5/12, not 4/11; reading r-b gives
+      1/10 and fails the means. The cell counts differ from Table 1, shown openly; not a code error.
+    response: No change of outcome.
+  - claim: table1-pigmented-no-xe991
+    agrees: true
+    outcome: partially_reproduced
+    reason: Means within tolerance, but p = 0.0010, not < 0.0001.
+    response: No change of outcome.
+  - claim: table1-albino-no-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Counts 11/30, means within tolerance, p = 0.586.
+    response: No change of outcome.
+  - claim: table1-xe991-no-effect-alpha
+    agrees: true
+    outcome: partially_reproduced
+    reason: XE991 effect p >= 0.47 under all three models, and the pooled means are within tolerance.
+      But the counts are 17/27, and the criterion requires 16/27.
+    response: No change of outcome.
+  - claim: figs2-alphab-vs-clw
+    agrees: true
+    outcome: reproduced
+    reason: Pigmented rho = -0.85, p < 0.0001; albino p = 0.29. Rests on a test the paper does not name.
+    response: No change of outcome.
+  - claim: splice-isoform-x1
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed from the zip''s file list (120 members): only MATLAB, HDF5, scripts and an ontology;
+      no sequencing data.'
+    response: No change of outcome.
+  - claim: v05-by-turn
+    agrees: true
+    outcome: reproduced
+    reason: Reading v-a, all four means within the SD and within 10%. Turn 1 is more negative than turn
+      4 in both colonies.
+    response: No change of outcome.
+  - claim: fig2b-v05-vs-clw
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both slopes positive with p < 0.01. Pigmented R2 0.613 passes; albino R2 0.175 falls outside
+      0.2 +/- 0.02.
+    response: No change of outcome.
+  - claim: fig2b-no-phenotype-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: The interaction test (g-a) gives p = 0.0385, so the slopes do differ.
+    response: No change of outcome.
+  - claim: v05-gradient-length
+    agrees: true
+    outcome: not_reproduced
+    reason: The regression readings give 0.45 to 0.50 um/mV (l-a) or 1.37 to 1.58 um/mV (l-b); none within
+      0.63 to 0.77. The paper's comparison value, the mouse 1.6 um/mV across the cochlea, reads as an
+      end-to-end gradient, which was not run and which the claims file omits (a gap in the claims file,
+      not a correction). The paper gives no citation for the 0.7 um/mV, so it may not come from this data
+      set.
+    response: 'No change of outcome. The notebook now prints the mean lateral wall length, cell length
+      and V0.5 per turn and colony and runs the end-to-end gradient as a variant: 0.95 to 1.43 um/mV,
+      also outside. The reading and the source of the 0.7 um/mV are asked of a reader in questions/crcns-ear-1.yaml;
+      the claim is unchanged.'
+  - claim: xe991-voltage-clamp
+    agrees: false
+    outcome: not_reproduced
+    reason: Every XE991 cell's drop is under 13%. But the ratio of medians is 1.5, not >= 2. The largest
+      conductance at V0.5 is 8.53 nS against 0.335 nS. Every conductance in the data set is in the nS
+      range (the largest Rm, 375 MOhm, is about 2.7 nS), so the paper's 335 pS cannot be matched by any
+      reading.
+    response: 'Outcome changed from partially_reproduced to not_reproduced, as the verifier gave: the
+      criterion needs all three conditions and names no partial tier, and two fail. The sanity cell now
+      prints the I-V steps (V) and mean currents (pA) of one cell, about 37 nS between neighbouring steps,
+      which confirms the nS scale.'
+  - claim: table2-pigmented-xe991
+    agrees: true
+    outcome: reproduced
+    reason: Means -0.062 and -0.036 V, p = 0.021.
+    response: No change of outcome.
+  - claim: table2-pigmented-no-xe991
+    agrees: true
+    outcome: reproduced
+    reason: Means within tolerance, p = 0.0005 (< 0.001).
+    response: No change of outcome.
+  - claim: table2-albino
+    agrees: true
+    outcome: reproduced
+    reason: Counts 11/30, means within tolerance, p = 0.0697, the same as the paper's.
+    response: No change of outcome.
+  - claim: table2-xe991-v05-shift
+    agrees: true
+    outcome: reproduced
+    reason: Shift 0.024 V (reading h-a) or 0.0225 V (h-b), p = 0.0019. QTm, CLW and alphaB all have p
+      >= 0.27.
+    response: No change of outcome.
+  - claim: v05-not-correlated-voltage-drop
+    agrees: true
+    outcome: reproduced
+    reason: All four Pearson tests p >= 0.065. One Spearman variant gives p = 0.038.
+    response: No change of outcome.
+  - claim: fig3a-eq3a-fit
+    agrees: true
+    outcome: reproduced
+    reason: Bin edges from the smallest CLW (e-b), weighted unconstrained fit (u-a), Vd 0.0311, R2 0.931,
+      slope -0.4245, R2 0.948, all four pass. Under edges at multiples of 5 pF (e-a), the slope misses
+      by 0.0001.
+    response: No change of outcome. The dVmin limit adopted for the other fits (y-1) leaves out no bin
+      of this fit, so its values are unchanged; y-2 (cells outside the range dropped before binning) is
+      shown and moves Vd to 0.0299 V.
+  - claim: fig3a-xe991-fit
+    agrees: true
+    outcome: not_reproduced
+    reason: Under L-b, no reading passes any value (Vd 0.077 to 0.085 V, R2 around -43). One 2-cell XE991
+      bin (file 57, CL 5.93 pF, CLW 0.475 pF, dVmin 1.33 V; bin mean 0.80 V) causes this. Refitted without
+      that bin, Vd 0.0505 V, R2 0.844, slope -0.376, R2 0.920, all within tolerance, so the paper's Fig.
+      3a evidently did not include this bin; its Fig. S4 fit also restricts dVmin to < 0.4 V. The notebook
+      needed to run a bins with dVmin <= 0.4 V reading consistently across these claims.
+    response: Outcome changed from not_reproduced to reproduced. A reading y-1, bins and groups with mean
+      dVmin in (0, 0.4] V, taken from the Fig. S4 legend and the Discussion, is adopted as an assumption
+      for every Eq. 3a fit and every group built on the Fig. 3a and Fig. S4 data, with all bins (y-0)
+      and a cell-level limit (y-2) shown. Under y-1 the 15 XE991 cells with 144 mM chloride give Vd 0.0505
+      V, R2 0.847, slope -0.377 and R2 0.921, all within. The fits without the bin are now printed in
+      the notebook.
+  - claim: fig3a-high-density-deviation
+    agrees: true
+    outcome: reproduced
+    reason: On the 0.01 V bins all three conditions hold, t-test p = 0.042, F-test p = 0.021, and the
+      mean residual below 0.25 V is smaller.
+    response: No change of outcome.
+  - claim: figs4-fine-bins
+    agrees: true
+    outcome: partially_reproduced
+    reason: Weighted (w-1), both Vd within tolerance (0.0299 and 0.0522 V). The XE991 R2 of 0.605 is outside
+      0.737 +/- 0.074.
+    response: No change of outcome.
+  - claim: tables3-by-region
+    agrees: true
+    outcome: reproduced
+    reason: In every group and region reading, the region with the higher dVmin has the more negative
+      V0.5. Table S3's numbers are not available to compare.
+    response: No change of outcome.
+  - claim: fig3a-other-rodents
+    agrees: true
+    outcome: blocked
+    reason: Needs rat and mouse V0.5 and QTm from other papers; not in the archive.
+    response: No change of outcome.
+  - claim: fig3c-engineered-mice
+    agrees: true
+    outcome: blocked
+    reason: Rests only on values from other papers.
+    response: No change of outcome.
+  - claim: capacitance-asymmetry
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The two dC/CLW percentages fail; reading m-a gives apical 0.154 and basal 0.361, reading
+      m-b gives basal 0.299. The CLn readings were chosen to match the paper''s own numbers: the plateau
+      threshold was picked so the cell count is 62, and first2 because it reproduces the Fig. S1 legend''s
+      CLn; both are stated as assumptions. Whether the first two ramp points carry settling transients
+      was never checked. The SD of dC is 2.42 pF against the paper''s 1.32.'
+    response: 'Outcome changed from partially_reproduced to not_reproduced, as the verifier gave: the
+      criterion needs every value within tolerance and names no partial tier, and both shares of CLW fail
+      (basal 36.1% by m-a, 29.9% by m-b, against 21 +/- 2.1%). The notebook now prints C at the first
+      eight ramp points: over 89 cells the median C - CL is 3.48 and 3.44 pF at the first two points,
+      rising to 5.02 pF at the eighth, and the first two lie below the next six in 80 cells, so they show
+      no settling transient that raises them. The CLn rule remains an assumption, and the notes give the
+      SD of dC.'
+  - claim: figs5-specific-capacitance
+    agrees: true
+    outcome: reproduced
+    reason: With the stored area, all five values within tolerance.
+    response: No change of outcome.
+  - claim: fig3b-negative-clw-fit
+    agrees: true
+    outcome: not_reproduced
+    reason: Every reading fails, with slopes of +0.03. Only the first2 reading of CLn is used; below_m015
+      is never run for Fig. 3b. A positive slope and R2 down to -400 point to outlier bins, probably cells
+      with negative dC, but the per-bin table is not printed. Mean-slope-half inherits this.
+    response: No change of outcome. The notebook now prints the bins of every reading, the dC of every
+      cell and the cells with dC < 0, and runs CLn at or below -0.15 V. The positive slope came from one
+      cell (file 18, dC -5.0 pF, CLWn -0.95 pF) forming a bin of dVmin -0.70 V; y-1 leaves it out. The
+      slope is then -0.403 (first2, kept) and -0.27 to -0.97 over the readings, but no reading puts Vd
+      and the slope within tolerance together.
+  - claim: mean-slope-half
+    agrees: true
+    outcome: not_reproduced
+    reason: Mean slope -0.15 to -0.22 against -0.48 +/- 0.048. It inherits the XE991 bin and the Fig.
+      3b outlier.
+    response: 'No change of outcome. Under y-1 the slopes are -0.441, -0.377 and -0.403, mean -0.407,
+      outside. The notebook now shows every combination of the readings: 7 of 16 give a mean within tolerance,
+      so the outcome rests on the choice of the first reading of each fit, now marked as an assumption.'
+  - claim: fig4a-vh-rises-vd-constant
+    agrees: false
+    outcome: not_reproduced
+    reason: Without XE991 (o-a), Vh is monotonic and Vd constant, but |Vh| max/min is 2.67, just under
+      the 2.7 bound. Pooled bins (o-b) give 5.6 with 3 inversions.
+    response: 'Outcome changed from partially_reproduced to not_reproduced, as the verifier gave: the
+      criterion names no partial tier. Under y-1 the pooled ratio is 2.76, within, but Vh then has 2 inversions
+      by V0.5 and 3 by CLW, more than the one allowed, so no reading passes.'
+  - claim: fig4d-cleq-two-limits
+    agrees: true
+    outcome: reproduced
+    reason: '5 pF CLW groups (j-a), 0.560 and 1.048 aF, Spearman p = 0.001. Fragile: the lower limit passes
+      only because of the 0.20 aF outlier bin; without it the limit is 0.6496, outside by 0.0006. The
+      notebook flags this, but only for fig4d.'
+    response: Outcome changed from reproduced to not_reproduced. With the dVmin limit (y-1) applied to
+      every group built on the Fig. 3a and Fig. S4 data, as for the fits, the j-a lower limit is 0.6496
+      aF, outside by 0.0006 aF, and no grouping puts both limits within tolerance. The y-0 result (0.560
+      and 1.048 aF) is shown.
+  - claim: fig4c-sensor-area
+    agrees: true
+    outcome: not_reproduced
+    reason: Area range 21 to 136 nm2 under j-a, outside 45.9 to 133.1 nm2. Under j-a the exponent (-1.60)
+      matches -1.5 but the coefficient (64.8) does not match 38.5.
+    response: No change of outcome. Under y-1 the j-a range is 63.8 to 135.6 nm2; the upper end is still
+      outside, and the coefficient is unchanged.
+  - claim: fig4e-sensor-charge
+    agrees: true
+    outcome: reproduced
+    reason: Under j-b, z values 0.929, 0.814 and 0.885, Welch p = 0.12.
+    response: No change of outcome. Under y-1, j-a also passes (0.913, 0.883 and 0.875, Welch p = 0.34),
+      and its values are recorded as the first grouping.
+  - claim: table3-pathway-energies
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under j-a both V0.5 values are within tolerance, but lambda for pathway 1 is 4.40 kB T against
+      3.97 +/- 0.40. No grouping passes all six. The rebuilt equations do give Table 3's values from Table
+      3's inputs.
+    response: Outcome changed from partially_reproduced to reproduced. Under y-1 the j-a groups give V0.5
+      -0.0749 and -0.0253 V, lambda 3.69 and 2.29 kB T and forward barriers 2.65 and 1.09 kB T, all six
+      within tolerance; the y-0 values are shown.
+  - claim: alternative-limit
+    agrees: true
+    outcome: not_reproduced
+    reason: Delta mean 0.65 to 0.69 against 0.535 +/- 0.054, and the ranges fall outside.
+    response: No change of outcome. Under y-1 the j-a means are n 1.25 and delta 0.741, both outside.
+  - claim: fig4f-all-rodents
+    agrees: true
+    outcome: blocked
+    reason: Needs values from other papers.
+    response: No change of outcome.
+  - claim: low-chloride-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: C_Leq and z pass for all 3 cells, but no cell is within 0.02 V of the XE991 line, whose Vd
+      is 0.0847. With the 2-cell bin removed, low-chloride-similar would have 2 of 3 cells pass, a partial
+      result.
+    response: Outcome changed from not_reproduced to partially_reproduced. Under y-1 the XE991 line has
+      Vd 0.0505 V and two of the three cells (residuals -0.005 and -0.017 V) meet all three conditions,
+      the partial tier; y-0 is shown.
+  - claim: molecular-model
+    agrees: true
+    outcome: blocked
+    reason: The zip holds no structural model.
+    response: No change of outcome.
+  - claim: figs7-hearing-loss
+    agrees: true
+    outcome: blocked
+    reason: Values from other papers only.
+    response: No change of outcome.
+  - claim: v05-temperature-corrected
+    agrees: true
+    outcome: blocked
+    reason: The temperature coefficient is an outside input the paper does not give. The uncorrected basal
+      V0.5 could be computed from the archive, but it decides nothing without that coefficient.
+    response: No change of outcome.
+  - claim: recording-time
+    agrees: true
+    outcome: reproduced
+    reason: Means 124.7 and 112.0 min; none of the 10 correlations is significant.
+    response: No change of outcome.
+  - claim: two-hyperpolarized-states
+    agrees: true
+    outcome: partially_reproduced
+    reason: The Fig. 3a slope is near -1/2 (-0.42), Vd is constant, Vh is monotonic, and the two C_Leq
+      limits pass. The mean slope and the threefold fail. The criterion defines no outcome for this mix;
+      judged partial.
+    response: No change of outcome. Under y-1 the lower C_Leq limit now fails by 0.0006 aF and the mean
+      slope is -0.407; neither the reproduced nor the not-reproduced tier holds, so partial stays the
+      closest tier.

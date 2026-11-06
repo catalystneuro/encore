@@ -7,9 +7,9 @@ authors derived (linear capacitance, charge, V0.5 and voltage sensitivity).
 
 | Claims | Outcome |
 |---|---|
-| Cohort, example cell, CNLW, CLW by turn, charge growth of Fig. 1, colony and region differences of voltage sensitivity and V0.5 (Tables 1 and 2), the XE991 shift, the Eq. 3a fit without XE991 and the deviation above 0.25 V, the two C_Leq limits, sensor charge | Mostly reproduced (22 reproduced) |
-| Counts of Table 1, Fig. 2b fit, voltage clamp with XE991, Fig. S4 fits, capacitance asymmetry, Vh and Vd, Table 3 energies, the overall conclusion | Partially reproduced (10) |
-| Eq. 3a fits with XE991 and of Fig. 3b, mean slope of -0.48, the band of Fig. 1, sensor area, the alternative limit, length gradient, equal slopes of the two colonies, low chloride cells | Not reproduced (9) |
+| Cohort, example cell, CNLW, CLW by turn, charge growth of Fig. 1, colony and region differences of voltage sensitivity and V0.5 (Tables 1 and 2), the XE991 shift, the Eq. 3a fits with and without XE991 and the deviation above 0.25 V, sensor charge, Table 3 energies | Mostly reproduced (23 reproduced) |
+| Counts of Table 1, Fig. 2b fit, Fig. S4 fits, low chloride cells, the overall conclusion | Partially reproduced (7) |
+| Eq. 3a fit of Fig. 3b, mean slope of -0.48, the band of Fig. 1, voltage clamp with XE991, capacitance asymmetry, Vh and Vd, the two C_Leq limits, sensor area, the alternative limit, length gradient, equal slopes of the two colonies | Not reproduced (11) |
 | Sequencing and protein model; values from other rodents and other papers | Blocked (7) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -20,7 +20,9 @@ question in [`questions/crcns-ear-1.yaml`](../../questions/crcns-ear-1.yaml), th
 takes CLW = CL - CNLW with CNLW = CSB + root per cell. The stereocilia capacitance CSB is computed
 here by the rule of Corbitt et al. (2012), the paper the method cites, on the stored cell area; this
 is an assumption, and every outcome on CLW, charge density or C_Leq rests on it. CL - 4.82 pF is
-shown for comparison only. The attempt record, with the
+shown for comparison only. Bins and groups whose mean charge density is outside (0, 0.4] V are left
+out of the Eq. 3a fits and the groups built on them (an assumption taken from the Fig. S4 legend;
+all bins are shown as a variant). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/crcns-ear-1-farrell-2020-01.yaml`](../../attempts/crcns-ear-1-farrell-2020-01.yaml).
 

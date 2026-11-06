@@ -43,6 +43,13 @@ Sources of the parameters (docs/protocol.md, Author, step 1.6):
   apical for turns 3 and 4), which is reading (r-a) of the claims file. Reading (r-b) (turn 1 against
   turn 4) is `region_rb`.
 - CLn, the linear capacitance at negative voltages, is not stored. Readings in `cln_readings`.
+- `DVMIN_MAX` = 0.4 V: groups of cells (bins) whose mean dVmin is above it, or not positive, are
+  left out of the Eq. 3a fits and of the groups built on them (`in_range`, `groups(limit=True)`;
+  reading y-1, an assumption). The Fig. S4 legend fits only "Delta V min exp < 0.4 V", and the
+  Discussion (Kinetic scheme) assumes "V 0.5 is constant and independent for Delta V min exp > 0.3
+  V (Fig. 3 a and Fig. S4)". Under the CSB rule above, the two smallest XE991 cells form a 5 pF bin
+  of mean dVmin 0.80 V (file 57 has CLW 0.48 pF), and one Fig. 3b cell has a negative CLWn; neither
+  bin is compatible with the paper's reported fits. All bins (y-0) are shown in the notebook too.
 """
 
 from __future__ import annotations
@@ -71,6 +78,7 @@ CNLW_C = 4.82                # pF, reading L-c of the shared method (Results, pa
 SB_SLOPE, SB_MAX = 0.07, 140.0   # um2 of bundle per um2 of AM, and its plateau (Corbitt et al. 2012)
 SB_SPECIFIC_C = 0.0075       # pF/um2, specific capacitance used for the bundle (Corbitt et al. 2012)
 SPECIFIC_C = 0.0095          # pF/um2 (Fig. 4c criterion; Results, Determine q, paragraph 1)
+DVMIN_MAX = 0.4              # V, upper dVmin of a group in the Eq. 3a fits (Fig. S4 legend; assumption, y-1)
 
 _A = ("assay/voltage clamp assay/whole-cell patch clamp voltage clamp assay/"
       "electrical admittance dual-sine stimulus/")
@@ -315,6 +323,11 @@ def bin_cells(df: pd.DataFrame, col: str, width: float, start: float = 0.0) -> p
     return out
 
 
+def in_range(b: pd.DataFrame) -> pd.DataFrame:
+    """The groups (bins) whose mean dVmin lies in (0, DVMIN_MAX], reading y-1 (module docstring)."""
+    return b[(b["dVmin"] > 0) & (b["dVmin"] <= DVMIN_MAX)]
+
+
 def anova1(*groups):
     """One-way ANOVA (F, p)."""
     f, p = stats.f_oneway(*groups)
@@ -380,12 +393,12 @@ def dc_conductance_at(tr: dict, v: float) -> float:
     return float((ii[k] - ii[k - 1]) / (vv[k] - vv[k - 1]) * 1e-3)   # pA/V = pS; to nS
 
 
-def groups(df: pd.DataFrame, how: str) -> pd.DataFrame:
+def groups(df: pd.DataFrame, how: str, limit: bool = False) -> pd.DataFrame:
     """Groups of cells for Fig. 4d to f and Table 3 (fig4d-cleq-two-limits, readings j-a to j-c):
     `clw5` the 5 pF CLW bins of Fig. 3a, `dv001` the 0.01 V dVmin bins of Fig. S4, `cell` per cell.
     Bins are formed separately for the cells with and without XE991 (Fig. 3a and S4 plot the two
     sets apart) and then pooled. Per group the means of V0.5, z and dVmin, and C_Leq = z e0 / dVmin
-    from the group means."""
+    from the group means. With `limit`, only the groups of `in_range` (reading y-1)."""
     parts = []
     for xe, s in df.groupby("xe991"):
         if how == "cell":
@@ -398,6 +411,8 @@ def groups(df: pd.DataFrame, how: str) -> pd.DataFrame:
                                                    n=("V05", "size"))
         parts.append(g.assign(xe991=xe).reset_index(drop=True))
     out = pd.concat(parts, ignore_index=True)
+    if limit:
+        out = in_range(out).reset_index(drop=True)
     out["C_Leq_aF"] = out["z"] * E0 / out["dVmin"] * 1e18
     out["A_nm2"] = out["C_Leq_aF"] / SPECIFIC_C          # aF / (pF/um2) = 1e-6 um2 = nm2
     return out
