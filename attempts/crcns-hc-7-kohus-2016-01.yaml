@@ -1,0 +1,531 @@
+schema_version: 2
+id: crcns-hc-7-kohus-2016-01
+dataset:
+  archive: crcns
+  id: hc-7
+  version: unversioned
+  doi: 10.6080/K0MK69T5
+paper: doi:10.1113/jp272231
+date: 2026-11-06
+entry: crcns-hc-7-kohus-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42217124418
+outcomes:
+- claim: fig2b-pv-cck-clusters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 800 ms current-step responses of the 67 interneurons are not in the data set; the zip holds
+    only paired recordings under the train, RIP, EPI and recovery protocols, and the descriptor lists
+    nothing else.
+- claim: fig2b-pvbc-aac-clusters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig2b-pv-cck-clusters; no current-step recordings.
+- claim: cck-no-subclusters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig2b-pv-cck-clusters; no current-step recordings.
+- claim: table1-pv-cck-features
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-cell features come from current-step recordings, which are not in the data set.
+- claim: table2-pvbc-aac-features
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As table1-pv-cck-features.
+- claim: fig3-cp-pv
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Connection probability needs the tested pairs that were not connected. The data set holds only
+    connected pairs (14 PV+BC to PV+BC, 2 PV+BC to AAC), and no record of the unconnected ones.
+- claim: fig3-cp-cck
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig3-cp-pv; only connected CCK+ pairs (6 CCK+BC, 4 CCK+DTI) are in the data set.
+- claim: fig3-cp-pv-cck
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig3-cp-pv; the data set holds no PV+ to CCK+ or CCK+ to PV+ pairs and no unconnected pairs.
+- claim: fig4b-in-pc-kruskal-wallis
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig4b-in-pc-kruskal-wallis
+  notes: With the single AP 1.3 s before the RIP burst (M3 a), all five measures differ across PV+BC (7
+    pairs), AAC (7) and CCK+BC (12) to PC pairs at p < 0.05, with the authors' failures (M2 a; rise
+    0.0191, latency 0.00842, amplitude 0.00405, potency 0.00624, transmission probability 0.00951) and
+    with detected failures (M2 b; 0.00653 to 0.0179). The 1 Hz train (M3 b; 4, 3 and 3 pairs) gives no
+    difference and the pooled reading (M3 c) three or four. The decay time constant does not differ (p
+    0.122). Medians (M3 a, M2 a) PV+BC, AAC, CCK+BC; rise 0.601, 0.547, 0.709 ms; latency 0.747, 0.664,
+    0.999 ms; amplitude 113.1, 226.1, 40.3 pA; transmission probability 1.0, 1.0, 0.875.
+  deviations:
+  - The data set holds 7 PV+BC, 8 AAC (7 with a RIP recording) and 12 CCK+BC to PC pairs, against the
+    paper's 8, 9 and 14 high KCl pairs.
+  - The files do not say which pipette solution each pair was recorded with; all IN to PC pairs are
+    treated as high KCl pairs, as no type has more pairs than the paper's high KCl count.
+  - Rise, latency and peak are measured on averaged sweeps with a baseline 4 to 0.8 ms before the AP
+    peak and a response window 0.3 to 8 ms after it, standard choices the paper does not give.
+- claim: fig4b-in-pc-posthoc
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig4b-in-pc-posthoc
+  notes: At most 4 of the 8 comparisons hold, under M3 a with either M2 reading; AAC against CCK+BC for
+    rise time, latency, amplitude and potency (Bonferroni-corrected p 0.0293, 0.0157, 0.0112, 0.0157).
+    PV+BC against CCK+BC goes the stated way for rise time, latency and amplitude but misses the corrected
+    threshold (0.205, 0.0512, 0.0663; uncorrected 0.0683, 0.0171, 0.0221). AAC against CCK+BC
+    transmission probability gives corrected p 0.159. The 1 Hz reading gives 0 of 8 and the pooled
+    reading 2 of 8. The criterion's partial threshold is five comparisons.
+  deviations:
+  - Fewer pairs than the paper (7, 7 and 12 against 8, 9 and 14), which lowers the power of the post hoc
+    tests; all pairs treated as high KCl pairs.
+- claim: fig4c-cckdti-pc-silent-single-ap
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig4c-cckdti-pc-silent-single-ap
+  measured: 3
+  notes: The data set holds 7 CCK+DTI to PC pairs. Three have no RIP recording and are marked "No release"
+    for RIP in Experiments_description.txt; they are counted as silent (3 of 7, 43%, against the 85% the
+    criterion requires). The other four transmit to the single AP before RIP (success rates 0.55 to 0.85
+    under M2 a; detection rates 0.50 to 0.95 against 0.20 to 0.50 with no AP under M2 b). All seven
+    transmit to the single AP after an EPI train under M2 a, six under M2 b. The paper's own later
+    statement that four of eight pairs respond at 1 to 40 Hz or to RIP agrees better with these data.
+  deviations:
+  - 7 pairs where the paper reports 8; pairs without a RIP recording are taken as silent from the
+    authors' "No release" label.
+- claim: fig7a-cscl-kinetics
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The pairs are not labelled by pipette solution, in the files, the headers, the descriptor or
+    Experiments_description.txt, so CsCl pairs cannot be told from high KCl pairs. The pair counts (7, 8,
+    12 to PC) do not exceed the paper's high KCl counts, which suggests the CsCl pairs were not deposited,
+    but the data do not show it.
+- claim: fig5c-pv-rip-depression
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig5c-pv-rip-depression
+  notes: Under M4 a (the authors' amplitudes) with the Mann-Whitney reading of the test, the PV+BC medians
+    at the 3rd and 4th AP are 0.650 and 0.641 (p 0.00106, 7 pairs) and the AAC median at the 2nd AP 0.767
+    (p 0.0204, 7 pairs). Under M4 b it holds with both tests (AAC 2nd AP 0.679, Wilcoxon p 0.0312). Under
+    M4 a with the Wilcoxon test the AAC 2nd AP misses (p 0.109). The PV+BC 2nd AP is not depressed (1.15
+    under M4 a, 0.969 under M4 b, p 0.172 or more). Leaving out the first three sweeps keeps the result
+    under the Mann-Whitney reading.
+  deviations:
+  - The RIP bursts in the data are at 222 Hz (4.5 ms between APs), not the 160 Hz of the paper.
+- claim: fig5c-cck-rip-facilitation
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig5c-cck-rip-facilitation
+  notes: Under M4 a the CCK+BC to PC medians are above 1 at the 2nd to 4th AP (1.37, 1.46, 1.11; 12
+    pairs), the medians of the 4 CCK+DTI pairs that transmit under RIP are above 1 at all three (1.01,
+    1.35, 1.05), and 7 of 16 CCK+ pairs are below 1 at the 4th AP. Under M4 b the CCK+BC medians are above
+    1 at only the 2nd AP (1.22), as local amplitudes at 222 Hz are measured on the decay of the previous
+    IPSC.
+  deviations:
+  - 12 CCK+BC and 4 CCK+DTI pairs with RIP, against the paper's 14 and 4; RIP at 222 Hz in the data.
+- claim: fig5db-recovery
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig5db-recovery
+  notes: Under M4 a (6 PV+BC, 7 AAC, 9 CCK+BC pairs) the recovery ratio rises with the interval for PV+BC
+    (Spearman rho 0.306, p 0.0484) and AAC (rho 0.527, p 9.85e-05), both medians 0.634 at 50 ms; the
+    CCK+BC median rises from 0.776 at 50 ms to 1.052 at 500 ms and falls to 0.725 at 1200 ms. PV+BC and
+    CCK+BC differ at 100 ms (p 0.012) and 200 ms (p 0.0496) uncorrected; with Bonferroni over 7 intervals
+    no interval is significant (smallest 0.0839). M4 b gives the same pattern (PV+BC rho 0.385, p 0.00626;
+    100 ms p 0.0115). The difference part rests on the uncorrected reading of the criterion.
+  deviations:
+  - The interval of each sweep is read from its AP times; the descriptor does not give the order of the
+    intervals (1200 to 50 ms, descending) or which _EPA block holds which.
+  - One PV+BC recovery recording (Pair04) has no _EPA table, so M4 a has 6 PV+BC pairs and M4 b 7.
+- claim: fig6-pv-trains-depression
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig6-pv-trains-depression
+  notes: The depression grows with frequency (Spearman rho -0.738 PV+BC, -0.788 AAC under M4 a; p 1.9e-07,
+    1.1e-11), and at 5 to 320 Hz and under EPI every median relative amplitude of APs 2 to 10 is below 1.
+    At 1 Hz (4 PV+BC, 3 AAC pairs) the medians fluctuate around 1 (largest 1.148 and 1.156 under M4 a;
+    under M4 b PV+BC 1.128 and AAC above 1 at two APs), so purely depressing at every frequency fails
+    under every reading. The synchrony part also fails; the onset rule of fig6-cckbc-async-onset marks
+    asynchronous charge under EPI in 6 of 7 PV+BC and 8 of 8 AAC pairs, the reason that claim is blocked.
+  deviations:
+  - The EPI burst in the data is at 147 and 303 Hz, not 160 and 320 Hz.
+- claim: fig6-cckbc-pc-trains
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig6-cckbc-pc-trains
+  notes: Of the 6 CCK+BC to PC pairs with trains, 1 facilitates (mean relative amplitude of APs 2 to 10
+    above 1) at every frequency from 1 to 40 Hz it was recorded at, under M4 a and b, and 0 without the
+    first three sweeps; Pair01 (0.51 to 0.84) and Pair02 (0.61 to 0.89) depress at every one. The
+    high-frequency pattern holds at 160 Hz, 320 Hz and EPI under M4 a (peak at APs 2 to 5 1.26 to 1.27,
+    last AP 0.77 to 0.95) but not at 80 Hz (last AP 1.32).
+  deviations:
+  - The 1 Hz train exists for 3 of the 6 pairs and the 5, 20, 80 and 320 Hz trains for 5; facilitation
+    is judged at the frequencies each pair has.
+- claim: fig6-cckbc-async-onset
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig6-cckbc-async-onset
+  notes: Both onset readings of the criterion were run. Rule (a), immediate asynchronous charge above 2
+    SD of the baseline charge for three APs, gives CCK+BC to PC EPI onsets at the 2nd to 4th AP (median
+    2.0, 10 pairs), and the same in 6 of 7 PV+BC and 8 of 8 AAC to PC pairs, which the paper calls
+    synchronous; it also fires in 160 and 320 Hz trains of every type (6 of 6 CCK+BC to PC at 160 Hz).
+    Rule (b) gives the 1st AP in every pair of every type. Scaling the reconstruction to the authors'
+    amplitudes changes little (CCK+BC median 3.5, PV+BC 2.5). As both rules mark release the paper calls
+    synchronous, neither reproduces the paper's procedure, and the paper does not describe one, so the
+    claim is blocked (protocol, Record the attempt, on a selection whose false-positive behaviour differs
+    from the paper's). The _EPA tables carry an undocumented code AR from some AP on in every CCK+BC and
+    CCK+DTI to PC EPI table and in no PV+BC or AAC table; read as the onset, it gives a CCK+BC median of 12
+    (quartiles 10 to 12.8, range 8 to 19) against the paper's 11 (10 to 14, range 10 to 19), and no AR in
+    any CCK+BC 10-AP train. This is shown and not used to decide. The question is for the paper's authors
+    (findings).
+  deviations:
+  - Template from the average of the 11th IPSCs of the pair's trains; four CCK+BC pairs without trains use
+    the single AP before EPI, and two CCK+BC pairs have no EPI recording.
+  - 100 Hz low-pass as a fourth-order zero-phase Butterworth filter, the claims file's standard choice.
+- claim: cckdti-pc-transmission
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:cckdti-pc-transmission
+  measured:
+  - 5
+  - 2.0
+  notes: The data set holds 7 CCK+DTI to PC pairs, not 8. Five transmit at 1 to 40 Hz or to RIP (expected
+    4, tolerance 0); the first sweep with a uIPSC to the first AP of a train is on average 2.0 over 11
+    train recordings of these pairs (values 1 to 4; expected 4 plus or minus 0.4). The frequency pattern
+    of the responding pairs holds under M4 a (median mean of APs 2 to 10 above 1 at 10 Hz, below 1 at 40
+    and 160 Hz). Of the two pairs that transmit only under EPI, Pair07 depresses at the last AP (0.584)
+    and Pair06 facilitates (3.675).
+  deviations:
+  - Pairs without recordings at a protocol are taken from the "No release" labels of
+    Experiments_description.txt; one pair labelled "40 Hz" holds a 10 Hz train.
+- claim: cckdti-async-onset
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:cckdti-async-onset
+  notes: Depends on fig6-cckbc-async-onset, blocked for the same reason. Rule (a) gives CCK+DTI to PC EPI
+    onsets with median 3.0 (6 of 7 pairs); the authors' AR marks give a median of 8 (quartiles 7 to 9,
+    range 5 to 10) under EPI against the paper's 7 (7 to 9, range 7 to 13), and 6 to 8 at 160 Hz (4 pairs)
+    against 7 (6 to 8). Shown, not used to decide.
+- claim: async-charge-epi-vs-160
+  outcome: partially_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:async-charge-epi-vs-160
+  notes: CCK+BC to PC pairs carry more charge in the 500 ms after the last EPI AP than after the 160 Hz
+    train (reading b, area under the mean trace, 4.67 against 0.60 pC; reading a, delayed asynchronous
+    charge, 4.44 against -0.11 pC; Mann-Whitney p 0.00025, 10 EPI and 6 train recordings). Under reading b
+    the absences hold for PV+BC (1.51 against 0.72 pC, p 0.0734) and CCK+DTI (2.60 against 0.71 pC, p
+    0.412) but not for AAC (3.27 against 1.26 pC, p 0.00295), one absence failing. Under reading a PV+BC (p
+    0.00233) and AAC (p 0.000155) both differ.
+  deviations:
+  - Reading b measures the area from the pre-stimulation baseline; the sweeps end before an equal window
+    at least 500 ms after the stimulation, the paper's reference for the total charge.
+- claim: decay-epi-vs-160
+  outcome: partially_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:decay-epi-vs-160
+  measured:
+  - 7.36
+  - 96.05
+  - 7.94
+  - 125.65
+  notes: The decay after the last AP is longer under EPI than after the 160 Hz train for CCK+BC (p
+    0.00025) and CCK+DTI (p 0.00606) to PC pairs under both fit windows. With the fit to 5% of the peak
+    (reading b, the values given as measured) the EPI medians are within tolerance (96.05 against 103.65;
+    125.65 against 138.71 ms) but the 160 Hz medians are far shorter (7.36 against 13.01; 7.94 against
+    36.82 ms). With the fit to 500 ms (reading a) none of the four is within tolerance (7.44, 88.27, 8.16,
+    104.13 ms). PV+BC and AAC pairs also lengthen under EPI (12.9 to 14.4 against 7.3 to 7.4 ms, p 0.0023
+    and 0.00016), shown and not judged.
+- claim: fig7b-cscl-stp
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig7a-cscl-kinetics; the pairs are not labelled by pipette solution.
+- claim: fig8-pvbc-pvbc-uipsc
+  outcome: partially_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig8-pvbc-pvbc-uipsc
+  measured:
+  - 0.514
+  - 3.38
+  - 0.687
+  - 104.4
+  - 1.0
+  notes: Over the 10 PV+BC to PV+BC pairs with a 1 Hz train (M3 b, M2 a, decay fit over 20 ms), 3 of 5
+    medians are within 10%; decay 3.38 ms, latency 0.687 ms and transmission probability 1.0. The rise
+    time is faster (0.514 against 0.63 ms) and the amplitude larger (104.4 against 81.18 pA). M2 b and the
+    50 ms decay window give the same count; reading d (the first AP of the trains, 14 pairs) gives 2 of 5.
+  deviations:
+  - No PV+BC pair has a RIP recording, so M3 a cannot be run; 14 pairs in the data set against 16.
+- claim: fig8-cck-pairs-uipsc
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig8-cck-pairs-uipsc
+  measured:
+  - 1.429
+  - 4.903
+  - 0.921
+  - 0.55
+  - 0.822
+  - 5.548
+  - 1.413
+  - 7.066
+  - 0.125
+  notes: Under reading d (M2 a, 20 ms) at most 2 of 9 medians are within tolerance under any reading (1
+    under M2 a, 2 under M2 b). CCK+BC pairs have a lower transmission probability than PV+BC pairs
+    (corrected p 0.00164) but not a longer latency (0.92 against 0.64 ms, corrected p 1; uncorrected
+    0.659). Kruskal-Wallis across the three pair types p 0.0002 to 0.03 for every measure.
+  deviations:
+  - The CCK+ pairs were recorded only with 10, 40 and 160 Hz trains, so none of the claims file's single-AP
+    readings (RIP single AP, 1 Hz train) exists for them. Assumed, reading d, the first AP of each train at
+    40 Hz or slower, which follows at least 1 s without APs (Methods, protocols paragraph, "1 s intervals
+    between the two trains"), with the decay fit ending before the second AP. This is the nearest to a
+    single AP the data hold; the Fig. 8A legend's "10 single action potentials" may be such first APs. The
+    question is for the paper's authors (findings).
+- claim: fig8-cckbc-vs-cckdti-pairs
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig8-cckbc-vs-cckdti-pairs
+  notes: Under reading d CCK+BC pairs do not rise faster than CCK+DTI pairs (1.43 against 0.82 ms,
+    corrected p 0.514 under M2 a; 2.23 against 1.29 ms, corrected p 1 under M2 b). The four absences hold
+    (decay, latency, amplitude and transmission probability, corrected p 0.2 to 1).
+  deviations:
+  - Single APs by reading d, as fig8-cck-pairs-uipsc (assumed).
+- claim: fig9-pvbc-pvbc-depression
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig9-pvbc-pvbc-depression
+  notes: Over 10 to 14 PV+BC to PV+BC pairs per frequency, the median relative amplitude at the 10th AP is
+    below 1 at all eight frequencies (0.806 at 1 Hz to 0.14 at 320 Hz, M4 a), and the mean of APs 2 to 10
+    falls with frequency (Spearman rho -0.737, p 2.4e-18). M4 b and the variant without the first three
+    sweeps agree (rho -0.83, -0.70).
+- claim: fig9-pvbc-pvbc-transmission-probability
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig9-pvbc-pvbc-transmission-probability
+  measured:
+  - 1.0
+  - 6.7
+  - 0.85
+  notes: With the authors' success tables (M2 a), the median transmission probability at 80 Hz is 1 at
+    every AP (expected 0.9 plus or minus 0.09 at the 10th). At 160 Hz it falls by 5, 10 and 5% at the 8th
+    to 10th AP (mean 6.7%, inside 4.5 to 11). At 320 Hz it is 1.0 at the 3rd AP and 0.8 to 0.9 from the 4th
+    to the 10th (median 0.85), so the 3rd AP is outside 0.72 to 0.99. Below 80 Hz and at every 11th AP the
+    median is 1. Detection on the raw traces (M2 b) gives 1 at 80 Hz and 0.1 to 0.9 at 320 Hz. Neither the
+    80 Hz nor the 320 Hz part holds, so the outcome is not partial.
+  deviations:
+  - For M2 b in the trains, a uIPSC is a peak after the AP (to the next AP, at most 8 ms) above the current
+    just before it by more than 3 SD of the 10 ms before the first AP, a standard choice.
+- claim: fig9-pvbc-pvbc-recovery-11th
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig9-pvbc-pvbc-recovery-11th
+  notes: The median 11th over first IPSC is 0.61 to 0.71 at every frequency from 5 to 320 Hz (M4 a), below
+    1, and does not depend on the frequency (Kruskal-Wallis p 0.124; Friedman over 10 pairs with all seven
+    frequencies p 0.115). Under M4 b p 0.668 and 0.708.
+- claim: fig10-cck-cck-heterogeneity
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Depends on the onset rule of fig6-cckbc-async-onset, blocked. Rule (a) marks asynchronous release
+    at 160 Hz in all 9 CCK+ to CCK+ pairs with that train and at 40 Hz in 3, so it does not separate the
+    pairs; the _EPA tables of these pairs carry no AR mark.
+- claim: fig10-cck-cck-frequency
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig10-cck-cck-frequency
+  notes: Under M4 a the median over CCK+ to CCK+ pairs of the mean relative amplitude of APs 2 to 10 is
+    1.559 at 10 Hz (6 pairs) and 2.153 at 40 Hz (9 pairs); at 160 Hz 5 pairs are above 1 and 4 below
+    (median 1.191). Without the first three sweeps 1.771 and 1.497, and 6 above and 3 below at 160 Hz;
+    under M4 b 1.558 and 1.825, and 4 above and 5 below.
+  deviations:
+  - 10 CCK+ to CCK+ pairs in the data set (6 CCK+BC, 4 CCK+DTI) where the paper analyses nine with trains.
+- claim: fig10-cck-cck-async
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Depends on fig10-cck-cck-heterogeneity, blocked (the onset rule).
+- claim: fig10bd-be-async-charge
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Depends on fig10-cck-cck-heterogeneity, blocked (the onset rule); the charges need the pairs
+    with asynchronous release.
+- claim: fig11-model-pv-udr
+  outcome: partially_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig11-model-pv-udr
+  measured:
+  - 22.9
+  - 13.1
+  - 24.7
+  notes: For PV+BC to PV+BC (14 connections), PV+BC to PC (6) and AAC to PC (8) the lowest BIC is the UDR
+    depressing model under both readings, and adding facilitation to it lowers the error by 4.1, 0.1 and
+    7.9% (reading a; 1.3, 2.2 and 7.1% under b), less than 10%. The SSE decrease with UDR is 22.9, 13.1 and
+    24.7% under reading a (17.0, 8.2 and 21.2% under b), against 35, 22 and 34%, outside tolerance. Under
+    reading a the BIC ranking holds and the decreases lie in 10 to 50%, the criterion's partial.
+  deviations:
+  - Four starting points per fit (a standard choice); the optimizer is trust-region least squares.
+  - Fitted on the authors' mean amplitudes (M4 a) of the 10-AP trains with the 11th AP; the 1 Hz train has
+    no 11th AP in the sweeps.
+- claim: fig11-model-cck-facilitation
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig11-model-cck-facilitation
+  notes: Under reading b (errors divided by each connection's first-IPSC amplitude) the lowest BIC for
+    CCK+BC to PC (6 connections) is the TM depressing plus facilitating model (-1389, against -1387 for UDR
+    with facilitation and -1260 for TM depressing), and its error is below that of TM depressing (15.6
+    against 22.5). Under reading a the UDR model with facilitation has a lower BIC by 3 (3497 against
+    3500), so the result rests on reading b, a reading the criterion lists.
+- claim: table4-model-parameters
+  outcome: partially_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:table4-model-parameters
+  measured:
+  - 0.423
+  - 316.2
+  - 0.365
+  - 276.1
+  - 0.301
+  - 539.5
+  - 0.149
+  - 40.2
+  - 373.4
+  - 1.087
+  - 1.223
+  - 1.93
+  - 65.5
+  notes: Under reading a 8 of 13 values are within tolerance (7 under reading b); Imax of all four types,
+    tau_r of PV+BC to PV+BC (1.087 s) and CCK+BC to PC (65.5 ms), U0 of PV+BC to PC and CCK+BC to PC.
+    Outside are U0 of PV+BC to PV+BC (0.423) and AAC to PC (0.301), tau_r of PV+BC to PC (1.223 s) and AAC
+    to PC (1.93 s), and CCK+BC tau_f (40.2 against 10.9 ms). The comprehensive model's CCK+BC tau_r
+    (variant b) is 0.415 s under reading b and diverges under a, not 12.9 s. In the UDR fits a_e reaches
+    its bound of 1 for all three PV+ types.
+- claim: fig11c-parameter-differences
+  outcome: not_reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig11c-parameter-differences
+  notes: In the comprehensive model U0 (Kruskal-Wallis p 0.0002 under a, 0.0072 under b) and tau_f (0.0339,
+    0.0001) differ across the four types, but Imax does not (0.077, 0.162), so the Kruskal-Wallis part
+    fails. Of the six post hoc differences, 2 hold under reading a (U0 smaller for CCK+BC to PC than for
+    PV+BC to PV+BC and PV+BC to PC) and 3 under reading b (also tau_f larger than for PV+BC to PV+BC).
+- claim: fig11-model-prediction
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig11-model-prediction
+  notes: Under reading b, with only Imax refitted on the RIP and EPI amplitudes, the lowest test error is
+    the UDR depressing model for PV+BC to PC (324.0 pA2) and AAC to PC (953.2 pA2) and the TM depressing
+    plus facilitating model for CCK+BC to PC (3658.2 pA2). Under reading a the AAC to PC test error is
+    lowest for TM depressing (994.4 against 1003.0). PV+BC to PV+BC pairs have no RIP or EPI recordings,
+    so that type is not tested.
+  deviations:
+  - The PV+BC to PV+BC part cannot be tested, as no interneuron pair was recorded with RIP or EPI.
+- claim: fig12-sipsc-kinetics
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No spontaneous IPSC recordings in the data set.
+- claim: sipsc-continuum
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No spontaneous IPSC recordings in the data set.
+- claim: decay-pc-vs-interneuron
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:decay-pc-vs-interneuron
+  measured:
+  - 7.78
+  - 3.38
+  - 6.12
+  - 4.9
+  notes: The PV+BC part holds under every reading (PV+BC to PC 7.52 to 8.07 ms against PV+BC to PV+BC 3.38
+    to 3.99 ms, p 0.000206 to 0.002). The CCK+BC part does not under any (CCK+BC to PC 6.12 to 7.04 ms
+    against 4.90 to 8.09 ms in the three CCK+ interneuron groups, p 0.0698 or more), so no reading gives
+    both tests at p < 0.05. Measured values are the first reading (M3 a on PCs, M3 b for PV+BC pairs, CCK+BC
+    pairs by reading d, M2 a, 20 ms decay fit), with 4 of 4 medians within 10%.
+  deviations:
+  - CCK+ interneuron decay by reading d, assumed, as fig8-cck-pairs-uipsc.
+  - Decay fitted from the peak over 20 and 50 ms with the baseline fixed at 0, standard choices; both run.
+- claim: fig13-pvbc-pc-recovery-halftime
+  outcome: reproduced
+  notebook: reproduce_kohus_2016.ipynb
+  output: claim:fig13-pvbc-pc-recovery-halftime
+  measured: 525.8
+  notes: With a free plateau (reading c) the median tau is 525.8 ms over 6 PV+BC to PC pairs (M4 a) and
+    433.6 ms over 7 (M4 b), within 495.8 plus or minus 152.2 ms; tau ln 2 (reading d) is 364.4 ms under M4
+    a, also within, and 300.5 under M4 b, outside. With the plateau fixed at 1 (readings a, b) the medians
+    are 917.5 to 1538.3 ms, outside. The fits are poorly constrained; the interquartile ranges reach
+    thousands of ms and several pairs reach the 100000 ms bound, so the agreement of the median is fragile.
+- claim: fig13a-swr-refractory
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No field potential recordings in the data set.
+- claim: fig13c-optogenetic-swr
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No optogenetic or field potential recordings in the data set.
+findings:
+- kind: metadata_error
+  statement: The stimulation timings in the data differ from the data descriptor and the paper. RIP bursts
+    are four APs 4.5 ms apart (222 Hz), not 160 Hz; the EPI burst is 30 APs 6.7 ms apart (147 Hz) and four
+    3.3 ms apart (303 Hz), not 160 and 320 Hz; the single AP precedes the RIP and EPI bursts by 1.3 s, not
+    1 s. The 10-AP trains are at their nominal rates.
+- kind: metadata_error
+  statement: Experiments_description.txt mislabels two recordings (PV+BC to PV+BC pair 10 s130807-0205,
+    listed as 5 Hz, and CCK+DTI to PC pair 5 s150222-0305, listed as 40 Hz, are 10 Hz trains), names eight
+    files that are not in the zip (three misdated s1508.. for s1308..), lists one file for two protocols
+    in two pairs, leaves 20 recordings of the zip unnamed, lists no PV+BC to AAC pairs, and numbers the IN
+    to PC pairs differently from the PairNN folders.
+- kind: data_missing
+  statement: Three recordings have a header but no sweeps (CCK+BC to PC Pair07 s140616-0105 and -0106,
+    CCK+DTI to PC Pair01 s150119-0104), three have sweeps but no _EPA table, and the RIP recording listed
+    for PV+BC to PC pair 4 is absent. The data set holds 7 PV+BC, 8 AAC, 12 CCK+BC and 7 CCK+DTI to PC and
+    14 PV+BC to PV+BC pairs, fewer than the paper's 8, 9, 14, 8 and 16.
+- kind: data_missing
+  statement: The current-step recordings (Fig. 2, Tables 1 and 2), the connectivity tests with unconnected
+    pairs (Fig. 3, Table 3), the spontaneous IPSCs (Fig. 12) and the field potential and optogenetic
+    recordings (Fig. 13A, C) are not in the data set, which is described as holding the paired recordings
+    only.
+- kind: metadata_insufficient
+  statement: The _EPA tables use a code AR, not described in the descriptor, that cuts off the mean row of
+    every CCK+BC and CCK+DTI to PC EPI table and four CCK+DTI to PC 160 Hz tables from some AP on; its
+    position matches the onset of asynchronous release the paper reports. The block the descriptor calls
+    Relative ampl. holds amplitudes in pA.
+- kind: metadata_insufficient
+  statement: The pairs are not labelled by pipette solution (high KCl, or low KCl with CsCl), which the
+    paper's comparisons of Figure 7 need, and the order of the recovery intervals across sweeps, and
+    which _EPA block holds which interval, are not documented (the AP times show 1200 down to 50 ms).
+- kind: identifier_missing
+  statement: The files carry no animal or slice identifiers; the recording day in the file name is the
+    only grouping above the pair, so results cannot be broken down by animal.
+- kind: format_error
+  statement: Two _EPA tables (CCK+BC to PC s140619-0204 and s140619-0105) hold column labels in place of
+    the mean values; several tables list fewer sweeps than the raw data without a note (for example
+    PV+BC to PC s140603-0406, 14 of 20); some have blank amplitude cells; four AAC to PC tables have
+    successes with amplitude 0 or failures with an amplitude; a few mean rows differ from the mean of
+    their own per-sweep values (up to 38 pA).
+- kind: paper_inconsistency
+  statement: The Results say seven of eight CCK+DTI to PC pairs did not transmit for a single AP or an AP
+    after RIP, and also that four of eight responded at 1 to 40 Hz or to RIP. In the data set four of the
+    seven CCK+DTI pairs have RIP recordings and transmit to the single AP before RIP.
+- kind: methods_unavailable
+  statement: Question for the authors. How was the onset of asynchronous release determined (Results,
+    Transmission of CCK+ cells, onset between the 10th and 19th AP)? Both rules the claims file names, a
+    charge threshold on the reconstructed asynchronous current and a failure to return to baseline, mark
+    early asynchronous charge in PV+BC and AAC pairs that the paper calls synchronous. Does the AR code in
+    the _EPA tables mark the onset, and by what criterion?
+- kind: methods_unavailable
+  statement: Question for the authors. Which APs gave the single-AP uIPSCs of the CCK+ interneuron pairs
+    (Fig. 8)? The data set holds only 10, 40 and 160 Hz trains for these pairs; this attempt used the first
+    AP of each train at 40 Hz or slower. Which windows were used for the baseline, the peak and the
+    single-exponential decay fit of the averaged uIPSCs?
+- kind: methods_unavailable
+  statement: Question for the authors. How was the recovery half-time of PV+BC to PC IPSCs (Fig. 13B)
+    fitted; with the plateau fixed at full recovery or free, and is the value tau or tau ln 2? Only the
+    free-plateau fits come near 495.8 ms here.
