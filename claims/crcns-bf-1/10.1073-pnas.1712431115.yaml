@@ -1,0 +1,670 @@
+# Claims for Nair, Klaassen, Arato, Vyssotski, Harvey & Rainer (2018), PNAS 115:1352-1357, on
+# CRCNS data set bf-1.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-06,
+# protocol as stated in docs/protocol.md (Reader, version pilot-13).
+#
+# Text read: the version of record, as supplied under paper/ (PyMuPDF text of the journal PDF),
+# with its Results, figure legends and short Materials and Methods, and the supplement
+# (pnas.201712431si.pdf: SI results on low-frequency power, unimodality, excursions and
+# locomotion, SI Materials and Methods, and the legends of Figs. S1 to S7). The Methods that
+# fix the analyses are in the SI Materials and Methods. The paper links no analysis code, so none
+# was read; it names the toolboxes used (Wave_clus, CircStat, Chronux, BSMART, MVGC, SPSS). No PDF
+# renderer was available, so figures were read from their legends and the Results only. The
+# extracted text prints one p-value as "P < 0.0" (ACC gamma, Results, Gamma Oscillations in BF
+# Cortical Projection Targets); it is recorded as printed.
+#
+# Data the paper used. Adult male Long Evans rats, 80 to 120 days old. 16 rats implanted with
+# tungsten microelectrodes in the BF (AP -0.8, ML 2.8, DV -8.2 mm from bregma), 14 of them also in
+# the VC and 8 in the ACC; 22 BF hemispheres in the group analyses; 4 more rats with bipolar BF
+# electrodes. LFPs were recorded with a head-mounted Neurologger 2A (four LFP channels at 1.6 kHz,
+# and a 3D accelerometer for movement), and in tethered recordings (TDT RZ5) LFP at 1.6 kHz with
+# single units at 24 kHz (49 BF neurons in six rats). Conditions: home cage; exploration of a novel
+# empty 70 x 70 cm arena in two 10-min sessions a day for 3 days, 45 min apart, with the rat back
+# in the home cage between them; on day 4, arena exploration with two identical objects. Behavior
+# (exploration, grooming, quiet wakefulness) was scored from video in seven rats. Measured
+# variables: LFP power spectra, gamma power (30 to 80 Hz), movement-sensor values, BF-cortex
+# coherence and Granger causality, spike phase locking.
+#
+# The CRCNS data set, by its title and data description, holds BF LFP from six rats at 400 Hz,
+# in consecutive 2-s segments of 800 samples with artifact segments removed, a movement-sensor
+# value per segment (mean acceleration), and two sessions each of the 'Hcage' and 'Arena'
+# conditions per rat. It is described as the data of this paper. By that description it holds
+# no ACC or VC channels, no spikes, no object sessions and no behavior scoring; the claims that
+# need those are kept, as the paper's findings, and the author finds whether the data set holds
+# their data. The six rats match the six-rat SI analyses of excursions and unimodality (Figs.
+# S3 to S5, about 20 min each of arena and home cage).
+#
+# Method details from the SI Materials and Methods, used by every LFP claim below unless it says
+# otherwise: LFPs down-sampled to 400 Hz and cut into 2- or 10-s epochs; epochs rejected when
+# their peak-to-peak amplitude exceeds the median plus 1 SD (1 to 4% rejected); power spectrum of
+# each epoch by fast Fourier transform; gamma power is the mean of the power spectrum between 30
+# and 80 Hz; for the movement analysis the accelerometer data are split into quartiles and the
+# mean gamma power of each quartile is averaged across animals.
+#
+# Details the paper leaves open that apply to many claims, with the readings it allows:
+# - Epoch length: 2-s or 10-s epochs, as the Methods name both. The data set's segments are 2 s,
+#   so 2-s epochs are the main reading and 10-s epochs (five consecutive segments) the variant.
+# - Artifact rejection: the data set's segments are already cleaned. Readings: (a) the segments
+#   as delivered; (b) the paper's rule (peak-to-peak above median plus 1 SD, per file) applied
+#   again.
+# - FFT details (window, detrending, scaling) are not given. A plain periodogram of each epoch
+#   (squared magnitude of the FFT, no taper) is used as a standard choice; it cannot change a
+#   ratio or a paired comparison of the same measure. Whether the 30 and 80 Hz bins are included
+#   is a standard choice (both included).
+# - The unit of pairing: the paper pairs hemispheres (n = 22) or animals; the data set gives one
+#   BF signal per rat and session, so tests run over rats (n = 6), with the two sessions of a
+#   condition (a) averaged per rat, or (b) kept as separate pairs (session 1 with session 1).
+schema_version: 2
+dataset:
+  archive: crcns
+  id: bf-1
+  doi: 10.6080/K0MK6B2Q
+paper: doi:10.1073/pnas.1712431115
+claims:
+- id: behavior-arena-time-budget
+  statement: In the arena, rats spent most of their time exploring (87.8 +/- 3.6%), 7.6 +/- 1.7%
+    grooming and 1.80 +/- 0.9% in quiet wakefulness (mean +/- SEM, seven rats, video tracking and
+    motion sensor).
+  source: Results, Behavioral Analyses, paragraph 1; Figure 2B
+  quote: In the arena, tracking analyses showed that rats spent a large majority of their time
+    (87.8 ± 3.6%, mean ± SEM) exploring the arena itself and objects when these were present. Only
+    7.6 ± 1.7% of the total time was spent grooming in this exploratory context, and animals were
+    rarely in a state of quiet wakefulness (1.80 ± 0.9%).
+  expected:
+  - quantity: time exploring in the arena
+    value: 87.8
+    tolerance: 3.6
+    unit: percent
+  - quantity: time grooming in the arena
+    value: 7.6
+    tolerance: 1.7
+    unit: percent
+  - quantity: time in quiet wakefulness in the arena
+    value: 1.8
+    tolerance: 0.9
+    unit: percent
+  criterion: The behavior labels come from video tracking and manual scoring (ELAN, SI Materials
+    and Methods), which the data set's description does not list. Tolerances are the reported
+    SEM.
+- id: behavior-home-cage-less-exploration
+  statement: Rats explored less in the home cage than in the arena with or without objects, and
+    in the home cage they divided their time about equally between quiet wakefulness and
+    grooming.
+  source: Results, Behavioral Analyses, paragraph 1; Figure 2B
+  quote: By contrast, rats exhibited significantly less exploratory locomotor behavior in the home
+    cage than in the arena with or without objects (paired t tests... Instead, they divided their
+    time about equally (paired t test... between states of quiet wakefulness and grooming (Fig. 2).
+  statistics:
+  - about: exploration, home cage against arena and against object arena
+    test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: seven rats
+  - about: quiet wakefulness against grooming in the home cage
+    test: paired t test
+    p: 0.1
+    p_relation: ">"
+    n: seven rats
+  criterion: Needs the behavior scoring of Figure 2 (video and motion sensor, seven rats).
+    Reproduced when exploration time is lower in the home cage than in each arena condition by
+    paired t tests at p < 0.001, and the paired t test of quiet wakefulness against grooming time
+    in the home cage gives p > 0.1 (a claim of absence, judged on that test).
+- id: behavior-movement-speed
+  statement: Mean movement speed from video was 8.9 +/- 0.5 cm/s in arena exploration, 6.9 +/- 0.7
+    cm/s in object exploration and 1.4 +/- 0.4 cm/s in the home cage; both exploration conditions
+    exceeded the home cage, and arena exceeded object exploration.
+  source: Results, Behavioral Analyses, paragraph 1
+  quote: mean speed... arena exploration, 8.9 ± 0.5 cm/s; object exploration, 6.9 ± 0.7 cm/s; home
+    cage, 1.4 ± 0.4 cm/s). Locomotor behavior was greater in both exploration conditions than in
+    the home cage (ANOVA with post hoc tests... In addition, locomotion during arena exploration
+    was increased compared with object exploration
+  statistics:
+  - about: each exploration condition against home cage
+    test: ANOVA with post hoc tests
+    p: 0.01
+    p_relation: "<"
+  - about: arena against object exploration
+    test: ANOVA with post hoc tests
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: mean speed, arena exploration
+    value: 8.9
+    tolerance: 0.5
+    unit: cm/s
+  - quantity: mean speed, object exploration
+    value: 6.9
+    tolerance: 0.7
+    unit: cm/s
+  - quantity: mean speed, home cage
+    value: 1.4
+    tolerance: 0.4
+    unit: cm/s
+  criterion: Speed of the animal's geometric center from video, which the data set's description
+    does not list; the movement sensor is not a speed in cm/s. Tolerances are the reported SEM.
+- id: fig3a-bf-gamma-reduction
+  statement: BF gamma power was reduced by 35 +/- 3% when rats moved from the home cage to the
+    novel arena, a highly significant reduction.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 1; Figure 3A
+  quote: The main finding of the present study is a striking (35 ± 3%) and highly significant
+    (paired t test, P < 10−5) reduction of this BF gamma activity when rats were transferred from
+    their home cage to a novel, empty arena which they explored during a 10-min interval (Fig. 3A).
+  statistics:
+  - test: paired t test
+    p: 0.00001
+    p_relation: "<"
+    n: 22 hemispheres
+  expected:
+  - quantity: reduction of BF gamma power, arena relative to home cage
+    value: 35
+    tolerance: 3
+    unit: percent
+  criterion: Gamma power is the mean of the epoch power spectrum from 30 to 80 Hz (SI Materials
+    and Methods), per epoch, averaged over the epochs of a recording. The paper does not say how
+    the percentage is formed. Readings, (a) the mean over recordings of 100 x (1 - arena / home
+    cage); (b) 100 x (1 - mean arena / mean home cage) over the group means. Tolerance is the
+    reported SEM. Reproduced when, under one reading, the reduction is within tolerance and a
+    paired t test of home-cage against arena gamma over rats gives p < 0.05 with home cage
+    higher (the paper's p < 1e-5 rests on 22 hemispheres; with six rats the expected p is
+    larger, so p < 1e-5 is reported, not required). Partially reproduced when the paired test
+    holds and no reading puts the reduction within tolerance.
+- id: fig3a-each-hemisphere-significant
+  statement: The BF gamma reduction in the arena was significant in every one of the 22
+    hemispheres analyzed individually.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 1
+  quote: BF gamma reductions were significant in all brain hemispheres (n = 22) when analyzed
+    individually (unpaired t test P < 0.01).
+  statistics:
+  - test: unpaired t test
+    p: 0.01
+    p_relation: "<"
+    n: 22 hemispheres, each tested on its own
+  depends_on:
+  - fig3a-bf-gamma-reduction
+  criterion: Per recording (rat and session pair), an unpaired t test of the epoch gamma powers
+    in the arena against those in the home cage. Reproduced when every rat gives p < 0.01 with
+    the home cage higher; partially reproduced when all but one do.
+- id: bipolar-gamma-reduction
+  statement: In four more rats with bipolar BF electrodes, home-cage gamma was also strong and was
+    reduced by 24 +/- 3% during arena exploration.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 1
+  quote: Strong BF gamma activity in the home cage was also observed in these bipolar recordings,
+    and this oscillatory activity was again strongly suppressed during arena exploration, (24 ± 3%
+    reduction; paired t tests... 10−4).
+  statistics:
+  - test: paired t tests
+    p: 0.0001
+    p_relation: "<"
+    n: four rats with bipolar electrodes
+  expected:
+  - quantity: reduction of bipolar BF gamma power, arena relative to home cage
+    value: 24
+    tolerance: 3
+    unit: percent
+  depends_on:
+  - fig3a-bf-gamma-reduction
+  criterion: As fig3a-bf-gamma-reduction, with its readings, on bipolar recordings only. The data
+    set's description does not say whether any of its rats had bipolar electrodes; the claim
+    applies only to recordings identified as bipolar.
+- id: fig3b-arena-gamma-unrelated-to-movement
+  statement: In the arena, BF gamma power did not vary with movement-sensor quartile.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3B
+  quote: This analysis, shown in Fig. 3B, demonstrates that BF gamma activity in the arena was
+    largely unrelated to locomotor behavior (one-way ANOVA...
+  statistics:
+  - test: one-way ANOVA
+    p: 0.1
+    p_relation: ">"
+  criterion: A claim of absence. 2-s epochs sorted into quartiles of the movement-sensor value
+    and the mean gamma power of each quartile averaged across animals (Results paragraph 2 and
+    SI Materials and Methods). Quartiles are formed within each condition, as the matched
+    comparison of fig3b-matched-movement pairs different quartiles of the two conditions; the
+    paper does not say whether within each recording or over a rat's pooled sessions, and both
+    are run. Judged on the paper's test, a one-way ANOVA with quartile as the factor on the
+    per-rat quartile means. Reproduced when p > 0.1; not reproduced when p < 0.05; the size of
+    the quartile effect is given either way. A repeated-measures ANOVA is shown as a variant.
+- id: fig3b-home-cage-gamma-increases-with-movement
+  statement: In the home cage, BF gamma power increased with movement-sensor quartile.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3B
+  quote: BF gamma activity increased with locomotor behavior in the home cage (one-way ANOVA...
+  statistics:
+  - test: one-way ANOVA
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig3b-arena-gamma-unrelated-to-movement
+  criterion: Quartiles and per-rat quartile means as in fig3b-arena-gamma-unrelated-to-movement,
+    for the home cage. Reproduced when the one-way ANOVA over quartiles gives p < 0.05 and the
+    fourth quartile mean exceeds the first.
+- id: fig3b-matched-movement
+  statement: Gamma suppression in the arena remained highly significant when epochs matched for
+    movement were compared, for example the fourth home-cage quartile against the third arena
+    quartile.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3B
+  quote: gamma suppression during exploration remained highly significant when LFP epochs matched
+    for movement were analyzed (e.g., the fourth and third movement quartiles for home cage and
+    arena, respectively; one-way ANOVA
+  statistics:
+  - test: one-way ANOVA
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - fig3b-arena-gamma-unrelated-to-movement
+  criterion: Quartiles as in fig3b-arena-gamma-unrelated-to-movement. The paper names the home-cage
+    fourth and arena third quartiles as its example of a movement match. Readings, (a) that pair,
+    as named; (b) the pair of quartiles, one per condition, whose mean movement-sensor values are
+    closest. Reproduced when, under one reading, a one-way ANOVA of the per-rat gamma means of the
+    two groups gives p < 0.05 with the home cage higher (p < 0.001 reported, not required with six
+    rats).
+- id: fig3c-consistent-over-days
+  statement: BF gamma power in the arena was consistent over the 3 days of testing.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3C
+  quote: was consistent over the 3 d of testing (one-way ANOVA... (Fig. 3C)
+  statistics:
+  - test: one-way ANOVA
+    p: 0.1
+    p_relation: ">"
+  criterion: A claim of absence, judged on a one-way ANOVA with day as the factor on per-rat gamma
+    power. Reproduced when p > 0.1, not reproduced when p < 0.05. Needs recordings labelled by day;
+    the data set's description names sessions 1 and 2 only.
+- id: fig3c-home-cage-above-both-sessions
+  statement: BF gamma was larger in the home cage than in either of the two daily arena sessions,
+    and slightly larger (5.62 +/- 1.2%) in the second arena session than in the first, with no
+    interaction between day and session.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3C
+  quote: was larger in the home cage than during either of the two arenaexploration sessions
+    (two-way ANOVA with factors day and session and post hoc tests... In addition, gamma activity
+    was slightly increased during the second arena-exploration session compared with the first
+    session (5.62 ± 1.2%; post hoc test... and there was no significant interaction between day
+    and session number.
+  statistics:
+  - about: home cage against each arena session
+    test: two-way ANOVA with factors day and session, post hoc tests
+    p: 0.0001
+    p_relation: "<"
+  - about: second against first arena session
+    test: post hoc test
+    p: 0.01
+    p_relation: "<"
+  expected:
+  - quantity: increase of gamma power, second arena session relative to first
+    value: 5.62
+    tolerance: 1.2
+    unit: percent
+  criterion: Session levels home cage, arena 1 and arena 2 (Figure 3C axis). The post hoc test is
+    not named; Tukey's HSD is the standard reading and Bonferroni-corrected paired t tests the
+    variant. The percentage is read as 100 x (arena 2 / arena 1 - 1), averaged over recordings,
+    and as the ratio of group means. Reproduced when the home cage exceeds both arena sessions at
+    p < 0.05, arena 2 exceeds arena 1 at p < 0.05 and, under one reading, the increase is within
+    tolerance (reported SEM). If the data set has no day labels, the two arena sessions are
+    compared within rat by a paired t test and the day factor is dropped, recorded as a
+    deviation.
+- id: fig3d-gamma-rises-with-time-in-arena
+  statement: Within arena sessions BF gamma stayed suppressed but rose with time spent in the
+    arena (r = 0.72, n = 22).
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3D
+  quote: While gamma activity was continuously suppressed in the arena, it was positively
+    correlated with time spent in the arena (r = 0.72, n = 22, P < 10−4) during individual
+    exploration sessions, as shown in Fig. 3D.
+  statistics:
+  - test: correlation
+    statistic: r = 0.72
+    p: 0.0001
+    p_relation: "<"
+    n: '22'
+  expected:
+  - quantity: correlation of BF gamma power with time in the arena
+    value: 0.72
+    tolerance: 0.072
+  criterion: The paper does not say what is correlated; n = 22 matches the number of hemispheres.
+    Readings, (a) Pearson r between time and the gamma power averaged across recordings, in time
+    bins over the 10-min session (bin width open; 1 min, as the Figure 3D axis runs in minutes,
+    with 2-s epochs as the variant); (b) the mean over recordings of each recording's r between
+    epoch time and epoch gamma; (c) r over all epochs pooled. Reproduced when, under one reading,
+    r is within tolerance (10%) and positive at p < 0.05.
+- id: fig3d-rapid-switch-to-home-cage
+  statement: BF gamma increased rapidly when the rat was transferred back from the arena to its
+    home cage.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 2; Figure 3D
+  quote: Nevertheless, gamma increased rapidly when the rat was transferred back to its home cage.
+  criterion: Needs a continuous recording across the transfer (Figure 3D, time 0). The paper gives
+    no measure of how fast. Readings, (a) mean gamma in the first minute after transfer exceeds
+    that in the last minute before it, by a paired t test over rats at p < 0.05; (b) mean gamma in
+    the first minute after transfer does not differ from that of the rest of the home-cage
+    recording by a paired t test (p > 0.05). Reproduced when both hold; partially reproduced when
+    (a) holds alone.
+- id: fig3f-grooming-quiet-arena
+  statement: BF gamma was higher during grooming than during quiet wakefulness, and both were
+    higher than during arena exploration; in the arena, rats groomed 4.6 +/- 0.3% of the time,
+    with elevated gamma during those pauses.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 3; Figure 3E and 3F
+  quote: The results, shown in Fig. 3F, indicate that gamma activity was higher during grooming
+    than during quiet wakefulness (one-way ANOVA with post hoc tests... P < 0.001), but gamma
+    activity was elevated during both quiet wakefulness and grooming compared with arena
+    exploration (P < 0.01 and P < 0.001, respectively).
+  statistics:
+  - about: grooming against quiet wakefulness
+    test: one-way ANOVA with post hoc tests
+    p: 0.001
+    p_relation: "<"
+  - about: quiet wakefulness against arena exploration
+    test: one-way ANOVA with post hoc tests
+    p: 0.01
+    p_relation: "<"
+  - about: grooming against arena exploration
+    test: one-way ANOVA with post hoc tests
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: time grooming during arena exploration
+    value: 4.6
+    tolerance: 0.3
+    unit: percent
+  criterion: Needs behavior labels per epoch (video scoring), which the data set's description
+    does not list. With labels, per-rat mean gamma for each behavior, a one-way ANOVA with Tukey's
+    HSD as the standard reading of "post hoc tests". Reproduced when the three orderings hold at
+    p < 0.05.
+- id: fig4-object-exploration-suppressed
+  statement: BF gamma suppression was maintained during object exploration, attenuated as much as
+    in empty-arena exploration relative to the home cage, and not different from the arena value.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 4; Figure 4A and 4C
+  quote: We found that gamma suppression was maintained during the object-exploration task, with
+    gamma being similarly attenuated for object and empty arena exploration compared with
+    home-cage values (one-way ANOVA... and was not
+    significantly different from the arenaexploration value (P > 0.1).
+  statistics:
+  - about: object exploration against home cage
+    test: one-way ANOVA
+    p: 0.01
+    p_relation: "<"
+  - about: arena exploration against home cage
+    test: one-way ANOVA
+    p: 0.001
+    p_relation: "<"
+  - about: object against arena exploration
+    test: one-way ANOVA
+    p: 0.1
+    p_relation: ">"
+  - about: object exploration against home cage, per recording
+    test: paired t test
+    p: 0.000001
+    p_relation: "<"
+  - about: arena exploration against home cage, per recording
+    test: paired t test
+    p: 0.00001
+    p_relation: "<"
+  criterion: Needs the day-4 object sessions, which the data set's description does not list.
+    With them, per-rat gamma in home cage, arena and object sessions; a one-way ANOVA with post
+    hoc tests (Tukey's HSD as the standard reading), and paired t tests of each exploration
+    condition against home cage (Figure 4C). Reproduced when both exploration conditions are
+    below home cage at p < 0.05 and the object against arena comparison gives p > 0.1 (absence,
+    judged on that test).
+- id: fig5a-phase-locked-neurons
+  statement: Of 49 well-isolated BF neurons in six rats, 25 were phase locked to broadband (30 to
+    80 Hz) gamma oscillations.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 5; Figure 5A
+  quote: We recorded 49 well-isolated BF neurons in six animals. Of these neurons, 25 exhibited
+    significant phase locking to broadband (30–80 Hz) gamma oscillations
+  expected:
+  - quantity: phase-locked BF neurons
+    value: 25
+    tolerance: 2.5
+    unit: of 49 neurons
+  criterion: Needs single units (tethered recordings at 24 kHz), which the data set's description
+    does not list. Phase from the Hilbert transform of the 30 to 80 Hz LFP, spikes in 25 bins of
+    14.4 degrees, Hodges-Ajne test at p < 0.01 (SI Materials and Methods; the Results name it the
+    Hodge-Ange circular O-test).
+- id: fig5cd-pli-max-at-gamma
+  statement: Phase locking, measured by the phase-locked index, was maximal at gamma frequencies
+    in both the home cage and the arena.
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 5; Figure 5C and 5D
+  quote: We calculated a phase-locked index (PLI) as the coefficient of variation over the 25 bins
+    at each band pass, and with this metric phase locking was found to be maximal at gamma
+    frequencies in both the home cage and arena (one-way ANOVA, P < 0.005)
+  statistics:
+  - test: one-way ANOVA
+    p: 0.005
+    p_relation: "<"
+    n: phase-locked BF neurons
+  depends_on:
+  - fig5a-phase-locked-neurons
+  criterion: Needs single units. PLI is the coefficient of variation of spike probability over 25
+    phase bins, for LFP band passes 1-10, 10-20, ... 90-100 Hz (SI Materials and Methods).
+    Reproduced when a one-way ANOVA over bands gives p < 0.05 and the maximum mean PLI falls in a
+    band within 30 to 80 Hz, in each condition.
+- id: spike-width-phase-locked
+  statement: Phase-locked BF neurons had shorter spikes (214 +/- 5 us, trough to peak) than
+    non-phase-locked neurons (247 +/- 12 us).
+  source: Results, BF Gamma Deactivation During Exploration, paragraph 5
+  quote: Spike durations of the phase-locked neurons were significantly shorter (mean = 214 ± 5 μs)
+    than for the non–phase-locked neurons (mean = 247 ± 12 μs; P < 0.05)
+  statistics:
+  - p: 0.05
+    p_relation: "<"
+    n: 25 phase-locked and 24 non-phase-locked neurons
+  expected:
+  - quantity: spike duration, phase-locked neurons
+    value: 214
+    tolerance: 5
+    unit: us
+  - quantity: spike duration, non-phase-locked neurons
+    value: 247
+    tolerance: 12
+    unit: us
+  depends_on:
+  - fig5a-phase-locked-neurons
+  criterion: Needs single-unit waveforms. Duration from the first negative trough to the first
+    positive peak (Results). The test is not named; an unpaired t test is the reading, a
+    Mann-Whitney test the variant. Tolerances are the reported spread.
+- id: fig6a-acc-gamma-home-cage
+  statement: As in the BF, ACC gamma power was higher in the home cage than during arena
+    exploration and switched rapidly to the elevated state on transfer to the home cage.
+  source: Results, Gamma Oscillations in BF Cortical Projection Targets, paragraph 1; Figure 6A
+  quote: We observed that, as in the BF, gamma LFP activity was elevated in the ACC when rats were
+    in their home cage, compared with arena exploration (paired t test... (Fig. 6A, Left). As in
+    the BF, gamma activity switched rapidly to an elevated state when rats were transferred to
+    their home cage after arena exploration.
+  criterion: Needs ACC recordings, which the data set's description does not list. The p-value is
+    printed "P < 0.0" in the text read and cannot be recorded. Reproduced when a paired t test of
+    home-cage against arena ACC gamma (30 to 80 Hz) gives p < 0.05 with home cage higher.
+- id: fig6a-vc-gamma-unchanged
+  statement: VC gamma power (40 to 60 Hz) did not differ between arena and home cage, while high
+    gamma (60 to 100 Hz) was higher during arena exploration.
+  source: Results, Gamma Oscillations in BF Cortical Projection Targets, paragraph 1; Figure 6A
+  quote: Thus, VC gamma activity (40–60 Hz) was unchanged between arena-exploration and home-cage
+    environments [paired t test... However, we did observe enhanced high gamma activity between
+    60 and 100 Hz during arena exploration (paired t test
+  statistics:
+  - about: VC 40 to 60 Hz, arena against home cage
+    test: paired t test
+    p: 0.1
+    p_relation: ">"
+  - about: VC 60 to 100 Hz, arena against home cage
+    test: paired t test
+    p: 0.00000001
+    p_relation: "<"
+  criterion: Needs VC recordings, which the data set's description does not list. The absence is
+    judged on the paper's paired t test of 40 to 60 Hz power (p > 0.1 reproduced, p < 0.05 not);
+    the high-gamma part holds when the paired t test of 60 to 100 Hz power gives p < 0.05 with
+    arena higher.
+- id: fig6b-coherence
+  statement: Gamma coherence with the BF was greater for the ACC than for the VC, and for both
+    areas it was higher in the home cage than in the arena.
+  source: Results, Gamma Oscillations in BF Cortical Projection Targets, paragraph 1; Figure 6B
+  quote: We found that coherence at gamma frequencies was greater between the BF and ACC than
+    between the BF and VC across behavioral conditions (two-way ANOVA... Additionally, for both
+    cortical areas, coherence with the BF was elevated in the home cage compared with the arena
+    (two-way ANOVA
+  statistics:
+  - about: BF-ACC against BF-VC
+    test: two-way ANOVA
+    p: 0.01
+    p_relation: "<"
+    n: four animals
+  - about: home cage against arena
+    test: two-way ANOVA
+    p: 0.01
+    p_relation: "<"
+    n: four animals
+  criterion: Needs ACC and VC recordings. Coherence from an autoregressive model of order 15 on
+    normalized, detrended 2-s epochs (BSMART), area under the curve from 40 to 60 Hz,
+    repeated-measures ANOVA (SI Materials and Methods). Reproduced when both main effects give
+    p < 0.05 in the stated direction.
+- id: fig6c-granger-bf-to-acc
+  statement: During BF gamma bursts, gamma-band Granger causality was stronger from the BF to the
+    cortex than in reverse, stronger to the ACC than to the VC, and stronger in the home cage
+    than in the arena.
+  source: Results, Gamma Oscillations in BF Cortical Projection Targets, paragraph 2; Figure 6C
+  quote: directional interactions were stronger in the corticopetal than in the corticofugal
+    direction for both the ACC and VC (two-way ANOVAs, main effects of direction... However,
+    directional interactions to the ACC were significantly larger than to the VC (two-way ANOVA,
+    main effect of pathway... as well as being more pronounced in the home cage than in the arena
+    (two-way ANOVAs, main effect of location
+  statistics:
+  - about: corticopetal against corticofugal
+    test: two-way ANOVAs, main effect of direction
+    p: 0.01
+    p_relation: "<"
+    n: seven animals (bivariate)
+  - about: to ACC against to VC
+    test: two-way ANOVA, main effect of pathway
+    p: 0.05
+    p_relation: "<"
+    n: seven animals (bivariate)
+  - about: home cage against arena
+    test: two-way ANOVAs, main effect of location
+    p: 0.016
+    p_relation: "<"
+    n: seven animals (bivariate)
+  criterion: Needs ACC and VC recordings. BF bursts from the 40 to 60 Hz band-passed, detrended
+    LFP above 2.5 SD of the mean, bounded where the amplitude falls below 1.5 SD, 100 to 800 ms
+    long; unfiltered 160-ms epochs centred on the bursts; MVGC with maximal model order 15 by
+    AIC; spectra averaged over 40 to 60 Hz; repeated-measures ANOVAs (SI Materials and Methods).
+    "Amplitude" is open, (a) the absolute value of the band-passed signal, (b) its Hilbert
+    envelope. Reproduced when the three main effects give p < 0.05 in the stated directions.
+- id: fig6d-trivariate-granger
+  statement: Trivariate Granger causality analyses in rats with BF, VC and ACC electrodes showed
+    BF-to-cortex directionality, stronger to the ACC than to the VC and in the home cage than in
+    the arena.
+  source: Results, Gamma Oscillations in BF Cortical Projection Targets, paragraph 2; Figure 6D
+  quote: These findings illustrate BF→cortex directionality of interactions and the specificities
+    in terms of cortical region, i.e., ACC over VC, as well as behavioral state, i.e., home cage
+    over arena.
+  depends_on:
+  - fig6c-granger-bf-to-acc
+  criterion: Needs ACC and VC recordings (four animals, SI Materials and Methods). Methods as in
+    fig6c-granger-bf-to-acc, trivariate. The paper reports no test; reproduced when the group mean
+    BF-to-ACC value exceeds the ACC-to-BF, BF-to-VC and VC-to-BF values in the home cage, and the
+    BF-to-ACC value is larger in the home cage than in the arena.
+- id: figs2-bf-low-frequency-bands
+  statement: In the BF, delta and beta power, like gamma, were higher in the home cage than in the
+    arena, while theta power was strongly suppressed in the home cage.
+  source: SI, Low-Frequency Power Modulations in Home Cage and Arena, paragraph 2; Fig. S2
+  quote: In the BF, in addition to the gamma enhancement in the home cage, beta and delta
+    oscillations are also elevated, whereas theta power is strongly suppressed relative to values
+    recorded in the arena.
+  statistics:
+  - test: paired t test
+    p: 0.05
+    p_relation: "<"
+  criterion: Band power as the mean of the epoch power spectrum within delta (1 to 5 Hz), theta (6
+    to 10 Hz), beta (12 to 30 Hz) and gamma (30 to 80 Hz), per rat and condition (SI). Paired t
+    test of home cage against arena per band, as the Fig. S2 legend names. Reproduced when all
+    four bands differ at p < 0.05 in the stated directions; partially reproduced when theta and
+    gamma do and one of delta and beta does not.
+- id: figs2-acc-vc-low-frequency-bands
+  statement: In the ACC, gamma, beta and delta power were higher in the home cage and theta did
+    not differ; in the VC the strongest effect was higher theta in the arena, and the only other
+    difference was higher high gamma (above 60 Hz) in the arena.
+  source: SI, Low-Frequency Power Modulations in Home Cage and Arena, paragraph 2; Fig. S2
+  quote: A similar pattern is observed in ACC, where gamma, beta, and delta power are enhanced in
+    the home cage but theta power is not significantly different in the two environments. In the
+    VC the strongest effect is related to enhanced theta power in the arena; the only other
+    significant difference is in the high gamma band (above 60 Hz)
+  statistics:
+  - test: paired t test
+    p: 0.05
+    p_relation: "<"
+  criterion: Needs ACC and VC recordings. Bands and tests as in figs2-bf-low-frequency-bands, with
+    high gamma 60 to 100 Hz (Results, Figure 6A). The absences (ACC theta; VC delta, beta and
+    30-60 Hz gamma) are judged on the same paired t test at p < 0.05.
+- id: figs3-unimodal-states
+  statement: Within each condition, the distributions of BF theta and gamma power over 2-s epochs
+    were unimodal, with no evidence of substates, in each of six rats.
+  source: SI, Distributions of Theta and Gamma Power Within Each State Are Unimodal, paragraph 1;
+    Fig. S3
+  quote: These results were confirmed (at P > 0.1) in a total of six animals, in total yielding no
+    evidence for multimodality in either behavioral state or frequency band.
+  statistics:
+  - test: Hartigan dip test
+    p: 0.1
+    p_relation: ">"
+    n: six rats
+  criterion: A claim of absence, judged on the Hartigan dip test of the 2-s epoch theta (6 to 10
+    Hz) and gamma (30 to 80 Hz) powers, per rat, condition and band, about 20 min of data each.
+    Reproduced when every test gives p > 0.1; not reproduced when any gives p < 0.05; the dip
+    statistics are reported either way. Which session per rat is open; both sessions are run.
+- id: figs5-arena-excursions
+  statement: During about 20 min of arena exploration, BF gamma made on average eight brief
+    excursions into the home-cage range, lasting 8 to 44 s (16 +/- 8 s), with a clear rise in
+    gamma power (0.56 +/- 0.27) and no change in theta power (-0.01 +/- 0.82) relative to 4 to 8 s
+    before the peak.
+  source: SI, Analysis of Excursions to DMN Brain State During Arena Exploration, paragraph 2;
+    Fig. S5
+  quote: We found on average eight excursions during the 20 min spent in the arena, corresponding
+    to about one excursion every 2–3 min. Excursions lasted between 8 and 44 s, with an average
+    duration of 16 ± 8 s. Based on a comparison of LFP power at the gamma peak to the average
+    values 4–8 s before the peak, gamma transitions were associated with clear increases in gamma
+    power (0.56 ± 0.27, paired t tests... but no concomitant significant modulations in theta
+    power (−0.01 ± 0.82, paired t tests... P > 0.1) were found.
+  statistics:
+  - about: gamma power at the peak against 4 to 8 s before
+    test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: six rats
+  - about: theta power at the peak against 4 to 8 s before
+    test: paired t tests
+    p: 0.1
+    p_relation: ">"
+    n: six rats
+  expected:
+  - quantity: excursions per arena session (about 20 min)
+    value: 8
+    tolerance: 0.8
+  - quantity: mean excursion duration
+    value: 16
+    tolerance: 8
+    unit: s
+  - quantity: gamma power increase at the excursion peak
+    value: 0.56
+    tolerance: 0.27
+  criterion: From the SI. Gamma power of 2-s epochs smoothed with a boxcar of length 3; threshold
+    at the intersection of the home-cage and arena gamma histograms (Fig. S3; 2.6 in the example);
+    an excursion is a run of smoothed gamma above threshold, its duration the time above
+    threshold; peak values taken from the unsmoothed data, compared with the mean of the epochs 4
+    to 8 s before the peak. Open, (1) the histogram bins that set the intersection, with readings 20
+    equal bins over the pooled range as a standard choice, and a kernel density crossing as the
+    variant; (2) the power scale, as the paper's units are not stated and 2.6 and 0.56 cannot be
+    placed on a scale without them, with readings raw power, log10 power, and power normalized to the
+    rat's mean; (3) which arena session, each and their mean. The paired test "P << 0.001" is
+    recorded as p < 0.001. Reproduced when, under one reading, the mean count and duration are
+    within tolerance (10% for the count, the reported spread for the duration), durations fall
+    within 8 to 44 s widened by 10%, the gamma increase is significant at p < 0.05 and the theta
+    change is not (p > 0.1, absence judged on the paired t test). The 0.56 value is compared only
+    under a reading whose scale puts the threshold near 2.6; otherwise it is reported and not
+    judged. Partially reproduced when the gamma and theta tests hold and the count or duration
+    does not.
+- id: figs6-object-more-stationary
+  statement: Quasi-stationary behavior (0 to 2 cm/s) was more frequent in object exploration than
+    in empty-arena exploration.
+  source: SI, Locomotion During Arena and Object Exploration, paragraph 1; Fig. S6
+  quote: We found that quasi-stationary behavior (0–2 cm/s) was seen significantly more frequently
+    in the object-exploration than in the arena-exploration condition (paired t test; P < 0.05)
+  statistics:
+  - test: paired t test
+    p: 0.05
+    p_relation: "<"
+    n: four rats
+  criterion: Needs video tracking of object sessions, which the data set's description does not
+    list. Reproduced when the paired t test gives p < 0.05 with object exploration higher.
