@@ -90,6 +90,13 @@ outcomes:
     each of 1000 resamples. The notebook's CI section judges the claim again with the non-reflected form
     (which matches the paper's Figure 1G CIs), with the inner bootstrap SE of MATLAB bootci (100 resamples)
     and with five seeds.
+  - The outcome rests on one reading, all 90 sessions with 0/0 suppression ratios read as 0, judged on
+    the median bounds over 50 seeds. That is not the authors' handling. With 0/0 set to 1, as the scripts
+    do and as fig1h-poke-rate-unrelated assumes because it gives the paper's F exactly, the uncertainty
+    minus safety CI contains zero in every one of the 50 seeds with the standard interval, in both session
+    sets (median lower bounds -0.125 with the 82 sessions and -0.084 with the 90), and the claim is not
+    reproduced with that interval.
+  assumed: true
 - claim: fig1h-poke-rate-unrelated
   outcome: reproduced
   notebook: reproduce_ray_2022.ipynb
@@ -111,7 +118,7 @@ outcomes:
   output: claim:fig1h-discrimination-safety
   measured: -0.979
   notes: Danger minus safety suppression correlates with safety suppression across the seven rats under
-    every reading (R = -0.978 to -0.986, p of 1.4e-4 or less).
+    every reading (R = -0.978 to -0.986, p from 4.5e-5 to 1.4e-4; the paper R = -0.98, p = 1.41e-4).
 - claim: fig2-five-clusters
   outcome: partially_reproduced
   notebook: reproduce_ray_2022.ipynb
@@ -125,9 +132,11 @@ outcomes:
   notes: No reading gives the five counts within tolerance. With N4 and the most frequent of 100 starts
     the centroids show the five patterns (smallest cosine to the templates 0.79) with 6, 28, 45, 89 and
     25 units (Threat Excited, Threat Inhibited, Danger Excited, Bidirectional Valence, Non-Selective);
-    N2 gives 7, 27, 44, 91 and 24, and the script normalization 9, 25, 34, 89 and 36. Other normalized
-    readings give partitions whose centroids do not show the patterns, and firing in Hz groups units by
-    rate. The partitions are unstable (each found in 1 to 3 of 100 starts), and the mean distance falls
+    N2 gives 7, 27, 44, 91 and 24 (smallest cosine 0.77) and N4 with the best of 100 starts 46, 28, 27,
+    86 and 6 (0.73). The script normalization's best partition (9, 25, 34, 89 and 36; 0.66) and N1 most
+    frequent (0.65) come close; the other readings give partitions whose centroids do not show the patterns
+    (smallest cosine 0.30 or below), and firing in Hz groups units by rate. The normalized partitions are
+    unstable (each found in 1 to 3 of 100 starts; the most frequent partition in Hz in 19), and the mean distance falls
     steadily from k = 1 to 7. On the 219 units of screen reading (a) the counts are 47, 36, 80, 45 and
     11.
   deviations:
@@ -1226,3 +1235,242 @@ verifications:
       (a), which has 0-4 events per unit taken at the end of the recorded segments.
     response: No change of outcome. With the corrected events the Danger Excited danger correlation is
       still significant under reading (b) (p = 0.034 and 0.0012); reading (a) holds no event.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write
+    the notebook)
+  reviewed: 'Round 2: the full executed notebook with the conclusions and summary, the helper module nac.py,
+    the claims file, the attempt record and the README; the verifier also read the paper under paper/.
+    Report in transcripts/crcns-nac-1/verifier-2-report.md.'
+  results:
+  - claim: units-recorded
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree: cell 10 gives 90 sessions, and the criterion''s tolerance is zero. The 95-session
+      count is still not explained; Extended Data Figure 1-1 is not available to compare against.'
+    response: 'No change of outcome. The 95-session count stays unexplained: the per-rat session counts
+      are printed and recorded in the notes, and the paper''s Extended Data Figure 1-1 is not under paper/.'
+  - claim: cue-responsive-193
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The screen choice is stated as an assumption (cells 14 and 15, which repeat the same
+      paragraph); the script's 193 units are a reasonable assumption.
+    response: No change of outcome. Cell 14 no longer repeats the assumption paragraph of cell 15; it
+      keeps the result and the chance-level check.
+  - claim: fig1c-acquisition
+    agrees: true
+    outcome: blocked
+    reason: Agree; the outcome checks against the printed outputs.
+    response: No change of outcome.
+  - claim: fig1g-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Agree, because the criterion accepts "under one reading". But the outcome rests on one reading,
+      all sessions with 0/0 suppression ratios read as 0 (uncertainty minus safety CI [0.012, 0.599] at
+      the median of 50 seeds, excluding zero in 68% of seeds; 3 of 5 seeds with the analytic SE and 2
+      of 5 with the inner bootstrap SE in the CI section). Under 0/0 = 1 with the 82 sessions, which the
+      record adopts for fig1h, that CI contains zero in every seed with the standard interval. The outcome
+      rests on a deviation the record names (a tie-break the criterion does not give), yet carries no
+      assumed flag. It should, and the note should say that the authors' 0/0 handling does not reproduce
+      the claim with the standard interval.
+    response: 'No change of outcome. The outcome now carries assumed: true, and a deviation and the conclusion
+      (cell 24) say that with 0/0 set to 1 the uncertainty minus safety CI contains zero in all 50 seeds
+      with the standard interval, in both session sets (median lower bounds -0.125 and -0.084), so the
+      authors'' handling does not reproduce the claim with that interval. The summary row says the same.
+      The CI form and the 0/0 reading remain open questions in questions/crcns-nac-1.yaml.'
+  - claim: fig1h-poke-rate-unrelated
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The 0/0 = 1 assumption is stated in the deviations and reasonable. The question on
+      the 0/0 reading is still open.
+    response: No change of outcome. The 0/0 reading is asked of a reader in questions/crcns-nac-1.yaml.
+  - claim: fig1h-discrimination-safety
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 27 and the record's notes say "p of 1.4e-4 or less"; the outputs print p only
+      as 0.0, so this cannot be checked against them.
+    response: No change of outcome. Cell 26 now prints the unrounded p values (4.5e-5 to 1.41e-4), and
+      cell 27 and the notes say "p from 4.5e-5 to 1.4e-4".
+  - claim: fig2-five-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree. Cell 33 says other readings give partitions with smallest cosine below 0.5, but cell
+      30 shows 0.73 for N4 (i), one of the fitting partitions, 0.65 for N1 (ii) and 0.66 for the script
+      normalization (i). "Each found in 1 to 3 of 100 starts" is true only of the normalized readings;
+      the Hz most frequent partition was found 19 times. The partition assumption is the weakest, since
+      the alternative partition flips fig5ab and fig7; both flips are disclosed.
+    response: No change of outcome. Cell 33 and the notes now give N4 (i) (0.73, counts 46, 28, 27, 86
+      and 6), N1 (ii) (0.65) and the script normalization (i) (0.66), say the remaining readings have
+      smallest cosines of 0.30 or below, and limit the 1 to 3 of 100 starts to the normalized readings,
+      with 19 for the Hz most frequent partition. The partition stays an assumption.
+  - claim: populations-by-rat
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: most-units-threat
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. It carries no assumed flag, which is fine: it holds under every partition.'
+    response: No change of outcome.
+  - claim: fig3ab-rate-cv-unimodal
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. It carries no assumed flag, which is fine: it holds under every partition.'
+    response: No change of outcome.
+  - claim: fig3c-waveform-bimodal
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The 0.3875 waveform boundary and the unhalved peak-valley duration are stated as assumptions
+      and are reasonable.
+    response: No change of outcome.
+  - claim: fig4ab-thi-threat-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The normalization question is still
+      open (the script variant matches the paper's effect sizes for fig4ab).
+    response: No change of outcome. The normalization is asked of a reader in questions/crcns-nac-1.yaml.
+  - claim: fig4b-thi-danger-equals-uncertainty
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig4cd-de-danger-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The normalization question is still
+      open (the script variant matches the paper's effect sizes for fig4cd).
+    response: No change of outcome. The normalization is asked of a reader in questions/crcns-nac-1.yaml.
+  - claim: fig4ef-bv-danger-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig4f-bv-safety-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig5ab-the-onset
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. Problem 4 (partition choice) is stated as an assumption and the alternative partition
+      is shown; this claim still depends on it.
+    response: No change of outcome. The dependence on the partition is stated in the notes, the conclusion
+      and the summary.
+  - claim: fig5cd-ns-nonselective
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig6-similarity-anova
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig6d-thi-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig6e-de-similarity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig6f-bv-no-similarity-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig6-thi-greatest-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig7-tuning-curves
+    agrees: true
+    outcome: reproduced
+    reason: Agree. It still depends on the partition choice (problem 4). Cell 86 says "largest difference
+      1.3e-15"; cell 85 prints 9.09e-16.
+    response: No change of outcome. Cell 86 now says 9.1e-16.
+  - claim: fig8ab-thi-exaggerated-threat
+    agrees: true
+    outcome: reproduced
+    reason: Agree; the outcome checks against the printed outputs. The per-trial normalization (N4 SD)
+      and the 0/0 handling are stated assumptions and reasonable.
+    response: No change of outcome.
+  - claim: fig8cd-de-exaggerated-threat
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
+  - claim: fig8ef-bv-exaggerated-threat
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The normalization question is still
+      open (the script variant matches the paper's effect sizes for fig8ef).
+    response: No change of outcome. The normalization is asked of a reader in questions/crcns-nac-1.yaml.
+  - claim: fig9a-reward-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree. ITI reading (a) is empty by the data, not only by construction: the latest recorded
+      poke or pellet is 33.54 s after onset (cell 6), so no 4-s window can lie after onset + 30 s. Reading
+      (b) is the only testable reading for fig9 and fig10.'
+    response: No change of outcome.
+  - claim: fig9bcd-reward-pre-post
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. Cell 105 says "Threat Inhibited post-reward firing and its rise exclude zero under
+      both (0.67 [0.12, 1.35] and 0.58 [0.04, 1.10])"; those are the post values under (i) and (ii), and
+      the rises are 0.71 [0.15, 1.37] and 0.90 [0.32, 1.45] (cell 104). The conclusion is unaffected.
+    response: No change of outcome. Cell 105 now gives both the post values and the rises.
+  - claim: fig9efg-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agree. A further claims-file defect: the conditions for reproduced and partially reproduced
+      overlap. The reproduced condition does not test the Danger Excited part of the statement, which
+      the partial condition does. Here both are met, and cell 109 resolves it toward partially reproduced.
+      That choice is reasonable, but the criterion should be fixed.'
+    response: No change of outcome. The overlap is asked of a reader in questions/crcns-nac-1.yaml; the
+      claim is unchanged.
+  - claim: fig9hij-danger-safety-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The summary (cell 126) says the script variant brings the effect sizes to the paper's
+      values for fig9hij, but the Danger Excited R2 of 0.212 is outside 0.25 +- 0.025 (cell 111); only
+      the Bidirectional Valence R2 (0.062) is within tolerance. The normalization question is still open.
+    response: No change of outcome. The summary now names only the Bidirectional Valence R2 of fig9hij
+      and says the Danger Excited R2 (0.212) stays outside its tolerance; the question in questions/crcns-nac-1.yaml
+      says the same.
+  - claim: fig10a-poke-cessation-anova
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Under ITI reading (b) the interval p is 0.26 and 0.12 and the interaction p < 1e-4
+      (cell 114).
+    response: No change of outcome.
+  - claim: fig10bcd-poke-cessation-pre-post
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. With the 1-s baseline and cessations at recording pauses dropped, the Bidirectional
+      Valence pre CI contains zero under every reading (0.085 [-0.009, 0.207] and 0.218 [-0.038, 0.485],
+      cell 117), in every seed, form and SE (cell 124). The round-1 reproduced outcome was on the uncorrected
+      events.
+    response: No change of outcome.
+  - claim: fig10efg-poke-cessation-cue-unrelated
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree; the outcome checks against the printed outputs. The assumptions it rests on (partition,
+      the script's 193 units and the others flagged assumed) are stated in the deviations and reasonable.
+    response: No change of outcome.
