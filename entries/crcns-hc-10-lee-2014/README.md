@@ -24,6 +24,7 @@ data set's description. The PC sweeps start at the -70 mV holding potential, so 
 potential is not in them. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/crcns-hc-10-lee-2014-01.yaml`](../../attempts/crcns-hc-10-lee-2014-01.yaml).
 
-- `reproduce_lee_2014.ipynb`: the analysis. It takes under a minute, most of it streaming the zip.
+- `reproduce_lee_2014.ipynb`: the analysis. It takes about 15 minutes, most of it a 20 ms run of the
+  paper's network model, timed to estimate the cost of the two model claims.
 - `hc10.py`: streaming and parsing the ATF files, the step window, and the measures of firing,
   input resistance and sag. Other notebooks on this data set can import it.
