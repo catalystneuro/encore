@@ -359,8 +359,8 @@ outcomes:
   notes: Three-cue pool, danger onset -0.974 [-1.284, -0.690], uncertainty onset -0.592 [-0.883, -0.263],
     safety onset -0.337 [-0.529, -0.136], danger late -0.870 [-1.114, -0.649], uncertainty late -0.554
     [-0.767, -0.310], safety late [-0.101, 0.183], the pattern holds under both pools, but danger onset
-    and late, and uncertainty onset and late, are outside tolerance (paper -0.54, -0.25, -0.21, -0.49,
-    -0.23). The authors' normalization gives -0.544, -0.253, -0.207, -0.488, -0.234.
+    and late, uncertainty onset and late, and under the three-cue pool safety onset, are outside tolerance
+    (paper -0.54, -0.25, -0.21 +- 0.10, -0.49, -0.23). The authors' normalization gives -0.544, -0.253, -0.207, -0.488, -0.234.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -1280,7 +1280,7 @@ verifications:
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
   reviewed: Round 1. The executed notebook of commit f940f5d6b1 (author-answers, the analysis of the author run 4d8f88d15e)
     with the conclusion cells and the summary removed, the helper module and the claims file, with the paper.
-    The verifier also read the archive listing and tested the helper functions on synthetic input. agrees
+    The header summary table in cell 0, which gives the outcomes, was still in that notebook. The verifier also read the archive listing and tested the helper functions on synthetic input. agrees
     compares its outcome with the outcome of the record it reviewed.
   results:
   - claim: recorded-units
@@ -1378,11 +1378,14 @@ verifications:
     agrees: true
     outcome: partially_reproduced
     reason: 'The pattern holds under O1b. Means are about 1.7x the paper''s (danger onset -0.61 against -0.37
-      +- 0.08). Under O1a the safety late-cue interval is above zero (cell 44). Problem 2, the notebook never
+      +- 0.08). Under O1a the safety late-cue interval is above zero (cell 44). Problem 2, the authors'' per-trial
+      normalization matches the printed values, which suggests the paper''s Methods do not describe the computation
+      the figures were made with; that decides fig3b, 3d, 4c, 4g, 6b, 6c and 6-assignment. The notebook never
       isolates which element causes the gap: per-trial vs trial-averaged Z, 2 s vs 10 s baseline, or flooring.'
     response: No change to the outcome. A new section before this claim varies one element at a time. Z over
       single trials puts all seven checked means within tolerance whatever the baseline and floor, and Z over
-      trial means none; the baseline and floor move the means by at most 0.06. The Methods describe Z over
+      trial means none; flooring moves the means by at most 0.008 and the baseline length the four Low means by
+      at most 0.057 (Intermediate uncertainty onset by up to 0.15). The Methods describe Z over
       trial means, so the claims file reads them correctly; the code_mismatch finding now says which element
       differs.
   - claim: fig3b-low-differential
@@ -1599,3 +1602,315 @@ verifications:
     response: No change to the outcome. The conclusion and notes now say the difference has no common unit
       under (i) and that under (ii) no reading gives the pattern. Whether (i) belongs among this claim's readings
       is asked in questions/crcns-bf-3.yaml.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of commit 9c2068cc1a (author-revise-1), with the conclusions and
+    summary, the README, the attempt record, the helper module, the claims file and the round-1 report, with the
+    paper. agrees compares its outcome with the outcome of the record it reviewed.
+  results:
+  - claim: recorded-units
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The Result sentence and the record notes match the printed outputs.
+    response: No change. The Summary now names it among the partial outcomes that do not meet the criterion under
+      the code's variant.
+  - claim: cue-responsive-screen
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The Result sentence and the record notes match the printed outputs.
+    response: No change.
+  - claim: fig1f-suppression-cue-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It also holds on groups B, so it is right that it is not flagged as assumed.
+    response: No change.
+  - claim: fig1f-differential-suppression
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It also holds on groups B, so it is right that it is not flagged as assumed.
+    response: No change.
+  - claim: fig2-excited-inhibited-split
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees with reproduced, but only under A1. The claim's statement names the 257 neurons; on those,
+      the claims-file reading Hz, two window means gives 130/127 (cell 29). On the Methods' 271 neurons every claims-file
+      reading fails (142 to 155 inhibited); the round-1 range of 139 to 155 was wrong. Cell 32 says two of the criterion's
+      four readings give counts within tolerance, but cell 29 shows three of four within tolerance with the three-cue
+      pool (130/127, 125/132, 121/136), plus the four-type pool with two means (124/133). Cell 0 repeats the implication.
+    response: Cell 32 now says three of four readings are within tolerance with the three-cue pool and two of four
+      with the four-type pool (Hz two means and normalized two means, 124/133). The header (cell 0) now calls Hz
+      with two window means one of the readings within tolerance. The Summary says which claims rest on A1.
+  - claim: ancova-excited-no-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on A1. It reverses on groups B (p <= 0.0006).
+    response: No change; the notes already give the groups B result and mark the outcome as resting on A1. The Summary
+      sentence that said all claims rest on A1 and A2 now says which rest on which.
+  - claim: ancova-inhibited-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It also holds on groups B, so it is right that it is not flagged as assumed.
+    response: No change.
+  - claim: kmeans-three-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. A2 is reasonable because the Methods name Matlab kmeans, whose default is one
+      start, and the code does rng(1) (cell 15, lines 1485-1487). It is fragile, only 98 of 300 seeds reach the
+      paper's partition (cell 44). About 25 cluster claims rest on it; the claims file's statement that the seed
+      cannot change a conclusion beyond the edge of an interval is wrong here, and a question is filed. The membership
+      check is done (adjusted Rand index 1.000, cell 46).
+    response: No change; the question is in questions/crcns-bf-3.yaml.
+  - claim: clusters-differ-in-cue-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: clusters-by-rat
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig3a-low-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig3b-low-inhibited-to-threat-cues
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Cell 59 says the baseline length and flooring move the means by at most 0.06;
+      this fails for one of the seven means (cell 58), Intermediate uncertainty onset moves from -0.592 to -0.442
+      (0.15) under trial means and from -0.330 to -0.253 (0.077) under single trials. The round-1 response says
+      the same and is wrong for the same reason. The fig3b notes are correct, as they cover only the four Low means,
+      which move at most 0.054. The round-1 reason kept only that the notebook never isolates which element causes
+      the gap, and dropped the main point, that the Methods may not describe the computation the figures were made
+      with, which decides fig3b, 3d, 4c, 4g, 6b, 6c and fig6-excited-assignment-050; the code_mismatch finding covers
+      the substance.
+    response: 'Cell 59 now gives the size of each effect: flooring moves each mean by at most 0.008; the baseline
+      length moves Intermediate uncertainty onset by 0.15 (trial means) and 0.077 (single trials), the other six
+      means by at most 0.062 and the four Low means by at most 0.057 (taken over all four baseline and floor settings).
+      The round-1 response is corrected to match, and the round-1 reason now includes the dropped point.'
+  - claim: fig3b-low-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. With the code variant the delay interval reaches zero (cell 67), so it is one
+      of the partial outcomes that still fails under the code variant, against the Summary and README sentence that
+      most partial outcomes are values within tolerance under the code's normalization.
+    response: The Summary and README sentence now says ten of the 15 partial outcomes meet the criterion under the
+      code's variant and names the five that do not, this claim among them. The Summary table note now gives the
+      delay interval.
+  - claim: fig3c-intermediate-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig3d-intermediate-inhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The record notes' list of means outside tolerance leaves out safety onset under
+      the three-cue pool (-0.337 against -0.21 +- 0.10, cell 73). This does not change the outcome.
+    response: The notes now include safety onset under the three-cue pool.
+  - claim: fig3d-intermediate-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: supp5-low-cue-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The 1 s onset window may be a misreading by the claims file; a question is
+      filed and the outcome would change if it is answered differently.
+    response: No change.
+  - claim: supp6-low-nosepoke-pauses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced, as given in round 1.
+    response: No change.
+  - claim: fig4a-low-rt-over-fo
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4a-low-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4a-low-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4b-low-dynamic-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4c-low-early-late-betas
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4d-low-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4e-int-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4e-int-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4f-int-no-assignment-interval
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It reverses on groups B (models a and b).
+    response: No change; the notes already give the groups B result (p = 0.012 to 0.034).
+  - claim: fig4g-int-early-late-betas
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4h-int-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4-low-int-combined
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig5a-low-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig5bc-reward-pre-post
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Cell 150 says that with scaling (ii) the pre intervals exclude zero; under
+      events (a)/(ii) the Low pre interval is [-0.044, 0.150] (cell 149), which contains zero. The record's version
+      (the Intermediate pre interval excludes zero) is correct.
+    response: Cell 150 now says the Intermediate pre interval excludes zero under both event readings and the Low
+      pre interval only under events (b), and that the Low post means, not all means, are about three times larger.
+  - claim: fig5d-f-low-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The 10% tolerance on R2 may be a misreading by the claims file; a question
+      is filed and the outcome would change if it is answered differently.
+    response: No change.
+  - claim: fig5-low-fisher-comparisons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig5g-i-intermediate-no-reward-cue-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig6a-excited-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6b-excited-period-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The safety requirement may be a misreading by the claims file; a question is
+      filed. With the code variant the safety intervals still exclude zero (cell 85), so the partial outcome does
+      not come only from the normalization.
+    response: The Summary and README sentence on partial outcomes now names this claim among those that do not meet
+      the criterion under the code's variant.
+  - claim: supp8-excited-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: supp9-excited-nosepoke-pauses
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees with reproduced, but only under A3. With the code's pause definition no post or post - pre
+      interval lies above zero under any scaling, on 3367 events with 9 to 46 per neuron (cell 96). The margin is
+      thin, lower bounds are -0.013 and -0.001. Under the claims file's own 5 s/(ii) reading firing rises after
+      the pause, so the claim fails there.
+    response: No change; the notes and conclusion already give the 5 s/(ii) result, and the outcome is marked as
+      resting on A3.
+  - claim: fig6-excited-assignment-050
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6c-excited-regressor-interval
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6d-excited-betas
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6ef-excited-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6g-excited-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The 10% tolerance on R2 may be a misreading; a question is filed. R2 values
+      0.084/0.113/0.098 are still outside tolerance under the code variant (cell 162).
+    response: The Summary and README sentence on partial outcomes now names this claim among those that do not meet
+      the criterion under the code's variant.
+  - claim: fig6-excited-peak-cue-vs-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Scaling (i) may be a misreading by the claims file; a question is filed and
+      the outcome would change if it is answered differently.
+    response: No change.

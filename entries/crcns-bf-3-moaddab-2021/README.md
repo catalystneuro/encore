@@ -9,9 +9,10 @@ Of the 45 claims, 28 are reproduced, 15 partially reproduced and 2 not reproduce
 Most outcomes rest on two assumptions: the neuron groups and the k-means clusters are those the
 authors' scripts produce, which match every count the paper reports. Firing is normalized as the
 Methods describe it; the scripts normalize single trials differently, and their normalization gives
-the paper's printed values, so most of the partial outcomes are values outside tolerance that the
-scripts' normalization brings within it. The element that matters is Z-scoring single trials in
-place of trial-averaged firing.
+the paper's printed values. Ten of the 15 partial outcomes meet the criterion under the scripts'
+variant (four failed on values alone, six on p values or intervals); five do not meet it under
+either. In the normalization, the element that matters is Z-scoring single trials in place of
+trial-averaged firing.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
