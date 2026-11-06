@@ -12,7 +12,7 @@ catch-trial, video-tracking and network-model analyses.
 | Behaviour: above chance, go better than nogo, block switching, intertrial interval | Reproduced (4) |
 | Hold-period rule encoding in mPFC and A1, its size, independence of auditory responsiveness | Reproduced (4) |
 | Example mPFC units (Figure 3A, 3B) | Reproduced |
-| Example A1 units (Figure 4A, 4B) | Not reproduced: the code's figure index swaps the two units; swapped, all values match |
+| Example A1 units (Figure 4A, 4B) | Reproduced, with the units identified by preference as the legends describe them (the code's figure index swaps them) |
 | Error trials, trial types, spontaneous rate, reaction and movement time | Reproduced (5) |
 | Time course of rule encoding (Figure 5) | Reproduced (3) |
 | Evoked responses, baseline and evoked change, decoding, tuning, stimulus pairs | Reproduced (8) |
