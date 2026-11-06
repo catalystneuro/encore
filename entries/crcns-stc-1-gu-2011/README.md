@@ -33,12 +33,14 @@ spike times, distances, training-group labels or naive single units.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-Most outcomes rest on one assumption: the data set holds per-condition noise correlations, and the
-paper's pooled value is taken as their mean. Under it the main result matches the paper to the third
-decimal. The simulations use a tuning amplitude and baseline that the paper does not give. The
-attempt record, with the reasons and the differences from the paper's method, is
+Seven of the 17 tested outcomes rest on one assumption: the data set holds per-condition noise
+correlations, and the paper's pooled value is taken as their mean. Under it the group means of the
+main result (0.0241 and 0.1190) lie within the SEMs of the paper's 0.023 and 0.116. Four outcomes
+rest on another: the simulations use a tuning amplitude and baseline that the paper does not give.
+The Figure 4 test of lateral against fore-aft sensitivity passes under one of the claims file's 8
+readings and runs without the paper's selection of significantly tuned units. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-stc-1-gu-2011-01.yaml`](../../attempts/crcns-stc-1-gu-2011-01.yaml).
 
-- `reproduce_gu_2011.ipynb`: the analysis. It takes about two minutes.
+- `reproduce_gu_2011.ipynb`: the analysis. It runs in about one minute.
 - `stc1.py`: loading the data set with its MD5 check, the pairs table, the group assignment, and
   the Fisher information of equations 2 to 5. Other notebooks on this data set can import it.

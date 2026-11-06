@@ -315,8 +315,8 @@ outcomes:
 - claim: methods-single-vs-multiple-electrodes
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: No pair carries an electrode label. Ten file_ids of monkey 17 end in "s", which the data
-    descriptor does not explain; the paper's 67 single-electrode pairs cannot be identified. The 52
+  notes: No pair carries an electrode label. Ten pairs of monkey 17, in six recordings, have file_ids
+    ending in "s", which the data descriptor does not explain (printed under the data check); the paper's 67 single-electrode pairs cannot be identified. The 52
     pairs over 1 mm, needed for the reading over all 179 pairs, are not in the data set either.
 - claim: fig2a-behavioral-learning
   outcome: blocked
@@ -353,8 +353,15 @@ outcomes:
     two-factor p is 0.013 to 0.77, and with spline-peak preferences no reading reaches p < 0.05.
     The neurometric thresholds of experiment 2, a variant, give two-factor p = 7.3e-07 (vector sum,
     log10) and 0.0011 (spline peak, log10). Per monkey, the visual difference is significant in both
-    (p = 0.00024 and 0.00017) and the vestibular one in neither (p = 0.082 and 0.185). Tested after
-    the round-1 verification found that the claim had been blocked wrongly.
+    (p = 0.00024 and 0.00017) and the vestibular one in neither (p = 0.082 and 0.185). The outcome
+    rests on the one passing reading. In it the preference by condition interaction is significant
+    (p = 0.026), the difference being larger in the visual condition. The two-factor ANOVA counts
+    each unit twice; a mixed model with a random intercept per unit gives p = 2.7e-07 in that
+    reading and no other reading below 0.001. With a proxy of the paper's tuning selection, 252 of
+    258 values are kept and the reading gives p = 1.2e-07 (mixed model 1.8e-07); with a stricter
+    proxy, 169 are kept and it gives p = 9.6e-08. Under both, no other reading reaches p < 0.001
+    (smallest 0.012), and the smallest two-factor p with spline-peak preferences is 0.051. Tested
+    after the round-1 verification found that the claim had been blocked wrongly.
   deviations:
   - A subset of the paper's data. The experiment 1 tuning curves hold 129 units of two trained
     monkeys (Gu et al. 2008), against the paper's 992 visual and 556 vestibular neurons of naive
@@ -364,7 +371,16 @@ outcomes:
     and 22.5 degrees, a choice made here as a piecewise-linear curve has no derivative at a knot.
     Two values whose curve is flat at 0 have infinite thresholds and are left out of that reading.
   - The tuning curves in spikes/s are read as counts over the middle 1 s (Experimental Procedures,
-    Noise and Signal Correlations); a different window scales all thresholds alike.
+    Noise and Signal Correlations). The first term of equation 3 scales with the window and the
+    trace term does not, so another window does not scale all thresholds alike; with 0.5 s or 2 s
+    the passing reading gives p = 1.9e-07, as with 1 s.
+  - The Figure 4 legend includes only neurons with significant heading tuning (p < 0.05, ANOVA).
+    That selection needs trial responses, which the data set does not hold, so the readings
+    include every unit. As a check, a proxy selection computes the one-way ANOVA from each mean
+    curve with variance equal to the mean (equation 4) and five repetitions ("typically repeated
+    five times", Experimental Protocol and Task), and a stricter one with three repetitions and
+    variance twice the mean; the outcome is the same under both.
+  - The two-factor reading counts each unit once per condition; a mixed model with a random intercept per unit is shown and agrees.
   - The vector sum weights each response by the angle it covers, as in fig8ab.
 - claim: fig4dh-training-no-sensitivity-change
   outcome: blocked
@@ -380,8 +396,9 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs the tuning curves of each pair's units; the pairs carry only rsignal and preferred
-    headings. Seven pair recordings share a cell id with experiment 1 units, but the data set does
-    not say which pair unit, if any, those curves belong to.
+    headings. Seven pairs, each in its own recording, share a cell id with experiment 1 units
+    (printed under the data check), but the data set does not say which pair unit, if any, those
+    curves belong to.
 - claim: figs5-congruency
   outcome: blocked
   blocked_by: data_missing
@@ -408,8 +425,9 @@ findings:
     paper needs. The groups can be recovered here only because the paper's per-animal pair counts
     are all distinct and match the counts per monkey in the file_ids.
 - kind: metadata_insufficient
-  statement: No pair carries an electrode or distance label, and ten file_ids of monkey 17 end in
-    "s" without explanation, so the single-electrode and multi-electrode pairs cannot be told
+  statement: No pair carries an electrode or distance label, and ten pairs of monkey 17, in six
+    recordings (m17c36r1s, m17c40r1s, m17c41r1s, m17c42r1s, m17c44r1s, m17c48r1s), have file_ids
+    ending in "s" without explanation, so the single-electrode and multi-electrode pairs cannot be told
     apart.
 - kind: metadata_insufficient
   statement: The data descriptor does not say how heading_pref was computed, how cp is signed
@@ -425,7 +443,8 @@ findings:
 - kind: methods_unavailable
   statement: Question for the paper's authors. Is the pooled rnoise of Figure 2B and Figure 5 the
     correlation of z-scores pooled over both conditions (which the mean of the two per-condition
-    values in the data set approximates, matching 0.023 and 0.116 to the third decimal), and do the
+    values in the data set approximates, giving 0.0241 and 0.1190, within the SEMs of the paper's
+    0.023 and 0.116), and do the
     stored per-condition values include the renormalization in blocks of 20 trials?
 - kind: methods_unavailable
   statement: Question for the paper's authors. What tuning amplitude, baseline and counting window
@@ -697,4 +716,241 @@ verifications:
     agrees: true
     outcome: blocked
     reason: No eye records.
+    response: No change.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and the summary, the attempt record,
+    the README, the helper module and the claims file, with the paper. Report in transcripts/crcns-stc-1/verifier-2-report.md.
+    Points not tied to one claim, the README's "It takes about two minutes" (no output gives a run time)
+    is answered by a cell before the summary that prints the run time (51 s), and the README now says
+    about one minute.
+  results:
+  - claim: training-group-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig2b-trained-lower-noise-correlation
+    agrees: true
+    outcome: reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+      It quoted the statement that the main result matches the paper to the third decimal (Summary, README,
+      methods_unavailable finding) as not supported, as cell 16 prints 0.0241 and 0.1190 against 0.023
+      and 0.116, within the paper's SEMs but not equal to the third decimal; it overstates the support
+      for the assumption. It also quoted the README's "Most outcomes rest on one assumption", as only
+      7 of the 17 tested outcomes rest on it and another 4 rest on the tuning amplitude and baseline.
+    response: The Summary, the README and the methods_unavailable finding now say that the means lie within
+      the paper's SEMs, giving the values, and the Summary and README say that 7 of the 17 tested outcomes
+      rest on this assumption and 4 on the tuning parameters. Outcome kept.
+  - claim: figs2b-individual-animals
+    agrees: true
+    outcome: reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+    response: No change.
+  - claim: fig1-example-pair
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig1f-modality-correlated
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig1f-modality-means-equal
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig5-noise-signal-positive
+    agrees: true
+    outcome: reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+    response: No change.
+  - claim: fig5-slope-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+    response: No change.
+  - claim: fig5-intercept-lower-trained
+    agrees: true
+    outcome: partially_reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+      Resolved from round 1, bootstrap intercept intervals added (cell 37); they overlap.
+    response: No change.
+  - claim: fig5-regression-coefficients
+    agrees: true
+    outcome: partially_reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+      Problem 4 (cell 0 header) is fixed.
+    response: No change.
+  - claim: fig6a-population-thresholds
+    agrees: true
+    outcome: reproduced
+    reason: The tuning amplitude 30 and baseline 10 spikes/s over 1 s assumption is stated and reasonable.
+      fig6a is sensitive to this choice, in cell 44 baseline 2 gives 4.32 and baseline 20 gives 5.90,
+      both outside 4.5 to 5.5, and the record states this. Problem 6 resolved, cell 43 prints the rsignal
+      difference (5.6e-07).
+    response: No change.
+  - claim: fig6b-slope-not-intercept
+    agrees: true
+    outcome: reproduced
+    reason: The tuning amplitude 30 and baseline 10 spikes/s over 1 s assumption is stated and reasonable.
+    response: No change.
+  - claim: fig7a-pair-sign-of-effect
+    agrees: true
+    outcome: partially_reproduced
+    reason: The tuning amplitude 30 and baseline 10 spikes/s over 1 s assumption is stated and reasonable.
+      Resolved from round 1, the crossover is reported, rsignal = -0.0216 (cell 50).
+    response: No change.
+  - claim: fig7c-narrow-preferences
+    agrees: true
+    outcome: partially_reproduced
+    reason: The tuning amplitude 30 and baseline 10 spikes/s over 1 s assumption is stated and reasonable.
+      It agrees with partially_reproduced, the change it asked for in round 1.
+    response: No change.
+  - claim: fig8ab-choice-probability-lateral
+    agrees: true
+    outcome: not_reproduced
+    reason: It holds under every preference reading, including the corrected vector sum (p = 0.80), and
+      under the distance-from-0.5 variant (p = 0.10 to 0.17), so it does not depend on how the CPs are
+      signed. Problem 1 resolved, the vector sum is weighted for the uneven heading spacing, checked on
+      synthetic curves in cell 56. The criterion tests raw CP, where the Figure 8A legend describes CP
+      "more deviated away from the chance level of 0.5"; the notebook runs this as a variant and the outcome
+      is unchanged. Whether the 258 CPs are among the paper's 311 cannot be resolved from the data set.
+      The rule "reproduced under one reading" is permissive when there are 8 or more readings, a design
+      point, not a misreading.
+    response: Added the reading of the Figure 8A legend to questions/crcns-stc-1.yaml as a question for
+      a reader; the claim is unchanged. The one-reading rule is the claims file's and is not changed.
+      Outcome kept.
+  - claim: fig8cd-noise-not-preference
+    agrees: true
+    outcome: reproduced
+    reason: The pooled-rnoise assumption (mean of the two per-condition values) is stated and reasonable.
+      Problem 3 resolved, the conflict with the claims-file point-count rule is stated in cells 62 and
+      64 and in the notes, and the claims-file readings support the argument made there.
+    response: No change.
+  - claim: fig2c-timecourse-naive-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: figs2a-difference-decreases
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig3-mean-response-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig3-fano-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: figs8c-renormalization
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: discussion-stimulus-reduces-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: figs1-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: methods-single-vs-multiple-electrodes
+    agrees: true
+    outcome: blocked
+    reason: Problem 8 resolved, recorded as a finding. The statement "Ten file_ids of monkey 17 end in
+      's'" in the notes and a metadata_insufficient finding is printed by no cell.
+    response: The data check now prints the pairs whose file_id ends in "s" (10 pairs of monkey 17 in
+      six recordings, listed), and the notes and finding now say ten pairs in six recordings. Outcome
+      kept.
+  - claim: fig2a-behavioral-learning
+    agrees: true
+    outcome: blocked
+    reason: Problem 7 resolved, fixed in cell 11.
+    response: No change.
+  - claim: fig4-tuning-width-visual
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig4-tuning-width-vestibular
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig4-amplitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig4dh-lateral-more-sensitive
+    agrees: true
+    outcome: reproduced
+    reason: It meets the criterion as written, lateral thresholds lower with p < 0.001 under at least
+      one reading, but the result is fragile and the record does not say so in full. Only 1 of the 8 claims-file
+      readings passes (cell 57, weighted vector sum, spline, log10, two-factor ANOVA, p = 1.9e-07). In
+      that reading the preference by condition interaction is significant (p = 0.026), which neither the
+      conclusion nor the notes report. The two-factor ANOVA counts each of the 129 units twice. With spline-peak
+      preferences no reading reaches p < 0.05. The analysis applies no tuning-significance selection,
+      which the Figure 4 legend uses ("Only neurons with significant heading tuning (p < 0.05, ANOVA)
+      were included"), and the record does not list this as a deviation; without it poorly tuned units
+      with huge thresholds and arbitrary preferences enter the test, which may explain why the two preference
+      readings agree on only 71.7% of group labels and why no spline-peak reading passes. The selection
+      cannot be applied exactly to trial-averaged curves; it should be listed as a deviation, with the
+      interaction and the double counting. The deviation "a different window scales all thresholds alike"
+      is not exact, as the trace term 0.5(f'/f)^2 does not scale with the counting window; the effect
+      is small and does not change the outcome. Problem 2 resolved, the claim is now tested.
+    response: Added a check after the main table. A proxy of the tuning selection (one-way ANOVA from
+      each mean curve with variance equal to the mean and five repetitions, the Experimental Procedures'
+      typical count) keeps 252 of 258 values, and a stricter one (three repetitions, variance twice the
+      mean) keeps 169; the passing reading gives p = 1.2e-07 and 9.6e-08, and no other reading reaches
+      p < 0.001. A mixed model with a random intercept per unit gives p = 2.7e-07 in the passing reading
+      and agrees on which readings pass. The conclusion and notes now report the interaction (p = 0.026)
+      and that the outcome rests on one reading. The selection, the double counting and the corrected
+      window statement are deviations, and the notebook now shows the passing reading with 0.5 s and 2
+      s windows (p = 1.9e-07 in each). The missing selection is added to questions/crcns-stc-1.yaml as
+      a question for a reader; the claim is unchanged. Outcome kept, no change proposed, as every check
+      gives the same outcome.
+  - claim: fig4dh-training-no-sensitivity-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: figs4-population-sensitivity-any-reference
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: fig7b-msdt-pairs
+    agrees: true
+    outcome: blocked
+    reason: The statement in the notes that seven pair recordings share a cell id with experiment 1 units
+      is printed by no cell.
+    response: The data check now prints them (7 pairs in 7 recordings, listed), and the notes point to
+      it. Outcome kept.
+  - claim: figs5-congruency
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: figs6-task-independent
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
+    response: No change.
+  - claim: figs8ab-eye-movements
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (it agrees with all 35), with no comment on this claim.
     response: No change.

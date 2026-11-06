@@ -190,12 +190,13 @@ def pref_spline_peak(headings, resp) -> float:
     return float(wrap180(grid[np.argmax(cs(grid))]))
 
 
-def neuron_threshold(headings, resp, interp: str = "spline") -> float:
+def neuron_threshold(headings, resp, interp: str = "spline", window: float = 1.0) -> float:
     """Threshold (degrees) of one neuron at straight ahead, equations 2 and 3 with variance = mean.
 
     interp "spline" (periodic cubic spline) or "linear" (slope between the neighbours of 0).
-    Infinite when the curve is flat at 0.
+    resp in spikes/s, counted over `window` seconds. Infinite when the curve is flat at 0.
     """
+    resp = np.asarray(resp, float) * window
     h, r = _sorted_circle(headings, resp)
     if interp == "spline":
         cs = CubicSpline(np.append(h, h[0] + 360.0), np.append(r, r[0]), bc_type="periodic")
