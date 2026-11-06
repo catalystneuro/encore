@@ -4,7 +4,7 @@ Tests the findings of [Qi et al. (2026)](https://doi.org/10.64898/2026.10.05.756
 [DANDI:001960](https://dandiarchive.org/dandiset/001960/0.261013.2016), which holds, for two
 NDNF-Cre::NPY-GFP mice, a spontaneous session, an intrinsic-excitability session and a
 connectivity-mapping session of about 320 layer 1 interneurons imaged at 787 Hz, and a raw-movie
-excerpt. Of the 56 claims, 47 are tested and 9 blocked.
+excerpt. Of the 56 claims, 46 are tested and 10 blocked.
 
 | Claims | Outcome |
 |---|---|
@@ -15,7 +15,7 @@ excerpt. Of the 56 claims, 47 are tested and 9 blocked.
 | Presynaptic identity sets IPSP amplitude, postsynaptic sets decay, mixed-model variances (Figure 3J to O) | Reproduced (three claims) |
 | Connection structure with distance | Partially reproduced |
 | Population interaction kernel; gap-junction strength without identity effect; lasso off-target correction | Not reproduced |
-| Spontaneous correlations, dimensionality, oscillations, voltage-to-spike curves, private depolarizations (Figure 4, six claims) | Reproduced |
+| Spontaneous correlations, dimensionality, oscillations, private depolarizations (Figure 4, five claims) | Reproduced |
 | Traveling waves | Not reproduced |
 | Spike-synchrony length constants and widths | Partially reproduced |
 | SNR decay over an hour | Reproduced |
@@ -27,14 +27,15 @@ excerpt. Of the 56 claims, 47 are tested and 9 blocked.
 | NPY subtypes do not differ in gap-junction connectivity | Not reproduced |
 | Figure 1 tool experiments, high-magnification footprints (six claims) | Blocked: data missing |
 | Detection limits | Blocked: too large |
-| Inhibition-gap balance; rates at oscillation peaks | Blocked: methods underspecified |
+| Voltage-to-spike curves; inhibition-gap balance; rates at oscillation peaks | Blocked: methods underspecified |
 
-Of the 56 claims, 47 are tested (36 reproduced, 5 partially reproduced, 6 not reproduced) and 9
-blocked. Six outcomes rest on an assumption about a method the paper leaves open
-(two-mice-intrinsic-distributions, hadamard-stimulation-rates, voltage-to-spike-sigmoid,
-npy-ipsp-duration, lasso-off-target-correction, traveling-waves). For voltage-to-spike-sigmoid a
-change to blocked (methods underspecified) is proposed, since the readings its criterion names give
-different outcomes; a third verification round reviews it.
+Of the 56 claims, 46 are tested (35 reproduced, 5 partially reproduced, 6 not reproduced) and 10
+blocked. Five outcomes rest on an assumption about a method the paper leaves open
+(two-mice-intrinsic-distributions, hadamard-stimulation-rates, npy-ipsp-duration,
+lasso-off-target-correction, traveling-waves). Voltage-to-spike-sigmoid is blocked (methods
+underspecified) after the third verification round, since the readings its criterion names give
+different outcomes: 52% of cells pass with V at the spike frame, 42% and 24% with V in the 10 ms
+before.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
