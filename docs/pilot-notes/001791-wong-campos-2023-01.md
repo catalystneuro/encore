@@ -1,0 +1,145 @@
+# 001791, Wong-Campos et al. 2023
+
+Three claims reproduced (all three on an assumption), six partially (two on an
+assumption), three not reproduced and seven blocked, four for missing data and
+three for other reasons. The first verification round agreed with 14 of the 19
+outcomes as they stood and the second with all 19; nothing was proposed after
+the second, so there was no third round. It pins version 0.260424.0313, the
+only published one; the paper cites none, and the draft has the same paths and
+sizes. The paper, Wong-Campos, Park, Davis, Qi, Fan, Marblestone, Grimm, Lavis,
+Cohen et al., "Voltage dynamics of dendritic integration and back-propagation
+in vivo", a bioRxiv preprint, images voltage at the soma and apical dendrites
+of layer 2/3 pyramidal neurons in mouse barrel cortex with Optopatch and
+dual-plane structured illumination, maps bAP propagation under soma-targeted
+optogenetic stimulation in anesthetized mice, compares dendrites in
+anesthetized and awake mice and under dendrite-targeted stimulation, and
+follows bAP failures and amplification in spontaneous, optogenetically driven
+and air-puff evoked activity; the dandiset holds the per-branch traces and
+summary tables of the authors' pipeline, grouped by figure, and nine HiLo
+z-stacks. The claims were written from version 1 of the preprint as bioRxiv
+JATS XML, without a PDF, so values printed only inside figures could not be
+read; the paper links no analysis code of its own, only NoRMCorre for motion
+correction. The check changed six claims and added one, among them the paper's
+95% intervals for fig2e and fig2f, a dendrite to soma reading for fig4fg and
+the new `figs12-spontaneous-failures-both-states`, and left open the bounds of
+fig2c, the spike detection thresholds (5 and 4 robust s.d.), the bAP amplitude
+windows and the bins and p-values printed only in Figs. 3i, 4d and 4h. The Fig.
+1 light pulse, Fig. 2 amplitude and delay, Fig. 3d correlation and Fig. 4
+spontaneous and air-puff claims could be tested; the Fig. 2 trial variation,
+shot-noise and dendrite-targeted stimulation claims could not, nor the three
+distal dendrite claims of Figs. 4e-h and S13. Reproduced are
+`fig1d-light-intensity-spike-rate` (Spearman rho 0.56 with K = 5 and 0.86 with
+K = 4), resting on pulse windows inferred from the traces,
+`fig2e-half-amplitude-distance` (238.9 μm, R2 = 0.491) and
+`fig2f-conduction-speed` (0.088 m/s, R2 = 0.462), both resting on taking the
+preprint's 30 sites as the 30 LR sites. Partial are
+`fig1fg-dendrite-peaks-after-soma` (three of four dendrites after the soma by a
+parabola, 0.03 to 0.66 ms, none by the sample of the maximum),
+`fig3d-dendrite-cross-correlation` (0.903 and 0.732 for the Fig. 3 neuron,
+0.863 and 0.803 over the three neurons recorded in both states),
+`fig4bc-doublet-first-fails` (68% of branches in one K = 5 reading, below the
+70% bound), `fig4d-accelerating-amplifies` (the decelerating effect fails at K
+= 5, p = 0.097), `fig4ijk-sensory-first-fails` (the first bAP smaller in 18 of
+20 or 20 of 22 trial and dendrite pairs, but 5 of 40 (K = 5) and 8 or 9 of 76
+(K = 4) dendritic spikes with no somatic spike before them) and
+`figs12-spontaneous-failures-both-states` (awake failures under every reading,
+the anesthetized half not tested, as column 1 is not shown to be a soma). Not
+reproduced are `fig2f-delay-range` (0.00 to 3.92 ms, 23 of 32 LR delays below
+1.35 ms), `fig4a-doublet-isi` (36.6 ± 20.4 ms over 36 doublets with K = 5,
+against 18 ± 7) and `fig4l-sensory-plateau` (264 ms, outside 360 to 440); the
+speed reproduces on the same delays whose range does not, as the deposited
+delays differ from the paper's by an offset and agree in slope. The author's
+first run had 5 reproduced, 4 partially, 3 not reproduced and 7 blocked, with 4
+robust s.d. adopted as the spike threshold for fig4bc and fig4d. The author
+asked no questions of a reader, so the answer and author-answers runs changed
+nothing. Round 1 disagreed on fig1d (reproduced), on fig4bc, fig4d and figs12
+(partially reproduced) and on fig4ijk (not reproduced), and found that the
+figure2h and figure2j files were never opened, that reading (b) of fig4fg was
+not run and fig4h and figs13 had no analysis cell, that the 3 ms distal
+threshold is applied to delays about 1.5 to 2 ms lower than the paper's and
+that column 1 of the anesthetized figure3i recordings was not checked as a
+soma; in reply four outcomes changed as round 1 gave them, fig4ijk stayed
+partially reproduced with the disagreement recorded, the files were opened, the
+missing readings and cells, a column 1 check and a table of the dendritic
+spikes without a somatic spike were added, and the author found that recordings
+14 and 15 of the Fig. 4e-h file, sampled at 1,000 Hz, had been read at 500 Hz,
+which had given two STA delays above 3 ms. Round 2 accepted fig4ijk as
+partially reproduced, found figs12 wrongly marked assumed, asked that the
+notebook discuss why the speed reproduces where the range does not and found
+sentences the outputs did not support, among them that no LR delay is exactly
+0, where one is 3.6e-15 ms; in reply the flag was removed, the text corrected
+and a check with the LR delays shifted up by 1.9 ms added (the same 0.088 m/s
+and R2 0.462). Nothing went to a reader in `questions/001791.yaml`. The
+author's run took about 32 minutes (12:34 to 13:06 UTC); a shell `cd` mistake
+briefly gave stale output, so the notebook was re-run, and nothing failed in
+the final runs. The notebook ran in 47 s at first, 54 s after the
+author-answers run, 42 s after round 1 and 59 s at the end. The untracked files
+in the repository root were left alone.
+
+The dandiset holds the pipeline's per-branch traces and summary tables, not the
+imaging movies, so the background-robust dF/F and the shot-noise bound of Fig.
+S9 cannot be computed; it holds no recordings of dendrite-targeted stimulation
+(Figs. 3e-i, S11), no single-trial traces or baseline noise of the Fig. 2
+mapping recordings (the Fig. 2h and 2i/2j files hold normalized amplitudes
+pooled over sites without site labels), no record of the Fig. 1 light pulses
+and no morphology reconstructions, and four claims are blocked for this. By the
+deposited delays no dendrite of the Fig. 4e-h recordings has the conduction
+delay above 3 ms that the Methods use to define distal dendrites (46 dendrites,
+at most 2.26 ms), nor by the STA (at most 1.95 ms), and no Fig. 4i-l dendrite
+does by its STA (at most 1.48 ms), so three claims are blocked; the deposited
+Fig. 2 delays run about 1.9 ms below the paper's stated range, which suggests
+they are measured differently from the paper's. The files follow a later
+version of the paper than the one the dandiset names: they name panels the
+preprint does not have (Figs. 2h and 2i/2j) and count 12 neurons for Fig. 2, 7
+for Fig. 3d and 238 triplets in 5 neurons for Fig. 4d, where the preprint has
+5, 3 and 186 in 3, and no identifier marks the preprint's subsets. Every one of
+the 44 assets is one of 22 pairs of byte-identical files (same SHA-256), once
+under a figure name at the top level and once under a subfolder, and the
+figure3e file is also a third copy of recording 3 of the figure3i file. In
+figure2g_bAP_propagation_delay.nwb the delay series are named
+LR_amplitude_vs_distance and ST_amplitude_vs_distance with the unit -dF/F, and
+branch_order_vs_amplitude holds delays; its all_amplitude_vs_distance series
+holds the 53 amplitudes of the amplitude file followed by 17 more rows repeated
+three times (104 rows). The deposited Fig. 3d table holds 30 correlation values
+above 1 (up to 1.24). Both files of the Fig. 3 neuron (barrel1_20220711) are
+described as awake, including the one named anesthetized at 1% isoflurane, and
+the archive counts 19 subjects, which include pooled pseudo-subjects and one
+neuron under two spellings (Barrel500-2 and barrel500_2). The figure3i
+recordings say "Column 1 = soma (if present)" without saying where a soma is
+present, the Fig. 4a-d file has 31 dendrite columns while its own tables list
+19 dendrite distances and 19 STA dendrites, and no file names the neuron each
+Fig. 2 site belongs to. The Fig. 4a-d file says its spike times are frame
+indices; they are in seconds, each one frame (2 ms) after the soma's peak, its
+per-recording accelerating and decelerating tables repeat one value in every
+column and its pooled summary tables have 6 rows for a stated 238 triplets. The
+spike times of recordings 2 and 3 of the Fig. 4i-l file are not sorted.
+Recordings 14 and 15 of the Fig. 4e-h file are sampled at 1,000 Hz and the
+other 15 at 500 Hz; their stimulus of 259 frames lasts 259 ms against 518 ms in
+the others, so only 200 to 259 ms of the 200 to 400 ms normalization window
+falls inside it, and neither length is the paper's 400 ms. Questions are put to
+the paper's authors: how spikes were detected and doublets defined; which sites
+make the Fig. 2 n = 30 and what curve gives the 50% distance; how peaks were
+timed below one frame; which branch pairs make the 23 pairs of Fig. 3d; how the
+plateau duration of Fig. 4l and the conduction delays that split distal
+dendrites at 3 ms were measured; and when the Fig. 1 light pulses were given
+and at what intensities.
+
+The author's points on the protocol: it says nothing about a dataset that
+matches a later version of the paper than the claims file, so the claims were
+tested as written and the mismatch recorded as a `paper_inconsistency` finding,
+not a clean fit for the kind; readings inherited from other claims, combined
+with "under every reading" in one claim and "under one reading" in another,
+leave the logic undefined, so every combination was run and K = 4 adopted on
+evidence under step 1.6; the authors' derived values in the dataset (spike
+times, delays, amplitudes) are not covered, so they were used as variants or as
+the only data where nothing else exists; there is no rule for a reading that
+selects nothing, so the remaining reading was tested; dependent claims of a
+claim blocked because few units pass its own rule were given `other` as the
+same reason; there is no finding kind for duplicates, so they went under
+`other`; `measured` is defined only for when several readings match, so the
+first listed reading was recorded; `assumed` is defined for method choices
+only, so a data-label assumption was stated in the deviations; the clock check
+could not be done without a stimulus table for Fig. 1; "the cells that show the
+result" is vague, so every code cell of each claim section was tagged; and the
+prompt and the example record name the harness differently, and the prompt's
+name was used.
