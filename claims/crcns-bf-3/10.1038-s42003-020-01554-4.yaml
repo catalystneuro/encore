@@ -65,11 +65,15 @@
 # O5, cue and reward values for the correlations (Fig. 5d to 5i, Fig. 6g). Reward "[peak - pre]"
 #   over "250 ms prior to reward delivery to 250 ms following": (a) the 250 ms bin after delivery
 #   minus the 250 ms bin before; (b) the maximum of those two bins minus the bin before. Cue
-#   values: the named 250 ms cue bin (second for inhibited neurons, first for excited) minus the
-#   last 250 ms bin before cue onset.
+#   values: the named 250 ms cue bin (second for inhibited neurons, first for excited) minus
+#   "pre". The legends do not say what the cue "pre" is; it is read as the last 250 ms bin before
+#   cue onset, by analogy with the reward window in the same legends, an assumption.
 # O6, sample sizes. Several reported degrees of freedom imply fewer neurons than the group size
 #   (Low firing cue ANOVA 72 of 74; cue-excited cue ANOVA 130 of 131; Low reward ANOVA 72 of
-#   74). The paper does not say which neurons were left out. The author runs all neurons of the
+#   74; cue-inhibited ANCOVA 124 of 126 and cue-excited ANCOVA 130 of 131, counting one df for
+#   the covariate; Low 0.00/0.25 and 0.25/0.50 regressor ANOVAs 73 of 74; Intermediate
+#   regressor ANOVAs 33 of 34; cue-excited assignment ANOVAs 130 and regressor ANOVA 129 of
+#   131). The paper does not say which neurons were left out. The author runs all neurons of the
 #   group and reports the n used.
 # O7, k-means. The Methods name the five features and k = 3 (Matlab kmeans). Feature scaling,
 #   distance, replicates and seed are not given. Readings: (a) raw features, Matlab defaults
@@ -84,7 +88,7 @@ paper: doi:10.1038/s42003-020-01554-4
 claims:
 - id: recorded-units
   statement: 435 VP neurons were recorded from 14 rats over 194 sessions.
-  source: Results, paragraph 3 (after the Fig. 1 legend)
+  source: Results, paragraph 2
   quote: A total of 435 VP neurons were recorded from 14 rats over 194 sessions
   expected:
   - quantity: neurons recorded
@@ -101,7 +105,7 @@ claims:
 - id: cue-responsive-screen
   statement: 257 of the 435 neurons (about 59%) were cue-responsive, recorded in 153 sessions,
     with at least one cue-responsive neuron in each of the 14 rats.
-  source: Results, paragraph 3; Methods, Identifying cue-responsive neurons
+  source: Results, paragraph 2; Methods, Identifying cue-responsive neurons
   quote: This screen identified 257 cue-responsive neurons (~59% of all recorded neurons) from 153
     sessions, with at least one cue-responsive neuron identified in each of the 14 rats
   depends_on:
@@ -122,7 +126,7 @@ claims:
 - id: fig1f-suppression-cue-effect
   statement: Suppression ratios were high to danger, intermediate to uncertainty and low to
     safety, with a main effect of cue in an ANOVA on the rats' mean suppression ratios.
-  source: Results, paragraph 4; Figure 1f
+  source: Results, paragraph 3; Figure 1f
   quote: Suppression ratios were high to danger, intermediate to uncertainty, and low to safety (Fig.
     1f ). Analysis of variance (ANOVA) for mean individual suppression ratio [factor... revealed a
     main effect of cue
@@ -143,7 +147,7 @@ claims:
   statement: Suppression ratios differed for every cue pair; the 95% bootstrap intervals of the
     differences excluded zero for danger vs. uncertainty (0.28), uncertainty vs. safety (0.52)
     and danger vs. safety (0.80).
-  source: Results, paragraph 4; Figure 1f
+  source: Results, paragraph 3; Figure 1f
   quote: The 95% bootstrap confidence interval for differential suppression ratio did not contain
     zero for danger vs. uncertainty (mean = 0.28, 95% CI [(lower bound) 0.19, (upper bound) 0.38]),
     uncertainty vs. safety ( M = 0.52, 95% CI [0.35, 0.65]), and danger vs. safety ( M = 0.80, 95%
@@ -276,9 +280,9 @@ claims:
     value: 18
     tolerance: 1.8
   criterion: Features as the Methods define them; baseline rate over the 10 s before cue onset;
-    CV and skewness (3 x (mean - median)/SD) of inter-spike intervals, over the whole session
-    (the Methods do not say over which spikes; whole session is used, baseline periods only as a
-    variant); half duration and amplitude ratio from the mean waveform. K-means with k = 3 under
+    CV and skewness (3 x (mean - median)/SD) of inter-spike intervals; the Methods do not say
+    over which spikes, so both readings are run, (a) the whole session and (b) the 10 s
+    baseline periods; half duration and amplitude ratio from the mean waveform. K-means with k = 3 under
     readings O7, clusters named by mean baseline rate. Reproduced when, under one reading, the
     three counts are within tolerance, a one-way ANOVA across clusters has p < 0.05 for baseline
     rate, CV, skewness and half duration, baseline rate has the largest F, and amplitude ratio
@@ -569,8 +573,9 @@ claims:
   criterion: Pearson correlation across neurons of normalized firing (Methods, Population and
     single-unit firing analyses), per cluster (Low, Intermediate) and period (onset, late cue,
     delay), danger against uncertainty and uncertainty against safety. The supplementary figure
-    that gives the panels was not read, so "commonly" is judged here as at least two of the three
-    periods. Reproduced when, in each of the two clusters, danger-uncertainty r is positive with
+    that gives the panels was not read and the text read does not define "commonly"; it is judged
+    here as at least two of the three periods, an assumption of this file that the outcome rests
+    on. Reproduced when, in each of the two clusters, danger-uncertainty r is positive with
     p < 0.05 in at least two periods and uncertainty-safety r is never positive with p < 0.05.
 - id: supp6-low-nosepoke-pauses
   statement: Pauses in nose poking during the inter-trial interval, in the absence of cues, did
@@ -588,13 +593,15 @@ claims:
     nose-poke cessation) as factor, and bootstrap intervals of the post (first 500 ms after
     cessation) firing against zero and of post minus pre (500 ms before). What counts as a
     pause is defined in the unread supplement; the readings are a gap of at least (a) 10 s, the
-    cue length, or (b) 5 s, the late-cue window, after a poke, outside the trial window.
+    cue length, or (b) 5 s, the late-cue window, after a poke, outside the trial window. Neither
+    length comes from the text read, so the outcome rests on an assumption.
     Normalization as O4. Reproduced when, in each cluster, the post interval and the post minus
     pre interval do not exclude zero below it; not reproduced when they do. The interval effect
     of the ANOVA is reported.
 - id: fig4a-low-rt-over-fo
   statement: Across all five uncertainty assignments, Low firing neurons signaled relative threat
-    more strongly than fear output (more negative cue-averaged relative-threat betas).
+    more strongly than fear output (cue-averaged relative-threat betas further from zero than
+    fear-output betas).
   source: Results, Low and Intermediate firing neurons dynamically signal relative threat,
     paragraph 2; Figure 4a
   quote: Low firing neurons more strongly signaled relative threat, compared to fear output, across
@@ -607,8 +614,9 @@ claims:
     with Matlab regress on a constant, the trial's cue suppression ratio (fear output, O3 for
     0/0 trials), and relative threat (danger 1, safety 0, uncertainty 0, 0.25, 0.50, 0.75 or 1,
     one model per assignment). Threat tuning value = beta averaged over the ten cue bins.
-    Reproduced when, for every assignment, the mean relative-threat beta over Low neurons is
-    further from zero than the mean fear-output beta and below zero, under one reading. At the
+    Strength is distance from zero (Methods, Single-unit linear regression). Reproduced when,
+    for every assignment, the mean relative-threat beta over Low neurons is further from zero
+    than the mean fear-output beta, under one reading; the signs are reported. At the
     1.00 assignment uncertainty and danger share a value; the fit is run as is.
 - id: fig4a-low-025-better-than-000
   statement: For Low firing neurons, relative threat signaling was better captured by the actual
@@ -627,8 +635,8 @@ claims:
   - fig4a-low-rt-over-fo
   criterion: Repeated measures ANOVA on betas of fig4a-low-rt-over-fo, assignment (0.00, 0.25) x
     regressor (fear output, relative threat) x interval (14 bins of 1 s). Reproduced when the
-    three-way interaction has p < 0.05 and the mean cue relative-threat beta is more negative at
-    0.25 than at 0.00, under one reading of O2 and O3.
+    three-way interaction has p < 0.05 and the mean cue relative-threat beta is further from zero
+    at 0.25 than at 0.00, under one reading of O2 and O3.
 - id: fig4a-low-025-similar-050
   statement: For Low firing neurons, relative threat signaling of the actual probability (0.25)
     was similar to that of the midpoint probability (0.50); ANOVA found no assignment x regressor
@@ -766,9 +774,9 @@ claims:
   - kmeans-three-clusters
   - fig1f-suppression-cue-effect
   criterion: As fig4a-low-rt-over-fo and fig4a-low-025-better-than-000, on the Intermediate
-    firing neurons. Reproduced when the mean cue relative-threat beta is negative and further
-    from zero than the fear-output beta at every assignment, the three-way interaction has p <
-    0.05, and the 0.25 relative-threat beta is more negative than the 0.00 one, under one reading.
+    firing neurons. Reproduced when the mean cue relative-threat beta is further from zero than
+    the fear-output beta at every assignment, the three-way interaction has p < 0.05, and the
+    0.25 relative-threat beta is further from zero than the 0.00 one, under one reading.
 - id: fig4e-int-025-similar-050
   statement: For Intermediate firing neurons, ANOVA for 0.25 and 0.50 betas found no assignment x
     regressor x interval interaction.
@@ -984,7 +992,7 @@ claims:
   statement: Across Low firing neurons, larger reward firing increases went with larger firing
     decreases to danger and to uncertainty (negative correlations), with no relationship between
     reward and safety firing.
-  source: Results, Low firing neurons show opposing responses to threat and reward, paragraph 4;
+  source: Results, Low firing neurons show opposing responses to threat and reward, paragraph 3;
     Figure 5d to 5f
   quote: Low firing neurons showing greater reward firing increases, showed greater danger firing
     decreases ( R 2 = 0.08, p = 0.01; Fig. 5d ). Reward and uncertainty firing were also negatively
@@ -1024,7 +1032,7 @@ claims:
 - id: fig5-low-fisher-comparisons
   statement: In Low firing neurons the danger-reward and uncertainty-reward correlations did not
     differ, while the uncertainty-reward and safety-reward correlations did.
-  source: Results, Low firing neurons show opposing responses to threat and reward, paragraph 4
+  source: Results, Low firing neurons show opposing responses to threat and reward, paragraph 3
   quote: equivalent danger-reward and uncertainty-reward correlations were observed in Low firing
     neurons (Fisher r-to-z transformation, Z = 0.74, p = 0.46), but uncertainty-reward and
     safety-reward correlations significantly differed (Fisher r-to-z transformation, Z = 2.96, p =
@@ -1057,7 +1065,7 @@ claims:
 - id: fig5g-i-intermediate-no-reward-cue-correlation
   statement: Intermediate firing neurons showed no cue-reward firing relationships, and their
     correlations did not differ from one another.
-  source: Results, Low firing neurons show opposing responses to threat and reward, paragraph 4;
+  source: Results, Low firing neurons show opposing responses to threat and reward, paragraph 3;
     Figure 5g to 5i
   quote: No cue-reward firing relationships were observed for Intermediate firing neurons (Fig. 5g-i
     ), and these correlations did not differ from one another (all Z < 1, all p > 0.3
@@ -1366,8 +1374,8 @@ claims:
   - quantity: R2, reward against safety
     value: 0.08
     tolerance: 0.008
-  criterion: Reward value as O5; cue value the first 250 ms bin of cue minus the bin before cue
-    onset (Figure 6g legend); Pearson correlation over cue-excited neurons. Reproduced when all
+  criterion: Reward value as O5; cue value the first 250 ms bin of cue (Figure 6g legend) minus
+    pre as read in O5; Pearson correlation over cue-excited neurons. Reproduced when all
     three r are positive with p < 0.05 under one reading; partially reproduced when that holds
     but an R2 is outside tolerance.
 - id: fig6-excited-peak-cue-vs-reward
@@ -1402,3 +1410,22 @@ claims:
   criterion: Per neuron, the cue peak value minus the reward peak value of
     fig6g-excited-reward-cue-correlations, bootstrap over neurons. Reproduced when only the danger
     interval excludes zero and the means are within tolerance, under one reading of O4 and O5.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - recorded-units and cue-responsive-screen, source changed from Results paragraph 3 to paragraph 2; the 435 and 257 counts are in the second paragraph ("Electrode placement was confirmed..."), legends not counted, as elsewhere in the file.
+  - fig1f-suppression-cue-effect and fig1f-differential-suppression, source changed from paragraph 4 to paragraph 3 for the same reason.
+  - fig5d-f-low-reward-cue-correlations, fig5-low-fisher-comparisons and fig5g-i-intermediate-no-reward-cue-correlation, source changed from paragraph 4 to paragraph 3 of their section ("Not only did Low firing neurons..."), the third paragraph when legends are not counted.
+  - fig4a-low-rt-over-fo, statement and criterion required more negative or below-zero relative-threat betas; the paper defines strength as distance from zero (Methods, Single-unit linear regression) and does not state a sign for this finding, so the criterion now compares distance from zero and reports the signs.
+  - fig4a-low-025-better-than-000 and fig4e-int-025-better-than-000, "better captured" was tested as more negative and fig4e also required negative betas; both now test distance from zero, as the paper defines strength.
+  - kmeans-three-clusters, the spike set for CV and skewness was fixed as the whole session with baselines as a variant; the Methods leave it open and it can change the clusters, so both are now named as readings.
+  - supp5-low-cue-correlations, the reading of "commonly" as two of three periods is not from the text read; the criterion now says so and that the outcome rests on it.
+  - supp6-low-nosepoke-pauses (and supp9 through it), the 10 s and 5 s pause lengths are not from the text read; the criterion now says so and that the outcome rests on it.
+  - header O5 and fig6g-excited-reward-cue-correlations, the cue "pre" was given as the 250 ms bin before cue onset and credited to the Figure 6g legend; the legends say only "[peak - pre]" or "[trough - pre]", so it is now marked as an assumption by analogy with the reward window.
+  - header O6, completed the list of degrees of freedom that imply fewer neurons than the group (ANCOVAs, regression ANOVAs), so the author sees each.
+  - Not settled. The Supplementary Information (Supplementary Figs. 1 to 10) was not supplied; claims supp5, supp6, supp8 and supp9 rest on unread figures, and the pause definition and correlation panels should be checked against it when it is available.
+  - Not settled. The checker reports 1.20e-7, 1.50e-7 (kmeans-three-clusters) and 8.20e-4 (fig6g) as not found; all three are printed in the paper (Results, Diversity paragraph 2; Cue-excited neurons increase firing to reward), and the checker misses them only because it drops trailing zeros.
+  - Not settled. The paper code (http://mcdannaldlab.org/resources) could not be read, so the readings named in O1 to O7 stay open.
