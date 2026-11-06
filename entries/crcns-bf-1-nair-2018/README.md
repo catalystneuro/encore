@@ -13,7 +13,7 @@ behaviour scoring of the paper are not in it.
 | Arena gamma unrelated to movement (Fig. 3B) | Reproduced |
 | Home-cage gamma increases with movement (Fig. 3B) | Not reproduced |
 | Suppression holds for movement-matched epochs (Fig. 3B) | Not reproduced |
-| Home cage above both arena sessions, second session 5.6% above the first (Fig. 3C) | Partially reproduced (session order not in the data set) |
+| Home cage above both arena sessions, second session 5.6% above the first (Fig. 3C) | Partially reproduced (by paired t tests, not Tukey; session order not in the data set) |
 | Arena gamma rises with time in the arena, r = 0.72 (Fig. 3D) | Partially reproduced |
 | Delta, beta higher and theta lower in the home cage (Fig. S2) | Reproduced |
 | Theta and gamma power unimodal within each condition (Fig. S3) | Reproduced |
@@ -29,7 +29,7 @@ data set gives one BF signal per rat, so tests run over six rats where the paper
 hemispheres. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-bf-1-nair-2018-01.yaml`](../../attempts/crcns-bf-1-nair-2018-01.yaml).
 
-- `reproduce_nair_2018.ipynb`: the analysis. It takes under a minute, streaming the 22 MB archive.
+- `reproduce_nair_2018.ipynb`: the analysis. It streams the 22 MB archive from the CRCNS bucket.
 - `bflfp.py`: streaming the archive from the CRCNS bucket, band powers per segment, the SI's
   artifact rule, 10-s epochs and the excursion detection. Other notebooks on this data set can
   import it.
