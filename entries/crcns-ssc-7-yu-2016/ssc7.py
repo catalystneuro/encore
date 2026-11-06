@@ -23,7 +23,8 @@ Where each parameter comes from:
 - Whisking onsets: the end of a nonwhisking epoch followed by a rise of the mean amplitude of at
   least 2 degrees, no touch within 250 ms; the rise is measured over the 250 ms after the onset
   (reading a) or 100 ms (reading b) against the last 100 ms of the epoch (M-EPOCH; the reference
-  window is an assumption, the shortest nonwhisking epoch).
+  window is an assumption, the shortest nonwhisking epoch). In the onset Vm windows, Vm after a
+  later touch is set to NaN (M-EPOCH).
 - Touches: principal-whisker touch onsets and offsets as stored in the files; intertouch interval
   from the previous offset in the same trial (the first touch of a trial has no previous offset
   and is kept, as ``compute_touchNWB.m`` keeps it, where its ITI is its onset time); touches with
@@ -31,7 +32,13 @@ Where each parameter comes from:
 - Spikes per touch, latency (M-TOUCH, M-LAT): as the Methods, Data analysis, paragraph 1.
 - Spike removal and threshold (M-VM): threshold where dVm/dt exceeds 3 s.d. of the trial's
   dVm/dt, searched back from each stored spike time; Vm replaced by a line from 1 ms before to
-  4 ms after the threshold time (Methods, Data analysis, paragraph 1).
+  4 ms after the threshold time (Methods, Data analysis, paragraph 1). The per-trial threshold is
+  a line fitted to thresholds against trial number (M-VM); where all thresholds fall in one trial
+  the line is not defined and their mean is used. Variants for distance to threshold: the line
+  held at its end values outside the trials with spikes, and one mean threshold per neuron.
+- Drifting whole-cell trials: trials whose median Vm lies more than 20 mV from the neuron's
+  median are left out of the Vm measures (``stable_trials``; an assumption after the Methods'
+  rejection of recordings "with slow baseline drift (>20 mV)").
 - Phase tuning (M-PHASE): equal phase bins over -pi to pi (8 or 16), sinusoid fit by least
   squares; coupling strength half the peak-to-trough of the fit.
 - Spectra (M-SPEC): multitaper with 3 Slepian tapers (NW = 2, i.e. 4 Hz resolution on 500 ms),
@@ -275,6 +282,18 @@ def reduce_file(folder, fname, h):
                 n2 = len(v) // step
                 v = v[: n2 * step].reshape(n2, step).mean(1)
             vm.append(v)
+    # Every ephys trial, including any beyond the whisker trials (those are not paired with a
+    # whisker trial and are not analysed): start time, and for whole-cell files the trial's median
+    # Vm and largest injected current, so that depolarized trials can be found.
+    e_med = np.full(n_e, np.nan)
+    e_cur = np.full(n_e, np.nan)
+    if vm is not None:
+        for i in range(n_e):
+            s, e = es[i], ee[i]
+            e_med[i] = float(np.median(acq[vkey]["data"][s:e]))
+            if cur is not None:
+                e_cur[i] = float(np.max(np.abs(cur[s:e])))
+    c["ephys_trials"] = dict(start=te[es], median_vm=e_med, max_abs_current=e_cur)
     c["meta"] = dict(meta, unit_description=udesc, kind=folder, ephys_fs=ephys_fs,
                      n_ephys_trials=n_e, vm_key=vkey, lasers=sites, opto_sites=ex_lambda,
                      location=_get(h, "general/intracellular_ephys/whole_cell_1/location", ""))
@@ -287,6 +306,32 @@ def reduce_file(folder, fname, h):
     c["vm"] = vm
     c["vm_t0"] = vm_t0
     return [c]
+
+
+CELL_LIST_URL = BUCKET + "docs/yu_gutnisky_CellList.xlsx"
+
+
+def read_cell_list():
+    """The data set's cell list (sheet AllCellsReported): one row per cell with its section
+    heading (such as "Whole-cell units" or "Extracellular units"), depth, mouse and mouse type.
+    Streamed from the bucket, not saved."""
+    import pandas as pd
+    with fsspec.open(CELL_LIST_URL).open() as f:
+        raw = pd.read_excel(io.BytesIO(f.read()), sheet_name="AllCellsReported", header=None)
+    rows, section = [], ""
+    for r in raw.itertuples(index=False):
+        name = r[0]
+        if not isinstance(name, str) and not np.isfinite(name if isinstance(name, float) else 0):
+            continue
+        name = str(name).strip()
+        if name == "cell" or name == "nan":
+            continue
+        if r[3] is None or (isinstance(r[3], float) and not np.isfinite(r[3])):
+            if not name.startswith("ANM"):
+                section = name.rstrip(":")
+                continue
+        rows.append(dict(section=section, cell=name, depth=r[1], mouse=r[3], mouse_type=r[4]))
+    return pd.DataFrame(rows)
 
 
 def load(folders=None, verbose=True):
@@ -560,8 +605,11 @@ def spikes_per_touch(spk, tt, kind="cortex5"):
     return np.mean(n_post) - k * np.mean(n_pre)
 
 
-def spike_latency(psth_counts, n_touch, pre=0.1):
-    """M-LAT on a 1 ms PSTH (counts summed over touches). Returns latency ms or nan (excluded)."""
+def spike_latency(psth_counts, n_touch, pre=0.1, centre=False):
+    """M-LAT on a 1 ms PSTH (counts summed over touches). Returns latency ms or nan (excluded).
+
+    The latency is the left edge of the first bin after the crossing; with ``centre`` it is the
+    bin's centre (0.5 ms later), a variant: the paper does not say which edge it reports."""
     rate = psth_counts / n_touch * 1000.0
     z = int(round(pre * 1000))
     if rate[z:z + 100].max() < 10:
@@ -573,7 +621,7 @@ def spike_latency(psth_counts, n_touch, pre=0.1):
     k = np.flatnonzero(post > thr)
     if len(k) == 0:
         return np.nan
-    return float(k[0] + 1)
+    return float(k[0] + 1) + (0.5 if centre else 0.0)
 
 
 def response_duration(psth_counts, n_touch, pre=0.1):
@@ -646,14 +694,39 @@ def prep_vm(c):
         thr_trial.append(np.full(len(tv), i))
     tv = np.concatenate(thr_all) if thr_all else np.array([])
     tr = np.concatenate(thr_trial) if thr_trial else np.array([])
-    if len(tv) >= 2:
+    n = len(c["vm"])
+    if len(tv) >= 2 and len(np.unique(tr)) >= 2:
         p = np.polyfit(tr, tv, 1)
-        line = np.polyval(p, np.arange(len(c["vm"])))
-    elif len(tv) == 1:
-        line = np.full(len(c["vm"]), tv[0])
+        line = np.polyval(p, np.arange(n))
+        # Variant: the line is used only over the trials it was fitted on, and held at its end
+        # values before the first and after the last trial with a spike (an assumption; the
+        # Methods do not say how the line is used far from any spike).
+        clamped = np.polyval(p, np.clip(np.arange(n), tr.min(), tr.max()))
+        slope = float(p[0])
+    elif len(tv) >= 1:
+        line = clamped = np.full(n, float(np.mean(tv)))
+        slope = 0.0
     else:
-        line = np.full(len(c["vm"]), -42.0)
-    return dict(vm=vm_nospk, thr=tv, thr_trial=tr, thr_line=line)
+        line = clamped = np.full(n, -42.0)
+        slope = np.nan
+    const = np.full(n, float(np.mean(tv)) if len(tv) else -42.0)  # variant: one threshold per neuron
+    return dict(vm=vm_nospk, thr=tv, thr_trial=tr, thr_line=line, thr_clamped=clamped, thr_const=const,
+                thr_slope=slope, thr_trial_range=(int(tr.min()), int(tr.max())) if len(tr) else (-1, -1))
+
+
+def stable_trials(c, max_dev=20.0):
+    """Whole-cell trials whose median Vm lies within `max_dev` mV of the median over the neuron's
+    trials. The Methods reject depolarized recordings "with slow baseline drift (>20 mV)" (Barrel
+    cortex recordings, paragraph 3); the same 20 mV is applied here per trial, to leave out trials
+    far from the neuron's usual Vm (such as the first trials of JY1139, near 0 mV while it fires).
+    This is an assumption: the paper gives no trial-level rule."""
+    if c["vm"] is None:
+        return np.ones(c["meta"]["n_trials"], bool)
+    med = np.array([float(np.median(v)) if len(v) else np.nan for v in c["vm"]])
+    ok = np.abs(med - np.nanmedian(med)) <= max_dev
+    out = np.zeros(c["meta"]["n_trials"], bool)
+    out[: len(ok)] = ok
+    return out
 
 
 def vm_at(c, vmn, i, t_whisker_s):
@@ -727,21 +800,32 @@ def epoch_vm(c, vmn, ep, kind, trials=None):
     return np.concatenate(out) if out else np.array([])
 
 
-def onset_vm_change(c, vmn, ep, which="onsets"):
-    """Per onset: mean Vm 100-300 ms after minus mean 0-200 ms before (Supplementary Fig. 4)."""
+def onset_vm_change(c, vmn, ep, which="onsets", tch=None):
+    """Per onset: mean Vm 100-300 ms after minus mean 0-200 ms before (Supplementary Fig. 4).
+
+    Vm after a later touch is set to NaN (M-EPOCH, "data after a later touch are set to NaN");
+    `tch` is the per-trial list of (onsets, offsets) from ``touches``. An onset whose 100 to
+    300 ms window is wholly after a touch is left out."""
     out = []
     for i, d in ep.items():
         if i >= len(vmn):
             continue
         v = vmn[i]
+        on = tch[i][0] if tch is not None else np.array([])
         for e in d[which]:
             k = vm_at(c, vmn, i, e / 1000)
             a, b = k - int(0.2 * VM_FS), k + int(0.3 * VM_FS)
             if a < 0 or b > len(v):
                 continue
             pre = v[a:k].mean()
-            post = v[k + int(0.1 * VM_FS):b].mean()
-            out.append((pre, post))
+            post = v[k + int(0.1 * VM_FS):b].astype(float)
+            later = on[on * 1000 > e]
+            if len(later):
+                kt = vm_at(c, vmn, i, later[0]) - (k + int(0.1 * VM_FS))
+                if kt <= 0:
+                    continue
+                post[kt:] = np.nan
+            out.append((pre, np.nanmean(post)))
     return np.array(out).reshape(-1, 2)
 
 
@@ -929,16 +1013,21 @@ def spike_summary(c, trials=None, margin="a", rise=0.250, min_iti=0.025, nbins=(
     return out
 
 
-def vm_summary(c, trials=None, margin="a", min_iti=0.025):
-    """Vm measures of one whole-cell neuron (M-VM, M-LAT, M-DTT, M-PHASE), control trials."""
+def vm_summary(c, trials=None, margin="a", min_iti=0.025, drop_drift=True):
+    """Vm measures of one whole-cell neuron (M-VM, M-LAT, M-DTT, M-PHASE), control trials.
+
+    With ``drop_drift`` (the default), trials far from the neuron's usual Vm are left out
+    (``stable_trials``)."""
     if trials is None:
         trials = control_trials(c)
     trials = trials & (np.arange(len(trials)) < len(c["vm"]))
+    if drop_drift:
+        trials = trials & stable_trials(c)
     P = prep_vm(c)
     vmn = P["vm"]
     ep = cell_epochs(c, trials, margin)
     out = dict(name=cell_name(c), group=group(c), n_trials=int(trials.sum()),
-               n_spikes_thr=len(P["thr"]))
+               n_spikes_thr=len(P["thr"]), thr_slope=P["thr_slope"], thr_trial_range=P["thr_trial_range"])
     out["thr_mean"] = float(np.mean(P["thr"])) if len(P["thr"]) else np.nan
     nw = epoch_vm(c, vmn, ep, "nonw")
     wv = epoch_vm(c, vmn, ep, "whisk")
@@ -961,8 +1050,8 @@ def vm_summary(c, trials=None, margin="a", min_iti=0.025):
     out["rest_b"] = float(np.median(np.concatenate(rest_b))) if rest_b else np.nan
     out["whisk_mean"] = float(np.mean(wv)) if len(wv) else np.nan
     out["wdep_b"] = out["whisk_mean"] - out["rest_a"]
-    oc = onset_vm_change(c, vmn, ep, "onsets")
-    ocb = onset_vm_change(c, vmn, ep, "onsets_b")
+    oc = onset_vm_change(c, vmn, ep, "onsets", T)
+    ocb = onset_vm_change(c, vmn, ep, "onsets_b", T)
     out["onset_pre_post"] = oc
     out["wdep_a"] = float(np.mean(oc[:, 1] - oc[:, 0])) if len(oc) else np.nan
     out["wdep_a_sd"] = float(np.std(oc[:, 1] - oc[:, 0])) if len(oc) else np.nan
@@ -990,11 +1079,15 @@ def vm_summary(c, trials=None, margin="a", min_iti=0.025):
             out[k] = np.nan
     # distance to threshold (M-DTT): threshold of the trial minus Vm, 10th percentile
     spk = spikes_by_trial(c)
-    for rem in ("a", "b"):
+    # Threshold readings: "line", the per-trial line of M-VM; "clamp", the line held at its end
+    # values outside the trials with spikes; "const", the neuron's mean threshold (variants).
+    for rem, tk in [(r, t) for t in ("line", "clamp", "const") for r in ("a", "b")]:
+        key = {"line": "thr_line", "clamp": "thr_clamped", "const": "thr_const"}[tk]
+        sfx = rem if tk == "line" else f"{rem}_{tk}"
         dd = {"nonw": [], "whisk": [], "touch": []}
         for i, d in ep.items():
             v = vmn[i] if rem == "a" else c["vm"][i]
-            th = P["thr_line"][i]
+            th = P[key][i]
             for kind in ("nonw", "whisk"):
                 for a, b in d[kind]:
                     ka, kb = vm_at(c, vmn, i, a / 1000), vm_at(c, vmn, i, b / 1000)
@@ -1005,9 +1098,9 @@ def vm_summary(c, trials=None, margin="a", min_iti=0.025):
                 if ka >= 0 and kb <= len(v):
                     dd["touch"].append(th - v[ka:kb])
         p10 = {k: (np.percentile(np.concatenate(x), 10) if x else np.nan) for k, x in dd.items()}
-        out[f"dtt_{rem}"] = p10
-        out[f"shift_whisk_{rem}"] = p10["nonw"] - p10["whisk"]
-        out[f"shift_touch_{rem}"] = p10["nonw"] - p10["touch"]
+        out[f"dtt_{sfx}"] = p10
+        out[f"shift_whisk_{sfx}"] = p10["nonw"] - p10["whisk"]
+        out[f"shift_touch_{sfx}"] = p10["nonw"] - p10["touch"]
     ph, y = vm_phase_data(c, vmn, ep)
     for nb in (8, 16):
         out[f"vphase{nb}"] = phase_fit(ph, y, nb) if len(ph) > 100 else (np.nan, np.nan, np.nan, None)

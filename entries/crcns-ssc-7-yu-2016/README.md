@@ -6,7 +6,7 @@ of VPM units, L4 excitatory neurons and L4 fast-spiking interneurons in mice tha
 with their whiskers. It also holds whisker tracking, touch annotations, licks and optogenetic
 trials, and recordings after infraorbital nerve (ION) transection. The notebook streams the data
 set's single archive, `data.tar.gz`, once from the public bucket and reduces each NWB file in
-memory. It takes about ten minutes.
+memory. It takes about twenty minutes, most of it streaming.
 
 | Claim | Outcome |
 |---|---|
@@ -18,12 +18,12 @@ memory. It takes about ten minutes.
 | VPM rate is modulated by whisking phase | Reproduced |
 | VPM rate and whisking amplitude co-vary across trials | Reproduced |
 | Example neuron E No. 1 (rest, threshold, touch PSP, whisking) | Reproduced |
-| Example neurons E No. 24 and 32, whisking Vm change | Partially reproduced |
+| Example neurons E No. 24 and 32, whisking Vm change | Reproduced |
 | L4 E resting Vm, -76 to -45 mV | Reproduced |
 | L4 E touch PSP latency and amplitude | Partially reproduced |
 | L4 E whisking Vm change, 1.2 mV | Reproduced |
 | Touch moves L4 E Vm closer to threshold than whisking | Partially reproduced |
-| L4 E effective reversal potentials of touch and whisking | Partially reproduced |
+| L4 E effective reversal potentials of touch and whisking | Reproduced |
 | Whisking raises L4 E Vm fluctuations above 10 Hz | Reproduced |
 | Fig. 3: inhibition at rest and depolarized (two claims) | Blocked: data missing |
 | FS baseline rate | Reproduced |
@@ -42,7 +42,7 @@ memory. It takes about ten minutes.
 | Rabies tracing labels VPM more than POM | Blocked: data missing |
 | After ION cut: performance at chance | Reproduced |
 | After ION cut: no L4 E touch PSP | Not reproduced |
-| After ION cut: smaller L4 E whisking depolarization | Reproduced |
+| After ION cut: smaller L4 E whisking depolarization | Partially reproduced |
 | After ION cut: L4 E phase locking abolished | Reproduced |
 | After ION cut: no change of L4 E Vm spectra with whisking | Reproduced |
 | After ION cut: no FS touch spikes | Reproduced |
@@ -53,7 +53,7 @@ memory. It takes about ten minutes.
 | PV suppression raises L4 E rates | Partially reproduced |
 | With PV suppressed, L4 E neurons follow whisking | Reproduced |
 | PV suppression and touch-evoked spikes (no mean change) | Not reproduced |
-| PV suppression and touch detection (AUC) | Reproduced |
+| PV suppression and touch detection (AUC) | Not reproduced |
 | AUC groups and their rates | Not reproduced |
 | eNpHR inhibits 3 of 4 PV neurons, with its latencies | Partially reproduced |
 | PV suppression raises false alarms in most mice | Not reproduced |
@@ -62,6 +62,7 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 Several outcomes rest on assumptions, recorded in the attempt: which tracked whisker series is the
-principal whisker (the files do not say), and how the light-onset latency is read. The data set
+principal whisker (the files do not say), how the light-onset latency is read, and whether the
+first touch of a trial tagged passive enters the touch-detection (AUC) analysis. The data set
 mixes time units in its cortical whisker timestamps, and it lacks the thalamic multiunit
 recordings, the rabies tracing and the recordings with depolarizing current injection.
