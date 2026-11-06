@@ -10,10 +10,12 @@
 # Figures 1 to 13 and Tables 1 to 4. The paper has no supplement. The PDF could not be opened as
 # images in this run (no renderer installed), so values printed only inside figures (the medians of
 # Fig. 4B, 5C, 5Db, 6B and C, 7, 10, 11B and 12) were not read; claims on those figures rest on the
-# Results and the legends. In the extracted Table 4 the columns for the connection type specific
-# parameters (tau_r, tau_e, a_e, k_e) are empty; their values are taken from the Figure 11 legend.
-# In the CCK+BC to PC row of Table 4 the three values given with quartiles (0.15, 10.9, 499) are read
-# as U0, tau_f and Imax, since tau_r is fitted per type (12.9 s, Fig. 11 legend) and has no quartiles.
+# Results and the legends. The extracted Table 4 holds every column: for the three PV+ types U0,
+# tau_r (1080, 1620, 1700 ms), tau_e (23.7, 13.5, 13.6 ms), a_e, k_e and Imax; for CCK+BC to PC U0
+# 0.15 (0.11, 0.18), tau_r 71 ms, tau_f 10.9 (7.2, 53.5) ms and Imax 499 (252, 708) pA. Table 4 gives
+# the best model of each type; the Figure 11 legend gives the type parameters of a fit that includes
+# use-dependent replenishment for all four types, and differs from Table 4 for CCK+BC to PC (tau_r
+# 12.9 s against 71 ms) and for PV+BC to PV+BC tau_e (2.37 against 23.7 ms).
 #
 # Code. The paper links no code. Its Methods name in-house and third-party programs (Stimulog, EVAN,
 # MATLAB 7.0.4 and Delphi 6.0 scripts, a feature extraction script by M. Rozsa modified by S. Kali,
@@ -74,7 +76,9 @@
 # M6. Tests (Methods, Statistical analysis): Kruskal-Wallis across groups, post hoc Mann-Whitney U
 #   with Bonferroni correction; the number of comparisons is not given, so the factor is the number of
 #   pairwise comparisons among the groups of that panel (3 for three groups); Pearson chi-squared for
-#   connection probabilities. A threshold of p < 0.05 unless the claim states another.
+#   connection probabilities. A threshold of p < 0.05 unless the claim states another. The
+#   chi-squared p-values 9.42e-4, 0.0175 and 0.0181 are those of a 2 x 2 Pearson test without Yates
+#   correction on the Figure 3A counts (checked by hand), so the chi-squared tests are run without it.
 # M7. Tolerances. Values reported as median (first quartile, third quartile) use the paper's stated
 #   spread: the tolerance is the distance from the median to the nearer quartile, so the value holds
 #   when it falls within the reported interquartile range on that side. Other values use 10%.
@@ -124,7 +128,8 @@ claims:
     unit: percent
   criterion: As fig2b-pv-cck-clusters, on the 26 PV+ cells alone, with the same readings. Reproduced
     when under one reading the two-cluster cut matches the anatomical PV+BC/AAC labels for 75 to 91%
-    of cells (83% within 10%) with each cluster holding a majority of one type.
+    of cells (83% within 10%) with each cluster holding a majority of one type. The paper's counts
+    give 21 of 26 (80.8%), not 83%; both lie inside the range.
   depends_on:
   - fig2b-pv-cck-clusters
 - id: cck-no-subclusters
@@ -203,6 +208,12 @@ claims:
     resistance, rheobase current, maximal AP number, AP width, and duration and amplitude of AHP
     (Table 2) (all P < 0.01, Mann-Whitney U test)
   statistics:
+  - about: input resistance
+    test: Mann-Whitney U test
+    p: 1.0e-4
+  - about: rheobase current
+    test: Mann-Whitney U test
+    p: 6.0e-4
   - about: maximal AP number for any input current
     test: Mann-Whitney U test
     p: 0.001
@@ -276,7 +287,11 @@ claims:
     presynaptic axon was preserved (Results, same section, paragraph 3). Counts as in Figure 3A (22/44,
     20/30, 2/4, 0/4, 0/6). Reproduced when the counts of tested and connected pairs give the
     expected values and a Pearson chi-squared test of connected against unconnected, PV+BC against
-    AAC as presynaptic cell, gives p < 0.001. Needs the record of unconnected tested pairs.
+    AAC as presynaptic cell, gives p < 0.001. Needs the record of unconnected tested pairs. The
+    paper does not give the table behind P = 6.21e-4; PV+BC (22 of 34) against AAC (0 of 10) as
+    presynaptic cell gives 3.2e-4 without Yates correction and 1.2e-3 with it, so neither reproduces
+    the printed value. Both readings are shown, and the claim is judged at p < 0.001 without the
+    correction (M6).
 - id: fig3-cp-cck
   statement: Connection probability among CCK+ cells is 28% (14 of 50), with frequent bidirectional
     connections, but only within CCK+BCs (42.85%) and within CCK+DTIs (45.45%); none between the two
@@ -489,7 +504,8 @@ claims:
     and over AAC pairs, rises with the interval (Spearman correlation of ratio with interval above 0
     with p < 0.05 over the pair by interval values), below 1 at 50 ms. Complex behaviour, the CCK+BC
     median ratio is not monotonic in interval (at least one rise followed by a fall of more than 10%
-    of the ratio). Difference, two-sided Mann-Whitney U test of PV+BC against CCK+BC at each
+    of the ratio). The paper names no test for either shape; the Spearman test, the 50 ms condition
+    and the 10% fall are standard choices, not the paper's. Difference, two-sided Mann-Whitney U test of PV+BC against CCK+BC at each
     interval; the paper gives no correction (readings uncorrected and Bonferroni over 7 intervals).
     Reproduced when all three parts hold under one reading of M4, with at least one interval
     significant.
@@ -507,8 +523,12 @@ claims:
     frequency and for the EPI protocol, for each of the two types (a value up to 1.05 at a single AP
     is allowed as noise, a standard choice). More prominent with frequency, the median over pairs of
     the mean relative amplitude of APs 2 to 10 falls with frequency (Spearman correlation below 0 with
-    p < 0.05 over the pair by frequency values). Reproduced when both hold for both types under one
-    reading of M4.
+    p < 0.05 over the pair by frequency values; the paper names no test, so this is a standard
+    choice). Synchronous release, no pair of either type shows an onset of asynchronous release
+    under EPI by the onset rule of fig6-cckbc-async-onset (Results, same section, paragraph 3, "The
+    evoked IPSCs were synchronous to APs, even during the high frequency EPI stimulation pattern").
+    Reproduced when all three hold for both types under one reading of M4; partially reproduced when
+    the two depression parts hold and synchrony fails.
 - id: fig6-cckbc-pc-trains
   statement: All CCK+BC to PC pairs (n = 6) facilitate at 1 to 40 Hz; at 80 Hz and above and under
     EPI the facilitation of the 1st to 5th APs turns into depression later in the train.
@@ -819,7 +839,7 @@ claims:
   criterion: As fig6-pv-trains-depression, for PV+BC to PV+BC pairs (M4, M5). Reproduced when under
     one reading of M4 the median relative amplitude at the 10th AP is below 1 at all eight frequencies
     and the median mean relative amplitude of APs 2 to 10 falls with frequency (Spearman correlation
-    below 0, p < 0.05, over pair by frequency values).
+    below 0, p < 0.05, over pair by frequency values; a standard choice, the paper names no test).
 - id: fig9-pvbc-pvbc-transmission-probability
   statement: Between PV+BCs the transmission probability starts to fall at 80 Hz (to 0.9 at the 10th
     AP), falls by 5 to 10% at the 8th to 10th AP at 160 Hz, and lies between 0.8 and 0.9 from the 3rd
@@ -847,7 +867,9 @@ claims:
     by 10% of each bound gives 4.5 to 11 (7.75 plus or minus 3.25). The 320 Hz range 0.8 to 0.9
     widened gives 0.72 to 0.99 (0.855 plus or minus 0.135) for every AP from the 3rd to the 10th. Below 80 Hz the median is 1 at
     every AP. Reproduced when under one reading of M2 all hold and the 11th AP median is at least
-    0.95 at every frequency; partially reproduced when the 80 Hz and 320 Hz parts hold.
+    0.95 at every frequency (the paper says only that it "recovered by the time of the 11th
+    stimulation", Fig. 9B legend; 0.95 is a standard choice); partially reproduced when the 80 Hz and
+    320 Hz parts hold.
   depends_on:
   - fig9-pvbc-pvbc-depression
 - id: fig9-pvbc-pvbc-recovery-11th
@@ -889,8 +911,10 @@ claims:
     tolerance: 0
     unit: pairs of 9
   criterion: CCK+BC to CCK+BC and CCK+DTI to CCK+DTI pairs, 10-AP trains. Asynchronous release in a
-    pair is judged by the onset rule of fig6-cckbc-async-onset (both readings) at 40 Hz and above
-    (paragraph 4 places its appearance after the 5th AP at 40 and 160 Hz). Reproduced when under one
+    pair is judged by the onset rule of fig6-cckbc-async-onset (both readings) on the trains above
+    10 Hz. Which trains count is read two ways, (a) 40 Hz and above (paragraph 4 places its
+    appearance after the 5th AP at 40 and 160 Hz); (b) 20 Hz and above (Fig. 10Ac legend, "appeared
+    at frequencies higher than 10 Hz"). Reproduced when under one
     reading four pairs show none and five show it (if the data set holds a different number of pairs,
     when the fraction with asynchronous release is 45 to 66%, 5 of 9 within 10% of each count), both
     types are among each group, and every pair has a relative amplitude above 1 at some AP of the 10
@@ -964,7 +988,9 @@ claims:
     zero-phase Butterworth) is used and named. Median over pairs with asynchronous release. Reproduced
     when the median immediate charge summed over APs 5 to 10 is larger at 40 than at 10 Hz and smaller
     at 320 than at 40 Hz, and the median delayed charge rises from 10 to 160 Hz (each step not lower
-    than the previous by more than 10%) with 320 Hz within 20% of 160 Hz.
+    than the previous by more than 10%) with 320 Hz within 20% of 160 Hz. The paper gives no test or
+    margin for these trends; the sum over APs 5 to 10 and the 10% and 20% margins are standard
+    choices.
   depends_on:
   - fig10-cck-cck-heterogeneity
 - id: fig11-model-pv-udr
@@ -1005,7 +1031,9 @@ claims:
     squared. Fits started from several initial points (a standard choice). The SSE decrease is 1 minus
     SSE(UDR depressing)/SSE(TM depressing), per type. Reproduced when under one reading the three
     decreases are within tolerance, the lowest BIC is the UDR depressing model for all three types,
-    and adding facilitation to UDR lowers the SSE by less than 10%; partially reproduced when the BIC
+    and adding facilitation to UDR lowers the SSE by less than 10% (the paper says "did not lead to
+    any significant improvement" without a test; 10% is a standard choice, and the BIC of the two
+    is shown); partially reproduced when the BIC
     ranking holds and the decreases lie within 10 to 50%.
 - id: fig11-model-cck-facilitation
   statement: CCK+BC to PC connections are best fitted by a Tsodyks-Markram model with depression and
@@ -1026,11 +1054,12 @@ claims:
 - id: table4-model-parameters
   statement: The best-fitting models give per-connection medians of U0 0.31, 0.33 and 0.26 and Imax
     410, 289 and 646 pA for PV+BC to PV+BC, PV+BC to PC and AAC to PC, and for CCK+BC to PC U0 0.15,
-    tau_f 10.9 and Imax 499 pA, with type parameters tau_r 1.08, 1.62, 1.70 and 12.9 s.
+    tau_f 10.9 and Imax 499 pA, with type parameters tau_r 1.08, 1.62 and 1.70 s for the three PV+
+    types and 71 ms for CCK+BC to PC (Table 4; the Figure 11 legend gives 12.9 s for CCK+BC to PC).
   source: Table 4; Figure 11 legend
   inferred: Numbers from Table 4 and the Figure 11 legend; no sentence of the Results states them.
-    The CCK+BC column assignment (U0, tau_f, Imax) is read from the table header, as the extracted
-    text lost the empty cells.
+    Table 4 prints every column; its CCK+BC to PC row reads U0 0.15 (0.11, 0.18), tau_r 71, tau_f
+    10.9 (7.2, 53.5), Imax 499 (252, 708).
   expected:
   - quantity: U0, PV+BC to PV+BC
     value: 0.31
@@ -1077,13 +1106,16 @@ claims:
     tolerance: 0.17
     unit: s
   - quantity: tau_r, CCK+BC to PC
-    value: 12.9
-    tolerance: 1.29
-    unit: s
+    value: 71
+    tolerance: 7.1
+    unit: ms
   criterion: Fits as fig11-model-pv-udr with the best model per type (UDR depressing for the three PV+
-    types; TM depressing plus facilitating for CCK+BC to PC). The tau_r values are those of the Figure
-    11 legend, which gives them for the most comprehensive model; for the best models the extracted
-    Table 4 lost them, so tau_r is judged in the comprehensive model. Table 4 prints tau_f in ms
+    types; TM depressing plus facilitating for CCK+BC to PC), the model Table 4 reports (its legend).
+    Table 4 and the Figure 11 legend agree on tau_r for the three PV+ types; for CCK+BC to PC Table 4
+    gives 71 ms and the legend 12.9 s, the legend listing tau_e, a_e and k_e for CCK+BC as well and
+    so describing a fit with use-dependent replenishment. Readings for CCK+BC tau_r, (a) 71 ms in the
+    TM depressing plus facilitating model (Table 4, judged); (b) 12.9 s (tolerance 1.29 s) in the
+    comprehensive model (Fig. 11 legend), shown and named as a variant. Table 4 prints tau_f in ms
     while the Results say tau_f is larger for CCK+BC than for PV+ connections; the unit is taken as
     printed. Reproduced when under one reading at least 10 of the 13 values are within tolerance;
     partially reproduced when at least 6 are.
@@ -1176,6 +1208,24 @@ claims:
     0.05), rise time differs only for AAC against CCK+BC, and the amplitude and interevent interval
     tests are not significant. Needs the sIPSC recordings, which the data set is not described as
     holding.
+- id: sipsc-continuum
+  statement: In every cell type the sIPSCs form a continuum; PCA shows amplitude, rise and decay
+    strongly coupled on the first component, and clustering does not divide the events into groups.
+  source: Results, IPSCs onto interneurons are more rapid than on PCs, paragraph 5
+  quote: because PCA revealed a strong coupling among IPSC amplitude, rise and decay time values
+    (strong loading on the first component, data not shown), the IPSC population could not be divided
+    by clustering, meaning that the observed events form a continuum
+  criterion: Events as fig12-sipsc-kinetics. Per cell type, PCA on the event amplitude, 10 to 90%
+    rise time and decay time constant, then hierarchical clustering with Euclidean distance and Ward
+    linkage (the paper names "multidimensional exploratory methods" and PCA only; the clustering
+    method of its Methods, Electrophysiological characterization and clustering of cell types, is used
+    as the nearest the paper gives). Whether features are standardized is open; readings z-scored and
+    raw. Reproduced when under one reading amplitude, rise and decay all load on the first component
+    with the same sign (absolute loading above 0.4, a standard choice) and no two-cluster cut gives
+    clusters separated by more than the within-cluster spread (silhouette below 0.5, a standard
+    choice). Needs the sIPSC recordings, which the data set is not described as holding.
+  depends_on:
+  - fig12-sipsc-kinetics
 - id: decay-pc-vs-interneuron
   statement: uIPSCs from PV+BCs and CCK+BCs decay more slowly in PCs than in homologous interneurons
     (PV+BC, 7.31 against 3.17 ms; CCK+BC, 6.34 against 4.47 ms).
@@ -1229,7 +1279,7 @@ claims:
   expected:
   - quantity: recovery half-time of PV+BC to PC IPSCs, median over pairs
     value: 495.8
-    tolerance: 147.8
+    tolerance: 152.2
     unit: ms
   criterion: Recovery ratios per pair as fig5db-recovery (intervals 50 to 1200 ms). The fit is not
     given; Fig. 13B labels the value "Tau (median)" while the text calls it a half-time. Readings, (a)
@@ -1280,6 +1330,52 @@ claims:
     tolerance: 119.6
     unit: ms
   criterion: As fig13a-swr-refractory, with the amplitude of SWRs evoked by 10 ms light pulses against
-    the time since the previous spontaneous SWR. Reproduced when the median is within tolerance under
-    one reading and no SWR is evoked at intervals under 100 ms. Needs the optogenetic recordings, which
+    the time since the previous spontaneous SWR. The window with no evoked SWR is 100 ms in the
+    Results and 200 ms in the Fig. 13 legend ("absence of SWRs (full refractoriness) in the 200 ms
+    window"); both readings are run. Reproduced when the median is within tolerance under one reading
+    and no SWR is evoked within the window under one of the two. Needs the optogenetic recordings, which
     the data set is not described as holding.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header comment, the extracted Table 4 is not missing columns; it gives tau_r, tau_e, a_e and
+    k_e for the PV+ types and tau_r 71 ms for CCK+BC to PC. The comment now records the values and the
+    two conflicts with the Figure 11 legend (CCK+BC tau_r 71 ms against 12.9 s; PV+BC to PV+BC tau_e
+    23.7 against 2.37 ms).
+  - table4-model-parameters, CCK+BC tau_r changed from 12.9 s (Fig. 11 legend) to 71 ms (Table 4),
+    the value of the best model the claim tests; 12.9 s kept as a named variant for the comprehensive
+    model; inferred note and statement corrected, as the text did not lose the cells.
+  - fig13-pvbc-pc-recovery-halftime, tolerance 147.8 changed to 152.2 ms, the distance from 495.8 to
+    either quartile (343.6, 648.0) under M7.
+  - M6, recorded that the chi-squared p-values 9.42e-4, 0.0175 and 0.0181 match a 2 x 2 Pearson test
+    without Yates correction on the Figure 3A counts (14/32 against 0/18; 36/94 against 4/28; 22/44
+    against 2/14), so the tests are run that way.
+  - fig3-cp-pv, recorded that the counts give 3.2e-4 (uncorrected) or 1.2e-3 (Yates) for PV+BC against
+    AAC, not the printed 6.21e-4; both are shown.
+  - table2-pvbc-aac-features, added the Table 2 Mann-Whitney p-values for input resistance (1.0e-4)
+    and rheobase (6.0e-4), two of the features the statement names.
+  - fig2b-pvbc-aac-clusters, noted that 13 of 16 plus 8 of 10 is 80.8%, against the paper's 83%; the
+    range used covers both.
+  - fig6-pv-trains-depression, the statement's synchrony under EPI had no test; added one from the
+    onset rule of fig6-cckbc-async-onset, citing paragraph 3, and marked the Spearman test as a
+    standard choice.
+  - fig5db-recovery, fig9-pvbc-pvbc-depression, fig9-pvbc-pvbc-transmission-probability,
+    fig10bd-be-async-charge and fig11-model-pv-udr, marked the tests and margins the paper does not
+    give (Spearman, 10% falls, 0.95 at the 11th AP, 10% and 20% margins, 10% SSE gain) as standard
+    choices.
+  - fig10-cck-cck-heterogeneity, added the Fig. 10Ac legend reading (asynchronous release above 10
+    Hz, so 20 Hz and above) next to the 40 Hz and above reading of paragraph 4.
+  - fig13c-optogenetic-swr, the Fig. 13 legend gives a 200 ms window without SWRs, the Results 100
+    ms; both readings named.
+  - sipsc-continuum, new claim for the finding that sIPSCs form a continuum (Results, IPSCs onto
+    interneurons are more rapid than on PCs, paragraph 5), which had no claim.
+  - Open, the table behind the fig3-cp-pv P = 6.21e-4 is not given and none of the paper's counts
+    reproduces it.
+  - Open, fig8-cck-pairs-uipsc, Fig. 8A labels the CCK+DTI pair example n = 3 while the Results give
+    n = 4; the claim keeps the Results' n.
+  - Open, figure-only values (medians in Figs 4B, 5C, 5Db, 6B and C, 7, 10, 11B and 12) were not read,
+    as the PDF could not be rendered in this run either; the asterisk counts of Fig. 5Db, which would
+    say at how many intervals PV+BC and CCK+BC differ, remain unread.
