@@ -1,0 +1,1449 @@
+# Claims for Varela & Wilson (2020), eLife 9, e48881, on CRCNS hc-24.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-06,
+# protocol as stated in docs/protocol.md.
+#
+# Text read: the version of record, PMC7319772 (Europe PMC full-text XML, flattened), with its
+# Results, figure legends, figure supplements (Figure 1 to 7 supplements), Table 1 and Materials
+# and methods. The figure supplements are legends only; no separate supplementary file exists.
+# The PDF was not opened. The data descriptor (hc-24 data description, version 0.6) was read
+# only to know what the dataset is meant to hold; no claim comes from it.
+#
+# Code. The paper links no analysis code. Its only software link is Xclust, the manual spike
+# sorting program (github.com/wilsonlab/mwsoft64, src/xclust), which fixes no analysis choice
+# and was not read. The Data availability statement says the CRCNS deposit holds Matlab scripts
+# that illustrate the main findings; they are files of the dataset and were not read here. No
+# detail below comes from code.
+#
+# Data the paper used, as it reports them. Eight male Long-Evans rats (units from seven); 333
+# units in total; 63 thalamic units (Table 1: RE 25, VM 18, MD 7, Rh/CM 4, PT/AM 7, no histology
+# 2). Tetrodes in mPFC (prelimbic, infralimbic), midline thalamus (RE, VM, MD, PT, Rh, CM) and
+# dorsal CA1. Sessions of 1 to 5 h in a quiet 50 x 50 cm enclosure where the rat cycled between
+# sleep and waking; 32 sessions with thalamic units, 23 sessions from six rats for the LFP event
+# analyses. In six sessions (three rats, two each) the rat explored a 4-arm or 8-arm radial maze
+# for 30 min between sleep before (about 52 min) and sleep after (about 78 min); four long
+# sessions without the maze from two of these rats served as a control. Measured variables: unit
+# and multi-unit spike times (32 kHz, peak amplitudes on 4 wires), LFP at 600 Hz, head position
+# from two LEDs at 30 Hz. The CRCNS description lists three sessions from three rats (52, 69 and
+# 93 min) of rest in the enclosure, with units, multi-unit spikes and LFP per region and derived
+# data (sleep periods, K-complex, spindle trough and SWR timestamps). It mentions no maze
+# sessions. Whether the dataset holds the maze sessions is for the author to find.
+#
+# Shared methods, cited from the paper. Criteria below refer to them by label.
+# M-filter. One wire of one tetrode per region, chosen by visual inspection (Methods, LFP state
+#   and event detection, paragraph 1). Zero-phase FIR band-pass, Blackman window, order six times
+#   sampling rate over bandwidth; delta 1-4 Hz, spindle 6-14 Hz, ripple 100-275 Hz (same place).
+#   Open, which wire; readings (a) the wire the deposited derived events were detected on, when
+#   the dataset says which, (b) each candidate wire in the region, reporting all.
+# M-sleep. Non-REM sleep is time when mPFC delta power and CA1 ripple power are both above the
+#   session mean for at least 2 min (Methods, paragraph 2), power being the moving average of
+#   the squared filtered LFP (Figure 1C legend); periods confirmed by visual inspection and by
+#   velocity (Gaussian smoothing 250 ms sd, gaps under 300 ms interpolated). Open, the moving
+#   average window and the inspection. Readings (a) the sleep periods deposited as derived data,
+#   (b) the rule as written with a 1 s window, (c) the same with a 10 s window (1 s and 10 s are
+#   choices the paper does not make).
+# M-KC. Delta-filtered mPFC LFP with positive values set to 0, squared, local maxima above mean
+#   plus 4 sd (Methods, paragraph 3; Results, opening section, paragraph 1). Open, where mean and
+#   sd come from; the Methods say "the LFP in quiet states", the Results "the average LFP voltage
+#   across sleep periods". Readings (a) sleep periods, (b) all immobile time. A further reading is
+#   the deposited K-complex timestamps.
+# M-spindle. Spindle troughs; the Methods say local minima three sd below the mean of the
+#   spindle-filtered LFP, the Results an amplitude threshold of 3 sd on the squared filtered trace.
+#   Readings (a) minima of the filtered trace below mean minus 3 sd (Methods, followed first),
+#   (b) troughs where the squared trace exceeds mean plus 3 sd of the squared trace (Results),
+#   (c) the deposited spindle trough timestamps. A spindle cycle runs from the peak before to the
+#   peak after a detected trough (Results, Sparse thalamic firing, paragraph 5; Figure 6, figure
+#   supplement 1 legend). Detection is limited to sleep (Figure 1, figure supplement 3 legend).
+# M-SWR. Squared ripple-filtered CA1 LFP above mean plus k sd for at least 20 ms, events closer
+#   than 20 ms merged, timestamp at the largest absolute filtered value (Methods, paragraph 3).
+#   The Methods give k = 3, the Results k = 4 (Results, opening section, paragraph 1); readings
+#   (a) k = 3 (Methods, first), (b) k = 4, (c) the deposited SWR timestamps. Mean and sd "when
+#   the animal was quiet"; readings as in M-KC.
+# M-PETH. Peri-event histograms in 15 ms bins smoothed with a Gaussian of 15 ms sd; a null from
+#   100 shifts of all event times by a uniform random 1.5 to 2.5 s; each bin expressed in sd from
+#   the null (Methods, Correlation quantifications, paragraph 1; Figure 1, figure supplement 4).
+#   Reference times are KC and spindle troughs and SWR peaks. The plotted extent is not given; a
+#   window of plus or minus 1 s is used, a standard choice that cannot change any windowed value
+#   below. Open, whether the shift is forward only or of random sign; readings (a) forward,
+#   (b) random sign, a choice that is not expected to change the outcome.
+# M-burst. Burst spikes are groups of spikes with inter-spike intervals under 5 ms whose first
+#   spike follows at least 70 ms of silence (Results, Thalamic cells decrease, paragraph 4). The
+#   paper does not say whether the leading spike counts; following the criterion it cites (Lu et
+#   al., 1992) it does, and a burst has at least two spikes.
+# M-phase. Instantaneous phase from the Hilbert transform of the delta or spindle-filtered mPFC
+#   LFP; spike phase histograms normalized by the phase distribution of the whole filtered LFP in
+#   non-REM sleep; Rayleigh test for non-uniformity; von Mises fit for mean phase and kappa
+#   (Methods, Phase-locking analyses, paragraph 1). Phase 0 is the LFP peak, plus or minus pi the
+#   trough, positive values the descending phase (Results, Phase-locking, paragraph 1; Figure 5C
+#   legend). Open, how the normalization enters the Rayleigh test and the bin count; readings
+#   (a) Rayleigh test on the normalized histogram as binned weighted angles, 36 bins (a standard
+#   choice), (b) Rayleigh test on raw spike phases, the normalized histogram used only for the
+#   mean and kappa.
+# M-stats. Unpaired data, Mann-Whitney U; paired, Wilcoxon signed rank; Kruskal-Wallis for
+#   one-way, two-way ANOVA for two factors, F-test for variances, Tukey-Kramer for multiple
+#   pairwise comparisons (Methods, Phase-locking analyses, paragraph 2). Two-sided, alpha 0.05,
+#   unless the claim says otherwise.
+#
+# Unit samples. The paper's n changes between analyses (40 thalamic units for waking against
+# sleep, 47 for SWR histograms and autocorrelations, 31 for KC and phase analyses, 39 pairs) and
+# it does not give the rule behind each subset, beyond units on tetrodes moved at least 80 um or
+# with changed cluster profiles (Methods, Selection of electrodes and sessions). Every criterion
+# runs on all thalamic (or CA1, mPFC) units the dataset holds that meet the analysis's own stated
+# condition, and reports n. The dataset is expected to hold a subset of the paper's sessions, so
+# proportions and means are compared with the paper's values, with their tolerances, and the
+# direction of each effect is judged on the subset.
+#
+# Outside data. The paper uses none. Part of its data is the CRCNS deposit itself (hc-24,
+# doi:10.6080/K0K35RVG); the Data availability statement also names CRCNS hc-19, without
+# saying what it holds for this paper. No claim needs it.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-24
+  doi: 10.6080/K0K35RVG
+paper: doi:10.7554/elife.48881
+claims:
+- id: fig1s3-spindles-not-theta
+  statement: Spindle cycles detected in sleep carry spectral power concentrated near 10 to 15 Hz
+    in the mPFC and CA1 LFP, unlike cycles detected by the same algorithm in quiet or active
+    waking, which have theta-like profiles.
+  source: Figure 1, figure supplement 3 legend
+  quote: Spindle cycles detected during sleep are associated with spectral power concentrated in
+    the 10–15 Hz band, suggestive of spindle (and not theta) detection
+  criterion: Spindle troughs by M-spindle, in sleep (M-sleep) and, separately, in waking time
+    outside sleep. A wavelet scalogram of the mPFC and CA1 LFP averaged around troughs (plus or
+    minus 0.5 s; Morlet wavelet, a standard choice, as the paper names no wavelet). Reproduced
+    when the sleep trough-triggered mPFC scalogram peaks between 10 and 15 Hz and the waking
+    CA1 scalogram peaks at a lower frequency than the sleep one.
+- id: fig2-swr-phase-delta-spindle
+  statement: CA1 SWRs are phase-locked to the mPFC delta peak (circular mean -0.04 rad) and to
+    the trough and ascending phase of mPFC spindles (circular mean -1.72 rad).
+  source: Results, opening section, paragraph 4; Figure 2B; Figure 2, figure supplement 1
+  quote: SWRs preferentially occurred following and preceding KCs, phase-locked to the peaks of
+    the delta-filtered LFP, and to the troughs and ascending phase of spindle cycles (circular
+    mean and standard deviation of delta phase at the time of SWRs = −0.04 ± 0.43 rad; spindle
+    phase = −1.72 ± 0.93 rad; n = 23 sessions, six rats
+  expected:
+  - quantity: circular mean over sessions of the delta phase at SWRs
+    value: -0.04
+    tolerance: 0.43
+    unit: rad
+  - quantity: circular mean over sessions of the spindle phase at SWRs
+    value: -1.72
+    tolerance: 0.93
+    unit: rad
+  criterion: SWRs by M-SWR in M-sleep; phases by M-phase. Per session the circular mean of the
+    normalized phase distribution at SWR times; across sessions the circular mean and circular
+    sd. Tolerances are the paper's circular sd. Reproduced when both means fall within
+    tolerance and the per-session Rayleigh test is significant in the majority of sessions.
+- id: fig2c-swr-around-kc
+  statement: SWR probability rises within about 250 ms before and after mPFC K-complexes (4.65
+    sd at 208 ms before, 3.02 sd at 267 ms after), with its minimum about 10 ms after the KC.
+  source: Results, Thalamic rebound following the down-state, paragraph 2; Figure 2C
+  quote: SWR probability increased within the 250 ms around mPFC KCs (4.65 sd at 208.15 ± 90 ms
+    before KCs, and 3.02 sd at 266.85 ± 100 ms after KCs; n = 23 sessions). This indicates a
+    delta modulated increase in SWR probability in CA1, with the minimum rate of ripples
+    following briefly after the trough of neocortical activity (10.33 ± 5.88 ms)
+  expected:
+  - quantity: peak of the peri-KC SWR histogram before KCs
+    value: 4.65
+    tolerance: 0.465
+    unit: sd from null
+  - quantity: time of that peak before KCs
+    value: 208.15
+    tolerance: 90
+    unit: ms
+  - quantity: peak of the peri-KC SWR histogram after KCs
+    value: 3.02
+    tolerance: 0.302
+    unit: sd from null
+  - quantity: time of that peak after KCs
+    value: 266.85
+    tolerance: 100
+    unit: ms
+  - quantity: time of the SWR minimum after KCs
+    value: 10.33
+    tolerance: 5.88
+    unit: ms
+  criterion: KCs by M-KC, SWRs by M-SWR, peri-KC SWR histogram by M-PETH, per session, then
+    averaged over sessions. Peaks are the maximum z in -0.5 to 0 s and 0 to 0.5 s (the 0.5 s
+    windows of the asymmetry index, Results, same section, paragraph 3); the minimum is the
+    lowest z in -0.25 to 0.25 s. Reproduced when both peaks exceed 2 sd and all five values are
+    within tolerance.
+- id: fig3a-thalamic-rate-wake-sleep
+  statement: Thalamic units fire less in sleep than in waking (10.10 against 7.73 spikes/s).
+  source: Results, Thalamic cells decrease their overall firing, paragraph 2; Figure 3A
+  quote: the firing rate of thalamic units changed from an average of 10.10 ± 4.26 spikes/s
+    during wakefulness to 7.73 ± 3.09 spikes/s during sleep (n = 40 units; p=1.31 × 10 −6 ,
+    Wilcoxon signed rank
+  statistics:
+  - test: Wilcoxon signed rank
+    p: 1.31e-6
+    n: 40 thalamic units, 28 sessions, seven rats
+  expected:
+  - quantity: mean thalamic rate in waking
+    value: 10.10
+    tolerance: 4.26
+    unit: spikes/s
+  - quantity: mean thalamic rate in sleep
+    value: 7.73
+    tolerance: 3.09
+    unit: spikes/s
+  criterion: Sleep is M-sleep. Sessions with less than 5 min of waking are left out (Results,
+    same paragraph). Waking is not defined; readings (a) all time outside the sleep periods,
+    (b) time outside sleep when the smoothed velocity (M-sleep) exceeds 2 cm/s, a threshold the
+    paper does not give. Rate is spike count over time in the state. Reproduced when, under a
+    reading, sleep rate is lower in a Wilcoxon signed rank test with p < 0.05 and both means
+    are within tolerance.
+- id: fig3a-bursting-in-sleep
+  statement: Thalamic units burst more in sleep; 25% of units have at least 5% of spikes in
+    bursts in waking against 77.5% in sleep, and burst spikes rise from 4.60% to 18.65%.
+  source: Results, Thalamic cells decrease their overall firing, paragraph 4; Figure 3A
+  quote: we found that 25% of the thalamic cells had at least 5% of their spikes in bursts during
+    wakefulness, while 77.5% did during sleep (average percentage of spikes in bursts during
+    wakefulness 4.60 ± 7.97%, and during sleep 18.65 ± 15.3%; p=1.8 × 10 −7 ; Wilcoxon signed
+    rank; n = 40 units, seven rats
+  statistics:
+  - test: Wilcoxon signed rank
+    p: 1.8e-7
+    n: 40 thalamic units, seven rats
+  expected:
+  - quantity: units with at least 5% burst spikes in waking
+    value: 25
+    tolerance: 2.5
+    unit: percent of units
+  - quantity: units with at least 5% burst spikes in sleep
+    value: 77.5
+    tolerance: 7.75
+    unit: percent of units
+  - quantity: mean percent of spikes in bursts, waking
+    value: 4.60
+    tolerance: 7.97
+    unit: percent
+  - quantity: mean percent of spikes in bursts, sleep
+    value: 18.65
+    tolerance: 15.3
+    unit: percent
+  depends_on:
+  - fig3a-thalamic-rate-wake-sleep
+  criterion: Bursts by M-burst, states as in fig3a-thalamic-rate-wake-sleep, with its readings.
+    Reproduced when, under a reading, the sleep percentage is higher (Wilcoxon signed rank, p <
+    0.05) and the four values are within tolerance. With fewer units than the paper, the two
+    proportions are judged on direction and tolerance together.
+- id: fig3a-bursting-around-swrs
+  statement: Thalamic bursting is higher still in the 2 s around CA1 SWRs (25.52% of spikes in
+    bursts).
+  source: Results, Thalamic cells decrease their overall firing, paragraph 4; Figure 3A
+  quote: The increase in bursting was more pronounced around the time of SWRs in CA1 (25.52 ±
+    17.29% of spikes in bursts in a 2 s window around SWRs; p=1.8 × 10 −7 Kruskall-Wallis
+  statistics:
+  - test: Kruskal-Wallis
+    p: 1.8e-7
+    n: 40 thalamic units
+  expected:
+    quantity: mean percent of spikes in bursts within 1 s of SWRs
+    value: 25.52
+    tolerance: 17.29
+    unit: percent
+  depends_on:
+  - fig3a-bursting-in-sleep
+  criterion: Spikes within plus or minus 1 s of any SWR (M-SWR) in sleep, pooled over SWRs as a
+    union of windows. A Kruskal-Wallis test across the three groups (waking, sleep, SWR windows)
+    as the paper names. Reproduced when the test gives p < 0.05, the SWR-window mean exceeds the
+    sleep mean and is within tolerance.
+- id: swr-shift-control
+  statement: Compared with SWR times shifted by more than 2 s or 5 s, the 2 s windows around SWRs
+    hold fewer thalamic spikes and a higher percentage of burst spikes.
+  source: Results, Thalamic cells decrease their overall firing, paragraph 4
+  quote: In both cases (>2 and>5 s shifts), the average number of thalamic unit spikes was
+    significantly lower in the SWRs windows compared to the shifted timestamps (p<10 −3 ), and
+    the percent of spikes in bursts significantly higher (p=0.002 and p<10 −3 respectively
+    after a 2 s or 5 s shift; Wilcoxon signed rank
+  statistics:
+  - about: spike count, SWR windows against shifted windows, both shifts
+    test: Wilcoxon signed rank
+    p: 0.001
+    p_relation: "<"
+  - about: percent burst spikes, 2 s shift
+    test: Wilcoxon signed rank
+    p: 0.002
+  - about: percent burst spikes, 5 s shift
+    test: Wilcoxon signed rank
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - fig3a-bursting-around-swrs
+  criterion: Each SWR time shifted at random; the paper says only "at least 2 (or 5 s)".
+    Readings for the shift (a) uniform in 2 to 3 s and in 5 to 6 s, (b) uniform in 2 to 10 s
+    and in 5 to 10 s, forward. Per unit, spikes and burst-spike percent in plus or minus 1 s
+    windows at true and shifted times, compared by Wilcoxon signed rank. Reproduced when, under
+    a reading, both comparisons go the paper's way with p < 0.05 for both shifts.
+- id: fig3c-thalamic-decrease-at-swrs
+  statement: About 55% of thalamic units reduce their firing by more than 2 sd from the null in
+    the 200 ms around SWRs (average -4.23 sd); 14.89% show a pure increase and 8.51% a rebound
+    after a decrease.
+  source: Results, Thalamic cells decrease their overall firing, paragraph 5; Figure 3B-C
+  quote: 55.32% of units in the thalamus showed a reduction in firing of more than two standard
+    deviations (sd) from the null (average −4.23 ± 2.00 sd) in a 200 ms window around the time
+    of SWRs occurrence ... A few thalamic units (14.89%) showed a pure increase in firing in the
+    200 ms window around CA1 SWRs ... Another four units (8.51%) had a rebound in firing
+  expected:
+  - quantity: thalamic units with a decrease beyond -2 sd
+    value: 55.32
+    tolerance: 5.53
+    unit: percent of units
+  - quantity: mean decrease in those units
+    value: -4.23
+    tolerance: 2.00
+    unit: sd from null
+  - quantity: thalamic units with a pure increase above 2 sd
+    value: 14.89
+    tolerance: 1.49
+    unit: percent of units
+  - quantity: thalamic units with a rebound after a decrease
+    value: 8.51
+    tolerance: 0.85
+    unit: percent of units
+  criterion: Peri-SWR histograms by M-PETH for each thalamic unit in sleep. The percentages fit
+    47 units (26, 7 and 4 of 47; Figure 4, figure supplement 1C gives n = 47). Open, how the
+    window is read; readings (a) the minimum (or maximum) z in -100 to 100 ms beyond 2 sd,
+    (b) the mean z over that window beyond 2 sd. A pure increase has a maximum above 2 sd and no
+    bin below -2 sd before it; a rebound has a bin below -2 sd followed by a bin above 2 sd
+    within the window. Reproduced when, under a reading, the decreasing units are the largest
+    group and the four values are within tolerance; partially when only the direction holds.
+- id: fig3s1-ca1-mpfc-at-swrs
+  statement: Around SWRs, 90.18% of CA1 units increase their firing (by 19.85 sd on average),
+    while in mPFC 30.95% of units increase and 40.48% decrease.
+  source: Results, Thalamic cells decrease their overall firing, paragraph 5; Figure 3, figure
+    supplement 1A
+  quote: Instead, 90.18% of CA1 units increased their firing by 19.85 ± 18.65 sd in a 200 ms
+    window around SWRs (4.91% of CA1 units showed an average decrease of 4.11 ± 1.59 sd), while
+    the mPFC population included 30.95% of units showing an increase (average 6.22 ± 4.32 sd)
+    and 40.48% a reduction in firing (average −3.22 ± 1.40 sd
+  expected:
+  - quantity: CA1 units increasing
+    value: 90.18
+    tolerance: 9.02
+    unit: percent of units
+  - quantity: mean increase of those CA1 units
+    value: 19.85
+    tolerance: 18.65
+    unit: sd from null
+  - quantity: mPFC units increasing
+    value: 30.95
+    tolerance: 3.10
+    unit: percent of units
+  - quantity: mPFC units decreasing
+    value: 40.48
+    tolerance: 4.05
+    unit: percent of units
+  depends_on:
+  - fig3c-thalamic-decrease-at-swrs
+  criterion: As in fig3c-thalamic-decrease-at-swrs, with its readings, for CA1 and mPFC units.
+    Reproduced when, under a reading, a large majority of CA1 units increase, mPFC holds both
+    increasing and decreasing units, and the four values are within tolerance.
+- id: glm-thalamus-anticorrelated-swrs
+  statement: In Poisson GLMs, CA1 activity varies inversely with the firing of most thalamic
+    units (61.7%); for those units SWR rate rises by about 20.74% per 1 spike/s drop in thalamic
+    firing.
+  source: Results, Thalamic cells decrease their overall firing, paragraph 6
+  quote: showed that the firing in CA1 varied inversely with the firing of most thalamic units
+    (61.7%, p<0.001; only one unit in the MD nucleus had a significant positive correlation with
+    SWR rate). For the units that negatively correlated with SWRs, the models predict an average
+    increase of 20.74% in the rate of SWRs for every one spike/s drop in thalamic firing
+  expected:
+  - quantity: thalamic units with a significant negative GLM coefficient
+    value: 61.7
+    tolerance: 6.17
+    unit: percent of units
+  - quantity: mean predicted increase in SWR rate per 1 spike/s drop
+    value: 20.74
+    tolerance: 2.07
+    unit: percent
+  criterion: Poisson GLM log(mu) = b0 + b1 X, 250 ms bins over non-REM sleep, Wald test on b1
+    at p < 0.001 (Methods, Correlation quantifications, paragraph 2). The Methods name thalamic
+    multi-unit spikes as X and the Results thalamic units; the percentage is of units, so X is
+    each unit's binned spikes (reading a) with tetrode MUA as a variant. Open, the units of X;
+    readings (i) spikes per second, change 100 (exp(-b1) - 1), (ii) spikes per 250 ms bin, change
+    100 (exp(-0.25 b1) - 1), as a 1 spike/s drop is 0.25 spike per bin. Open, which response
+    the 61.7% counts; readings (A) SWR counts, (B) CA1 MUA, (C) either. Reproduced when, under a
+    reading, most units have a significant negative b1 for SWRs, at most one is significantly
+    positive, and both values are within tolerance.
+- id: glm-re-versus-other-nuclei
+  statement: The size of the GLM effect is marginally larger in RE than in other thalamic nuclei
+    (p=0.05), while the proportion of SWR-correlated units does not differ (p=0.159).
+  source: Results, Thalamic cells decrease their overall firing, paragraph 6
+  quote: the size of the effect was marginally significant in RE compared to non-RE units (p=0.05).
+    However, there was no difference between the proportion of SWR-correlated units in RE
+    compared to non-RE units (p=0.159
+  statistics:
+  - about: effect size, RE against non-RE units
+    p: 0.05
+  - about: proportion of SWR-correlated units, RE against non-RE
+    p: 0.159
+  depends_on:
+  - glm-thalamus-anticorrelated-swrs
+  criterion: Needs the nucleus of each thalamic unit (Table 1; from histology). The tests are
+    not named. For the effect size, Mann-Whitney U on b1 (M-stats, unpaired). For the
+    proportion, readings (a) Fisher exact test, (b) chi-square test, as M-stats names neither.
+    The absence part is judged on that test at p < 0.05; reproduced when the proportion test
+    does not reach p < 0.05 and the RE effect is the larger, with its p reported.
+- id: fig3e-thalamic-rebound-after-kc
+  statement: Thalamic units fire more after mPFC K-complexes than before (2.48 sd at about 275
+    ms after against 1.28 sd at about 263 ms before).
+  source: Results, Thalamic rebound following the down-state, paragraph 1; Figure 3D-E
+  quote: Units in the thalamus often fired asymmetrically with respect to KCs, with stronger
+    firing in the few hundreds of milliseconds after the mPFC KC compared to before KCs (average
+    of 2.48 standard deviations at 274.76 ± 135.33 ms after KCs, compared to 1.28 standard
+    deviations at 263.31 ± 145.31 ms before KCs; n = 31 thalamic units
+  expected:
+  - quantity: mean peak z after KCs
+    value: 2.48
+    tolerance: 0.248
+    unit: sd from null
+  - quantity: time of peak after KCs
+    value: 274.76
+    tolerance: 135.33
+    unit: ms
+  - quantity: mean peak z before KCs
+    value: 1.28
+    tolerance: 0.128
+    unit: sd from null
+  - quantity: time of peak before KCs
+    value: 263.31
+    tolerance: 145.31
+    unit: ms
+  criterion: Peri-KC histograms by M-PETH (KCs by M-KC) per thalamic unit. Peaks are the maximum
+    z in 0 to 0.5 s after and -0.5 to 0 s before KCs (the windows of the asymmetry index). The
+    paper reports no test here; reproduced when the after peak exceeds the before peak on
+    average and the four values are within tolerance.
+- id: kc-trough-timing
+  statement: The trough of thalamic firing follows the KC (10.56 ms after), after the trough of
+    mPFC units (-7.70 ms) and with the SWR trough (10.33 ms after).
+  source: Results, Thalamic rebound following the down-state, paragraph 1
+  quote: (thalamic unit firing minimum at 10.56 ± 130.75 ms after KCs, n = 31; mPFC units −7.70 ±
+    72.3 ms, before LFP KCs, n = 46; SWRs 10.33 ± 5.88 ms after KCs
+  expected:
+  - quantity: time of thalamic unit minimum after KCs
+    value: 10.56
+    tolerance: 130.75
+    unit: ms
+  - quantity: time of mPFC unit minimum relative to KCs
+    value: -7.70
+    tolerance: 72.3
+    unit: ms
+  depends_on:
+  - fig3e-thalamic-rebound-after-kc
+  - fig2c-swr-around-kc
+  criterion: Time of the minimum z of each unit's peri-KC histogram in -0.25 to 0.25 s, averaged
+    over units. The wide tolerances are the paper's sd; reproduced when both means are within
+    them and the thalamic mean is later than the mPFC mean.
+- id: kc-fraction-of-thalamic-peaks
+  statement: 38.71% of thalamic units have a significant peak (above 2 sd) after KCs against
+    9.68% before only; 19.35% have both.
+  source: Results, Thalamic rebound following the down-state, paragraph 2
+  quote: For the population of thalamic cells, 38.71% increased their activity above two sd (from
+    the null distribution) following KCs, that is, in the down to up-state transition, compared
+    to 9.68% of the cells with a significant peak preceding KCs
+  expected:
+  - quantity: thalamic units with a peak above 2 sd after KCs only
+    value: 38.71
+    tolerance: 3.87
+    unit: percent of units
+  - quantity: thalamic units with a peak above 2 sd before KCs only
+    value: 9.68
+    tolerance: 0.97
+    unit: percent of units
+  - quantity: thalamic units with peaks both before and after
+    value: 19.35
+    tolerance: 1.94
+    unit: percent of units
+  depends_on:
+  - fig3e-thalamic-rebound-after-kc
+  criterion: Peaks as in fig3e-thalamic-rebound-after-kc, over 31 units in the paper (12, 3 and
+    6 of 31). Open, whether 38.71% and 9.68% exclude the units with both; readings (a) they
+    exclude them (the three groups are disjoint), (b) they include them. Reproduced when, under
+    a reading, more units peak after than before and the values are within tolerance.
+- id: kc-ca1-mpfc-symmetric
+  statement: CA1 and mPFC units increase firing both before and after KCs, by similar amounts.
+  source: Results, Thalamic rebound following the down-state, paragraph 2
+  quote: The modulation of SWRs was paralleled by a modulation of firing in CA1 units (n = 111),
+    which increased their activity both before and after KCs (2.32 ± 1.49 sd at −233.7 ± 146 ms
+    before KCs, and 2.35 ± 1.69 sd at 273 ± 140 ms after KCs) ... Activity in mPFC (n = 46 units)
+    was modulated in a similar way, with increases in unit firing preceding and following the
+    down-state of the slow oscillation (2.33 standard deviations at −267.30 ± 110.40 ms, before
+    KCs; 2.31 standard deviations at 295.20 ± 120 ms, after KCs
+  expected:
+  - quantity: CA1 mean peak before KCs
+    value: 2.32
+    tolerance: 1.49
+    unit: sd from null
+  - quantity: CA1 mean peak after KCs
+    value: 2.35
+    tolerance: 1.69
+    unit: sd from null
+  - quantity: mPFC mean peak before KCs
+    value: 2.33
+    tolerance: 0.233
+    unit: sd from null
+  - quantity: mPFC mean peak after KCs
+    value: 2.31
+    tolerance: 0.231
+    unit: sd from null
+  depends_on:
+  - fig3e-thalamic-rebound-after-kc
+  criterion: As in fig3e-thalamic-rebound-after-kc for CA1 and mPFC units. Reproduced when the
+    four values are within tolerance; the peak times are reported.
+- id: kc-regions-compared
+  statement: Peaks after KCs do not differ between thalamus, mPFC and CA1, while thalamic units
+    fire significantly less before KCs than mPFC and CA1 units.
+  source: Results, Thalamic rebound following the down-state, paragraph 3
+  quote: while units from the three areas showed no difference in the peak of the histograms in
+    the time window following KCs (p=0.89, Kruskal-Wallis between regions), thalamic units had
+    significantly lower firing before KCs compared to mPFC and CA1 units (p=0.007,
+    Kruskal-Wallis
+  statistics:
+  - about: peaks after KCs across regions
+    test: Kruskal-Wallis
+    p: 0.89
+  - about: peaks before KCs across regions
+    test: Kruskal-Wallis
+    p: 0.007
+  depends_on:
+  - kc-ca1-mpfc-symmetric
+  criterion: Peak z values as in fig3e-thalamic-rebound-after-kc, Kruskal-Wallis across the three
+    regions. The absence after KCs is judged on that test at p < 0.05; the before effect is
+    reproduced at p < 0.05 with the thalamic median lowest.
+- id: fig3f-asymmetry-index
+  statement: The KC asymmetry index is biased to positive values for thalamic units (0.24) and
+    centred near zero for mPFC (-0.004) and CA1 (-0.06) units.
+  source: Results, Thalamic rebound following the down-state, paragraph 3; Figure 3F
+  quote: The distribution of this index ( Figure 3f ) was biased to positive values for thalamic
+    units, but was uniformly distributed for mPFC and CA1 units (average 0.24 ± 0.22 in
+    thalamus; −0.004 ± 0.47 in mPFC; −0.06 ± 0.5 in CA1
+  expected:
+  - quantity: mean asymmetry index, thalamus
+    value: 0.24
+    tolerance: 0.22
+  - quantity: mean asymmetry index, mPFC
+    value: -0.004
+    tolerance: 0.47
+  - quantity: mean asymmetry index, CA1
+    value: -0.06
+    tolerance: 0.5
+  criterion: Index from the maximum firing rate in 0.5 s windows before and after KCs, after
+    minus before, normalized to the maximum of the two windows (Results, same paragraph). Open,
+    the histogram used and the normalization; readings (a) raw-rate peri-KC histogram (M-PETH
+    bins), divided by the larger maximum, (b) the same divided by the sum of the two maxima,
+    (c) z-scored histogram as in (a). Tolerances are the paper's sd. Reproduced when, under a
+    reading, the thalamic mean is positive and within tolerance and the mPFC and CA1 means are
+    within tolerance; a Wilcoxon signed rank test of the thalamic index against 0 is reported.
+- id: spindle-mua-modulation
+  statement: Multi-unit activity increases around mPFC spindle troughs in 84.62% of CA1
+    tetrodes, 53.3% of mPFC and 36% of thalamic tetrodes; individual units are less clearly
+    modulated.
+  source: Results, Sparse thalamic firing, paragraph 1; Figure 3G-H; Figure 3, figure supplement
+    1C
+  quote: Across the sessions, 84.62% of the CA1 tetrodes showed an increase in spike activity (at
+    least three standard deviations from null distribution in the −100 to 100 ms window of the
+    peri-spindle-trough histogram), with 53.3% and 36% tetrodes showing a similar result in mPFC
+    and thalamus
+  expected:
+  - quantity: CA1 tetrodes with MUA increase
+    value: 84.62
+    tolerance: 8.46
+    unit: percent of tetrodes
+  - quantity: mPFC tetrodes with MUA increase
+    value: 53.3
+    tolerance: 5.33
+    unit: percent of tetrodes
+  - quantity: thalamic tetrodes with MUA increase
+    value: 36
+    tolerance: 3.6
+    unit: percent of tetrodes
+  criterion: Peri-spindle-trough histograms of each tetrode's MUA by M-PETH (troughs by
+    M-spindle); a tetrode counts when its maximum z in -100 to 100 ms is at least 3. Reproduced
+    when the order CA1 > mPFC > thalamus holds and the values are within tolerance.
+- id: fig4-units-not-rhythmic
+  statement: Thalamic units do not fire rhythmically at spindle frequency; the autocorrelation
+    peak is later for units (223.60 ms) than for thalamic MUA (119.30 ms), and falls in the
+    spindle band for 63.3% of MUA curves against 17.02% of units.
+  source: Results, Sparse thalamic firing, paragraph 2; Figure 4A; Figure 4, figure supplement 1
+  quote: We found that the peak of the MUA autocorrelation occurs on average at 119.30 ± 78 ms,
+    whereas the interval is longer for the units, 223.60 ± 113.30 ms (p<0.001, Wilcoxon
+    Mann-Whitney). The peak of the autocorrelation occurred within the spindle band in 63.3% of
+    the curves calculated with MUA (with subsampled spikes matched to the units) and in 17.02%
+    of the units
+  statistics:
+  - about: lag of autocorrelation peak, MUA against units
+    test: Wilcoxon Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+    n: 47 thalamic units; MUA from 30 sessions
+  - about: peak autocorrelation value within the spindle band, MUA against units
+    test: Wilcoxon Mann-Whitney
+    p: 0.0038
+  expected:
+  - quantity: mean lag of MUA autocorrelation peak
+    value: 119.30
+    tolerance: 78
+    unit: ms
+  - quantity: mean lag of unit autocorrelation peak
+    value: 223.60
+    tolerance: 113.30
+    unit: ms
+  - quantity: subsampled MUA curves with peak in the spindle band
+    value: 63.3
+    tolerance: 6.33
+    unit: percent
+  - quantity: units with peak in the spindle band
+    value: 17.02
+    tolerance: 1.70
+    unit: percent of units
+  - quantity: mean peak value, MUA, peaks in the spindle band
+    value: 0.24
+    tolerance: 0.20
+  - quantity: mean peak value, units, peaks in the spindle band
+    value: 0.05
+    tolerance: 0.01
+  criterion: Autocorrelation of sleep spikes; the peak is the maximum after the minimum that
+    follows lag 0 (Results, same paragraph). MUA subsampled in blocks with the spike count of
+    the sparsest unit of the session, averaged (Figure 4, figure supplement 1B). Open, bin size,
+    lag range and normalization; readings (a) 5 ms bins, (b) 10 ms bins, lags to 500 ms,
+    normalized so lag 0 is 1 after removing it (coefficient), as the values 0.24 and 0.05 imply
+    a normalized measure. Open, the spindle band in lags; readings (i) 71 to 167 ms (6 to 14
+    Hz), (ii) 50 to 150 ms (Results, same paragraph). Reproduced when, under a reading, unit
+    peaks are later than MUA peaks (Mann-Whitney, p < 0.05), the spindle-band fraction is
+    higher for MUA, and the lag means are within tolerance.
+- id: fig4b-thalamic-pairs-correlated
+  statement: 33% of simultaneously recorded thalamic unit pairs have a sleep cross-correlogram
+    peak above 3 sd, at lags within a spindle cycle.
+  source: Results, Sparse thalamic firing, paragraph 4; Figure 4B-C; Figure 4, figure supplement
+    2A
+  quote: We tested this by calculating cross-correlograms of sleep spikes in sessions in which we
+    recorded more than one unit in the thalamus (n = 39 pairs, four rats); 33% of the pairs had a
+    peak above three standard deviations from the average cross-correlogram (average peak z-score
+    2.40 ± 1.21 sd
+  expected:
+  - quantity: pairs with a peak above 3 sd
+    value: 33
+    tolerance: 3.3
+    unit: percent of pairs
+  - quantity: mean peak z of pair cross-correlograms
+    value: 2.40
+    tolerance: 1.21
+    unit: sd
+  criterion: Cross-correlograms of sleep spikes of every simultaneously recorded thalamic pair.
+    Open, the z-score and window; readings (a) z against the mean and sd of the same
+    correlogram over plus or minus 1 s, peak within plus or minus 100 ms (one spindle cycle),
+    (b) z against a null of shifted spike trains as in M-PETH. Bins 5 ms (a standard choice).
+    Reproduced when, under a reading, both values are within tolerance.
+- id: xcorr-stronger-in-spindles
+  statement: Pair cross-correlograms are stronger with spikes within spindle cycles (2.74 sd)
+    than with sleep spikes between spindles (2.31 sd).
+  source: Results, Sparse thalamic firing, paragraph 5; Figure 4D; Figure 4, figure supplement
+    2B-C
+  quote: (average peak cross-correlograms with spindle spikes 2.74 ± 0.85 sd compared to 2.31 ±
+    1.18 sd with sleep spikes that occurred between detected spindles; p=0.015, Wilcoxon signed
+    rank test
+  statistics:
+  - test: Wilcoxon signed rank
+    p: 0.015
+    n: 39 thalamic pairs
+  expected:
+  - quantity: mean peak z, spikes in spindle cycles
+    value: 2.74
+    tolerance: 0.85
+    unit: sd
+  - quantity: mean peak z, sleep spikes between spindles
+    value: 2.31
+    tolerance: 1.18
+    unit: sd
+  depends_on:
+  - fig4b-thalamic-pairs-correlated
+  criterion: Correlograms as in fig4b-thalamic-pairs-correlated, with its readings, on spikes
+    inside spindle cycles (M-spindle) and, separately, sleep spikes in periods with no spindle
+    for at least 5 s. Open, the between-spindle periods; readings (a) gaps between consecutive
+    troughs longer than 5 s, all their spikes, (b) only spikes more than 2.5 s from any trough.
+    Reproduced when the spindle peak is higher (Wilcoxon signed rank, p < 0.05) and both values
+    are within tolerance.
+- id: fig5c-spindle-phase-locking
+  statement: Most thalamic units (67.74%) fire preferentially on the descending phase of the
+    mPFC spindle oscillation (circular mean 0.77 rad).
+  source: Results, Phase-locking of thalamic units, paragraph 2; Figure 5C
+  quote: We found that the majority of thalamic units (67.74% of n = 31 units) showed preferential
+    firing at the descending phases of the spindle-filtered mPFC LFP, as suggested by the
+    positive values of the mean phase distribution (circular mean 0.77 ± 1.15 rad; p<0.05,
+    Rayleigh test
+  expected:
+  - quantity: thalamic units phase-locked to spindles
+    value: 67.74
+    tolerance: 6.77
+    unit: percent of units
+  - quantity: circular mean of unit preferred spindle phases
+    value: 0.77
+    tolerance: 1.15
+    unit: rad
+  criterion: Spike phases by M-phase in sleep. The p < 0.05 is the per-unit threshold of the
+    count (a selection, not recorded as a statistic). Open, what 67.74% counts; readings
+    (a) units with a significant Rayleigh test, (b) units with positive mean phase, (c) both.
+    Reproduced when, under a reading, the fraction and the circular mean are within tolerance.
+- id: fig5c-delta-phase-locking
+  statement: Thalamic units are phase-locked to mPFC delta near its positive peak (64.52% of
+    units; circular mean 0.30 rad).
+  source: Results, Phase-locking of thalamic units, paragraph 2; Figure 5C
+  quote: Thalamic units were phase-locked to the mPFC delta band, closer to the positive peak of
+    the oscillation (64.52%, p<0.05, Rayleigh test; circular mean 0.30 ± 1.04 rad
+  expected:
+  - quantity: thalamic units phase-locked to delta
+    value: 64.52
+    tolerance: 6.45
+    unit: percent of units
+  - quantity: circular mean of unit preferred delta phases
+    value: 0.30
+    tolerance: 1.04
+    unit: rad
+  depends_on:
+  - fig5c-spindle-phase-locking
+  criterion: As in fig5c-spindle-phase-locking for the delta band, the fraction being units with
+    a significant Rayleigh test. Reproduced when both values are within tolerance.
+- id: phase-robust-to-spike-count
+  statement: Preferred phases do not change when computed with 10% of the spikes.
+  source: Results, Phase-locking of thalamic units, paragraph 2
+  quote: the circular mean was not different when the histograms were calculated with 10% of the
+    spikes (p=0.68 for spindle and 0.07 for delta; Wilcoxon signed rank
+  statistics:
+  - about: spindle phase
+    test: Wilcoxon signed rank
+    p: 0.68
+  - about: delta phase
+    test: Wilcoxon signed rank
+    p: 0.07
+  depends_on:
+  - fig5c-delta-phase-locking
+  criterion: A claim of absence. Per unit the circular mean from all spikes and from a random
+    10% of them (seed fixed, a standard choice), compared by Wilcoxon signed rank over units on
+    the phase values as the paper names. Reproduced when p >= 0.05 for both bands; the median
+    difference is reported.
+- id: rebound-delta-phase-trend
+  statement: The amplitude of the post-KC thalamic rebound tends to correlate with earlier
+    preferred delta phase, though not significantly (r = -0.32, p=0.08); no such trend holds
+    for firing before KCs.
+  source: Results, Phase-locking of thalamic units, paragraph 2
+  quote: The amplitude of the thalamic rebound after KCs (reported above) had a tendency to
+    correlate with a preference for earlier phases of delta; although the correlation was not
+    significant (p=0.08, r = −0.32), we did not observe such a trend when we regressed mean
+    phase preference to the cell firing rate in a time window of the same length but before KCs
+    (p=0.65, r = 0.08
+  statistics:
+  - about: rebound amplitude against preferred delta phase
+    test: correlation
+    statistic: r = -0.32
+    p: 0.08
+  - about: firing before KCs against preferred delta phase
+    test: correlation
+    statistic: r = 0.08
+    p: 0.65
+  depends_on:
+  - fig3e-thalamic-rebound-after-kc
+  - fig5c-delta-phase-locking
+  criterion: Rebound amplitude is the peak z after KCs (fig3e-thalamic-rebound-after-kc); the
+    test is a linear regression ("regressed"), Pearson r. Open, whether the phase is circular;
+    readings (a) phase in radians as a linear variable, (b) circular-linear correlation.
+    Reproduced when, under a reading, r is negative with p >= 0.05 for the rebound and the
+    before-KC correlation is near zero; the paper's absence of significance is judged at 0.05.
+- id: fig5d-phase-lags-consistent
+  statement: Phase lags between spikes of correlated thalamic pairs within spindles are less
+    variable than those of uncorrelated pairs (sd 2.15 against 2.50).
+  source: Results, Phase-locking of thalamic units, paragraph 3; Figure 5D; Figure 5, figure
+    supplement 1
+  quote: The standard deviation of phase lag distributions within spindles was significantly lower
+    for correlated pairs compared to uncorrelated pairs (2.15 compared to 2.50; p<0.001,
+    Mann-Whitney U-test
+  statistics:
+  - test: Mann-Whitney U
+    p: 0.001
+    p_relation: "<"
+    n: 39 thalamic pairs
+  expected:
+  - quantity: sd of within-spindle phase lags, correlated pairs
+    value: 2.15
+    tolerance: 0.215
+    unit: rad
+  - quantity: sd of within-spindle phase lags, uncorrelated pairs
+    value: 2.50
+    tolerance: 0.25
+    unit: rad
+  depends_on:
+  - fig4b-thalamic-pairs-correlated
+  criterion: For each spike of one unit in a spindle cycle, the spindle phase difference to the
+    closest spike of the other, unwrapped to -2 pi to 2 pi (Results, same paragraph). Pairs
+    correlated when the cross-correlogram peak exceeds 3 sd (fig4b-thalamic-pairs-correlated).
+    Open, whether the sd is linear or circular; the -2 pi to 2 pi range implies linear.
+    Open, whether the Mann-Whitney test is on pairs (one sd each) or on pooled lags; readings
+    (a) pairs, (b) lags pooled per group. Reproduced when, under a reading, correlated pairs
+    have the lower sd with p < 0.05 and both values are within tolerance.
+- id: spindle-cycles-by-ripple-power
+  statement: Spindle cycles with ripple power above the median are slightly shorter and larger,
+    significant within most sessions but not across sessions.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 1;
+    Figure 6, figure supplement 1
+  quote: Cycles with ripple power above the median were slightly shorter in duration (102.17 ±
+    2.01 ms compared to 103.22 ± 2.35 ms when ripple power was low; p<0.05 in 65% of the
+    sessions, although not significant for the mean duration across sessions, p=0.11;
+    Mann-Whitney U-test) and larger in amplitude (229.21 ± 102.14 µV versus 219.47 ± 94.32 µV;
+    p<0.05 in 85% of sessions, p=0.54 across sessions; Mann-Whitney U-test
+  statistics:
+  - about: cycle duration across sessions
+    test: Mann-Whitney U
+    p: 0.11
+  - about: cycle amplitude across sessions
+    test: Mann-Whitney U
+    p: 0.54
+  expected:
+  - quantity: mean duration, high ripple power cycles
+    value: 102.17
+    tolerance: 2.01
+    unit: ms
+  - quantity: mean duration, low ripple power cycles
+    value: 103.22
+    tolerance: 2.35
+    unit: ms
+  - quantity: mean peak-to-trough amplitude, high ripple power cycles
+    value: 229.21
+    tolerance: 102.14
+    unit: uV
+  - quantity: mean peak-to-trough amplitude, low ripple power cycles
+    value: 219.47
+    tolerance: 94.32
+    unit: uV
+  criterion: Cycles by M-spindle; ripple power is the mean squared ripple-filtered CA1 LFP over
+    the cycle (Figure 6, figure supplement 1 title), split at the session median. Open, the
+    amplitude; readings (a) mean of the two peaks minus the trough, (b) the larger peak minus
+    the trough, on the spindle-filtered trace. Per session a Mann-Whitney U test; across
+    sessions Mann-Whitney on session means. Reproduced when, under a reading, high cycles are
+    shorter and larger within most sessions, the across-session tests give p >= 0.05, and the
+    four values are within tolerance.
+- id: fig6-modulation-with-ripple-power
+  statement: The peri-spindle modulation index of most thalamic units (64.52%) is higher in
+    spindle cycles with ripple power above the median; 22.58% are more modulated in low ripple
+    power cycles.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 2;
+    Figure 6A, D
+  quote: This index increased in the majority of thalamic units in spindle cycles with ripple power
+    above the median (64.52%, n = 31) ... In addition, a subset of units (22.58%, n = 31) showed
+    stronger modulation with low ripple power spindles, with modulation values that were at
+    least as high as the average for cells that increased their modulation with high ripple
+    power
+  expected:
+  - quantity: units with higher index in high ripple power cycles
+    value: 64.52
+    tolerance: 6.45
+    unit: percent of units
+  - quantity: units more strongly modulated in low ripple power cycles
+    value: 22.58
+    tolerance: 2.26
+    unit: percent of units
+  depends_on:
+  - spindle-cycles-by-ripple-power
+  criterion: Modulation index is peak minus trough over the mean of the peri-spindle-trough
+    histogram (M-PETH bins, raw rate) in a 200 ms window centred at 0 (Results, same paragraph),
+    for high and low ripple power cycles. The 22.58% are units with a higher index in low cycles
+    and a low-cycle index at least the mean high-cycle index of the increasing units. Reproduced
+    when both values are within tolerance; partially when only a majority increases.
+- id: modulation-amplitude-versus-ripple
+  statement: The modulation index increases significantly from low to high amplitude spindles
+    (p=0.005) but not from low to high ripple power spindles (p=0.25); absolute index values are
+    similar under both classifications.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 4;
+    Figure 6D
+  quote: The absolute index values were similar in spindles classified based on spindle amplitude
+    or ripple power (p>0.3, Wilcoxon signed rank), but increased significantly from low to high
+    amplitude spindles (p=0.005) compared to low to high ripple power spindles (p=0.25). The
+    modulation also increased, although less, when comparing spindles with low amplitude and
+    low ripple power to spindles with high amplitude and high ripple power (p=0.014
+  statistics:
+  - about: index under amplitude against ripple power classification
+    test: Wilcoxon signed rank
+    p: 0.3
+    p_relation: ">"
+  - about: low against high amplitude spindles
+    test: Wilcoxon signed rank
+    p: 0.005
+  - about: low against high ripple power spindles
+    test: Wilcoxon signed rank
+    p: 0.25
+  - about: low amplitude and ripple against high amplitude and ripple
+    test: Wilcoxon signed rank
+    p: 0.014
+  depends_on:
+  - fig6-modulation-with-ripple-power
+  criterion: Indices as in fig6-modulation-with-ripple-power, with cycles split at the session
+    median of amplitude (readings of spindle-cycles-by-ripple-power), of ripple power, and of
+    both jointly. Wilcoxon signed rank over units (Results names it for the first test; M-stats,
+    paired, for the rest). Reproduced when the amplitude split gives p < 0.05 and the ripple
+    split p >= 0.05, with the joint split p < 0.05.
+- id: fig6e-quartile-synergy
+  statement: In the highest amplitude spindles ripple power has no significant effect on
+    modulation (p=0.94), while in the highest ripple power spindles amplitude does (p=0.04);
+    61.29% of units still increase modulation with ripple power in high amplitude spindles.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 4;
+    Figure 6E; Figure 6, figure supplement 2
+  quote: In the population of cells, we did not find evidence of a significant effect of ripple
+    power on the modulation value of thalamic firing in high amplitude spindles (p=0.94;
+    Wilcoxon signed rank), while higher spindle amplitude led to higher modulation values on
+    high ripple power spindles (p=0.04). However, although the modulation values were not
+    significantly different, a majority (61.29%) of units showed a further increase in
+    modulation index with ripple power in high amplitude spindles (average increase 18.15 ±
+    21.94%); instead, 32.26% of the units increased their modulation with spindle amplitude (in
+    the spindles with highest ripple power; average increase 30.00 ± 20.97%) ... The percent
+    change in the modulation index with ripple power and spindle amplitude were positively
+    correlated (Spearman correlation 0.51; p=0.003
+  statistics:
+  - about: ripple power effect in high amplitude spindles
+    test: Wilcoxon signed rank
+    p: 0.94
+  - about: amplitude effect in high ripple power spindles
+    test: Wilcoxon signed rank
+    p: 0.04
+  - about: percent changes with ripple power and with amplitude
+    test: Spearman correlation
+    statistic: rho = 0.51
+    p: 0.003
+  expected:
+  - quantity: units increasing with ripple power in high amplitude spindles
+    value: 61.29
+    tolerance: 6.13
+    unit: percent of units
+  - quantity: mean increase in those units
+    value: 18.15
+    tolerance: 21.94
+    unit: percent
+  - quantity: units increasing with amplitude in high ripple power spindles
+    value: 32.26
+    tolerance: 3.23
+    unit: percent of units
+  - quantity: mean increase in those units
+    value: 30.00
+    tolerance: 20.97
+    unit: percent
+  depends_on:
+  - modulation-amplitude-versus-ripple
+  criterion: Cycles in the upper quartile of amplitude, split by ripple power; cycles in the
+    upper quartile of ripple power, split by amplitude (Results, same paragraph). Open, the
+    median for the split; readings (a) median within the quartile subset, (b) session median
+    over all cycles. Index as in fig6-modulation-with-ripple-power. Reproduced when, under a
+    reading, the ripple effect is absent (p >= 0.05), the amplitude effect present (p < 0.05),
+    the Spearman correlation positive with p < 0.05, and the four values within tolerance.
+- id: fig6f-quartile-versus-median
+  statement: Modulation values in the upper quartile are higher for spindle amplitude (1.16)
+    than for ripple power (0.60), and the quartile split widens the spread of the index for
+    amplitude but not for ripple power.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 5;
+    Figure 6F
+  quote: The increase in modulation index was higher in the upper quartile of spindle amplitude in
+    29% of thalamic units and with ripple power in 22.6% units. The absolute modulation values
+    were higher for spindle amplitude compared to ripple power and positively correlated
+    (average of 1.16 ± 0.57 in the upper quartile of spindle amplitude compared to 0.60 ± 0.26
+    in the upper quartile of ripple power; p=0.04, Mann-Whitney ... leading to a wider spread of
+    the distribution (when spindles were classified based on quartiles compared to median;
+    p=0.04; F-test) which was not the case with ripple power (p=0.36; F-test
+  statistics:
+  - about: index in the upper amplitude quartile against the upper ripple power quartile
+    test: Mann-Whitney
+    p: 0.04
+  - about: spread, quartile against median split, amplitude
+    test: F-test
+    p: 0.04
+  - about: spread, quartile against median split, ripple power
+    test: F-test
+    p: 0.36
+  expected:
+  - quantity: units with a larger increase under the amplitude quartile split
+    value: 29
+    tolerance: 2.9
+    unit: percent of units
+  - quantity: units with a larger increase under the ripple power quartile split
+    value: 22.6
+    tolerance: 2.26
+    unit: percent of units
+  - quantity: mean index, upper quartile of amplitude
+    value: 1.16
+    tolerance: 0.57
+  - quantity: mean index, upper quartile of ripple power
+    value: 0.60
+    tolerance: 0.26
+  depends_on:
+  - fig6e-quartile-synergy
+  criterion: Index as in fig6-modulation-with-ripple-power, in the upper quartile of amplitude
+    and of ripple power against the remaining cycles, and against the median split. Open, what
+    the quartile comparison is against; readings (a) upper quartile against the lower three
+    quartiles, (b) upper against lower quartile. Mann-Whitney and F-tests as the paper names.
+    Reproduced when, under a reading, the amplitude quartile index is the higher with p < 0.05,
+    the F-test is significant for amplitude only, and the values are within tolerance.
+- id: fig6g-spike-count-unchanged
+  statement: The number of spikes of thalamic units does not change significantly between low
+    and high ripple power spindles, nor between SWRs coupled and uncoupled to spindles.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 6;
+    Figure 6G
+  quote: the absolute number of spikes in single units did not change significantly with spindles
+    low or high in ripple power, nor with SWRs coupled or uncoupled to spindles
+  depends_on:
+  - spindle-cycles-by-ripple-power
+  criterion: A claim of absence, for which the paper names no test. Following M-stats (paired
+    data), a Wilcoxon signed rank test over units at p < 0.05 of mean spikes per cycle in low
+    against high cycles, and of mean rate in plus or minus 50 ms of SWRs in spindle cycles
+    against an equal random sample of SWRs outside them. Reproduced when neither test is
+    significant; median differences are reported.
+- id: xcorr-pairs-ripple-modulation
+  statement: In spindle cycles with high ripple power, the modulation index of pair
+    cross-correlograms rises by 26.64% in 48.72% of thalamic pairs and falls by 20.90% in the
+    rest.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 7
+  quote: We calculated the modulation index for the cross-correlograms of thalamic pairs and found
+    that it increased by an average of 26.64% in 48.72% of the pairs in spindle cycles with high
+    ripple power and decreased by 20.90% in the rest of the pairs (n = 39
+  expected:
+  - quantity: pairs whose index increases
+    value: 48.72
+    tolerance: 4.87
+    unit: percent of pairs
+  - quantity: mean increase in those pairs
+    value: 26.64
+    tolerance: 2.66
+    unit: percent
+  - quantity: mean decrease in the other pairs
+    value: 20.90
+    tolerance: 2.09
+    unit: percent
+  depends_on:
+  - fig4b-thalamic-pairs-correlated
+  - fig6-modulation-with-ripple-power
+  criterion: Cross-correlograms of each pair with spikes in high and in low ripple power cycles
+    (correlogram readings of fig4b-thalamic-pairs-correlated), modulation index as in
+    fig6-modulation-with-ripple-power over plus or minus 100 ms of lag. Reproduced when the
+    three values are within tolerance.
+- id: thalamus-at-spindle-nested-swrs
+  statement: Thalamic firing near SWRs is low and does not differ between spindle-nested and
+    other SWRs in a 100 ms window (3.83 against 3.99 spikes/s), with a slight decrease for
+    nested SWRs in windows of 1 s or more.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 8
+  quote: We found low firing rates but no significant difference in thalamic firing near SWRs that
+    occurred within detected spindle cycles (mean firing 3.83 ± 3.49 spikes/s with
+    spindle-nested SWRs, compared to 3.99 ± 3.39; p=0.18, Wilcoxon signed rank; n = 31); only
+    when broadening the window of the cross-correlograms to at least 1 s around SWRs, did we find
+    a slight decrease in thalamic firing with SWRs nested in spindles (mean firing 3.73 ± 3.43
+    spikes/s with spindle-nested SWRs, compared to 3.94 ± 3.35; p<10 −2 , Wilcoxon signed rank;
+    n = 31
+  statistics:
+  - about: 100 ms window, nested against non-nested SWRs
+    test: Wilcoxon signed rank
+    p: 0.18
+    n: 31 thalamic units
+  - about: 1 s window, nested against non-nested SWRs
+    test: Wilcoxon signed rank
+    p: 0.01
+    p_relation: "<"
+    n: 31 thalamic units
+  expected:
+  - quantity: mean rate, 100 ms window, nested SWRs
+    value: 3.83
+    tolerance: 3.49
+    unit: spikes/s
+  - quantity: mean rate, 100 ms window, other SWRs
+    value: 3.99
+    tolerance: 3.39
+    unit: spikes/s
+  - quantity: mean rate, 1 s window, nested SWRs
+    value: 3.73
+    tolerance: 3.43
+    unit: spikes/s
+  - quantity: mean rate, 1 s window, other SWRs
+    value: 3.94
+    tolerance: 3.35
+    unit: spikes/s
+  criterion: Nested SWRs fall inside a spindle cycle (M-spindle); the comparison set is an equal
+    random sample of SWRs outside cycles (seed fixed, a standard choice). Mean rate in the
+    central 100 ms and in the central 1 s of each unit's SWR cross-correlogram. Wilcoxon signed
+    rank over units. The 100 ms absence is judged at p < 0.05; the 1 s decrease is reproduced
+    at p < 0.05 with nested lower. Values within tolerance.
+- id: mpfc-units-coupled-swrs
+  statement: mPFC units as a population do not fire differently at SWRs coupled or uncoupled to
+    spindles (z 0.17 against 0.24, p=0.46).
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 9;
+    Figure 6, figure supplement 3A
+  quote: we found that there was no significant difference for the population of mPFC units
+    between SWRs coupled or uncoupled to spindles (z-score 0.17 ± 1.26 for coupled-SWRs and 0.24
+    ± 0.86; p=0.46, Wilcoxon signed rank
+  statistics:
+  - test: Wilcoxon signed rank
+    p: 0.46
+  expected:
+  - quantity: mean z, coupled SWRs
+    value: 0.17
+    tolerance: 1.26
+  - quantity: mean z, uncoupled SWRs
+    value: 0.24
+    tolerance: 0.86
+  criterion: Peri-SWR histograms of mPFC units in 2 ms bins over plus or minus 400 ms, coupled
+    SWRs against an equal sample of uncoupled ones, z-scored to one shuffled distribution from
+    randomized SWR times (Results, same paragraph); the value is the mean z in -40 to 40 ms
+    (Figure 6, figure supplement 3A legend). Open, the randomization; readings (a) the M-PETH
+    shifts, (b) uniform random times within sleep. A claim of absence, judged on Wilcoxon signed
+    rank at p < 0.05.
+- id: mua-coupled-swrs
+  statement: mPFC and CA1 multi-unit activity is higher at SWRs coupled to spindles than at
+    uncoupled SWRs, with no difference in thalamic tetrodes.
+  source: Results, Spindle activation of thalamic units modulated with CA1 SWRs, paragraph 9;
+    Figure 6, figure supplement 3B
+  quote: With this analysis we found stronger correlation of mPFC spikes with SWRs coupled to
+    spindles (z-score 0.83 ± 1.34 compared to uncoupled, 0.09 ± 1.53; p=0.002). We also found
+    stronger correlations with CA1 firing (55.81 ± 28.40, 50.40 ± 30.51; p<10–3; Wilcoxon signed
+    rank), and no significant difference in the thalamic tetrodes (−64 ± 1.42, 0.34 ± 0.95;
+    p=0.17
+  statistics:
+  - about: mPFC MUA, coupled against uncoupled
+    p: 0.002
+  - about: CA1 MUA, coupled against uncoupled
+    test: Wilcoxon signed rank
+    p: 0.001
+    p_relation: "<"
+  - about: thalamic MUA, coupled against uncoupled
+    p: 0.17
+  expected:
+  - quantity: mPFC MUA mean z, coupled SWRs
+    value: 0.83
+    tolerance: 1.34
+  - quantity: mPFC MUA mean z, uncoupled SWRs
+    value: 0.09
+    tolerance: 1.53
+  - quantity: CA1 MUA mean z, coupled SWRs
+    value: 55.81
+    tolerance: 28.40
+  - quantity: CA1 MUA mean z, uncoupled SWRs
+    value: 50.40
+    tolerance: 30.51
+  - quantity: thalamic MUA mean z, uncoupled SWRs
+    value: 0.34
+    tolerance: 0.95
+  depends_on:
+  - mpfc-units-coupled-swrs
+  criterion: As in mpfc-units-coupled-swrs, with its readings, per tetrode MUA. The thalamic
+    coupled value is printed "−64 ± 1.42", which cannot be a z-score mean with that sd; it is
+    read as -0.64 and not given an expected value. Wilcoxon signed rank over tetrodes (named
+    for CA1, M-stats for the rest). Reproduced when mPFC and CA1 are higher for coupled SWRs at
+    p < 0.05 and the thalamic test gives p >= 0.05.
+- id: maze-swr-kc-increase
+  statement: After maze exploration, SWR amplitude and rate and KC amplitude increase in sleep,
+    while spindle number and amplitude do not change.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 1
+  quote: All the sessions showed an increase in the amplitude (peak-to-trough) and rate (per
+    second) of SWRs during sleep after the maze exploration, as well as an increase in the
+    amplitude of KCs (p=0.03, Wilcoxon signed rank), while spindles did not change significantly
+    in number or amplitude (p>0.5
+  statistics:
+  - about: SWR amplitude and rate and KC amplitude, sleep after against before
+    test: Wilcoxon signed rank
+    p: 0.03
+    n: 6 sessions, three rats
+  - about: spindle number and amplitude
+    p: 0.5
+    p_relation: ">"
+  criterion: Needs the six maze sessions. Events by M-KC, M-spindle, M-SWR in sleep before and
+    after the maze; per session the mean peak-to-trough amplitude of the ripple-filtered SWR,
+    SWR count per second of sleep, mean KC amplitude, spindle trough count per second and
+    amplitude. Wilcoxon signed rank over sessions (with n = 6, p = 0.03 means all six increase).
+    Reproduced when every session increases in SWR amplitude, SWR rate and KC amplitude and the
+    spindle tests give p >= 0.05.
+- id: maze-control-sessions
+  statement: In long sessions without the maze, SWR amplitude and rate do not differ between
+    the first and second half.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 1
+  quote: We compared the SWRs amplitude and rate in the first half to the second half of these
+    sessions, finding no difference in amplitude nor rate between the first and second half of
+    the recording (p>0.2
+  statistics:
+  - p: 0.2
+    p_relation: ">"
+    n: 4 sessions, two rats
+  depends_on:
+  - maze-swr-kc-increase
+  criterion: A claim of absence. Four long sessions without maze from two of the maze rats,
+    split at the midpoint of the recording; measures as in maze-swr-kc-increase; Wilcoxon signed
+    rank (M-stats, paired). With n = 4 the smallest two-sided p is 0.125, so the test cannot
+    reach 0.05; the claim is reproduced when the half-to-half changes do not all share the sign
+    of the maze effect, and the changes are reported.
+- id: maze-ripple-power-in-spindles
+  statement: After maze exploration, CA1 SWR power within spindle cycles increases.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 2
+  quote: there was a significant increase in CA1 SWR power within spindle cycles (p=0.03, Wilcoxon
+    signed rank
+  statistics:
+  - test: Wilcoxon signed rank
+    p: 0.03
+    n: 6 sessions
+  depends_on:
+  - maze-swr-kc-increase
+  criterion: Mean ripple power in spindle cycles (as in spindle-cycles-by-ripple-power) per
+    session, before against after the maze, Wilcoxon signed rank over sessions. Reproduced when
+    it increases in all six sessions.
+- id: fig7c-run-units-in-spindles
+  statement: CA1 units active on the maze are more active in high ripple power spindle cycles
+    than units not active on the maze, with independent effects of activity on the maze and of
+    ripple power.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 2; Figure 7A, C
+  quote: Units that were active during maze exploration were more likely to be active within
+    spindle cycles with high ripple power than units not active on the maze (p=0.009,
+    Mann-Whitney U-test for the mean number of spikes in spindle cycles and p=0.039 for the
+    percent of spindle cycles with unit spikes ... found both factors to have a significant
+    effect on the spike metrics (p<0.007 for ‘RUN compared to not in RUN’; p<0.01 for ‘low versus
+    high ripple power’), with no interaction between the two factors (p>0.15
+  statistics:
+  - about: mean spikes per high ripple power cycle, run against not-run units
+    test: Mann-Whitney U
+    p: 0.009
+    n: 27 run and 15 not-run CA1 units
+  - about: percent of high ripple power cycles with spikes, run against not-run
+    test: Mann-Whitney U
+    p: 0.039
+  - about: two-way ANOVA, run factor
+    test: two-way ANOVA
+    p: 0.007
+    p_relation: "<"
+  - about: two-way ANOVA, ripple power factor
+    test: two-way ANOVA
+    p: 0.01
+    p_relation: "<"
+  - about: two-way ANOVA, interaction
+    test: two-way ANOVA
+    p: 0.15
+    p_relation: ">"
+  - about: percent of cycles, run and high ripple against not-run and low
+    test: Tukey-Kramer
+    p: 0.0002
+  - about: percent of cycles, run and high ripple against run and low
+    test: Tukey-Kramer
+    p: 0.001
+  - about: percent of cycles, run and high ripple against not-run and high
+    test: Tukey-Kramer
+    p: 0.028
+  - about: mean spikes, run and high ripple against not-run and low
+    test: Tukey-Kramer
+    p: 0.0002
+  - about: mean spikes, run and high ripple against run and low
+    test: Tukey-Kramer
+    p: 0.0007
+  - about: mean spikes, run and high ripple against not-run and high
+    test: Tukey-Kramer
+    p: 0.017
+  criterion: Needs the maze sessions. Run units have spikes on the maze; the paper classified
+    them by visual inspection of clusters (Results, same paragraph), so the readings are
+    (a) any labels the dataset gives, (b) units with at least 50 spikes in the 30 min maze
+    epoch, (c) units with any spike in it (thresholds the paper does not give). Cycles from
+    sleep after the maze, split at the median ripple power (spindle-cycles-by-ripple-power).
+    Per unit the percent of high (and low) cycles with at least one spike and the mean spikes
+    per cycle. Mann-Whitney U, two-way ANOVA (run by ripple power) and Tukey-Kramer as the paper
+    names. Reproduced when, under a reading, both Mann-Whitney tests give p < 0.05 with run units
+    higher and both ANOVA main effects p < 0.05.
+- id: maze-ca1-rates-similar
+  statement: CA1 units active and not active on the maze do not differ in firing rate in sleep
+    after the maze.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 2
+  quote: These two groups of CA1 units did not differ in firing rate in the sleep post-behavior
+    (calculated as the mean number of spikes over the total sleep time, or as the reciprocal of
+    the mean inter-spike interval; p>0.1, Mann-Whitney U-test
+  statistics:
+  - test: Mann-Whitney U
+    p: 0.1
+    p_relation: ">"
+    n: 27 run and 15 not-run CA1 units
+  depends_on:
+  - fig7c-run-units-in-spindles
+  criterion: A claim of absence. Rates both ways the paper gives, Mann-Whitney U at p < 0.05,
+    under each classification reading of fig7c-run-units-in-spindles. Reproduced when neither
+    rate differs; medians reported.
+- id: fig7d-run-units-peri-swr
+  statement: CA1 units active on the maze have higher peaks in their peri-SWR histograms (5.09
+    against 2.34 spikes/s), with no difference between SWRs nested in spindles and others.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 3; Figure 7D
+    left
+  quote: the peri-SWR histograms of CA1 cells that had been active during run showed significantly
+    higher peaks (mean 5.09 ± 4.23 spikes/s), compared to those units that were only active in
+    the sleep post-behavior (mean 2.34 ± 2.09 spikes/s; p<10 −2 , Mann-Whitney U-test ... we did
+    not find differences between the maximum nor mean firing in SWRs that were nested within
+    spindle cycles compared to a sample of an equal number of SWRs not coupled to spindles
+    (p>0.3 for both units in run and units not active in run; Wilcoxon signed rank
+  statistics:
+  - about: peak, run against not-run units
+    test: Mann-Whitney U
+    p: 0.01
+    p_relation: "<"
+  - about: nested against non-nested SWRs, each group
+    test: Wilcoxon signed rank
+    p: 0.3
+    p_relation: ">"
+  expected:
+  - quantity: mean peri-SWR peak, run units
+    value: 5.09
+    tolerance: 4.23
+    unit: spikes/s
+  - quantity: mean peri-SWR peak, not-run units
+    value: 2.34
+    tolerance: 2.09
+    unit: spikes/s
+  depends_on:
+  - fig7c-run-units-in-spindles
+  criterion: Peri-SWR histograms in raw rate (M-PETH bins) in sleep after the maze; peak is the
+    maximum in -100 to 100 ms (the 200 ms window of fig3c-thalamic-decrease-at-swrs). Nested
+    and non-nested SWRs as in thalamus-at-spindle-nested-swrs. Reproduced when, under a reading
+    of the classification, run peaks are higher at p < 0.05, the nested comparison gives p >=
+    0.05 in both groups, and both values are within tolerance.
+- id: fig7b-run-units-spindle-phase
+  statement: Spikes of maze-active CA1 units in spindle-nested SWRs are locked to spindle phase
+    (circular mean -1.48 rad); not-run units are not, and Rayleigh Z is higher for run units and
+    for coupled SWRs.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 3; Figure 7B,
+    7D right
+  quote: the spikes fired by units active in run during SWRs nested in spindles occurred at
+    preferential phases of the spindle oscillation; phase distribution examples are shown in
+    Figure 7b for the units in 7a (circular mean = −1.48 ± 1.33; concentration = 0.63 ± 0.32;
+    mean p value = 0.027 ± 0.05, Rayleigh test; n = 27 units). The phase modulation in the same
+    spindle-nested SWRs, was not significant for units not active in run (circular mean = −1.20
+    ± 1.55; concentration = 0.51 ± 0.29; mean p value = 0.218 ± 0.28; n = 14 units
+  statistics:
+  - about: two-way ANOVA on Rayleigh Z, run factor
+    test: two-way ANOVA
+    p: 0.007
+  - about: two-way ANOVA on Rayleigh Z, coupled against uncoupled SWRs
+    test: two-way ANOVA
+    p: 0.015
+  - about: two-way ANOVA, interaction
+    test: two-way ANOVA
+    p: 0.08
+  - about: run units in coupled SWRs against not-run units in coupled SWRs
+    test: Tukey-Kramer
+    p: 0.01
+  - about: run units in coupled SWRs against run units in uncoupled SWRs
+    test: Tukey-Kramer
+    p: 0.0026
+  - about: run units in coupled SWRs against not-run units in uncoupled SWRs
+    test: Tukey-Kramer
+    p: 0.002
+  expected:
+  - quantity: circular mean spindle phase, run units, nested SWRs
+    value: -1.48
+    tolerance: 1.33
+    unit: rad
+  - quantity: mean kappa, run units
+    value: 0.63
+    tolerance: 0.32
+  - quantity: mean Rayleigh p, run units
+    value: 0.027
+    tolerance: 0.05
+  - quantity: mean Rayleigh p, not-run units
+    value: 0.218
+    tolerance: 0.28
+  depends_on:
+  - fig7c-run-units-in-spindles
+  criterion: Spindle phase (M-phase) of each unit's spikes in SWRs nested in spindles and in
+    uncoupled SWRs, sleep after the maze. Open, which spikes are in an SWR; readings (a) spikes
+    within the above-threshold period of the SWR (M-SWR), (b) spikes within plus or minus 50 ms
+    of its timestamp. Units with too few SWR spikes are left out (one in the paper; no count
+    given). Two-way ANOVA on Rayleigh Z and Tukey-Kramer as named. Reproduced when, under a
+    reading, both main effects give p < 0.05, run units in coupled SWRs have the highest Z, and
+    the run-unit mean Rayleigh p is below 0.05.
+- id: fig8-thalamus-unchanged-by-maze
+  statement: Thalamic units show no significant change after maze exploration in KC and spindle
+    histograms, spindle phase, or spindle modulation index.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 4; Figure 8A-B
+  quote: Thalamic units also had similar peri-event histograms with mPFC spindle cycles before and
+    after behavior ( Figure 8b ), and no change in spindle phase distribution mean or
+    concentration values (p>0.3, Mann-Whitney U-test); the spindle modulation index increased on
+    average after behavior although not significantly (0.52 ± 0.30 before maze exploration and
+    0.84 ± 1.03 after; p=0.43 Wilcoxon signed rank test
+  statistics:
+  - about: spindle phase mean and kappa, before against after
+    test: Mann-Whitney U
+    p: 0.3
+    p_relation: ">"
+    n: 9 thalamic units
+  - about: spindle modulation index, before against after
+    test: Wilcoxon signed rank
+    p: 0.43
+    n: 9 thalamic units
+  expected:
+  - quantity: mean spindle modulation index before the maze
+    value: 0.52
+    tolerance: 0.30
+  - quantity: mean spindle modulation index after the maze
+    value: 0.84
+    tolerance: 1.03
+  criterion: A claim of absence, on the paper's tests. Phase by M-phase and modulation index as
+    in fig6-modulation-with-ripple-power (all cycles), per thalamic unit in sleep before and
+    after the maze. Reproduced when the Mann-Whitney tests and the Wilcoxon test give p >= 0.05;
+    the changes are reported.
+- id: fig8e-ca1-spindle-trend
+  statement: CA1 units tend to take part more in high ripple power spindle cycles after maze
+    exploration (60% fire more), without a significant before-after effect; ripple power has a
+    significant effect.
+  source: Results, Multi-region correlations after spatial exploration, paragraph 4; Figure 8C-E
+  quote: 60% of the CA1 units fired more spikes in high-ripple power spindle cycles after
+    exploration compared to before (p=0.12), and fired in a larger proportion of high-ripple
+    power spindle cycles (p=0.08; Wilcoxon signed rank ... finding a significant difference in
+    engagement in spindles with ‘Low-High ripple’ power (p=0) and no significant effect for the
+    ‘Before-After’ factor (p>0.06
+  statistics:
+  - about: spikes per high ripple power cycle, after against before
+    test: Wilcoxon signed rank
+    p: 0.12
+  - about: percent of high ripple power cycles with spikes, after against before
+    test: Wilcoxon signed rank
+    p: 0.08
+  - about: two-way ANOVA, ripple power factor
+    test: two-way ANOVA
+    p: 0
+  - about: two-way ANOVA, before-after factor
+    test: two-way ANOVA
+    p: 0.06
+    p_relation: ">"
+  expected:
+    quantity: CA1 units firing more spikes in high ripple power cycles after the maze
+    value: 60
+    tolerance: 6
+    unit: percent of units
+  depends_on:
+  - fig7c-run-units-in-spindles
+  criterion: Measures as in fig7c-run-units-in-spindles for all CA1 units, before and after the
+    maze. Open, the median for the ripple split; readings (a) per epoch, (b) over both epochs
+    together. Reproduced when, under a reading, the fraction is within tolerance, the ANOVA
+    ripple effect gives p < 0.05, and the before-after tests give p >= 0.05.
+- id: thalamus-not-selective-for-run-cells
+  statement: Thalamic firing does not differ between spindle cycles that hold spikes of
+    maze-active CA1 units and those that hold spikes of other CA1 units, nor with cycles in
+    which co-modulated CA1 pairs are active.
+  source: Results, Multi-region correlations after spatial exploration, paragraphs 5 and 6
+  quote: We found no significant differences between the peak or the average firing values of the
+    cross-correlograms between the two types of spindles and thalamic units (p>0.3, Wilcoxon
+    signed rank), nor any differences between the mean number of thalamic spikes per spindle
+    cycle or the percent of spindle cycles with spikes from thalamic units (p>0.1
+  statistics:
+  - about: peak and mean of peri-spindle thalamic histograms
+    test: Wilcoxon signed rank
+    p: 0.3
+    p_relation: ">"
+  - about: thalamic spikes per cycle and percent of cycles with spikes
+    p: 0.1
+    p_relation: ">"
+  - about: cycles with co-modulated CA1 pairs active against others
+    p: 0.9
+    p_relation: ">"
+    n: 19 CA1 pairs, 9 thalamic units
+  depends_on:
+  - fig7c-run-units-in-spindles
+  criterion: A claim of absence. Spindle cycles after the maze containing spikes of run units
+    against cycles with spikes of not-run units; peri-spindle thalamic histograms (M-PETH) and
+    per-cycle measures as in fig7c-run-units-in-spindles; Wilcoxon signed rank over thalamic
+    units (named for the first, M-stats for the rest). CA1 pairs co-modulated during the maze
+    were chosen by eye (Figure 7, figure supplement 1B); reading, pairs whose maze
+    cross-correlogram peak within plus or minus 100 ms exceeds 3 sd (the pair rule of
+    fig4b-thalamic-pairs-correlated, not stated for these pairs). Reproduced when no test gives
+    p < 0.05; repeated on thalamic MUA as the paper did.
