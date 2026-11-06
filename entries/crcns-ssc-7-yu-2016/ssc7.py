@@ -646,17 +646,18 @@ def response_duration(psth_counts, n_touch, pre=0.1):
 # Membrane potential
 # ---------------------------------------------------------------------------------------------
 
-def remove_spikes(v, spk_rel, fs=VM_FS):
+def remove_spikes(v, spk_rel, fs=VM_FS, forward=False):
     """Spike thresholds and spike-removed Vm of one trial (M-VM).
 
     For each stored spike time, the threshold is the last time before the spike peak at which
     dVm/dt rises above 3 s.d. of the trial's dVm/dt (searched back up to 3 ms); Vm is replaced by
-    a line from 1 ms before to 4 ms after that time.
+    a line from 1 ms before to 4 ms after that time. dVm/dt is a central difference, or with
+    `forward` a forward difference (a variant).
     """
     v = np.asarray(v, float).copy()
     if len(spk_rel) == 0:
         return v, np.array([]), np.array([])
-    dv = np.gradient(v) * fs
+    dv = (np.diff(v, append=v[-1]) if forward else np.gradient(v)) * fs
     sd = np.nanstd(dv)
     thr_v, thr_i = [], []
     n = len(v)

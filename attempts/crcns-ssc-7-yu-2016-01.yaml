@@ -135,7 +135,8 @@ outcomes:
   notes: JY0861, whose unit description names it neuron 1. All seven values are within tolerance under
     readings (a), and spikes per touch range from 0 to 7. The epoch reading of the whisking change gives
     5.52 mV and the whisking-rate reading 0.55 spikes/s, both outside. The threshold s.d. over spikes
-    is 8.91 mV against the paper's 3.7.
+    is 8.91 mV against the paper's 3.7. With dVm/dt as a forward difference (variant), the threshold is
+    -45.53 mV (within), s.d. 7.98 mV.
   deviations:
   - Spike thresholds are found by searching back from the data set's spike times for the dVm/dt crossing
     (Online Methods, Data analysis, paragraph 1); spikes are not detected again.
@@ -171,8 +172,10 @@ outcomes:
   - 5.26
   - 5.4
   notes: All 37 amplitudes are positive. The latency median (5.0 ms) and the amplitude median (5.4 mV)
-    are within tolerance. The latency mean (6.03 ms, n = 35, raised by long latencies up to 22.1 ms in
-    neurons with small PSPs) and the amplitude mean (5.26 mV) are not. Two neurons have no latency crossing.
+    are within tolerance. The latency mean (6.03 ms, n = 35) and the amplitude mean (5.26 mV) are not.
+    Five latencies above 8 ms (9.5 to 22.1 ms) come from neurons with PSPs of 0.17 to 1.66 mV, against
+    a median of 6.06 mV for latencies of 2.5 to 8 ms. Four latencies of 0.0 to 1.4 ms, shorter than the
+    paper's VPM touch latency, are unlikely to be PSP onsets. Two neurons have no latency crossing.
     With the principal whisker taken from the whisker configuration, the amplitude is 4.18 mV (median
     3.7) and only the latency median (4.8 ms) holds, so the outcome does not rest on that choice.
 - claim: l4e-whisking-vm
@@ -261,8 +264,13 @@ outcomes:
   - 3.9
   notes: The seven whole-cell FS neurons give an amplitude of 6.8 +- 1.93 mV (median 6.97) and a latency
     of 3.67 +- 1.18 ms (median 3.9). With JY1139's drifting trials kept, 6.74, 6.97, 3.69 and 4.0, all
-    within as well.
+    within as well. With the principal whisker taken from the whisker configuration, which changes only
+    JY1171, the latency mean is 7.24 ms (outside) and the other three values are within (6.23 mV, median
+    6.97 mV, latency median 3.9 ms), which would be partially reproduced.
+  assumed: true
   deviations:
+  - The principal whisker is the first tracked series (assumption; see findings). The FS spike responses
+    support it (1.78 against 0.45 spikes per touch); the configuration order is shown as a variant.
   - 'Trials whose median Vm lies more than 20 mV from the neuron''s median are left out of the Vm measures:
     13 trials of JY1139 (5 control trials), which starts near 0 mV and settles at about -41 mV. An assumption
     after the Methods'' rejection of recordings "with slow baseline drift (>20 mV)" (Barrel cortex recordings,
@@ -282,7 +290,8 @@ outcomes:
     within tolerance. The latency mean 5.92 ms and median 4 ms are not. With the principal whisker taken
     from the whisker configuration, the FS neurons with two tracked whiskers give 0.45 spikes per touch
     on average, against 1.78 with the first series. Read at the bin centre, the latency median is 4.5
-    ms (within) and the mean 6.42 ms (outside), so three of five values hold under either edge.
+    ms (within) and the mean 6.42 ms (outside), so three of five values hold at the bin edge and four at
+    the bin centre.
   deviations:
   - The principal whisker is the first tracked series (assumption; see findings).
 - claim: fs-whisking-count
@@ -355,7 +364,9 @@ outcomes:
   - 0.214
   notes: The claim of no whisking effect fails its test. The signed-rank test of whisking against nonwhisking
     rates gives p = 0.020 to 0.027 under all readings (mean difference 0.29 to 0.33 spikes/s, median 0).
-    Spikes per touch are 0.20 (median 0.04) against 0.3 (0.1). Whole-cell neurons give 0.096 spikes per
+    Spikes per touch are 0.20 (median 0.04) against 0.3 (0.1). The nonwhisking mean and the whisking median
+    are within tolerance under every reading; the nonwhisking median is within under rate reading (a)
+    (0.092) and outside under reading (b) (0.116 to 0.121). Whole-cell neurons give 0.096 spikes per
     touch, cell-attached ones 0.28. With the principal whisker taken from the whisker configuration, p
     = 0.0061 and spikes per touch 0.172, so the outcome does not rest on that choice.
 - claim: thalamus-inhibition-vpm
@@ -540,7 +551,8 @@ outcomes:
     so the outcome rests on the choice (143 trials tagged passive). Regression to the mean is small here:
     with control trials split in halves, the evoked rate of one half does not correlate with the AUC difference
     between halves (rho = 0.02, p = 0.91), and with rate and control AUC from different halves the claim''s
-    correlation is rho = -0.19, p = 0.27. Six neurons lack enough touch or no-touch trials. A question
+    correlation is rho = -0.19, p = 0.27. Under reading (a) with the passive first touches kept, rho =
+    -0.29, p = 0.086. Six neurons lack enough touch or no-touch trials. A question
     on the criterion is asked of a reader.'
   deviations:
   - The AUC is computed over whole trials (the first touch, or a reference time, with 250 ms windows),
@@ -578,10 +590,16 @@ outcomes:
     performance with light and none an increase, against 6 of 8 and 1. Leaving out any one mouse gives
     3 or 4, so no 8 of the 9 match. No session matches the example (closest JY1247, false alarms 14% to
     58%). Light falls in 23% to 48% of Nogo trials here, where the example describes "a small subset of
-    trials".
+    trials". Per session the light share of Nogo trials is 14% to 70% (median 37%; 3 of 47 sessions under
+    20%). One mouse (ANM266951) has 7 Nogo trials and cannot give a significant result; without it, 8
+    mice give 4 decreases.
+  assumed: true
   deviations:
-  - Tested on the recording sessions, the only behavior in the data set; the paper's 8 mice may be separate
-    behavior sessions.
+  - 'Tested on the recording sessions, assumed to be the sessions of Supplementary Fig. 14. The paper
+    does not say which sessions it used, and the data set holds no other behavior with eNpHR light.
+    Against the assumption: 9 mice here against 8, and no session matches the example. For it: the mouse
+    with 7 Nogo trials may be the one the paper does not count, and some sessions have light in a small
+    share of Nogo trials.'
 findings:
 - kind: format_error
   statement: In the cortical files the whisker timestamps (processing/whisker/BehavioralTimeSeries/*/timestamps,
@@ -592,7 +610,8 @@ findings:
   statement: Seventy cortical files hold two tracked whisker series (whisker_angle_1, whisker_angle_2,
     with their touch annotations), and nothing says which whisker each is. Mapping them in the order of
     general/whisker_configuration to analysis/principal_whisker gives FS neurons almost no touch response
-    (0.45 against 1.78 spikes per touch with series 1). The example code takes the first whisker as the
+    (0.45 against 1.78 spikes per touch with series 1), while for several L4 E neurons it picks the series
+    with the larger touch response (JY1345 0.857 against 0.235). The example code takes the first whisker as the
     main one.
 - kind: data_missing
   statement: Not in the data set, though the paper reports them. The 17 thalamic multiunit recordings
@@ -612,7 +631,7 @@ findings:
 - kind: paper_inconsistency
   statement: The eNpHR experiments hold 43 L4 E neurons with 594 nm light trials (39 cell-attached and
     4 whole-cell), where the paper gives 40. Thalamic photoinhibition has 13 whole-cell L4 E neurons against
-    12, direct cortical activation 8 or 9 against 7, and the mice with eNpHR light number 9, where Supplementary
+    12, direct cortical activation 8 against 7, and the mice with eNpHR light number 9, where Supplementary
     Fig. 14 has 8.
 - kind: methods_unavailable
   statement: For the authors. The onset latency of Vm after light onset (Supplementary Fig. 9c,f; 4.2
@@ -972,3 +991,294 @@ verifications:
       since the example has light on "a small subset of trials" and here it falls in 23% to 48% of Nogo
       trials; the recording sessions are the only behavior with eNpHR light in the data set, so the claim
       is tested on them.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, with its conclusions and summary, the helper
+    module, the README, the attempt record and the claims file, with the paper under paper/.
+  results:
+  - claim: behavior-performance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Stated and reasonable. The outcome does not depend on it: under the "config" variant Go touches
+      are 5.93 (within) but Nogo is 0.63 and reaction time 334 ms (both outside).'
+    response: No change.
+  - claim: vpm-baseline-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes. Cell 4 says "Seven VPM sessions come from one mouse (ANM199552)";
+      cell 27 shows 7 units in 6 sessions (two units share 20130608). The record's "Seven units" is correct.
+    response: Cell 4 now says seven VPM units in six sessions, two sharing the session of 2013-06-08. No change
+      of outcome.
+  - claim: vpm-touch-response
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 48 outcomes. Point 7 is partly resolved: the VPM median latency of 1 ms against
+      2.5 ms is still unexplained, and stated as such. It does not change a conclusion.'
+    response: No change; the difference remains unexplained.
+  - claim: vpm-whisking-count
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: vpm-whisking-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: vpm-phase-modulation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: vpm-rate-amplitude-trials
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-example-e1
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 48 outcomes. Point 13 is partly resolved: the forward-difference check is quoted
+      but not run in the notebook. It does not change a conclusion.'
+    response: The forward-difference threshold search is now run in the notebook (ssc7.remove_spikes, forward=True),
+      giving -45.53 mV with s.d. 7.98 mV, within. No change of outcome.
+  - claim: l4e-example-e24-e32
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced, as I gave it in round 1.
+    response: No change.
+  - claim: l4e-resting-vm
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-touch-psp
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 48 outcomes. Cell 70: the long latencies come from "neurons with small PSPs".
+      No per-neuron amplitudes are printed. Four latencies of 0.0 to 1.4 ms, faster than VPM, are not flagged.'
+    response: Cell 69 now prints latency and amplitude per neuron. The five latencies above 8 ms have PSPs
+      of 0.17 to 1.66 mV (median of the others 6.06 mV). The four latencies of 0.0 to 1.4 ms are flagged in
+      the result as unlikely PSP onsets; leaving them out would raise the mean further. No change of outcome.
+  - claim: l4e-whisking-vm
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-distance-threshold
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-reversal-potential
+    agrees: true
+    outcome: reproduced
+    reason: Changed to reproduced, and I agree. With Vm after a later touch set to NaN, as M-EPOCH asks, the
+      median whisking reversal is 4.9 mV above rest, inside the 5 mV margin. Cell 78 also gives p = 2.6e-5
+      and 34 of 35. The margin is very narrow, and the record says so.
+    response: No change.
+  - claim: l4e-hf-fluctuations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-inhibition-window
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-whisking-inhibition
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: fs-baseline-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: fs-touch-vm
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 48 outcomes. It rests on the same series-1 choice as fs-touch-spikes but carries
+      no flag. It was not run under "config". The risk to the outcome is low: only one FS whole-cell neuron
+      (JY1171) changes series.'
+    response: Run under "config" (cell 84). JY1171 alone changes series, and the latency mean becomes 7.24
+      ms (outside) with the other three values within, which would be partially reproduced. The outcome is
+      now marked assumed, with the deviation and the variant in the notes. It stays reproduced, since the FS
+      spike responses support series 1.
+  - claim: fs-touch-spikes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stated and reasonable. The FS touch responses support taking series 1 as the principal whisker.
+      Cell 34 and the notes say "Three of the five values hold under either edge." At the bin centre four of
+      five hold (spikes per touch mean and median, latency median 4.5, n = 25). The outcome is unchanged.
+    response: Cell 34 and the notes now say three of five at the bin edge and four at the bin centre. No change
+      of outcome.
+  - claim: fs-whisking-count
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: fs-whisking-vm
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: fs-whisking-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: fs-phase-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: fs-hf-fluctuations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: l4e-spikes-touch-selective
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 48 outcomes. Cell 46: "both medians (0.09 and 0.21) are within tolerance." This
+      holds only under rate reading (a). Under (b) the nonwhisking median is 0.116 to 0.121, which is outside.'
+    response: Cell 46 and the notes now say the nonwhisking median is within under rate reading (a) and outside
+      under (b) (0.116 and 0.121). No change of outcome.
+  - claim: thalamus-inhibition-vpm
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: thalamus-inhibition-l4e-vm
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stated and reasonable. The rule as written gives 0 ms at the light step. The smoothing grid in
+      cell 114 shows the thalamic latency is always longer, and both latencies are never within tolerance together.
+      The record finding "direct cortical activation 8 or 9" is not supported; the notebook prints only 8 (cells
+      105 and 114).
+    response: The finding now says 8. No change of outcome.
+  - claim: thalamus-inhibition-fs
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: thalamus-inhibition-dose
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 48 outcomes. Claims-file issue (point 9a), reported and not corrected: the test
+      mostly compares light with no light. Among light trials only, a dose effect appears in 1 of 3 epochs.
+      It is now asked of a reader.'
+    response: No change; the question stands in questions/crcns-ssc-7.yaml.
+  - claim: rabies-vpm-input
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-behavior
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-l4e-touch
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 48 outcomes. Claims-file issue (point 8), reported and not corrected: the peak-minus-baseline
+      amplitude is tested against zero. Random times give 0.208 mV, and touch does not differ from them (p
+      = 0.148). It is now asked of a reader.'
+    response: No change; the question stands in questions/crcns-ssc-7.yaml.
+  - claim: ion-cut-l4e-whisking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Changed to partially reproduced, and I agree. The control mean is 1.337 against a bound of 1.34
+      (cell 96). No reading has both means within tolerance. It sits on its margin (0.003 mV outside), which
+      is stated.
+    response: No change.
+  - claim: ion-cut-l4e-phase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-l4e-spectra
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-fs-touch
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-fs-whisking
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-fs-phase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: ion-cut-l5-fs
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-kruskal-wallis
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-l4e-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-whisking-driven
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-spikes-per-touch
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-auc
+    agrees: true
+    outcome: not_reproduced
+    reason: Changed to not reproduced, and I agree; cell 129 gives p = 0.16 (reading a) and 0.09 (reading b).
+      The assumption is stated, and reasonable because it matches touch_table, but the outcome depends on it
+      entirely. Keeping the passive first touches gives rho = -0.34, p = 0.038 under reading (b), which would
+      be reproduced. M-ROC says only "the first touch", so both choices are defensible. The summary's "enphr-auc
+      reproduces only with those touches kept" is shown for reading (b) only; reading (a) with those touches
+      kept is not printed.
+    response: Reading (a) with the passive first touches kept is now printed (rho = -0.29, p = 0.086). The
+      summary and notes say the claim reproduces only with those touches kept and only under reading (b). No
+      change of outcome; the question to the authors in the findings stands.
+  - claim: enphr-auc-groups
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-pv-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 48 outcomes.
+    response: No change.
+  - claim: enphr-behavior
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome, with a caveat. It rests on the recording sessions being the paper's Supplementary
+      Fig. 14 behaviour sessions, an assumption raised only as a deviation. The evidence that they are not
+      the same sessions is real, with 9 mice against the paper's 8, light in 23-48% of Nogo trials against
+      the legend's "small subset of trials", and no session matching the example. This should be assumed true
+      at least, and arguably blocked (data_missing or metadata_insufficient).
+    response: Marked assumed, with the assumption as a deviation. Not proposed as blocked. Cell 138 now prints
+      the light share per session (14% to 70%, 3 of 47 sessions under 20%), so some sessions do have light
+      in a small share of Nogo trials. One of the 9 mice (ANM266951) has 7 Nogo trials and cannot be significant,
+      so the paper's 8 may be the other 8, which give 4 decreases. The data set may hold the paper's sessions,
+      so the claim stays tested.

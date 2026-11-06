@@ -6,7 +6,7 @@ of VPM units, L4 excitatory neurons and L4 fast-spiking interneurons in mice tha
 with their whiskers. It also holds whisker tracking, touch annotations, licks and optogenetic
 trials, and recordings after infraorbital nerve (ION) transection. The notebook streams the data
 set's single archive, `data.tar.gz`, once from the public bucket and reduces each NWB file in
-memory. It takes about twenty minutes, most of it streaming.
+memory. It took 17 and 22 minutes in the last two runs, 10 and 15 of them streaming.
 
 | Claim | Outcome |
 |---|---|
@@ -63,6 +63,7 @@ reasoning and the differences from the paper's method.
 
 Several outcomes rest on assumptions, recorded in the attempt: which tracked whisker series is the
 principal whisker (the files do not say), how the light-onset latency is read, and whether the
-first touch of a trial tagged passive enters the touch-detection (AUC) analysis. The data set
+first touch of a trial tagged passive enters the touch-detection (AUC) analysis, and whether the
+recording sessions are the behavior sessions of the paper's eNpHR experiment. The data set
 mixes time units in its cortical whisker timestamps, and it lacks the thalamic multiunit
 recordings, the rabies tracing and the recordings with depolarizing current injection.
