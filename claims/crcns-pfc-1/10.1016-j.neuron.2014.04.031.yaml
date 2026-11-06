@@ -120,6 +120,22 @@ claims:
     7 of the 12 rat and block pairs (a majority, reading "typically"); the pairs are reported.
   depends_on:
   - fig2a-above-chance
+- id: fig2d-block-switch
+  statement: After each block change rats switch rapidly to the new target; performance dips briefly
+    during the cue trials at the start of a block and recovers within a few trials.
+  source: Results, A Novel Behavioral Task for Rodents, paragraph 2; Figure 2D legend
+  quote: After each block change, rats rapidly and correctly switched to selecting the new target
+    sound ... Performance briefly dips during cue trials at the beginning of a block but recovers
+    within a few trials
+  criterion: As 2-1-behavres/main04.py (Figure 2D). Sessions as fig2a-above-chance, nonrandom 0, the
+    first block of each session dropped; trials folded on their position in the 160-trial cycle of a
+    localization and a pitch discrimination block; the fraction of hits at each position, averaged
+    over sessions weighted by trial counts. The paper gives no number for the dip or for "a few
+    trials"; read here, as a choice, as the hit fraction on the first trial of each block lying below
+    the mean over that block's non-cue trials (21 to 80) and reaching that mean within the first 10
+    trials of the block (within 5 shown as a variant). Reproduced when this holds for both blocks.
+  depends_on:
+  - fig2a-above-chance
 - id: iti-median
   statement: The median intertrial interval is 4.0 s (interquartile range 2.7 to 5.3 s).
   source: Results, Within-Trial Timescale of the Encoding of the Selection Rule, paragraph 1
@@ -379,6 +395,31 @@ claims:
     non-preferred interference response is higher with p < 0.01.
   data: with_labels
   depends_on:
+  - fig4c-a1-rule-encoding
+- id: figs2c-s3c-hold-by-trial-type
+  statement: In rule-encoding neurons of both regions, hold-period activity does not differ between
+    correct go, correct nogo and go-on-nogo error trials within a block, while interference trials
+    differ from all other trial types.
+  source: Figure S2C and S3C legends
+  quote: There is no significant difference in the hold period activity between correct go, correct
+    nogo, and incorrect go-on-nogo trials ... However, there is a significant difference between
+    interference trials and all other trial types in that block ... However, there is no difference
+    between the other trial types, regardless of whether the rat performed a go or nogo response
+  criterion: In part a claim of absence. As 3-2-errhold/main3.py and the Figure S2C legend, which
+    names the test (paired Mann-Whitney U-test across neurons, Bonferroni corrected) but prints no
+    p-value, so no statistics entry is recorded.
+    Rule-encoding units (M3), hold counts as M3 on trials of blocks 2 and 4 with nonrandom 0, in
+    four categories per block, correct go, correct nogo, go-on-nogo errors and interference trials
+    (stimuli as fig3d-pfc-interference); units with at least 3 trials in each of the eight
+    categories; rates relabelled by preferred block. Wilcoxon signed-rank tests (M5) between every
+    pair of categories within each block, Bonferroni corrected over all comparisons of a region.
+    Reproduced when, in each region, no comparison among the three non-interference categories has
+    corrected p < 0.05 and every comparison of interference with another category in the same block
+    has corrected p < 0.05; partially reproduced when only the absence holds. The p-values are
+    reported.
+  data: with_labels
+  depends_on:
+  - fig3c-pfc-rule-encoding
   - fig4c-a1-rule-encoding
 - id: figs2f-s3f-bidirectional-vs-spont
   statement: Across rule-encoding neurons in both regions, the hold-period rate is significantly
@@ -641,16 +682,21 @@ claims:
   expected:
   - quantity: A1 neurons with a significant baseline-subtracted change
     value: 6
-    tolerance: 0.6
+    tolerance: 1
   - quantity: of these, from Rat 1 (CR12B)
     value: 4
-    tolerance: 0.4
+    tolerance: 1
   criterion: As 6-3-evokgain/main0.py with the block's hold rate subtracted from each trial's evoked
     rate; trials drawn with replacement equally from each stimulus pair in each block (10000
     draws, at least 5 trials per stimulus), two-sided bootstrap p of a zero difference, floored at
-    1/10000, Benjamini-Hochberg within region. Reproduced when the count is 5 to 7 of the A1 units
-    and at least half of them come from CR12B; partially reproduced when the count is within 3 to 9.
-    The tolerance of one neuron on 6 and 4 follows the 10% rule rounded to whole neurons.
+    1/10000, Benjamini-Hochberg within region (the code; the Supplement gives p < 0.05 and names no
+    correction, so the unadjusted count is shown as a variant). Reproduced when the count is 5 to 7
+    of the A1 units, 3 to 5 of them come from CR12B and these are a majority of the count, and the
+    CR12B units have the higher baseline-subtracted evoked rate in pitch discrimination; partially
+    reproduced when the count is within 3 to 9. The Supplement's "in these neurons the firing rate
+    was higher during pitch discrimination" is read as the CR12B units; the direction of all
+    significant units is reported. The tolerance of one neuron on 6 and 4 is the 10% rule rounded
+    up to a whole neuron.
   data: with_labels
   depends_on:
   - fig6cd-baseline-evoked-correlation
@@ -714,7 +760,8 @@ claims:
   - audresp-prevalence
 - id: figs5hi-stimulus-pairs
   statement: No stimulus pair shows a greater change in evoked response between blocks than the
-    others, with or without baseline subtraction, and in absolute value.
+    others, with or without baseline subtraction, and in absolute value; and no stimulus pair's
+    change differs from zero.
   source: Results, Changes in Baseline Activity Correlate with Changes in Evoked Activity, paragraph
     4; Figure S5H and S5I legends
   quote: A one-way Kruskal-Wallis test revealed no significant difference between the stimulus pairs
@@ -970,3 +1017,18 @@ claims:
     2 from 2^-6 to 2^-2) taken. Reproduced when for N = 320 and SNR 0.0625 some positive task signal
     gives above 80% correct in both tasks, and at SNR 0.25 performance is at least 99% over most
     positive task signals. The SNR is a grid value and taken exactly.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - evoked-beyond-baseline-rare, expected tolerances 0.6 and 0.4 raised to 1 neuron each, to agree with the criterion's own band of 5 to 7 and its stated rounding to whole neurons; the Rat 1 condition "at least half" replaced by 3 to 5 and a majority, to match the expected value.
+  - evoked-beyond-baseline-rare, criterion now tests the direction the statement gives (higher in pitch discrimination, read as the Rat 1 units, Supplement, Changes in magnitude of evoked response); it did not before.
+  - evoked-beyond-baseline-rare, criterion now says the Benjamini-Hochberg step is the code's (6-3-evokgain/main0.py, checked at commit 390b608) and that the Supplement names no correction; the unadjusted count is a variant.
+  - figs5hi-stimulus-pairs, statement now includes that no stimulus pair's change differs from zero, which the S5H legend states and the claim's statistics and criterion already test.
+  - Added fig2d-block-switch, from Results paragraph 2 and the Figure 2D legend (rapid switching, a brief dip during cue trials); no claim covered it. The paper gives no number for the dip or for "a few trials", so the criterion's thresholds are named as a choice.
+  - Added figs2c-s3c-hold-by-trial-type, from the Figure S2C and S3C legends (no difference among correct go, correct nogo and go-on-nogo hold activity; interference differs from all), which supports the paper's motor-plan argument; method from 3-2-errhold/main3.py (Bonferroni over pairs, as the legend says). No statistics entry, as no p-value is printed.
+  - Checked against the code at commit 390b608, no change needed, the interference and go-on-nogo stimulus categories and hold windows (3-2-errhold), pooled Benjamini-Hochberg over all units (3-1-hold/main1.py), BH over bins in Figure 5C (5-1-timecourse/main2b.py), per-block t-tests of r for RT and MT (3-4-RT_vs_hold/main3.py), sessions with control above disruption as the binomial count (7-1-zap/main1.py), square-root differences with Kruskal-Wallis and Wilcoxon (6-1-evoked/main5.py).
+  - Open, fig3d-pfc-interference and figs2f-s3f-bidirectional-vs-spont record p < 0.05 where the paper says only "significantly"; kept, as 0.05 is the level the paper uses throughout (Figure S2F prints p = 0.06 as not significant), but the bound is not printed at the cited place.
+  - Open, fig2a-above-chance reads "best rats' typical performance" as the median over a rat's sessions; the paper does not define it.
