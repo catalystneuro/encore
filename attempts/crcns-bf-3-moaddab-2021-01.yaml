@@ -43,7 +43,10 @@ outcomes:
   notes: With the Methods' rates (mean Hz, unrounded), 271 of 435 neurons (62%) from 160 sessions pass
     the screen, within tolerance of 257 and 153, and every rat has one. With the rates floored to integers
     as the authors' code does, and Matlab's ttest treating a constant nonzero difference as significant,
-    the screen gives 257 neurons from 153 sessions, the paper's counts. 240 neurons pass under both.
+    the screen gives 257 neurons from 153 sessions, the paper's counts. 240 neurons pass under both. The paper gives no chance level;
+    the same screen on pre-cue windows (20 to 10 s before onset as baseline, 10 to 9 s and 5 to 0 s before
+    onset as the two windows) passes 119 of 435 neurons (27%), near the 26.5% six independent tests at
+    0.05 give.
   deviations:
   - The authors' floored rates are shown as a variant (vpAnalysis.m, lines 7-64).
 - claim: fig1f-suppression-cue-effect
@@ -82,7 +85,9 @@ outcomes:
     gives 130 cue-excited and 127 cue-inhibited, normalized firing (three-cue pool) gives 125/132 or 121/136;
     the four-type pool gives 124/133; pooling the 6 s with Hz gives 118/139 (outside tolerance). The authors'
     normalization gives 131/126. On the Methods' 271 neurons no reading is within tolerance (142 to 155
-    cue-inhibited, tolerance 113.4 to 138.6).
+    cue-inhibited, tolerance 113.4 to 138.6). The authors' split, used for the later claims, and the Hz
+    two-means split differ on 25 of the 257 neurons (13 and 12 each way). The claim is tested on the
+    257 neurons its statement names; that population is the code's screen (A1).
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -144,7 +149,11 @@ outcomes:
     sums of squares (groups A, 56/48/22 to 58/46/22; groups B, 74/54/20 or 76/52/20), none within tolerance;
     on the authors' features the global partition has SSE 7254 against 7997 for the paper's. Over seeds
     1 to 300, one start reaches the paper's partition 98 times. Z-scored features (O7 b) give 30/64/32
-    or 46/56/24.
+    or 46/56/24. The partitions of the claims file's reading (b) and of the authors' features have the
+    same members (adjusted Rand index 1.000); the lower-SSE partition moves 16 Low neurons to Intermediate
+    and 4 Intermediate to High (index 0.579). So the seed and number of starts change the clusters, against
+    the claims file's statement that the seed cannot change a conclusion beyond the edge of an interval;
+    whether the reading should be Matlab's default of one start is asked in questions/crcns-bf-3.yaml.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -168,7 +177,8 @@ outcomes:
     (three-cue pool) and 1.34, p = 0.011 (four types); Low vs High p = 6.1e-4 and 3.6e-5; Intermediate
     vs High p = 2.0e-5 and 2.3e-6. All three pairs are significant at 0.05, but Low vs Intermediate misses
     the paper's p < 0.005. With the authors' normalization all pairs give p < 0.005 (Low vs Intermediate
-    p = 0.0027), as they do on groups B's clusters, which are not the paper's.
+    p = 0.0027), a variant outside the claims file. Groups B's clusters also give p < 0.005 for all pairs, but
+    they are not the paper's clusters and do not count towards the outcome.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -252,7 +262,9 @@ outcomes:
     0.021], safety late [0.001, 0.216]. Four-type pool, the pattern holds (safety late [-0.010, 0.170])
     with means -0.614, -0.299, -0.427, -0.209. The means are about twice the paper's (-0.37, -0.14, -0.27,
     -0.09) and outside tolerance. The authors' normalization gives -0.364, -0.138, -0.266, -0.094 and
-    the full pattern.
+    the full pattern. Changing one element of the normalization at a time, Z over single trials in place
+    of trial means is what brings the means to the paper's (single trials, 10 s baseline, unfloored, -0.344,
+    -0.166, -0.240, -0.118); the baseline length and flooring move them by at most 0.06.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -412,7 +424,8 @@ outcomes:
     never significant. The positive onset uncertainty-safety correlation of Low neurons fails the criterion
     under every reading. The authors' code correlates the first 5 s of cue in place of the first 1 s (vpAnalysis.m,
     lines 1719-1775); with that window the Low onset uncertainty-safety correlation is r = 0.03 (p = 0.82),
-    so the outcome depends on the window Supplementary Fig. 5 used, which the claims file did not read.
+    so the outcome depends on the window Supplementary Fig. 5 used, which the claims file did not read. With the
+    first 5 s both clusters meet the criterion. Which window the supplement used is asked in questions/crcns-bf-3.yaml.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -433,16 +446,19 @@ outcomes:
   - The reading of 'commonly' as two of three periods is the claims file's assumption.
   assumed: true
 - claim: supp6-low-nosepoke-pauses
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_moaddab_2021.ipynb
   output: claim:supp6-low-nosepoke-pauses
-  notes: With the authors' pause definition, scaling (i) and (ii), Low post -0.054 [-0.255, 0.170] and
-    0.048 [-0.074, 0.193], post - pre [-0.141, 0.357] and [-0.058, 0.209]; Intermediate post -0.252 [-0.572,
-    0.062] and -0.024 [-0.212, 0.249], post - pre [-0.303, 0.451] and [-0.200, 0.256]; no interval lies
-    below zero. The claims file's 10 s pauses agree, with events in 47 of 74 Low and 14 of 34 Intermediate
-    neurons (median one event), and so do 5 s pauses with scaling (i). With 5 s pauses and scaling (ii),
-    Intermediate post firing lies below zero (-0.399 [-0.646, -0.051]), and with the authors' single-event
-    scaling Intermediate post firing is -0.103 [-0.201, -0.020].
+  notes: Low firing neurons show no inhibition after a pause under any reading. Intermediate neurons
+    show none with the authors' pause definition and the claims file's scalings (post -0.252 [-0.572, 0.062]
+    and -0.024 [-0.212, 0.249], post - pre [-0.303, 0.451] and [-0.200, 0.256]), but with the authors'
+    single-event scaling their post firing lies below zero (-0.103 [-0.201, -0.020]), and so it does with
+    5 s pauses and scaling (ii) (-0.399 [-0.646, -0.051], post - pre -0.320 [-0.613, -0.016]). The 10 s
+    pauses show no inhibition but give only 25 events in 14 of 34 Intermediate neurons (median 0 per
+    neuron) and 85 in 47 of 74 Low neurons, too few to support an absence. With the authors' pauses
+    the interval effect is significant for Intermediate neurons (p = 1.2e-5 to 3.3e-8) and not for Low
+    (p >= 0.13). The absence holds in the Low cluster and in the Intermediate cluster only under some
+    readings, so the claim holds in part. Changed from reproduced after verification round 1.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -851,7 +867,8 @@ outcomes:
     = 0.026), uncertainty r = -0.39 (R2 0.154, p = 5e-4), safety r = 0.07 (R2 0.005, p = 0.54). Every
     reading gives the signs and significance the criterion asks, none puts all three R2 within 10% of
     the paper's (0.08, 0.16, 0.006). The authors' normalization and O5 (a) give R2 0.084, 0.156, 0.0057,
-    all within tolerance.
+    all within tolerance. The partial outcome comes only from the 10% tolerance on
+    R2, which is asked in questions/crcns-bf-3.yaml.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -971,10 +988,12 @@ outcomes:
   - 0.415
   notes: Three-cue pool, onset intervals above zero for all cues; danger and uncertainty above zero in
     late cue and delay; all six difference intervals above zero (danger - uncertainty 0.478, 0.413, 0.332;
-    uncertainty - safety 0.370, 0.255, 0.415). Safety late cue contains zero, but safety delay lies below
-    zero (-0.162 [-0.254, -0.077]) under every reading. The difference means are outside tolerance with
+    uncertainty - safety 0.370, 0.255, 0.415). Safety delay lies below zero under every reading (-0.162 [-0.254, -0.077]),
+    and safety late cue under the three-cue pool ([-0.150, -0.004]) and the authors' normalization ([-0.098,
+    -0.008]); the four-type pool's late-cue interval contains zero ([-0.126, 0.003]). The difference means are outside tolerance with
     the Methods' normalization; the authors' normalization gives 0.265, 0.239, 0.195, 0.206, 0.146, 0.222,
-    within tolerance (paper 0.26, 0.24, 0.19, 0.21, 0.15, 0.22).
+    within tolerance (paper 0.26, 0.24, 0.19, 0.21, 0.15, 0.22). Whether the paper says safety firing
+    did not differ from baseline, or only did not increase, is asked in questions/crcns-bf-3.yaml.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -1017,9 +1036,11 @@ outcomes:
   output: claim:supp9-excited-nosepoke-pauses
   notes: With the authors' pause definition, the post - pre interval is [-0.039, 0.361] (scaling i), [-0.013,
     0.222] (ii) and [-0.001, 0.112] (authors' scaling), and no post interval lies above zero. 10 s pauses
-    agree (events in 71 of 131 neurons). With 5 s pauses and scaling (ii), firing rises after the pause
+    agree but rest on 135 events in 71 of 131 neurons (median one per neuron); the authors' pauses give
+    3367 events, 9 to 46 per neuron, and a significant interval effect (p = 8.3e-8 to 1.6e-6) without
+    a post or post - pre interval above zero. With 5 s pauses and scaling (ii), firing rises after the pause
     (post 0.172 [0.037, 0.336], post - pre 0.207 [0.052, 0.389]); with scaling (i) post - pre is 0.206
-    [-0.004, 0.395].
+    [-0.004, 0.395]. The outcome depends on the pause definition and rests on A3.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -1142,7 +1163,8 @@ outcomes:
   - 0.0762
   notes: Three-cue pool, events (a), scaling (i), O5 (a), r = 0.32, 0.32, 0.28 (R2 0.101, 0.100, 0.076,
     p <= 0.0014). Every reading gives three positive significant correlations; none puts all three R2
-    within 10% of the paper's (0.09, 0.12, 0.08). The authors' normalization gives 0.084, 0.113, 0.098.
+    within 10% of the paper's (0.09, 0.12, 0.08). The authors' normalization gives 0.084, 0.113, 0.098. The partial outcome comes only from the 10% tolerance on
+    R2, which is asked in questions/crcns-bf-3.yaml.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -1172,7 +1194,10 @@ outcomes:
     - reward 0.586 [0.241, 0.945], safety - reward 0.129 [-0.263, 0.558]; uncertainty also excludes zero.
     With O5 (b) the pattern holds (0.632, 0.089, -0.368) with means outside tolerance. The authors' normalization
     with O5 (a) gives 0.398 [0.148, 0.631], 0.136 [-0.082, 0.351], -0.086 [-0.317, 0.168], the paper's
-    values (0.40, 0.13, -0.08).
+    values (0.40, 0.13, -0.08). Under scaling (i) the cue values are Z-scored over cue bins and the reward
+    values over the 16 reward bins, so the difference has no common unit; under scaling (ii), where both
+    share the cue normalization's SD, no reading gives the pattern. Whether (i) belongs among this claim's
+    readings is asked in questions/crcns-bf-3.yaml.
   deviations:
   - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
     on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
@@ -1225,7 +1250,9 @@ findings:
     subtracts from each trial its firing in the 2 s before cue onset, floored to an integer rate, and
     Z-scores single trials. The paper's printed means, bootstrap intervals and regression betas match
     the script's normalization (for example Low firing danger onset -0.364 against the paper's -0.37),
-    and the Methods' normalization gives values about twice as large.
+    and the Methods' normalization gives values about twice as large. Of the three differences, Z-scoring single trials
+    in place of trial means accounts for the gap, since with Z over single trials the means are within the paper's
+    tolerance whatever the baseline length or flooring.
 - kind: code_mismatch
   statement: The Methods screen neurons on mean firing rates (Hz); vpAnalysis.m floors each trial's rate
     to an integer before the t-tests. The floored screen gives the paper's 257 neurons from 153 sessions;
@@ -1247,3 +1274,328 @@ findings:
     than 2 s between pokes 18 to 2 s before cue onset, and vpAnalysis.m correlates the first 5 s of cue
     for the cue-inhibited clusters. Question for the authors, are these the definitions used in the supplementary
     figures?
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of commit f940f5d6b1 (author-answers, the analysis of the author run 4d8f88d15e)
+    with the conclusion cells and the summary removed, the helper module and the claims file, with the paper.
+    The verifier also read the archive listing and tested the helper functions on synthetic input. agrees
+    compares its outcome with the outcome of the record it reviewed.
+  results:
+  - claim: recorded-units
+    agrees: true
+    outcome: partially_reproduced
+    reason: 435 neurons and 14 rats match. There are 195 distinct sessions against 194 (cell 15). The criterion
+      says to report this as a difference in the data set. Problem 10, four same-session unit pairs share
+      more than 70% of their spikes and are likely duplicate units; they are kept in every population.
+    response: No change to the outcome. The duplicate pairs stay in, as the paper counts them; the notes and
+      a finding already report them, and the verifier marks this as not affecting a conclusion.
+  - claim: cue-responsive-screen
+    agrees: true
+    outcome: reproduced
+    reason: With the Methods' rates, 271 neurons, 160 sessions, all 14 rats, within tolerance. The authors'
+      floored rates give exactly 257/153 (cell 17). The paper states no chance level for the cue screen. Six
+      uncorrected tests imply about 26% false positives per neuron under the null, and the notebook does not
+      report this.
+    response: No change to the outcome. The cell now prints the chance reference, 1 - 0.95^6 = 0.265, and
+      the same screen run on pre-cue windows, which passes 119 of 435 neurons (27%); the conclusion and notes
+      give it. The notebook now also prints the lines of the authors' scripts that it cites (vpAnalysis.m
+      lines 7-64 among them).
+  - claim: fig1f-suppression-cue-effect
+    agrees: true
+    outcome: reproduced
+    reason: F(2,26) = 74.6 to 80.9, p about 1e-11, danger > uncertainty > safety under every O3 reading and
+      both populations (cell 19). Problem 11, cell 19 contains a dead expression.
+    response: No change to the outcome. The dead expression is removed.
+  - claim: fig1f-differential-suppression
+    agrees: true
+    outcome: reproduced
+    reason: All three intervals exclude zero and all means are within tolerance (0.29/0.51/0.80) under every
+      reading (cell 21).
+    response: No change.
+  - claim: fig2-excited-inhibited-split
+    agrees: false
+    outcome: partially_reproduced
+    reason: On the paper's 257 neurons, Hz with two window means gives 130/127, within tolerance. On the Methods'
+      271 neurons no claims-file reading is within tolerance, 139 to 155 inhibited (cell 23). Problem 1, the
+      header says the Methods' reading is the main result and the authors' code a variant, and A1 reverses
+      that for the neuron groups, using the code's floored-rate screen and the code's per-trial normalization
+      for the split; the notebook never shows how far the groups it used differ from the Hz two-means split.
+    response: 'Kept as reproduced and the disagreement recorded. The criterion asks for counts within tolerance
+      under one reading, and the claim''s statement is about the 257 neurons; on those, the claims-file reading
+      Hz with two window means gives 130/127. The 257 come from the code''s screen (A1), so the outcome stays
+      marked as resting on it, and the notes say the Methods'' 271 neurons fail. The header now states A1
+      as an exception to the rule for both steps, with the reason (the code reproduces every count the paper
+      gives and the Methods do not mention rounding). A new cell crosstabs the groups: the code''s split and
+      the Hz two-means split differ on 25 of the 257 neurons, and groups A and B share 108 cue-excited and
+      115 cue-inhibited neurons.'
+  - claim: ancova-excited-no-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: On the 131 neurons, p = 0.235 (O1a) and p = 0.182 (O1b). On groups B (Methods' rates) p < 0.001,
+      so the absence depends on A1 (cell 27).
+    response: No change; the notes already say the outcome rests on A1 and give the groups B result.
+  - claim: ancova-inhibited-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: p from 1.4e-9 to 1.5e-4 in every reading and group (cell 29).
+    response: No change.
+  - claim: kmeans-three-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Reading CV over the 10 s baselines, raw features, Matlab default of one start after rng(1) gives
+      74/34/18, and the F pattern matches, amplitude ratio p = 0.12 (cell 31). The partition is a local optimum.
+      Problem 3, the claims file says the seed cannot change a conclusion beyond the edge of an interval,
+      and here it does; only 98 of 300 single starts reach 74/34/18 and the lower-SSE optimum (58/46/22) fails
+      the counts. The main clusters use the code's features, not a claims-file reading, and the notebook does
+      not check that the claims-file reading's memberships are identical.
+    response: 'No change to the outcome. A new cell gives the adjusted Rand index and crosstabs: the claims-file
+      reading (10 s baselines, raw, one start after rng(1)) has the same members as the code''s clusters (index
+      1.000), and the lower-SSE partition moves 20 of 126 neurons (index 0.579). The conclusion and notes
+      say the seed changes the clusters and that every cluster claim rests on A2. Whether the claims file''s
+      reading should be Matlab''s default of one start, as the Methods name it, is asked in questions/crcns-bf-3.yaml.'
+  - claim: clusters-differ-in-cue-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: On the paper's clusters under O1a/b all three pairs have p < 0.05, but Low vs Intermediate has
+      p = 0.035/0.011, not < 0.005. Only the code normalization gives p < 0.005 for all pairs (cell 36). Problem
+      5, groups B's clusters (74/54/20) are not the paper's clusters, so the all-p < 0.005 result on B should
+      not count toward this claim.
+    response: No change to the outcome. The conclusion and notes now say groups B's clusters do not count
+      towards it.
+  - claim: clusters-by-rat
+    agrees: true
+    outcome: reproduced
+    reason: 11/9/5 rats, and 11 High neurons from pa02, on the main clusters (cell 38).
+    response: No change.
+  - claim: fig3a-low-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: All three effects p < 1e-11 and cue means order D < U < S under O1a/b (cell 42).
+    response: No change.
+  - claim: fig3b-low-inhibited-to-threat-cues
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The pattern holds under O1b. Means are about 1.7x the paper''s (danger onset -0.61 against -0.37
+      +- 0.08). Under O1a the safety late-cue interval is above zero (cell 44). Problem 2, the notebook never
+      isolates which element causes the gap: per-trial vs trial-averaged Z, 2 s vs 10 s baseline, or flooring.'
+    response: No change to the outcome. A new section before this claim varies one element at a time. Z over
+      single trials puts all seven checked means within tolerance whatever the baseline and floor, and Z over
+      trial means none; the baseline and floor move the means by at most 0.06. The Methods describe Z over
+      trial means, so the claims file reads them correctly; the code_mismatch finding now says which element
+      differs.
+  - claim: fig3b-low-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'O1b: the pattern holds but the late-cue U-S mean is -0.28 (tolerance -0.14 +- 0.11). No O1 reading
+      meets both conditions (cell 46).'
+    response: No change; the normalization section bears on it as on fig3b-low-inhibited-to-threat-cues.
+  - claim: fig3c-intermediate-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: All effects significant and onset order D < U < S (cell 48).
+    response: No change.
+  - claim: fig3d-intermediate-inhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: The pattern holds under O1a/b. Means are about 1.8x the paper's (danger onset -0.97/-0.86 against
+      -0.54 +- 0.15) (cell 50).
+    response: No change; the normalization section includes the Intermediate onset means.
+  - claim: fig3d-intermediate-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under O1a/b the late-cue D-U interval contains zero ([-0.66, 0.04]) and the U-S means are out
+      of tolerance. The code normalization meets everything (cell 52).
+    response: No change.
+  - claim: supp5-low-cue-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: For Low neurons, onset U-S r = 0.36/0.38 with p <= 0.0014 is positive under every reading (cell
+      54). The code's first-5 s period would pass. Problem 8, supp5 uses a 1 s onset period; the Supplementary
+      Information was not read, and the authors' code correlates the first 5 s; a possible misreading by the
+      claims file.
+    response: No change to the outcome. The first-5 s variant was already shown; the notes now say both clusters
+      meet the criterion with it. The period is asked in questions/crcns-bf-3.yaml.
+  - claim: supp6-low-nosepoke-pauses
+    agrees: false
+    outcome: partially_reproduced
+    reason: Low shows no inhibition under every reading. Intermediate post firing is below zero under 5 s/(ii)
+      ([-0.65, -0.05]) and under code/code (cell 64). Problem 4, the header calls supp6 reproduced, but readings
+      5 s/(ii) and code/code for Intermediate show the effect the paper says is absent; under the 10 s reading
+      Intermediate neurons have a median of 0 events and only 14 of 34 contribute, too little data to support
+      a claim that an effect is absent.
+    response: Changed to partially reproduced, as the verifier gives. Under the authors' pause definition
+      (A3) the absence holds for Intermediate neurons with the claims file's scalings but not with the authors'
+      own single-event scaling, and the 10 s reading has too few events to count. The pause cells now print
+      the number of events and their distribution per neuron (min, quartiles, max).
+  - claim: fig4a-low-rt-over-fo
+    agrees: true
+    outcome: reproduced
+    reason: RT beta is further from zero than FO beta at all five assignments in every reading. Both are negative
+      (cell 70).
+    response: No change.
+  - claim: fig4a-low-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.007 to 0.012, and |RT| at 0.25 is greater than at 0.00 in every reading (cell 72).
+    response: No change.
+  - claim: fig4a-low-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.36 to 0.58 in every reading (cell 74).
+    response: No change.
+  - claim: fig4b-low-dynamic-shift
+    agrees: true
+    outcome: reproduced
+    reason: Model (a) gives p = 0.003 to 0.005 in every reading. Models (b) and (c) give p > 0.1 (cell 76).
+      Problem 9, the interaction holds only for model (a), which the code supports.
+    response: No change; the conclusion and notes already say the outcome holds for model (a) only.
+  - claim: fig4c-low-early-late-betas
+    agrees: true
+    outcome: partially_reproduced
+    reason: Model (a) means are within tolerance, but the late 0.25 interval excludes zero above it ([0.12,
+      1.00]) under every claims-file reading. Only the code firing gives the full pattern (cell 78).
+    response: No change.
+  - claim: fig4d-low-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: 'Model (a): 1.10 / -0.84 / 1.94, all intervals with the reported signs and within tolerance (cell
+      79).'
+    response: No change.
+  - claim: fig4e-int-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: 'O2a and O2c: RT > FO at every assignment, p = 0.006 to 0.012, and 0.25 > 0.00 (cell 81).'
+    response: No change.
+  - claim: fig4e-int-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.42 to 0.48 (cell 83).
+    response: No change.
+  - claim: fig4f-int-no-assignment-interval
+    agrees: true
+    outcome: reproduced
+    reason: p >= 0.055 in every reading on the paper's 34 neurons (cell 85).
+    response: No change.
+  - claim: fig4g-int-early-late-betas
+    agrees: true
+    outcome: not_reproduced
+    reason: 'No claims-file reading gives the pattern: model (a) early 0.25 contains zero and late 0.50 is
+      below zero, and model (c) early 0.50 is below zero. Only the code firing reproduces it (cell 87).'
+    response: No change.
+  - claim: fig4h-int-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: 'Model (a), every O2/O3 reading: 1.39 [0.58, 2.33], -0.81 [-1.82, 0.06], 2.20 [0.49, 4.04], all
+      within tolerance (cell 88).'
+    response: No change.
+  - claim: fig4-low-int-combined
+    agrees: true
+    outcome: reproduced
+    reason: 'Models (a) and (b): assignment x interval p <= 0.022, three-way p >= 0.70 (cell 90).'
+    response: No change.
+  - claim: fig5a-low-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: Every reading meets all three conditions (cell 100).
+    response: No change.
+  - claim: fig5bc-reward-pre-post
+    agrees: true
+    outcome: reproduced
+    reason: 'Events (a) and (b) with scaling (i): pattern holds and values within tolerance (cell 102).'
+    response: No change.
+  - claim: fig5d-f-low-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Signs and p values hold in every reading. R2 values are outside the 10% tolerance (cell 104).
+      Problem 7, a 10% tolerance on R2 (+-0.0006 for a null R2 of 0.006) is unreasonably tight, and the partial
+      outcomes come from it, not from the data.
+    response: No change to the outcome; the tolerance is the claims file's, which the author may not change.
+      It is asked in questions/crcns-bf-3.yaml, and the notes say the partial outcome comes only from it.
+  - claim: fig5-low-fisher-comparisons
+    agrees: true
+    outcome: reproduced
+    reason: D vs U p = 0.17 to 0.49 and U vs S p <= 0.0055 in every reading (cell 105).
+    response: No change.
+  - claim: fig5g-i-intermediate-no-reward-cue-correlation
+    agrees: true
+    outcome: reproduced
+    reason: All correlation p >= 0.14 and all Fisher p >= 0.31 (cell 106).
+    response: No change.
+  - claim: fig6a-excited-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: All effects significant and onset order D > U > S (cell 56).
+    response: No change.
+  - claim: fig6b-excited-period-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Every increase and all six difference intervals exclude zero above it. Safety delay is below zero
+      in every reading, and the means are within tolerance only with the code normalization (cell 58). Problem
+      8, the criterion requires safety late-cue and delay intervals to contain zero; the paper says only that
+      increases were limited to threat cues, so a safety value below zero does not contradict it; a possible
+      misreading by the claims file.
+    response: No change to the outcome. The notes and conclusion now also say the late-cue safety interval
+      lies below zero under the three-cue pool and the code normalization (it was described as containing
+      zero). The criterion's reading of the passage is asked in questions/crcns-bf-3.yaml; with the Methods'
+      normalization the means stay outside tolerance either way.
+  - claim: supp8-excited-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: On the 131 neurons under O1a/b, delay U-S r = -0.08 (p = 0.34). It passes with the code normalization
+      and on groups B (cell 60).
+    response: No change.
+  - claim: supp9-excited-nosepoke-pauses
+    agrees: false
+    outcome: partially_reproduced
+    reason: No increase under 10 s, under 5 s/(i) and under the code pauses. Under 5 s/(ii), post 0.17 [0.04,
+      0.34] and post-pre are above zero (cell 66). Problem 4, the header calls supp9 reproduced, but reading
+      5 s/(ii) shows the effect the paper says is absent.
+    response: Kept as reproduced, resting on A3, and the disagreement recorded. Under the authors' pause definition,
+      the best-supported reading (cubeScriptPR25.m, 'find ITI periods with a 2-s nose poke cessation'), no
+      interval lies above zero under any of the three scalings, the authors' own included, with 3367 events
+      (9 to 46 per neuron). The readings disagree, so the outcome is marked as resting on the assumption,
+      and the 5 s/(ii) result is in the notes and conclusion. The 10 s reading is now reported as resting
+      on 135 events in 71 of 131 neurons.
+  - claim: fig6-excited-assignment-050
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0.25 vs 0.50 significant and 0.50 has the largest beta in every reading. 0.50 vs 0.75 has p =
+      0.12 to 0.30 under claims-file readings and p = 0.0497 only under the code variant (cell 92).
+    response: No change.
+  - claim: fig6c-excited-regressor-interval
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'No claims-file reading gives both effects: O2b gives the regressor effect only, O2c the interaction
+      only (cell 94).'
+    response: No change.
+  - claim: fig6d-excited-betas
+    agrees: true
+    outcome: reproduced
+    reason: 'O2a and O2c with both O3 readings: pattern holds and values within tolerance (cell 96).'
+    response: No change.
+  - claim: fig6ef-excited-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: 'Events (a) and (b) with scaling (i): interval effect p < 1e-6 and both intervals above zero within
+      tolerance (cell 108).'
+    response: No change.
+  - claim: fig6g-excited-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: All three r are positive with p < 0.05 in every reading. R2 is out of the 10% tolerance in every
+      reading (cell 110). Problem 7, the 10% tolerance on R2 is unreasonably tight and the partial outcome
+      comes from it, not from the data.
+    response: No change to the outcome; the tolerance is asked in questions/crcns-bf-3.yaml, and the notes
+      say the partial outcome comes only from it.
+  - claim: fig6-excited-peak-cue-vs-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Pattern holds only for O1a, O5b, scale (i), where the safety mean of -0.37 is out of tolerance
+      (cell 112). Problem 6, under scaling (i) the cue values are Z-scored over cue bins and the reward values
+      over 16 reward bins, so the cue - reward difference has no common unit, and scaling (i) is the only
+      claims-file reading where the pattern holds.
+    response: No change to the outcome. The conclusion and notes now say the difference has no common unit
+      under (i) and that under (ii) no reading gives the pattern. Whether (i) belongs among this claim's readings
+      is asked in questions/crcns-bf-3.yaml.

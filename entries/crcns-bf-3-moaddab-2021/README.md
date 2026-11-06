@@ -5,12 +5,13 @@ on [CRCNS bf-3](https://doi.org/10.6080/K0HH6H8V), which holds the spike times, 
 behavioral events of 435 ventral pallidum units recorded from 14 rats during fear discrimination,
 with the authors' MATLAB analysis scripts.
 
-Of the 45 claims, 29 are reproduced, 14 partially reproduced and 2 not reproduced; none is blocked.
+Of the 45 claims, 28 are reproduced, 15 partially reproduced and 2 not reproduced; none is blocked.
 Most outcomes rest on two assumptions: the neuron groups and the k-means clusters are those the
 authors' scripts produce, which match every count the paper reports. Firing is normalized as the
 Methods describe it; the scripts normalize single trials differently, and their normalization gives
 the paper's printed values, so most of the partial outcomes are values outside tolerance that the
-scripts' normalization brings within it.
+scripts' normalization brings within it. The element that matters is Z-scoring single trials in
+place of trial-averaged firing.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

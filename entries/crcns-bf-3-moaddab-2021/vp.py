@@ -45,7 +45,8 @@ which the paper does not link, see the notebook header):
   types. Claims file reading O1: the pool is (a) three cues, uncertainty trials pooled, or (b)
   four trial types; under (b) the uncertainty curve is the trial-weighted mean of the shock and
   omission curves. The authors' code instead Z-scores single trials after subtracting each
-  trial's own 2 s baseline, floored (variant `code`).
+  trial's own 2 s baseline, floored (variant `code`). `normalize_variant` changes one of these
+  elements at a time (Z over trial means or single trials, 10 s or 2 s baseline, floored or not).
 - Periods (Methods, Population and single-unit firing analyses): onset 0-1 s, late cue 5-10 s,
   delay 10-12 s; ANOVA intervals are the 56 bins of 250 ms from 2 s before cue onset to 2 s
   after offset.
@@ -262,6 +263,26 @@ def normalize_cue(u: dict, pool: str = "3") -> dict:
         n_s, n_o = masks["US"].sum(), masks["UO"].sum()
         z["U"] = (n_s * z.pop("US") + n_o * z.pop("UO")) / (n_s + n_o)
     return z | {"mu": mu, "sd": sd}
+
+
+def normalize_variant(u: dict, z_over: str, base_s: float, floor: bool) -> dict:
+    """Normalized cue firing per cue (D, U, S; three-cue pool) with one element of the Methods'
+    normalization changed at a time, to find which element separates it from the authors' code:
+    Z over the trial-averaged curves (`z_over="trial means"`, the Methods) or over single trials
+    (`"single trials"`, cubeScriptPR25.m lines 460-471); baseline the `base_s` s before cue onset
+    (10 s Methods, 2 s code), floored to an integer rate or not (code: floored)."""
+    sp, on = u["spikes"], u["onsets"]
+    b = counts(sp, on - base_s, on) / base_s
+    if floor:
+        b = np.floor(b)
+    d = u["rate250"] - b[:, None]
+    masks = type_masks(u["types"], "3")
+    if z_over == "single trials":
+        z = (d - d.mean()) / d.std(ddof=1)
+        return {k: z[v].mean(0) for k, v in masks.items()}
+    curves = {k: d[v].mean(0) for k, v in masks.items()}
+    allv = np.concatenate(list(curves.values()))
+    return {k: (c - allv.mean()) / allv.std(ddof=1) for k, c in curves.items()}
 
 
 def stack(norms: list[dict], key: str) -> np.ndarray:
