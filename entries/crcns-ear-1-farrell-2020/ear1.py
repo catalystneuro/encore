@@ -24,9 +24,20 @@ Sources of the parameters (docs/protocol.md, Author, step 1.6):
   voltages, the second choice that Methods, paragraph 2 allows.
 - alphaB is the stored `alpha_f1`, which that script computes as 4 x max d(q/QTm)/dV (Eq. 8d as
   rebuilt in the claims file); alpha(V0.5) = alphaB / 4.
-- CNLW = 4.82 pF, the value the claims file's shared method uses (Results, Experimental magnitude,
-  paragraph 1, "~4.82 pF"). The paper computes CLW with Eq. 8a and a per-cell stereocilia bundle
-  capacitance (CSB) that the data set does not store, so CLW = CL - 4.82 pF is a stated assumption.
+- CLW = CL - CNLW with CNLW = CSB + root per cell (Eqs. 8a and 8c as rebuilt; reading L-b of the
+  claims file's shared method, as amended after the question in questions/crcns-ear-1.yaml). The
+  paper says "We determined C N L W by calculating the capacitance of the stereocilia bundle and
+  plotting ... Q T m ... as a function of C L - C S B to find the root" (Expressions used to
+  determine the experimental parameters, paragraph 2) and takes the bundle from Corbitt et al.
+  (2012), doi:10.1016/j.bpj.2012.04.054, which the data set's description also cites for its
+  methods. The CSB rule (`csb`) is that paper's: the bundle area is 0.07 um2 per um2 of the cell's
+  membrane area AM = 2 pi r (L + r) up to AM = 2000 um2 and a constant ~140 um2 above, and CSB is
+  that area times 0.0075 pF/um2 (Corbitt et al. 2012, Methods). AM is the data set's stored
+  `cell_surface_area` ("surface area of outer hair cell excluding stereocilia", "calculated from the
+  measured outer hair cell diameter and measured outer hair cell lateral wall length",
+  M2HDF5/arm_cellv6a.m). The data set stores no area for 6 cells; their CSB is the median CSB of
+  the cells of the same turn (an assumption). The root is fitted by `nlw_fit` (nlw-capacitance).
+  `CNLW_C` = 4.82 pF is reading L-c, shown for comparison only (`with_cnlw`).
 - T = 297.15 K (24 C, the stored temperature of every cell; claims file, opening comment).
 - Basal and apical: the data set's own label `apical_basal_polarity` (basal for turns 1 and 2,
   apical for turns 3 and 4), which is reading (r-a) of the claims file. Reading (r-b) (turn 1 against
@@ -56,7 +67,9 @@ KB = 1.380649e-23            # J/K
 E0 = 1.602176634e-19         # C
 T = 297.15                   # K, 24 C (stored temperature; claims file opening comment)
 KT = KB * T
-CNLW = 4.82                  # pF, non-lateral-wall capacitance (claims file shared method; assumption)
+CNLW_C = 4.82                # pF, reading L-c of the shared method (Results, paragraph 1), comparison only
+SB_SLOPE, SB_MAX = 0.07, 140.0   # um2 of bundle per um2 of AM, and its plateau (Corbitt et al. 2012)
+SB_SPECIFIC_C = 0.0075       # pF/um2, specific capacitance used for the bundle (Corbitt et al. 2012)
 SPECIFIC_C = 0.0095          # pF/um2 (Fig. 4c criterion; Results, Determine q, paragraph 1)
 
 _A = ("assay/voltage clamp assay/whole-cell patch clamp voltage clamp assay/"
@@ -166,15 +179,33 @@ def derive(df: pd.DataFrame) -> pd.DataFrame:
     df["adult"] = df["maturity"].eq("mature")
     df["region"] = df["polarity"].where(df["polarity"].isin(["basal", "apical"]))     # reading r-a
     df["region_rb"] = df["turn"].map({1: "basal", 4: "apical"})                         # reading r-b
-    df["CLW"] = df["CL"] - CNLW
-    df["dVmin"] = df["QTm"] / df["CLW"]                      # pC / pF = V (Eq. 2c)
     df["alpha"] = df["alphaB"] / 4                           # Eq. 8d as rebuilt
     df["z"] = df["alphaB"] * KT / E0                         # Eq. 5
-    df["C_Leq_aF"] = df["z"] * E0 / df["dVmin"] * 1e18       # n e0 / dVmin with n = z (delta = 1)
-    df["Vh"] = df["V05"] - df["dVmin"] / 2                    # Eq. 3b as rebuilt
-    df["Vd"] = df["V05"] + df["dVmin"] / 2
     df["drop_pos"] = 1 - df["VD"]                            # Rs/(Rs+Rm) at positive voltages
-    return df
+    df["CSB"], df["CSB_imputed"] = csb(df)
+    df.attrs["root"] = nlw_fit(df["CL"] - df["CSB"], df["QTm"])["root"]
+    return with_cnlw(df, df["CSB"] + df.attrs["root"])
+
+
+def csb(df: pd.DataFrame, area: pd.Series | None = None) -> tuple[pd.Series, pd.Series]:
+    """Stereocilia bundle capacitance per cell, pF, by the rule of Corbitt et al. (2012): bundle
+    area = min(0.07 AM, 140 um2), times 0.0075 pF/um2. AM is the stored cell surface area unless
+    `area` is given. Cells without AM take the median CSB of their turn (assumption); returns the
+    CSB and a mask of the imputed cells."""
+    am = df["area_um2"] if area is None else area
+    c = np.minimum(SB_SLOPE * am, SB_MAX) * SB_SPECIFIC_C
+    miss = c.isna()
+    by_turn = c.groupby(df["turn"]).transform("median")
+    c = c.fillna(by_turn).fillna(c.median())
+    return c, miss
+
+
+def nlw_fit(x, qtm) -> dict:
+    """Fit QTm = gamma + beta ln(x), x = CL - CSB in pF (Eq. 8b as rebuilt, nlw-capacitance), and
+    return the root exp(-gamma/beta), the value of x where QTm is zero."""
+    r = ols(np.log(np.asarray(x, float)), qtm)
+    return {"root": float(np.exp(-r["intercept"] / r["slope"])), "beta": r["slope"],
+            "gamma": r["intercept"], "adj_r2": r["adj_r2"], "n": r["n"]}
 
 
 # --- recomputation from the traces ---------------------------------------------------------------
@@ -309,12 +340,12 @@ def load_mat(z: zipfile.ZipFile | None = None) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def with_cnlw(df: pd.DataFrame, cnlw: float) -> pd.DataFrame:
-    """The per-cell quantities with another non-lateral-wall capacitance. The claims file uses
-    4.82 pF; 5.89 pF is the value implied by the Fig. S1 legend (CL 24.45 pF, CLW 18.56 pF) and is
-    shown as a variant (see the question for a reader in questions/crcns-ear-1.yaml)."""
+def with_cnlw(df: pd.DataFrame, cnlw) -> pd.DataFrame:
+    """The per-cell quantities that depend on the non-lateral-wall capacitance, for a CNLW that is
+    one value for every cell (reading L-c, 4.82 pF) or a per-cell Series (reading L-b)."""
     df = df.copy()
-    df["CLW"] = df["CL"] - cnlw
+    df["CNLW"] = cnlw
+    df["CLW"] = df["CL"] - df["CNLW"]
     df["dVmin"] = df["QTm"] / df["CLW"]
     df["C_Leq_aF"] = df["z"] * E0 / df["dVmin"] * 1e18
     df["Vh"] = df["V05"] - df["dVmin"] / 2

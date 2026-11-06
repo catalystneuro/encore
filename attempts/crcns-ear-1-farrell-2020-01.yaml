@@ -19,6 +19,11 @@ provenance:
   runner:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/42212958015
+inputs:
+- what: The rule for the stereocilia bundle capacitance CSB in Corbitt et al. (2012), Methods (bundle
+    area 0.07 um2 per um2 of membrane area up to about 140 um2, at 0.0075 pF/um2), the method the paper
+    cites for CSB; a method only, no data were taken from it
+  source: doi:10.1016/j.bpj.2012.04.054
 outcomes:
 - claim: cohort
   outcome: reproduced
@@ -42,15 +47,18 @@ outcomes:
   measured:
   - 24.58
   - 25.94
-  - 19.76
+  - 18.43
   - -0.0216
   - 2.92
   - 36.04
   notes: File 79 is the one cell with original number 99 that is pigmented, prepubertal, female and in
-    60 uM XE991. Recomputed from its trace, CL 24.58 pF, CLn 25.94 pF, CLW 19.76 pF, V0.5 -0.0216 V, QTm
+    60 uM XE991. Recomputed from its trace, CL 24.58 pF, CLn 25.94 pF, CLW 18.43 pF, V0.5 -0.0216 V, QTm
     2.92 pC and alphaB 36.04 V-1, all within tolerance. The stored CL 24.45 pF, V0.5 -0.0218 V, QTm 3.02
-    pC and alphaB 34.99 V-1 equal the legend. CLW passes only on the wide tolerance; the legend's CLW
-    of 18.56 pF implies a non-lateral-wall capacitance of 5.89 pF for this cell, not 4.82 pF.
+    pC and alphaB 34.99 V-1 equal the legend. The cell's stored area is 2223 um2, so CSB is 1.05 pF and
+    CNLW 6.154 pF (the legend implies 5.89 pF); the stored CL gives CLW 18.30 pF. The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CLW = CL - 4.82 pF, CLW was 19.76 pF, within tolerance only on its wide bound; the outcome (reproduced)
+    is unchanged.
   deviations:
   - CL is recomputed as the mean C over 0.09 to 0.15 V, the range the Methods give for Rm and Rs where
     there is no measurable voltage-dependent capacitance (Methods, Whole-cell patch-clamp, paragraph 2);
@@ -62,65 +70,116 @@ outcomes:
     the Fig. S1 legend''s 25.94 pF for its cell), and a cell has a plateau when the slope of C at or below
     -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
     count is nearest the paper''s 62 cells.'
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
 - claim: nlw-capacitance
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:nlw-capacitance
-  measured: 5.44
-  notes: Only reading n-c (CSB = 0) can be run, since the data set stores no CSB, CNLW or CLW. The root
-    of QTm = gamma + beta ln(CL) is 5.44 pF (95% bootstrap interval 4.87 to 6.02, 89 cells) and 5.46 pF
-    (86 cells with 144 mM chloride), outside 4.82 +/- 0.48 pF. The group intervals overlap (pigmented
-    5.07 against albino 6.11 pF; adult 5.59 against juvenile 5.31 pF), so the second part of the statement
-    holds under this reading.
+  measured: 5.1
+  notes: With the CSB of Corbitt et al. (2012) on the stored area, the root of QTm = gamma + beta ln(CL
+    - CSB) (reading n-ii) is 5.104 pF (95% bootstrap interval 4.53 to 5.66, 89 cells) and 5.125 pF (86
+    cells with 144 mM chloride), within 4.82 +/- 0.482 pF; the area recomputed as 2 pi r (L + r) gives
+    5.100 and 5.120 pF. The mean per-cell CNLW (n-i) is 5.98 pF, outside. The group intervals overlap
+    (pigmented 4.76 against albino 5.72 pF; adult 5.26 against juvenile 4.96 pF), so the second part of
+    the statement holds. The answer in questions/crcns-ear-1.yaml kept the expected 4.82 pF and amended
+    the criterion to read it as the mean per-cell CNLW (n-i) or the root alone (n-ii), with a per-cell
+    CSB. Before the answer only CSB = 0 (n-c) was run, giving 5.44 pF, and the outcome was not_reproduced;
+    n-c still gives 5.44 pF.
   deviations:
-  - Readings n-a and n-b (CSB or CNLW as stored per cell) cannot be run; the data set does not store them.
+  - Readings n-a and n-b (CSB, or CNLW and CLW, as stored per cell) cannot be run as written; the data
+    set does not store them. The CSB of Corbitt et al. (2012), doi:10.1016/j.bpj.2012.04.054, Methods,
+    the method the paper cites for the stereocilia bundle (Expressions used to determine the experimental
+    parameters, paragraph 2), is computed per cell from the stored cell surface area and stands in for
+    n-a. Assumed, as the paper does not state the rule; the 6 cells without an area take the median CSB
+    of their turn. Reading n-c (CSB = 0) is also shown.
   - Intervals are 95% bootstrap intervals over cells (2000 resamples, fixed seed), a standard choice.
+  assumed: true
 - claim: clw-by-turn
   outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:clw-by-turn
   measured:
-  - 5.85
-  - 19.1
-  notes: Mean CLW is 5.85 pF (SD 2.44, 8 cells) for turn 1 and 19.10 pF (SD 2.77, 36 cells) for turn 4
-    (readings c-a and c-b; c-c gives 5.97 and 19.65 pF). Both SDs are within 10% of the paper's. With
-    CNLW 5.89 pF the means are 4.78 and 18.03 pF.
+  - 5.04
+  - 17.79
+  notes: Under L-b, mean CLW is 5.04 pF (SD 2.34, 8 cells) for turn 1 and 17.79 pF (SD 2.74, 36 cells)
+    for turn 4 (readings c-a and c-b; c-c gives 5.15 and 18.32 pF). Both SDs are within 10% of the paper's.
+    The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell CNLW (reading L-b
+    used here, see deviations). Before it, with CL - 4.82 pF, the means were 5.85 and 19.10 pF and the
+    outcome was the same (reproduced); the means now lie closer to the paper's 5.0 and 17.9 pF.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig1-charge-not-linear
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig1-charge-not-linear
-  measured: 0.585
-  notes: 'The steeper rise for small cells holds: the slope of QTm^2 on CLW^2 is 0.0418 for 26 cells with
-    CLW < 10 pF and 0.0219 for 60 others through the origin (ratio 1.91, disjoint 95% intervals), and
-    0.0369 against 0.0109 with an intercept (ratio 3.40). The adjusted R2 of the Eq. 6b fit is outside
-    0.516 +/- 0.052 under every reading (0.585 through the origin with a centred total sum of squares,
-    0.902 uncentred, 0.701 with an intercept, 0.69 to 0.97 on the scale of QTm against CLW). With CNLW
-    5.89 pF the centred fit through the origin gives 0.538. The criterion names no partial tier; the outcome
-    is partial because the steepness part holds and the R2 does not.'
+  measured: 0.539
+  notes: Under L-b the Eq. 6b fit through the origin on QTm^2 against CLW^2 has adjusted R2 0.539 (centred
+    total sum of squares), within 0.516 +/- 0.052 (0.891 uncentred, 0.687 with an intercept, 0.64 to 0.96
+    on the scale of QTm against CLW). The slope of QTm^2 on CLW^2 is 0.0496 for 31 cells with CLW < 10
+    pF and 0.0248 for 55 others through the origin (ratio 2.00, disjoint 95% intervals), and 0.0410 against
+    0.0091 with an intercept (ratio 4.51). The answer in questions/crcns-ear-1.yaml amended the shared
+    method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the
+    R2 was 0.585 under the same reading, outside tolerance, and the outcome was partially_reproduced.
   deviations:
   - The fit through the origin has no defined adjusted R2 convention in the paper; centred (as MATLAB's
     curve fitting computes it) and uncentred are both shown.
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig1-two-state-bounds
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig1-two-state-bounds
-  notes: The Eq. 6b lines are dVmin 0.2356 and 0.1287 V. 79 of the 86 cells with 144 mM chloride (91.9%)
-    lie between them widened by 10% (3 above, 4 below), so reading b-a holds. Reading b-b does not (median
-    dVmin 0.210 V for CLW < 10 pF and 0.158 V for the others). With CNLW 5.89 pF the fraction is 84.9%.
+  notes: The Eq. 6b lines are dVmin 0.2356 and 0.1287 V. Under L-b, 74 of the 86 cells with 144 mM chloride
+    (86.0%) lie between them widened by 10% (8 above, 4 below), short of the 90% of reading b-a. Under
+    b-b the median dVmin is 0.2362 V for CLW < 10 pF, within 10% of the upper line, and 0.1673 V for the
+    others, not within 10% of the lower. The answer in questions/crcns-ear-1.yaml amended the shared method
+    to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, 79 of 86
+    cells (91.9%) lay in the band and the outcome was reproduced; the smaller CLW of L-b raises dVmin,
+    most for small cells, and moves 5 more cells above the upper line.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: alpha-pigmented-vs-albino
   outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
@@ -221,12 +280,25 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:figs2-alphab-vs-clw
-  notes: Pigmented cells without XE991, Spearman rho -0.85 (p < 0.0001), slope -0.57 V-1 per pF (p < 0.0001);
-    albino cells rho -0.17 (p = 0.29), slope p = 0.75. With the XE991 cells included the pigmented rho
-    is -0.82.
+  notes: Pigmented cells without XE991, Spearman rho -0.85 (p < 0.0001), slope -0.59 V-1 per pF under
+    L-b (p < 0.0001); albino cells rho -0.17 (p = 0.29), slope p = 0.75. With the XE991 cells included
+    the pigmented rho is -0.82. The answer in questions/crcns-ear-1.yaml amended the shared method to
+    a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the slope was
+    -0.57 V-1 per pF with the same rho; the outcome is unchanged.
   deviations:
   - The paper gives no test; Spearman and linear regression are the criterion's readings, chosen before
     the analysis.
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   assumed: true
 - claim: splice-isoform-x1
   outcome: blocked
@@ -250,21 +322,49 @@ outcomes:
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig2b-v05-vs-clw
   measured:
-  - 0.612
-  - 0.172
-  notes: 'Both slopes are positive: pigmented 0.00324 V/pF (p < 0.0001, adjusted R2 0.612, within tolerance),
-    albino 0.00167 V/pF (p = 0.0036, adjusted R2 0.172, outside 0.18 to 0.22). The pigmented fit is better,
-    as stated. 69 cells, where the legend counts 70.'
+  - 0.613
+  - 0.175
+  notes: 'Under L-b, pigmented cells: slope 0.00335 V/pF (p < 0.0001), adjusted R2 0.613, within 0.6 +/-
+    0.06; albino cells: 0.00173 V/pF (p = 0.0034), adjusted R2 0.175, outside 0.2 +/- 0.02. The pigmented
+    fit is the better one, as stated. The answer in questions/crcns-ear-1.yaml amended the shared method
+    to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the R2 were
+    0.612 and 0.172 and the outcome was the same (partially_reproduced).'
   deviations:
   - The data set has 69 cells with 144 mM chloride and no XE991, one fewer than the Fig. 2 legend.
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig2b-no-phenotype-difference
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig2b-no-phenotype-difference
-  notes: The CLW by colony interaction is significant (p = 0.039); the pigmented slope exceeds the albino
-    slope by 0.00157 V/pF (0.00324 against 0.00167; slope t-test t = 2.13, p = 0.037).
+  notes: Under L-b the CLW by colony interaction is significant (p = 0.039); the slopes differ by 0.00162
+    V/pF (g-b t = 2.14, p = 0.037). The answer in questions/crcns-ear-1.yaml amended the shared method
+    to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the p values
+    were the same (0.039 and 0.037) and the outcome (not_reproduced) is unchanged.
   deviations:
   - The paper names no test; the interaction test (g-a) is the criterion's reading.
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: v05-gradient-length
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
@@ -350,83 +450,142 @@ outcomes:
   - The paper names no test; Pearson correlation at p < 0.05 is the criterion's reading.
   assumed: true
 - claim: fig3a-eq3a-fit
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig3a-eq3a-fit
   measured:
-  - 0.0215
-  - 0.952
-  - -0.594
-  - 0.971
-  notes: Edges at multiples of 5 pF, the Eq. 3a fit gives Vd 0.0215 V (adjusted R2 0.952) and the unconstrained
-    fit slope -0.594 (adjusted R2 0.971); Vd and slope are outside tolerance under every reading (slopes
-    -0.59 to -0.63), both R2 within. With CNLW 5.89 pF all four are within tolerance with edges at multiples
-    of 5 pF (Vd 0.0322 V, R2 0.846 or 0.911, slope -0.372 or -0.405, R2 0.950 or 0.957).
+  - 0.0311
+  - 0.931
+  - -0.4245
+  - 0.948
+  notes: Under L-b, with bin edges from the smallest CLW (e-b), the Eq. 3a fit gives Vd 0.0311 V (adjusted
+    R2 0.931 with weights, 0.949 without) and the weighted unconstrained fit slope -0.4245 (adjusted R2
+    0.948); all four are within tolerance. With edges at multiples of 5 pF (e-a), Vd 0.0311 V and both
+    R2 (0.942, 0.949) are within but the weighted slope is -0.4412, outside -0.401 +/- 0.0401 by 0.0001;
+    unweighted slopes are -0.473 to -0.477. The answer in questions/crcns-ear-1.yaml amended the shared
+    method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, Vd
+    was 0.0215 V and the slope -0.594, both outside, and the outcome was not_reproduced. The outcome now
+    rests on the bin-edge reading e-b as well as on the CSB rule.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   - 69 cells with 144 mM chloride and no XE991, both colonies.
+  assumed: true
 - claim: fig3a-xe991-fit
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig3a-xe991-fit
   measured:
-  - 0.0538
-  - -8.19
-  - -0.084
-  - 0.124
-  notes: For the 17 XE991 cells with 144 mM chloride, Vd 0.0538 V (within tolerance; 0.0498 V on all 20),
-    but the Eq. 3a R2 is -8.2 and the unconstrained slope -0.084 (R2 0.12). One cell with CL 5.93 pF (CLW
-    1.11 pF, dVmin 0.571 V) dominates the bins. With CNLW 5.89 pF its CLW is 0.04 pF and the fit fails
-    entirely.
+  - 0.0847
+  - -42.9
+  - -0.038
+  - 0.062
+  notes: Under L-b, for the 17 XE991 cells with 144 mM chloride, Vd is 0.0847 V (0.0770 V on all 20),
+    outside 0.0499 +/- 0.005; the Eq. 3a R2 is -43 and the unconstrained slope -0.038 (R2 0.06). The first
+    5 pF bin holds two cells with mean dVmin 0.80 V; one (file 57, CL 5.93 pF, area 666 um2, CSB 0.35
+    pF) has CLW 0.48 pF and dVmin 1.33 V. The answer in questions/crcns-ear-1.yaml amended the shared
+    method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, Vd
+    was 0.0538 V (within) with slope -0.084, and the outcome was the same (not_reproduced); under L-b
+    Vd is also outside.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   - All 20 XE991 cells are stored as 60 uM, so reading k-b equals k-a; the 17 cells with 144 mM chloride
     are the first reading.
+  assumed: true
 - claim: fig3a-high-density-deviation
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig3a-high-density-deviation
-  notes: Only 2 cells without XE991 have dVmin above 0.25 V; their mean residual is 0.0227 V (t-test p
-    = 0.41), variance ratio 1.15 (p = 0.29). With CNLW 5.89 pF, 10 cells lie above 0.25 V with mean residual
-    0.0295 V (p = 0.0075) and variance ratio 1.55 (p = 0.15).
+  notes: Under L-b, with Vd 0.0311 V, 8 cells without XE991 lie above dVmin 0.25 V and 61 below. On the
+    0.01 V bins of Fig. S4 (the binned reading the criterion names), the 5 bins above have mean residual
+    0.0351 V (t-test p = 0.042) against -0.0032 V for the 14 below, and a larger spread (SD 0.0267 against
+    0.0130 V, F-test p = 0.021), so all three conditions hold. Per cell, the mean residual above is 0.0284
+    V (p = 0.012) against -0.0037 V below, but the variance ratio is 1.15 (p = 0.34). The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CL - 4.82 pF, only 2 cells lay above 0.25 V (residual 0.0227 V, p = 0.41) and the outcome was not_reproduced.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   assumed: true
 - claim: figs4-fine-bins
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:figs4-fine-bins
   measured:
-  - 0.0215
-  - 0.398
-  - 0.0432
-  - 0.758
-  notes: Without XE991, Vd 0.0215 V (weighted, R2 0.398) or 0.0267 V (unweighted); with XE991 and the
-    0.4 V limit 0.0432 or 0.0460 V (R2 0.758 or 0.768), without the limit 0.0538 V (R2 -4.8). No reading
-    has both Vd within tolerance. With CNLW 5.89 pF both Vd are within (0.0301 and 0.0527 V) and neither
-    R2 (0.32 and 0.44).
+  - 0.0299
+  - 0.396
+  - 0.0522
+  - 0.605
+  notes: Under L-b, without XE991 the weighted fit gives Vd 0.0299 V (R2 0.396), both within (unweighted
+    0.0338 V, R2 0.503); with XE991 and the 0.4 V limit, Vd 0.0522 V (weighted) or 0.0556 V (unweighted),
+    within, with R2 0.605 or 0.625, outside 0.737 +/- 0.074; without the limit Vd 0.0847 V (R2 -52). Both
+    Vd are within and an R2 is not, the partial tier. The answer in questions/crcns-ear-1.yaml amended
+    the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL -
+    4.82 pF, Vd without XE991 was 0.0215 V, outside, and the outcome was not_reproduced.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: tables3-by-region
   outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:tables3-by-region
-  notes: In each group (pigmented with and without XE991, albino) and under both region readings, the
-    basal region has the higher mean dVmin and the more negative mean V0.5 (e.g. pigmented without XE991,
-    0.2105 V and -0.0907 V basal against 0.1615 V and -0.0552 V apical). Table S3's values are not in
-    the supplied text, so no number is compared.
+  notes: Under L-b, in each group (pigmented with and without XE991, albino) and under both region readings,
+    the basal region has the higher mean dVmin and the more negative mean V0.5 (e.g. pigmented without
+    XE991, 0.2465 V and -0.0907 V basal against 0.1750 V and -0.0552 V apical). Table S3's values are
+    not in the supplied text, so no number is compared. The answer in questions/crcns-ear-1.yaml amended
+    the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL -
+    4.82 pF, the ordering was the same in every group and the outcome (reproduced) is unchanged.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig3a-other-rodents
   outcome: blocked
   blocked_by: other
@@ -447,14 +606,14 @@ outcomes:
   - 2.89
   - 2.4
   - 1.88
-  - 0.142
-  - 0.286
-  notes: With the adopted rule 62 cells have a CLn; mean dC 2.89 pF (SD 2.42). Without dC > 5 pF (53 cells),
-    dC is 2.40 pF apical (35) and 1.88 pF basal (18), all within tolerance; the apical increase is 14.2%
-    of CLW (m-a; 13.1% by m-b), within 13 +/- 1.3%, but the basal increase is 28.6% (m-a) or 26.2% (m-b),
-    outside 21 +/- 2.1%. The second CLn reading gives larger differences (3.68 pF over 62 cells). The
-    criterion names no partial tier; the outcome is partial because the count and the three differences
-    hold and one of the two percentages does not.
+  - 0.154
+  - 0.361
+  notes: The adopted plateau fraction 0.4 keeps 62 cells; mean dC 2.89 pF (SD 2.42); after dropping dC
+    > 5 pF (53 cells), 2.40 pF apical (35) and 1.88 pF basal (18), all within tolerance. As a share of
+    CLW under L-b, apical 15.4% (m-a) or 14.1% (m-b, within 13 +/- 1.3%), basal 36.1% (m-a) or 29.9% (m-b),
+    outside 21 +/- 2.1%. The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell
+    CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the shares were 14.2%
+    and 28.6% (m-a) and the outcome was the same (partially_reproduced).
   deviations:
   - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
     V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
@@ -462,9 +621,17 @@ outcomes:
     -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
     count is nearest the paper''s 62 cells. Every fraction and a second CLn reading (mean C at or below
     -0.15 V) are shown.'
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   assumed: true
 - claim: figs5-specific-capacitance
   outcome: reproduced
@@ -495,15 +662,17 @@ outcomes:
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig3b-negative-clw-fit
   measured:
-  - -0.0361
-  - -404
-  - 0.0079
-  - -0.0591
-  - -0.083
-  notes: 'With CLWn = CLW + dC, the Eq. 3a fit gives Vd -0.036 V (46 cells, dC > 5 pF kept) or -0.041
-    V (38, dropped), and the unconstrained slope is +0.008: V0.5 does not fall with dVmin^n. The CNLW
-    5.89 pF variant gives slopes of 0.03 to 0.05. The data set has 46 such cells, where the legend counts
-    44.'
+  - 0.0072
+  - -19.0
+  - 0.0297
+  - -0.0627
+  - -0.0965
+  notes: Under L-b, with CLWn = CLW + dC, the Eq. 3a fit gives Vd 0.0072 V (46 cells, dC > 5 pF kept;
+    Eq. 3a R2 -19) or 0.0110 V (38 cells, dropped); the unconstrained slope is +0.030 or +0.031, so V0.5
+    does not fall with dVmin^n. The data set has 46 such cells where the legend counts 44. The answer
+    in questions/crcns-ear-1.yaml amended the shared method to a per-cell CNLW (reading L-b used here,
+    see deviations). Before it, with CL - 4.82 pF, Vd was -0.036 V and the slope +0.008, and the outcome
+    was the same (not_reproduced).
   deviations:
   - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
     V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
@@ -511,123 +680,208 @@ outcomes:
     -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
     count is nearest the paper''s 62 cells. Every fraction and a second CLn reading (mean C at or below
     -0.15 V) are shown.'
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   assumed: true
 - claim: mean-slope-half
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:mean-slope-half
-  measured: -0.223
-  notes: The three unconstrained slopes are -0.594 (Fig. 3a), -0.084 (XE991) and +0.008 (Fig. 3b), mean
-    -0.223, outside -0.48 +/- 0.048 (unweighted, -0.224). With CNLW 5.89 pF the mean is -0.115.
+  measured: -0.15
+  notes: Under L-b the three slopes are -0.441, -0.038 and +0.030, mean -0.150, outside -0.48 +/- 0.048
+    (unweighted fits, -0.161). The answer in questions/crcns-ear-1.yaml amended the shared method to a
+    per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the mean was
+    -0.223 and the outcome was the same (not_reproduced).
   deviations:
   - Each slope is the first reading of its claim (edges at multiples of 5 pF, weighted unconstrained fit;
     XE991 cells with 144 mM chloride; dC > 5 pF kept).
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   assumed: true
 - claim: fig4a-vh-rises-vd-constant
   outcome: partially_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4a-vh-rises-vd-constant
-  measured: 2.6
-  notes: In the 5 pF bins without XE991 (o-a), Vh rises monotonically with V0.5 (Spearman 1.0, no inversion)
-    and Vd varies over 0.014 V against 0.127 V for Vh (q-a holds; under q-b the Vd slope is 0.178, p =
-    0.049), but the ratio of largest to smallest |Vh| is 2.60, outside 3 +/- 0.3. Pooled with the XE991
-    bins (o-b) the ratio is 4.47 with two inversions. With CNLW 5.89 pF the o-a ratio is 2.90. The criterion
-    names no partial tier; the outcome is partial because the monotone rise of Vh and the constant Vd
-    hold and the threefold ratio does not.
+  measured: 2.67
+  notes: Under L-b, in the 5 pF bins without XE991 (o-a), Vh rises monotonically with V0.5 (Spearman 1.0,
+    no inversions), but the ratio of largest to smallest |Vh| is 2.67, outside 3 +/- 0.3. Vd varies over
+    0.010 V against 0.142 V for Vh (q-a holds) and its slope on V0.5 is -0.087 (p = 0.48, q-b holds).
+    Pooled bins (o-b) give a ratio of 5.61 with three inversions. The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CL - 4.82 pF, the ratio was 2.60 and q-b failed (p = 0.049); the outcome (partially_reproduced) is
+    unchanged.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig4d-cleq-two-limits
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4d-cleq-two-limits
   measured:
-  - 0.672
-  - 1.08
-  notes: With the 5 pF groups (j-a) the lower limit is 0.672 aF (6 groups), outside 0.584 +/- 0.065, and
-    the upper 1.080 aF (3 groups), within; the 0.01 V groups give 0.686 and 1.027 aF, the cells 0.770
-    and 0.957 aF. C_Leq rises with V0.5 (Spearman 0.73, p = 0.011 for j-a), by a factor of 1.61. With
-    the split at -0.06 V, 0.651 and 0.928 aF. With CNLW 5.89 pF, the 0.01 V groups give 0.594 aF (within)
-    and 0.937 aF (outside).
+  - 0.56
+  - 1.048
+  notes: Under L-b, with the 5 pF groups (j-a), the lower limit is 0.560 aF (5 groups), within 0.584 +/-
+    0.065, and the upper 1.048 aF (3 groups), within 1.07 +/- 0.038; C_Leq rises with V0.5 (Spearman 0.85,
+    p = 0.001). The 0.01 V groups give 0.584 and 0.979 aF, per cell 0.686 and 0.894 aF; the split at -0.06
+    V gives 0.650 and 0.820 aF. The lower limit includes an XE991 group of two cells with mean dVmin 0.80
+    V and C_Leq 0.20 aF (one is file 57, CLW 0.48 pF); without groups above dVmin 0.4 V it is 0.6496 aF,
+    outside by 0.0006 aF, so the outcome rests on that group. The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CL - 4.82 pF, the j-a limits were 0.672 and 1.080 aF and the outcome was not_reproduced.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   - Guinea pig groups only; the paper's limits may include the rat and mouse values of Fig. 3a.
+  assumed: true
 - claim: fig4c-sensor-area
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4c-sensor-area
   measured:
-  - 30.5
-  - 132.1
-  - 734.0
-  notes: Sensor areas of the 5 pF groups run from 30.5 to 132 nm2; the low end, an XE991 group of one
-    cell (C_Leq 0.29 aF), is below 51 nm2 widened by 10%. The other groupings reach 156 and 182 nm2. The
-    power law over groups without XE991 has exponent -2.10 (j-a), -1.12 (j-b) or -0.62 (j-c), with coefficients
-    734, 8.57 and 0.93 (V, nm2); the j-b exponent is within 10% of -1.15 but its coefficient is not 38.5.
+  - 21.3
+  - 135.6
+  - 64.8
+  notes: Under L-b the sensor areas of the 5 pF groups run from 21.3 to 135.6 nm2, beyond 45.9 to 133.1
+    nm2 at both ends (the low end is the XE991 group of the two smallest cells); the other groupings run
+    from 13.1 to 143.5 and 152.6 nm2. The power law over groups without XE991 has exponent -1.60 (j-a,
+    coefficient 64.8 in V and nm2), -1.04 (j-b, 5.54) or -0.69 (j-c, 1.21); the j-a exponent is within
+    10% of -1.5 but the coefficient is not 38.5. The answer in questions/crcns-ear-1.yaml amended the
+    shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82
+    pF, the range was 30.5 to 132.1 nm2 and the outcome was the same (not_reproduced).
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig4e-sensor-charge
   outcome: reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:fig4e-sensor-charge
   measured:
-  - 0.927
-  - 0.857
-  - 0.896
-  notes: In the 5 pF groups mean z is 0.927 at the lower limit, 0.857 at the upper and 0.896 over all,
-    each within tolerance, and the limits do not differ (Welch p = 0.12). The 0.01 V groups give 0.924
-    and 0.813 (p = 0.069), the cells 0.880 and 0.823 (p = 0.054). The paper's all-wild-type value includes
-    rats and mice; guinea pig groups only here.
+  - 0.929
+  - 0.814
+  - 0.885
+  notes: Under L-b, with the 0.01 V groups (j-b), mean z is 0.929 at the lower limit, 0.814 at the upper
+    and 0.885 over all groups, all within tolerance, and the limits do not differ (Welch p = 0.12); per
+    cell (j-c), 0.880 and 0.823 (p = 0.054). With the 5 pF groups (j-a) z at the lower limit is 0.9325,
+    outside by 0.002. The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell
+    CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, the 5 pF groups gave 0.927,
+    0.857 and 0.896 (all within) and the outcome was the same (reproduced).
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: table3-pathway-energies
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:table3-pathway-energies
   measured:
-  - -0.0707
+  - -0.0718
   - -0.0253
-  - 3.74
-  - 2.58
-  - 2.32
+  - 4.4
+  - 2.7
+  - 2.35
   - 1.11
-  notes: The rebuilt Eqs. 6a and 7 give Table 3's values from its own inputs (3.953, 2.674, 0.125 and
-    2.157, 1.185, 0.145 kB T). From the 5 pF groups, pathway 1 V0.5 -0.0707 V, lambda 3.74 kB T, forward
-    barrier 2.58 kB T; pathway 2 V0.5 -0.0253 V, lambda 2.32 kB T, forward barrier 1.11 kB T; all six
-    within tolerance. Reverse barriers 0.107 and 0.223 kB T (paper 0.125 and 0.145); forward rate ratio
-    of pathway 2 to pathway 1 per dimer 57.5 (paper 64). The lower C_Leq limit used (0.672 aF) is outside
-    the tolerance of fig4d-cleq-two-limits. The chemical free energy of 6.7 kB T was not computed.
+  notes: The rebuilt Eqs. 6a and 7 give Table 3's values from its own inputs (3.953, 2.674 and 0.125 kB
+    T; 2.157, 1.185 and 0.145 kB T). Under L-b, from the 5 pF groups, pathway 1 has V0.5 -0.0718 V, lambda
+    4.40 kB T (outside 3.97 +/- 0.397) and forward barrier 2.70 kB T, pathway 2 -0.0253 V, 2.35 and 1.11
+    kB T; both V0.5 and the other energies are within. The 0.01 V groups put the pathway 2 V0.5 (-0.0217
+    V) outside; per cell, both lambdas are outside. Reverse barriers 0.208 and 0.231 kB T; forward rate
+    ratio 72.5 (paper 64). The answer in questions/crcns-ear-1.yaml amended the shared method to a per-cell
+    CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, all six were within (lambda
+    3.74 kB T for pathway 1) and the outcome was reproduced.
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: alternative-limit
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:alternative-limit
   measured:
-  - 1.43
-  - 0.73
-  notes: With C_Leq 1.098 aF, the 5 pF groups give mean n 1.43 (0.73 to 3.91) and mean delta 0.730 (0.26
-    to 1.14); the other groupings give n 1.36 and 1.22 and delta 0.728 and 0.744. No mean is within tolerance
-    and no range lies within the paper's.
+  - 1.63
+  - 0.69
+  notes: Under L-b, with C_Leq 1.098 aF, the 5 pF groups give mean n 1.63 (0.79 to 5.49), within 1.7 +/-
+    0.17, and mean delta 0.690 (0.18 to 1.17), outside 0.535 +/- 0.054; neither range lies within the
+    paper's. The other groupings give n 1.69 and 1.41, delta 0.654 and 0.676. The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CL - 4.82 pF, the means were 1.43 and 0.730 and the outcome was the same (not_reproduced).
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: fig4f-all-rodents
   outcome: blocked
   blocked_by: other
@@ -637,13 +891,24 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_farrell_2020.ipynb
   output: claim:low-chloride-similar
-  notes: The three 10 mM cells all have z within 0.746 to 0.952 (0.763, 0.905, 0.921); two have C_Leq
-    within range (0.70 and 0.96 aF, the third 1.16 aF); one has V0.5 within 0.02 V of the XE991 Eq. 3a
-    line (residuals -0.016, -0.039, -0.024 V, with Vd 0.0538 V). One cell meets all three conditions.
+  notes: Under L-b all three 10 mM cells have z within 0.746 to 0.952 (0.763, 0.905, 0.921) and C_Leq
+    within range (0.64, 0.87, 1.09 aF), but none has V0.5 within 0.02 V of the XE991 Eq. 3a line (Vd 0.0847
+    V; residuals -0.040, -0.063, -0.051 V). No cell meets all three. The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CL - 4.82 pF (line Vd 0.0538 V), one cell met all three and the outcome was the same (not_reproduced).
   deviations:
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
+  assumed: true
 - claim: molecular-model
   outcome: blocked
   blocked_by: data_missing
@@ -676,27 +941,38 @@ outcomes:
   assumed: true
 - claim: two-hyperpolarized-states
   outcome: partially_reproduced
-  notes: Of the claims it depends on, fig3a-eq3a-fit, mean-slope-half and fig4d-cleq-two-limits are not
-    reproduced and fig4a-vh-rises-vd-constant is partially reproduced. The main unconstrained slope is
-    negative and near -1/2 (-0.594), Vd is constant and Vh rises, but the mean of the three slopes is
-    -0.223 and C_Leq does not show the paper's two limits. The criterion's partial tier needs the mean
-    slope within 10% of -0.48 and its not-reproduced tier a non-negative slope or a varying Vd; neither
-    holds, and the outcome is the closest tier.
+  notes: Under L-b, fig3a-eq3a-fit and fig4d-cleq-two-limits are reproduced, fig4a-vh-rises-vd-constant
+    is partially reproduced (Vh rises 2.67-fold) and mean-slope-half is not (mean -0.150). The main fit's
+    unconstrained slope is negative (-0.42), Vd is constant and C_Leq shows two limits (the lower resting
+    on one group of two XE991 cells). Neither the reproduced tier (all claims reproduced) nor the not-reproduced
+    tier (non-negative slope or varying Vd) holds; partial is the closest tier. The answer in questions/crcns-ear-1.yaml
+    amended the shared method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with
+    CL - 4.82 pF, fig3a-eq3a-fit and fig4d-cleq-two-limits were not reproduced and the outcome was the
+    same (partially_reproduced).
   deviations:
   - The criterion does not cover a negative slope whose mean over the three fits is far from -0.48; partially
     reproduced is the closest of its tiers.
-  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
-    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
-    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
-  assumed: true
+  - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
+    amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
+    so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
+    the capacitance of the stereocilia bundle and plotting ... Q T m ... as a function of C L - C S B
+    to find the root", Expressions used to determine the experimental parameters, paragraph 2; Corbitt
+    et al. 2012, doi:10.1016/j.bpj.2012.04.054, Methods), bundle area min(0.07 AM, 140 um2) times 0.0075
+    pF/um2 with AM the stored cell surface area. This rule is assumed, as the paper does not state it;
+    it gives the Fig. S1 cell CLW 18.30 pF, within the claims file's admissibility bound (18.56 +/- 1.856
+    pF). The 6 cells without an area take the median CSB of their turn (assumed). The root, 5.104 pF,
+    is that of QTm on ln(CL - CSB) over all 89 cells. CL - 4.82 pF (reading L-c) is shown for comparison
+    and decides nothing.
   notebook: reproduce_farrell_2020.ipynb
+  assumed: true
 findings:
 - kind: metadata_insufficient
   statement: The data set stores CL, QTm, V0.5 and alphaB per cell, but not the lateral wall capacitance
     CLW, the stereocilia bundle capacitance CSB or the non-lateral-wall capacitance CNLW that the paper's
-    Eq. 8a uses, so the paper's CLW and charge density cannot be recomputed. CL - 4.82 pF (the paper's
-    stated CNLW) does not give the Fig. S1 legend's CLW (18.56 pF from CL 24.45 pF, implying 5.89 pF),
-    and several results depend on the difference.
+    Eq. 8a uses, so the paper's CLW and charge density cannot be taken from it. Computed here with the
+    CSB rule of Corbitt et al. (2012) on the stored area, CLW reproduces the Fig. S1 legend's value (18.30
+    against 18.56 pF), but several results (the XE991 fits, the band of Fig. 1, the lower C_Leq limit)
+    turn on the CLW of the smallest cells, which this rule makes as small as 0.48 pF.
 - kind: metadata_insufficient
   statement: The linear capacitance at negative voltages, CLn, and the rule for when it could be estimated
     are not stored; neither are the linear-region indices in the HDF5 files (the MATLAB files keep them
@@ -731,7 +1007,10 @@ findings:
     having reached the hyperpolarized plateau, so that 62 cells qualify), and how was the per-cell CSB
     of Eq. 8 computed? The CLn rule assumed here (mean of the two most negative ramp points, plateau when
     the negative-end slope is below 0.4 of the steepest slope of the flank) gives 62 cells and the Fig.
-    S1 legend's 25.94 pF, but the basal share of dC is 28.6%, not 21%.
+    S1 legend's 25.94 pF, but the basal share of dC is 36.1%, not 21%. The CSB assumed here is the rule
+    of Corbitt et al. (2012), bundle area min(0.07 AM, 140 um2) at 0.0075 pF/um2 with AM the stored cell
+    surface area; it gives a root of 5.10 pF and the Fig. S1 cell CLW 18.30 pF (legend 18.56 pF). Was
+    this the rule, and which area was AM?
 - kind: other
   statement: The largest conductance at V0.5 among XE991 cells is 8.5 nS from the DC steps and 7.0 nS
     from the admittance, about 25 times the 335 pS the paper reports; the unit or the measure in the paper
