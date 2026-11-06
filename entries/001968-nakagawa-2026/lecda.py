@@ -163,6 +163,21 @@ def _open(asset_id: str) -> h5py.File:
                 raise
 
 
+def file_tree(asset_id: str) -> list[tuple]:
+    """Every group and dataset of one file, with shape and type, outside the NWB specifications."""
+    h = _open(asset_id)
+    out = []
+    def visit(name, obj):
+        if name.startswith("specifications"):
+            return
+        if isinstance(obj, h5py.Dataset):
+            out.append((name, obj.shape, str(obj.dtype)))
+        else:
+            out.append((name + "/", None, obj.attrs.get("neurodata_type", "")))
+    h.visititems(visit)
+    return out
+
+
 def _s(x):
     v = x[()]
     return v.decode() if isinstance(v, bytes) else v
@@ -360,11 +375,16 @@ def tukey_cells(values: pd.DataFrame, factors: list[str], mse: float, df_resid: 
 
 
 def two_way(values: pd.DataFrame, a: str, b: str):
-    """Ordinary two-way ANOVA with interaction (type II sums of squares) and Tukey over cells."""
+    """Ordinary two-way ANOVA with interaction and Tukey over cells. Type III sums of squares
+    with sum-to-zero contrasts, the default of MATLAB's anovan (Methods, Data analysis:
+    "analyses were performed using MATLAB codes"; Code availability: "standard functions in
+    MATLAB"); the interaction term is the same under type II. The
+    table's rows are named C(a), C(b), C(a):C(b) and Residual."""
     import statsmodels.api as sm
     from statsmodels.formula.api import ols
-    model = ols(f"y ~ C({a}) * C({b})", data=values).fit()
-    table = sm.stats.anova_lm(model, typ=2)
+    model = ols(f"y ~ C({a}, Sum) * C({b}, Sum)", data=values).fit()
+    table = sm.stats.anova_lm(model, typ=3).drop(index="Intercept")
+    table.index = [f"C({a})", f"C({b})", f"C({a}):C({b})", "Residual"]
     tk = tukey_cells(values, [a, b], model.mse_resid, model.df_resid)
     return table, tk
 
@@ -397,7 +417,14 @@ def _block_row(s, code, tp, tr, perf):
 
 
 def per_unit(df: pd.DataFrame, unit: str) -> pd.DataFrame:
-    """Sessions as units, or the mean over a mouse's sessions (unit 'mouse')."""
+    """Sessions as units, or the mean over a mouse's sessions (unit 'mouse').
+
+    The paper's units are hemispheres (10 WT, 8 APP-KI; Fig. 4 legends), which the files do not
+    identify. Its F(4,80) for 18 hemispheres and 5 timepoints (Fig. 4d legend) leaves one value
+    per hemisphere and timepoint, so a hemisphere's sessions are pooled into one value. The
+    mouse mean is the nearest pooled unit the files allow and is the adopted reading (an
+    assumption); sessions as units, which count each recording of a hemisphere apart, are a
+    variant."""
     if unit == "session":
         return df.assign(unit=df.session)
     cols = ["pre"] + list(WINDOWS)
@@ -406,8 +433,15 @@ def per_unit(df: pd.DataFrame, unit: str) -> pd.DataFrame:
 
 
 def is_correct(df: pd.DataFrame, reading: str, cut: str) -> pd.Series:
+    """Correct sessions. A session whose T5 performance is undefined under the reading (no
+    Odor-1/2 trial among trials 121 to 160 under B1) is neither correct nor an error."""
     p = df[f"perf_{reading}"]
     return p > 80 if cut == ">" else p >= 80
+
+
+def is_error(df: pd.DataFrame, reading: str, cut: str) -> pd.Series:
+    """Error sessions: T5 performance defined and not correct."""
+    return df[f"perf_{reading}"].notna() & ~is_correct(df, reading, cut)
 
 
 def behaviour_table(sessions: list[dict]) -> pd.DataFrame:

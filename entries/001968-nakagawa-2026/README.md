@@ -19,7 +19,7 @@ Figure 6 cannot be tested. Histology, optogenetics and the behaviour of most mic
 | Delayed Odor-1 dopamine signals in APP-KI mice | Not reproduced |
 | Lower Odor-1 dopamine signal at T1 in APP-KI mice, all and correct sessions | Not reproduced |
 | No dopamine difference in error sessions | Reproduced |
-| The T1 decrease is specific to Odor-1 | Reproduced |
+| The T1 decrease is specific to Odor-1 | Partially reproduced |
 | Dopamine emergence correlates with learning | Blocked: methods underspecified |
 | Spike widths and types | Blocked: data missing |
 | Cue responses, PCA, similarity and decoding (13 claims) | Blocked: data missing |
@@ -31,7 +31,9 @@ reasoning and the differences from the paper's method.
 
 No file states genotype, age group or treatment; these come from the paper's Supplementary Table 2
 and Supplementary Fig. 2a. The photometry files state no sampling rate or cue time; the notebook
-reads them as 1 kHz with the cue at 1 s from their z-scoring, an assumption. The attempt record,
+reads them as 1 kHz with the cue at 1 s from their z-scoring and a cue-locked step in the mean
+trace, an assumption. The files do not identify the paper's hemispheres; the photometry statistics
+use the mean over each mouse's sessions, with sessions as units as a variant. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/001968-nakagawa-2026-01.yaml`](../../attempts/001968-nakagawa-2026-01.yaml).
 
