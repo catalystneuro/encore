@@ -143,13 +143,15 @@ outcomes:
     0.0074; paper 0.02 and 0.008), with higher naive intercepts (0.095 against 0.015, 0.096 against
     0.009). The 95% intervals of the intercepts overlap under every reading. Vestibular, separate
     fits give naive 0.026 to 0.163 and trained -0.018 to 0.048; the ANCOVA model gives 0.036 to 0.153
-    and -0.020 to 0.050. Visual is alike, as is the additive model. With the same-condition rnoise
-    the vestibular main effect is not significant (p = 0.183).
+    and -0.020 to 0.050. Visual is alike, as is the additive model. Bootstrap intervals of each
+    group's own fit (2000 resamples of pairs within the group) also overlap, vestibular naive 0.040
+    to 0.151 and trained -0.016 to 0.046, visual 0.021 to 0.172 and -0.023 to 0.040. With the
+    same-condition rnoise the vestibular main effect is not significant (p = 0.183).
   deviations:
   - Pooled rnoise as the mean of the two conditions (assumption, as in fig2b).
   - The paper does not say how the intercept intervals of Figure 5D were computed; separate
-    per-group fits, the ANCOVA model with interaction (Figure 5 legend, "regression fits (ANCOVA)")
-    and the additive model are all shown, and all overlap.
+    per-group fits, the ANCOVA model with interaction (Figure 5 legend, "regression fits (ANCOVA)"),
+    the additive model and a bootstrap over pairs are all shown, and all overlap.
 - claim: fig5-regression-coefficients
   outcome: partially_reproduced
   assumed: true
@@ -176,7 +178,9 @@ outcomes:
   output: claim:fig6a-population-thresholds
   measured: 5.41
   notes: At 2000 neurons the naive threshold is 5.41 times the independent one, and trained is
-    within 0.01% of naive, under both rsignal readings, which give the same values. The ratio is
+    within 0.01% of naive, under both rsignal readings, which give the same values because their
+    rsignal differs by at most 5.6e-07; the open parameters that matter are the amplitude and
+    baseline. The ratio is
     4.32 to 5.90 over the amplitude and baseline variants, and 9.18 without the trace term of
     equation 3. With the coefficients fitted here (reading c) it is 5.47.
   deviations:
@@ -205,11 +209,12 @@ outcomes:
   output: claim:fig7a-pair-sign-of-effect
   notes: Trained is lower than naive for all 88 pairs with positive rsignal and higher for 92 of 93
     with negative rsignal. The exception, at rsignal = -0.011, has trained 0.09% below naive; the
-    sign changes just below rsignal = 0. The criterion asks for every pair.
+    ratio of trained to naive crosses 1 at rsignal = -0.0216, between second preferences of -1 and
+    -2 degrees. The criterion asks for every pair.
   deviations:
   - Tuning parameters as in fig6a (claims file readings, not from the paper).
 - claim: fig7c-narrow-preferences
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_gu_2011.ipynb
   output: claim:fig7c-narrow-preferences
@@ -221,7 +226,11 @@ outcomes:
   notes: The proportions of positive rsignal are within tolerance. The trained improvement grows
     from -0.48% to 4.83% as the range narrows and then levels off (4.58% to 4.83%); its maximum,
     4.83%, is below 8 +- 0.8%. The maximum is 3.6% to 6.0% under the amplitude and baseline
-    variants and 11.75% without the trace term of equation 3.
+    variants and 11.75% without the trace term of equation 3. Two of the criterion's three parts
+    hold (the improvement grows as the range narrows; the proportions are within tolerance) and the
+    best improvement is smaller than the paper's, so the effect is present but weaker. Recorded as
+    not_reproduced before the round-1 verification and changed to partially_reproduced, as the
+    verifier proposed.
   deviations:
   - Tuning parameters as in fig6a (claims file readings, not from the paper); the result depends on
     them and on the trace term.
@@ -233,17 +242,24 @@ outcomes:
   output: claim:fig8ab-choice-probability-lateral
   notes: On 258 values from 129 units of monkeys 2 and 5, fore-aft units do not have smaller
     choice probabilities. With spline-peak preferences, fore-aft 0.527 against lateral 0.542, p =
-    0.136. With the vector sum, 0.546 against 0.511, p = 0.0006, the opposite direction. Leftward
-    and rightward units do not differ under any reading (p = 0.27 to 0.56), as the paper says.
-    Variants, the vector sum over the 8 evenly spaced headings gives p = 0.691, and the distance of
-    CP from 0.5 gives p = 0.10 to 0.85. The vector sum and spline readings put 64% of values in the
-    same group.
+    0.136. With the weighted vector sum, 0.533 against 0.535, p = 0.796. Leftward and rightward
+    units do not differ under any reading (p = 0.25 to 0.35), as the paper says. Variants, the
+    vector sum over the 8 evenly spaced headings gives p = 0.691, and the distance of CP from 0.5
+    gives p = 0.10 to 0.17. The vector sum and spline readings put 71.7% of values in the same
+    group. Of the CPs 71.7% are above 0.5 (mean 0.534), consistent with CPs signed relative to each
+    unit's preferred direction. The round-1 version used an unweighted vector sum, biased toward
+    straight ahead by the uneven headings, which gave p = 0.0006 in the opposite direction; it was
+    replaced.
   deviations:
   - A subset of the paper's data. The data set holds the choice probabilities of 129 units of two
     trained monkeys from Gu et al. (2008), 258 values over the two conditions, against the paper's
     311; whether they are among the 311 cannot be checked.
   - Preferred headings from the experiment 1 tuning curves of the same cells, by the two readings of
     the claims file; the data set does not say how its CPs are signed.
+  - The experiment 1 headings are unevenly spaced (+-22.5 degrees added to the eight 45 degrees
+    apart), so the vector sum weights each response by half the gaps to its two neighbours. On
+    synthetic curves this recovers the preference to within 3 degrees, where the unweighted sum
+    puts 30 degrees at 16. A choice made here, after the round-1 verification.
 - claim: fig8cd-noise-not-preference
   outcome: reproduced
   assumed: true
@@ -253,7 +269,11 @@ outcomes:
     with visual preferences (0.033 against 0.014) and p = 0.170 with vestibular preferences (0.011
     against 0.045). Lateral is lower only with vestibular preferences. Variant with all 127 pairs
     (254 points), vestibular preferences give a significant difference (0.022 against 0.096, p =
-    0.0009), visual do not (p = 0.623).
+    0.0009), visual do not (p = 0.623). The variant's 254 points are nearer the legend's 328 than
+    the 178 used, so by point count alone the claims file's rule would judge on it, and the claim
+    would then fail with vestibular preferences. The outcome is kept on the trained pairs, a
+    complete reading of the criterion and the sample the Results name ("in trained animals"); the
+    127 pairs are the all-179 reading with the 52 pairs over 1 mm missing.
   deviations:
   - Of the claims file's readings only the trained pairs under 1 mm can be formed (178 points, the
     legend has 328 and 55); the other trained pairs, the pairs over 1 mm and the task points are not
@@ -303,7 +323,9 @@ outcomes:
   blocked_by: data_missing
   notes: The training histories are not in the data set. Experiment 2 holds one threshold per
     animal for two of the five trained monkeys (vestibular 1.2 and 3.1 degrees, both inside 0.9 to
-    3.3), not the thresholds over sessions the criterion fits.
+    3.3; visual 1.2 and 3.25 degrees), not the thresholds over sessions the criterion fits. Whether
+    these are plateau values, and the fall from above 10 degrees, cannot be checked. The notebook
+    states them under the data check.
 - claim: fig4-tuning-width-visual
   outcome: blocked
   blocked_by: data_missing
@@ -319,14 +341,36 @@ outcomes:
   blocked_by: data_missing
   notes: As fig4-tuning-width-visual.
 - claim: fig4dh-lateral-more-sensitive
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The criterion's factorial ANOVA needs naive and trained neurons from the single-electrode
-    database; the data set holds 129 units of two trained monkeys only.
+  outcome: reproduced
+  notebook: reproduce_gu_2011.ipynb
+  output: claim:fig4dh-lateral-more-sensitive
+  notes: On 258 values from 129 units of two trained monkeys, lateral units have lower median
+    thresholds than fore-aft ones under every reading, in both conditions. Under one of the 8
+    readings of the claims file the difference reaches p < 0.001, as the criterion requires
+    ("under one reading"), with vector-sum preference, spline threshold, log10, condition as a factor,
+    p = 1.9e-07. Per condition that reading gives visual p = 3.4e-07 and vestibular p = 0.040, so
+    the per-condition reading fails in the vestibular condition. In the other 7 readings the
+    two-factor p is 0.013 to 0.77, and with spline-peak preferences no reading reaches p < 0.05.
+    The neurometric thresholds of experiment 2, a variant, give two-factor p = 7.3e-07 (vector sum,
+    log10) and 0.0011 (spline peak, log10). Per monkey, the visual difference is significant in both
+    (p = 0.00024 and 0.00017) and the vestibular one in neither (p = 0.082 and 0.185). Tested after
+    the round-1 verification found that the claim had been blocked wrongly.
+  deviations:
+  - A subset of the paper's data. The experiment 1 tuning curves hold 129 units of two trained
+    monkeys (Gu et al. 2008), against the paper's 992 visual and 556 vestibular neurons of naive
+    and trained animals, so the ANOVA has no training factor. The two-factor reading has
+    preference group and condition.
+  - For the linear interpolation the derivative at 0, a sampled heading, is the slope between -22.5
+    and 22.5 degrees, a choice made here as a piecewise-linear curve has no derivative at a knot.
+    Two values whose curve is flat at 0 have infinite thresholds and are left out of that reading.
+  - The tuning curves in spikes/s are read as counts over the middle 1 s (Experimental Procedures,
+    Noise and Signal Correlations); a different window scales all thresholds alike.
+  - The vector sum weights each response by the angle it covers, as in fig8ab.
 - claim: fig4dh-training-no-sensitivity-change
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on fig4dh-lateral-more-sensitive; no naive single units in the data set.
+  notes: Needs naive single units, which the data set does not hold; the trained units are tested
+    under fig4dh-lateral-more-sensitive.
 - claim: figs4-population-sensitivity-any-reference
   outcome: blocked
   blocked_by: data_missing
@@ -357,8 +401,8 @@ findings:
     or trial responses, no interneuronal distances, none of the 52 pairs over 1 mm, no
     discrimination-task correlations and no eye records; the single-electrode database of Figures
     4, S4 and 8A is represented only by 129 units of two trained monkeys, and the training histories
-    of Figure 2A by one threshold for each of two monkeys. Nineteen of the paper's 34 claims
-    cannot be tested.
+    of Figure 2A by one threshold for each of two monkeys. Eighteen of the 35 claims cannot be
+    tested.
 - kind: metadata_insufficient
   statement: No pair or monkey carries a naive or trained label, which every comparison in the
     paper needs. The groups can be recovered here only because the paper's per-animal pair counts
@@ -396,5 +440,261 @@ findings:
 - kind: methods_unavailable
   statement: Question for the paper's authors. For Figure 8A and 8B, how was each unit's preferred
     heading computed, which units entered the 311 values, and how was CP signed? On the 129 units of
-    the data set the fore-aft and lateral CPs differ in opposite directions under the vector sum and
-    the spline peak.
+    the data set neither the vector sum nor the spline peak gives fore-aft CPs smaller than lateral
+    ones (p = 0.80 and 0.14).
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier checked the archive listing for the
+    blocked claims and tested the helper functions on synthetic inputs (tls_plane, threshold,
+    sigma_for_fwhm, preference_group, pref_spline_peak, pref_vector_sum, pooled_rnoise). Report in
+    transcripts/crcns-stc-1/verifier-1-report.md.
+  results:
+  - claim: training-group-link
+    agrees: true
+    outcome: reproduced
+    reason: In cell 13 the eight per-monkey counts match the Figure S2B counts one to one, giving 89
+      trained and 38 naive pairs and 146 and 64 units; monkeys 2 and 5, the ones with behavioural
+      thresholds, both fall in the trained group. The 89/38 split follows from matching by count, so
+      only the neuron counts and the behaviour check are independent tests.
+    response: No change.
+  - claim: fig2b-trained-lower-noise-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Trained 0.0241 +- 0.0174, naive 0.1190 +- 0.0316, both within tolerance; Student p =
+      0.0056 (paper 0.006), Welch p = 0.011. It checked on synthetic data that the pooled-z-score
+      Pearson equals the mean of the per-condition values with equal trial numbers and no outliers;
+      whether the stored values include outlier removal or renormalization cannot be told (problem
+      5, not affecting a conclusion).
+    response: No change; the assumption and its limits were already stated.
+  - claim: figs2b-individual-animals
+    agrees: true
+    outcome: reproduced
+    reason: The lowest naive animal mean (0.088) is above the highest mean among the trained animals
+      shown (0.048), with counts 35/26/18/8 and 22/11/5. There are no time courses because the data
+      set holds no spike times.
+    response: No change.
+  - claim: fig1-example-pair
+    agrees: true
+    outcome: reproduced
+    reason: One pair, m2c338r1, has all four values within tolerance (0.828, 0.786, 0.291, 0.142).
+      The per-pair p values cannot be checked without trial counts.
+    response: No change.
+  - claim: fig1f-modality-correlated
+    agrees: true
+    outcome: partially_reproduced
+    reason: Spearman R = 0.449, p = 1e-7, on n = 127, the smaller sample the criterion allows. R is
+      outside 0.342 to 0.418.
+    response: No change.
+  - claim: fig1f-modality-means-equal
+    agrees: true
+    outcome: reproduced
+    reason: Paired p = 0.73, n = 127. The vestibular mean of 0.056 is outside the paper's 0.035 +-
+      0.014, but the paper's figure is from 179 pairs.
+    response: No change.
+  - claim: fig5-noise-signal-positive
+    agrees: true
+    outcome: reproduced
+    reason: With pooled rnoise the rsignal slope is positive with p = 0.00017 (vestibular) and p =
+      0.0007 (visual).
+    response: No change.
+  - claim: fig5-slope-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Interaction p = 0.83 (vestibular) and 0.96 (visual).
+    response: No change.
+  - claim: fig5-intercept-lower-trained
+    agrees: true
+    outcome: partially_reproduced
+    reason: The training main effect is significant (p = 0.018 vestibular, 0.0074 visual, pooled
+      rnoise). The 95% intervals of the intercepts overlap under every construction, separate fits,
+      the ANCOVA model and the additive model. It could not check what interval method the paper
+      used; a bootstrap interval for the per-group intercept would help.
+    response: Added bootstrap 95% intervals of each group's intercept from its own fit (2000
+      resamples of pairs within the group). They overlap too (vestibular naive 0.040 to 0.151,
+      trained -0.016 to 0.046). Outcome kept.
+  - claim: fig5-regression-coefficients
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under readings (a) and (b) the slopes are 0.119/0.084 and 0.132/0.085 and the naive
+      intercept 0.077/0.074, all within tolerance. The trained intercept is 0.003/0.002, outside
+      0.005 +- 0.0005, though still below the naive one. Reading (c) misses the visual slope (0.106).
+      Cell 0 said that no analysis draws random numbers, but this cell runs a seeded bootstrap
+      (problem 4, not affecting a conclusion).
+    response: Corrected the header of the notebook, which now names the two seeded bootstraps.
+      Outcome kept.
+  - claim: fig6a-population-thresholds
+    agrees: true
+    outcome: reproduced
+    reason: At N = 2000 the naive/independent ratio is 5.41 (within 4.5 to 5.5) and trained/naive
+      1.000, under the claims-file reading (A30/B10) for both rsignal readings. The result is
+      sensitive to the unstated amplitude and baseline (4.32 to 5.90; A35 gives 5.57). The two
+      rsignal readings differ by at most 5e-7 in rsignal, so the second adds nothing (problem 6, not
+      affecting a conclusion).
+    response: The notebook now prints the largest difference in rsignal between the two readings
+      (5.6e-07) and the conclusion and notes say the open parameters that matter are the amplitude
+      and baseline. Outcome kept.
+  - claim: fig6b-slope-not-intercept
+    agrees: true
+    outcome: reproduced
+    reason: Over a slope width of 0.2 the threshold changes by 1.97 degrees, over an intercept width
+      of 0.2 by 0.11 degrees. The threshold falls from the trained to the naive intercept (7.251 to
+      7.217). It is not monotone at intercept 0 to 0.02.
+    response: No change.
+  - claim: fig7a-pair-sign-of-effect
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 88 pairs with positive rsignal follow the rule, and 92 of 93 with negative rsignal.
+      The exception is at rsignal = -0.011 (pref2 = -2 degrees), and the criterion requires every
+      pair. It asked for the rsignal at which trained/naive equals 1.
+    response: Added the crossing, rsignal = -0.0216 (between second preferences of -1 and -2
+      degrees) under both rsignal readings. Outcome kept.
+  - claim: fig7c-narrow-preferences
+    agrees: false
+    outcome: partially_reproduced
+    reason: The proportions are 48.6, 73.1 and 92.4%, all within tolerance, and the improvement
+      grows from -0.5% to about 4.8%. The best improvement of 4.83% is far outside 8 +- 0.8. It stays
+      at 3.6 to 6.0% under the amplitude and baseline variants; only dropping the trace term, which
+      is not equation 3, reaches 8%.
+    response: Changed from not_reproduced to partially_reproduced. Two of the criterion's three parts
+      hold and the effect is present but smaller, which is the protocol's partially_reproduced.
+  - claim: fig8ab-choice-probability-lateral
+    agrees: true
+    outcome: not_reproduced
+    reason: 258 CPs from two trained monkeys, a subset of the paper's 311. No preferred-heading
+      reading gives fore-aft CP smaller with p < 0.05. The vector sum over all 10 headings gives the
+      opposite sign (p = 0.0006), but that reading is biased; stc1.pref_vector_sum takes the sum
+      over the unevenly spaced headings with no weighting for angular spacing, so true preferences
+      of 30/60/90/120 degrees come out as 16/35/59/93 and many lateral units are labelled fore-aft.
+      It should be dropped or replaced by a spacing-weighted vector sum (problem 1). It could not
+      check how many of the 258 CPs are in the paper's 311 or the sign convention of the CPs.
+    response: Replaced the vector sum by one that weights each response by half the gaps to its
+      neighbours, shown on synthetic curves in the notebook to recover the preference within 3
+      degrees. It gives fore-aft 0.533 against lateral 0.535, p = 0.796. Added the share of CPs
+      above 0.5 (71.7%, mean 0.534) as a check of the sign. The overlap with the paper's 311 cannot
+      be checked from the data set. Outcome kept.
+  - claim: fig8cd-noise-not-preference
+    agrees: true
+    outcome: reproduced
+    reason: Trained pairs, as the Results specify ("in trained animals"), p = 0.43 (visual
+      preference) and 0.17 (vestibular). The claims file says to judge under the reading whose point
+      count is closest to 328; the 127-pair variant (254 points) is closer than the 178 used, and with
+      vestibular preference it gives p = 0.0009. It keeps reproduced because the Results restrict the
+      statement to trained animals, but the notebook should state this conflict with the claims-file
+      rule (problem 3).
+    response: The notebook's description and conclusion, and the notes, now state the conflict and
+      why the outcome is kept on the trained pairs. Outcome kept.
+  - claim: fig2c-timecourse-naive-higher
+    agrees: true
+    outcome: blocked
+    reason: It confirmed the archive listing; stc-1/live holds only MSTd.mat (65 KB, derived),
+      VIP.mat, demo.m, docs, filelist.txt and checksums. There are no spike times.
+    response: No change.
+  - claim: figs2a-difference-decreases
+    agrees: true
+    outcome: blocked
+    reason: No spike times.
+    response: No change.
+  - claim: fig3-mean-response-unchanged
+    agrees: true
+    outcome: blocked
+    reason: No spike times.
+    response: No change.
+  - claim: fig3-fano-unchanged
+    agrees: true
+    outcome: blocked
+    reason: No spike times.
+    response: No change.
+  - claim: figs8c-renormalization
+    agrees: true
+    outcome: blocked
+    reason: No trial-ordered responses.
+    response: No change.
+  - claim: discussion-stimulus-reduces-correlation
+    agrees: true
+    outcome: blocked
+    reason: No prestimulus responses.
+    response: No change.
+  - claim: figs1-distance
+    agrees: true
+    outcome: blocked
+    reason: No distances, and no pairs over 1 mm (all 127 are under 1 mm).
+    response: No change.
+  - claim: methods-single-vs-multiple-electrodes
+    agrees: true
+    outcome: blocked
+    reason: No electrode label, and the recording structure (cell 6) cannot stand in for one. Cell 6
+      finds a recording with 6 pairs, against the paper's stated maximum of 5; it is noted but not
+      explained (problem 8, not affecting a conclusion).
+    response: No change. The six pairs are all pairs of four units; the data set holds nothing that
+      could explain the difference from the paper's maximum of five, which stays a finding.
+  - claim: fig2a-behavioral-learning
+    agrees: true
+    outcome: blocked
+    reason: There are no training histories. experiment2.behv holds one threshold per monkey for
+      monkeys 2 and 5 (1.2/1.2 and 3.1/3.25 degrees), both inside 0.9 to 3.3 degrees. Only the
+      plateau part could be checked, for 2 of 5 animals, and the notebook does not report it
+      (problem 7, not affecting a conclusion).
+    response: The notebook now states these thresholds against the criterion's plateau range under
+      the data check, and the notes give them. Outcome kept, as the criterion needs the fall over
+      sessions.
+  - claim: fig4-tuning-width-visual
+    agrees: true
+    outcome: blocked
+    reason: The single-unit data have no naive animals. Trained medians could be computed from the
+      experiment1 tuning curves for a descriptive comparison only, and the ANOVA selection cannot be
+      applied to trial-averaged curves.
+    response: No change.
+  - claim: fig4-tuning-width-vestibular
+    agrees: true
+    outcome: blocked
+    reason: As fig4-tuning-width-visual.
+    response: No change.
+  - claim: fig4-amplitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: As fig4-tuning-width-visual.
+    response: No change.
+  - claim: fig4dh-lateral-more-sensitive
+    agrees: false
+    reason: Blocked wrongly. Its main claim is the preference-group effect, which can be tested within
+      the two trained monkeys from experiment1 and experiment2, with the claims-file Fisher threshold
+      on interpolated tuning curves; the notebook used exactly this subset for fig8ab. The claim
+      should be partially tested, not blocked (problem 2).
+    response: Tested on the 129 trained units under the claims file's readings, without the training
+      factor. Lateral thresholds are lower under every reading, and one of the 8 readings reaches p <
+      0.001 (p = 1.9e-07), so the outcome is reproduced on the subset, with the subset and the missing
+      training factor as deviations.
+  - claim: fig4dh-training-no-sensitivity-change
+    agrees: true
+    outcome: blocked
+    reason: Needs naive single units.
+    response: No change.
+  - claim: figs4-population-sensitivity-any-reference
+    agrees: true
+    outcome: blocked
+    reason: Needs naive single units.
+    response: No change.
+  - claim: fig7b-msdt-pairs
+    agrees: true
+    outcome: blocked
+    reason: Pairs carry only preferences and correlations, no tuning curves.
+    response: No change.
+  - claim: figs5-congruency
+    agrees: true
+    outcome: blocked
+    reason: The congruency index needs each unit's tuning curves. A proxy from the visual-vestibular
+      preference difference is possible but is not the paper's measure.
+    response: No change.
+  - claim: figs6-task-independent
+    agrees: true
+    outcome: blocked
+    reason: No discrimination-task correlations.
+    response: No change.
+  - claim: figs8ab-eye-movements
+    agrees: true
+    outcome: blocked
+    reason: No eye records.
+    response: No change.

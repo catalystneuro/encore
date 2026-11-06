@@ -21,12 +21,13 @@ spike times, distances, training-group labels or naive single units.
 | Correlations raise the population threshold 5-fold; training has little effect (Figure 6A) | Reproduced |
 | Thresholds depend on the slope more than the intercept (Figure 6B) | Reproduced |
 | For a pair, reducing correlations helps when rsignal > 0 and hurts when < 0 (Figure 7A) | Partially reproduced |
-| At best the trained threshold is about 8% lower (Figure 7C) | Not reproduced |
+| At best the trained threshold is about 8% lower (Figure 7C) | Partially reproduced |
+| Lateral units are more sensitive around straight ahead (Figures 4D, 4H; trained animals only) | Reproduced |
 | Fore-aft units have smaller choice probabilities (Figure 8A, 8B) | Not reproduced |
 | Noise correlation does not depend on heading preference (Figure 8C, 8D) | Reproduced |
 | Time courses, Fano factors, renormalization, prestimulus correlations | Blocked: data missing |
 | Distance groups, single against multiple electrodes | Blocked: data missing, metadata insufficient |
-| Training histories, single-electrode database (Figures 2A, 4, S4) | Blocked: data missing |
+| Training histories, comparisons of naive and trained single units (Figures 2A, 4, S4) | Blocked: data missing |
 | Pair tuning curves, task correlations, eye movements (Figures 7B, S5, S6, S8A, S8B) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the

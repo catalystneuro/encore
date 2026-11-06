@@ -38,9 +38,18 @@ Where the parameters come from:
   they are not from the paper. Preferences evenly spaced over the range is a standard choice.
   `RSIGNAL_HEADINGS_8` (8 headings 45 degrees apart) and a 1-degree grid are the two rsignal
   readings of the claims file.
-- Preferred heading from a tuning curve (fig8ab): the vector sum, or the peak of a periodic
-  cubic spline through the curve at 1 degree; the two readings of the claims file
-  (fig4dh-lateral-more-sensitive).
+- Preferred heading from a tuning curve (fig4dh, fig8ab): the vector sum, or the peak of a
+  periodic cubic spline through the curve at 1 degree; the two readings of the claims file
+  (fig4dh-lateral-more-sensitive). The experiment 1 headings are unevenly spaced (+-22.5 degrees
+  added to the eight 45 degrees apart), so each response in the vector sum is weighted by the
+  angle it covers (half the gaps to its two neighbours); an unweighted sum is pulled toward
+  straight ahead (a choice made here, after the round-1 verification found that bias).
+- Single-neuron threshold (fig4dh): equations 2 and 3 for one neuron, with variance equal to the
+  mean (equation 4 for i = j), so that I = f'^2 / f + 0.5 (f' / f)^2, on the tuning curve in
+  spikes/s read as the count of the middle 1 s (Experimental Procedures, Noise and Signal
+  Correlations). The two interpolations are the claims file's readings. For the linear one, f'
+  at 0, a sampled heading, is the slope between the two neighbouring headings (-22.5 and 22.5),
+  a choice made here since a piecewise-linear curve has no derivative at a knot.
 - Fore-aft and lateral groups: within 45 degrees of 0 or 180, or of -90 or 90 (Results, Effects
   of Training on Tuning Curves, paragraph 3). A preference at exactly 45 degrees from both is
   counted as lateral, a standard choice that affects no value in these data.
@@ -157,21 +166,46 @@ def preference_group(pref):
     return np.where(fore_aft, "fore-aft", "lateral")
 
 
-def pref_vector_sum(headings, resp) -> float:
-    h = np.deg2rad(np.asarray(headings, float))
-    r = np.asarray(resp, float)
-    return float(np.rad2deg(np.arctan2((r * np.sin(h)).sum(), (r * np.cos(h)).sum())))
-
-
-def pref_spline_peak(headings, resp) -> float:
+def _sorted_circle(headings, resp):
     h = np.asarray(headings, float) % 360.0
     order = np.argsort(h)
     h, r = h[order], np.asarray(resp, float)[order]
     h, idx = np.unique(h, return_index=True)
-    r = r[idx]
+    return h, r[idx]
+
+
+def pref_vector_sum(headings, resp) -> float:
+    """Vector sum, each response weighted by half the gaps to its two neighbouring headings."""
+    h, r = _sorted_circle(headings, resp)
+    gap = np.diff(np.append(h, h[0] + 360.0))
+    w = r * (gap + np.roll(gap, 1)) / 2
+    hr = np.deg2rad(h)
+    return float(np.rad2deg(np.arctan2((w * np.sin(hr)).sum(), (w * np.cos(hr)).sum())))
+
+
+def pref_spline_peak(headings, resp) -> float:
+    h, r = _sorted_circle(headings, resp)
     cs = CubicSpline(np.append(h, h[0] + 360.0), np.append(r, r[0]), bc_type="periodic")
     grid = np.arange(0.0, 360.0, 1.0)
     return float(wrap180(grid[np.argmax(cs(grid))]))
+
+
+def neuron_threshold(headings, resp, interp: str = "spline") -> float:
+    """Threshold (degrees) of one neuron at straight ahead, equations 2 and 3 with variance = mean.
+
+    interp "spline" (periodic cubic spline) or "linear" (slope between the neighbours of 0).
+    Infinite when the curve is flat at 0.
+    """
+    h, r = _sorted_circle(headings, resp)
+    if interp == "spline":
+        cs = CubicSpline(np.append(h, h[0] + 360.0), np.append(r, r[0]), bc_type="periodic")
+        f, fp = float(cs(0.0)), float(cs(0.0, 1))
+    else:
+        if h[0] != 0.0:
+            raise ValueError("the linear reading needs a response at 0 degrees")
+        f, fp = r[0], (r[1] - r[-1]) / (h[1] - h[-1] + 360.0)
+    info = fp**2 / f + 0.5 * (fp / f) ** 2
+    return float(np.sqrt(2.0) / np.sqrt(info)) if info > 0 else np.inf
 
 
 def tls_plane(X: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, float]:
