@@ -1,0 +1,738 @@
+schema_version: 2
+id: crcns-ear-1-farrell-2020-01
+dataset:
+  archive: crcns
+  id: ear-1
+  version: unversioned
+  doi: 10.6080/K0571975
+paper: doi:10.1085/jgp.201912447
+date: '2026-11-06'
+entry: crcns-ear-1-farrell-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42212958015
+outcomes:
+- claim: cohort
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:cohort
+  measured:
+  - 89
+  - 42
+  - 47
+  notes: All eight group counts match the paper (17 and 22 adult males, 15 and 6 prepubertal males, 10
+    and 18 prepubertal females, 1 pigmented adult female); 42 albino and 47 pigmented cells. 3 cells have
+    10 mM chloride, 20 have XE991 (all stored as 60 uM), 81 have Rs < 10 MOhm (all 89 below 12 MOhm),
+    and recordings were made 47 to 182 min after death.
+  deviations:
+  - The HDF5 maturity `juvenile` (10 males) is read as prepubertal, as the original MATLAB files put these
+    cells in the prepubertal-male file.
+- claim: figs1-example-cell
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:figs1-example-cell
+  measured:
+  - 24.58
+  - 25.94
+  - 19.76
+  - -0.0216
+  - 2.92
+  - 36.04
+  notes: File 79 is the one cell with original number 99 that is pigmented, prepubertal, female and in
+    60 uM XE991. Recomputed from its trace, CL 24.58 pF, CLn 25.94 pF, CLW 19.76 pF, V0.5 -0.0216 V, QTm
+    2.92 pC and alphaB 36.04 V-1, all within tolerance. The stored CL 24.45 pF, V0.5 -0.0218 V, QTm 3.02
+    pC and alphaB 34.99 V-1 equal the legend. CLW passes only on the wide tolerance; the legend's CLW
+    of 18.56 pF implies a non-lateral-wall capacitance of 5.89 pF for this cell, not 4.82 pF.
+  deviations:
+  - CL is recomputed as the mean C over 0.09 to 0.15 V, the range the Methods give for Rm and Rs where
+    there is no measurable voltage-dependent capacitance (Methods, Whole-cell patch-clamp, paragraph 2);
+    the paper's own linear region was picked by hand.
+  - V0.5 is the voltage of the largest C (reading p-a) times Rm/(Rm+Rs) over 0.09 to 0.15 V; the Boltzmann
+    reading (p-b) gives -0.0234 V.
+  - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
+    V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
+    the Fig. S1 legend''s 25.94 pF for its cell), and a cell has a plateau when the slope of C at or below
+    -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
+    count is nearest the paper''s 62 cells.'
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: nlw-capacitance
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:nlw-capacitance
+  measured: 5.44
+  notes: Only reading n-c (CSB = 0) can be run, since the data set stores no CSB, CNLW or CLW. The root
+    of QTm = gamma + beta ln(CL) is 5.44 pF (95% bootstrap interval 4.87 to 6.02, 89 cells) and 5.46 pF
+    (86 cells with 144 mM chloride), outside 4.82 +/- 0.48 pF. The group intervals overlap (pigmented
+    5.07 against albino 6.11 pF; adult 5.59 against juvenile 5.31 pF), so the second part of the statement
+    holds under this reading.
+  deviations:
+  - Readings n-a and n-b (CSB or CNLW as stored per cell) cannot be run; the data set does not store them.
+  - Intervals are 95% bootstrap intervals over cells (2000 resamples, fixed seed), a standard choice.
+- claim: clw-by-turn
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:clw-by-turn
+  measured:
+  - 5.85
+  - 19.1
+  notes: Mean CLW is 5.85 pF (SD 2.44, 8 cells) for turn 1 and 19.10 pF (SD 2.77, 36 cells) for turn 4
+    (readings c-a and c-b; c-c gives 5.97 and 19.65 pF). Both SDs are within 10% of the paper's. With
+    CNLW 5.89 pF the means are 4.78 and 18.03 pF.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: fig1-charge-not-linear
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig1-charge-not-linear
+  measured: 0.585
+  notes: 'The steeper rise for small cells holds: the slope of QTm^2 on CLW^2 is 0.0418 for 26 cells with
+    CLW < 10 pF and 0.0219 for 60 others through the origin (ratio 1.91, disjoint 95% intervals), and
+    0.0369 against 0.0109 with an intercept (ratio 3.40). The adjusted R2 of the Eq. 6b fit is outside
+    0.516 +/- 0.052 under every reading (0.585 through the origin with a centred total sum of squares,
+    0.902 uncentred, 0.701 with an intercept, 0.69 to 0.97 on the scale of QTm against CLW). With CNLW
+    5.89 pF the centred fit through the origin gives 0.538. The criterion names no partial tier; the outcome
+    is partial because the steepness part holds and the R2 does not.'
+  deviations:
+  - The fit through the origin has no defined adjusted R2 convention in the paper; centred (as MATLAB's
+    curve fitting computes it) and uncentred are both shown.
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: fig1-two-state-bounds
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig1-two-state-bounds
+  notes: The Eq. 6b lines are dVmin 0.2356 and 0.1287 V. 79 of the 86 cells with 144 mM chloride (91.9%)
+    lie between them widened by 10% (3 above, 4 below), so reading b-a holds. Reading b-b does not (median
+    dVmin 0.210 V for CLW < 10 pF and 0.158 V for the others). With CNLW 5.89 pF the fraction is 84.9%.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: alpha-pigmented-vs-albino
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:alpha-pigmented-vs-albino
+  measured:
+  - 9.0
+  - 7.81
+  notes: alpha(V0.5) is 9.00 +/- 1.42 V-1 for 27 pigmented cells and 7.81 +/- 0.93 V-1 for 42 albino cells
+    (144 mM chloride, no XE991); one-way ANOVA p = 0.00008, Welch p = 0.0004. Both means are within the
+    stated SDs and within 10%. Without cell 3 (alphaB 57.5 V-1) the pigmented mean is 8.79 +/- 0.95 V-1.
+  deviations:
+  - Per-cell CL, QTm, V0.5 (corrected) and alphaB are the values the data set stores; they equal the Fig.
+    S1 legend for its example cell and follow from the stored traces as the data set's analysis script
+    computes them (Analysis/check_non_linear_electrical_properties.m).
+  - The data set gives 27 pigmented cells without XE991 with 144 mM chloride, where the paper counts 28.
+- claim: alpha-gradient-pigmented
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:alpha-gradient-pigmented
+  measured:
+  - 9.93
+  - 8.25
+  - 7.96
+  - 7.78
+  notes: Under r-a, pigmented cells without XE991 have alpha(V0.5) 9.93 V-1 basal against 8.25 V-1 apical
+    (ANOVA p = 0.00097); albino cells 7.96 against 7.78 V-1 (p = 0.586). All four means are within the
+    stated SDs. Under r-b, 9.05 against 8.06 (p = 0.019) and 7.75 against 7.73 (p = 0.977).
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+- claim: table1-pigmented-xe991
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table1-pigmented-xe991
+  measured:
+  - 37.49
+  - 33.85
+  - 0.96
+  - 0.87
+  notes: Under r-a the pigmented XE991 cells with 144 mM chloride number 5 basal and 12 apical (paper
+    4 and 11); alphaB 37.49 against 33.85 V-1 and z 0.96 against 0.87, all within tolerance; ANOVA p =
+    0.0027. Under r-b there is one basal cell. The direction and significance hold with other counts.
+    Counting cell 91 as without XE991 gives 5 and 11.
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+  - Which of the paper's cells form Table 1 row (a) is not given; the data set has one more basal and
+    one more apical XE991 cell than the table.
+- claim: table1-pigmented-no-xe991
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table1-pigmented-no-xe991
+  measured:
+  - 39.73
+  - 32.99
+  - 1.017
+  - 0.845
+  notes: Under r-a, 12 basal and 15 apical cells (paper 12 and 16); alphaB 39.73 +/- 6.04 against 32.99
+    +/- 3.17 V-1, z 1.017 against 0.845, all within tolerance; ANOVA p = 0.0010, not < 0.0001 (r-b p =
+    0.019). The basal mean includes cell 3 (alphaB 57.5 V-1, QTm 0.66 pC); without it 38.11 +/- 2.39 V-1
+    over 11 cells. With cell 91 counted without XE991, 12 and 16 cells and p = 0.0008.
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+- claim: table1-albino-no-gradient
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table1-albino-no-gradient
+  measured:
+  - 31.84
+  - 31.11
+  - 0.815
+  - 0.797
+  notes: Under r-a, 11 basal and 30 apical cells, the paper's counts; alphaB 31.84 against 31.11 V-1 (difference
+    0.73 V-1), z 0.815 against 0.797, all within tolerance; ANOVA p = 0.586 (paper 0.5294), so the test
+    finds no difference. Under r-b p = 0.977.
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+- claim: table1-xe991-no-effect-alpha
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table1-xe991-no-effect-alpha
+  measured:
+  - 39.07
+  - 33.38
+  - 1.0
+  - 0.855
+  notes: The XE991 effect on alphaB is not significant under any reading (p = 0.86 for x-a, 0.66 for x-b,
+    0.47 for x-c; coefficients -0.21 to -1.06 V-1). Pooled pigmented cells give basal 39.07 +/- 5.24 V-1
+    (z 1.00) and apical 33.38 +/- 2.63 V-1 (z 0.855), all within tolerance, but with 17 and 27 cells,
+    where the criterion asks for 16 and 27. The criterion names no tier for a matching test with other
+    counts; the outcome is partial for that reason.
+  deviations:
+  - Effect tests use type II sums of squares on an ordinary least squares model, which equal JMP's effect
+    tests for a model without interactions.
+- claim: figs2-alphab-vs-clw
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:figs2-alphab-vs-clw
+  notes: Pigmented cells without XE991, Spearman rho -0.85 (p < 0.0001), slope -0.57 V-1 per pF (p < 0.0001);
+    albino cells rho -0.17 (p = 0.29), slope p = 0.75. With the XE991 cells included the pigmented rho
+    is -0.82.
+  deviations:
+  - The paper gives no test; Spearman and linear regression are the criterion's readings, chosen before
+    the analysis.
+  assumed: true
+- claim: splice-isoform-x1
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The PCR and sequencing of cochlear cDNA are not in the data set, which holds only the voltage-clamp
+    recordings (its file list and description name no sequencing data).
+- claim: v05-by-turn
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:v05-by-turn
+  measured:
+  - -0.0826
+  - -0.0496
+  - -0.1025
+  - -0.0524
+  notes: Fig. 2 cells (v-a), albino turn 1 -0.0826 +/- 0.0299 V (3 cells), turn 4 -0.0496 +/- 0.0176 V
+    (15); pigmented turn 1 -0.1025 +/- 0.0190 V (4), turn 4 -0.0524 +/- 0.0201 V (11). All within the
+    SDs and within 10%, and turn 1 is more negative in both colonies.
+- claim: fig2b-v05-vs-clw
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig2b-v05-vs-clw
+  measured:
+  - 0.612
+  - 0.172
+  notes: 'Both slopes are positive: pigmented 0.00324 V/pF (p < 0.0001, adjusted R2 0.612, within tolerance),
+    albino 0.00167 V/pF (p = 0.0036, adjusted R2 0.172, outside 0.18 to 0.22). The pigmented fit is better,
+    as stated. 69 cells, where the legend counts 70.'
+  deviations:
+  - The data set has 69 cells with 144 mM chloride and no XE991, one fewer than the Fig. 2 legend.
+- claim: fig2b-no-phenotype-difference
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig2b-no-phenotype-difference
+  notes: The CLW by colony interaction is significant (p = 0.039); the pigmented slope exceeds the albino
+    slope by 0.00157 V/pF (0.00324 against 0.00167; slope t-test t = 2.13, p = 0.037).
+  deviations:
+  - The paper names no test; the interaction test (g-a) is the criterion's reading.
+- claim: v05-gradient-length
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:v05-gradient-length
+  measured: 0.46
+  notes: Length regressed on V0.5 (l-a) gives 0.46 um/mV on the lateral wall length of 64 Fig. 2 cells,
+    0.45 um/mV on 83 cells, and 0.50 um/mV on the cell length of 35 cells; the inverse slope (l-b) gives
+    1.37 to 1.58 um/mV. None is within 0.63 to 0.77 um/mV.
+  deviations:
+  - The data set has two length fields (lateral wall length for 83 cells, cell length for 35) and does
+    not say which the paper used; both are run.
+- claim: xe991-voltage-clamp
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:xe991-voltage-clamp
+  measured:
+  - 0.065
+  - 8530
+  notes: All 20 XE991 cells have a fractional drop below 13% (largest 0.065 at V0.5, 0.127 at positive
+    voltages). The median drop without XE991 is 1.52 (at V0.5) and 1.51 (positive voltages) times the
+    median with it, not twofold; the means give 2.15 and 1.66. The largest conductance at V0.5 among XE991
+    cells is 8.53 nS (DC chord conductance, 12 cells) or 7.02 nS (admittance 1/Rm), about 25 times the
+    335 pS claimed. One cell without XE991 has a drop of 0.260 at positive voltages. The criterion names
+    no partial tier; the outcome is partial because the drop part holds and the twofold (by medians) and
+    conductance parts do not.
+  deviations:
+  - The drop at V0.5 is taken from the admittance Rm and Rs at the ramp point nearest the raw V0.5, and
+    for the 19 cells with DC steps from the DC chord conductance between the two steps around V0.5 (Methods,
+    Whole-cell patch-clamp, paragraph 2); the second measured value is in pS.
+- claim: table2-xe991-v05-shift
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table2-xe991-v05-shift
+  measured: 0.0239
+  notes: The XE991 effect on V0.5 has p = 0.0019 (x-a) and 0.0007 (x-b); the shift is 0.0239 V by region-matched
+    means (h-a; basal 0.0284, apical 0.0193 V) and 0.0225 V by the coefficient (h-b), both within 0.020
+    +/- 0.010 V. QTm, CLW and alphaB show no XE991 effect under x-a and x-b (p 0.27 to 0.86).
+- claim: table2-pigmented-xe991
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table2-pigmented-xe991
+  measured:
+  - -0.0623
+  - -0.0358
+  notes: Under r-a, V0.5 -0.0623 V basal against -0.0358 V apical, ANOVA p = 0.0205, both within tolerance;
+    5 and 12 cells where the table has 4 and 11.
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+- claim: table2-pigmented-no-xe991
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table2-pigmented-no-xe991
+  measured:
+  - -0.0907
+  - -0.0552
+  notes: Under r-a, V0.5 -0.0907 V basal (12 cells) against -0.0552 V apical (15), ANOVA p = 0.0005 (<
+    0.001), both within tolerance; r-b p = 0.0008.
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+- claim: table2-albino
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table2-albino
+  measured:
+  - -0.071
+  - -0.0573
+  notes: Under r-a, the paper's counts (11 and 30); V0.5 -0.0710 against -0.0573 V (difference 0.0138
+    V), ANOVA p = 0.0697, the paper's value, so the test does not find the difference. Under r-b (3 and
+    15 cells) p = 0.0165.
+  deviations:
+  - Basal and apical are the data set's own `apical_basal_polarity` label (turns 1-2 and 3-4), which is
+    the claims file's reading r-a; r-b (turn 1 against turn 4) is shown.
+- claim: v05-not-correlated-voltage-drop
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:v05-not-correlated-voltage-drop
+  notes: 'No Pearson correlation of V0.5 with the fractional drop is significant (144 mM cells): with
+    XE991 p = 0.97 (at V0.5) and 0.088 (positive voltages), without XE991 p = 0.10 and 0.065. In the Spearman
+    variant the XE991 drop at positive voltages correlates (rho 0.51, p = 0.038, 17 cells).'
+  deviations:
+  - The paper names no test; Pearson correlation at p < 0.05 is the criterion's reading.
+  assumed: true
+- claim: fig3a-eq3a-fit
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig3a-eq3a-fit
+  measured:
+  - 0.0215
+  - 0.952
+  - -0.594
+  - 0.971
+  notes: Edges at multiples of 5 pF, the Eq. 3a fit gives Vd 0.0215 V (adjusted R2 0.952) and the unconstrained
+    fit slope -0.594 (adjusted R2 0.971); Vd and slope are outside tolerance under every reading (slopes
+    -0.59 to -0.63), both R2 within. With CNLW 5.89 pF all four are within tolerance with edges at multiples
+    of 5 pF (Vd 0.0322 V, R2 0.846 or 0.911, slope -0.372 or -0.405, R2 0.950 or 0.957).
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - 69 cells with 144 mM chloride and no XE991, both colonies.
+- claim: fig3a-xe991-fit
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig3a-xe991-fit
+  measured:
+  - 0.0538
+  - -8.19
+  - -0.084
+  - 0.124
+  notes: For the 17 XE991 cells with 144 mM chloride, Vd 0.0538 V (within tolerance; 0.0498 V on all 20),
+    but the Eq. 3a R2 is -8.2 and the unconstrained slope -0.084 (R2 0.12). One cell with CL 5.93 pF (CLW
+    1.11 pF, dVmin 0.571 V) dominates the bins. With CNLW 5.89 pF its CLW is 0.04 pF and the fit fails
+    entirely.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - All 20 XE991 cells are stored as 60 uM, so reading k-b equals k-a; the 17 cells with 144 mM chloride
+    are the first reading.
+- claim: fig3a-high-density-deviation
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig3a-high-density-deviation
+  notes: Only 2 cells without XE991 have dVmin above 0.25 V; their mean residual is 0.0227 V (t-test p
+    = 0.41), variance ratio 1.15 (p = 0.29). With CNLW 5.89 pF, 10 cells lie above 0.25 V with mean residual
+    0.0295 V (p = 0.0075) and variance ratio 1.55 (p = 0.15).
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  assumed: true
+- claim: figs4-fine-bins
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:figs4-fine-bins
+  measured:
+  - 0.0215
+  - 0.398
+  - 0.0432
+  - 0.758
+  notes: Without XE991, Vd 0.0215 V (weighted, R2 0.398) or 0.0267 V (unweighted); with XE991 and the
+    0.4 V limit 0.0432 or 0.0460 V (R2 0.758 or 0.768), without the limit 0.0538 V (R2 -4.8). No reading
+    has both Vd within tolerance. With CNLW 5.89 pF both Vd are within (0.0301 and 0.0527 V) and neither
+    R2 (0.32 and 0.44).
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: tables3-by-region
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:tables3-by-region
+  notes: In each group (pigmented with and without XE991, albino) and under both region readings, the
+    basal region has the higher mean dVmin and the more negative mean V0.5 (e.g. pigmented without XE991,
+    0.2105 V and -0.0907 V basal against 0.1615 V and -0.0552 V apical). Table S3's values are not in
+    the supplied text, so no number is compared.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: fig3a-other-rodents
+  outcome: blocked
+  blocked_by: other
+  notes: The rat and mouse values come from six other papers (Mahendrasingam et al. 2010, Cheatham et
+    al. 2005, Homma et al. 2013, Yamashita et al. 2012, Zhu et al. 2013 and 2015). They are not under
+    paper/, the claims file does not give them, and they were not fetched in this run.
+- claim: fig3c-engineered-mice
+  outcome: blocked
+  blocked_by: other
+  notes: Rests wholly on values from other papers (Zhu et al. 2013 and 2015, Yamashita et al. 2012, Homma
+    et al. 2013, Gao et al. 2007, Cheatham et al. 2005), which are not under paper/ and were not fetched;
+    the data set holds none of them.
+- claim: capacitance-asymmetry
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:capacitance-asymmetry
+  measured:
+  - 2.89
+  - 2.4
+  - 1.88
+  - 0.142
+  - 0.286
+  notes: With the adopted rule 62 cells have a CLn; mean dC 2.89 pF (SD 2.42). Without dC > 5 pF (53 cells),
+    dC is 2.40 pF apical (35) and 1.88 pF basal (18), all within tolerance; the apical increase is 14.2%
+    of CLW (m-a; 13.1% by m-b), within 13 +/- 1.3%, but the basal increase is 28.6% (m-a) or 26.2% (m-b),
+    outside 21 +/- 2.1%. The second CLn reading gives larger differences (3.68 pF over 62 cells). The
+    criterion names no partial tier; the outcome is partial because the count and the three differences
+    hold and one of the two percentages does not.
+  deviations:
+  - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
+    V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
+    the Fig. S1 legend''s 25.94 pF for its cell), and a cell has a plateau when the slope of C at or below
+    -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
+    count is nearest the paper''s 62 cells. Every fraction and a second CLn reading (mean C at or below
+    -0.15 V) are shown.'
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  assumed: true
+- claim: figs5-specific-capacitance
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:figs5-specific-capacitance
+  measured:
+  - 0.00952
+  - 2.25
+  - 0.794
+  - 0.01093
+  - 0.787
+  notes: On the stored area, CL has slope 0.00952 pF/um2, intercept 2.25 pF, adjusted R2 0.794 (83 cells);
+    CLn with the same intercept, slope 0.01093 pF/um2, adjusted R2 0.787 (57 cells, where the paper has
+    59). All five within tolerance; the two area formulas from length and radius move the intercept outside
+    tolerance.
+  deviations:
+  - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
+    V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
+    the Fig. S1 legend''s 25.94 pF for its cell), and a cell has a plateau when the slope of C at or below
+    -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
+    count is nearest the paper''s 62 cells. Every fraction and a second CLn reading (mean C at or below
+    -0.15 V) are shown.'
+  - The stored area follows 2 pi r l for 34 cells and 2 pi r LW + 2 pi r^2 for 50; the paper cites Corbitt
+    et al. (2012) for it.
+  assumed: true
+- claim: fig3b-negative-clw-fit
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig3b-negative-clw-fit
+  measured:
+  - -0.0361
+  - -404
+  - 0.0079
+  - -0.0591
+  - -0.083
+  notes: 'With CLWn = CLW + dC, the Eq. 3a fit gives Vd -0.036 V (46 cells, dC > 5 pF kept) or -0.041
+    V (38, dropped), and the unconstrained slope is +0.008: V0.5 does not fall with dVmin^n. The CNLW
+    5.89 pF variant gives slopes of 0.03 to 0.05. The data set has 46 such cells, where the legend counts
+    44.'
+  deviations:
+  - 'CLn is not stored and the paper gives no rule beyond the plateau (Results, Asymmetry of C versus
+    V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
+    the Fig. S1 legend''s 25.94 pF for its cell), and a cell has a plateau when the slope of C at or below
+    -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
+    count is nearest the paper''s 62 cells. Every fraction and a second CLn reading (mean C at or below
+    -0.15 V) are shown.'
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  assumed: true
+- claim: mean-slope-half
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:mean-slope-half
+  measured: -0.223
+  notes: The three unconstrained slopes are -0.594 (Fig. 3a), -0.084 (XE991) and +0.008 (Fig. 3b), mean
+    -0.223, outside -0.48 +/- 0.048 (unweighted, -0.224). With CNLW 5.89 pF the mean is -0.115.
+  deviations:
+  - Each slope is the first reading of its claim (edges at multiples of 5 pF, weighted unconstrained fit;
+    XE991 cells with 144 mM chloride; dC > 5 pF kept).
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  assumed: true
+- claim: fig4a-vh-rises-vd-constant
+  outcome: partially_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig4a-vh-rises-vd-constant
+  measured: 2.6
+  notes: In the 5 pF bins without XE991 (o-a), Vh rises monotonically with V0.5 (Spearman 1.0, no inversion)
+    and Vd varies over 0.014 V against 0.127 V for Vh (q-a holds; under q-b the Vd slope is 0.178, p =
+    0.049), but the ratio of largest to smallest |Vh| is 2.60, outside 3 +/- 0.3. Pooled with the XE991
+    bins (o-b) the ratio is 4.47 with two inversions. With CNLW 5.89 pF the o-a ratio is 2.90. The criterion
+    names no partial tier; the outcome is partial because the monotone rise of Vh and the constant Vd
+    hold and the threefold ratio does not.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: fig4d-cleq-two-limits
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig4d-cleq-two-limits
+  measured:
+  - 0.672
+  - 1.08
+  notes: With the 5 pF groups (j-a) the lower limit is 0.672 aF (6 groups), outside 0.584 +/- 0.065, and
+    the upper 1.080 aF (3 groups), within; the 0.01 V groups give 0.686 and 1.027 aF, the cells 0.770
+    and 0.957 aF. C_Leq rises with V0.5 (Spearman 0.73, p = 0.011 for j-a), by a factor of 1.61. With
+    the split at -0.06 V, 0.651 and 0.928 aF. With CNLW 5.89 pF, the 0.01 V groups give 0.594 aF (within)
+    and 0.937 aF (outside).
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  - Guinea pig groups only; the paper's limits may include the rat and mouse values of Fig. 3a.
+- claim: fig4c-sensor-area
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig4c-sensor-area
+  measured:
+  - 30.5
+  - 132.1
+  - 734.0
+  notes: Sensor areas of the 5 pF groups run from 30.5 to 132 nm2; the low end, an XE991 group of one
+    cell (C_Leq 0.29 aF), is below 51 nm2 widened by 10%. The other groupings reach 156 and 182 nm2. The
+    power law over groups without XE991 has exponent -2.10 (j-a), -1.12 (j-b) or -0.62 (j-c), with coefficients
+    734, 8.57 and 0.93 (V, nm2); the j-b exponent is within 10% of -1.15 but its coefficient is not 38.5.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: fig4e-sensor-charge
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:fig4e-sensor-charge
+  measured:
+  - 0.927
+  - 0.857
+  - 0.896
+  notes: In the 5 pF groups mean z is 0.927 at the lower limit, 0.857 at the upper and 0.896 over all,
+    each within tolerance, and the limits do not differ (Welch p = 0.12). The 0.01 V groups give 0.924
+    and 0.813 (p = 0.069), the cells 0.880 and 0.823 (p = 0.054). The paper's all-wild-type value includes
+    rats and mice; guinea pig groups only here.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: table3-pathway-energies
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:table3-pathway-energies
+  measured:
+  - -0.0707
+  - -0.0253
+  - 3.74
+  - 2.58
+  - 2.32
+  - 1.11
+  notes: The rebuilt Eqs. 6a and 7 give Table 3's values from its own inputs (3.953, 2.674, 0.125 and
+    2.157, 1.185, 0.145 kB T). From the 5 pF groups, pathway 1 V0.5 -0.0707 V, lambda 3.74 kB T, forward
+    barrier 2.58 kB T; pathway 2 V0.5 -0.0253 V, lambda 2.32 kB T, forward barrier 1.11 kB T; all six
+    within tolerance. Reverse barriers 0.107 and 0.223 kB T (paper 0.125 and 0.145); forward rate ratio
+    of pathway 2 to pathway 1 per dimer 57.5 (paper 64). The lower C_Leq limit used (0.672 aF) is outside
+    the tolerance of fig4d-cleq-two-limits. The chemical free energy of 6.7 kB T was not computed.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: alternative-limit
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:alternative-limit
+  measured:
+  - 1.43
+  - 0.73
+  notes: With C_Leq 1.098 aF, the 5 pF groups give mean n 1.43 (0.73 to 3.91) and mean delta 0.730 (0.26
+    to 1.14); the other groupings give n 1.36 and 1.22 and delta 0.728 and 0.744. No mean is within tolerance
+    and no range lies within the paper's.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: fig4f-all-rodents
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the rat and mouse values of fig3a-other-rodents and the heterozygote values of Fig. 3c,
+    from other papers that are not under paper/ and were not fetched.
+- claim: low-chloride-similar
+  outcome: not_reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:low-chloride-similar
+  notes: The three 10 mM cells all have z within 0.746 to 0.952 (0.763, 0.905, 0.921); two have C_Leq
+    within range (0.70 and 0.96 aF, the third 1.16 aF); one has V0.5 within 0.02 V of the XE991 Eq. 3a
+    line (residuals -0.016, -0.039, -0.024 V, with Vd 0.0538 V). One cell meets all three conditions.
+  deviations:
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+- claim: molecular-model
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Rests on an I-TASSER model of guinea pig prestin that the paper does not deposit (no coordinates
+    or archive identifier are given), and the data set holds only voltage-clamp recordings.
+- claim: figs7-hearing-loss
+  outcome: blocked
+  blocked_by: other
+  notes: Rests wholly on hearing loss and charge density values from other papers (Dallos et al. 2008,
+    Yamashita et al. 2012, Gao et al. 2007, Zhu et al. 2013), not under paper/ and not fetched; the data
+    set holds none of them.
+- claim: v05-temperature-corrected
+  outcome: blocked
+  blocked_by: other
+  notes: The temperature correction is taken from Meltzer and Santos-Sacchi (2001), which the paper does
+    not state numerically; that paper is not under paper/ and was not fetched, so the correction cannot
+    be applied.
+- claim: recording-time
+  outcome: reproduced
+  notebook: reproduce_farrell_2020.ipynb
+  output: claim:recording-time
+  measured:
+  - 124.7
+  - 112.0
+  notes: Recordings 47 to 182 min after death, pigmented 124.7 +/- 31.8 min (47 cells), albino 112.0 +/-
+    35.6 min (42), both within tolerance. None of the ten Pearson correlations with recording time is
+    significant (|r| <= 0.19, p >= 0.22).
+  deviations:
+  - Table S1's test is not in the supplied text; Pearson correlation per colony is the criterion's reading.
+  assumed: true
+- claim: two-hyperpolarized-states
+  outcome: partially_reproduced
+  notes: Of the claims it depends on, fig3a-eq3a-fit, mean-slope-half and fig4d-cleq-two-limits are not
+    reproduced and fig4a-vh-rises-vd-constant is partially reproduced. The main unconstrained slope is
+    negative and near -1/2 (-0.594), Vd is constant and Vh rises, but the mean of the three slopes is
+    -0.223 and C_Leq does not show the paper's two limits. The criterion's partial tier needs the mean
+    slope within 10% of -0.48 and its not-reproduced tier a non-negative slope or a varying Vd; neither
+    holds, and the outcome is the closest tier.
+  deviations:
+  - The criterion does not cover a negative slope whose mean over the three fits is far from -0.48; partially
+    reproduced is the closest of its tiers.
+  - CLW is CL - 4.82 pF, the claims file's shared method. The data set stores no CLW or CSB, and the Fig.
+    S1 legend implies 5.89 pF for its example cell (CL 24.45, CLW 18.56 pF); the analysis is also shown
+    with 5.89 pF as a variant, and the point is asked of a reader (questions/crcns-ear-1.yaml).
+  assumed: true
+  notebook: reproduce_farrell_2020.ipynb
+findings:
+- kind: metadata_insufficient
+  statement: The data set stores CL, QTm, V0.5 and alphaB per cell, but not the lateral wall capacitance
+    CLW, the stereocilia bundle capacitance CSB or the non-lateral-wall capacitance CNLW that the paper's
+    Eq. 8a uses, so the paper's CLW and charge density cannot be recomputed. CL - 4.82 pF (the paper's
+    stated CNLW) does not give the Fig. S1 legend's CLW (18.56 pF from CL 24.45 pF, implying 5.89 pF),
+    and several results depend on the difference.
+- kind: metadata_insufficient
+  statement: The linear capacitance at negative voltages, CLn, and the rule for when it could be estimated
+    are not stored; neither are the linear-region indices in the HDF5 files (the MATLAB files keep them
+    as indposit_ramplin).
+- kind: format_error
+  statement: In every HDF5 file with DC steps (19 cells), `transformed data set/.../I_mean` has shape
+    (N, 2) but stores its values in MATLAB column order (the N means, then the N SDs). Read as given,
+    the mean and SD columns are interleaved; reshaped to (2, N) it equals the (mean, SD) columns of the
+    original MATLAB files.
+- kind: metadata_error
+  statement: File sensory_cell_#52.h5 holds the membrane at +0.06 V before and after the ramp, where the
+    stimulus description in every file says -0.06 V.
+- kind: metadata_insufficient
+  statement: '`cell_surface_area` follows two formulas, 2 pi r l for the 34 cells with a cell length and
+    2 pi r LW + 2 pi r^2 (with the lateral wall length) for 50 others, and the description does not say
+    so or which length is which measurement; `cochlear_outer_hair_cell_length` is stored for 35 cells
+    and `cochlear_outer_hair_cell_lateral_wall_length` for 83.'
+- kind: selection_undocumented
+  statement: The cells behind the paper's tables are not marked. The data set gives 27 pigmented cells
+    without XE991 with 144 mM chloride (paper 28), 17 pigmented XE991 cells with 144 mM chloride split
+    5 and 12 by region (Table 1 row a, 4 and 11), 69 Fig. 2 cells (legend 70), 46 cells for Fig. 3b by
+    the rule used here (legend 44).
+- kind: metadata_insufficient
+  statement: The original MATLAB field `toxins` labels 15 of the 20 XE991 cells `XE991` and 5 `yes`; the
+    HDF5 files store 60 uM for all 20, while the Methods give 30 to 60 uM.
+- kind: identifier_missing
+  statement: 'The `original cell number` is not unique: 13 numbers are used by two cells each, from different
+    dates and mostly different researchers and colonies. The file number is the only unique identifier,
+    and the paper names cells by original number (Fig. S1, cell 99).'
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was CLn taken (which voltages, and what counted as
+    having reached the hyperpolarized plateau, so that 62 cells qualify), and how was the per-cell CSB
+    of Eq. 8 computed? The CLn rule assumed here (mean of the two most negative ramp points, plateau when
+    the negative-end slope is below 0.4 of the steepest slope of the flank) gives 62 cells and the Fig.
+    S1 legend's 25.94 pF, but the basal share of dC is 28.6%, not 21%.
+- kind: other
+  statement: The largest conductance at V0.5 among XE991 cells is 8.5 nS from the DC steps and 7.0 nS
+    from the admittance, about 25 times the 335 pS the paper reports; the unit or the measure in the paper
+    may differ from the data set's.
