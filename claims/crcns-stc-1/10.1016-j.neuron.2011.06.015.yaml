@@ -176,6 +176,15 @@ claims:
   quote: For this example pair of neurons, rsignal = 0.83 and 0.79 for the visual and
     vestibular conditions, respectively ... rnoise = 0.29, p = 0.04, Figure 1D ... R = 0.14, p =
     0.3, Figure 1E
+  statistics:
+  - about: rnoise of the example pair, visual
+    test: Pearson correlation
+    statistic: rnoise = 0.29
+    p: 0.04
+  - about: rnoise of the example pair, vestibular
+    test: Pearson correlation
+    statistic: R = 0.14
+    p: 0.3
   expected:
   - quantity: rsignal, visual
     value: 0.83
@@ -302,8 +311,8 @@ claims:
     degrees
   expected:
     quantity: plateau vestibular threshold
-    value: 2
-    tolerance: 1.3
+    value: 2.1
+    tolerance: 1.2
     unit: degrees
   criterion: The range 1 to 3 degrees widened by 10% of each bound gives 0.9 to 3.3 degrees.
     Reproduced when each animal's threshold falls from above 10 degrees early in training to a
@@ -366,8 +375,9 @@ claims:
     tolerance: 12.6
     unit: degrees
   criterion: A claim of absence, judged on a Wilcoxon rank-sum test at p < 0.05 on full width
-    at half maximum, for neurons with significant tuning (one-way ANOVA p < 0.05) in the
-    single-electrode database. How width is measured from the sampled tuning curve
+    at half maximum, for neurons with significant heading tuning in the horizontal plane
+    (one-way ANOVA p < 0.05, Results) in the single-electrode database (visual 466 naive and 526
+    trained, vestibular 216 naive and 340 trained, Figure S4 legend). How width is measured from the sampled tuning curve
     (interpolation) is not stated; linear interpolation of the tuning curve over the circle is
     the reading. Reproduced when the test finds no difference and both medians are within
     tolerance.
@@ -445,13 +455,17 @@ claims:
     p_relation: "<"
     n: 992 visual and 556 vestibular neurons
   criterion: Neuronal threshold per neuron from Fisher information on the interpolated tuning
-    curve at straight ahead (equation 2 for one neuron), with Poisson variance as in Figure S4
-    and Gu et al. 2010; how tuning curves are interpolated is not stated (readings, cubic
-    spline and linear interpolation). Fore-aft is a preference within 45 degrees of 0 or 180,
-    lateral within 45 degrees of -90 or 90. A factorial ANOVA on threshold with preference group
-    and training group, per condition; whether thresholds were log transformed is open (raw
-    and log are both run). Reproduced when lateral neurons have lower thresholds with p < 0.001
-    in both conditions under one reading.
+    curve at straight ahead (equations 2 and 3 for one neuron), with variance equal to the mean
+    as equation 4 gives for i = j; how tuning curves are interpolated is not stated (readings,
+    cubic spline and linear interpolation). Fore-aft is a preference within 45 degrees of 0 or
+    180, lateral within 45 degrees of -90 or 90 (Results). How the preferred heading is
+    computed is not stated in this paper; the readings are the vector sum of the tuning curve
+    and the peak of the interpolated curve. A factorial ANOVA on threshold with preference
+    group and training group; whether it was run per condition (Figures 4D and 4H) or once with
+    condition as a third factor is not stated, and both are run; whether thresholds were log
+    transformed is open (raw and log are both run). Reproduced when lateral neurons have lower
+    thresholds with p < 0.001 under one reading (in both conditions for the per-condition
+    reading).
 - id: fig4dh-training-no-sensitivity-change
   statement: Neuronal sensitivity does not differ between naive and trained animals for either
     fore-aft or lateral neurons (p > 0.5, factorial ANOVA), with no interaction (p > 0.3).
@@ -483,10 +497,12 @@ claims:
   quote: Confidence intervals are largely overlapping between naïve (blue) and trained (pink)
     animals
   criterion: As in the Figure S4 legend, population threshold from equation 2 with independent
-    Poisson neurons, 95% bands from bootstrap resampling of 100 neurons with replacement, per
-    condition and group (visual 466 naive, 526 trained; vestibular 216 naive, 340 trained). The
-    number of bootstrap iterations and the reference headings sampled are not stated; 1,000
-    iterations and references every 22.5 degrees are standard choices. Reproduced when the
+    Poisson neurons, 95% bands by bootstrap, per condition and group (visual 466 naive, 526
+    trained; vestibular 216 naive, 340 trained). The legend's "100 neurons were resampled with
+    replacement" allows two readings, both run; populations of 100 neurons drawn with
+    replacement (1,000 iterations, a standard choice), and the whole group resampled with
+    replacement 100 times. The reference headings sampled are not stated; every 22.5 degrees
+    is a standard choice. Reproduced when the
     naive and trained bands overlap at every reference heading in both conditions; partially
     reproduced when they overlap at most.
 - id: fig5-noise-signal-positive
@@ -583,7 +599,9 @@ claims:
     to be common to both groups is not stated; the readings are (a) one orthogonal fit to all
     127 pairs with a separate intercept per group (rnoise centred per group before fitting the
     slopes) and (b) the fit to all pairs for the slopes, with each group's intercept as its
-    mean of rnoise minus the slope terms. Ordinary least squares is shown as a variant. The
+    mean of rnoise minus the slope terms, and (c) the slopes of an orthogonal fit to the naive
+    pairs, used for both groups as the Results describe structure (1), with the trained
+    intercept fitted with those slopes fixed. Ordinary least squares is shown as a variant. The
     tolerance of 10% on the trained intercept of 0.005 is tighter than any estimate can be;
     it is kept as the protocol default, and the 95% interval of the fitted intercept is
     reported beside it. Reproduced when, under one reading, all four values are within
@@ -611,7 +629,8 @@ claims:
     (the coefficients fitted in fig5-regression-coefficients shown as a variant). Not stated are
     the tuning amplitude and baseline, the counting window, the headings over which rsignal is
     computed, and how bandwidth enters the wrapped Gaussian. The readings are amplitude 30
-    spikes/s on baseline 10 spikes/s over 1 s, rsignal over the 8 headings 45 degrees apart and
+    spikes/s on baseline 10 spikes/s over 1 s (a standard choice, not from the paper; Figure 4
+    reports median amplitudes of 17 to 35 spikes/s and no baseline), rsignal over the 8 headings 45 degrees apart and
     over a continuous circle, and bandwidth as full width at half height. The factor of about
     5 is read from the extracted text, whose "approximately" sign is garbled. Reproduced
     when, under one reading, the ratio is within tolerance and the trained threshold at 2000
@@ -629,8 +648,9 @@ claims:
   depends_on:
   - fig6a-population-thresholds
   criterion: The simulation of fig6a with 256 neurons, over a grid of slopes and intercepts
-    for which rnoise stays within -1 and 1 (the grid range is read from Figure 6B; slope 0 to
-    0.4 and intercept 0 to 0.2 are the reading). Reproduced when, under the fig6a readings, the
+    for which rnoise stays within -1 and 1. The grid range is shown only in Figure 6B, whose
+    axes could not be read from the text; slope 0 to 0.4 and intercept 0 to 0.2, which contain
+    the measured naive and trained parameters, are a choice, not from the paper. Reproduced when, under the fig6a readings, the
     threshold changes more over the slope range than over an intercept range of the same
     width, and threshold decreases as the intercept rises at the measured slopes.
 - id: fig7a-pair-sign-of-effect
@@ -726,7 +746,8 @@ claims:
     p: 0.11
   criterion: Choice probabilities from the single-electrode database (n = 311, vestibular and
     visual pooled), groups by preferred heading as in Figure 4 (fore-aft within 45 degrees of 0
-    or 180, lateral within 45 degrees of -90 or 90). Two-sample t tests. Reproduced when fore-aft
+    or 180, lateral within 45 degrees of -90 or 90; the preferred heading by the readings of
+    fig4dh-lateral-more-sensitive). Two-sample t tests. Reproduced when fore-aft
     choice probabilities are smaller with p < 0.05 and the leftward and rightward means do not
     differ at p < 0.05.
 - id: fig8cd-noise-not-preference
@@ -742,11 +763,14 @@ claims:
       preferences
   criterion: A claim of absence, judged on a t test at p < 0.05 of the noise correlation of
     lateral against fore-aft neurons, each pair entered twice, at each neuron's preferred
-    heading (Figure 8C legend). The pairs are those of Figure 8C, recorded in trained animals
-    during fixation and discrimination; which pairs and which preference (visual or
-    vestibular) are not stated, and the readings are the trained pairs under 1 mm with visual
-    preference and with vestibular preference. Reproduced when no reading's test finds a
-    difference; the group means are reported either way.
+    heading (Figure 8C legend), groups as in Figure 4. The Results speak of trained animals,
+    but the legend's 328 fixation points (164 pairs entered twice) exceed the 89 trained pairs
+    under 1 mm (178 points), so the sample is not settled. The readings are the trained pairs
+    under 1 mm, all trained pairs, and all 179 pairs, each with visual and with vestibular
+    preference, with and without the 55 discrimination-task points. The test is run under
+    each; the outcome is judged under the reading whose point count comes closest to 328 and
+    55, and the others are shown. Reproduced when that test finds no difference; the group
+    means are reported either way.
 - id: figs5-congruency
   statement: Noise correlation differs between naive and trained animals (p = 0.008) but is not
     affected by the congruency of the two units (p > 0.5), with no interaction (p > 0.5),
@@ -774,11 +798,22 @@ claims:
     test: ANCOVA
     p: 0.6
     p_relation: ">"
+  - about: interaction of congruency with rsignal in the ANCOVA
+    test: ANCOVA
+    p: 0.7
+    p_relation: ">"
+  - about: interaction of congruency with training group in the ANCOVA
+    test: ANCOVA
+    p: 0.8
+    p_relation: ">"
   criterion: Congruency index per neuron as the Pearson correlation of its visual and
     vestibular tuning curves; pairs CC, OO or CO by the signs (Figure S5 legend). Two-way ANOVA
-    of pooled rnoise on training group and pair type, over the 127 pairs. Needs tuning curves.
-    Reproduced when the training effect has p < 0.05 and neither the congruency effect nor the
-    interaction has p < 0.05 (a claim of absence for these two, judged on this test).
+    of pooled rnoise on training group and pair type, over the 127 pairs. Then, as in the
+    legend, an ANCOVA of rnoise with rsignal as covariate and pair type and training group as
+    factors; which rsignal enters (visual, vestibular) is not stated, and both are run. Needs
+    tuning curves. Reproduced when the ANOVA training effect has p < 0.05 and none of the
+    ANOVA congruency effect, the ANOVA interaction and the three ANCOVA congruency terms has p
+    < 0.05 (claims of absence, judged on these tests).
 - id: figs6-task-independent
   statement: For 41 pairs recorded in both tasks, noise correlations during fixation and
     during heading discrimination are correlated (R = 0.47, p = 0.002) and their means do not
@@ -871,5 +906,27 @@ claims:
   criterion: The paper shows no figure or test. Needs spike times. rnoise as for the main
     measure in a prestimulus window against the middle 1 s of the stimulus; the prestimulus
     window is not stated, and the reading is the fixation period before motion onset (100 to
-    200 ms, Experimental Procedures), with 500 ms before onset as a variant. Reproduced when
-    the mean prestimulus rnoise exceeds the stimulus rnoise by a paired t test at p < 0.05.
+    200 ms, Experimental Procedures), with 500 ms before onset as a variant. The paper names no
+    test; a paired t test over pairs is a standard choice, not the paper's. Reproduced when
+    the mean prestimulus rnoise exceeds the stimulus rnoise by that test at p < 0.05.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1-example-pair, added the two per-pair Pearson tests (p = 0.04 and 0.3) under statistics, which the statement reports and the file had left out.
+  - fig2a-behavioral-learning, expected value 2 with tolerance 1.3 gave 0.7 to 3.3 degrees, not the 0.9 to 3.3 the criterion and the protocol rule for a range give; set to 2.1 with tolerance 1.2.
+  - fig4-tuning-width-visual, selection now says tuning in the horizontal plane (Results) and gives the group sizes of the Figure S4 legend.
+  - fig4dh-lateral-more-sensitive, Poisson variance is now taken from equation 4 (Q_ii = f_i) in place of Gu et al. 2010, which is not this paper; added as open how the preferred heading is computed and whether the ANOVA was per condition or with condition as a factor, each with readings.
+  - fig8ab-choice-probability-lateral, preferred heading readings referred to fig4dh-lateral-more-sensitive.
+  - figs4-population-sensitivity-any-reference, the legend's 100 resampled neurons allows two bootstrap readings (populations of 100 neurons, or 100 resamples of the whole group); both are now named.
+  - fig5-regression-coefficients, added reading (c), slopes from the naive fit used for both groups, as the Results describe the naive structure.
+  - fig6a-population-thresholds, tuning amplitude and baseline marked as a choice not from the paper.
+  - fig6b-slope-not-intercept, the grid range was said to be read from Figure 6B, which the text does not show and no reader could render; marked as a choice.
+  - fig8cd-noise-not-preference, the reading of 89 trained pairs under 1 mm (178 points) does not match the legend's 328 fixation points; readings widened to all trained pairs and all 179 pairs, with and without the 55 task points, judged under the reading whose counts come closest.
+  - figs5-congruency, the statement's ANCOVA part had no criterion; added the ANCOVA of the Figure S5 legend and its two other terms (p > 0.7, p > 0.8) under statistics.
+  - discussion-stimulus-reduces-correlation, said that the paired t test is a standard choice, since the paper names no test.
+  - Open, fig5-regression-coefficients keeps the protocol's 10% tolerance on the trained intercept of 0.005 (0.0005), which no estimate from 89 pairs can meet; the claim will likely rest on its partial criterion.
+  - Open, the PDF could not be rendered in this run either, so figure-only details (Figure 6B axes, the garbled approximately signs before 5-fold and 8%) were not checked against the figures.
+  - Open, Figure 2A, Figure 4, Figure S4 and Figures 8A and 8B use single-electrode data and training histories from the authors' earlier studies; whether stc-1 holds them is for the author.
