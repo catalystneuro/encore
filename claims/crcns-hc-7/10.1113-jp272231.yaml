@@ -1,0 +1,1285 @@
+# Claims for Kohus, Kali, Rovira-Esteban, Schlingloff, Papp, Freund, Hajos & Gulyas (2016), J Physiol,
+# "Properties and dynamics of inhibitory synaptic communication within the CA3 microcircuits of
+# pyramidal cells and interneurons expressing parvalbumin or cholecystokinin", doi:10.1113/jp272231,
+# on CRCNS data set hc-7 (doi:10.6080/K0MK69T5).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-06,
+# protocol as stated in docs/protocol.md (Reader), version pilot-13.
+#
+# Text read: the version of record (J Physiol 2016, pp 1 to 30), as supplied under paper/ (text
+# extracted from the PDF with PyMuPDF): Key points, Methods, Results, Discussion, the legends of
+# Figures 1 to 13 and Tables 1 to 4. The paper has no supplement. The PDF could not be opened as
+# images in this run (no renderer installed), so values printed only inside figures (the medians of
+# Fig. 4B, 5C, 5Db, 6B and C, 7, 10, 11B and 12) were not read; claims on those figures rest on the
+# Results and the legends. In the extracted Table 4 the columns for the connection type specific
+# parameters (tau_r, tau_e, a_e, k_e) are empty; their values are taken from the Figure 11 legend.
+# In the CCK+BC to PC row of Table 4 the three values given with quartiles (0.15, 10.9, 499) are read
+# as U0, tau_f and Imax, since tau_r is fitted per type (12.9 s, Fig. 11 legend) and has no quartiles.
+#
+# Code. The paper links no code. Its Methods name in-house and third-party programs (Stimulog, EVAN,
+# MATLAB 7.0.4 and Delphi 6.0 scripts, a feature extraction script by M. Rozsa modified by S. Kali,
+# software for asynchronous charge by D. Gemes, Origin 9.0 for exponential fits and statistics); none
+# is published. Every method below is from the paper's text.
+#
+# Data the paper used. Acute horizontal hippocampal slices (250 to 350 um) from BAC-PV-eGFP and
+# BAC-CCK-DsRed mice of both sexes, postnatal day 18 to 25, CA3 area, modified aCSF (3.5 mM K, 1.6 mM
+# Ca, 1.2 mM Mg), 30 to 32 C, NBQX 20 uM and AP-5 50 uM, AM251 1 uM for CCK+ cells. Paired whole-cell
+# recordings: presynaptic interneuron in current clamp at -65 mV, driven by 1 ms, 1500 pA current
+# pulses; postsynaptic cell in voltage clamp at -60 mV; 3 kHz low-pass, 10 kHz sampling. Mostly high
+# KCl pipette solution in both cells; in some pairs low KCl (presynaptic) and high CsCl (postsynaptic).
+# Cell types identified post hoc (biocytin, ankyrin G for AACs, CB1 for CCK+ cells): PV+ basket
+# cells (PV+BC), axo-axonic cells (AAC), CCK+ basket cells (CCK+BC) and CCK+ dendritic-region
+# targeting cells (CCK+DTI), and pyramidal cells (PC). Protocols: 10 APs at 1, 5, 10, 20, 40, 80,
+# 160 and 320 Hz followed by an 11th AP after 1000 ms; RIP (a single AP, then after 1000 ms four APs
+# at 160 Hz); EPI (a single AP, then after 1000 ms 30 APs at 160 Hz and four at 320 Hz); recovery
+# (two RIP trains 50, 100, 200, 300, 500, 800 or 1200 ms apart). Pairs reported: interneuron to PC,
+# high KCl, PV+BC 8, AAC 9, CCK+BC 14, CCK+DTI 8 (Fig. 4, 5; 10-AP trains PV+BC 6, AAC 8, CCK+BC 6,
+# CCK+DTI 3 or 4, Fig. 6; recovery PV+BC 7, AAC 9, CCK+BC 11); with CsCl, PV+BC 9, AAC 10, CCK+BC 6;
+# interneuron to interneuron, PV+BC to PV+BC 16 (13 with 10-AP trains), CCK+BC to CCK+BC 6, CCK+DTI
+# to CCK+DTI 4, nine CCK+ to CCK+ pairs with trains (Fig. 10), heterogeneous pairs 2 each. Measured
+# variables: uIPSC 10 to 90% rise time, decay time constant, latency, amplitude (with failures),
+# potency (without failures), transmission probability, amplitudes normalized to the first IPSC,
+# asynchronous charge. Not paired recordings: current-step responses of 67 interneurons (40 features,
+# Tables 1 and 2, Fig. 2), connection testing of all filled pairs (Fig. 3, Table 3), spontaneous IPSCs
+# in PCs and interneurons (Fig. 12), local field potentials of SWRs in slices and optogenetic SWRs in
+# PV-Cre x ChR2 mice aged P60 to 300 in 450 um slices (Fig. 13). By its description the CRCNS data
+# set holds the paired recordings (raw pre- and postsynaptic sweeps and per-sweep amplitude and
+# success tables) of the eight connection types under the stimulation protocols above; it is not
+# described as holding the current-step, connectivity, spontaneous IPSC or field potential data.
+#
+# Shared method details, used by the criteria below.
+# M1. uIPSC measures (Methods, Electrophysiological recordings and analysis, paragraph 6; Fig. 4B
+#   legend): rise time, decay time constant, latency, potency and transmission probability on the
+#   averaged events excluding failures; amplitude on averaged events including failures; latency from
+#   the presynaptic AP peak to the uIPSC start, the start being the intersection of the baseline with
+#   a line fitted to the 10 to 90% rising phase; decay a single exponential fit to the decaying phase
+#   of the average; transmission probability the fraction of APs followed by a uIPSC.
+# M2. Failures. The paper does not say how a failure is scored. Readings: (a) the success and
+#   amplitude scored per sweep by the authors, as the data set's own tables hold them; (b) a
+#   detection on the raw sweeps, a uIPSC being a peak in the response window larger than three
+#   standard deviations of the pre-AP baseline (a standard choice, not the paper's).
+# M3. Which APs are "single" (Results, The type of interneuron determines the properties of uIPSCs
+#   onto PCs, paragraph 1; Fig. 4Ca; Fig. 8A legend). Readings: (a) the single AP that precedes the
+#   RIP train by 1000 ms (Methods, paragraph on protocols); (b) the ten APs of the 1 Hz train (the
+#   Fig. 8A legend shows uIPSCs "triggered by 10 single action potentials"); (c) both pooled.
+# M4. Amplitude in trains. The paper does not fix the window or baseline. Readings: (a) the per-sweep
+#   amplitudes of the data set's tables, averaged over sweeps; (b) the peak of the sweep-averaged
+#   trace in the interval from the AP to the next AP (or 10 ms after the last AP), measured from the
+#   current just before that AP. Relative amplitude is the mean amplitude at each AP divided by the
+#   mean amplitude of the first IPSC of the same train (Methods, paragraph 6), per pair; the group
+#   value is the median over pairs (Fig. 6C and 9B legends; Statistical analysis).
+# M5. Sweeps. The Methods say each pattern was repeated 10 (trains) or 10 or 20 times (RIP, EPI); the
+#   Results say 20 bursts were averaged. All sweeps of a protocol are used. The Fig. 5A legend speaks
+#   of a "steady-state average"; whether any first sweeps were left out is not said, so a variant
+#   leaving out the first three sweeps is shown where a criterion depends on sweep averages.
+# M6. Tests (Methods, Statistical analysis): Kruskal-Wallis across groups, post hoc Mann-Whitney U
+#   with Bonferroni correction; the number of comparisons is not given, so the factor is the number of
+#   pairwise comparisons among the groups of that panel (3 for three groups); Pearson chi-squared for
+#   connection probabilities. A threshold of p < 0.05 unless the claim states another.
+# M7. Tolerances. Values reported as median (first quartile, third quartile) use the paper's stated
+#   spread: the tolerance is the distance from the median to the nearer quartile, so the value holds
+#   when it falls within the reported interquartile range on that side. Other values use 10%.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-7
+  doi: 10.6080/K0MK69T5
+paper: doi:10.1113/jp272231
+claims:
+- id: fig2b-pv-cck-clusters
+  statement: Hierarchical clustering of 67 CA3 interneurons on principal components of 40
+    electrophysiological features gives two clusters that match PV+ and CCK+ cells with more than
+    98% overlap; a single PV+ cell falls in the CCK+ cluster.
+  source: Results, Hierarchical clustering based on electrophysiological properties identifies
+    interneuron types, paragraphs 1 and 2; Figure 2B, left
+  quote: We found that the cells clearly formed two separate clusters based on their physiological
+    features ... the two main clusters corresponded almost perfectly to PV+ and CCK+ cells,
+    respectively, with only a single PV+ cell misplaced into the group of CCK+ cells. This resulted in
+    a more than 98% overlap between the anatomical and physiological classification
+  expected:
+  - quantity: agreement between the two clusters and the anatomical class
+    value: 98
+    tolerance: 2
+    unit: percent
+  criterion: Methods, Electrophysiological characterization and clustering of cell types. The 40
+    features of Tables 1 and 2 from the 800 ms current steps; PCA on the features, keeping the
+    components that carry most of the variance; hierarchical clustering with Euclidean distance and
+    Ward linkage, cut into two clusters. The paper does not say whether features were standardized
+    before PCA or how many components were kept ("solutions involving different numbers of principal
+    components were tested"). Readings, (a) z-scored features, components explaining 80% of the
+    variance; (b) z-scored features, components with eigenvalue above 1; (c) raw features, same two
+    rules. Reproduced when under one reading the two-cluster cut agrees with the PV+/CCK+ labels for
+    at least 98% of cells (at most one cell of 67 misplaced). The tolerance of 2 points is the step
+    between "more than 98%" and the next lower whole percent.
+- id: fig2b-pvbc-aac-clusters
+  statement: Reclustering the 26 PV+ cells gives two groups, one mostly PV+BCs (13 of 16) and one
+    mostly AACs (8 of 10), an overall match of about 83%.
+  source: Results, Hierarchical clustering based on electrophysiological properties identifies
+    interneuron types, paragraph 3; Figure 2B, right
+  quote: one cluster contained predominantly PV+BCs (13 of 16) and the other contained mainly AACs
+    (eight of 10), with an overall match of
+  expected:
+  - quantity: overall match of PV+ subclusters with PV+BC/AAC identity
+    value: 83
+    tolerance: 8.3
+    unit: percent
+  criterion: As fig2b-pv-cck-clusters, on the 26 PV+ cells alone, with the same readings. Reproduced
+    when under one reading the two-cluster cut matches the anatomical PV+BC/AAC labels for 75 to 91%
+    of cells (83% within 10%) with each cluster holding a majority of one type.
+  depends_on:
+  - fig2b-pv-cck-clusters
+- id: cck-no-subclusters
+  statement: Clustering the CCK+ cells reveals no well-separated subgroups matching CCK+BCs and
+    CCK+DTIs, which form a physiological continuum.
+  source: Results, Hierarchical clustering based on electrophysiological properties identifies
+    interneuron types, paragraph 4
+  quote: the branching structure of hierarchical clustering did not reveal any well-separated
+    clusters, and the clusters that could be defined did not show any correspondence to the two major
+    anatomical subclasses of CCK+ neurons
+  criterion: As fig2b-pv-cck-clusters, on the CCK+ cells alone, with the same readings. The paper
+    reports no test; the correspondence is judged by the agreement of a two-cluster cut with the
+    CCK+BC/CCK+DTI labels against the agreement of the larger class alone. Reproduced when under every
+    reading the agreement is no more than 10 points above the agreement given by assigning every cell
+    to the larger class.
+  depends_on:
+  - fig2b-pv-cck-clusters
+- id: table1-pv-cck-features
+  statement: PV+ and CCK+ interneurons differ in single-cell physiology; PV+ cells have a lower input
+    resistance, fire more APs at most and have narrower APs than CCK+ cells.
+  source: Results, Hierarchical clustering based on electrophysiological properties identifies
+    interneuron types, paragraph 2; Table 1
+  quote: PV+ and CCK+ neurons were significantly different from each other at the population level
+    according to several features, including input resistance, membrane time constant, the maximal
+    rate of firing for any input level ... (all P < 0.01, Mann-Whitney U test)
+  statistics:
+  - about: input resistance
+    test: Mann-Whitney U test
+    p: 0.001
+  - about: membrane time constant
+    test: Mann-Whitney U test
+    p: 0.002
+  - about: maximal AP number for any input current
+    test: Mann-Whitney U test
+    p: 1.5e-7
+  - about: AP half-width
+    test: Mann-Whitney U test
+    p: 1.4e-6
+  expected:
+  - quantity: input resistance, PV+
+    value: 55.64
+    tolerance: 11.68
+    unit: MOhm
+  - quantity: input resistance, CCK+
+    value: 107.89
+    tolerance: 43.55
+    unit: MOhm
+  - quantity: maximal AP number for any input current, PV+
+    value: 145.5
+    tolerance: 16.5
+  - quantity: maximal AP number for any input current, CCK+
+    value: 58.0
+    tolerance: 10.25
+  - quantity: AP half-width, PV+
+    value: 0.32
+    tolerance: 0.05
+    unit: ms
+  - quantity: AP half-width, CCK+
+    value: 0.50
+    tolerance: 0.10
+    unit: ms
+  criterion: Features as in Table 1, from the current-step responses (Methods, Electrophysiological
+    characterization and clustering of cell types); the feature definitions are those of an
+    unpublished script, so a feature is computed by the standard definition its name gives (input
+    resistance from the steady response to the small hyperpolarizing steps, half-width at half the
+    AP amplitude from threshold). Medians per class; two-sided Mann-Whitney U test. Reproduced when
+    every listed median is within tolerance (the nearer quartile, M7) and every listed test gives p
+    < 0.01 in the reported direction.
+- id: table2-pvbc-aac-features
+  statement: Morphologically identified PV+BCs and AACs differ in input resistance, rheobase, maximal
+    AP number, AP width and after-hyperpolarization; AACs have a higher input resistance, a lower
+    rheobase and fire more APs at most.
+  source: Results, Hierarchical clustering based on electrophysiological properties identifies
+    interneuron types, paragraph 3; Table 2
+  quote: Morphologically identified PV+BCs and AACs differed significantly in terms of input
+    resistance, rheobase current, maximal AP number, AP width, and duration and amplitude of AHP
+    (Table 2) (all P < 0.01, Mann-Whitney U test)
+  statistics:
+  - about: maximal AP number for any input current
+    test: Mann-Whitney U test
+    p: 0.001
+  - about: AP half-width
+    test: Mann-Whitney U test
+    p: 0.004
+  - about: AP width
+    test: Mann-Whitney U test
+    p: 0.007
+  expected:
+  - quantity: input resistance, PV+BC
+    value: 42.12
+    tolerance: 8.9
+    unit: MOhm
+  - quantity: input resistance, AAC
+    value: 79.47
+    tolerance: 9.29
+    unit: MOhm
+  - quantity: rheobase, PV+BC
+    value: 250
+    tolerance: 50
+    unit: pA
+  - quantity: rheobase, AAC
+    value: 100
+    tolerance: 15
+    unit: pA
+  - quantity: maximal AP number, PV+BC
+    value: 109
+    tolerance: 27.5
+  - quantity: maximal AP number, AAC
+    value: 162
+    tolerance: 7.5
+  criterion: As table1-pv-cck-features, for PV+BCs against AACs. Reproduced when every listed median
+    is within tolerance and input resistance, rheobase and maximal AP number differ in the reported
+    direction with Mann-Whitney p < 0.01. Table 2 prints some of the "all P < 0.01" features at P =
+    0.02 (AHP amplitude, new method) and 0.01 or more (AHP duration, old method); those are reported
+    and not judged.
+- id: fig3-cp-pv
+  statement: Connection probability is high among PV+ cells, 50% (22 of 44 pairs); 66.6% among
+    PV+BCs (20 of 30, six unidirectional and seven bidirectional pairs); PV+BCs contact AACs (2 of 4)
+    but AACs contact neither PV+BCs nor AACs, a highly significant difference.
+  source: Results, Frequency of interactions among homogeneous and heterogeneous types of
+    inhibitory neurons, paragraph 4; Figure 3A; Table 3
+  quote: From a total of 44 putative cell pairs (including PV+BCs and AACs), we found 22 pairs (CP =
+    50%). The CP among PV+BCs was 66.6% (six unidirectional and seven bidirectional pairs ... We
+    found two PV+BC to AAC pairs (CP = 50%). On the other hand, no AAC to PV+BC or AAC to AAC
+    connections were found. The difference in the likelihood with which PV+BCs and AACs contacted
+    other PV+ interneurons was highly significant (P = 6.21 × 10-4; chi-squared)
+  statistics:
+  - about: PV+BC against AAC as presynaptic partner of PV+ cells
+    test: Pearson's chi-squared test
+    p: 6.21e-4
+  expected:
+  - quantity: CP among PV+ cells
+    value: 50
+    tolerance: 5
+    unit: percent
+  - quantity: CP among PV+BCs
+    value: 66.6
+    tolerance: 6.66
+    unit: percent
+  - quantity: CP from PV+BC to AAC
+    value: 50
+    tolerance: 5
+    unit: percent
+  - quantity: CP from AAC to PV+ cells
+    value: 0
+    tolerance: 0
+    unit: percent
+  criterion: CP is the fraction of connected pairs among all tested unidirectional pairs whose
+    presynaptic axon was preserved (Results, same section, paragraph 3). Counts as in Figure 3A (22/44,
+    20/30, 2/4, 0/4, 0/6). Reproduced when the counts of tested and connected pairs give the
+    expected values and a Pearson chi-squared test of connected against unconnected, PV+BC against
+    AAC as presynaptic cell, gives p < 0.001. Needs the record of unconnected tested pairs.
+- id: fig3-cp-cck
+  statement: Connection probability among CCK+ cells is 28% (14 of 50), with frequent bidirectional
+    connections, but only within CCK+BCs (42.85%) and within CCK+DTIs (45.45%); none between the two
+    subtypes, a significant preference for the same partner type.
+  source: Results, Frequency of interactions among homogeneous and heterogeneous types of
+    inhibitory neurons, paragraph 5; Figure 3A; Table 3
+  quote: The CP between CCK+ cells was relatively high (28%), with frequent bidirectional
+    connections; however, we observed synaptic coupling only between homogeneous CCK+BC (CPCCK+BC =
+    42.85%) and CCK+DTI (CPCCK+DTI = 45.45%) pairs. The preference of CCK+ interneurons for
+    homologous postsynaptic partners was highly significant (P = 9.42 × 10-4)
+  statistics:
+  - test: Pearson's chi-squared test
+    p: 9.42e-4
+  expected:
+  - quantity: CP among CCK+ cells
+    value: 28
+    tolerance: 2.8
+    unit: percent
+  - quantity: CP among CCK+BCs
+    value: 42.85
+    tolerance: 4.29
+    unit: percent
+  - quantity: CP among CCK+DTIs
+    value: 45.45
+    tolerance: 4.55
+    unit: percent
+  - quantity: CP between CCK+BCs and CCK+DTIs, either direction
+    value: 0
+    tolerance: 0
+    unit: percent
+  criterion: As fig3-cp-pv; counts as in Figure 3A (14/50, 9/21, 5/11, 0/9, 0/9). The chi-squared
+    test compares connected against unconnected pairs for same-type against different-type pairs.
+    Reproduced when the expected values hold and p < 0.001.
+- id: fig3-cp-pv-cck
+  statement: Connections between PV+ and CCK+ interneurons are rare (2 of 14 in each direction);
+    interneurons connect preferentially within their main class, and PV+ cells preferentially target
+    PV+ cells over CCK+ cells.
+  source: Results, Frequency of interactions among homogeneous and heterogeneous types of
+    inhibitory neurons, paragraph 6; Figure 3A; Table 3
+  quote: From a total of 28 trials among PV+ and CCK+ cells, only two PV+ to CCK+ and two CCK+ to PV+
+    pairs were found. Overall, PV+ and CCK+ interneurons showed a greater probability of targeting
+    interneurons within the same main class (P = 0.0175) and PV+ cells in particular preferentially ...
+    targeted other PV+ interneurons
+  statistics:
+  - about: within against between main class
+    test: Pearson's chi-squared test
+    p: 0.0175
+  - about: PV+ presynaptic cells, PV+ against CCK+ targets
+    test: Pearson's chi-squared test
+    p: 0.0181
+  expected:
+  - quantity: CP from PV+ to CCK+
+    value: 14.3
+    tolerance: 1.43
+    unit: percent
+  - quantity: CP from CCK+ to PV+
+    value: 14.3
+    tolerance: 1.43
+    unit: percent
+  criterion: As fig3-cp-pv; 2/14 in each direction (Figure 3A). The two tests as described in the
+    quote, chi-squared on connected against unconnected pairs. Reproduced when the counts hold and
+    both tests give p < 0.05.
+- id: fig4b-in-pc-kruskal-wallis
+  statement: uIPSCs evoked in PCs by PV+BCs, AACs and CCK+BCs differ in 10 to 90% rise time,
+    latency, amplitude, synaptic potency and transmission probability.
+  source: Results, The type of interneuron determines the properties of uIPSCs onto PCs, paragraph
+    2; Figure 4B
+  quote: the three perisomatic region-targeting interneuron-evoked uIPSCs were different in 10-90%
+    rise time (Kruskal-Wallis ANOVA P = 0.027), latency (Kruskal-Wallis ANOVA ... P = 7.49 × 10-4),
+    amplitude (Kruskal-Wallis ANOVA ... P = 0.001), synaptic potency (Kruskal-Wallis ANOVA, P = 0.004)
+    and transmission probability (Kruskal-Wallis ANOVA ... P = 0.003)
+  statistics:
+  - about: 10 to 90% rise time
+    test: Kruskal-Wallis ANOVA
+    p: 0.027
+    n: 8 PV+BC, 9 AAC and 14 CCK+BC to PC pairs
+  - about: latency
+    test: Kruskal-Wallis ANOVA
+    p: 7.49e-4
+  - about: amplitude
+    test: Kruskal-Wallis ANOVA
+    p: 0.001
+  - about: synaptic potency
+    test: Kruskal-Wallis ANOVA
+    p: 0.004
+  - about: transmission probability
+    test: Kruskal-Wallis ANOVA
+    p: 0.003
+  criterion: Pairs recorded with high KCl solution in both cells. Per pair, the measures of M1 on
+    single-AP uIPSCs (M3 readings a to c), failures by M2 readings a and b. Kruskal-Wallis across the
+    three presynaptic types for each measure. Reproduced when under one reading of M2 and M3 all five
+    measures give p < 0.05; partially reproduced when three or four do. The decay time constant was
+    not reported as different; its p is shown.
+- id: fig4b-in-pc-posthoc
+  statement: PV+BC and AAC uIPSCs onto PCs rise faster, have shorter latency and larger amplitude
+    than CCK+BC uIPSCs; AAC uIPSCs have larger potency, and higher transmission probability, than
+    CCK+BC uIPSCs.
+  source: Results, The type of interneuron determines the properties of uIPSCs onto PCs, paragraph
+    2; Figure 4B
+  quote: uIPSCs mediated by PV+BCs (n = 8) and AACs (n = 9) had a significantly faster 10-90% rise,
+    shorter latency and larger peak amplitude compared to CCK+BC-PC pairs (n = 14). Moreover, AAC-PC
+    pairs had a larger synaptic potency than CCK+BC-PC pairs, and CCK+BC-PC pairs had a significantly
+    smaller transmission probability than AAC-PC pairs
+  statistics:
+  - test: Mann-Whitney U test, post hoc
+    corrected: Bonferroni
+    p: 0.05
+    p_relation: "<"
+    n: 8 PV+BC, 9 AAC and 14 CCK+BC to PC pairs
+  criterion: As fig4b-in-pc-kruskal-wallis; post hoc two-sided Mann-Whitney U tests, Bonferroni
+    factor 3 (M6). Eight comparisons are claimed (PV+BC and AAC against CCK+BC for rise time, latency
+    and amplitude; AAC against CCK+BC for potency and for transmission probability). Reproduced when
+    under one reading of M2 and M3 all eight hold at corrected p < 0.05 in the stated direction;
+    partially reproduced when at least five do.
+  depends_on:
+  - fig4b-in-pc-kruskal-wallis
+- id: fig4c-cckdti-pc-silent-single-ap
+  statement: Seven of eight CCK+DTI to PC pairs transmit neither for a single AP nor for an AP after
+    a RIP burst; a single AP evokes a uIPSC only after an EPI burst.
+  source: Results, The type of interneuron determines the properties of uIPSCs onto PCs, paragraph
+    1; Figure 4Ca and Cb
+  quote: CCK+DTIs (seven of eight) did not transmit either for a single AP or for an AP following a
+    RIP protocol AP burst ... A single AP evoked transmission only if it was preceded by an EPI
+    burst-stimulation train
+  expected:
+  - quantity: CCK+DTI to PC pairs without uIPSCs to single APs
+    value: 7
+    tolerance: 0
+    unit: pairs of 8
+  criterion: For each CCK+DTI to PC pair, transmission probability of the single AP before the RIP
+    train and of the single AP before the EPI train (1600 ms after the previous EPI train), failures
+    by M2. A pair transmits when its transmission probability exceeds that seen in the same window
+    with no AP (the baseline crossing rate of reading b), or any success under reading a. Reproduced
+    when 7 of 8 pairs do not transmit to the single AP before RIP while at least one transmits to the
+    single AP that follows an EPI train. The tolerance is 0 as the claim is a count of pairs; if the
+    data set holds fewer pairs, the fraction is judged (at least 85% silent).
+- id: fig7a-cscl-kinetics
+  statement: Recording PCs with high CsCl (and interneurons with low KCl) gives longer 10 to 90%
+    rise times and latencies for all three perisomatic interneuron types than high KCl in both cells,
+    and larger amplitude and potency for CCK+BC to PC uIPSCs.
+  source: Results, The type of interneuron determines the properties of uIPSCs onto PCs, paragraph
+    3; Figure 7A
+  quote: all three types of PTI-mediated uIPSCs recorded on PCs with high CsCl-based intrapipette
+    solution had a significantly longer 10-90% rise time value and latency. Additionally, the
+    CsCl-based solution increased both the amplitude and synaptic potency of uIPSCs between
+    CCK+BC-PC pairs
+  statistics:
+  - test: Mann-Whitney U test, post hoc
+    p: 0.05
+    p_relation: "<"
+    n: high KCl 8 PV+BC, 9 AAC, 14 CCK+BC pairs; CsCl 9 PV+BC, 10 AAC, 6 CCK+BC pairs
+  criterion: Measures as fig4b-in-pc-kruskal-wallis, readings M2 and M3. For each presynaptic type,
+    two-sided Mann-Whitney U test of CsCl against high KCl pairs. The paper says "post hoc" without a
+    correction for this panel; readings, (a) uncorrected, (b) Bonferroni factor 3 (three cell types).
+    Reproduced when under one reading of M2, M3 and the correction, rise time and latency are longer
+    with CsCl in all three types and CCK+BC amplitude and potency are larger, at p < 0.05 (eight
+    comparisons); partially reproduced when at least five hold. Needs the pairs to be labelled by
+    pipette solution.
+- id: fig5c-pv-rip-depression
+  statement: Under the RIP protocol (four APs at 160 Hz) PV+BC to PC pairs show short-term
+    depression at the 3rd and 4th AP, and AAC to PC pairs already at the 2nd AP.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 3 (Transmission of PV+ cells is depressing and homogenous);
+    Figure 5C
+  quote: PV+BC-PC pairs (n = 8) expressed short-term depression in response to the 3rd and 4th APs of
+    the RIP protocol, whereas AAC-PC pairs (n = 9) ) expressed short-term depression in response to
+    the 2nd AP
+  statistics:
+  - test: not named; asterisks in Figure 5C
+    p: 0.05
+    p_relation: "<"
+    n: 8 PV+BC and 9 AAC to PC pairs
+  criterion: High KCl pairs. Per pair, relative amplitudes of the four RIP IPSCs (M4 readings a and
+    b, M5), normalized to the first of the four. The paper does not name the test behind the Fig. 5C
+    asterisks. Readings, (a) Wilcoxon signed-rank test of the per-pair relative amplitude at AP n
+    against 1; (b) Mann-Whitney U test of the per-pair relative amplitudes at AP n against those at
+    AP 1 (all equal to 1), the paper's named two-group test. Reproduced when under one reading of
+    M4 and of the test, the PV+BC medians at the 3rd and 4th AP and the AAC median at the 2nd AP are
+    below 1 with p < 0.05. Whether the PV+BC 2nd AP is also depressed is reported.
+- id: fig5c-cck-rip-facilitation
+  statement: CCK+BC to PC (n = 14) and CCK+DTI to PC (n = 4) pairs on average show strong short-term
+    facilitation, although individual pairs can show either facilitation or depression.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 5 (Transmission of CCK+ cells is variable); Figure 5C
+  quote: IPSCs between CCK+BC to PC (n = 14) and CCK+DTI-PC pairs (n = 4) on average were
+    characterized by powerful short-term facilitation; however, individual cell pairs could display
+    both short-term facilitation and short-term depression
+  criterion: As fig5c-pv-rip-depression, RIP protocol. Reproduced when for CCK+BC to PC pairs the
+    median relative amplitude at the 2nd to 4th AP is above 1 at two or more of the three APs, the
+    same holds for the CCK+DTI pairs that transmit under RIP, and at least one CCK+ pair has a
+    relative amplitude below 1 at the 4th AP. Pairs whose first IPSC is all failures under M2 cannot
+    be normalized and are counted apart.
+- id: fig5db-recovery
+  statement: After a RIP train, PV+BC to PC (n = 7) and AAC to PC (n = 9) transmission recovers
+    gradually with the interval to a second RIP train, while CCK+BC to PC transmission (n = 11) rises
+    and falls with the interval; PV+BC and CCK+BC pairs differ at several intervals.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 4; Figure 5Da and Db
+  quote: PV+BC to PC (n = 7) and AAC to PC (n = 9) transmission gradually recovered, whereas CCK+BC to
+    PC transmission (n = 11) showed a more complex (increasing and decreasing) behaviour depending on
+    the interstimulus interval
+  statistics:
+  - about: PV+BC against CCK+BC to PC, recovery ratio at given intervals
+    test: not named; asterisks in Figure 5Db
+    p: 0.05
+    p_relation: "<"
+  criterion: Recovery ratio, the amplitude of the first IPSC of the second RIP train over that of the
+    first IPSC of the first train (Methods, paragraph on protocols; Fig. 5Db legend), per pair and
+    interval (50 to 1200 ms), amplitudes by M4. Gradual recovery, the median ratio over PV+BC pairs,
+    and over AAC pairs, rises with the interval (Spearman correlation of ratio with interval above 0
+    with p < 0.05 over the pair by interval values), below 1 at 50 ms. Complex behaviour, the CCK+BC
+    median ratio is not monotonic in interval (at least one rise followed by a fall of more than 10%
+    of the ratio). Difference, two-sided Mann-Whitney U test of PV+BC against CCK+BC at each
+    interval; the paper gives no correction (readings uncorrected and Bonferroni over 7 intervals).
+    Reproduced when all three parts hold under one reading of M4, with at least one interval
+    significant.
+- id: fig6-pv-trains-depression
+  statement: PV+BC to PC (n = 6) and AAC to PC (n = 8) pairs show purely short-term depression to 10
+    APs at 1 to 320 Hz and to the EPI protocol, more pronounced at higher frequencies, with IPSCs
+    synchronous to the APs even under EPI.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 3; Figure 6A and C
+  quote: PV+BC to PC (n = 6) and AAC to PC (n = 8) pairs displayed purely short-term depression in
+    response to 10 APs at frequencies between 1 and 320 Hz and to our EPI protocol. The short-term
+    depression becomes more prominent with ... increasing frequency
+  criterion: Per pair and protocol, relative amplitudes (M4, M5); medians over pairs (Fig. 6C
+    legend). Purely depressing, the median relative amplitude of APs 2 to 10 is below 1 at every
+    frequency and for the EPI protocol, for each of the two types (a value up to 1.05 at a single AP
+    is allowed as noise, a standard choice). More prominent with frequency, the median over pairs of
+    the mean relative amplitude of APs 2 to 10 falls with frequency (Spearman correlation below 0 with
+    p < 0.05 over the pair by frequency values). Reproduced when both hold for both types under one
+    reading of M4.
+- id: fig6-cckbc-pc-trains
+  statement: All CCK+BC to PC pairs (n = 6) facilitate at 1 to 40 Hz; at 80 Hz and above and under
+    EPI the facilitation of the 1st to 5th APs turns into depression later in the train.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 6; Figure 6A and C
+  quote: All CCK+BC-PC pairs (n = 6) were characterized by short-term facilitation at frequencies
+    between 1 and 40 Hz. At higher frequencies (80 Hz, 160 Hz, 320 Hz; EPI protocol) the transient ...
+    short-term facilitation of the 1st to 5th APs turned later into short-term depression
+  criterion: As fig6-pv-trains-depression. Facilitation at 1 to 40 Hz, for every pair the mean
+    relative amplitude of APs 2 to 10 is above 1 at each of 1, 5, 10, 20 and 40 Hz. At 80, 160 and
+    320 Hz and EPI, the median over pairs is above 1 at some AP from 2 to 5 and below 1 at the last
+    AP of the train. Reproduced when both hold under one reading of M4; partially reproduced when
+    facilitation holds for at least five of six pairs and the high-frequency pattern for at least
+    three of the four protocols.
+- id: fig6-cckbc-async-onset
+  statement: At CCK+BC to PC pairs asynchronous release appears only during the EPI protocol, between
+    the 10th and 19th AP (median 11, interquartile range 10 to 14).
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 6; Figure 6A
+  quote: Asynchronous release at CCK+BC-PCpairsappearedonlyduringtheEPIprotocol between the 10th and
+    19th AP [median (interquartile range) 11 (10-14)]
+  expected:
+  - quantity: AP index of asynchronous release onset, CCK+BC to PC, EPI
+    value: 11
+    tolerance: 1
+  criterion: The paper does not say how the onset of asynchronous release is determined. The
+    immediate asynchronous charge at each AP is computed as in the Methods (Asynchronous charge
+    calculation, a template from the averaged 11th IPSC, synchronous release reconstructed and
+    subtracted, 100 Hz low-pass, window the interval to the next AP). Readings for the onset, (a)
+    the first AP after which the immediate asynchronous charge stays above two standard deviations of
+    the charge in equal windows of the pre-train baseline for at least three APs; (b) the first AP
+    after which the current between APs no longer returns to within 10% of the IPSC peak of the
+    baseline (a standard choice). Reproduced when under one reading the median onset is 10 to 12 (11
+    against the nearer quartile 10, M7, and 10% above), onsets lie within 9 to 21 (10 to 19 widened by
+    10%), and no pair shows asynchronous release under the 10-AP trains by the same rule.
+- id: cckdti-pc-transmission
+  statement: Of eight CCK+DTI to PC pairs, four respond at low frequencies (1 to 40 Hz) or to RIP; in
+    these the first AP of trains evokes an IPSC only from about the fourth sweep, transmission
+    facilitates at 10 Hz but depresses at 40 and 160 Hz; the other four transmit, with depression,
+    only under EPI.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 7; Figures 5A and 6A
+  quote: From a total of eight CCK+DTI-PC pairs, only four pairs responded to stimulation already at
+    low frequencies (1-40 Hz) or to RIP protocol with clearly distinguishable inhibitory transmission
+    ... the first AP of stimulation trains resulted in an IPSC starting from the fourthtraceonaverage
+    ... Transmission was characterized by short-term facilitation at 10 Hz (n = 3) but turned into
+    short-term depression at 40 Hz (n = 3) and 160 Hz (n = 4) stimulation. In the remaining four
+    CCK+DTI-PC pairs, inhibitory transmission (showing short-term depression) was observed only for
+    the stronger and longer lasting EPI stimulation train
+  expected:
+  - quantity: CCK+DTI to PC pairs transmitting at 1 to 40 Hz or RIP
+    value: 4
+    tolerance: 0
+    unit: pairs of 8
+  - quantity: first sweep with an IPSC to the first AP, mean over responding pairs
+    value: 4
+    tolerance: 0.4
+    unit: sweep index
+  criterion: Transmission per pair as in fig4c-cckdti-pc-silent-single-ap (M2), relative amplitudes
+    by M4. Reproduced when four of eight pairs transmit at 1 to 40 Hz or RIP, the mean first
+    successful sweep is within tolerance, and in the responding pairs the median mean relative
+    amplitude of APs 2 to 10 is above 1 at 10 Hz and below 1 at 40 and 160 Hz, while the other pairs
+    transmit only under EPI with the last-AP relative amplitude below 1. Partially reproduced when
+    the counts hold and the frequency pattern holds at two of the three frequencies.
+- id: cckdti-async-onset
+  statement: At CCK+DTI to PC pairs asynchronous release appears earlier than at CCK+BCs, between the
+    7th and 13th AP of the EPI protocol (median 7, interquartile range 7 to 9) and in trains at 160 Hz
+    and above (median 7, interquartile range 6 to 8).
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 8; Figure 6A and C
+  quote: In the CCK+DTIs, asynchronous release appeared earlier than for the CCK+BCs ... between the 7th
+    and 13th AP of the EPI protocol [median (interquartile range) 7 (7-9)] and above 160 Hz stimulation
+    [median (interquartile range) 7 (6-8)]
+  expected:
+  - quantity: AP index of asynchronous release onset, CCK+DTI to PC, EPI
+    value: 7
+    tolerance: 0.7
+  - quantity: AP index of asynchronous release onset, CCK+DTI to PC, trains at 160 Hz and above
+    value: 7
+    tolerance: 1
+  criterion: Onset readings as fig6-cckbc-async-onset. For EPI the nearer quartile equals the median,
+    so the tolerance is 10%; for trains the nearer quartile (6) gives 1. "Above 160 Hz" is read two
+    ways, (a) the 160 and 320 Hz trains pooled, (b) the 320 Hz train alone. Reproduced when under
+    one reading both medians are within tolerance and the CCK+DTI EPI onset median is lower than the
+    CCK+BC one.
+  depends_on:
+  - fig6-cckbc-async-onset
+- id: async-charge-epi-vs-160
+  statement: At CCK+BC to PC pairs the EPI protocol triggers a larger asynchronous charge after the
+    last AP than 160 Hz trains, while the charge is unchanged between the two patterns at PV+BC, AAC
+    and CCK+DTI to PC pairs.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 9; Figure 6A
+  quote: At CCK+BC-PC pairs, the EPI protocol triggered a significantly larger asynchronous charge
+    compared to 160 Hz stimulation (Mann-Whitney U test ... P = 0.002), whereas the charge transfer at
+    PV+BC to PC (Mann-Whitney U test ... P = 0.17) and AAC-PC pairs (Mann-Whitney U test ... P = 0.27) was
+    unchanged between the two stimulus patterns. We did not find any significant difference in the
+    asynchronous charge transfer at CCK+DTI-PC pairs (Mann-Whitney U test ... P = 0.9)
+  statistics:
+  - about: CCK+BC to PC, EPI against 160 Hz
+    test: Mann-Whitney U test
+    p: 0.002
+  - about: PV+BC to PC, EPI against 160 Hz
+    test: Mann-Whitney U test
+    p: 0.17
+  - about: AAC to PC, EPI against 160 Hz
+    test: Mann-Whitney U test
+    p: 0.27
+  - about: CCK+DTI to PC, EPI against 160 Hz
+    test: Mann-Whitney U test
+    p: 0.9
+  criterion: Charge in the 500 ms window after the last AP of the EPI protocol and of the 10-AP 160
+    Hz train (paragraph 9). The paper says asynchronous charge; readings, (a) the delayed asynchronous
+    charge of the Methods (the 100 Hz low-pass original trace minus the reconstructed synchronous
+    trace, 500 ms after the last AP); (b) the area under the mean trace in that window minus the area
+    of an equal window at least 500 ms later (the total charge method of the Methods, applied to the
+    window). Two-sided Mann-Whitney U test per type, EPI against 160 Hz, as the paper names it.
+    Reproduced when under one reading CCK+BC gives p < 0.05 with EPI larger, and the absence parts
+    hold on the paper's test, PV+BC, AAC and CCK+DTI each p >= 0.05; partially reproduced when
+    CCK+BC holds and one absence part fails.
+- id: decay-epi-vs-160
+  statement: The decay time constant after the last AP lengthens under EPI compared with 160 Hz
+    trains, from 13.01 to 103.65 ms at CCK+BC to PC pairs and from 36.82 to 138.71 ms at CCK+DTI to PC
+    pairs.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 9; Figure 6B
+  quote: the decay time (τ) of release prolonged significantly during EPI protocol compared to 160 Hz
+    stimulation at both CCK+BC-PC (from 13.01 ms to 103.65 ms; Mann-WhitneyUtest ... P =0.01) and
+    CCK+DTI-PC pairs (from 36.82 ms to 138.71 ms; Mann-Whitney U test ... P = 0.01)
+  statistics:
+  - about: CCK+BC to PC
+    test: Mann-Whitney U test
+    p: 0.01
+  - about: CCK+DTI to PC
+    test: Mann-Whitney U test
+    p: 0.01
+  expected:
+  - quantity: decay time constant after 10th AP at 160 Hz, CCK+BC to PC, median
+    value: 13.01
+    tolerance: 1.3
+    unit: ms
+  - quantity: decay time constant after last EPI AP, CCK+BC to PC, median
+    value: 103.65
+    tolerance: 10.37
+    unit: ms
+  - quantity: decay time constant after 10th AP at 160 Hz, CCK+DTI to PC, median
+    value: 36.82
+    tolerance: 3.68
+    unit: ms
+  - quantity: decay time constant after last EPI AP, CCK+DTI to PC, median
+    value: 138.71
+    tolerance: 13.87
+    unit: ms
+  criterion: Per pair, a single exponential fitted to the decay of the averaged current after the
+    10th AP of the 160 Hz train and after the last AP of the EPI protocol (Fig. 6A legend), medians
+    over pairs (Fig. 6B legend). The fit window is not given; readings, (a) from the peak to 500 ms
+    after the last AP (the window of the charge analysis); (b) from the peak to the return to
+    baseline, the first point within 5% of the peak above baseline. Two-sided Mann-Whitney U test,
+    EPI against 160 Hz. Reproduced when under one reading the four medians are within tolerance and
+    both tests give p < 0.05; partially reproduced when both tests hold with EPI longer but some
+    medians fall outside tolerance. Fig. 6B also reports PV+BC and AAC values (asterisks on CCK+BC and
+    "PTI"), not given in the text; these are shown and not judged.
+- id: fig7b-cscl-stp
+  statement: With the CsCl (postsynaptic) and low KCl (presynaptic) solutions short-term depression
+    at the 3rd and 4th RIP APs is larger at AAC to PC pairs, and short-term facilitation is smaller at
+    CCK+BC to PC pairs, than with high KCl.
+  source: Results, Cell type-specific short-term plasticity characterizes the synaptic transmission
+    of interneurons onto PCs, paragraph 11; Figure 7B
+  quote: The use of different intrapipette solutions significantly increased the short-term
+    depression between AACs and PCs, and decreased the short-term facilitation of CCK+BC-PC pairs,
+    compared to values of short-term plasticity observed with high KCl-based intrapipette solution
+  statistics:
+  - test: not named; asterisks in Figure 7B
+    p: 0.05
+    p_relation: "<"
+  criterion: RIP relative amplitudes (M4) at the 3rd and 4th AP (Fig. 7B legend), per pair, CsCl
+    pairs against high KCl pairs, two-sided Mann-Whitney U test per type and AP (the paper's
+    two-group test). Reproduced when under one reading of M4 the AAC relative amplitudes are lower
+    with CsCl at the 3rd and 4th AP and the CCK+BC relative amplitudes are lower with CsCl at the 3rd
+    and 4th AP, each p < 0.05; partially reproduced when two or three of the four hold. Needs the pairs
+    to be labelled by pipette solution.
+  depends_on:
+  - fig7a-cscl-kinetics
+- id: fig8-pvbc-pvbc-uipsc
+  statement: uIPSCs between PV+BCs (n = 16) are fast (10 to 90% rise time 0.63 ms, decay time
+    constant 3.17 ms), with short latency (0.76 ms), large amplitude (81.18 pA) and transmission
+    probability of 1.
+  source: Results, Properties of uIPSCs among interneurons are also connection type specific,
+    paragraph 2; Figure 8B
+  quote: uIPSCs at PV+BC to PV+BC pairs (n = 16) were fast (10-90% rise time, 0.63 ms; decay time
+    constant, 3.17 ms) with short latency (0.76 ms), large amplitude (81.18 pA) and high transmission
+    probability (P = 1)
+  expected:
+  - quantity: 10 to 90% rise time, median
+    value: 0.63
+    tolerance: 0.063
+    unit: ms
+  - quantity: decay time constant, median
+    value: 3.17
+    tolerance: 0.317
+    unit: ms
+  - quantity: latency, median
+    value: 0.76
+    tolerance: 0.076
+    unit: ms
+  - quantity: amplitude, median
+    value: 81.18
+    tolerance: 8.12
+    unit: pA
+  - quantity: transmission probability, median
+    value: 1.0
+    tolerance: 0.1
+  criterion: Measures of M1, single APs by M3 (the Fig. 8A legend favours reading b, the 1 Hz train),
+    failures by M2, median over pairs (Fig. 8B legend). Reproduced when under one reading of M2 and
+    M3 all five medians are within tolerance; partially reproduced when three or four are.
+- id: fig8-cck-pairs-uipsc
+  statement: uIPSCs between CCK+BCs (n = 6) have rise and decay times like those between PV+BCs
+    (0.63 and 3.65 ms) but significantly longer latency (1.59 ms) and lower transmission probability
+    (0.7); uIPSCs between CCK+DTIs (n = 4) are slowest (rise 0.98 ms, decay 4.47 ms, latency 1.52 ms),
+    smallest (43.71 pA) and least reliable (0.55).
+  source: Results, Properties of uIPSCs among interneurons are also connection type specific,
+    paragraph 2; Figure 8B
+  quote: The properties of inhibitory synapses among CCK+BCs (n = 6) were similar to PV+BC to PV+BC
+    synapses with respect to the 10-90% rise time (0.63 ms) and decay time constant (3.65 ms); however,
+    uIPSCs were evoked with a significantly longer latency (1.59 ms) and lower transmission
+    probability (P = 0.7). Finally, we found that synapses between CCK+DTI pairs (n = 4) had the
+    slowest time course of rise time (0.98 ms), decay time (4.47 ms) and latency (1.52 ms), with the
+    smallest amplitude (43.71 pA) and lowest transmission probability (0.55)
+  statistics:
+  - about: CCK+BC against PV+BC pairs, latency and transmission probability
+    test: Mann-Whitney U test, post hoc
+    corrected: Bonferroni
+    p: 0.05
+    p_relation: "<"
+    n: 16 PV+BC, 6 CCK+BC and 4 CCK+DTI pairs
+  expected:
+  - quantity: CCK+BC pairs, 10 to 90% rise time
+    value: 0.63
+    tolerance: 0.063
+    unit: ms
+  - quantity: CCK+BC pairs, decay time constant
+    value: 3.65
+    tolerance: 0.365
+    unit: ms
+  - quantity: CCK+BC pairs, latency
+    value: 1.59
+    tolerance: 0.159
+    unit: ms
+  - quantity: CCK+BC pairs, transmission probability
+    value: 0.7
+    tolerance: 0.07
+  - quantity: CCK+DTI pairs, 10 to 90% rise time
+    value: 0.98
+    tolerance: 0.098
+    unit: ms
+  - quantity: CCK+DTI pairs, decay time constant
+    value: 4.47
+    tolerance: 0.447
+    unit: ms
+  - quantity: CCK+DTI pairs, latency
+    value: 1.52
+    tolerance: 0.152
+    unit: ms
+  - quantity: CCK+DTI pairs, amplitude
+    value: 43.71
+    tolerance: 4.37
+    unit: pA
+  - quantity: CCK+DTI pairs, transmission probability
+    value: 0.55
+    tolerance: 0.055
+  criterion: As fig8-pvbc-pvbc-uipsc. Kruskal-Wallis across the three pair types, post hoc
+    Mann-Whitney U with Bonferroni factor 3 (M6). Reproduced when under one reading of M2 and M3 at
+    least seven of the nine medians are within tolerance and CCK+BC pairs have a longer latency and
+    lower transmission probability than PV+BC pairs at corrected p < 0.05; partially reproduced when
+    the tests hold and four to six medians are within tolerance. The uncorrected p is also shown.
+  depends_on:
+  - fig8-pvbc-pvbc-uipsc
+- id: fig8-cckbc-vs-cckdti-pairs
+  statement: Among CCK+ pairs, uIPSC decay, latency, amplitude and transmission probability are
+    similar between CCK+BC and CCK+DTI pairs, but CCK+BC uIPSCs rise significantly faster.
+  source: Results, Properties of uIPSCs among interneurons are also connection type specific,
+    paragraph 2; Figure 8B
+  quote: The decay time constant, latency, amplitude and transmission probability of uIPSCs among
+    CCK+BC and CCK+DTI pairs were similar, although the 10-90% rise time of uIPSCs mediated by
+    CCK+BCs was significantly faster compared to CCK+DTI pairs
+  statistics:
+  - about: 10 to 90% rise time, CCK+BC against CCK+DTI pairs
+    test: Mann-Whitney U test, post hoc
+    corrected: Bonferroni
+    p: 0.05
+    p_relation: "<"
+  criterion: As fig8-cck-pairs-uipsc, post hoc Mann-Whitney U test with Bonferroni factor 3. The
+    similarity is a claim of absence, judged on that test at corrected p < 0.05. Reproduced when the
+    rise time differs (CCK+BC faster) and decay, latency, amplitude and transmission probability do
+    not; partially reproduced when the rise time holds and one of the four absences fails. Under
+    the stated correction a 6 against 4 Mann-Whitney test has a smallest two-sided p of 0.0095, times
+    3 is 0.029, so complete separation is needed for the rise time.
+  depends_on:
+  - fig8-cck-pairs-uipsc
+- id: fig9-pvbc-pvbc-depression
+  statement: Transmission between PV+BCs (n = 13) depresses during 10-AP trains at all frequencies
+    from 1 to 320 Hz, more strongly at higher frequencies.
+  source: Results, Short-term depression among PV+BC pairs is frequency-dependent, paragraph 2;
+    Figure 9B, left
+  quote: The transmission was characterized by short-term depression (Fig. 9B); the amplitude of
+    triggered IPSCs decreased during the train of 10 APs at all frequencies. Moreover, as shown in Fig.
+    9, the short-term depression became more prominent as the frequency ofstimulation was increased
+  criterion: As fig6-pv-trains-depression, for PV+BC to PV+BC pairs (M4, M5). Reproduced when under
+    one reading of M4 the median relative amplitude at the 10th AP is below 1 at all eight frequencies
+    and the median mean relative amplitude of APs 2 to 10 falls with frequency (Spearman correlation
+    below 0, p < 0.05, over pair by frequency values).
+- id: fig9-pvbc-pvbc-transmission-probability
+  statement: Between PV+BCs the transmission probability starts to fall at 80 Hz (to 0.9 at the 10th
+    AP), falls by 5 to 10% at the 8th to 10th AP at 160 Hz, and lies between 0.8 and 0.9 from the 3rd
+    to the 10th AP at 320 Hz; it recovers by the 11th AP.
+  source: Results, Short-term depression among PV+BC pairs is frequency-dependent, paragraph 2;
+    Figure 9B, right
+  quote: the transmission probability started to decrease at 80 Hz stimulation (at the 10th AP to 0.9;
+    fast gamma frequency range). Increasing the frequency of stimulation to 160 Hz (SWR frequency
+    range), we observed a 5-10% decrease of transmission probability at the 8th to 10th AP, whereas,
+    at 320 Hz stimulation, the inhibitory transmission became less effective between the 3rd and 10th
+    AP (transmission probability between 0.8 and 0.9)
+  expected:
+  - quantity: transmission probability at the 10th AP, 80 Hz, median over pairs
+    value: 0.9
+    tolerance: 0.09
+  - quantity: decrease of transmission probability at the 8th to 10th AP, 160 Hz
+    value: 7.75
+    tolerance: 3.25
+    unit: percent
+  - quantity: transmission probability at the 3rd to 10th AP, 320 Hz, median over pairs
+    value: 0.855
+    tolerance: 0.135
+  criterion: Per pair and AP, the fraction of sweeps with a uIPSC (M2), median over pairs (Fig. 9B
+    legend). The 160 Hz decrease is read relative to the first AP; the reported range 5 to 10% widened
+    by 10% of each bound gives 4.5 to 11 (7.75 plus or minus 3.25). The 320 Hz range 0.8 to 0.9
+    widened gives 0.72 to 0.99 (0.855 plus or minus 0.135) for every AP from the 3rd to the 10th. Below 80 Hz the median is 1 at
+    every AP. Reproduced when under one reading of M2 all hold and the 11th AP median is at least
+    0.95 at every frequency; partially reproduced when the 80 Hz and 320 Hz parts hold.
+  depends_on:
+  - fig9-pvbc-pvbc-depression
+- id: fig9-pvbc-pvbc-recovery-11th
+  statement: Between PV+BCs a 1 s pause does not fully relieve depression, and the recovery of the
+    11th IPSC does not depend on the frequency of the preceding train.
+  source: Results, Short-term depression among PV+BC pairs is frequency-dependent, paragraph 3;
+    Figure 9B, left
+  quote: The 1 s interstimulus interval was not sufficient to completely recover synaptic depression
+    and the level of recovery was similar, regardless of the previous train frequency (Kruskal-Wallis
+    ANOVA ... P = 0.152)
+  statistics:
+  - test: Kruskal-Wallis ANOVA
+    p: 0.152
+    n: 13 PV+BC to PV+BC pairs, trains at 5 to 320 Hz
+  criterion: Per pair, the 11th IPSC amplitude over the first (M4), for trains at 5 to 320 Hz
+    (paragraph 3). Incomplete recovery, the median over pairs is below 1 at every frequency. Absence
+    of a frequency effect, Kruskal-Wallis across the seven frequencies on the per-pair values, as the
+    paper did (groups treated as independent though the pairs repeat), not significant at p < 0.05.
+    A Friedman test over pairs with all frequencies is shown as a variant. Reproduced when both hold.
+  depends_on:
+  - fig9-pvbc-pvbc-depression
+- id: fig10-cck-cck-heterogeneity
+  statement: Transmission between CCK+ cells is heterogeneous; all connections facilitate, four of
+    nine pairs release only synchronously while five show frequency-dependent strong asynchronous
+    release, and both BC and DTI pairs show either pattern.
+  source: Results, Interactions among CCK+ interneurons show heterogeneous dynamics regardless of
+    axonal location, paragraphs 2 and 3; Figure 10Aa to Ac
+  quote: Although short-term facilitation was a common feature of all connections, four out of nine
+    cells evoked only synchronous transmitter release (Fig. 10Aa), whereas five of them showed a
+    frequency-dependent strong ... asynchronous release (Fig. 10Ab). Both BCs and DTIs could show either
+    of these patterns
+  expected:
+  - quantity: CCK+ to CCK+ pairs with only synchronous release
+    value: 4
+    tolerance: 0
+    unit: pairs of 9
+  - quantity: CCK+ to CCK+ pairs with asynchronous release
+    value: 5
+    tolerance: 0
+    unit: pairs of 9
+  criterion: CCK+BC to CCK+BC and CCK+DTI to CCK+DTI pairs, 10-AP trains. Asynchronous release in a
+    pair is judged by the onset rule of fig6-cckbc-async-onset (both readings) at 40 Hz and above
+    (paragraph 4 places its appearance after the 5th AP at 40 and 160 Hz). Reproduced when under one
+    reading four pairs show none and five show it (if the data set holds a different number of pairs,
+    when the fraction with asynchronous release is 45 to 66%, 5 of 9 within 10% of each count), both
+    types are among each group, and every pair has a relative amplitude above 1 at some AP of the 10
+    or 40 Hz train.
+  depends_on:
+  - fig6-cckbc-async-onset
+- id: fig10-cck-cck-frequency
+  statement: Between CCK+ cells IPSC amplitudes facilitate at 10 and 40 Hz, while at 160 Hz they show
+    no consistent change or a mixture of depression and facilitation.
+  source: Results, Interactions among CCK+ interneurons show heterogeneous dynamics regardless of
+    axonal location, paragraph 3; Figure 10Ac
+  quote: the amplitude of evoked IPSCs among CCK+ cells displayed short-term facilitation at 10 and
+    40 Hz stimulation. On the other hand, the amplitude of individual IPSCs at 160 Hz stimulation was
+    characterized by no consistent change or by a mixture of short-term depression and short-term
+    facilitation
+  criterion: Relative amplitudes (M4, M5) per pair. Reproduced when under one reading of M4 the median
+    over pairs of the mean relative amplitude of APs 2 to 10 is above 1 at 10 and at 40 Hz, and at 160
+    Hz the pairs are mixed (at least one pair above 1 and one below 1) or the median is within 0.9 to
+    1.1.
+- id: fig10-cck-cck-async
+  statement: In the five CCK+ pairs with asynchronous release, release is synchronous at 10 Hz but
+    asynchronous after the 5th AP at 40 and 160 Hz, and persists after the train for 69.8 to 339.6 ms,
+    a duration independent of frequency; the total charge depends on the presynaptic frequency.
+  source: Results, Interactions among CCK+ interneurons show heterogeneous dynamics regardless of
+    axonal location, paragraph 4; Figure 10Ac and Ad
+  quote: In five CCK+ to CCK+ cell pairs, transmitter release was synchronous at 10 Hz stimulation
+    but, at 40 and 160 Hz stimulation, asynchronous release appeared after the 5th AP (immediate
+    asynchronous release). This asynchronous release persisted after the end of stimulation train,
+    lasting 69.8-339.6 ms for different cells (delayed asynchronousrelease).Itsdurationwasindependentofthe
+    frequency of stimulation train (data not shown). However, the total inhibitory charge during the
+    stimulation train (including a 500 ms window following the end of the 10th ... AP) was determined
+    by the frequency of presynaptic APs
+  expected:
+  - quantity: duration of delayed asynchronous release, range over pairs, shortest
+    value: 69.8
+    tolerance: 6.98
+    unit: ms
+  - quantity: duration of delayed asynchronous release, range over pairs, longest
+    value: 339.6
+    tolerance: 33.96
+    unit: ms
+  criterion: For the pairs with asynchronous release (fig10-cck-cck-heterogeneity). Onset by the rule
+    of fig6-cckbc-async-onset. Duration of delayed release, the time from the last AP to the point
+    where the low-pass (100 Hz) residual current (original minus reconstructed synchronous, Methods)
+    returns within two standard deviations of baseline, a standard choice the paper does not state.
+    Total charge as the Methods define it (area under the mean trace during the train and 500 ms
+    after, minus an equal window at least 500 ms later). Frequency dependence of total charge,
+    Kruskal-Wallis across 10 to 320 Hz at p < 0.05 (the paper's test for several groups); duration
+    independent of frequency, the same test not significant. Reproduced when under one reading the
+    onset is after the 5th AP at 40 and 160 Hz and absent at 10 Hz in at least four of five pairs,
+    the durations lie within 62.8 to 373.6 ms (the range widened by 10% of each bound), and both tests
+    go as stated.
+  depends_on:
+  - fig10-cck-cck-heterogeneity
+- id: fig10bd-be-async-charge
+  statement: Between CCK+ cells immediate asynchronous charge per AP rises from 10 to 40 Hz, starting
+    near the 5th AP, and falls at higher frequencies; delayed asynchronous charge grows with frequency
+    and saturates at 160 Hz.
+  source: Results, Interactions among CCK+ interneurons show heterogeneous dynamics regardless of
+    axonal location, paragraph 5; Figure 10Bd and Be
+  quote: immediate asynchronous charge increased with increasing frequency between 10 and 40 Hz,
+    starting around the 5th AP. However, at higher frequencies, immediate asynchronous charge started
+    to drop ... delayed asynchronous charge strongly potentiated in a frequency-dependent manner, and
+    saturated at 160 Hz
+  criterion: Methods, Asynchronous charge calculation. Template, a difference of two exponentials
+    (Eq. 6) fitted to the average of all 11th IPSCs; delay from the rise onset; the synchronous trace
+    rebuilt by adding templates at each AP plus the delay, scaled to the averaged IPSC amplitude at
+    that AP; original and rebuilt traces low-pass filtered at 100 Hz; immediate charge per AP over the
+    interval to the next AP (100, 50, 25, 12.5, 6.25, 3.125 ms at 10 to 320 Hz); delayed charge in the
+    500 ms after the 10th AP. The filter type and order are not given; a standard choice (fourth-order
+    zero-phase Butterworth) is used and named. Median over pairs with asynchronous release. Reproduced
+    when the median immediate charge summed over APs 5 to 10 is larger at 40 than at 10 Hz and smaller
+    at 320 than at 40 Hz, and the median delayed charge rises from 10 to 160 Hz (each step not lower
+    than the previous by more than 10%) with 320 Hz within 20% of 160 Hz.
+  depends_on:
+  - fig10-cck-cck-heterogeneity
+- id: fig11-model-pv-udr
+  statement: For PV+BC to PV+BC, PV+BC to PC and AAC to PC connections a purely depressing
+    Tsodyks-Markram model fits adequately; adding use-dependent replenishment lowers the summed
+    squared error by 35%, 22% and 34%, while adding facilitation gives no significant improvement; the
+    BIC favours the depressing model with use-dependent replenishment.
+  source: Results, Simple mathematical models of short-term plasticity effectively capture the
+    temporal properties of transmission, paragraphs 3 and 5; Figure 11A and B
+  quote: the combined sum of squared error decreased by 35% for PV+BC to PV+BC connections, by 22% for
+    PV+BC to PC connections, and by 34% for AAC to PC connections when use-dependent replenishment was
+    assumed). Adding synaptic facilitation to the model did not lead to any significant improvement
+    for these three types of connection ... The BIC clearly favoured the purely depressing model which
+    included use-dependent replenishment for PV+BC to PV+BC, PV+BC to PC and AAC to PC connections
+  expected:
+  - quantity: decrease of combined SSE with UDR, PV+BC to PV+BC
+    value: 35
+    tolerance: 3.5
+    unit: percent
+  - quantity: decrease of combined SSE with UDR, PV+BC to PC
+    value: 22
+    tolerance: 2.2
+    unit: percent
+  - quantity: decrease of combined SSE with UDR, AAC to PC
+    value: 34
+    tolerance: 3.4
+    unit: percent
+  criterion: Methods, Modelling the short-term plasticity, Eqs. 1 to 5; Results, same section,
+    paragraph 3; Table 4 legend. Data, per connection the mean IPSC amplitudes (pA, M4) of the 10-AP
+    trains at 1 to 320 Hz with the 11th AP, all frequencies fitted together. Four models, TM
+    depressing (Eqs. 1, 5), TM depressing plus facilitating (Eqs. 1, 2, 5), UDR depressing (Eqs. 1, 3,
+    4, 5), UDR plus facilitation; n = 1 and p = p0 before the first spike. U0 (p0), tau_f and Imax are
+    fitted per connection, the other parameters (tau_r, tau_e, a_e, k_e) jointly per connection type
+    (Table 4 legend; Fig. 11C legend). Not stated, and so open, the optimizer, the error weighting and
+    the BIC's form. Readings, (a) unweighted sum of squared errors in pA squared over all APs and
+    connections, BIC = N ln(SSE/N) + k ln N with N the number of fitted amplitudes and k the number of
+    free parameters; (b) the same with each connection's errors divided by its first-IPSC amplitude
+    squared. Fits started from several initial points (a standard choice). The SSE decrease is 1 minus
+    SSE(UDR depressing)/SSE(TM depressing), per type. Reproduced when under one reading the three
+    decreases are within tolerance, the lowest BIC is the UDR depressing model for all three types,
+    and adding facilitation to UDR lowers the SSE by less than 10%; partially reproduced when the BIC
+    ranking holds and the decreases lie within 10 to 50%.
+- id: fig11-model-cck-facilitation
+  statement: CCK+BC to PC connections are best fitted by a Tsodyks-Markram model with depression and
+    significant facilitation, better than the purely depressing model; use-dependent replenishment
+    does not improve the fit, and the BIC favours the depressing-facilitating model.
+  source: Results, Simple mathematical models of short-term plasticity effectively capture the
+    temporal properties of transmission, paragraphs 4 and 5; Figure 11A and B
+  quote: The parameters of the best-fitting Tsodyks-Markram model indicated a significant degree of
+    synaptic facilitation, and showed a better fit than the purely depressing model (Fig. 11B and C).
+    On the other hand, allowing the replenishment of resources to be use-dependent did not lead to a
+    better fit for these connections ... the depressing-facilitating model (without use-dependent
+    replenishment) provided the best fit for CCK+BC to PC connections
+  criterion: As fig11-model-pv-udr, for CCK+BC to PC connections (CCK+DTI to PC pairs were not
+    modelled, paragraph 4). Reproduced when under one reading the lowest BIC is the TM depressing plus
+    facilitating model and its SSE is lower than that of the TM depressing model.
+  depends_on:
+  - fig11-model-pv-udr
+- id: table4-model-parameters
+  statement: The best-fitting models give per-connection medians of U0 0.31, 0.33 and 0.26 and Imax
+    410, 289 and 646 pA for PV+BC to PV+BC, PV+BC to PC and AAC to PC, and for CCK+BC to PC U0 0.15,
+    tau_f 10.9 and Imax 499 pA, with type parameters tau_r 1.08, 1.62, 1.70 and 12.9 s.
+  source: Table 4; Figure 11 legend
+  inferred: Numbers from Table 4 and the Figure 11 legend; no sentence of the Results states them.
+    The CCK+BC column assignment (U0, tau_f, Imax) is read from the table header, as the extracted
+    text lost the empty cells.
+  expected:
+  - quantity: U0, PV+BC to PV+BC
+    value: 0.31
+    tolerance: 0.03
+  - quantity: Imax, PV+BC to PV+BC
+    value: 410
+    tolerance: 140
+    unit: pA
+  - quantity: U0, PV+BC to PC
+    value: 0.33
+    tolerance: 0.09
+  - quantity: Imax, PV+BC to PC
+    value: 289
+    tolerance: 36
+    unit: pA
+  - quantity: U0, AAC to PC
+    value: 0.26
+    tolerance: 0.04
+  - quantity: Imax, AAC to PC
+    value: 646
+    tolerance: 182
+    unit: pA
+  - quantity: U0, CCK+BC to PC
+    value: 0.15
+    tolerance: 0.03
+  - quantity: tau_f, CCK+BC to PC
+    value: 10.9
+    tolerance: 3.7
+    unit: ms
+  - quantity: Imax, CCK+BC to PC
+    value: 499
+    tolerance: 209
+    unit: pA
+  - quantity: tau_r, PV+BC to PV+BC
+    value: 1.08
+    tolerance: 0.108
+    unit: s
+  - quantity: tau_r, PV+BC to PC
+    value: 1.62
+    tolerance: 0.162
+    unit: s
+  - quantity: tau_r, AAC to PC
+    value: 1.70
+    tolerance: 0.17
+    unit: s
+  - quantity: tau_r, CCK+BC to PC
+    value: 12.9
+    tolerance: 1.29
+    unit: s
+  criterion: Fits as fig11-model-pv-udr with the best model per type (UDR depressing for the three PV+
+    types; TM depressing plus facilitating for CCK+BC to PC). The tau_r values are those of the Figure
+    11 legend, which gives them for the most comprehensive model; for the best models the extracted
+    Table 4 lost them, so tau_r is judged in the comprehensive model. Table 4 prints tau_f in ms
+    while the Results say tau_f is larger for CCK+BC than for PV+ connections; the unit is taken as
+    printed. Reproduced when under one reading at least 10 of the 13 values are within tolerance;
+    partially reproduced when at least 6 are.
+  depends_on:
+  - fig11-model-pv-udr
+  - fig11-model-cck-facilitation
+- id: fig11c-parameter-differences
+  statement: In the most comprehensive model the per-connection parameters differ between connection
+    types; tau_f is larger for CCK+BC to PC than for all PV+ connections, U0 is smaller for CCK+BC to
+    PC than for PV+BC to PV+BC and PV+BC to PC, and Imax is smaller for PV+BC to PC than for the other
+    three types.
+  source: Results, Simple mathematical models of short-term plasticity effectively capture the
+    temporal properties of transmission, paragraph 6; Figure 11C
+  quote: the values of all parameters for which cell-specific or run-specific values were fitted
+    showed connection type-specific differences (Kruskal-Wallis ANOVA; P = 0.0021 for U0, P = 0.0012
+    for τf and P = 5.8 × 10-7 for Imax)
+  statistics:
+  - about: U0
+    test: Kruskal-Wallis ANOVA
+    p: 0.0021
+  - about: tau_f
+    test: Kruskal-Wallis ANOVA
+    p: 0.0012
+  - about: Imax
+    test: Kruskal-Wallis ANOVA
+    p: 5.8e-7
+  - about: tau_f, CCK+BC to PC against AAC to PC
+    test: post hoc comparison
+    p: 0.001
+    p_relation: "<"
+  - about: tau_f, CCK+BC to PC against PV+BC to PC
+    test: post hoc comparison
+    p: 0.01
+    p_relation: "<"
+  - about: tau_f, CCK+BC to PC against PV+BC to PV+BC
+    test: post hoc comparison
+    p: 0.05
+    p_relation: "<"
+  - about: U0, CCK+BC to PC against PV+BC to PV+BC and PV+BC to PC
+    test: post hoc comparison
+    p: 0.01
+    p_relation: "<"
+  - about: Imax, PV+BC to PC against each other type
+    test: post hoc comparison
+    p: 0.001
+    p_relation: "<"
+  criterion: Fits of the comprehensive model (UDR with facilitation) as fig11-model-pv-udr; per
+    connection U0, tau_f and Imax. Kruskal-Wallis across the four types, post hoc Mann-Whitney U with
+    Bonferroni factor 6 (six pairs of four types, M6). Reproduced when under one reading the three
+    Kruskal-Wallis tests give p < 0.05 and at least five of the six named post hoc differences hold at
+    corrected p < 0.05 in the stated direction; partially reproduced when the Kruskal-Wallis tests
+    hold and two to four post hoc differences do.
+  depends_on:
+  - fig11-model-pv-udr
+- id: fig11-model-prediction
+  statement: Models fitted to the 10-AP trains predict responses to RIP and EPI patterns, purely
+    depressing UDR models for the three PV+ connection types and depressing-facilitating models for
+    CCK+BC to PC.
+  source: Results, Simple mathematical models of short-term plasticity effectively capture the
+    temporal properties of transmission, paragraph 7; Figure 11A and B
+  quote: We found that purely depressing models (with UDR) predicted the behaviour of PV+BC to PV+BC,
+    PV+BCtoPCandAACtoPCsynapseswellalsofornatural activitypatterns,whereasthebehaviourofCCK+BCtoPC
+    connections was best described by depressing-facilitating models of short-term plasticity
+  criterion: Fig. 11 legend. Models fitted as fig11-model-pv-udr on the 10-AP trains; test data the
+    mean RIP and EPI amplitudes (M4), with only A (Imax) refitted per connection. Reproduced when
+    under one reading the test mean squared error is lowest for a UDR depressing model (with or
+    without facilitation) for each PV+ type and for a model with facilitation for CCK+BC to PC.
+  depends_on:
+  - fig11-model-pv-udr
+  - fig11-model-cck-facilitation
+- id: fig12-sipsc-kinetics
+  statement: Spontaneous IPSCs decay faster in PV+BCs (n = 8) and AACs (n = 6) than in PCs (n = 10)
+    and CCK+BCs (n = 9); rise time differs only between AACs and CCK+BCs, and sIPSC amplitude and
+    frequency do not differ among cell types.
+  source: Results, IPSCs onto interneurons are more rapid than on PCs, paragraphs 2 and 4; Figure 12
+  quote: The spontaneous IPSCs onto PV+BCs (n = 8) and AACs (n = 6) decayed significantly faster
+    compared to those measured in PCs (n = 10) and CCK+BCs (n = 9). The only difference in the 10-90%
+    rise time value was between AACs and CCK+BCs ... We did not find significant differences in the
+    amplitude and frequency of sIPSCs among cell types
+  statistics:
+  - test: not named; asterisks in Figure 12
+    p: 0.05
+    p_relation: "<"
+    n: 10 PC, 8 PV+BC, 6 AAC and 9 CCK+BC
+  criterion: sIPSCs recorded at -60 mV with high KCl, NBQX and AP-5. Event detection is not described;
+    a standard template or threshold detection is used and named. Per cell, the averaged sIPSC, its
+    10 to 90% rise time and single exponential decay, the median amplitude and the mean interevent
+    interval. Kruskal-Wallis, post hoc Mann-Whitney with Bonferroni factor 6 (M6). Reproduced when
+    decay is shorter in PV+BC and in AAC than in PC and in CCK+BC (four comparisons, corrected p <
+    0.05), rise time differs only for AAC against CCK+BC, and the amplitude and interevent interval
+    tests are not significant. Needs the sIPSC recordings, which the data set is not described as
+    holding.
+- id: decay-pc-vs-interneuron
+  statement: uIPSCs from PV+BCs and CCK+BCs decay more slowly in PCs than in homologous interneurons
+    (PV+BC, 7.31 against 3.17 ms; CCK+BC, 6.34 against 4.47 ms).
+  source: Results, IPSCs onto interneurons are more rapid than on PCs, paragraph 3
+  quote: the decay time constant of uIPSCs originated from PV+BCs and CCK+BCs was significantly
+    longer on PCs than on homologous interneuron pairs (PV+BC, 7.31 vs. 3.17 ms, Mann-Whitney U test ...
+    P = 0.001; CCK+BC, 6.34 vs. 4.47 ms, Mann-Whitney U test ... P = 0.001)
+  statistics:
+  - about: PV+BC to PC against PV+BC to PV+BC
+    test: Mann-Whitney U test
+    p: 0.001
+    n: 8 PV+BC to PC and 16 PV+BC to PV+BC pairs
+  - about: CCK+BC to PC against CCK+BC to CCK+BC
+    test: Mann-Whitney U test
+    p: 0.001
+    n: 14 CCK+BC to PC and 6 CCK+BC to CCK+BC pairs
+  expected:
+  - quantity: decay time constant, PV+BC to PC, median
+    value: 7.31
+    tolerance: 0.731
+    unit: ms
+  - quantity: decay time constant, PV+BC to PV+BC, median
+    value: 3.17
+    tolerance: 0.317
+    unit: ms
+  - quantity: decay time constant, CCK+BC to PC, median
+    value: 6.34
+    tolerance: 0.634
+    unit: ms
+  - quantity: decay time constant, CCK+BC to interneuron, median
+    value: 4.47
+    tolerance: 0.447
+    unit: ms
+  criterion: Decay as M1 on single-AP uIPSCs (M2, M3), high KCl pairs. The paper is inconsistent on
+    the interneuron value for CCK+BCs, 4.47 ms here but 3.65 ms for CCK+BC pairs and 4.47 ms for
+    CCK+DTI pairs in paragraph 2 of the section on uIPSCs among interneurons. Readings for the CCK+BC
+    comparison group, (a) CCK+BC to CCK+BC pairs (the text's "homologous interneuron pairs"); (b)
+    CCK+DTI to CCK+DTI pairs (the pairs whose median is 4.47 ms); (c) both pooled. Two-sided
+    Mann-Whitney U test. Reproduced when under one reading both tests give p < 0.05 with PC decay
+    longer and at least three of the four medians are within tolerance.
+  depends_on:
+  - fig4b-in-pc-kruskal-wallis
+  - fig8-cck-pairs-uipsc
+- id: fig13-pvbc-pc-recovery-halftime
+  statement: Transmission at PV+BC to PC synapses recovers after a RIP train with a half-time of
+    495.8 ms (interquartile range 343.6 to 648.0, n = 7), close to the recovery of SWR amplitude.
+  source: Results, Possible physiological significance of short-term plasticity in SWR generation,
+    paragraphs 2 and 3; Figure 13B
+  quote: recovery was close to the recovery half-time of PV+BC to PC IPSCs (495.8 (343.6-648.0)
+    ms) (Fig. 13B)
+  expected:
+  - quantity: recovery half-time of PV+BC to PC IPSCs, median over pairs
+    value: 495.8
+    tolerance: 147.8
+    unit: ms
+  criterion: Recovery ratios per pair as fig5db-recovery (intervals 50 to 1200 ms). The fit is not
+    given; Fig. 13B labels the value "Tau (median)" while the text calls it a half-time. Readings, (a)
+    per pair, a single exponential r(t) = 1 - (1 - r0) exp(-t/tau) fitted to the ratios, the value
+    being tau; (b) the same fit, the value being tau ln 2; (c) a free plateau, r(t) = rmax - (rmax -
+    r0) exp(-t/tau), value tau; (d) as (c), value tau ln 2. Median over pairs. Tolerance, the distance
+    to the nearer quartile (M7). Reproduced when the median is within tolerance under one reading.
+  depends_on:
+  - fig5db-recovery
+- id: fig13a-swr-refractory
+  statement: Spontaneous SWRs in CA3 slices have a minimum interval of about 200 ms, and SWR
+    amplitude recovers with the time since the previous SWR with a half-time of 501.8 ms
+    (interquartile range 374.2 to 699.3, n = 8).
+  source: Results, Possible physiological significance of short-term plasticity in SWR generation,
+    paragraph 2; Figure 13A
+  quote: we found that there was a minimum time between SWRs, corresponding to an absolute refractory
+    period ... Plotting the relationship between the amplitude of SWRs and the time subsequent to the
+    previous SWR revealed that the amplitude recovered with a half-time of 501.8 (374.2-699.3) ms
+  expected:
+  - quantity: half-time of SWR amplitude recovery, median over slices
+    value: 501.8
+    tolerance: 127.6
+    unit: ms
+  - quantity: minimum interval between SWRs
+    value: 200
+    tolerance: 20
+    unit: ms
+  criterion: Local field potentials in CA3 (Methods, paragraph on field recordings). SWR detection is
+    not described in this paper (it refers to Schlingloff et al. 2014); the detection used is named.
+    Per slice, SWR amplitude against the interval from the previous SWR, fitted as in
+    fig13-pvbc-pc-recovery-halftime (its four readings, with amplitude in place of the ratio); median
+    over slices. Reproduced when under one reading the median is within tolerance and the shortest
+    interval is 180 to 220 ms. Needs field potential recordings, which the data set is not described as
+    holding.
+- id: fig13c-optogenetic-swr
+  statement: SWRs evoked by optogenetic activation of PV+ cells grow with the time since the previous
+    spontaneous SWR, none being evoked within 100 ms, with a recovery half-time of 451 ms
+    (interquartile range 300.3 to 570.6, n = 4), similar to spontaneous SWRs and PV+BC to PC IPSCs.
+  source: Results, Possible physiological significance of short-term plasticity in SWR generation,
+    paragraph 3; Figure 13C
+  quote: The shorter the time, the smaller the amplitude of light-triggered SWR; at short intervals of
+    less than 100 ms, no SWRs could be evoked. Moreover, the recovery half-time of light-evoked SWRs
+    (451 (300.3-570.6) ms) was similar to the recovery half-time of spontaneous SWR amplitude and
+    recovery half-time of IPSCs between PV+BC-PC pairs
+  expected:
+  - quantity: recovery half-time of light-evoked SWR amplitude, median
+    value: 451
+    tolerance: 119.6
+    unit: ms
+  criterion: As fig13a-swr-refractory, with the amplitude of SWRs evoked by 10 ms light pulses against
+    the time since the previous spontaneous SWR. Reproduced when the median is within tolerance under
+    one reading and no SWR is evoked at intervals under 100 ms. Needs the optogenetic recordings, which
+    the data set is not described as holding.
