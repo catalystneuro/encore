@@ -133,8 +133,9 @@ claims:
     unit: rad
   criterion: SWRs by M-SWR in M-sleep; phases by M-phase. Per session the circular mean of the
     normalized phase distribution at SWR times; across sessions the circular mean and circular
-    sd. Tolerances are the paper's circular sd. Reproduced when both means fall within
-    tolerance and the per-session Rayleigh test is significant in the majority of sessions.
+    sd. Tolerances are the paper's circular sd. The paper reports no test for this finding.
+    Reproduced when both means fall within tolerance; the per-session Rayleigh test (M-phase)
+    is reported.
 - id: fig2c-swr-around-kc
   statement: SWR probability rises within about 250 ms before and after mPFC K-complexes (4.65
     sd at 208 ms before, 3.02 sd at 267 ms after), with its minimum about 10 ms after the KC.
@@ -166,9 +167,12 @@ claims:
     unit: ms
   criterion: KCs by M-KC, SWRs by M-SWR, peri-KC SWR histogram by M-PETH, per session, then
     averaged over sessions. Peaks are the maximum z in -0.5 to 0 s and 0 to 0.5 s (the 0.5 s
-    windows of the asymmetry index, Results, same section, paragraph 3); the minimum is the
-    lowest z in -0.25 to 0.25 s. Reproduced when both peaks exceed 2 sd and all five values are
-    within tolerance.
+    windows of the asymmetry index, Results, same section, paragraph 3). The window for the
+    minimum is not given; readings (a) -0.25 to 0.25 s (the "250 ms around" of the Results),
+    (b) -0.5 to 0.5 s. Open, whether the peak heights are of the session-averaged histogram or
+    averages of per-session peaks (the times carry an sd, so they are per-session values);
+    readings (i) mean of per-session peaks, (ii) peak of the mean histogram. Reproduced when,
+    under a reading, both peaks are positive and all five values are within tolerance.
 - id: fig3a-thalamic-rate-wake-sleep
   statement: Thalamic units fire less in sleep than in waking (10.10 against 7.73 spikes/s).
   source: Results, Thalamic cells decrease their overall firing, paragraph 2; Figure 3A
@@ -246,8 +250,9 @@ claims:
     unit: percent
   depends_on:
   - fig3a-bursting-in-sleep
-  criterion: Spikes within plus or minus 1 s of any SWR (M-SWR) in sleep, pooled over SWRs as a
-    union of windows. A Kruskal-Wallis test across the three groups (waking, sleep, SWR windows)
+  criterion: Spikes within plus or minus 1 s of SWRs (M-SWR) in sleep. Open, how overlapping
+    windows count; readings (a) the union of windows, each spike once, (b) per SWR, a spike
+    counted in every window it falls in. A Kruskal-Wallis test across the three groups (waking, sleep, SWR windows)
     as the paper names. Reproduced when the test gives p < 0.05, the SWR-window mean exceeds the
     sleep mean and is within tolerance.
 - id: swr-shift-control
@@ -434,22 +439,24 @@ claims:
   depends_on:
   - fig3e-thalamic-rebound-after-kc
   - fig2c-swr-around-kc
-  criterion: Time of the minimum z of each unit's peri-KC histogram in -0.25 to 0.25 s, averaged
-    over units. The wide tolerances are the paper's sd; reproduced when both means are within
+  criterion: Time of the minimum z of each unit's peri-KC histogram (M-PETH), averaged over
+    units. The paper gives no window for the minimum; readings (a) -0.25 to 0.25 s, (b) -0.5 to
+    0.5 s (the asymmetry index windows), neither stated for this measure. The wide tolerances are the paper's sd; reproduced when both means are within
     them and the thalamic mean is later than the mPFC mean.
 - id: kc-fraction-of-thalamic-peaks
   statement: 38.71% of thalamic units have a significant peak (above 2 sd) after KCs against
-    9.68% before only; 19.35% have both.
+    9.68% with a significant peak before KCs; 19.35% have both.
   source: Results, Thalamic rebound following the down-state, paragraph 2
   quote: For the population of thalamic cells, 38.71% increased their activity above two sd (from
     the null distribution) following KCs, that is, in the down to up-state transition, compared
-    to 9.68% of the cells with a significant peak preceding KCs
+    to 9.68% of the cells with a significant peak preceding KCs, that is, in the up to down-state
+    transition (19.35 % units had a significant peak both before and after KCs)
   expected:
-  - quantity: thalamic units with a peak above 2 sd after KCs only
+  - quantity: thalamic units with a peak above 2 sd after KCs
     value: 38.71
     tolerance: 3.87
     unit: percent of units
-  - quantity: thalamic units with a peak above 2 sd before KCs only
+  - quantity: thalamic units with a peak above 2 sd before KCs
     value: 9.68
     tolerance: 0.97
     unit: percent of units
@@ -607,7 +614,10 @@ claims:
     tolerance: 0.01
   criterion: Autocorrelation of sleep spikes; the peak is the maximum after the minimum that
     follows lag 0 (Results, same paragraph). MUA subsampled in blocks with the spike count of
-    the sparsest unit of the session, averaged (Figure 4, figure supplement 1B). Open, bin size,
+    the sparsest unit of the session, averaged (Figure 4, figure supplement 1B). The 63.3% is of
+    subsampled curves; for the 119.30 ms mean the paper plots MUA "all the spikes in sleep or a
+    subsample" and does not say which it averages; readings (A) all MUA spikes, (B) the
+    subsampled curves. Open, bin size,
     lag range and normalization; readings (a) 5 ms bins, (b) 10 ms bins, lags to 500 ms,
     normalized so lag 0 is 1 after removing it (coefficient), as the values 0.24 and 0.05 imply
     a normalized measure. Open, the spindle band in lags; readings (i) 71 to 167 ms (6 to 14
@@ -747,10 +757,13 @@ claims:
   - fig3e-thalamic-rebound-after-kc
   - fig5c-delta-phase-locking
   criterion: Rebound amplitude is the peak z after KCs (fig3e-thalamic-rebound-after-kc); the
-    test is a linear regression ("regressed"), Pearson r. Open, whether the phase is circular;
-    readings (a) phase in radians as a linear variable, (b) circular-linear correlation.
-    Reproduced when, under a reading, r is negative with p >= 0.05 for the rebound and the
-    before-KC correlation is near zero; the paper's absence of significance is judged at 0.05.
+    control is "the cell firing rate in a time window of the same length but before KCs".
+    Open, the measure for both windows; readings (i) peak z in 0 to 0.5 s and in -0.5 to 0 s,
+    (ii) mean firing rate in the same windows. The test is a linear regression ("regressed"),
+    Pearson r. Open, whether the phase is circular; readings (a) phase in radians as a linear
+    variable, (b) circular-linear correlation. Reproduced when, under a reading, r is negative
+    with p >= 0.05 for the rebound and the before-KC regression gives p >= 0.05; the paper's
+    absence of significance is judged at 0.05.
 - id: fig5d-phase-lags-consistent
   statement: Phase lags between spikes of correlated thalamic pairs within spindles are less
     variable than those of uncorrelated pairs (sd 2.15 against 2.50).
@@ -880,8 +893,12 @@ claims:
   criterion: Indices as in fig6-modulation-with-ripple-power, with cycles split at the session
     median of amplitude (readings of spindle-cycles-by-ripple-power), of ripple power, and of
     both jointly. Wilcoxon signed rank over units (Results names it for the first test; M-stats,
-    paired, for the rest). Reproduced when the amplitude split gives p < 0.05 and the ripple
-    split p >= 0.05, with the joint split p < 0.05.
+    paired, for the rest). The similarity of absolute values is a claim of absence, judged on
+    the Wilcoxon signed rank test over units of the index under the amplitude split against the
+    index under the ripple split at p < 0.05. Open, which cycles it compares; readings (a) high
+    cycles of each split, (b) low and high cycles, each tested. Reproduced when that test gives
+    p >= 0.05, the amplitude split gives p < 0.05 and the ripple split p >= 0.05, with the joint
+    split p < 0.05.
 - id: fig6e-quartile-synergy
   statement: In the highest amplitude spindles ripple power has no significant effect on
     modulation (p=0.94), while in the highest ripple power spindles amplitude does (p=0.04);
@@ -1168,10 +1185,11 @@ claims:
   depends_on:
   - maze-swr-kc-increase
   criterion: A claim of absence. Four long sessions without maze from two of the maze rats,
-    split at the midpoint of the recording; measures as in maze-swr-kc-increase; Wilcoxon signed
-    rank (M-stats, paired). With n = 4 the smallest two-sided p is 0.125, so the test cannot
-    reach 0.05; the claim is reproduced when the half-to-half changes do not all share the sign
-    of the maze effect, and the changes are reported.
+    split at the midpoint of the recording; measures as in maze-swr-kc-increase; the paper names
+    no test, so Wilcoxon signed rank (M-stats, paired) at p < 0.05. With n = 4 the smallest
+    two-sided p is 0.125, so the test cannot find the effect and the claim is reproduced on it
+    whenever the four sessions are present; the size and sign of each half-to-half change are
+    reported, and whether all four share the sign of the maze effect is shown as a variant.
 - id: maze-ripple-power-in-spindles
   statement: After maze exploration, CA1 SWR power within spindle cycles increases.
   source: Results, Multi-region correlations after spatial exploration, paragraph 2
@@ -1292,8 +1310,9 @@ claims:
     unit: spikes/s
   depends_on:
   - fig7c-run-units-in-spindles
-  criterion: Peri-SWR histograms in raw rate (M-PETH bins) in sleep after the maze; peak is the
-    maximum in -100 to 100 ms (the 200 ms window of fig3c-thalamic-decrease-at-swrs). Nested
+  criterion: Peri-SWR histograms in raw rate (M-PETH bins) in sleep after the maze. The paper
+    gives no window for the peak; readings (a) maximum in -100 to 100 ms (the 200 ms window of
+    fig3c-thalamic-decrease-at-swrs), (b) maximum over the whole histogram (M-PETH extent). Nested
     and non-nested SWRs as in thalamus-at-spindle-nested-swrs. Reproduced when, under a reading
     of the classification, run peaks are higher at p < 0.05, the nested comparison gives p >=
     0.05 in both groups, and both values are within tolerance.
@@ -1447,3 +1466,22 @@ claims:
     cross-correlogram peak within plus or minus 100 ms exceeds 3 sd (the pair rule of
     fig4b-thalamic-pairs-correlated, not stated for these pairs). Reproduced when no test gives
     p < 0.05; repeated on thalamic MUA as the paper did.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - kc-fraction-of-thalamic-peaks, statement and expected quantities no longer say "before only" and "after only"; the paper gives 38.71% and 9.68% without saying whether they exclude the 19.35% with both peaks, which the criterion already leaves open; quote extended to the 19.35% clause.
+  - fig2c-swr-around-kc, the -0.25 to 0.25 s window for the SWR minimum and the 2 sd floor for the peaks are not in the paper; the window is now named as open with two readings, the floor replaced by positive peaks, and the reading of per-session against mean-histogram peaks added.
+  - kc-trough-timing, the -0.25 to 0.25 s window for the firing minimum is not in the paper; now named as open with two readings.
+  - fig2-swr-phase-delta-spindle, dropped the condition that the per-session Rayleigh test be significant in most sessions; the paper reports no test for this finding (Results, opening section, paragraph 4). The test is still reported.
+  - fig3a-bursting-around-swrs, how overlapping 2 s windows around SWRs count is not given; the union reading is now one of two named readings.
+  - fig4-units-not-rhythmic, the paper does not say whether the 119.30 ms MUA mean uses all MUA spikes or the subsampled curves (Results, Sparse thalamic firing, paragraph 2, "all the spikes in sleep or a subsample"); both readings named.
+  - rebound-delta-phase-trend, the before-KC control is "the cell firing rate in a time window of the same length", which the criterion did not define; readings added, and the vague "near zero" replaced by p >= 0.05, as the paper reports p=0.65.
+  - modulation-amplitude-versus-ripple, the statement's "similar absolute values" (p>0.3, Wilcoxon signed rank) had no test in the criterion; added as a claim of absence on that test, with the open choice of cycles named.
+  - maze-control-sessions, the rule "changes do not all share the sign of the maze effect" was not from the paper; per protocol the absence is judged on the paired test (Wilcoxon, M-stats), which with n = 4 cannot reach 0.05; the sign rule is kept as a variant.
+  - fig7d-run-units-peri-swr, the -100 to 100 ms window for the peri-SWR peak is not given for this analysis; now one of two named readings.
+  - Open, not settled. Fig 2C legend says spindles are largest in amplitude following KCs; no claim covers it; a minor legend-only finding, left out.
+  - Open, not settled. fig3f-asymmetry-index reading (b), dividing by the sum of the two maxima, is a weak reading of "normalized to the maximum firing in the two windows"; kept since it can only add a reading.
+  - Open, not settled. fig7c-run-units-in-spindles classification readings (b) and (c) use spike-count thresholds the paper does not give (it classified by eye); they are labelled as such and are the only route if the dataset lacks labels.
