@@ -244,7 +244,7 @@ outcomes:
     the centre when the decode is on another arm, NaN when it is in the centre. Speed is the camera-rate Spyglass
     head velocity, the paper''s head_speed at that rate.'
 - claim: fig3d-distant-vs-inbound
-  outcome: partially_reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_gu_2026.ipynb
   output: claim:fig3d-distant-vs-inbound
@@ -254,8 +254,8 @@ outcomes:
     in the drawn range. One-sided rank-sum, COM greater: under the smaller decode bound p = 3e-8, 0.041, 0.062,
     8e-15 and 8e-9 for M, E, J, K and L (3 rats at p < 0.0001, 4 at p < 0.05, the partial bar); under the larger
     bound p = 9e-14, 5e-10, 0.008, 7e-20 and 8e-14 (4 rats at p < 0.0001, the full bar). The two-sided variant gives
-    3 rats at p < 0.0001 under the smaller bound (and 3 at p < 0.05) and 4 under the larger. The verified outcome
-    rests on the smaller bound. Round 2 identified the decoder: every arm-restricted table, the inbound ones among
+    3 rats at p < 0.0001 under the smaller bound (and 3 at p < 0.05) and 4 under the larger. The outcome verified
+    in round 2 rested on the smaller bound. Round 2 identified the decoder: every arm-restricted table, the inbound ones among
     them, has the decodes of one decoder (A; 353 pairs of arm-restricted tables sharing samples all agree), and the
     code takes the COM and control decodes of a figure from one decoder. Under decoder A, p = 2e-8, 0.053, 0.064,
     1e-16 and 9e-9 (3 rats at p < 0.0001 and 3 at p < 0.05, below the partial bar). The inbound arm ranges are one
@@ -266,7 +266,9 @@ outcomes:
     further draw meets the partial bar under either. Measured within the arm on both sides (the arm-restricted COM
     tables, the measure of the inbound rows), COM is greater at p < 0.05 in 3 rats (E 0.90, J 0.13), and 3 of 20
     further draws meet the partial bar. With the decoder identified and all of the paper''s COM tables the claim
-    is not reproduced; the change is proposed below.'
+    is not reproduced, as the third verification round agreed. The result is borderline: it rests on the first
+    draw and on counting the tables that match neither trigger as COM tables, which may come from a parameter
+    set the paper did not use for Figure 3D.'
   deviations:
   - The `scratch/triggered` tables carry no description. They are read with the paper's code, which wrote them (Gu2026
     at commit 0f0c9a7, changeOfMind_triggered_position.save_triggered_position_decode_day, changeOfMind_triggered.find_triggered_session
@@ -275,10 +277,10 @@ outcomes:
     trigger (restricted to the COM arm). The decodes are the MAP (their values lie on the decoder's 2 cm position
     grid), from the causal posterior as the code reads it. The arm regions are the code's (changeOfMind_remote_interval.loc1d_to_baseoff)
     and match the arm bases of the deposited linearization.
-  - 'Assumed (verified round): the outcome under the smaller of the two decodes of each event is kept, since the
-    files do not say which decoder made which table and the code uses both (figure4c.get_position_decode_data_day);
+  - 'Assumed in round 2, now replaced: the outcome under the smaller of the two decodes of each event was kept, since
+    the files did not say which decoder made which table and the code uses both (figure4c.get_position_decode_data_day);
     under the other the claim is reproduced.'
-  - 'Assumed for the proposed change: decoder A, the decoder of every arm-restricted table and so of the inbound
+  - 'Assumed: decoder A, the decoder of every arm-restricted table and so of the inbound
     rows, since figure4c.get_position_decode_data_day takes the pre, post and control decodes of a figure from one
     decoder_type. That A is the run_time decoder of the Methods (encoding on spikes at more than 4 cm/s) and of the
     code''s defaults (load_day_decode, maze_distance_animal) is likely but not shown by the files. The COM events
@@ -290,14 +292,6 @@ outcomes:
     distance uses the whole-track tables, as the code's two inputs do (figure4c.plot_2D_distance_distribution_post
     reads the COM distances from maze_distance on the whole-track tables). This favours COM; the same within-arm
     measure on both sides is shown as a variant.
-  proposed:
-    outcome: not_reproduced
-    reason: With the decoder identified (decoder A, the decoder of the arm-restricted inbound tables) the first draw
-      gives p < 0.05 in only 3 rats (E 0.053); adding the whole-track COM-window tables that the file-majority rule
-      had left out gives 3 rats at p < 0.05 (E 0.16, J 0.23) and no further draw of the 20 reaches four, and the
-      same within-arm measure on both sides reaches four in 3 of 20 draws. The partial bar (p < 0.05 in at least four
-      rats) is met only with the events of the COM-classed tables alone, in 13 of 20 draws, or under the smaller bound,
-      which is not a single decoder. Cells 56 and 57.
 - claim: fig4e-next-choice
   outcome: blocked
   blocked_by: too_large
@@ -919,3 +913,25 @@ verifications:
     outcome: blocked
     reason: 'The posterior, state probabilities and events are not deposited. The triggered tables hold only MAP windows.'
     response: 'No change needed.'
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig3d-distant-vs-inbound, partially reproduced to not
+    reproduced) and the analysis behind it in the executed notebook after the round-2 revision (cells 42, 52, 56
+    and 57), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/001836/verifier-3-report.md.
+  results:
+  - claim: fig3d-distant-vs-inbound
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Every figure in the proposed reason matches the outputs of cells 56 and 57. Decoder A is identified from
+      the files (cell 42), before its result was known, and is the only decoder that pairs the COM decodes with the
+      decoder of the deposited inbound rows; the smaller bound is picked per event, so it has no claim to precedence
+      over A. Under A the first draw gives 3 rats at p < 0.05; every way of using all of the paper''s COM tables gives
+      0 of 20 draws, and the same measure gives 3 of 20. The within-arm inbound tables favour COM, and the bar is
+      still not met. Caveats that do not change the outcome: the result is borderline (13 of 20 draws pass with the
+      COM-classed tables only) and rests on counting the unmatched tables as COM tables; rat J has only 26 COM events
+      against 105 in fig3b, which points to how this attempt classified the tables; that A is the run_time decoder
+      is likely but not shown by the files. No misreading of the paper by the claims file.'
+    response: Outcome changed to not reproduced and the proposal removed. The notes now give the caveat that the
+      result rests on the first draw and on the unmatched tables. The notebook's conclusion and Summary, the README
+      and the attempt notes updated.

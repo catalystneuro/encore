@@ -23,7 +23,7 @@ on hippocampal content need the decoder output over whole sessions, which the da
 | More extended decodes before stopping on COM trials (Figure 3B) | Partially reproduced |
 | Decoded distance predicts a COM (Figure 3B) | Partially reproduced |
 | More distant decodes after stopping than before (Figure 3C) | Partially reproduced |
-| More distant decodes after stopping than on inbound runs (Figure 3D) | Partially reproduced (change to not reproduced proposed) |
+| More distant decodes after stopping than on inbound runs (Figure 3D) | Not reproduced |
 | Lower ripple rate during COM than at trial ends (Figure S7B) | Reproduced |
 | Remote and local extended content, theta (15 claims) | Blocked: too large |
 
@@ -38,8 +38,9 @@ five rats in the first random draw of arm ranges (all five in about half of furt
 decoded distance predicts a COM with a fold change within tolerance but not at p < 1e-20. Figure 3C:
 post-stopping decodes reach further than pre-stopping ones in four of five rats. Figure 3D: with the
 decoder of the inbound tables identified and all the paper's COM tables, COM exceeds inbound at
-p < 0.05 in only three rats, and a change to not reproduced is proposed for a third verification
-round. The attempt record, with the reasons and the differences from the paper's method, is
+p < 0.05 in only three rats, so the claim is not reproduced; the third verification round agreed
+with this change from partially reproduced. The result is borderline and changes with the random
+draw. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001836-gu-2026-01.yaml`](../../attempts/001836-gu-2026-01.yaml).
 
 - `reproduce_gu_2026.ipynb`: the analysis. It took 11 to 14 minutes in the runs of the round-2
