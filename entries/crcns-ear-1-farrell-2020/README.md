@@ -8,7 +8,7 @@ authors derived (linear capacitance, charge, V0.5 and voltage sensitivity).
 | Claims | Outcome |
 |---|---|
 | Cohort, example cell, CNLW, CLW by turn, charge growth of Fig. 1, colony and region differences of voltage sensitivity and V0.5 (Tables 1 and 2), the XE991 shift, the Eq. 3a fits with and without XE991 and the deviation above 0.25 V, sensor charge, Table 3 energies | Mostly reproduced (23 reproduced) |
-| Counts of Table 1, Fig. 2b fit, Fig. S4 fits, low chloride cells, the overall conclusion | Partially reproduced (7) |
+| Table 1 with XE991 (cell counts) and without XE991 (p = 0.0010, not < 0.0001), the XE991 effect of Table 1 (cell counts), Fig. 2b fit, Fig. S4 fits, low chloride cells, the overall conclusion | Partially reproduced (7) |
 | Eq. 3a fit of Fig. 3b, mean slope of -0.48, the band of Fig. 1, voltage clamp with XE991, capacitance asymmetry, Vh and Vd, the two C_Leq limits, sensor area, the alternative limit, length gradient, equal slopes of the two colonies | Not reproduced (11) |
 | Sequencing and protein model; values from other rodents and other papers | Blocked (7) |
 

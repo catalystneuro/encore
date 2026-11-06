@@ -69,7 +69,8 @@ outcomes:
     V function, paragraph 1). Assumed: CLn is the mean C of the two most negative ramp points (this gives
     the Fig. S1 legend''s 25.94 pF for its cell), and a cell has a plateau when the slope of C at or below
     -0.15 V is less than 0.4 of the steepest 5-point slope of the hyperpolarized flank, the fraction whose
-    count is nearest the paper''s 62 cells.'
+    count is nearest the paper''s 62 cells. This outcome does not rest on the CLn rule: the other reading
+    (C at or below -0.15 V) gives 26.69 pF, also within 25.94 +/- 2.594 pF.'
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
     so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
@@ -469,7 +470,10 @@ outcomes:
     unweighted slopes are -0.473 to -0.477. The answer in questions/crcns-ear-1.yaml amended the shared
     method to a per-cell CNLW (reading L-b used here, see deviations). Before it, with CL - 4.82 pF, Vd
     was 0.0215 V and the slope -0.594, both outside, and the outcome was not_reproduced. The outcome now
-    rests on the bin-edge reading e-b as well as on the CSB rule.
+    rests on the bin-edge reading e-b as well as on the CSB rule. It also rests on applying the dVmin
+    limit to bins (y-1, which leaves out no bin here, so y-0 gives the same values) and not to cells.
+    The cell-level limit y-2 drops one cell with dVmin above 0.4 V and moves Vd to 0.0299 V, outside
+    0.034 +/- 0.0034 V, under every reading.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -496,11 +500,14 @@ outcomes:
   notes: Under L-b and y-1 the first 5 pF XE991 bin (two cells, mean dVmin 0.80 V; file 57, CL 5.93 pF,
     area 666 um2, CSB 0.35 pF, CLW 0.48 pF, dVmin 1.33 V) is left out. The other 4 bins (15 cells with
     144 mM chloride) give Vd 0.0505 V with adjusted R2 0.847, and a weighted unconstrained slope of -0.377
-    with adjusted R2 0.921 (e-a, w-a, u-a), all within tolerance. All 20 cells give 0.0476 V, 0.745, -0.355
-    and 0.788 under e-b, also within; binning only the cells in range (y-2) passes under e-b (0.0522 V,
-    0.715, -0.336, 0.911). Keeping the bin (y-0) gives Vd 0.0847 V, an Eq. 3a R2 of -43 and a slope of
-    -0.038, and was the outcome (not_reproduced) before the round 1 verification, which showed that the
-    paper's values are matched without that bin. Under L-c with y-1, Vd is 0.0432 V, outside.
+    with adjusted R2 0.921 (e-a, w-a, u-a), all within tolerance. With all 20 XE991 cells, y-1 leaves
+    out the same bin, so 18 cells are fitted, and e-b gives 0.0476 V, 0.745, -0.355 and 0.788, also within;
+    binning only the cells in range (y-2) passes under e-b (0.0522 V, 0.715, -0.336, 0.911). Keeping the
+    bin (y-0) gives Vd 0.0847 V, an Eq. 3a R2 of -43 and a slope of -0.038, and was the outcome (not_reproduced)
+    before the round 1 verification, which showed that the paper's values are matched without that bin.
+    The outcome rests entirely on the dVmin limit, as under y-0 no value passes. Under L-c with y-1, Vd is
+    0.0432 V with edges e-a (outside) but 0.0538 V with e-b and 0.0498 V for all 20 cells (both within);
+    L-c decides nothing.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -523,7 +530,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: fig3a-high-density-deviation
   outcome: reproduced
@@ -720,7 +731,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: mean-slope-half
   outcome: not_reproduced
@@ -731,8 +746,11 @@ outcomes:
     -0.403 (Fig. 3b), mean -0.407, outside -0.48 +/- 0.048 (unweighted fits, -0.328). Over the 16 combinations
     of edges, weighting, CLn reading and the dC > 5 pF rule the mean runs from -0.598 to -0.328 and is
     within tolerance in 7, so the outcome rests on the choice of readings. With the slope of the reading
-    recorded for fig3a-eq3a-fit (e-b, -0.4245) the mean is -0.402. Keeping all bins (y-0), as before the
-    round 1 verification, the mean was -0.150. Under L-c with y-1 it is -0.515, within.
+    recorded for fig3a-eq3a-fit (e-b, -0.4245) the mean is -0.402, the reading of the criterion (the
+    slopes found in the claims it depends on), so the outcome stays not_reproduced. With edges e-b for
+    all three fits (weighted, `first2`, dC > 5 pF kept), the reading under which fig3a-eq3a-fit is reproduced,
+    the mean is -0.432, within tolerance. Keeping all bins (y-0), as before the round 1 verification,
+    the mean was -0.150. Under L-c with y-1 it is -0.515, within.
   deviations:
   - Each slope is the first reading of its claim (edges at multiples of 5 pF, weighted unconstrained fit;
     XE991 cells with 144 mM chloride; CLn by `first2` with dC > 5 pF kept). Assumed, as the paper does
@@ -757,7 +775,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: fig4a-vh-rises-vd-constant
   outcome: not_reproduced
@@ -792,7 +814,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: fig4d-cleq-two-limits
   outcome: not_reproduced
@@ -802,14 +828,15 @@ outcomes:
   - 0.6496
   - 1.048
   notes: Under L-b and y-1, the 5 pF groups (j-a) give a lower limit of 0.6496 aF (4 groups), outside
-    0.584 +/- 0.065 by 0.0006 aF, and an upper limit of 1.048 aF (3 groups, one of them a single cell
-    at 1.29 aF), within 1.07 +/- 0.038; C_Leq rises with V0.5 (Spearman 0.92, p = 0.0002). The 0.01 V
+    0.584 +/- 0.065 by 0.0006 aF, and an upper limit of 1.048 aF (3 groups, two of them single cells
+    at 1.29 and 1.02 aF and one of 9 cells at 0.83 aF), within 1.07 +/- 0.038; C_Leq rises with V0.5 (Spearman 0.92, p = 0.0002). The 0.01 V
     groups give 0.625 aF (within) and 0.979 aF (outside), per cell 0.704 and 0.894 aF; the split at -0.06
     V gives 0.650 and 0.923 aF (j-a). No grouping puts both within tolerance. With every group (y-0) the
     j-a lower limit is 0.560 aF and the claim passes, the outcome (reproduced) before the round 1 verification;
     that value rests on the XE991 group of the two smallest cells (mean dVmin 0.80 V, C_Leq 0.20 aF),
     which y-1 leaves out as it does for the Eq. 3a fits, so the outcome was changed for consistency. Under
-    L-c with y-1, j-a gives 0.748 and 1.080 aF.
+    L-c with y-1, j-a gives 0.748 and 1.080 aF. The outcome is on a knife-edge both ways. From groups
+    of 2 or more cells only, the lower limit is unchanged (0.6496 aF) and the upper is 0.834 aF, outside.
   deviations:
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
@@ -831,7 +858,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: fig4c-sensor-area
   outcome: not_reproduced
@@ -868,7 +899,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: fig4e-sensor-charge
   outcome: reproduced
@@ -903,7 +938,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: table3-pathway-energies
   outcome: reproduced
@@ -944,7 +983,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: alternative-limit
   outcome: not_reproduced
@@ -977,7 +1020,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: fig4f-all-rodents
   outcome: blocked
@@ -1014,7 +1061,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   assumed: true
 - claim: molecular-model
   outcome: blocked
@@ -1051,12 +1102,16 @@ outcomes:
   notes: Under L-b, fig3a-eq3a-fit is reproduced, and fig4a-vh-rises-vd-constant (Vh rises 2.67-fold),
     fig4d-cleq-two-limits (lower limit 0.6496 aF, outside by 0.0006 aF) and mean-slope-half (mean -0.407)
     are not. The main fit's unconstrained slope is negative (-0.42), Vd is constant, Vh rises monotonically
-    without XE991, and C_Leq rises with V0.5 (0.650 to 1.048 aF). Neither the reproduced tier (all claims
-    reproduced) nor the not-reproduced tier (non-negative slope or varying Vd) holds; partial is the closest
-    tier, as the round 1 verifier also judged.
+    without XE991, and C_Leq rises with V0.5 (0.650 to 1.048 aF). Under y-1 the slope (mean -0.407),
+    Vh (2.67-fold) and C_Leq (lower limit) conditions all fail, so no tier of the criterion fits. The
+    reproduced tier (all claims reproduced) does not hold, nor the partial tier (slope and Vh hold, C_Leq
+    does not), nor the not-reproduced tier (non-negative slope or varying Vd). Partial is kept as a judgement,
+    the closest description of a negative slope, constant Vd, rising Vh and rising C_Leq whose quantitative
+    conditions fail. The round 1 verifier's judgement of partial was made when the C_Leq limits passed;
+    the round 2 verifier agreed with partial as a judgement.
   deviations:
-  - The criterion does not cover a negative slope whose mean over the three fits is far from -0.48; partially
-    reproduced is the closest of its tiers.
+  - The criterion does not cover a negative slope with constant Vd whose slope, Vh and C_Leq conditions
+    all fail; partially reproduced is kept as a judgement, as no tier fits.
   - CLW is CL - CNLW with CNLW = CSB + root per cell, reading L-b of the claims file's shared method as
     amended after the question in questions/crcns-ear-1.yaml; the data set stores no CLW, CNLW or CSB,
     so reading L-a cannot be used. CSB follows the method the paper cites ("We determined C N L W by calculating
@@ -1076,7 +1131,11 @@ outcomes:
     gives the XE991 Eq. 3a fit an adjusted R2 of -43 against the paper's 0.793 and a C_Leq of 0.20 aF
     (21 nm2) against the paper's smallest area of 51 nm2, and one Fig. 3b cell has a negative CLWn. The
     limit leaves out no bin of the Fig. 3a fit without XE991. All bins (y-0) and the cells within the
-    range binned again (y-2) are shown in the notebook.
+    range binned again (y-2) are shown in the notebook. The limit is applied to bins and groups, the
+    points the paper fits, and not to cells before binning. In Fig. S4 the bins are by dVmin, so the
+    two are the same there, and for the 5 pF bins of Fig. 3a the paper does not say. The limit is not
+    in the claims file. It decides fig3a-xe991-fit, fig4d-cleq-two-limits, table3-pathway-energies and
+    low-chloride-similar, and the cell-level y-2 would fail fig3a-eq3a-fit (Vd 0.0299 V).
   notebook: reproduce_farrell_2020.ipynb
   assumed: true
 findings:
@@ -1472,3 +1531,375 @@ verifications:
     response: No change of outcome. Under y-1 the lower C_Leq limit now fails by 0.0006 aF and the mean
       slope is -0.407; neither the reproduced nor the not-reproduced tier holds, so partial stays the
       closest tier.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write
+    the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run, with its conclusions and summary,
+    the helper module ear1.py, the claims file, the README and the attempt record, with the paper under
+    paper/. Report in transcripts/crcns-ear-1/verifier-2-report.md.
+  results:
+  - claim: cohort
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: figs1-example-cell
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The record lists an "Assumed" CLn rule but the outcome has no assumed flag; the outcome
+      does not depend on the rule, since both CLn readings pass.
+    response: No change of outcome. The deviation and the conclusion now say that the other CLn reading
+      gives 26.69 pF, also within, so the outcome does not rest on the CLn rule; no assumed flag is added.
+  - claim: nlw-capacitance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. Round-1
+      point B8 is resolved (the root without the six imputed cells is 5.137 pF); B7 (area wording) is
+      corrected.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: clw-by-turn
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig1-charge-not-linear
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. Round-1
+      point B6 is resolved (n degrees of freedom for an uncentred total is correct).
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig1-two-state-bounds
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: alpha-pigmented-vs-albino
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: alpha-gradient-pigmented
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: table1-pigmented-xe991
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The Summary's "17 against 15 or 16 pigmented XE991 cells" is not supported; Table
+      1 row (a) has 15 XE991 cells, and the 16 is the pooled basal count (4 + 12), a different quantity.
+    response: No change of outcome. The Summary now says 17 against 15 pigmented XE991 cells (Table 1).
+  - claim: table1-pigmented-no-xe991
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The README's partial row reads "Counts of Table 1", but this claim is partial because
+      p = 0.0010 is not < 0.0001, not because of its counts.
+    response: No change of outcome. The README's partial row now names the p-value for this claim and
+      the cell counts for the other two Table 1 claims.
+  - claim: table1-albino-no-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: table1-xe991-no-effect-alpha
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: figs2-alphab-vs-clw
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: splice-isoform-x1
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: v05-by-turn
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2b-v05-vs-clw
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig2b-no-phenotype-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: v05-gradient-length
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Round-1 point B3 is resolved; the end-to-end gradient, 0.95 to 1.43 um/mV, is also
+      outside.
+    response: No change of outcome.
+  - claim: xe991-voltage-clamp
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, the outcome now matches the verifier's round-1 outcome. Round-1 point B9 is resolved;
+      the I-V units are printed, about 37 nS between neighbouring steps.
+    response: No change of outcome.
+  - claim: table2-xe991-v05-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: table2-pigmented-xe991
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: table2-pigmented-no-xe991
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: table2-albino
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: v05-not-correlated-voltage-drop
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3a-eq3a-fit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. The
+      cell-level limit y-2 fails this claim (Vd 0.0299 V against 0.034 +/- 0.0034 V), so choosing y-1
+      over y-2 matters for this claim too, and the record did not say so.
+    response: No change of outcome. The notes and the y-1 deviation now say that the outcome rests on
+      applying the limit to bins (y-1) and not to cells (y-2), which gives Vd 0.0299 V, outside.
+  - claim: fig3a-xe991-fit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. Under
+      y-1 with 5 pF bin edges all four values pass (0.0505 V, 0.847, -0.377, 0.921); under y-0 every value
+      fails, so the outcome rests entirely on y-1. "With all 20 cells, edges e-b give 0.0476 V, 0.745,
+      -0.355 and 0.788" gives values under y-1, which leaves 18 of the 20 cells in the fitted bins. "Under
+      L-c with y-1, Vd is 0.0432 V, outside" holds for edges at multiples of 5 pF only; with edges from
+      the smallest CLW Vd is 0.0538 V, and 0.0498 V for all XE991 cells, both within; this comparison
+      decides nothing. Round-1 point B1 is resolved.
+    response: No change of outcome. The conclusion and the notes now say that 18 of the 20 cells are fitted
+      under y-1, give the L-c values under both bin-edge readings and say that L-c decides nothing, and
+      say that the outcome rests entirely on the dVmin limit. The y-1 deviation now says that the limit
+      is not in the claims file and which outcomes it decides.
+  - claim: fig3a-high-density-deviation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: figs4-fine-bins
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. The
+      Summary's "the Eq. 3a fit without XE991, the Eq. 6b R2 of Fig. 1 and the Fig. S4 fit come within
+      tolerance" is not supported; the XE991 Fig. S4 R2 fails (0.605 against 0.737 +/- 0.074), which is
+      why this claim is partial.
+    response: No change of outcome. The Summary now says the Fig. S4 fit without XE991 comes within tolerance
+      and the R2 of the fit with XE991 does not.
+  - claim: tables3-by-region
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig3a-other-rodents
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3c-engineered-mice
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: capacitance-asymmetry
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. The
+      outcome now matches the verifier's round-1 outcome. Round-1 point B4 is resolved in part; the transient
+      check shows the first two ramp points are lower than the next six, not raised. What remains is that
+      the CLn plateau fraction was chosen to give 62 cells, and the SD of dC is 2.42 pF against the paper's
+      1.32 pF.
+    response: No change of outcome. Both remaining points are stated in the notes and deviations (the
+      plateau rule is flagged as assumed); no defensible rule was found that the paper states, so the
+      rule is kept as an assumption.
+  - claim: figs5-specific-capacitance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3b-negative-clw-fit
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. Round-1
+      point B2 is resolved; the cause is one cell, file 18, with dC -5.0 pF and a negative CLWn, and the
+      claim still fails under every reading.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: mean-slope-half
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. The
+      outcome depends on which reading counts as "first". The notebook takes edges at multiples of 5 pF
+      (e-a) for all three fits, giving -0.407, but fig3a-eq3a-fit is reproduced only with edges from the
+      smallest CLW (e-b). With e-b used throughout (weighted fits, the first2 CLn rule, dC > 5 pF kept)
+      the mean is -0.432, within -0.48 +/- 0.048. The literal criterion ("the slopes found in the claims
+      it depends on") gives -0.402, so not reproduced is accepted, but the conclusion should say that
+      the reading under which Fig. 3a passes also passes this claim.
+    response: No change of outcome. The conclusion and the notes now say that the criterion's reading
+      gives -0.402 and that edges e-b for all three fits, the reading under which fig3a-eq3a-fit is reproduced,
+      give -0.432, within tolerance.
+  - claim: fig4a-vh-rises-vd-constant
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. The
+      outcome now matches the verifier's round-1 outcome.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig4d-cleq-two-limits
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. y-1,
+      the dVmin limit on bins, is reasonable (the Fig. S4 legend and the Discussion support it) but is
+      not in the claims file, and it decides this outcome (it changed after round 1). The lower limit
+      misses by 0.0006 aF (0.6496 against 0.584 +/- 0.065), a knife-edge in the other direction from round
+      1. Two of the three groups behind the upper limit are single cells, at 1.29 and 1.02 aF; "a group
+      of one cell (1.29 aF)" and "3 groups, one of them a single cell" are not supported.
+    response: No change of outcome. The conclusion and the notes now say that two of the three upper groups
+      are single cells (1.29 and 1.02 aF) and the third has 9 cells (0.83 aF). A new output prints the
+      cells per group and the limits from groups of 2 or more cells only (lower 0.6496 aF, unchanged;
+      upper 0.834 aF, outside), and the conclusion calls the outcome a knife-edge. The y-1 deviation now
+      says that the limit is not in the claims file, which four outcomes it decides, that it is applied
+      to bins and not to cells, and that the cell-level y-2 would fail fig3a-eq3a-fit.
+  - claim: fig4c-sensor-area
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig4e-sensor-charge
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: table3-pathway-energies
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. y-1,
+      the dVmin limit on bins, is reasonable (the Fig. S4 legend and the Discussion support it) but is
+      not in the claims file, and it decides this outcome (it changed after round 1).
+    response: No change of outcome. The y-1 deviation now says that the limit is not in the claims file,
+      which four outcomes it decides, that it is applied to bins and not to cells, and that the cell-level
+      y-2 would fail fig3a-eq3a-fit.
+  - claim: alternative-limit
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source.
+    response: No change of outcome. The CSB rule stays an assumption, stated in the deviations and
+      flagged.
+  - claim: fig4f-all-rodents
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: low-chloride-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome uses CLW, dVmin or C_Leq and so rests on the Corbitt et al. (2012) CSB
+      rule, stated as an assumption and flagged; it passes the claims file's Fig. S1 check (CLW 18.30
+      pF against 18.56 +/- 1.856 pF), but the rule's constants cannot be checked against the source. y-1,
+      the dVmin limit on bins, is reasonable (the Fig. S4 legend and the Discussion support it) but is
+      not in the claims file, and it decides this outcome (it changed after round 1).
+    response: No change of outcome. The y-1 deviation now says that the limit is not in the claims file,
+      which four outcomes it decides, that it is applied to bins and not to cells, and that the cell-level
+      y-2 would fail fig3a-eq3a-fit.
+  - claim: molecular-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: figs7-hearing-loss
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: v05-temperature-corrected
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: recording-time
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion matches the printed outputs.
+    response: No change of outcome.
+  - claim: two-hyperpolarized-states
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as a judgement. The criterion defines partial as slope and Vh conditions holding but
+      C_Leq not; under y-1 all three now fail (mean slope -0.407, Vh rises 2.67-fold, lower C_Leq limit
+      misses by 0.0006 aF), so no tier of the criterion fits. The record cites the round-1 judgement,
+      which was made when the C_Leq limits passed.
+    response: No change of outcome. The conclusion, the notes and the deviation now say that no tier fits
+      under y-1 and that partial is kept as a judgement, and that the round-1 judgement was made when
+      the C_Leq limits passed.
