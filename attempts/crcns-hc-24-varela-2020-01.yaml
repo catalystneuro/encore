@@ -178,8 +178,8 @@ outcomes:
   deviations:
   - Events in three readings, the deposited events and the Methods and Results detection rules; S3 deposits
     no full SWR list, so its SWRs are detected here (M-SWR, k = 3 or 4) in every reading.
-  - The claim depends on fig3c-thalamic-decrease-at-swrs, blocked for too few thalamic units; the dependence
-    is on its method only, which applies unchanged to CA1 and mPFC, so this claim is tested.
+  - The claim depends on fig3c-thalamic-decrease-at-swrs (not reproduced); the dependence is on its method
+    only, which applies unchanged to CA1 and mPFC.
 - claim: glm-thalamus-anticorrelated-swrs
   outcome: not_reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -187,10 +187,10 @@ outcomes:
   measured:
   - 33.33
   - 10.63
-  notes: 'Three thalamic units with SWRs. SWR counts: S1 unit b1 = -0.10 per spike/s (Wald p < 1e-10), a 10.3
+  notes: 'Three thalamic units with SWRs. SWR counts: S1 unit b1 = -0.10 per spike/s (Wald p = 1e-12 to 8e-24 across readings), a 10.3
     to 10.6 % rise in SWR rate per 1 spike/s drop; S3 units b1 = -0.002 (p = 0.59) and +0.014 (p = 0.00015,
     positive). So 1 of 3 (33.3 %) is significantly negative, against 61.7 +- 6.17 %, and the change is half
-    the paper''s 20.74 +- 2.07. Response readings: CA1 MUA exists only in S1 (negative, p < 1e-10); reading
+    the paper''s 20.74 +- 2.07. Response readings: CA1 MUA exists only in S1 (negative, p = 8e-204); reading
     (C) gives 33.3 %. Readings (i) and (ii) of the units of X give the same number; the change per drop of
     one spike per 250 ms bin is shown as a variant (47.8 %).'
   deviations:
@@ -456,7 +456,10 @@ outcomes:
     units 0.18 to 0.75 over all cycles. Higher index in high ripple power cycles: 1 of 3 units (33.3 %) with
     the deposited and the Methods troughs, 0 of 3 with the Results troughs (against 64.52 +- 6.45); with S3''s
     deposited high and low labels 1 of 2. More modulated in low cycles (the 22.58 % subset): 66.7, 33.3 and
-    0 %. No reading has a majority increasing. Measured: M-spindle (a).'
+    0 %. No reading has a majority increasing. The two S3 units differ by 0.03 to 0.08 between high and low
+    cycles with the deposited troughs, about the 0.07 to 0.10 index flat firing gives at the same troughs,
+    so their direction is within the noise; only the S1 unit''s decrease (0.67 against 0.82) is clearly larger.
+    Measured: M-spindle (a).'
   deviations:
   - The modulation index is computed on the histogram smoothed over +-1 s and then cropped, so the smoothing
     has no edge effect inside the window.
@@ -470,17 +473,37 @@ outcomes:
     ripple effect, and with 3 units the smallest two-sided Wilcoxon p is 0.25. Index higher for high amplitude
     cycles in 3, 2 and 2 of 3 units across readings (p = 0.25 to 0.75), for high ripple power in 1, 1 and 0
     of 3 (p = 0.25 to 0.75), for the joint split in 3, 3 and 0 of 3 (p = 0.25); similarity tests p = 0.25 to
-    1.0, median absolute difference of high-cycle indices 0.017 to 0.063.'
+    1.0, median absolute difference of high-cycle indices 0.017 to 0.063. Mean change of the index, high
+    minus low cycles, +0.09 to +0.14 for amplitude and -0.03 to -0.13 for ripple power.'
+  proposed:
+    outcome: partially_reproduced
+    reason: 'Rated on values and directions, as the claims file''s unit samples paragraph asks and as the
+      record does for other claims whose tests cannot reach p < 0.05 at this n (kc-regions-compared is also
+      a contrast of significant and non-significant tests). The amplitude effect goes the paper''s way in
+      every reading (3, 2 and 2 of 3 units) and is larger than the ripple effect in every reading, the ripple
+      effect is absent (1, 1 and 0 of 3 units, mean change negative), and the values are similar (similarity
+      p >= 0.25); the joint split goes the paper''s way in 2 of 3 readings. No test is significant, so the
+      claim holds in part. Notebook, cells of modulation-amplitude-versus-ripple.'
 - claim: fig6e-quartile-synergy
   outcome: blocked
   blocked_by: other
   notebook: reproduce_varela_2020.ipynb
   output: claim:fig6e-quartile-synergy
-  notes: Too few units for the claim's tests (3 units; no Wilcoxon test can reach p < 0.05, and the 61.29 and
-    32.26 % bands hold no possible percentage). In the top amplitude quartile 33.3 to 66.7 % of units increase
-    with ripple power (mean increase 24.5 to 65.1 %), in the top ripple power quartile 66.7 to 100 % increase
-    with amplitude (15.9 to 65.5 %); ripple effect p = 0.5 to 1.0, amplitude effect p = 0.25 to 1.0; Spearman
-    correlation of the two changes negative in 5 of 6 readings (rho -1.0 to 0.5).
+  notes: 'Too few units for the claim''s tests (3 units; no Wilcoxon test can reach p < 0.05). In the top amplitude
+    quartile 33.3 to 66.7 % of units increase with ripple power (mean increase 24.5 to 65.1 %), in the top
+    ripple power quartile 66.7 to 100 % increase with amplitude (15.9 to 65.5 %); ripple effect p = 0.5 to
+    1.0, amplitude effect p = 0.25 to 1.0; Spearman correlation of the two changes negative in 5 of 6 readings
+    (rho -1.0 to 0.5). The 61.29 +- 6.13 band holds 66.7 % and the 32.26 +- 3.23 band holds 33.3 %, so both
+    can be met with 3 units (an earlier version of this note said neither could); three of the four values
+    are within tolerance in two readings, and the amplitude percentage in none.'
+  proposed:
+    outcome: not_reproduced
+    reason: 'Rated on values and directions, as for the other claims at this n. The share of units that increase
+      with amplitude in the top ripple power quartile is 66.7 to 100 %, outside 32.26 +- 3.23 in every reading;
+      at least as many units increase with amplitude as with ripple power in every reading, where the paper
+      has 61 % against 32 %; and the Spearman correlation the paper reports as positive (0.51) is negative
+      in 5 of 6 readings, though with 3 units rho takes only four values. No reading meets the claim''s pattern.
+      Notebook, cells of fig6e-quartile-synergy.'
 - claim: fig6f-quartile-versus-median
   outcome: blocked
   blocked_by: other
@@ -491,7 +514,15 @@ outcomes:
     the median split in 33.3 to 100 % of units for amplitude and 33.3 to 66.7 % for ripple power. Mean upper-quartile
     index 0.51 to 0.93 (amplitude) and 0.46 to 0.55 (ripple power), within 1.16 +- 0.57 except with the deposited
     troughs and within 0.60 +- 0.26, amplitude higher in every reading (Mann-Whitney p = 0.4 to 0.7); F-tests
-    p = 0.37 to 0.86 (amplitude) and 0.73 to 0.98 (ripple power).'
+    p = 0.37 to 0.86 (amplitude) and 0.73 to 0.98 (ripple power). Spread ratio, quartile against median split,
+    1.18 to 2.37 for amplitude and 0.79 to 1.39 for ripple power, larger for amplitude in 5 of 6 readings.'
+  proposed:
+    outcome: partially_reproduced
+    reason: 'Rated on values and directions, as for the other claims at this n. The amplitude quartile index
+      is above the ripple power one in every reading (2 or 3 of 3 units), both means are within tolerance
+      in the Methods and Results readings, and the quartile split widens the spread more for amplitude than
+      for ripple power in 5 of 6 readings. The two percentages are outside tolerance and no test is significant,
+      so the claim holds in part. Notebook, cells of fig6f-quartile-versus-median.'
 - claim: fig6g-spike-count-unchanged
   outcome: reproduced
   notebook: reproduce_varela_2020.ipynb
@@ -697,9 +728,9 @@ findings:
     figures?'
 - kind: methods_unavailable
   statement: 'Question for the authors: how was the spindle-trough-triggered scalogram of Figure 1, figure
-    supplement 3 scaled (raw wavelet power, or power relative to a baseline)? This attempt assumed power relative
-    to the mean power of the same state; in raw power the Session 3 mPFC peak falls at 4 to 8 Hz, not 10 to
-    15 Hz.'
+    supplement 3 scaled (raw wavelet power, or power relative to a baseline)? This attempt shows both raw power and
+    power relative to the mean power of the same state; in raw power the Session 3 mPFC peak falls at 4 to
+    8 Hz, not 10 to 15 Hz.'
 - kind: format_error
   statement: Spike times are stored at single precision. In Session 3 every spike time equals its float32 rounding,
     a resolution of 2^-10 s (0.98 ms) at these values, which produces repeated timestamps (6230 in the thalamic
@@ -1041,3 +1072,314 @@ verifications:
       could be run with the 2 S3 thalamic units but was not.
     response: Kept blocked, now with data_missing as the reason (the pairs need maze spikes). The run against
       not-run cycle comparison is now run on the 2 S3 thalamic units and the MUA.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision with its conclusions and summary, the README, the attempt
+    record, the helper module and the claims file, with the paper under paper/ (transcripts/crcns-hc-24/verifier-2-report.md).
+  results:
+  - claim: fig1s3-spindles-not-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The outcome no longer rests on the scalogram scaling, as both scalings are
+      shown; the methods_unavailable finding still says this attempt assumed power relative to the mean power, which
+      is now only background.
+    response: The finding now says that both raw and relative power are shown. No change of outcome.
+  - claim: fig2-swr-phase-delta-spindle
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig2c-swr-around-kc
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Said not_reproduced in round 1 and now accepts partial. The criterion has no partial clause, but the
+      attempt treats other such criteria the same way. Both rises hold in every session and reading. The failed
+      parts are stated in the notes: the minimum falls 30 to 60 ms before the KC, and 3 of 5 values at most are
+      in tolerance.'
+    response: No change.
+  - claim: fig3a-thalamic-rate-wake-sleep
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig3a-bursting-in-sleep
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig3a-bursting-around-swrs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: swr-shift-control
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig3c-thalamic-decrease-at-swrs
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig3s1-ca1-mpfc-at-swrs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The record's deviation says the claim depends on fig3c-thalamic-decrease-at-swrs,
+      blocked for too few thalamic units; fig3c is now not_reproduced, and this text is left over from round 1.
+    response: The deviation now names fig3c as not reproduced. No change of outcome.
+  - claim: glm-thalamus-anticorrelated-swrs
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The record says Wald p < 1e-10, but cell 50 prints p only to 5 decimals (0.00000),
+      so the bound is not shown.
+    response: Cell 50 now prints the Wald p of every unit fit in full; the S1 unit gives 1e-12 to 8e-24 across readings
+      and the CA1 MUA fit 8e-204, and the notes give these values. No change of outcome.
+  - claim: glm-re-versus-other-nuclei
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig3e-thalamic-rebound-after-kc
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: kc-trough-timing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs. Reference reading (b) of M-KC and M-SWR (all immobile
+      time) was not run and the record does not answer it; the KC counts agree with the deposit, so this is unlikely
+      to matter.
+    response: 'Not run, for every claim that uses M-KC or M-SWR: with no position data, immobile time cannot be told apart from the rest of waking, so reading
+      (b) would need a waking definition the data set cannot give; the deposited KCs and the Methods detection,
+      whose counts agree with the deposit, are shown. No change of outcome.'
+  - claim: kc-fraction-of-thalamic-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: kc-ca1-mpfc-symmetric
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: kc-regions-compared
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig3f-asymmetry-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Cell 74 says the z-scored reading (c) gives a negative thalamic mean, but cell
+      73 prints -0.027, +0.031 and -0.128, so one reading is positive; the record's -0.128 to 0.031 is correct.
+    response: Cell 74 now gives the range -0.128 to 0.031. No change of outcome.
+  - claim: spindle-mua-modulation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig4-units-not-rhythmic
+    agrees: true
+    outcome: not_reproduced
+    reason: Now valid. The fixed finder returns 100 ms on the synthetic 10 Hz process under all six settings, and
+      no reading meets the criterion. At smoothing 0 the first minimum of the MUA curves falls at 15 to 60 ms, so
+      those lags sit on noise; the measured values come from that noisiest reading, but the outcome is the same
+      under every reading. Cell 80 says thalamic unit peaks are not later than MUA peaks under any reading, but
+      in two readings the mean unit lag is later than the all-spike MUA lag (143 vs 135 ms; 84 vs 55 ms), neither
+      significantly (p >= 0.15); it should say not significantly later.
+    response: Cell 80 now says not significantly later and gives the two readings in which the mean unit lag is
+      later. No change of outcome.
+  - claim: fig4b-thalamic-pairs-correlated
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: xcorr-stronger-in-spindles
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig5c-spindle-phase-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs. The phase bins still drop (3.058, pi], following the
+      deposited script.
+    response: Kept, as it follows the deposited script PhaseLockingCA1UnitsPFCSpindles.mlx quoted in the data check.
+      No change of outcome.
+  - claim: fig5c-delta-phase-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: phase-robust-to-spike-count
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: rebound-delta-phase-trend
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig5d-phase-lags-consistent
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: spindle-cycles-by-ripple-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig6-modulation-with-ripple-power
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, as no reading has a majority increasing, so even the criterion''s partial clause fails. Caveat:
+      on flat firing the corrected index is 0.07 to 0.17 for half the cycles; the two S3 units differ by only 0.03
+      to 0.08 between high and low cycles with the deposited troughs, so their direction is within noise. Only the
+      S1 unit''s decrease is clearly larger than the noise. This weakens not reproduced but does not reverse it.'
+    response: No change of outcome. The conclusion and the notes now say that the direction of the two S3 units
+      is within the noise of the index and only the S1 unit's decrease is clearly larger.
+  - claim: modulation-amplitude-versus-ripple
+    agrees: false
+    outcome: partially_reproduced
+    reason: Still blocked as too few units, while the record now rates other claims whose test cannot reach p <
+      0.05 at this n on their values and directions, following the claims file's unit samples paragraph; kc-regions-compared
+      is itself a contrast of significant and non-significant tests, as is this claim. The amplitude split raises
+      the index in 3, 2 and 2 of 3 units, the ripple split in 1, 1 and 0 of 3, and the similarity tests give p >=
+      0.25. The direction matches the paper, so this is about partially_reproduced.
+    response: 'Outcome kept as blocked, as round 2 may not change it, and a change to partially_reproduced is proposed
+      under proposed: the verifier''s argument holds. A notebook cell now tabulates the directions and mean changes
+      per reading (amplitude +0.09 to +0.14, ripple power -0.03 to -0.13, joint split up in 2 of 3 readings).'
+  - claim: fig6e-quartile-synergy
+    agrees: false
+    outcome: not_reproduced
+    reason: Still blocked as too few units; under the attempt's own rule it now has an outcome. The Spearman rho
+      is negative in 5 of 6 readings, where the paper reports +0.51, and 67 to 100% of units increase with amplitude
+      in the top ripple-power quartile, where the paper reports 32%. This leans toward not_reproduced.
+    response: 'Outcome kept as blocked, and a change to not_reproduced is proposed under proposed. A notebook cell
+      now tabulates the four values against tolerance per reading. It also corrects the earlier note that the 61.29
+      and 32.26 % bands hold no possible percentage: they hold 66.7 % and 33.3 %, three of four values are within
+      tolerance in two readings, and the amplitude percentage in none.'
+  - claim: fig6f-quartile-versus-median
+    agrees: false
+    outcome: partially_reproduced
+    reason: Still blocked as too few units; under the attempt's own rule it now has an outcome. The upper-quartile
+      amplitude index is above the ripple-power index in every reading. Both means are within tolerance in the methods
+      and results readings. The F ratio is larger for amplitude in 5 of 6 readings. This is about partially_reproduced.
+    response: Outcome kept as blocked, and a change to partially_reproduced is proposed under proposed. A notebook
+      cell now tabulates the per-unit comparison, the values against tolerance and the spread ratios per reading.
+  - claim: fig6g-spike-count-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: xcorr-pairs-ripple-modulation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: thalamus-at-spindle-nested-swrs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: mpfc-units-coupled-swrs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: mua-coupled-swrs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: maze-swr-kc-increase
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: maze-control-sessions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: maze-ripple-power-in-spindles
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig7c-run-units-in-spindles
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: maze-ca1-rates-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig7d-run-units-peri-swr
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig7b-run-units-spindle-phase
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig8-thalamus-unchanged-by-maze
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: fig8e-ca1-spindle-trend
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.
+  - claim: thalamus-not-selective-for-run-cells
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (one of the 43 of 46 it agrees with); every conclusion sentence and record note
+      not listed in its part 2 matches the printed outputs.
+    response: No change.

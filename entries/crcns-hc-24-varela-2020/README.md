@@ -37,9 +37,9 @@ epoch, sleep before the maze, position data and most of the paper's units are no
 | fig5d-phase-lags-consistent | Blocked: other (no uncorrelated pair) |
 | spindle-cycles-by-ripple-power | Partially reproduced |
 | fig6-modulation-with-ripple-power | Not reproduced |
-| modulation-amplitude-versus-ripple | Blocked: other (too few units) |
-| fig6e-quartile-synergy | Blocked: other (too few units) |
-| fig6f-quartile-versus-median | Blocked: other (too few units) |
+| modulation-amplitude-versus-ripple | Blocked: other (too few units); change to partially reproduced proposed |
+| fig6e-quartile-synergy | Blocked: other (too few units); change to not reproduced proposed |
+| fig6f-quartile-versus-median | Blocked: other (too few units); change to partially reproduced proposed |
 | fig6g-spike-count-unchanged | Reproduced (the tests cannot reject at n = 3) |
 | xcorr-pairs-ripple-modulation | Blocked: other (one pair) |
 | thalamus-at-spindle-nested-swrs | Partially reproduced |
@@ -61,7 +61,9 @@ reasoning and the differences from the paper's method.
 
 The data set holds 5 thalamic units (the paper 63) and 2 thalamic pairs (the paper 39). Claims
 about them are tested on their values and directions, as the claims file says; a test over so few
-units cannot reach the paper's significance level, so many outcomes are partial. The record, with the
+units cannot reach the paper's significance level, so many outcomes are partial. Three fig6 claims
+still blocked for too few units carry proposed changes of outcome, to be settled by a third
+verification round. The record, with the
 reasons and the differences from the paper's method, is
 [`attempts/crcns-hc-24-varela-2020-01.yaml`](../../attempts/crcns-hc-24-varela-2020-01.yaml).
 
