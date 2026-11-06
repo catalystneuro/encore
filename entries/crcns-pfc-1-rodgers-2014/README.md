@@ -14,7 +14,7 @@ catch-trial, video-tracking and network-model analyses.
 | Example mPFC units (Figure 3A, 3B) | Reproduced |
 | Example A1 units (Figure 4A, 4B) | Reproduced, with the units identified by preference as the legends describe them (the code's figure index swaps them) |
 | Error trials, trial types, spontaneous rate, reaction and movement time | Reproduced (5) |
-| Time course of rule encoding (Figure 5) | Reproduced (3) |
+| Time course of rule encoding (Figure 5) | Reproduced (3), the single-unit onsets with all rule-encoding units kept in the median |
 | Evoked responses, baseline and evoked change, decoding, tuning, stimulus pairs | Reproduced (8) |
 | Head angle and posture equalization | Reproduced (4) |
 | mPFC disruption and catch trials | Reproduced (3) |
@@ -22,8 +22,10 @@ catch-trial, video-tracking and network-model analyses.
 
 Four outcomes rest on the code's choices: the auditory response classes and windows of Figure S5
 (recomputed from the spikes, the counts and the latency difference do not match), the single-unit
-onsets of Figure 5A and 5B (they need the code's smoother), and the count of evoked changes beyond
-baseline (it needs the code's Benjamini-Hochberg correction).
+onsets of Figure 5A and 5B (they need the code's smoother, and the units whose bin just before onset
+is not significant must be kept, as the code keeps them; this outcome is marked as resting on that
+assumption), and the count of evoked changes beyond baseline (it needs the code's Benjamini-Hochberg
+correction).
 
 The units the paper analysed, their region and their auditory response windows are not in the data
 set; they come from `metadata/unit_db.csv` of the paper's code

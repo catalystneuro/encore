@@ -91,7 +91,7 @@ outcomes:
   - 40
   notes: 'Reading (a), BH over all 220 units as the code: 76 of 121 mPFC units encode the rule, 36 prefer localization
     and 40 pitch discrimination, binomial p = 0.73. Reading (b), BH within region: 81, 37 and 44 (binomial p = 0.51),
-    the first outside tolerance. The paper''s code is ported to Python 3; R''s wilcox.test (exact=FALSE) is reproduced
+    each within tolerance (44 at the edge of 40 +/- 4), so the claim holds under both readings. The paper''s code is ported to Python 3; R''s wilcox.test (exact=FALSE) is reproduced
     with scipy''s normal approximation with continuity correction, and R''s p.adjust BH with statsmodels.'
 - claim: fig4c-a1-rule-encoding
   outcome: reproduced
@@ -193,9 +193,18 @@ outcomes:
   notes: With the code's smoother, median onset 0.550 s before stimulus in A1 (36 units) and 0.625 s in mPFC (76
     units), for W = 3 s and W = 5 s alike; both above 0.35 s. With exact spike times in place of the code's grid
     (variant) the medians are 0.575 s and 0.750 s, the mPFC value outside tolerance. 7 mPFC and 2 A1 units have
-    an onset although their bin before onset is not significant (main3.py marks them invalid, main4.py keeps them,
-    as the criterion does); leaving them out gives 0.650 s in both regions, outside tolerance in A1.
+    an onset although their bin before onset is not significant (main3.py marks them invalid, main4.py keeps them);
+    their onsets are 0.05 and 0.15 s in A1 and 0 to 1.35 s in mPFC. Counting them as having no preference before
+    the stimulus (onset 0) gives 0.550 s in A1 and 0.600 s in mPFC, within tolerance; leaving them out gives 0.650
+    s in both regions, outside tolerance in A1. The outcome rests on keeping them (see deviations).
   deviations:
+  - 'Assumed: the median is taken over all rule-encoding units, including the 7 mPFC and 2 A1 units that have
+    no significant interval containing the bin just before onset, each with the onset main4.py gives it. The criterion
+    defines the interval as the run that contains the bin just before onset, which these units lack, but also takes
+    the median over units as main4.py does. The paper speaks of "the median rule-encoding unit" (Results, Within-Trial
+    Timescale of the Encoding of the Selection Rule, paragraph 2), and Figure 5C gives n = 76 and 36 rule-encoding
+    neurons, which supports a median over all of them. Leaving the units out fails in A1 (0.650 s); a question
+    for a reader is in questions/crcns-pfc-1.yaml.'
   - 'The smoothing follows kkpandas.base.GaussianSmoother as 5-2-timecourse_exemplars/main1.py and main2.py use
     it: each spike is moved to the nearest 50 ms sample point and a Gaussian of one sample s.d., truncated at 3
     s.d. and normalized to sum to one, is added there (modules/kkpandas/base.py, modules/DiscreteAnalyze/PointProc.py).
@@ -203,6 +212,7 @@ outcomes:
     discretization.'
   - R's wilcox.test with fix_float=10000 (rounding of values) is not reproduced; scipy's test is applied to the
     smoothed values directly.
+  assumed: true
 - claim: fig5c-population-onset
   outcome: reproduced
   notebook: reproduce_rodgers_2014.ipynb
@@ -403,9 +413,10 @@ outcomes:
   notes: N = 320. At SNR 0.0625 (noise level 16) the best positive task signal gives 93.2% correct in task 1 and
     in task 2, above 80%. At SNR 0.25 task 1 is at least 99% at every sampled task signal over noise from 0.32 to
     10, which is 90% of Figure 8B's positive plotted axis (symlog, 8-1-model/main1.py set_xlim) and 97% of the linear
-    range 0 to 10, and at 38 of 40 (95%) positive gains of the code's narrow linear sweep (gains 0.25 to 20). It
-    is below 99% for the smallest task signals (about 0.63 to 0.77) and above the plotted range (0.52 at a gain
-    of 84). Counted over the log-spaced broad gains, which crowd near zero, 25% of the positive gains reach 99%
+    range 0 to 10, and at 38 of 40 (95%) positive gains of the code's narrow linear sweep (gains 0.25 to 20). Within
+    the plotted range it is below 99% only for task signals under 0.3 times the noise, where task 1 performance
+    runs from about 0.63 at the smallest gains to 0.988 at a gain of 1.194 (task signal / noise 0.30); above the
+    plotted range it falls (0.52 at a gain of 84). Counted over the log-spaced broad gains, which crowd near zero, 25% of the positive gains reach 99%
     (30% within the plotted range). The SNR is 1 / noise level, the code's label (gain/noise with sensory gain 1);
     gain/sqrt(noise) does not give the printed grid.
   deviations:
@@ -423,7 +434,9 @@ findings:
   statement: The auditory response classes of unit_db.csv apply rules the paper does not state (classes too brief,
     lasts to end, lasts too long). Recomputing responsiveness as the Supplement describes gives 46 mPFC and 61 A1
     responsive units in place of the paper's 31 and 49, and, of 67 units responsive under both, 17 whose window
-    starts at a different time.
+    starts at a different time. Part of the difference is the table's unstated classes (units classed too brief,
+    lasts too long or lasts to end are responsive when recomputed), and part the threshold and trial choices of
+    the recomputation (6 units classed nothing become responsive, 13 classed responsive do not).
 - kind: other
   statement: The spike files (*.kkp) and the miscellaneous pickles are pandas 0.10 pickles written under Python
     2. Current pandas cannot open them (module pandas.core.index no longer exists); the descriptor's pandas.load
@@ -449,6 +462,13 @@ findings:
   statement: The Figure 4B legend gives the trial counts of the simultaneously recorded pair with the blocks swapped
     (pitch discrimination 312, localization 253) relative to the 4A legend (localization 312, pitch discrimination
     253); the data have 312 localization and 253 pitch discrimination trials for both units.
+- kind: methods_unavailable
+  statement: 'For the single-unit onsets of Figures 5A and 5B (fig5ab-single-unit-onset), 7 mPFC and 2 A1 rule-encoding
+    units have no significant interval containing the bin just before stimulus onset. 5-2-timecourse_exemplars/main3.py
+    marks them invalid but main4.py keeps them in the median, and the paper does not say how such units count.
+    Kept, the medians are 0.550 s (A1) and 0.625 s (mPFC), the paper''s values; counted with onset 0 they are 0.550
+    and 0.600 s; left out, 0.650 s in both. Were these units included in "the median rule-encoding unit", and with
+    what onset?'
 - kind: code_mismatch
   statement: 3-5-vidtrack/main5.py says statsmodels' stand_mad does not subtract the median, but the paper's PRE
     values (0.471 and 0.318) are reproduced exactly by the MAD about the median; the uncentered MAD gives 0.327
@@ -701,3 +721,216 @@ verifications:
       Outcome changed from partially_reproduced to reproduced with assumed true: the quote describes Figure 8B,
       so most positive task signals is read over the plotted range, and the code''s linear sweep agrees; the per-sample
       count of the broad sweep is shown as the other reading.'
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, the helper module, the claims file and the
+    attempt record, with the paper. The verifier agreed with all 35 outcomes, for fig5ab-single-unit-onset only under a
+    reading it asked to be marked as assumed, and listed sentences the numbers do not support in cells 19, 33, 111,
+    123, the summary and the README. It did not read the code's scripts beyond the four of round 1 and re-ran nothing.
+    The revision corrected those sentences, marked fig5ab-single-unit-onset as assumed and asked a reader how the criterion
+    counts its units without an interval; no outcome changed.
+  results:
+  - claim: unit-table-link
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig2a-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs. Cell 19 says "The data set holds 55 sessions, all of which pass."
+      Only 54 were tested (cell 17); the catch-trial session was excluded.
+    response: Cell 19 now says the data set holds 55 sessions, 54 were tested with the catch-trial session left out, and
+      all 54 pass. Outcome kept.
+  - claim: figs1a-go-better-than-nogo
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig2d-block-switch
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: iti-median
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig3c-pfc-rule-encoding
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs. Cell 33 and the record's notes say that under reading (b) the counts
+      81, 37 and 44 put the first outside the tolerance of 7.6, so the claim holds under reading (a) only. In fact |81
+      - 76| = 5 <= 7.6, 37 is within 36 +/- 3.6 and 44 sits on the edge of 40 +/- 4; reading (b) also passes (cell 30,
+      binomial p = 0.51). The round-1 reason made the same mistake. The outcome itself is unaffected.
+    response: Cell 33 and the notes now say all three counts of reading (b) are within tolerance (44 at the edge), binomial
+      p = 0.51, so the claim holds under both readings. The round-1 reason is left as given. Outcome kept.
+  - claim: fig4c-a1-rule-encoding
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: a1-rule-encoding-not-audresp-dependent
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: rule-encoding-effect-size
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig3ab-pfc-example-units
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig4ab-a1-example-units
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig3d-pfc-interference
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig4d-a1-interference
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs2c-s3c-hold-by-trial-type
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs2f-s3f-bidirectional-vs-spont
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig5ab-single-unit-onset
+    agrees: true
+    outcome: reproduced
+    reason: Agrees only under a reading the record does not mark as assumed. The criterion defines the interval as the
+      run that contains the bin just before stimulus onset; seven mPFC and two A1 units have no such interval. With them
+      left out, cell 64 gives 0.650 s in A1, outside 0.55 +/- 0.05. The pass comes from keeping them, as main4.py does;
+      the notes say this follows the criterion, but the criterion's wording points the other way. The outcome should carry
+      assumed true with this reading stated, or the claims file should settle the point. The README's list of outcomes
+      resting on the code's choices leaves out this dependence.
+    response: Marked assumed true, with a deviation stating the assumption (median over all rule-encoding units, as the
+      paper's "the median rule-encoding unit" and the n of 76 and 36 in Figure 5C suggest) and a methods_unavailable finding.
+      Cell 64 now prints the onsets of the nine units and a variant counting them with onset 0 (0.550 s in A1, 0.600 s
+      in mPFC, within tolerance); only leaving them out fails. The conclusion, notes, summary and README say so. A question
+      for a reader on how the criterion counts these units is in questions/crcns-pfc-1.yaml. Outcome kept.
+  - claim: fig5c-population-onset
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig5d-go-nogo
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: audresp-prevalence
+    agrees: true
+    outcome: reproduced
+    reason: 'Meets its criterion in the printed outputs. The summary''s "because the table applies rules the paper does
+      not state" is only partly supported: cell 74 also shows 6 "nothing" units becoming responsive under reading (b),
+      and 13 units the table counts as responsive (5 A1, 8 mPFC) losing their responsiveness, so the threshold and trial
+      choices also contribute.'
+    response: The summary and the selection_undocumented finding now attribute the difference partly to the table's unstated
+      classes and partly to the threshold and trial choices of reading (b), with the 6 and 13 units. Outcome kept.
+  - claim: figs5cd-evoked-strength
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs5e-latency
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig6cd-baseline-evoked-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: evoked-beyond-baseline-rare
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig6e-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs5fg-tuning-vs-rule
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs5hi-stimulus-pairs
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs2gh-s3gh-rt-mt
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs2i-head-angle
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs2kl-s3kl-fev
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: posture-equalized-sign
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: posture-equalized-magnitude
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs. Cell 111 says a reduction of up to about half the magnitude is
+      not excluded; that holds for mPFC (-0.237 against 0.418), but in A1 the interval reaches -0.442 against a magnitude
+      of 0.401, so even a complete loss is not excluded.
+    response: Cell 111 now says a reduction of up to about half is not excluded in mPFC, and in A1 even a complete loss
+      is not excluded (0.442 against 0.401). Outcome kept.
+  - claim: fig7-disruption-by-block
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig7c-disruption-nogo
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: figs1bc-catch
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion in the printed outputs.
+    response: No change needed.
+  - claim: fig8-model
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the assumption is stated and reasonable. On the plotted axis, x >= 0.316 reaches at least 99% (90%
+      of the symlog axis); on the code''s linear sweep 38 of 40 positive gains reach at least 99%; the per-sample reading
+      of the log-spaced gains (25%) is shown and disclosed. Cell 123 and the notes say "below 99% only for the smallest
+      task signals (about 0.63 to 0.77)": these are performance values, but the sentence reads as if they were task-signal
+      values, and they leave out the 0.988 at gain 1.194 (x = 0.30) printed in cell 122.'
+    response: Cell 123 and the notes now say that within the plotted range task 1 is below 99% only for task signals under
+      0.3 times the noise, where performance runs from about 0.63 to 0.988 at gain 1.194 (x = 0.30). Outcome kept, assumed
+      true.
