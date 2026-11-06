@@ -31,16 +31,30 @@ Where the parameters come from (claim ids in brackets):
 - `norm_code` is the normalization of `cubeScriptPR25.m` (per trial, minus the trial's 2-s
   pre-cue rate, z-scored over all trials and bins of the unit, with rates floored to integers);
   it is a variant only.
-- The bootstrap is studentized with the analytic standard error of the mean in each resample;
-  MATLAB `bootci` estimates that standard error by an inner bootstrap. This is a standard choice
-  that cannot move a bound by more than resampling noise.
+- The bootstrap is studentized (`bootci(1000, {@mean, x}, 'type', 'student')`, mainAnalysis.m
+  lines 2054 and 3134). By default the standard error in each resample is the analytic SE of
+  the mean (`CI_SE = "analytic"`); MATLAB `bootci` estimates it by an inner bootstrap of 100
+  resamples (`CI_SE = "boot"`). The default interval is the standard reflected one
+  (`CI_MIRRORED = False`); the paper's printed Figure 1G intervals match the bootstrap-t
+  quantiles added without reflection (`CI_MIRRORED = True`). The notebook recomputes every
+  CI-based judgement under both forms, both SEs and several seeds (section "CI form").
+- Events in the ITI (reward, nose poke cessation) must have their 4-s window inside a recorded
+  segment, (onset - 20, onset + 30] s: the recording is paused between trials and the files hold
+  nothing from about 31 to 33.5 s after one onset to 20 s before the next (data check). The
+  30 s end is the cube's window and lies before the observed end of every segment. A cessation
+  needs its 2 s without a poke to fall inside the segment.
 - `HD_BOUNDARY` (0.3875 ms) is from `data/NAccAnalysis/halfDuration.m`; the dashed line of
   Figure 3C, read from the PDF, sits at about 0.39 ms. The waveform measure `peak_valley`
   follows `mainAnalysis.m` without its final division by 2 (see its docstring), so that its
   values span the 0.15 to 0.6 ms of Figure 3C (fig3c-waveform-bimodal).
 - The ITI windows for reward and nose poke cessation events are the two readings of the claims
   file (fig9a-reward-firing); `iti_events_code` is the script's window (18 to 2 s before cue
-  onset, and 14 to 28 s after it), shown as a variant.
+  onset, and 14 to 28 s after it, cubeScriptPR25.m lines 150 to 153 and 178 to 179), shown as
+  a variant.
+- The event baseline is the mean of the 1 s before the event, bins 4 to 7 of the 16 (Methods,
+  "mean of 1 s before reward delivery"; claims file, fig9a-reward-firing). The script variant
+  subtracts bins 1 to 4, 2 to 1 s before the event, as cubeScriptPR25.m does (lines 559 and
+  674, `mean(fire.raw.ms250.pellet(:,1:4),2)`).
 """
 
 from __future__ import annotations
@@ -299,14 +313,26 @@ def pattern(u_value):
 
 # ---------------------------------------------------------------- events in the ITI
 
-def iti_events(times, u, reading):
+SEGMENT = (-20.0, 30.0)  # recorded part of each trial, relative to onset (see the module docstring)
+
+
+def in_segment(lo, hi, u):
+    """True when (lo, hi] lies inside one recorded segment (onset - 20, onset + 30]."""
+    on = u["onsets"]
+    return bool(np.any((lo >= on + SEGMENT[0]) & (hi <= on + SEGMENT[1])))
+
+
+def iti_events(times, u, reading, require_recorded=True):
     """Events whose [-2, +2] s window lies in the ITI.
     (a) outside every [onset - 20, onset + 30] s; (b) not overlapping any cue [onset, onset + 10]
-    or shock [shock, shock + 0.5]."""
+    or shock [shock, shock + 0.5]. With require_recorded the window must also lie inside a
+    recorded segment, so reading (a) can hold no event."""
     on = u["onsets"]
     keep = []
     for t in times:
         lo, hi = t - 2, t + 2
+        if require_recorded and not in_segment(lo, hi, u):
+            continue
         if reading == "a":
             bad = np.any((hi > on - 20) & (lo < on + 30))
         else:
@@ -322,11 +348,17 @@ def iti_events_code(times, u):
     return np.array(sorted(sel))
 
 
-def cessations(u, reading):
-    """Nose pokes followed by at least 2 s without a poke, in the ITI (reading as iti_events)."""
+def cessations(u, reading, require_recorded=True):
+    """Nose pokes followed by at least 2 s without a poke, in the ITI (reading as iti_events).
+    With require_recorded the 2 s after the poke must lie inside the poke's recorded segment,
+    so that the last poke before a pause in the recording is not taken as a cessation."""
     p = u["poke"]
-    gap = np.diff(p)
-    cand = p[:-1][gap >= 2]
+    gap = np.diff(np.append(p, np.inf))
+    cand = p[gap >= 2]
+    if require_recorded:
+        cand = np.array([t for t in cand if in_segment(t, t + 2, u)])
+    else:
+        cand = cand[np.isfinite(gap[gap >= 2])]
     if reading == "code":
         on = u["onsets"]
         out = []
@@ -335,26 +367,31 @@ def cessations(u, reading):
             if len(a) > 1:
                 out.extend(a[:-1][np.diff(a) > 2])
         return np.array(sorted(out))
-    return iti_events(cand, u, reading)
+    return iti_events(cand, u, reading, require_recorded)
 
 
-def event_trace(u, events, norm, sd=None):
+EVENT_BASE = slice(4, 8)  # the 1 s before the event (Methods)
+EVENT_BASE_CODE = slice(0, 4)  # 2 to 1 s before the event (cubeScriptPR25.m, lines 559 and 674)
+
+
+def event_trace(u, events, norm, sd=None, base=EVENT_BASE):
     """Firing in 16 bins of 250 ms from 2 s before to 2 s after each event, averaged over events,
-    minus the mean of the 1 s before. norm 'sd' divides by the unit's cue-normalization SD
-    (reading i); 'z16' z-scores the 16-bin mean trace (reading ii); 'code' follows the script
-    (floored rates, per event minus its 1-s pre mean, z-scored over all events and bins, then
-    averaged). Returns NaN when there is no event."""
+    minus the mean of the baseline bins (default the 1 s before, bins 4 to 7). norm 'sd' divides
+    by the unit's cue-normalization SD (reading i); 'z16' z-scores the 16-bin mean trace
+    (reading ii); 'code' follows the script (floored rates, per event minus the mean of its bins
+    1 to 4, z-scored over all events and bins, then averaged). Returns NaN when there is no
+    event."""
     if len(events) == 0:
         return np.full(16, np.nan)
     edges = np.arange(-2, 2 + BIN / 2, BIN)
     r = binned_rates(u["spikes"], events, edges)
     if norm == "code":
         r = np.floor(r)
-        d = r - r[:, :4].mean(1, keepdims=True)
+        d = r - r[:, EVENT_BASE_CODE].mean(1, keepdims=True)
         s = d.std(ddof=1) if d.size > 1 else np.nan
         return ((d - d.mean()) / s).mean(0) if s > 0 else np.full(16, np.nan)
     m = r.mean(0)
-    m = m - m[:4].mean()
+    m = m - m[base].mean()
     if norm == "sd":
         return m / sd
     s = m.std(ddof=1)
@@ -363,18 +400,39 @@ def event_trace(u, events, norm, sd=None):
 
 # ---------------------------------------------------------------- statistics
 
-def boot_ci(x, rng, n_boot=1000, level=0.95, mirrored=False):
-    """Studentized bootstrap CI of the mean (bootci 'student', analytic SE per resample)."""
+CI_MIRRORED = False  # see the module docstring; the notebook's "CI form" section varies these
+CI_SE = "analytic"
+N_BOOTSTD = 100  # MATLAB bootci default for the inner bootstrap of the SE
+
+
+def _boot_se(x, rng, n_inner):
+    """Bootstrap SE of the mean for each row of x (rows x n), from n_inner resamples."""
+    k, n = x.shape
+    idx = rng.integers(0, n, size=(k, n_inner, n))
+    return np.take_along_axis(x[:, None, :].repeat(n_inner, 1), idx, 2).mean(2).std(1, ddof=1)
+
+
+def boot_ci(x, rng, n_boot=1000, level=0.95, mirrored=None, se_method=None):
+    """Studentized bootstrap CI of the mean (bootci 'student'). mirrored and se_method default to
+    CI_MIRRORED and CI_SE: se_method 'analytic' uses the SE of the mean, 'boot' an inner
+    bootstrap of N_BOOTSTD resamples, as bootci does."""
+    mirrored = CI_MIRRORED if mirrored is None else mirrored
+    se_method = CI_SE if se_method is None else se_method
     x = np.asarray(x, float)
     x = x[np.isfinite(x)]
     n = len(x)
     if n < 3:
         return np.nan, np.nan, np.nan
-    m, se = x.mean(), x.std(ddof=1) / np.sqrt(n)
     idx = rng.integers(0, n, size=(n_boot, n))
     xb = x[idx]
+    m = x.mean()
     mb = xb.mean(1)
-    seb = xb.std(1, ddof=1) / np.sqrt(n)
+    if se_method == "boot":
+        se = _boot_se(x[None, :], rng, N_BOOTSTD)[0]
+        seb = _boot_se(xb, rng, N_BOOTSTD)
+    else:
+        se = x.std(ddof=1) / np.sqrt(n)
+        seb = xb.std(1, ddof=1) / np.sqrt(n)
     with np.errstate(divide="ignore", invalid="ignore"):
         t = (mb - m) / seb
     t = t[np.isfinite(t)]

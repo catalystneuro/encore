@@ -1,0 +1,60 @@
+questions:
+- claim: fig1g-discrimination
+  asked: 2026-11-06
+  question: Should the claims file name a third reading of a 0/0 suppression ratio (no pokes in
+    baseline or cue), the ratio set to 1? The opening comment allows only (a) the trial left out
+    and (b) the ratio set to 0. The authors' scripts in the data set set it to 1
+    (cubeScriptPR25.m line 254 and mainAnalysis.m line 393, "cer.cue(isnan(cer.cue))=1"), and
+    only that handling gives the paper's F(2,12) = 57.41 (57.405 with the 82 sessions; 56.33 with
+    0/0 left out, 53.78 with 0/0 read as 0). The same reading applies to
+    fig1h-poke-rate-unrelated and to the fear output regressions of fig8ab, fig8cd and fig8ef.
+  passage: Methods, Calculating suppression ratios, "Fear was measured by suppression of rewarded
+    nose poking, calculated as the following ratio... Suppression ratios were calculated for each
+    trial using only the baseline of that trial. A ratio of 1 indicated high fear, 0 indicated low
+    fear"; Results, "a significant main effect of cue (F(2,12) = 57.41".
+  why: The verifier of this attempt reported that the claims file misses the reading that
+    reproduces the paper's statistic exactly. Under reading (b) (0/0 read as 0), baseline poke
+    rate correlates with danger suppression (R = 0.76, p = 0.048, 82 sessions), so
+    fig1h-poke-rate-unrelated is reproduced only with 0/0 left out or set to 1; the attempt
+    assumed the scripts' handling. For fig8ab, 0/0 read as 0 gives not reproduced where left out
+    or set to 1 gives reproduced.
+- claim: fig4cd-de-danger-firing
+  asked: 2026-11-06
+  question: Should the claims file name the authors' script normalization as a reading of the
+    normalized firing? The opening comment follows the Methods (trial-type means, minus the
+    type's 10-s baseline, z-scored across trial types). The data set's cubeScriptPR25.m
+    normalizes each trial against its own floored 2-s pre-cue rate and z-scores over all 16 trials
+    and bins. The script normalization brings several effect sizes to the paper's values, for
+    example fig4cd 0.24, 0.25 and 0.16 against 0.22, 0.21 and 0.17; fig8ef -0.303 and -0.389
+    against -0.31 and -0.39; fig9hij R2 0.21 and 0.062 against 0.25 and 0.06; Bidirectional
+    Valence post-reward firing 0.463 against 0.47.
+  passage: Methods, z-score normalization, "For each neuron, and for each trial type, firing rate
+    (in hertz) was calculated in 250 ms bins ... Mean firing rate over the 200 bins was calculated
+    by averaging all trials for each trial type. Mean differential firing was calculated for each
+    of the 200 bins by subtracting mean baseline firing rate (10 s before cue onset), specific to
+    that trial type, from each bin. Mean differential firing was z-score normalized across all
+    trial types within a single neuron".
+  why: The verifier reported that the claims-file normalization follows the Methods text while
+    the script normalization reproduces the paper's effect sizes much more closely. The claims
+    file reads the Methods as written, so this may not be a misreading. The outcome changes
+    with it for fig9hij-danger-safety-correlations (not reproduced under the four claims-file
+    readings, reproduced with the script normalization), fig6e-de-similarity (both comparisons
+    pass 0.0056 only with the script normalization) and the means of fig4cd and fig8ef, which
+    are within tolerance only with it. The same applies to every claim on normalized firing.
+- claim: fig1g-discrimination
+  asked: 2026-11-06
+  question: Should the claims file name the form of the studentized interval? Its opening comment
+    says "MATLAB bootci, studentized", which this attempt read as the standard interval (the
+    bootstrap-t quantiles reflected about the mean). The paper's three Figure 1G intervals are
+    not standard studentized intervals of the per-rat data, whose means and ANOVA match the paper
+    exactly; they match the bootstrap-t quantiles added to the mean without reflection
+    ([0.16, 0.28], [0.36, 1.03] and [0.52, 1.18] against the paper's [0.16, 0.29], [0.35, 1.03]
+    and [0.50, 1.25]; the standard form gives [0.14, 0.27], [-0.09, 0.59] and [0.19, 0.85]).
+  passage: Methods, Bootstrap confidence intervals, "The 95% bootstrap confidence intervals (CIs)
+    were constructed ... using the bootci function in MATLAB. Bootstrap distributions were
+    created by sampling the data 1000 times with replacement. Studentized confidence intervals
+    were constructed"; Results, Figure 1G CIs.
+  why: The verifier reported that the paper's CIs imply the non-reflected interval. With it
+    fig1g-discrimination is reproduced under all six readings; with the standard form only under
+    one reading (all sessions, 0/0 read as 0), and there in 68% of seeds. Elsewhere the form
+    moves single readings of fig8ab and fig8cd but no other outcome (the notebook's CI section).

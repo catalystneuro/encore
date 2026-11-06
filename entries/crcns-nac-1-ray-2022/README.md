@@ -7,7 +7,7 @@ pre-surgery sessions (Figure 1C) and the paper's population labels are not in it
 
 | Claim | Outcome |
 |---|---|
-| Units, sessions and rats recorded | Partially reproduced (90 sessions, not 95) |
+| Units, sessions and rats recorded | Not reproduced (90 sessions, not 95) |
 | Cue-responsive screen (193 units) | Reproduced |
 | Acquisition before surgery (Figure 1C) | Blocked: data missing |
 | Discrimination and behavior correlations (Figure 1G, 1H) | Reproduced (3) |
@@ -19,8 +19,8 @@ pre-surgery sessions (Figure 1C) and the paper's population labels are not in it
 | Firing similarity (Figure 6) | 4 reproduced, 1 not |
 | Tuning curves (Figure 7) | Reproduced |
 | Fear output and exaggerated threat (Figure 8) | 1 reproduced, 2 partially |
-| Reward firing (Figure 9) | 2 partially, 2 not |
-| Nose poke cessation firing (Figure 10) | 2 reproduced, 1 not |
+| Reward firing (Figure 9) | 1 partially, 3 not |
+| Nose poke cessation firing (Figure 10) | 1 reproduced, 2 not |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -32,6 +32,7 @@ and settle several details the Methods leave open. The attempt record, with the 
 differences from the paper's method, is
 [`attempts/crcns-nac-1-ray-2022-01.yaml`](../../attempts/crcns-nac-1-ray-2022-01.yaml).
 
-- `reproduce_ray_2022.ipynb`: the analysis. It takes about a minute, most of it streaming the zip.
+- `reproduce_ray_2022.ipynb`: the analysis. It takes about five minutes, most of it the CI checks.
 - `nac.py`: loading the unit files from the zip in place, the event channel map, and the
-  measures (suppression ratio, screen, normalizations, ITI events, ANOVAs, bootstrap, dip test).
+  measures (suppression ratio, screen, normalizations, ITI events inside the recorded segments,
+  ANOVAs, bootstrap in both interval forms, dip test).
