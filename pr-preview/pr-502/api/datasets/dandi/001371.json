@@ -1,0 +1,2069 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001371",
+  "label": "DANDI:001371"
+ },
+ "page": "datasets/dandi/001371/",
+ "generated": "2026-11-06T14:28:23+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 21,
+  "partially_reproduced": 5,
+  "not_reproduced": 7,
+  "blocked": 19
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001371-prince-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001371",
+    "version": "0.260831.0201",
+    "doi": "10.48324/dandi.001371/0.260831.0201"
+   },
+   "key": "dandi:001371",
+   "label": "DANDI:001371",
+   "dataset_version": "0.260831.0201",
+   "paper": "10.1038/s41467-025-60122-8",
+   "paper_title": "New information triggers prospective codes to adapt for flexible navigation",
+   "date": "2026-11-02",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41408436286"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001371-prince-2025",
+   "entry_title": "Prospective goal codes in hippocampus and prefrontal cortex (Prince et al. 2025)",
+   "description": "Tests the findings of Prince, Cushing, Yassine, Katragadda, Roberts and Singer (2025) on dandiset 001371, which holds the units, behaviour and LFP of 66 sessions from 7 mice in a virtual y-maze task with switch and stay cues. It tests the behaviour, Bayesian position decoding in CA1 and prefrontal cortex around the update cue, its theta phase, the residual goal codes on correct and incorrect trials, and their relation to view angle. The LSTM choice estimate and the choice decoding built on it were timed and do not fit the notebook limit.",
+   "notebooks": [
+    {
+     "path": "reproduce_prince_2025.ipynb",
+     "title": "Reproducing Prince et al. (2025) from dandiset 001371",
+     "executed": "notebooks/001371-prince-2025/reproduce_prince_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "recordings",
+     "statement": "Seven mice were recorded over 66 sessions, yielding 3892 hippocampal CA1 units and 2557 medial prefrontal units after curation and cell type classification.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 1; Supplementary Table 1",
+     "quote": "we recorded single unit and local field potential activity in dorsal hippocampal CA1 and medial prefrontal cortex during behavior ( n = 3892 units in hippocampus, n = 2557 units in medial prefrontal cortex",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "7 animals and 66 sessions (8, 12, 10, 11, 12, 6 and 7 per animal) match. 3545 CA1 units (within 389.2 of 3892) and 2271 PFC units (outside 255.7 of 2557). The units of five sessions (S20-210517, S28-211114, S29-211104, S29-211105, S34-220617; 633 units) have no region or cell type column, and 3545 + 2271 + 633 = 6449, the paper's total. The per-animal counts of the unlabelled units are 138 (S20), 142 (S28), 242 (S29) and 111 (S34). Their region cannot be recovered from the files: none of the five units tables has an electrodes or electrode_group column (61 of the 66 tables do), and the phy channel ch runs from 0 to 63 on both probes in the labelled sessions, so it does not say which probe a unit is on (data check).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "trial-mix",
+     "statement": "In the final task 65% of trials are delay only, 25% switch and 10% stay trials.",
+     "source": "Methods, Behavioral task and training, paragraph 2; Results, first section, paragraph 1",
+     "quote": "These trial types consisted of delay only trials (65% of trials)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Final-task trials (maze_id 4): 7172 delay only, 1840 switch and 717 stay, fractions 0.737, 0.189 and 0.074 pooled (reading a) and 0.750, 0.181 and 0.069 averaged over sessions (reading b), outside the tolerances under both readings. The counts equal the paper's Results counts. The 932 warm-up trials (maze_id 3) and the 7172 delay only trials make 8104, the delay count of Supplementary Table 1. The 65/25/10% read as the task's programmed probabilities, as the claims file foresaw.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task-timing",
+     "statement": "The delay on delay only trials lasted 10.56 s on average, the shortened delay before the update cue on switch trials 1.40 s, and the delay after the update cue 6.02 s; trials lasted about 21 s from start to choice.",
+     "source": "Results, first section, paragraph 1; Supplementary Fig. 1a",
+     "quote": "The mice had to maintain the memory of the correct goal arm during the delay period (10.56 \u00b1 0.07 seconds, n = 7172 trials, Supplementary Fig. 1 ). On a subset of trials, a second visual cue appeared when mice reached a specific location after a shortened delay period (1.40 \u00b1 0.03 seconds, n = 1840 trials)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Readings (a) second delay from t_delay2, (c) all final-task trials, (e) switch trials: delay only delay 10.559 +/- 0.067 s (n = 7172), first switch delay 1.403 +/- 0.029 s (n = 1840), second delay 6.020 +/- 0.084 s, trial start to choice 21.004 s (delay only) and 20.882 s (switch); all within tolerance, and the n equal the paper's. Reading (f), switch and stay pooled, gives 6.060 s, also within. Reading (b), update cue onset to choice, gives 9.93 s. On correct trials only (d), the delay only delay is 10.414 s and the first switch delay 1.328 s, outside tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-above-chance",
+     "statement": "Animals performed above 50% correct on delay only trials (65 +/- 2%) and on switch trials (74 +/- 2%).",
+     "source": "Results, first section, paragraph 1; Figure 1b; Supplementary Table 2, Figure 1b",
+     "quote": "animals learned to remember and follow the cues across all trial types and performed above 50% accuracy (delay only mean \u00b1 SEM: 65 \u00b1 2%, switch mean \u00b1 SEM: 74 \u00b1 2%, p = 6.197e\u221210 delay only vs. 50% correct, p = 3.410e\u221211 switch vs. 50% correct",
+     "statistics": [
+      {
+       "about": "delay only trials against 50% correct",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 125.5",
+       "p": 6.197e-10,
+       "n": "Supplementary Table 2 gives 6252 windows of 40 trials in 66 sessions from 7 animals"
+      },
+      {
+       "about": "switch trials against 50% correct",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 48.5",
+       "p": 3.41e-11,
+       "n": "1002 windows in 66 sessions from 7 animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Reading (a), one proportion per session and trial type: delay only mean 0.649 +/- 0.017 over 66 sessions, Wilcoxon W = 125.5, p = 6.1e-10; switch 0.745 +/- 0.020, W = 48.5, p = 3.3e-11. The paper prints W = 125.5 and 48.5, so its test is on session proportions. Means over animals (reading d) are 0.641 and 0.745. Reading (b), 40-trial windows, also gives p far below 0.05 (delay only mean 0.683, switch 0.810).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-window-performance",
+     "statement": "Over rolling windows of trials, proportion correct averaged 0.68 on delay only and 0.78 on switch trials.",
+     "source": "Figure 1b legend; Supplementary Table 2, Figure 1b",
+     "quote": "Box plots indicate median and quartiles of 40-trial bins. (delay only: 0.68 \u00b1 0.00, n = 6252 windows of 40 trials; switch: 0.78 \u00b1 0.01, n = 1002 windows)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Reading (b), 15-trial windows: 6252 delay only and 1002 switch windows, the paper's counts; means 0.678 and 0.775, medians 0.667 and 0.800, all within tolerance. Reading (a), 40-trial windows: 4636 and 239 windows, means 0.683 and 0.810 (switch outside), medians 0.675 and 0.825.",
+     "deviations": [
+      "The window length of the Methods and legend (40 trials) does not give the reported window counts; the code's 15 trials does, and decides here, as the criterion's reading (b)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-heading-switch",
+     "statement": "On switch trials the animals\u2019 heading (view angle) shifts from the initial toward the new side after the update cue, while on delay only trials it stays toward the initial side.",
+     "source": "Results, first section, paragraph 2; Figure 1d",
+     "quote": "We found that on switch trials around the update cue onset, the animals\u2019 heading direction shifted from one direction to the opposite in response to the cue indicating the reward location had changed (Fig. 1d",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Mean view angle by central-arm position bin, signed toward the initial side: on switch trials +0.198 and +0.183 rad at the update cue position and -0.318 and -0.154 rad in the last central bin (turn_type 1 and 2); on delay only trials +0.197 and +0.217 rad in the last bin. 12 of 14 animal and side means of switch trials point to the new side in the last bin.",
+     "deviations": [
+      "View angle is in radians (labelled degrees). Its sign convention (positive toward negative x, the left arm) is taken from the paper's code, which negates view angle on right trials; in the data view angle and sideways movement correlate negatively (median Spearman r -0.12 over sessions), consistent with it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-stay-performance",
+     "statement": "Animals performed very well on stay trials (proportion correct 0.92 over windows).",
+     "source": "Figure 5a legend; Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 1",
+     "quote": "accuracy on stay trials showing median and quartiles ( n = 7 animals; stay: 0.92 \u00b1 0.01, n = 117 40-trial windows)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "15-trial windows: 117 stay windows (the paper's count), mean 0.921, median 0.933. No session has 40 stay trials (at most 38), so the 40-trial reading gives no window.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tuning-tiles-track",
+     "statement": "Spatial tuning curves of hippocampal and prefrontal neurons tile the virtual track.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 1; Supplementary Figs. 2c and 5a",
+     "quote": "we found that neurons in both hippocampus and prefrontal cortex had spatial tuning curves that tiled the virtual environment (Supplementary Fig. 2c , Supplementary Fig. 5a )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Peaks of encoder tuning curves over all units with spikes in included sessions (CA1 3404, PFC 2148): every track bin is some unit's peak in both regions, and the only bins that are no unit's peak are the four bins lying wholly in the gaps between track segments (34, 35, 42, 43). Peaks fall about equally on the central arm and the goal arms (CA1 1730 and 1674, PFC 1075 and 1073). Reading (b) holds with no empty track bin. The reader's answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. Under the code's count (CA1 2854, PFC 1790 units) the result is the same; the outcome is unchanged.",
+     "deviations": [
+      "Reading (a) asks that every one of the 50 bins be a peak. Four bins lie wholly in the artificial gaps between track segments (Methods, Behavioral analysis), where the animal never is, so no tuning curve can peak there; reading (a) is judged on the 46 track bins.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "decoding-validation",
+     "statement": "Hippocampal and prefrontal population activity decodes the animal\u2019s current position across the track.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 1; Supplementary Figs. 2d and 5b",
+     "quote": "We first confirmed that hippocampal and prefrontal activity could reliably decode the animals\u2019 current location in the environment; decoded positions from neural activity represented the animals\u2019 true position across locations in the environment (Supplementary Figs. 2d and 5b )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Held-out delay only trials, 200 ms bins inside the trial: median error below the uniform null in 52 of 55 CA1 and 46 of 46 PFC sessions (median 9 and 7 bins against 16); the session-averaged confusion matrix peaks within 2 bins of the true bin in 37 of 46 track bins (CA1) and 35 of 46 (PFC). Scoring only the bins where the animal moves, as the encoder uses, gives the same (median 9 and 7 bins; 52 of 55 and 46 of 46 sessions; 97% of bins are moving). Errors are lowest with position at the same time, not shifted by 2 s, in 52 of 55 and 43 of 46 sessions. The code's count of trials gives 44 of 47 and 37 of 37 sessions, 36 and 41 of 46 bins.",
+     "deviations": [
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-hpc-goal-increase",
+     "statement": "After the update cue, hippocampal decoding of both the initial and the new goal arm is higher on switch trials than on delay only trials.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 2; Figure 2c to e; Supplementary Table 2, Figure 2e",
+     "quote": "the overall probability of goal locations being decoded, the posterior probability integrated over each goal arm, was elevated on switch trials compared to delay only trials (p = 2.630e-8, initial, switch vs. initial, delay only, p = 4.157e\u22127, new, switch vs. new, delay only",
+     "statistics": [
+      {
+       "about": "trial type (switch, delay only) by goal arm",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(4400.90) = 21.79",
+       "p": 5.286e-14,
+       "n": "1295 switch and 926 delay only trials"
+      },
+      {
+       "about": "switch against delay only, initial arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -5.87",
+       "p": 2.63e-08,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "switch against delay only, new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -5.39",
+       "p": 4.157e-07,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct trials, reading (a): ANOVA F(3) = 33.6, p = 9.9e-22; switch minus delay only, initial +0.039 (z = 7.47, Tukey p = 2.4e-12), new +0.035 (z = 6.74, p = 1.1e-10). Reading (b) gives the same (p = 6.7e-13 and 8.1e-11). Trial means 0.132 (switch initial), 0.135 (switch new), 0.093 (delay only initial), 0.100 (delay only new), all within tolerance. 1241 switch and 871 delay only trials in 55 sessions (paper 1295 and 926 in 56). The increase holds in 4 of 7 animals for the initial arm and 5 of 7 for the new arm. The code's count of trials gives p < 2e-10 for every contrast, and the round-1 grid gave p = 2.7e-12 and 1.8e-7; the outcome is the same under each.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-hpc-arms-equal",
+     "statement": "Within trials, hippocampal decoding of the initial and the new arm after the update cue does not differ: the initial minus new difference is not different from zero and does not differ between switch and delay only trials.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 3; Figure 2e right; Supplementary Table 2, Figure 2e",
+     "quote": "when we compared differences between the amount of initial goal location and new goal location representations on a trial-by-trial basis, the differences were not significantly different from zero and were not significantly different between switch and delay only trials ( p = 0.7806 switch vs. delay only",
+     "statistics": [
+      {
+       "about": "initial minus new, switch against delay only",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(2205.71) = 0.08",
+       "p": 0.7806,
+       "n": "1295 switch and 926 delay only trials"
+      },
+      {
+       "about": "switch, difference against zero",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 676",
+       "p": 0.3216,
+       "n": "56 sessions"
+      },
+      {
+       "about": "delay only, difference against zero",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 706",
+       "p": 0.4554,
+       "n": "56 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Initial minus new over 0 to 1.5 s: LME by trial type p = 0.59; per-session Wilcoxon against zero over 55 sessions p = 0.39 (switch, mean -0.0032) and p = 0.35 (delay only, mean -0.0071). No test gives p < 0.05. The code's count of trials gives p = 0.42, 0.36 and 0.11; the round-1 grid gave p = 0.17, 0.44 and 0.27. The outcome is the same under each.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig2e-goal-bias",
+     "statement": "Within single 200 ms bins hippocampal goal decoding is strongly biased to one arm (43% of bins highly biased), yet within a trial both arms are represented (70% of trials have a mean goal bias index between -0.5 and 0.5).",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 3; Supplementary Fig. 2e",
+     "quote": "each bin strongly represented one arm or the other with 43% of bins highly biased for one arm or the other (having a goal bias index close to 1 or \u22121)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "1241 correct switch trials. Reading (a), 0 to 1.5 s (8 bins per trial): 46.5% of bins beyond +/-0.93 and 64.8% of trials with mean index in [-0.5, 0.5]. Reading (b), 0 to 2.5 s (13 bins): 46.1% and 70.4%. Both within tolerance under both readings. The code's count of trials gives 45.9% and 64.9% (a), 45.9% and 70.8% (b).",
+     "deviations": [
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig3c-goals-over-retrospective",
+     "statement": "On switch trials after the update cue, both goal arms are decoded more than retrospective non-local positions at the start of the track.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 4; Supplementary Fig. 3c",
+     "quote": "We found that both initial and new goal arms were represented significantly more than retrospective non-local locations after the update cue on switch trials (retrospective vs. initial: p = 0.04, retrospective vs. new: p = 0.0011, Supplementary Fig. 3c )",
+     "statistics": [
+      {
+       "about": "retrospective against initial arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.04,
+       "corrected": "Tukey",
+       "n": "1295 switch trials"
+      },
+      {
+       "about": "retrospective against new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.0011,
+       "corrected": "Tukey",
+       "n": "1295 switch trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct switch trials, zone LME: initial minus retrospective +0.003 (Tukey p = 0.84), new minus retrospective +0.006 (p = 0.43), ANOVA p = 0.46. Trial means 0.129 (retrospective), 0.132 (initial), 0.135 (new) are each within tolerance of the paper's values; the differences between them are too small to reach significance here. The code's count of trials gives p = 0.46 and 0.20, and the round-1 grid gave p = 0.37 and 0.36; the outcome is the same under each.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig3c-retrospective-unchanged",
+     "statement": "Retrospective non-local decoding after the update cue does not differ between switch and delay only trials.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 4; Supplementary Fig. 3c ii",
+     "quote": "Comparing switch and delay only trials, we found that non-local retrospective codes did not differ significantly (retrospective switch vs delay only: p = 0.0513, Supplementary Fig. 3c )",
+     "statistics": [
+      {
+       "about": "retrospective zone, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.0513,
+       "corrected": "Tukey",
+       "n": "1295 switch and 926 delay only trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Zone by trial type LME: retrospective switch minus delay only +0.015, Tukey p = 0.036, so the paper's test finds a difference and the absence is not reproduced. Changed in round 1 from reproduced: with the round-1 grid, which had one bin centred on the cue and counted after it, the same test gave +0.013, p = 0.12 (variant in the notebook). The code's count of trials gives +0.013, p = 0.14. The outcome therefore rests on the time grid and on the inclusion rule; the grid that decides is the code's, and the rule the Methods' (S1). It also rests on the degrees of freedom of the Tukey test, which use the large-sample value in place of Kenward-Roger (R is not available here): on 49 degrees of freedom (sessions less levels, a deliberately small value printed as a variant) the same contrast gives p = 0.050. Window means weight each 0.2 s bin equally, as the code does; whether S7 should say so is asked in questions/001371.yaml.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig3ab-original-vs-update-cue",
+     "statement": "Goal arm decoding also rises during the original cue, but then favours the back half of the goal arms, while after the update cue it favours the front half.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 6; Supplementary Fig. 3a, b",
+     "quote": "during the original cue we found higher decoding of the back half of the goal arm (initial: p = 4.842e\u22129, new: p = 3.919e\u221214), while during the update cue decoding of the front half of the goal arms was higher (initial: p = 0.0100, new: p = 1.020e\u22127",
+     "statistics": [
+      {
+       "about": "back half, initial arm, original against update cue",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 4.842e-09,
+       "corrected": "Tukey",
+       "n": "1264 original cue and 1295 update cue trials"
+      },
+      {
+       "about": "back half, new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 3.919e-14,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "front half, initial arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.01,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "front half, new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 1.02e-07,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct switch trials, cue by arm half LME, halves split as the code (feature bins 35 to 37 and 43 to 45 front, 38 to 41 and 46 to 49 back): back halves higher during the original cue (initial +0.033, z = 8.67; new +0.038, z = 10.04; p below the precision of the studentized range). Front halves higher after the update cue, significantly for the new arm (-0.012, Tukey p = 0.044) but not the initial arm (-0.010, p = 0.12). Three of the four contrasts hold. Under the code's split the eight values are all outside tolerance (front 0.034 to 0.050 against 0.05 to 0.07; back 0.120 and 0.123 during the original cue, 0.088 and 0.085 after the update cue). The code's front halves hold a gap bin (35, 43) with no posterior; split over the bins with a posterior (36 to 38 and 44 to 46 front), the variant also gives three of four (front initial p = 0.10, new p = 0.0019) and all eight values within tolerance (0.052, 0.062, 0.055, 0.070, 0.103, 0.070, 0.106, 0.065). The code's count of trials gives front half p = 0.24 and 0.091. 1241 trials per cue (paper 1264 and 1295). In round 1 the split dropped the middle bin and gave front half p = 0.12 and 0.14. The new arm front contrast also rests on the degrees of freedom: on 47 (sessions less levels, a deliberately small value in place of Kenward-Roger, printed as a variant) it gives p = 0.063, and under the variant split 0.0056.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "The split of each goal arm into front and back halves follows the code (quantify_aligned_data: front ends round(n / 2) bins before the arm's end, rearhalf starts n // 2 bins after its start; 3 and 4 of the 7 arm bins), as the criterion cites; the code's arm bins include one gap bin per arm with no posterior. The split over the bins with a posterior is shown as a variant. The original cue is aligned at trial start, 0 to 1.5 s.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig2f-all-trials-encoder",
+     "statement": "With all trial types in the encoding model, the increase of hippocampal goal arm decoding after the update cue on switch trials remains similar.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 5; Supplementary Fig. 2f",
+     "quote": "we also ran the analysis using all trials in the encoding model and found that while there was more accurate representation of the animals\u2019 current location during the update cue, the non-local coding results remained similar (Supplementary Fig. 2f )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Reading (a), encoder from all trials and all trials decoded: both arms higher on switch trials for correct trials (initial +0.013, Tukey p = 9.0e-4; new +0.026, p = 1.9e-12) and all outcomes (p = 1.6e-5 and 1.0e-6); 1241 switch and 4225 delay only correct trials, nearer the paper's 1322 and 4538. Reading (b), 80/20 split of all types: the new arm differs (p = 3.8e-6, all outcomes 2.2e-5) but the initial arm does not (p = 0.44 and 0.19), with 269 switch trials. The criterion asks for every reading, so the claim holds in part. The code's count of trials gives the same pattern (reading b, initial arm p = 0.33 and 0.066).",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig5f-pfc-wider-spread",
+     "statement": "Decoded position distributions are spatially wider in prefrontal cortex than in CA1.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 7; Supplementary Fig. 5f",
+     "quote": "Indeed, we found the spatial spread of decoded positions was significantly wider in PFC than in CA1 (CA1 vs PFC: p = 0.0001, Supplementary Fig. 5f )",
+     "statistics": [
+      {
+       "about": "CA1 against PFC spread",
+       "test": "linear mixed effects model",
+       "p": 0.0001,
+       "n": "829 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "42 sessions with at least 20 units in each region and 50 final-task trials, larger region subsampled to the smaller's count (a seed per session); 1026 delay only trials per region (paper 829). Spread in feature bins under the code's rule (reading a): CA1 4.07, PFC 4.37, LME p = 0.0031; both outside the tolerances of 2.4 and 3.13. In linearized units (reading b) 30.6 and 32.8. PFC exceeds CA1 in 5 of 7 animals. The direction and significance hold, the values do not. The first-crossing reading of the Methods' wording (the verifier's reading) also gives PFC wider, 0.37 against 0.14 bins, p = 1.8e-122, with values further from the paper's; the outcome is the same under both. The code's count of trials gives 4.05 and 4.44, p = 1.3e-4. Round 1 gave 3.88 and 4.41 with the round-1 grid and one seed for all sessions.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Spread follows the paper's code (plot_region_error_distribution, read at the pinned commit): the outermost bins before and after the peak at or above peak minus one standard deviation, on bins where the animal is at or past 120.35 in the aligned window, averaged per trial; the Methods' wording (\"how far in front and behind of the peak value the decoding results dropped below this threshold\") read as the first crossing on each side is shown as a variant. The equal-cell subsampling uses a seed per session.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig5g-ca1-more-goal-coding",
+     "statement": "Before the update cue, goal arms are decoded more strongly from CA1 than from prefrontal cortex.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 7; Supplementary Fig. 5g",
+     "quote": "Goal locations were more strongly represented in CA1 than in the prefrontal cortex before any changes due to the update cue (CA1 vs PFC initial: p = 4.641e\u221214; new: p < 4.462e\u221261, Supplementary Fig. 5g )",
+     "statistics": [
+      {
+       "about": "initial arm, CA1 against PFC",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 4.641e-14,
+       "corrected": "Tukey",
+       "n": "364 trials"
+      },
+      {
+       "about": "new arm, CA1 against PFC",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 4.462e-61,
+       "p_relation": "<",
+       "corrected": "Tukey",
+       "n": "364 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Equal cell numbers, correct delay only trials, -2 to 0 s before the pseudo update: CA1 minus PFC, initial +0.057 (z = 13.4), new +0.061 (z = 14.4), Tukey p at the precision floor (1.8e-12). PFC initial 0.051, CA1 new 0.110, PFC new 0.049, all within tolerance. 717 trials per region (paper 364). The code's count of trials (682 trials) gives the same (z = 12.8 and 14.1).",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-pfc-no-goal-increase",
+     "statement": "Prefrontal position decoding of the goal arms after the update cue does not differ between switch and delay only trials, and the two arms are represented equally.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 7; Figure 2f, g; Supplementary Table 2, Figure 2g",
+     "quote": "Non-local representations in medial prefrontal cortex were not significantly different across trial types and both goal locations were equally represented until the animals approached the goal arm ( p = 0.3496, initial, switch vs. initial, delay only, p = 0.3148, new, switch vs. new, delay only, p = 0.9111, switch vs. delay only, Fig. 2g",
+     "statistics": [
+      {
+       "about": "trial type by goal arm",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(3773.42) = 1.91",
+       "p": 0.1261,
+       "n": "1109 switch and 798 delay only trials"
+      },
+      {
+       "about": "initial arm, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -1.65",
+       "p": 0.3496,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new arm, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -1.72",
+       "p": 0.3148,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial minus new, switch against delay only",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(1903.52) = 0.012",
+       "p": 0.9111
+      },
+      {
+       "about": "switch, difference against zero",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 471",
+       "p": 0.3227,
+       "n": "47 sessions"
+      },
+      {
+       "about": "delay only, difference against zero",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 545",
+       "p": 0.8448,
+       "n": "47 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Reading (a), switch and delay only in the model: ANOVA p = 0.017; switch minus delay only, initial +0.005 (Tukey p = 0.61), new +0.013 (p = 0.016). Reading (b), with stay: ANOVA p = 0.025, new arm p = 0.030, initial arm p = 0.82. Difference LME p = 0.12; per-session Wilcoxon of the difference over 46 sessions, switch p = 0.055, delay only p = 0.33. Two tests give p < 0.05 under each reading, so the absence is not reproduced whichever reading is the paper's. The effect is small and the trial means (0.069, 0.073, 0.066, 0.062) are within tolerance. The code's count of trials gives reading (a) ANOVA p = 0.018 and new arm p = 0.021, switch Wilcoxon p = 0.044. On the round-1 grid reading (a) gave p = 0.038 and 0.035 and reading (b) none below 0.05 (new arm p = 0.066); with the code's grid the outcome no longer depends on the reading.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig5e-pfc-windows",
+     "statement": "Prefrontal goal arm decoding on switch and delay only trials does not differ in shorter windows after the update cue either.",
+     "source": "Results, Enhanced non-local codes of both goal locations in hippocampus, paragraph 7; Supplementary Fig. 5e",
+     "quote": "There was a small increase in prefrontal decoding of goal locations on switch trials versus delay only trials, however these trial types did not differ significantly over several time windows examined (0\u20130.5 s, 0\u20131 s, 0\u20131.5 s after the update cue onset, Supplementary Fig. 5e )",
+     "statistics": [
+      {
+       "about": "0 to 0.5 s, initial arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.9307,
+       "corrected": "Tukey",
+       "n": "1109 switch and 798 delay only trials"
+      },
+      {
+       "about": "0 to 0.5 s, new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.9879,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "0 to 1 s, initial arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.524,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "0 to 1 s, new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.6319,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "0.5 to 1 s, initial arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.2623,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "0.5 to 1 s, new arm",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.2495,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "New arm switch minus delay only: 0 to 0.5 s +0.010 (Tukey p = 0.23), 0 to 1 s +0.013 (p = 0.033), 0 to 1.5 s +0.013 (p = 0.016), 0.5 to 1 s +0.018 (p = 0.029); initial arm p >= 0.61 in every window. Three windows give p < 0.05, so the absence is not reproduced. The code's count of trials gives p = 0.35, 0.040, 0.021 and 0.017, and the round-1 grid gave p = 0.15, 0.019, 0.035 and 0.024; the outcome is the same under each. With the code's grid, 0 to 0.5 s is the bins centred 0.1, 0.3 and 0.5 s and 0.5 to 1 s those centred 0.7 and 0.9 s.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-theta-phase-segregation",
+     "statement": "After the update cue on switch trials, hippocampal non-local goal codes are strongest in the first half of the theta cycle and local codes in the second half.",
+     "source": "Results, Theta phase segregation of non-local and local position codes, paragraph 2; Figure 3b, c; Supplementary Table 2, Figure 3c",
+     "quote": "we found that codes for prospective goal locations (non-local) were represented significantly more on the opposite theta phase as current location representations (local) (p = 0.0275, \u2212\u03c0 to 0, initial vs. central arm, p = 0.0106, \u2212\u03c0 to 0 new vs. central arm, p = 9.284e\u22129, 0 to \u03c0, initial vs. central arm, p = 6.672e\u221214, 0 to \u03c0, new vs. central arm, Fig. 3a\u2013c )",
+     "statistics": [
+      {
+       "about": "phase half by location",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(7709.45) = 18.93",
+       "p": 9.195e-19,
+       "n": "1295 switch trials"
+      },
+      {
+       "about": "first half, initial against central",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -3.05",
+       "p": 0.0275,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "first half, new against central",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -3.35",
+       "p": 0.0106,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "second half, initial against central",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 6.19",
+       "p": 9.284e-09,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "second half, new against central",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 8.31",
+       "p": 6.672e-14,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct switch trials, 0 to 1.5 s, 1241 trials. The central zone exceeds both goal arms in both half cycles under both readings: central window (b) 0.148 and 0.151 against initial 0.129 and 0.127 and new 0.130 and 0.126 (first and second half; all four contrasts with p at the precision floor); whole central arm (a) 0.66 and 0.67. So the goal arms do not exceed central in the first half. The modulation goes the stated way (central higher, goal arms lower in the second half). The goal arm values are within tolerance; the central values are not under either reading. The stored phase gives the same result (central window 0.148 and 0.151 against goal arms 0.126 to 0.129). The reader's answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code's count gives the same pattern; the outcome is unchanged.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Theta phase is computed from the LFP of the file's ripple channel: decimated to 200 Hz, band-passed 4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs define the phase; the interpolation and filter order are standard choices). 0 is put at the centre of the 30-degree bin of maximal CA1 pyramidal firing. The phase stored in the file, which the paper's code reads (general/lfp.py), is run as a variant and agrees with the computed phase.",
+      "Theta decoding uses 25 ms bins on held-out delay only, switch and stay test trials over 1.5 s around the update cue, with the encoder of the 200 ms analyses."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-theta-pre-post",
+     "statement": "At the theta timescale, goal arm decoding increases and central decoding decreases from before to after the update cue on switch trials.",
+     "source": "Results, Theta phase segregation of non-local and local position codes, paragraph 2; Figure 3b; Supplementary Table 2, Figure 3b",
+     "quote": "When comparing before and after the update cue onset, we found that there was a significant increase in the amount of goal location (non-local) decoding, but the local vs. non-local phase preferences were maintained ( p = 6.439e\u221214, pre- vs. post-update initial arm, p = 5.329e-14 pre- vs. post-update new goal, Fig. 3b\u2013d )",
+     "statistics": [
+      {
+       "about": "pre and post update by location",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(7709.65) = 142.33",
+       "p": 6.826e-145,
+       "n": "1295 switch trials"
+      },
+      {
+       "about": "central, pre against post",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -16.06",
+       "p": 4.462e-61,
+       "p_relation": "<",
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial, pre against post",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 10.28",
+       "p": 6.439e-14,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new, pre against post",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 9.91",
+       "p": 5.329e-14,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct switch trials. First half cycle, whole central arm: initial 0.114 to 0.129, new 0.115 to 0.130 (Tukey p 5.8e-12 and 5.5e-12), central 0.699 to 0.663 (p at the precision floor). The whole cycle and the central window give the same directions with p < 1e-11; the central window goes from 0.177 to 0.149, and the stored phase gives the same (initial p = 6.0e-11, new p = 1.8e-11, central p at the floor). The goal arm values are within tolerance; the central values are not (paper 0.15 to 0.12) under either central reading. The reader's answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code's count gives the same directions (p < 2e-11); the outcome is unchanged.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Theta phase is computed from the LFP of the file's ripple channel: decimated to 200 Hz, band-passed 4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs define the phase; the interpolation and filter order are standard choices). 0 is put at the centre of the 30-degree bin of maximal CA1 pyramidal firing. The phase stored in the file, which the paper's code reads (general/lfp.py), is run as a variant and agrees with the computed phase.",
+      "Theta decoding uses 25 ms bins on held-out delay only, switch and stay test trials over 1.5 s around the update cue, with the encoder of the 200 ms analyses."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig6-theta-switch-over-delay",
+     "statement": "At the theta timescale, goal arm decoding after the update cue is larger on switch than on delay only trials.",
+     "source": "Results, Theta phase segregation of non-local and local position codes, paragraph 2; Supplementary Fig. 6; Supplementary Table 2, Figure 3c, d",
+     "quote": "non-local codes at the timescale of individual theta cycles were also significantly larger on switch trials compared delay-only trials ( p = 1.450e\u221227, initial arm, switch vs. delay only, p = 1.367e\u221213 new arm, switch vs. delay only Supplementary Fig. 6 )",
+     "statistics": [
+      {
+       "about": "initial arm, trial type by phase half",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(5496.53) = 27.48",
+       "p": 1.45e-27,
+       "n": "1295 switch, 552 stay, 927 delay only trials"
+      },
+      {
+       "about": "initial arm, first half, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -5.79",
+       "p": 1.083e-07,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial arm, second half, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -8.46",
+       "p": 5.851e-14,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new arm, trial type by phase half",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(5500.03) = 13.96",
+       "p": 1.367e-13
+      },
+      {
+       "about": "new arm, first half, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -5.26",
+       "p": 2.163e-06,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new arm, second half, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -4.94",
+       "p": 1.179e-05,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct trials (1241 switch, 530 stay, 871 delay only), type by half LME per arm: ANOVA F(5) = 31.0 (initial) and 20.1 (new), p < 1e-19; switch minus delay only in the first and second halves, initial +0.012 and +0.014, new +0.011 and +0.010, all Tukey p < 1e-9. The stored phase gives the same (p < 1e-9). The reader's answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code's count gives p < 1e-8; the outcome is unchanged. On the small degrees of freedom of the variant (41 or 49) every contrast gives p < 1e-5.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Theta phase is computed from the LFP of the file's ripple channel: decimated to 200 Hz, band-passed 4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs define the phase; the interpolation and filter order are standard choices). 0 is put at the centre of the 30-degree bin of maximal CA1 pyramidal firing. The phase stored in the file, which the paper's code reads (general/lfp.py), is run as a variant and agrees with the computed phase.",
+      "Theta decoding uses 25 ms bins on held-out delay only, switch and stay test trials over 1.5 s around the update cue, with the encoder of the 200 ms analyses."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-new-arm-theta-modulated",
+     "statement": "After the update cue, decoding of the new goal arm differs between theta half cycles while decoding of the initial arm does not.",
+     "source": "Results, Theta phase segregation of non-local and local position codes, paragraph 2; Figure 3d; Supplementary Table 2, Figure 3d",
+     "quote": "The new goal location was more strongly theta modulated compared to the old goal location ( p = 0.0008, new arm \u2212 \u03c0 to 0 vs 0 to \u03c0 , p = 0.6496, initial arm \u2212 \u03c0 to 0 vs 0 to \u03c0",
+     "statistics": [
+      {
+       "about": "new arm, first against second half",
+       "test": "linear mixed effects model",
+       "statistic": "F(2533.71) = 11.22",
+       "p": 0.0008,
+       "n": "1295 switch trials"
+      },
+      {
+       "about": "initial arm, first against second half, as the text prints",
+       "test": "linear mixed effects model",
+       "p": 0.6496
+      },
+      {
+       "about": "initial arm, first against second half, as Supplementary Table 2 prints",
+       "test": "linear mixed effects model",
+       "statistic": "F(2533.36) = 0.65",
+       "p": 0.4203
+      },
+      {
+       "about": "central arm, first against second half",
+       "test": "linear mixed effects model",
+       "statistic": "F(2533.33) = 119.77",
+       "p": 2.868e-27
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Correct switch trials, 0 to 1.5 s: new arm first half 0.1286, second half 0.1246, p = 0.0049; initial arm 0.1287 and 0.1266, p = 0.15. With the stored phase, new arm p = 0.015 and initial arm p = 0.25. The reader's answer of 2026-11-02 (questions/001371.yaml) changed S1 to count the final-task trials of the session for the 50-trial rule, so this claim was re-run on 55 CA1 and 46 PFC sessions in place of 47 and 37. The code's count gives p = 0.0061 and 0.22; the outcome is unchanged.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Theta phase is computed from the LFP of the file's ripple channel: decimated to 200 Hz, band-passed 4 to 12 Hz with a 301-tap Parks-McClellan (equiripple) filter forward and backward, phase 0 at peaks and pi at troughs, linear in between (Methods, Theta cycles and phase, which says peaks and troughs define the phase; the interpolation and filter order are standard choices). 0 is put at the centre of the 30-degree bin of maximal CA1 pyramidal firing. The phase stored in the file, which the paper's code reads (general/lfp.py), is run as a variant and agrees with the computed phase.",
+      "Theta decoding uses 25 ms bins on held-out delay only, switch and stay test trials over 1.5 s around the update cue, with the encoder of the 200 ms analyses."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-lstm-choice-estimate",
+     "statement": "An LSTM predicting the final choice from behaviour is near chance at the start of the trial and highly accurate by the end, with session-averaged log likelihoods of -0.98, -0.63, -0.43 and -0.17 in the original cue, delay, update and second delay phases.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 1; Figure 4a",
+     "quote": "The choice estimate varied throughout the course of a trial, starting at chance-level accuracy at the start of the trial on average, and ending with a highly accurate, or \u22120.17 \u00b1 0.02 log likelihood on average, prediction of the animals\u2019 final choice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Not run. The choice estimate is a per-session LSTM (S10) trained on the unresampled behaviour (about 110 samples per second, trials padded to the longest, up to 3601 samples), with 6-fold cross-validation repeated 3 times, so 18 models of 20 epochs per session. The notebook builds the model as the paper's code does and times one fold on session S25-210906 (119 delay only trials): 2.8 s for the first epoch and 1.6 s for the second, 9.8 min for the session, and 9.9 h for all 66 sessions scaled by their delay only trial counts in one process; with one session per core on the machine's 4 cores, at best 2.5 h. Epoch times vary from run to run, so these figures change when the notebook is re-run. Both are over the notebook's 60 min limit, so, as the protocol says for an estimate over that limit (Author, Develop on a subset), the claim is blocked as too_large and not run. No session was fitted; a subset of sessions would not test the claim, whose expected values are means over the 66 sessions. The data it needs (velocities, position and view angle of every session) are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-pfc-choice-flips",
+     "statement": "After the update cue, prefrontal decoding of the initial choice is lower and of the new choice higher on switch than on delay only trials.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 2; Figure 4b to f; Supplementary Table 2, Figure 4f",
+     "quote": "We observed that the choice estimates of the initial and new choice began to diverge preceding the update and then rapidly flipped after the reward location changed ( p = 5.192e\u221249 initial switch vs. initial, delay only, p = 2.934e\u22127 new, switch vs. new, delay only Fig. 4b\u2013f",
+     "statistics": [
+      {
+       "about": "trial type by choice (the text gives this p for the initial contrast)",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(3777.66) = 78.10",
+       "p": 5.192e-49,
+       "n": "1109 switch and 798 delay only trials"
+      },
+      {
+       "about": "initial choice, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "z = 12.58",
+       "p": 4.462e-61,
+       "p_relation": "<",
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new choice, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -5.45",
+       "p": 2.934e-07,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-pfc-difference",
+     "statement": "The within-trial initial minus new choice difference in prefrontal cortex is negative on switch trials and positive on delay only trials, and differs between them.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 2; Figure 4f right",
+     "quote": "Furthermore, the difference between initial and new choice decoding was significantly different between switch and delay trial types (p = 8.610e-33 initial \u2013 new for switch vs. delay only Fig. 4f )",
+     "statistics": [
+      {
+       "about": "initial minus new, switch against delay only",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(1896.40) = 147.75",
+       "p": 8.61e-33,
+       "n": "1109 switch and 798 delay only trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-pfc-precedes-movement",
+     "statement": "On average, the switch of prefrontal choice decoding from the initial to the new choice precedes the change in rotational velocity.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 2; Figure 4d",
+     "quote": "On average, the change in neural activity choice decoding preceded the movement change (Fig. 4d )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig7d-pfc-before-motor-single-trials",
+     "statement": "Aligned to each trial's motor response, prefrontal initial choice decoding has already decreased and new choice decoding increased before the response, and new overtakes initial at about the time of the response.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 2; Supplementary Fig. 7d",
+     "quote": "Examining when animals began changing head direction (rotational velocity began decelerating away from the initial choice) on a single trial basis, we found initial choice codes decreased and new choice codes increased before the motor response (Supplementary Fig. 7d )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig7e-pfc-pre-update",
+     "statement": "On correct trials, prefrontal initial choice decoding 1.5 to 0.5 s before the update cue is lower on switch than on delay only trials, a difference attributed to selecting correct trials.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 2; Supplementary Fig. 7e",
+     "quote": "We also found differences in pre-update cue decoding of the initial choices in prefrontal cortex between switch and delay only trials (p = 0.0031 switch vs. delay-only 1.5\u20130.5 s preceding update cue, Supplementary Fig. 7e )",
+     "statistics": [
+      {
+       "about": "initial choice, correct trials, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.0031,
+       "corrected": "Tukey",
+       "n": "1099 switch and 792 delay only trials"
+      },
+      {
+       "about": "new choice, correct trials",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.1967,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial choice, all trials (opposite direction)",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.0165,
+       "corrected": "Tukey",
+       "n": "1453 switch and 1173 delay only trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-hpc-choice-switches",
+     "statement": "In hippocampus, initial choice decoding is lower and new choice decoding higher after the update cue on switch than on delay only trials.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 4; Figure 4g, h; Supplementary Table 2, Figure 4h",
+     "quote": "We found that initial choice representations in hippocampus were higher than the alternative choice preceding the update, and then decreased after the update cue was presented and the new choice representation increased (Fig. 4g, h",
+     "statistics": [
+      {
+       "about": "trial type by choice",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(4246.25) = 97.58",
+       "p": 4.462e-61,
+       "n": "1238 switch and 885 delay only trials"
+      },
+      {
+       "about": "initial choice, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 9.17",
+       "p": 4.674e-14,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new choice, switch against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -6.41",
+       "p": 8.592e-10,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial minus new, switch against delay only",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(2037.93) = 114.34",
+       "p": 5.17e-25,
+       "n": "1205 switch and 854 delay only trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-hpc-choices-equal",
+     "statement": "After the update cue on switch trials, hippocampus represents the initial and new choices equally; the within-trial difference is not different from zero.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 4; Figure 4h right",
+     "quote": "both choices were represented equally and the difference on a trial-by-trial basis was not significantly different from zero ( p = 0.5625, initial \u2013 new vs. zero, Fig. 4h )",
+     "statistics": [
+      {
+       "about": "switch, initial minus new against zero",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.5625,
+       "n": "1205 switch trials in the legend"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-hpc-slower-than-pfc",
+     "statement": "The switch from initial to new choice decoding evolves more slowly in hippocampus than in prefrontal cortex.",
+     "source": "Results, Rapid switch from old to new choice estimates in prefrontal cortex, paragraph 4; Figure 4d, g",
+     "quote": "However, while the decoded activity followed a similar pattern of switching from the initial to the new choice as in prefrontal cortex, this change evolved over a longer period of time in hippocampus.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-stay-hpc-like-delay",
+     "statement": "Hippocampal goal arm decoding after the second cue on stay trials does not differ from delay only trials.",
+     "source": "Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 2; Figure 5c, d; Supplementary Table 2, Figure 5d",
+     "quote": "we found that the amount of non-local representations on stay trials was not significantly different from delay-only trials (p = 0.9927, initial, stay vs. delay only; p = 0.6267, new, stay vs. delay only)",
+     "statistics": [
+      {
+       "about": "trial type (switch, stay, delay only) by goal arm",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(5498.95) = 18.14",
+       "p": 6.726e-18,
+       "n": "1295 switch, 551 stay, 926 delay only trials"
+      },
+      {
+       "about": "initial arm, stay against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -1.56",
+       "p": 0.9927,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new arm, stay against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -1.56",
+       "p": 0.6267,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Three trial types in the model, correct trials, 0 to 1.5 s: stay minus delay only, initial +0.008 (Tukey p = 0.79), new +0.015 (p = 0.17). Neither is below 0.05. Stay means 0.101 and 0.115, within tolerance; 530 correct stay trials (paper 551). The code's count of trials gives p = 0.90 and 0.10, and the round-1 grid gave p = 0.85 and 0.063; the outcome is the same under each.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-stay-hpc-below-switch",
+     "statement": "Hippocampal goal arm decoding after the second cue is lower on stay trials than on switch trials.",
+     "source": "Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 2; Figure 5c, d",
+     "quote": "Non-local codes were in fact significantly lower on stay trials compared to switch trials ( p = 2.358e-8 initial, stay vs. switch, p = 0.0274 new, stay vs. switch, Fig. 5c, d )",
+     "statistics": [
+      {
+       "about": "initial arm, stay against switch",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -5.72",
+       "p": 2.358e-08,
+       "corrected": "Tukey",
+       "n": "551 stay and 1295 switch trials"
+      },
+      {
+       "about": "new arm, stay against switch",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -3.05",
+       "p": 0.0274,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Stay minus switch, from the model of fig5d-stay-hpc-like-delay: initial -0.031 (Tukey p = 3.5e-6), new -0.020 (p = 0.0094). Both arms are lower on stay trials with p < 0.05. Changed in round 1 from partially reproduced: with the round-1 grid, which had one bin centred on the cue and counted after it, the new arm gave -0.012, p = 0.38 (variant in the notebook). The code's count of trials gives p = 1.8e-7 and 0.019. The new arm part rests on the time grid; the grid that decides is the code's.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig10-stay-transient-new-arm",
+     "statement": "In the first 0.5 s after the stay cue, hippocampal decoding of the new arm is transiently higher on stay than on delay only trials, with no difference for the initial arm.",
+     "source": "Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 2; Supplementary Fig. 10",
+     "quote": "Examining that period (0\u20130.5 s after the update cue), we found significantly more decoding of the new arm on stay trials than on delay only trials (initial, stay vs delay only: p = 0.9806; new, stay vs delay only: p = 0.0375, Supplementary Fig. 10a, b )",
+     "statistics": [
+      {
+       "about": "new arm, stay against delay only, as the text and legend print",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.0375,
+       "corrected": "Tukey",
+       "n": "551 stay and 926 delay only trials"
+      },
+      {
+       "about": "new arm, stay against delay only, as Supplementary Table 2 prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -2.86",
+       "p": 0.049,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial arm, stay against delay only, as the text prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.9806,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial arm, as Supplementary Table 2 prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 0.81",
+       "p": 0.9651,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "0 to 0.5 s (bins centred 0.1, 0.3 and 0.5 s), three trial types: stay minus delay only, new arm +0.030 (Tukey p = 0.0052), initial arm +0.008 (p = 0.93). The new arm is higher on stay trials and the initial arm does not differ, as the criterion asks. Stay new 0.124 and stay initial 0.098 are within tolerance; delay only new 0.094 is below the tolerance of 0.11 +/- 0.011. The code's count of trials gives p = 0.0030 and 0.99; the round-1 grid, whose 0 to 0.5 s window held the bin centred on the cue, gave p = 0.037 and 1.0. The outcome is the same under each.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-stay-pfc-new-choice",
+     "statement": "Prefrontal new choice decoding after the second cue on stay trials is similar to delay only trials and lower than on switch trials.",
+     "source": "Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 3; Figure 5e, f; Supplementary Table 2, Figure 5f",
+     "quote": "We found that new choice coding on stay trials was also at similar levels to delay only trials, and significantly lower than switch trials ( p = 0.7914, stay vs. delay only, p = 0.0072, stay vs. switch, Fig. 5e, f )",
+     "statistics": [
+      {
+       "about": "trial type by choice",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(4739.91) = 55.44",
+       "p": 3.584e-56,
+       "n": "1109 switch, 483 stay, 798 delay only trials"
+      },
+      {
+       "about": "new choice, stay against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -1.29",
+       "p": 0.7914,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new choice, stay against switch",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -3.46",
+       "p": 0.0072,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-stay-pfc-initial-choice",
+     "statement": "Prefrontal initial choice decoding after the second cue on stay trials stays higher than on switch trials but is lower than on delay only trials.",
+     "source": "Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 3; Figure 5f",
+     "quote": "The decoded initial choice estimate remained relatively constant on stay trials, in contrast to switch trials, though also significantly lower than on delay trials ( p = 0.0032, stay vs. delay only, p = 1.908e-10 stay vs. switch)",
+     "statistics": [
+      {
+       "about": "initial choice, stay against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 3.68",
+       "p": 0.0032,
+       "corrected": "Tukey",
+       "n": "483 stay and 798 delay only trials"
+      },
+      {
+       "about": "initial choice, stay against switch",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 6.77",
+       "p": 1.908e-10,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-stay-pfc-difference",
+     "statement": "The prefrontal within-trial initial minus new choice difference on stay trials differs from both switch and delay only trials.",
+     "source": "Results, Goal codes for updating behaviors are not due simply to new visual information, paragraph 3; Figure 5f right",
+     "quote": "Furthermore, the difference between initial and new choice decoding was significantly different between trial types ( p < 4.462e\u221261 initial-new for switch vs. stay, p = 0.0033 initial-new for stay vs. delay only)",
+     "statistics": [
+      {
+       "about": "initial minus new by trial type",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(2370.62) = 76.21",
+       "p": 8.356e-33,
+       "n": "1109 switch, 483 stay, 798 delay only trials"
+      },
+      {
+       "about": "stay against switch",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "T = 6.86",
+       "p": 4.462e-61,
+       "p_relation": "<",
+       "corrected": "Tukey"
+      },
+      {
+       "about": "stay against delay only",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "T = 3.25",
+       "p": 0.0033,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-hpc-new-lower-incorrect",
+     "statement": "On incorrect switch trials, hippocampal new goal arm decoding after the update cue is less elevated than on correct trials, after accounting for speed and rotation.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 1; Figure 6a, b; Supplementary Table 2, Figure 6b",
+     "quote": "We found that indeed on incorrect trials in hippocampus, the new goal choice coding was not as elevated as correct trials (p = 0.0025, new correct vs. incorrect, Fig. 6a, b )",
+     "statistics": [
+      {
+       "about": "trial outcome by goal arm",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(3283.78) = 4.99",
+       "p": 0.0019,
+       "n": "1295 correct and 407 incorrect switch trials"
+      },
+      {
+       "about": "new arm, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 3.51",
+       "p": 0.0025,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Methods GLM (one Poisson GLM per arm on rotational and translational velocity over all trial types and animals, Pearson residuals), switch trials, 0 to 1.5 s: correct minus incorrect, new arm +0.084 (z = 4.00, Tukey p = 3.7e-4), ANOVA p = 8.9e-5. Trial means correct 0.073, incorrect 0.012, within tolerance. 1241 correct and 395 incorrect trials. The code's per-session GLM gives p = 9.5e-4 and the code's count of trials p = 9.1e-4; the round-1 grid gave p = 0.0011.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the comparison is shown as a variant.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-hpc-initial-no-difference",
+     "statement": "Hippocampal initial goal arm decoding after the update cue does not differ between correct and incorrect switch trials.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 1; Figure 6b",
+     "quote": "There was also no significant difference in initial goal choice coding on correct versus incorrect trials after the update cue (p = 0.2967 initial correct vs. incorrect, Fig. 6b )",
+     "statistics": [
+      {
+       "about": "initial arm, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 1.75",
+       "p": 0.2967,
+       "corrected": "Tukey",
+       "n": "1295 correct and 407 incorrect switch trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Methods GLM, switch trials, 0 to 1.5 s: correct minus incorrect, initial arm +0.041 (Tukey p = 0.21), not below 0.05. The code's per-session GLM gives p = 0.25, the code's count of trials p = 0.16, and the round-1 grid gave p = 0.12; the outcome is the same under each.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the comparison is shown as a variant.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-hpc-pre-cue-initial-higher-incorrect",
+     "statement": "Before the update cue, hippocampal initial goal arm decoding is higher on incorrect than on correct switch trials, beyond motor differences.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 1; Supplementary Table 2, Figure 6b pre update",
+     "quote": "Interestingly, preceding the update cue there was a noticeable increase in the initial goal arm representation on incorrect trials that could not be explained by motor differences alone ( p = 0.002, initial correct vs. incorrect)",
+     "statistics": [
+      {
+       "about": "outcome by arm, pre update",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(3162.37) = 7.62",
+       "p": 4.49e-05,
+       "n": "1292 correct and 407 incorrect switch trials"
+      },
+      {
+       "about": "initial arm, correct against incorrect, as the text prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.002,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial arm, as Supplementary Table 2 prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = -4.17",
+       "p": 0.0002,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new arm, pre update",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "Z = 2.27",
+       "p": 0.1058,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Methods GLM, switch trials, -1.5 to 0 s: the initial arm residual is higher on incorrect trials (correct minus incorrect -0.067, z = -3.97, Tukey p = 4.3e-4); the new arm does not differ (p = 0.88). The code's count of trials gives p = 3.1e-4 and the round-1 grid gave p = 1.2e-5. The code's per-session GLM, a variant, gives the same direction without significance (-0.035, p = 0.12).",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the comparison is shown as a variant.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-pfc-new-lower-incorrect",
+     "statement": "On incorrect switch trials prefrontal new choice decoding is smaller after the update cue and does not overtake the initial choice.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 2; Figure 6c, d; Supplementary Table 2, Figure 6d",
+     "quote": "This lack of switching choice representations was driven by significantly smaller decoding of the new choice in prefrontal cortex on incorrect trials ( p = 0.002, new correct vs. incorrect)",
+     "statistics": [
+      {
+       "about": "outcome by choice",
+       "test": "linear mixed effects model, ANOVA",
+       "statistic": "F(2754.10) = 8.29",
+       "p": 1.743e-05,
+       "n": "1109 correct and 359 incorrect switch trials"
+      },
+      {
+       "about": "new choice, correct against incorrect, as the text prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.002,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "new choice, as Supplementary Table 2 prints",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "T = 4.14",
+       "p": 0.0002,
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-pfc-initial-no-difference",
+     "statement": "Prefrontal initial choice decoding does not differ between correct and incorrect switch trials after the update cue, nor, after accounting for motor differences, before it.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 2; Figure 6d",
+     "quote": "In contrast, there was no significant difference in initial choice coding on correct and incorrect trials when accounting for motor differences ( p = 0.5874, initial correct vs. incorrect, Fig. 6d )",
+     "statistics": [
+      {
+       "about": "initial choice, post update",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "T = -1.26",
+       "p": 0.5874,
+       "corrected": "Tukey",
+       "n": "1109 correct and 359 incorrect switch trials"
+      },
+      {
+       "about": "initial choice, pre update",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "t = -2.54",
+       "p": 0.0536,
+       "corrected": "Tukey",
+       "n": "1107 correct and 359 incorrect switch trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-pfc-within-trial",
+     "statement": "Within trials, prefrontal new choice decoding exceeds initial on correct switch trials but not on incorrect ones.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 2; Figure 6d right",
+     "quote": "on incorrect trials the old and new choices were decoded at similar amounts even after new information was presented, in contrast to the significantly stronger new choice coding on correct trials (p = 0.0001, initial-new for correct vs. incorrect, p = 0.3531 initial-new vs. zero, incorrect trials, p = 0.0113 initial-new vs. zero, correct trials)",
+     "statistics": [
+      {
+       "about": "initial minus new, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "statistic": "T = -3.91",
+       "p": 0.0001,
+       "corrected": "Tukey",
+       "n": "1109 correct and 359 incorrect switch trials"
+      },
+      {
+       "about": "incorrect, initial minus new against zero",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.3531
+      },
+      {
+       "about": "correct, initial minus new against zero",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.0113
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig12-delay-hpc-no-outcome-difference",
+     "statement": "On delay only trials, hippocampal goal arm decoding in the update period does not differ between correct and incorrect trials.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 3; Supplementary Fig. 12a",
+     "quote": "On delay only trials we found no differences in hippocampal decoding of position for either initial or new goal arms ( p -values \u2265 0.942)",
+     "statistics": [
+      {
+       "about": "initial arm, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.9418,
+       "corrected": "Tukey",
+       "n": "926 correct and 435 incorrect delay only trials"
+      },
+      {
+       "about": "new arm, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.9649,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial minus new, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.947
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Methods GLM, delay only trials, 0 to 1.5 s: correct minus incorrect, initial arm -0.055 (Tukey p = 0.043), new arm -0.023 (p = 0.70); the initial minus new difference by outcome p = 0.18. One test gives p < 0.05, so the absence is not reproduced. The round-1 grid gave p = 0.012 for the initial arm. The code's per-session GLM, a variant, gives no p below 0.05 (0.33, 0.93, 0.41), and neither does the code's count of trials (0.096, 0.95, 0.12), so the outcome rests on the inclusion rule as well as the GLM; the Methods' GLM and the Methods' rule decide. It also rests on the degrees of freedom: on 51 (sessions less levels, a deliberately small value in place of Kenward-Roger, printed as a variant) the initial arm contrast gives p = 0.053.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "The GLM is fitted on all decoded trials of all types and animals together (Methods, Generalized linear model analysis), Poisson family as in the code, with rotational velocity mirrored like the decoding (S5) so its sign is relative to the initial side; the code's per-session GLM on the trials of the comparison is shown as a variant.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sfig12-delay-pfc-outcome-difference",
+     "statement": "On correct delay only trials prefrontal cortex decodes the initial (rewarded) choice more strongly, and on incorrect trials the new (unrewarded) choice.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 3; Supplementary Fig. 12b",
+     "quote": "On correct trials the initial goal arm (the one that will be rewarded on delay only trials) was decoded more strongly than the other goal arm throughout the delay period ( p = 5.934e\u221211, initial correct vs. incorrect, Supplementary Fig. 12b )",
+     "statistics": [
+      {
+       "about": "initial choice, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 5.934e-11,
+       "corrected": "Tukey",
+       "n": "798 correct and 384 incorrect delay only trials"
+      },
+      {
+       "about": "new choice, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 0.0002,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "initial minus new, correct against incorrect",
+       "test": "linear mixed effects model, Tukey post-hoc pairwise test",
+       "p": 9.682e-15
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-predict-outcome",
+     "statement": "The post-update difference between initial and new goal codes predicts whether a switch trial is correct, above shuffled labels, with 61.43% accuracy from prefrontal choice decoding and 55.83% from hippocampal position decoding.",
+     "source": "Results, Goal codes predict ability to accurately update decisions in response to new information, paragraph 3; Figure 6e",
+     "quote": "We found that in both hippocampus and prefrontal cortex, the population representation of the initial and new goals after the update cue was presented predicted whether the animals would choose the correct or incorrect side (hippocampus: p < 4.462e\u221261, prefrontal cortex: p < 4.462e\u221261, permutation test, Fig. 6e )",
+     "statistics": [
+      {
+       "about": "CA1 position decoding against shuffled labels",
+       "test": "permutation test",
+       "p": 4.462e-61,
+       "p_relation": "<",
+       "n": "1702 switch trials, 1000 shuffles"
+      },
+      {
+       "about": "PFC choice decoding against shuffled labels",
+       "test": "permutation test",
+       "p": 4.462e-61,
+       "p_relation": "<",
+       "n": "1468 switch trials, 1000 shuffles"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because its PFC half decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here, and the criterion judges both regions together. Its CA1 half needs no LSTM; the notebook builds its feature table (1241 correct and 395 incorrect switch trials, 2482 after balancing) and times the SVM: about 0.13 s per fit, so the paper's procedure, a leave-one-out randomized search and leave-one-out accuracy (27302 fits per run), takes about 1.0 h for the real labels alone and about 41 days with the 1000 shuffles of the permutation test, against the 60 min limit. Fit times vary from run to run: the real labels alone are near the limit and the notebook prints them as within it, so only the permutation test the criterion asks for is too large in the CA1 half. The claim stays blocked because of the PFC half.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-hpc-commitment-new-arm",
+     "statement": "The more committed the animal was to the initial arm at the update cue (view angle toward it), the larger the post-cue increase in hippocampal decoding of the new arm.",
+     "source": "Results, Increased goal representations are correlated with choice commitment, paragraph 1; Figure 7b, c; Supplementary Table 2, Figure 7c",
+     "quote": "the view angle preceding new information was positively correlated with the increase in non-local goal representation of the new arm (new goal codes vs. view angle: p = 1.330e-5, r s = 0.12370, Fig. 7b, c",
+     "statistics": [
+      {
+       "about": "view angle against change in new arm decoding",
+       "test": "Spearman correlation",
+       "statistic": "rho = 0.1237",
+       "p": 1.33e-05,
+       "n": "1235 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "1241 correct switch trials. Spearman rho between view angle toward the initial arm at the cue and the change in new arm decoding (0 to 1.5 s minus -1.5 to 0 s) = +0.077, p = 0.0067: sign and p hold, but rho is outside 0.1237 +/- 0.0124. Quartile means 0.024, 0.045, 0.073, 0.052 from toward new to toward initial. Per animal rho is positive in 5 of 7. The code's count of trials gives rho = +0.087, p = 0.0031, and the round-1 grid gave +0.057, p = 0.043.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-hpc-commitment-initial-arm",
+     "statement": "The change in hippocampal initial arm decoding after the update cue is not correlated with view angle at the cue.",
+     "source": "Results, Increased goal representations are correlated with choice commitment, paragraph 1; Figure 7c",
+     "quote": "It is important to note that the correlation between view angle and prospective codes was only observed for the new arm and not the initial arm",
+     "statistics": [
+      {
+       "about": "view angle against change in initial arm decoding",
+       "test": "Spearman correlation",
+       "statistic": "rho = 0.0439",
+       "p": 0.1234,
+       "n": "1235 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_prince_2025.ipynb",
+     "notes": "Spearman rho for the initial arm = +0.030, p = 0.29 (n = 1241), not below 0.05, as in the paper (rho = 0.044, p = 0.12). Changed in round 1 from not reproduced: with the round-1 grid, which had one bin centred on the cue and counted after it, rho was +0.058, p = 0.040 (variant in the notebook). The code's count of trials gives p = 0.29. The outcome rests on the time grid; the grid that decides is the code's.",
+     "deviations": [
+      "The ANOVA is a Wald test of the combined predictor in a statsmodels MixedLM (random intercepts for animal and session within animal); lme4 with Kenward-Roger degrees of freedom is not used. Tukey p values use the studentized range over all levels with large degrees of freedom, as emmeans pairs() does for large samples.",
+      "Decoding is a numpy implementation of pynapple decode_1d with a uniform prior, on tuning curves from within-trial locomotion samples (|rot| + |trans| of the acquisition series above 1000, S3) of 80% of delay only trials (train_test_split, random_state 21).",
+      "Sessions are included with at least 20 units in the region and at least 50 final-task trials of the session, warm-up trials left out (S1 as a reader amended it on 2026-11-02; Methods, Decoding analyses, \"less than 50 trials for the behavioral session\"), giving 55 CA1 and 46 PFC sessions against the paper's 56 and 47. The paper's trial counts are higher (for CA1 1295 switch and 926 delay only correct trials against 1241 and 871 here), partly because the units of five sessions carry no region (finding). The code's count of encoder training trials (47 CA1 and 37 PFC sessions), the variant S1 names, is shown for every test.",
+      "Update-aligned decoding uses the code's time grid (_align_by_times, samples at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s): 26 bins of 0.2 s from -2.6 to 2.6 s whose edges fall on the cue; the code decodes the session in 0.2 s bins and interpolates at those times, here each bin is decoded directly. Windows take bins by centre as the code (calc_trial_by_trial_quant_data): (lo, hi] after the cue, [lo, hi) before it, so 0 to 1.5 s is the 8 bins centred 0.1 to 1.5 s. In round 1 the grid had one bin centred on the cue and counted after it; that grid is shown as a variant in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7e-pfc-commitment-initial",
+     "statement": "The more committed the animal was to the initial side at the update cue, the larger the decrease in prefrontal initial choice decoding.",
+     "source": "Results, Increased goal representations are correlated with choice commitment, paragraph 1; Figure 7d, e; Supplementary Table 2, Figure 7e",
+     "quote": "In prefrontal cortex, when the animals were more committed to the initial side, the update cue induced a larger decrease in the initial choice representation compared to trials where animals were less committed (initial goal codes vs. view angle: p = 0.0002, r s = \u22120.1108",
+     "statistics": [
+      {
+       "about": "view angle against change in initial choice decoding",
+       "test": "Spearman correlation",
+       "statistic": "rho = -0.1108",
+       "p": 0.0002,
+       "n": "1103 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7e-pfc-commitment-new",
+     "statement": "The post-cue increase in prefrontal new choice decoding is weakly correlated with view angle at the cue, smallest when the animal was already heading to the new arm.",
+     "source": "Results, Increased goal representations are correlated with choice commitment, paragraph 1; Figure 7e; Supplementary Table 2, Figure 7e",
+     "quote": "After the update cue, prefrontal decoding of the new arm increased on all trial types, but the increase was the smallest when animals were already more committed to the new arm.",
+     "statistics": [
+      {
+       "about": "view angle against change in new choice decoding; the text prints rho 0.0615, Supplementary Table 2 rho -0.0615",
+       "test": "Spearman correlation",
+       "statistic": "r s = 0.0615",
+       "p": 0.0414,
+       "n": "1103 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Blocked because it decodes the LSTM choice estimate of fig4a-lstm-choice-estimate (S11), which is too large to run here (see that claim).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The units tables of five sessions (S20-210517, S28-211114, S29-211104, S29-211105, S34-220617; 633 units) hold only the phy columns, with no region, cell type, electrodes or electrode group column (61 of the 66 units tables have an electrode group). Their ch values (0 to 63) do not say which of the two 64-channel probes a unit is on, since ch runs from 0 to 63 on both probes in the labelled sessions, so they cannot be assigned to CA1 or PFC. With them, the unit count equals the paper's 6449; without them, CA1 has 3545 units and PFC 2271 against 3892 and 2557.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Position (processing/behavior/position) is labelled meters, but its values are in virtual track units (y from -117 to 286, the code's track ends at 285).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "View angle is labelled degrees, but its values run from -1.047 to 1.047, radians (plus or minus 60 degrees).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The theta phase in processing/ecephys/decomposition_phase is labelled degrees, but its values run from -pi to pi, radians.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The trials column turn_type is described as {'right': 1, 'left': 2}. In the data, correct delay only trials with turn_type 1 all end at negative x (2521 of 2521) and have choice 1, and the paper's code maps turn_type 1 to left and puts the left arm at negative x; the description has the two labels the other way round, or names sides by a convention the files do not state.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods and the Figure 1b legend give rolling windows of 40 trials, but the reported window counts (6252 delay only, 1002 switch, 117 stay) are those of 15-trial windows, the code's default; 40-trial windows give 4636, 239 and none.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Supplementary Table 1 lists 8104 delay trials; the final-task delay only trials number 7172, the Results' count, and the 932 warm-up trials (maze_id 3) make up the difference. The trial-type fractions of the Results (65, 25 and 10%) are not those of the trials (0.737, 0.189, 0.074).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's code counts the encoder training trials (80% of delay only trials) for the 50-trial session rule, where the Methods count the trials of the session; on this dataset the Methods' count gives 55 CA1 and 46 PFC sessions, close to the 56 and 47 of Supplementary Table 2, and the code's count 47 and 37. A reader amended S1 to follow the Methods (answer of 2026-11-02), and the code's count changes two outcomes here (sfig3c-retrospective-unchanged, p = 0.14 against 0.036, and sfig12-delay-hpc-no-outcome-difference, p = 0.096 against 0.043).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's code reads the theta phase stored in the file (general/lfp.py), where the Methods describe a phase from peaks and troughs of the filtered LFP; the two agree closely at the decoding bins (mean cosine of their difference, median 0.975 over 59 sessions), and every theta outcome is the same with either. In the session where they agree least (S20-210511, mean cosine -0.49) the pyramidal spikes are barely locked to theta (0.085 and 0.086 of spikes in the peak 30-degree bin against 0.083 for uniform firing), so the reference phase of maximal firing, and with it the referenced phase, is nearly arbitrary under either estimate.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods define the decoding spread of Supplementary Fig. 5f by \"how far in front and behind of the peak value the decoding results dropped below this threshold\" (peak minus one standard deviation), the first crossing on each side; the paper's code (plot_region_error_distribution) takes the outermost bins at or above the threshold anywhere before and after the peak. On this dataset the first crossing gives 0.14 and 0.37 bins (CA1, PFC) and the code's rule 4.07 and 4.37, against the paper's 2.4 and 3.13.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: which 0.2 s bins enter the windows after the update cue (0 to 0.5, 0 to 1 and 0 to 1.5 s)? The code samples the decoding at -2.5, -2.3, ..., -0.1, 0.1, ..., 2.5 s and cuts windows with pd.cut, which this attempt follows; a grid with a bin centred on the cue, counted after it, shifts the windows by 0.1 s. On this dataset the shift changes three outcomes (sfig3c-retrospective-unchanged p = 0.036 against 0.12; fig5d-stay-hpc-below-switch new arm p = 0.0094 against 0.38; fig7c-hpc-commitment-initial-arm p = 0.29 against 0.040). It also changes one test of fig2g-pfc-no-goal-increase (reading b new arm p = 0.030 against 0.066), whose outcome it leaves unchanged, since reading a fails on both grids.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1: the handover of the author-answers run, the executed notebook with the conclusions and summary removed, the helper module and the claims file, with the paper under paper/.",
+     "agreed": 52,
+     "of": 52,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2: the full executed notebook of the author-revise-1 run with its conclusions and summary, the helper module, the attempt record and the claims file, with the paper under paper/.",
+     "agreed": 52,
+     "of": 52,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001371-prince-2025",
+   "type": "reproduction",
+   "title": "Prospective goal codes in hippocampus and prefrontal cortex (Prince et al. 2025)",
+   "description": "Tests the findings of Prince, Cushing, Yassine, Katragadda, Roberts and Singer (2025) on dandiset 001371, which holds the units, behaviour and LFP of 66 sessions from 7 mice in a virtual y-maze task with switch and stay cues. It tests the behaviour, Bayesian position decoding in CA1 and prefrontal cortex around the update cue, its theta phase, the residual goal codes on correct and incorrect trials, and their relation to view angle. The LSTM choice estimate and the choice decoding built on it were timed and do not fit the notebook limit.",
+   "datasets": [
+    "dandi:001371"
+   ],
+   "papers": [
+    "10.1038/s41467-025-60122-8"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_prince_2025.ipynb",
+     "title": "Reproducing Prince et al. (2025) from dandiset 001371",
+     "executed": "notebooks/001371-prince-2025/reproduce_prince_2025.html"
+    }
+   ]
+  }
+ ]
+}
