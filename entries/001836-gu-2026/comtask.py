@@ -209,8 +209,11 @@ def arm_segments(lin, ev, start, stop):
     return out
 
 
-def detect_com(trials, lin, seg_of_arm, arm_start, theta="cm"):
-    """COM events per trial. Returns trials with com columns and a list of events."""
+def detect_com(trials, lin, seg_of_arm, arm_start, theta="cm", past_threshold=True):
+    """COM events per trial. Returns trials with com columns and a list of events.
+
+    ``past_threshold=False`` is the earlier rule, under which the first reversal of the visit counts
+    even when it ends before the head passes the threshold; it is kept to show what the rule changes."""
     t = lin.time.values
     lp = lin.lin.values
     sg = lin.seg.values
@@ -247,7 +250,7 @@ def detect_com(trials, lin, seg_of_arm, arm_start, theta="cm"):
                 # a reversal counts once the head has passed the threshold: the COM time is where
                 # the rat stops advancing in the arm (Methods, Change of mind time detection)
                 last = ndimage.maximum(np.arange(len(neg)), lab, range(1, nlab + 1))
-                ok = np.flatnonzero((sizes > rev_n) & (np.asarray(last) >= i_thr))
+                ok = np.flatnonzero((sizes > rev_n) & ((np.asarray(last) >= i_thr) | (not past_threshold)))
                 if len(ok) == 0:
                     continue
                 first = np.flatnonzero(lab == ok[0] + 1)[0]
@@ -340,14 +343,18 @@ def load_day(assets_day):
     for arm, s in seg_of_arm.items():
         x = lin_all.lin.values[lin_all.seg.values == s]
         starts[arm], lens[arm] = float(np.nanmin(x)), float(np.nanmax(x) - np.nanmin(x))
-    trials_all, events_all, trials_p, events_p = [], [], [], []
+    trials_all, events_all, trials_p, events_p, events_old = [], [], [], [], []
     for tag, (e, lin) in loaded.items():
         tr = build_trials(info["events"], e.start, e.stop)
         if len(tr) == 0:
             checks.append({"epoch": tag, "lin_files": 1, "trials": 0})
             continue
         trp, evp = detect_com(tr, lin, seg_of_arm, starts, theta="prop")
+        tr0, ev0 = detect_com(tr, lin, seg_of_arm, starts, theta="cm", past_threshold=False)
         tr, evs = detect_com(tr, lin, seg_of_arm, starts, theta="cm")
+        tr["com_earlier_rule"] = tr0.com.values
+        ev0["epoch"] = tag
+        events_old.append(ev0)
         for x in (tr, trp):
             x["epoch"] = tag
             x["trial"] = np.arange(len(x))
@@ -377,6 +384,7 @@ def load_day(assets_day):
     events = pd.concat(events_all, ignore_index=True) if events_all else pd.DataFrame()
     cat = lambda xs: pd.concat(xs, ignore_index=True) if xs else pd.DataFrame()
     return {"trials": trials, "events": events, "trials_prop": cat(trials_p), "events_prop": cat(events_p),
+            "events_earlier_rule": cat(events_old),
             "checks": pd.DataFrame(checks), "dups": dups,
             "seg_of_arm": seg_of_arm, "arm_start": starts, "arm_len": lens,
             "segmap": segmap, "epochs": epochs, "subject_id": info["subject_id"],
@@ -408,7 +416,7 @@ def load_all(assets, workers=12):
     res = dict(zip(days, processes(load_day, [assets[assets.day == d] for d in days], workers=workers)))
     for d, r in res.items():
         rat = d.split("-")[0]
-        for k in ("trials", "events", "trials_prop", "events_prop", "checks"):
+        for k in ("trials", "events", "trials_prop", "events_prop", "events_earlier_rule", "checks"):
             if len(r[k]):
                 r[k]["rat"] = RATS[rat]
                 r[k]["day"] = d
@@ -898,6 +906,64 @@ def segment_maze_post(rows, speeds, fix_ranges, rng):
     return out
 
 
+N_DRAWS = 20   # further draws of the control arm ranges, each with its own seed (a standard choice)
+
+
+def _row_trig(r):
+    return float(np.median(r["time_abs"] - r["time_triggered"]))
+
+
+def pair_agreement(rows_by_file, tol_s=1e-3):
+    """For every two tables of a day that share trigger times: at the samples both hold, how often
+    their decodes agree to within 1 cm (both finite), overall and where both lie on the row's arm.
+    The decodes lie on the decoder's 2 cm grid, so two decodes either agree or differ by 2 cm or more;
+    the 1 cm tolerance is a standard choice that cannot change a result."""
+    keys = {f: {int(round(_row_trig(r) / tol_s)): r for r in rows} for f, rows in rows_by_file.items()}
+    files = sorted(keys)
+    out = []
+    for i, fa in enumerate(files):
+        for fb in files[i + 1:]:
+            shared = sorted(set(keys[fa]) & set(keys[fb]))
+            if not shared:
+                continue
+            n, eq, n_arm, eq_arm = 0, 0, 0, 0
+            for k in shared:
+                ra, rb = keys[fa][k], keys[fb][k]
+                ta = np.round(np.asarray(ra["time_abs"]) * 1e4).astype(np.int64)
+                tb = np.round(np.asarray(rb["time_abs"]) * 1e4).astype(np.int64)
+                _, ia, ib = np.intersect1d(ta, tb, return_indices=True)
+                da = np.asarray(ra["triggered_decodes_abs"], dtype=float)[ia]
+                db = np.asarray(rb["triggered_decodes_abs"], dtype=float)[ib]
+                ok = np.isfinite(da) & np.isfinite(db)
+                n += int(ok.sum())
+                eq += int((np.abs(da - db)[ok] < 1.0).sum())
+                lo, hi = ARM_REGIONS[ra["arm"]]
+                inarm = ok & (da >= lo) & (da < hi) & (db >= lo) & (db < hi)
+                n_arm += int(inarm.sum())
+                eq_arm += int((np.abs(da - db)[inarm] < 1.0).sum())
+            out.append({"file_a": fa, "file_b": fb, "shared_rows": len(shared), "samples": n,
+                        "frac_equal": eq / n if n else np.nan, "samples_on_arm": n_arm,
+                        "frac_equal_on_arm": eq_arm / n_arm if n_arm else np.nan})
+    return pd.DataFrame(out)
+
+
+def segment_post_com(rows, speeds):
+    """Per row of an arm-restricted table around COM time: the largest maze distance after the
+    trigger, head within the first 80 cm of the arm and at 4 cm/s or more, decode within the arm
+    (the measure of the inbound rows, segment_maze_post, without the drawn range)."""
+    sp = _speed_rows(rows, speeds)
+    out = []
+    for r, s in zip(rows, sp):
+        base = ARM_REGIONS[r["arm"]][0]
+        pos = np.asarray(r["triggered_positions_baseoff"], dtype=float) + base
+        dec = np.asarray(r["triggered_decodes_baseoff"], dtype=float) + base
+        rel = np.asarray(r["time_triggered"])
+        m = (s >= SPEED_CM_S) & (pos >= base) & (pos - base <= FIG3_MAX_CM) & (rel >= 0)
+        out.append({"trial": r["trial"], "arm": r["arm"], "t_trig": _row_trig(r),
+                    "d_post": maze_distance_max(pos[m], dec[m]) if m.any() else np.nan})
+    return out
+
+
 def fig3_day(args):
     """All triggered tables of one day: what each holds, and the Figure 3 measures."""
     assets_day, epochs, com_times, poke_times, seed = args
@@ -921,9 +987,29 @@ def fig3_day(args):
         files.append(c)
         rows_by_file[p] = rows
     files = pd.DataFrame(files)
-    res = {"files": files, "com_pre": [], "poke_pre": [], "com_both": {}, "poke_post": []}
+    res = {"files": files, "com_pre": [], "poke_pre": [], "com_both": {}, "poke_post": [], "other_rows": [],
+           "com_both_other": {}, "com_seg_post": [], "other_pre": [], "pairs": pd.DataFrame()}
     if len(files) == 0:
         return res
+    res["pairs"] = pair_agreement(rows_by_file)
+    # Which decoder made each whole-track table: its agreement, on the arm, with the arm-restricted
+    # tables that share its triggers (all of these come from one decoder; see the notebook)
+    seg = set(files[files.segment].file)
+    agree = {}
+    for x in res["pairs"].itertuples():
+        for a, b in ((x.file_a, x.file_b), (x.file_b, x.file_a)):
+            if b in seg and a not in seg and x.samples_on_arm >= 100:
+                agree[a] = max(agree.get(a, 0.0), x.frac_equal_on_arm)
+    files["arm_table_agreement"] = files.file.map(agree)
+    # The rows of the tables that match neither trigger: their trigger times, and how far each is from
+    # this entry's COM times and outer pokes
+    for f in files[files.trigger == "other"].file:
+        c = files[files.file == f].iloc[0]
+        for r in rows_by_file[f]:
+            t = np.array([_row_trig(r)])
+            res["other_rows"].append({"file": f, "window": c.window, "segment": bool(c.segment), "trial": r["trial"],
+                                      "arm": r["arm"], "t_trig": float(t[0]), "d_com": float(_nearest(com_times, t)[0]),
+                                      "d_poke": float(_nearest(poke_times, t)[0])})
     sel = lambda trig, win, seg: files[(files.trigger == trig) & (files.window == win) & (files.segment == seg)].file
     for f in sel("com", "pre", True):
         res["com_pre"] += [dict(m, file=f) for m in segment_metrics(rows_by_file[f], speeds)]
@@ -940,12 +1026,36 @@ def fig3_day(args):
         fr = ranges[rng.integers(len(ranges))] if ranges else None
         m["d_matched"] = max_dist(m["pos"], m["dec"], fr) if fr else np.nan
         m["d_all"] = max_dist(m["pos"], m["dec"])
-    for m in res["com_pre"]:
+    # Variants asked for by the verifier (round 2). Each further draw has its own generator, so the
+    # draws above are unchanged.
+    for k in range(1, N_DRAWS + 1):
+        g = np.random.default_rng([seed, k])
+        for m in res["poke_pre"]:
+            fr = ranges[g.integers(len(ranges))] if ranges else None
+            m[f"d_matched_{k}"] = max_dist(m["pos"], m["dec"], fr) if fr else np.nan
+        g = np.random.default_rng([seed, 100 + k])
+        j = 0
+        for f in sel("poke", "post", True):
+            for m in segment_maze_post(rows_by_file[f], speeds, post_ranges, g):
+                res["poke_post"][j][f"d_post_{k}"] = m["d_post"]
+                j += 1
+    # every row of the "other" whole-track tables around a trigger, flagged by whether its trigger
+    # is within TRIG_TOL_S of a COM time of this entry
+    for f in sel("other", "both", False):
+        res["com_both_other"][f] = [dict(m, aligned=bool(_nearest(com_times, np.array([m["t_trig"]]))[0] < TRIG_TOL_S))
+                                    for m in prepost_maze(rows_by_file[f], speeds)]
+    # COM rows of the arm-restricted tables around COM time, measured as the inbound rows are
+    for f in sel("com", "both", True):
+        res["com_seg_post"] += [dict(m, file=f) for m in segment_post_com(rows_by_file[f], speeds)]
+    # rows of the arm-restricted tables before stopping that match neither trigger
+    for f in sel("other", "pre", True):
+        res["other_pre"] += [dict(m, file=f) for m in segment_metrics(rows_by_file[f], speeds)]
+    for m in res["com_pre"] + res["other_pre"]:
         m["d_all"] = max_dist(m["pos"], m["dec"])
         m["speed"] = ((m["pos_max"] - m["pos_min"]) / (m["n"] * 0.002)) if m["n"] >= 250 else np.nan
     for m in res["poke_pre"]:
         m["speed"] = ((m["pos_max"] - m["pos_min"]) / (m["n"] * 0.002)) if m["n"] >= 250 else np.nan
-    for k in ("com_pre", "poke_pre"):
+    for k in ("com_pre", "poke_pre", "other_pre"):
         for m in res[k]:
             m.pop("pos"), m.pop("dec")
     return res

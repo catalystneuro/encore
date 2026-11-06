@@ -23,7 +23,7 @@ on hippocampal content need the decoder output over whole sessions, which the da
 | More extended decodes before stopping on COM trials (Figure 3B) | Partially reproduced |
 | Decoded distance predicts a COM (Figure 3B) | Partially reproduced |
 | More distant decodes after stopping than before (Figure 3C) | Partially reproduced |
-| More distant decodes after stopping than on inbound runs (Figure 3D) | Partially reproduced |
+| More distant decodes after stopping than on inbound runs (Figure 3D) | Partially reproduced (change to not reproduced proposed) |
 | Lower ripple rate during COM than at trial ends (Figure S7B) | Reproduced |
 | Remote and local extended content, theta (15 claims) | Blocked: too large |
 
@@ -31,13 +31,20 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The dandiset holds fewer trials than the paper reports for rats M, K and L, which is most of why the
-counts are not reproduced. For Figure 1H the effect is in every rat, but the paired t-test reaches
-p < 0.01 in two rats where the paper reports four. The Figure 3 effects hold in four of the five
-rats. The attempt record, with the reasons and the differences from the paper's method, is
+counts are not reproduced. For Figure 1H the initial ratio exceeds the final in every rat, as a
+direction (rat M has p = 0.42), but the paired t-test reaches p < 0.01 in two rats where the paper
+reports four. Figure 3B: COM decodes reach further than run-through decodes at p < 0.01 in four of
+five rats in the first random draw of arm ranges (all five in about half of further draws), and the
+decoded distance predicts a COM with a fold change within tolerance but not at p < 1e-20. Figure 3C:
+post-stopping decodes reach further than pre-stopping ones in four of five rats. Figure 3D: with the
+decoder of the inbound tables identified and all the paper's COM tables, COM exceeds inbound at
+p < 0.05 in only three rats, and a change to not reproduced is proposed for a third verification
+round. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001836-gu-2026-01.yaml`](../../attempts/001836-gu-2026-01.yaml).
 
-- `reproduce_gu_2026.ipynb`: the analysis. It takes about 15 minutes, in separate processes: about
-  3 minutes to stream the events and the linearized position of 197 run sessions, 5 for the
-  triggered tables, and 4 for ripple detection on the LFP.
+- `reproduce_gu_2026.ipynb`: the analysis. It took 11 to 14 minutes in the runs of the round-2
+  revision, in separate processes: 2 to 5 minutes to stream the events and the linearized position
+  of 197 run sessions, about 3 to 5 for the triggered tables, and under 3 for ripple detection on
+  the LFP.
 - `comtask.py`: loading, trials, change-of-mind detection, the side and sequence measures, the
   triggered tables and ripple detection. Other notebooks on this dandiset can import it.
