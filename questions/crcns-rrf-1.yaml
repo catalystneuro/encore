@@ -1,0 +1,38 @@
+# Questions from attempt crcns-rrf-1-moaddab-2021-01 (author revision after verifier round 1,
+# 2026-11-06) about claims/crcns-rrf-1/10.1016-j.cub.2021.02.055.yaml, asked under docs/protocol.md,
+# "Hand over for verification". The verifier reported these as places where the claims file may
+# misread the paper; the claims were tested as the file has them.
+dataset: CRCNS:rrf-1
+paper: doi:10.1016/j.cub.2021.02.055
+questions:
+- claim: fig6a-k1-shock
+  asked: 2026-11-06
+  question: For k1, k3, k5 and k6 the claims file takes the outcome window from the Figure 6 gray
+    boxes (0 to 8 s after shock offset) and the expected means and CI patterns from Table S4.
+    Table S4's means for these four clusters are reproduced to within 0.008 by 0 to 4 s after shock
+    offset and differ by 0.04 to 0.15 at 0 to 8 s. Should the window of these claims be the one
+    Table S4's values come from (0 to 4 s), or the gray boxes? The same question applies to
+    fig6c-k3-continued-threat, fig6de-k4-k5-persistent-threat (k5) and fig6f-k6-ppe-then-valence.
+  passage: The gray box indicates the interval analyzed in columns i and ii (Figure 6 legend), and
+    See also Table S4. On the rendered page the boxes of panels A, C, E and F end at the 8-s tick;
+    the paper's code (rrfAnalysis.m 6177 to 6210) puts 0 s of these traces at shock offset and does
+    not draw the boxes.
+  why: fig6a-k1-shock is not reproduced at 0 to 8 s (danger and uncertainty shock CIs include zero)
+    and its seven CIs and four means all agree at 0 to 4 s. For k5 the omission mean is 0.156 at 0
+    to 8 s, outside 0.25 +/- 0.08, and 0.248 at 0 to 4 s, though one k5 CI then disagrees, so
+    fig6de stays partial either way. For k3, seven CIs agree at 0 to 8 s and six at 0 to 4 s; for
+    k6, seven agree in the single draw of either window.
+- claim: fig4abc-threat-bias
+  asked: 2026-11-06
+  question: Part (2) of the criterion asks that in at least six of the seven clusters other than k2
+    the uncertainty mean have a smaller absolute value than the danger mean. The paper says that k4
+    neurons inhibit equally to danger and uncertainty. Should k4 be left out of part (2), or the
+    count lowered, since the paper itself does not expect k4 to meet it?
+  passage: K4 neurons specifically and equivalently inhibited firing to danger and uncertainty
+    (Results, Diverse cue firing patterns), against With the exception of cluster k2, the direction
+    and temporal characteristics of each cluster's uncertainty firing were similar to that for
+    danger, only diminished in magnitude (Results, Uniform firing bias toward threat cues).
+  why: Part (2) holds in five of seven clusters, one short of six. The two failures are k4
+    (uncertainty -0.324 against danger -0.319, as the paper describes k4) and k7 (uncertainty
+    -0.002 in the delay). With k4 left out it would hold in five of six; whether that is enough
+    for reproduced depends on the count the reader sets.
