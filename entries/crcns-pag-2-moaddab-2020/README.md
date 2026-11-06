@@ -35,7 +35,10 @@ reasoning and the differences from the paper's method.
 The group of each rat and the meaning of the event codes are given only by the authors' script in
 the data set. The paper's counts of responsive neurons follow from the cube's firing rates, which
 are truncated to whole Hz, and its statistics for Figs. 4C, 4F and 6 follow from the script's
-normalization, which differs from the one the Methods describe. The attempt record, with the
+normalization, which differs from the one the Methods describe. The single-unit regressions are
+judged under the script's own inputs, which give the paper's printed statistics more closely than
+any other reading. The paper's Fig. 7 statistics follow from firing over the first 5 s of the cue,
+where its legend says the last 5 s. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/crcns-pag-2-moaddab-2020-01.yaml`](../../attempts/crcns-pag-2-moaddab-2020-01.yaml).
 
