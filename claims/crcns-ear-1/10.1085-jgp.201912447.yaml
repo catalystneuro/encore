@@ -19,8 +19,9 @@
 #   Eq. 8d, alphaB = 4 alpha(V0.5) (Results, 9.32 and 8.08 V-1 against Table 1, 37.3 and 32.3 V-1).
 #   Eq. 6a, lambda = q^2 / (2 C_Leq), and Eq. 6b, QTm^2 = (2 lambda / C_Leq) CLW^2 (gives 3.95 and
 #     2.16 kB T for q = 0.859 e0 and C_Leq 0.584 and 1.07 aF, as in Table 3 and Fig. 1).
-#   Eq. 7, dG = (lambda +/- q V0.5 / kB T)^2 / (4 lambda), the activation with +, the deactivation
-#     with - (gives 2.68 and 0.125 kB T for pathway 1, 1.19 and 0.145 for pathway 2, Table 3).
+#   Eq. 7, dG = (lambda -/+ q V0.5 / kB T)^2 / (4 lambda), the activation with -, the deactivation
+#     with + (Theoretical model, the sentence after Eq. 7; with q = 0.859 e0 and V0.5 < 0 this
+#     gives 2.68 and 0.125 kB T for pathway 1, 1.19 and 0.145 for pathway 2, Table 3).
 #   Eqs. 8b and 8c (the non-lateral-wall capacitance) are not rebuilt beyond the prose; see
 #   nlw-capacitance.
 # (2) The contents of Tables S1 to S4 are not in the text (only their captions). Claims that rest
@@ -61,8 +62,9 @@
 # show both). CLW = CL - CNLW, CNLW about 4.82 pF. dVmin_exp = QTm / CLW. z = alphaB kB T / e0 at
 # T = 297.15 K. "Basal" and "apical" are not defined in the text; readings (r-a) basal = turns 1
 # and 2, apical = turns 3 and 4; (r-b) basal = turn 1, apical = turn 4 with 2 and 3 left out.
-# Reading (r-a) is the one the cell counts favour (Table 1 counts 15 + 28 + 41 cells in its two
-# regions out of 84 cells of known turn with 144 mM chloride, less the cells left out of Table 1).
+# Reading (r-a) is the one the cell counts favour: Table 1 places 15 + 28 + 41 = 84 cells in its two
+# regions, and Fig. 1 shows 86 cells with 144 mM chloride, of which at most 85 have a known turn, so
+# nearly every cell of known turn is in a region, which (r-b) would not give.
 # Where a claim gives no test, none is reported in the paper.
 schema_version: 2
 dataset:
@@ -156,7 +158,9 @@ claims:
     CL - CSB where QTm is zero. CNLW is then CSB plus that root. CSB, the stereocilia bundle
     capacitance, is "calculated" by a method the paper takes from Corbitt et al. (2012) and does not
     give; open. Readings (n-a) CSB as stored per cell in the data set, if it is; (n-b) CNLW and CLW
-    as stored per cell; (n-c) CSB = 0, so CNLW is the root alone. Cells, 144 mM chloride. Reproduced
+    as stored per cell; (n-c) CSB = 0, so CNLW is the root alone. The form of Eq. 8c (CNLW = CSB +
+    root) is rebuilt from the prose. Which cells enter the fit is not given; readings all 89 cells,
+    or the 86 with 144 mM chloride (the population of Fig. 1). Reproduced
     when under one reading CNLW is within tolerance and separate fits for pigmented against albino,
     and adult against juvenile, give roots whose 95% confidence intervals overlap (the paper names no
     test for "no differences"; overlap of intervals is the reading used here, and the size of each
@@ -196,7 +200,9 @@ claims:
   criterion: Cells, the 86 with 144 mM chloride in the pipette (Fig. 1 legend), with and without
     XE991. Eq. 6b as rebuilt (QTm^2 proportional to CLW^2) is fitted by least squares. The paper does
     not say whether the fit has an intercept; readings (f-a) through the origin, as Eq. 6b has none;
-    (f-b) with an intercept. The adjusted R2 is reported under each. Reproduced when under one
+    (f-b) with an intercept; and whether the R2 is taken on the scale of QTm^2 against CLW^2 (as the
+    Results describe Fig. 1) or of QTm against CLW, both shown. The adjusted R2 is reported under
+    each. Reproduced when under one
     reading the adjusted R2 is within tolerance and the slope of QTm^2 on CLW^2 fitted to cells with
     CLW < 10 pF is larger than the slope fitted to cells with CLW >= 10 pF (same intercept reading),
     with non-overlapping 95% confidence intervals of the two slopes (the paper gives no test for
@@ -277,8 +283,10 @@ claims:
   depends_on:
   - table1-pigmented-no-xe991
   - table1-albino-no-gradient
-  criterion: Tolerances are the stated standard deviations. These values times four are Table 1's
-    rows (b) and (c), so the cells are those rows' (pigmented without XE991, albino) and the test
+  criterion: Tolerances are the stated standard deviations. The pigmented values times four are
+    Table 1's rows (b) (37.3 and 32.3 V-1); the albino values times four (31.0 and 30.4 V-1) are
+    close to but not equal to rows (c) (31.3 and 30.5 V-1), so the albino cells may differ slightly
+    from Table 1's. The cells are taken as those rows' (pigmented without XE991, albino) and the test
     is Table 1's one-way ANOVA; basal and apical by readings (r-a) and (r-b) of the opening comment.
     Reproduced when the four means are within tolerance under one region reading, the pigmented
     difference has p < 0.05 and the albino difference has p >= 0.05 (the absence judged by the same
@@ -403,7 +411,8 @@ claims:
   criterion: The absence is judged on the paper's test, an "ANOVA effect test" of XE991 (Table 1
     footnote). Its model is not given; readings (x-a) a two-way ANOVA of alphaB on region and XE991
     over the pigmented cells (the footnote's rows a and b); (x-b) a two-way ANOVA on region and
-    XE991 over all three groups of Table 1, with colony as a third factor. Reproduced when under one
+    XE991 over all three groups of Table 1, with colony as a third factor; (x-c) a one-way ANOVA of
+    alphaB on XE991 over the pigmented cells. Reproduced when under one
     reading the XE991 effect has p >= 0.05 and the pooled means are within tolerance with counts 16
     and 27; not reproduced when the XE991 effect has p < 0.05 under the reading closer to the paper's
     counts. The effect size is shown. The pooled counts (16, 27) are those of Table 1 (4 + 12, 11 +
@@ -477,7 +486,8 @@ claims:
     value: 0.2
     tolerance: 0.02
   criterion: Cells, the 70 of Fig. 2 (144 mM chloride, no XE991; legend). Least-squares linear fit of
-    corrected V0.5 on CLW per colony. Reproduced when both slopes are positive with p < 0.05 and
+    corrected V0.5 on CLW per colony. The paper gives no test of the slopes; the p < 0.05 on each
+    slope is a choice made here. Reproduced when both slopes are positive with p < 0.05 and
     both adjusted R2 are within tolerance; partially reproduced when the slopes are positive and the
     pigmented R2 exceeds the albino R2 but one is outside tolerance. The paper's "about" values
     carry the default 10% tolerance.
@@ -526,7 +536,8 @@ claims:
     Whole-cell patch-clamp, paragraph 2). Readings for the voltage at which it is taken, (d-a) at
     V0.5; (d-b) at positive voltages (0.09 to 0.15 V, where Rm and Rs are measured). Reproduced when
     under one reading every XE991 cell has a drop below 13% (widened by 10%), the median drop
-    without XE991 is at least twice the median with XE991, and the largest conductance at V0.5
+    without XE991 is at least twice the median with XE991 (the paper names no measure of "twofold
+    improvement"; the medians are a choice made here, the means shown as a variant), and the largest conductance at V0.5
     among XE991 cells is within tolerance.
 - id: table2-xe991-v05-shift
   statement: XE991 shifts V0.5 by about 20 mV in the depolarizing direction (ANOVA effect test P =
@@ -542,9 +553,12 @@ claims:
   expected:
     quantity: depolarizing shift of V0.5 with XE991
     value: 0.020
-    tolerance: 0.002
+    tolerance: 0.010
     unit: V
-  criterion: Pigmented cells of Table 2 rows (a) and (b). Model of the effect test open, as in
+  criterion: The tolerance is not the default 10%; the text's "20mV" is a rounding of Table 2,
+    whose own means give shifts of 0.029 V (basal), 0.019 V (apical) and 0.028 V (count-weighted
+    pooled means), so 0.010 V is used to admit the paper's own numbers. Pigmented cells of Table 2
+    rows (a) and (b). Model of the effect test open, as in
     table1-xe991-no-effect-alpha; readings (x-a) and (x-b). The shift is read as (h-a) the
     difference of region-matched means averaged over basal and apical (Table 2 gives 0.029 and 0.019
     V), or (h-b) the XE991 coefficient of the two-way model. Reproduced when under one reading the
@@ -651,8 +665,9 @@ claims:
     Cells without XE991, both colonies pooled; the chloride is not stated, and the 144 mM cells are
     used (the 10 mM cells are shown apart in Fig. 4). Cells grouped by CLW in 5 pF bins; per bin the
     mean dVmin_exp (QTm / CLW) and mean corrected V0.5. Fit of V0.5 = Vd - dVmin_exp / 2 (Eq. 3a as
-    rebuilt) with Vd the only free parameter, weighted by the number of cells per bin (legend); a
-    weighted unconstrained linear fit. Open, (e-a) bin edges at multiples of 5 pF from 0; (e-b) bins
+    rebuilt) with Vd the only free parameter, weighted by the number of cells per bin (legend); an
+    unconstrained linear fit, (u-a) weighted the same way, (u-b) unweighted (the legend states the
+    weights for the Eq. 3a fits only). Open, (e-a) bin edges at multiples of 5 pF from 0; (e-b) bins
     starting at the smallest CLW; and whether the adjusted R2 is computed (w-a) with or (w-b)
     without the weights. Vd is 0.033 V in the text and 0.034 V in the legend; both fall within the
     tolerance of 0.034. Reproduced when under one reading all four values are within tolerance;
@@ -696,8 +711,10 @@ claims:
     dVmin_exp / 2). No test is given; reading used, the cells with dVmin_exp > 0.25 V have a mean
     residual above zero (one-sample t-test, p < 0.05) and a larger residual variance than cells
     below 0.25 V (F-test, p < 0.05), and the mean residual below 0.25 V is smaller in magnitude than
-    above. Reproduced when all three hold; partially reproduced when the mean residual holds but not
-    the variance. Rests on tests the paper does not name.
+    above. The sentence is about the binned data of Fig. 3a and Fig. S4; the same three conditions
+    are also computed on the 0.01 V bins of Fig. S4 (bin means, and spread of bin means) as a
+    reading. Reproduced when all three hold under one reading; partially reproduced when the mean
+    residual holds but not the variance. Rests on tests the paper does not name.
 - id: figs4-fine-bins
   statement: With cells binned by charge density in 0.01 V bins (dVmin_exp < 0.4 V fitted), Eq. 3a
     gives Vd 0.030 V (adjusted R2 0.389) without XE991 and Vd 0.054 V (adjusted R2 0.737) with
@@ -913,8 +930,10 @@ claims:
     neighbouring bins; "threefold" by the ratio of largest to smallest magnitude of Vh. The paper
     fixes no measure of "approximately constant"; readings (q-a) the range of Vd across bins is less
     than one third of the range of Vh; (q-b) a weighted linear fit of Vd on V0.5 has a slope not
-    different from zero at p < 0.05. Reproduced when the Vh conditions hold and Vd is constant under
-    one reading, for the cells without XE991 (the XE991 bins shown apart).
+    different from zero at p < 0.05. Fig. 4a plots the bins with and without XE991 together, and the
+    text does not say over which set the threefold is taken; readings (o-a) the bins without XE991;
+    (o-b) all bins pooled. Reproduced when the Vh conditions hold and Vd is constant under one
+    reading.
 - id: fig4d-cleq-two-limits
   statement: The capacitance of the membrane where one sensor resides, C_Leq = n e0 / dVmin_exp, has
     two limits, 0.584 (+/- 0.065) aF at mean V0.5 below -0.06 V, rising almost exactly twofold to
@@ -940,9 +959,15 @@ claims:
     groups are "the data obtained with linear capacitance measured at positive potentials (Fig. 3 a
     and Fig. S4)", read as (j-a) the 5 pF CLW bins of Fig. 3a; (j-b) the 0.01 V bins of Fig. S4;
     (j-c) per cell; each pooling cells with and without XE991 (Table 3 and Fig. 4f pool them).
-    The upper limit is read as the mean over groups with V0.5 above -0.045 V (the midpoint between
-    -0.06 and -0.03 V, a choice made here). Reproduced when under one grouping both values are within
-    tolerance and C_Leq rises with V0.5 (Spearman, p < 0.05).
+    The split of groups between the limits is taken from Table 3 and Discussion, Kinetic scheme,
+    paragraph 2, which give the V0.5 range of each pathway, -0.1 to -0.056 V for the 0.584 aF limit
+    and -0.043 to -0.013 V for the 1.07 aF limit; the lower limit is the mean over groups with V0.5
+    at or below -0.056 V, the upper over groups at or above -0.043 V, and groups between are left
+    out and shown (the text's "less than -0.06 V" is shown as a variant split). Fig. 4d plots the rat
+    and mouse values of Fig. 3a with the guinea pig values, and Table 3 is for all wild type, so the
+    paper's limits may include them; the data set gives the guinea pig groups only, and this is
+    noted. Reproduced when under one grouping both values are within tolerance and C_Leq rises with
+    V0.5 (Spearman, p < 0.05, a test chosen here).
 - id: fig4c-sensor-area
   statement: The limiting membrane area of one wild type sensor is 51 to 121 nm2 (from dVmin_exp and
     a specific capacitance of 0.0095 pF/um2), with |V0.5| falling as a power of the area,
@@ -971,7 +996,9 @@ claims:
     end values are shown). Power law fitted to guinea pig groups without XE991 (open blue circles,
     legend), units of |V0.5| and Amean not given (readings mV with nm2, V with nm2). The exponent is
     -1.15 in the legend and -1.5 in the text; the claim holds if the fitted exponent is within 10% of
-    either. Reproduced when the range and one exponent reading hold.
+    either. The paper's own numbers favour -1.5 with V and nm2 (38.5 x 61.5^-1.5 = 0.080 V and 38.5 x
+    112.6^-1.5 = 0.032 V, against Table 3's -0.076 and -0.031 V, with Amean from 0.584 and 1.07 aF);
+    -1.15 gives 0.34 and 0.17 V. Reproduced when the range and one exponent reading hold.
 - id: fig4e-sensor-charge
   statement: The charge moved per sensor is similar for all sensors, 0.873 +/- 0.0577 e0 at the
     0.584 aF limit and 0.872 +/- 0.083 e0 at the 1.07 aF limit, 0.859 +/- 0.066 e0 over all wild
@@ -1038,8 +1065,9 @@ claims:
   - fig4e-sensor-charge
   criterion: V0.5 tolerances are the stated spreads, the rest 10%. V0.5 per pathway is the mean V0.5
     of the groups at each C_Leq limit (fig4d-cleq-two-limits). lambda = q^2 / (2 C_Leq) (Eq. 6a as
-    rebuilt) with q = z e0, and the barriers (lambda +/- q V0.5 / kB T)^2 / (4 lambda) (Eq. 7 as
-    rebuilt), at 297.15 K; the rebuilt forms give Table 3's values from Table 3's inputs, which is
+    rebuilt) with q = z e0, z being the mean over all groups for both pathways, as Table 3 gives
+    0.859 for each; the forward (activation) barrier (lambda - q V0.5 / kB T)^2 / (4 lambda) and the
+    reverse (lambda + q V0.5 / kB T)^2 / (4 lambda) (Eq. 7 as rebuilt), at 297.15 K; the rebuilt forms give Table 3's values from Table 3's inputs, which is
     checked first and shown. Reproduced when all six values computed from the data are within
     tolerance; partially reproduced when the V0.5 values are but a derived energy is not. The text's
     3.95 and the table's 3.97 kB T both fall within tolerance. Rate ratios (pathway 2 forward 64
@@ -1062,12 +1090,13 @@ claims:
   depends_on:
   - fig4d-cleq-two-limits
   criterion: Per group (groupings of fig4d-cleq-two-limits), n = dVmin_exp x 1.098 aF / e0 and delta
-    = z / n (Results, paragraph 3). Reproduced when the means are within tolerance under one grouping
+    = z / n (Results, paragraph 3; the text prints "[n/z]", but z = n delta by Eq. 5, and 1.7 x
+    0.535 = 0.91 is a z, so z / n is the reading). Reproduced when the means are within tolerance under one grouping
     and the ranges lie within 1.44 to 1.92 and 0.432 to 0.63 widened by 10%.
 - id: fig4f-all-rodents
   statement: Charge density against V0.5 for the sensors of all rodents, with heterozygote density
     corrected, fits Eq. 3a with Vd 0.037 V (adjusted R2 0.538), regardless of bath composition.
-  source: Figure 4f legend; Results, Determine q, Amean, C_Leq and V0.5, paragraph 4
+  source: Figure 4f legend; Results, Determine q, Amean, C_Leq and V0.5, paragraph 3
   quote: The dashed line is the fit of data from all rodents with and without XE991 in the bath to
     Eq. 3a with intercept, V d 0.037 V (adjusted R 2 , 0.538)
   data: with_inputs
@@ -1139,12 +1168,14 @@ claims:
     unit: V
   - quantity: temperature-corrected V0.5, turn 3
     value: -0.040
-    tolerance: 0.004
+    tolerance: 0.022
     unit: V
   criterion: The temperature correction is taken from Meltzer and Santos-Sacchi (2001), an outside
     input the paper does not state numerically, applied from 24 C to 37 C (the temperature of the
     in vivo arrows, Fig. 3c legend). "Basal" by readings r-a and r-b; the cells by readings v-a and
-    v-b of v05-by-turn. The central tendency is read as (c-1) mean, (c-2) median. Reproduced when
+    v-b of v05-by-turn. The central tendency is read as (c-1) mean, (c-2) median. The turn 3
+    tolerance is the paper's stated spread, "-40 (± 0.022) mV", read as 0.022 V (a spread of
+    0.022 mV is implausible beside the other V0.5 spreads of 0.018 to 0.030 V). Reproduced when
     both values are within tolerance under one reading, and the basal range lies within -47 to -105
     mV widened by 10%.
 - id: recording-time
@@ -1173,7 +1204,8 @@ claims:
   statement: The relation of V0.5 to charge density, with slope near -1/2, Vd constant and Vh
     varying, shows that the prestin sensor has two hyperpolarized states and two charge-displacement
     pathways in the lateral membrane.
-  source: Results, Theoretical model, paragraph 4; Discussion, Kinetic scheme, paragraph 1; Figure 5
+  source: Theoretical model, the paragraph after Eq. 3; Discussion, Kinetic scheme, paragraph 1;
+    Figure 5
   quote: We show that a plot of V 0.5 as a function of Δ V m i n e x p has a negative slope, with an
     approximate value of one half for OHCs from rodents. This is evidence for more than one
     hyperpolarized state of the sensor
@@ -1186,3 +1218,30 @@ claims:
     reproduced (the mean slope is within 10% of -0.48, Vd constant and Vh rising, and C_Leq shows
     two limits); partially reproduced when the slope and Vh conditions hold but C_Leq does not show
     two limits; not reproduced when the unconstrained slope is not negative or Vd is not constant.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, Eq. 7. The signs were reversed. The Theoretical model says the negative sign gives the activation and the positive sign the deactivation, and only that assignment gives Table 3's 2.68 (forward) and 0.125 (reverse) kB T from its inputs.
+  - Opening comment, region readings. The cell-count argument for reading (r-a) was circular. Restated it with the Fig. 1 count (86 cells with 144 mM chloride, at most 85 of known turn) against the 84 cells in Table 1.
+  - nlw-capacitance. Marked the form of Eq. 8c (CNLW = CSB + root) as rebuilt from prose. The criterion fixed the cells as 144 mM chloride, which the paper does not say, so this is now named open with two readings.
+  - fig1-charge-not-linear. Added the scale on which the adjusted R2 is taken (QTm^2 against CLW^2, or QTm against CLW) as an open reading.
+  - alpha-gradient-pigmented. The criterion said these values times four are Table 1 rows (b) and (c). That holds for (b) only, since the albino values times four are 31.0 and 30.4 against 31.3 and 30.5. Corrected and noted.
+  - table1-xe991-no-effect-alpha. Added reading (x-c), a one-way ANOVA on XE991, because the footnote does not give the model of its effect test.
+  - fig2b-v05-vs-clw. Marked the p < 0.05 slope test as a choice made here, because the paper reports no slope test.
+  - xe991-voltage-clamp. Marked the comparison of medians for "twofold improvement" as a choice made here, with the means as a variant.
+  - table2-xe991-v05-shift. Tolerance widened from 0.002 to 0.010 V, with the reason in the criterion. Table 2's own means give shifts of 0.019 to 0.029 V, so the 10% default would have failed the paper's own numbers.
+  - fig3a-eq3a-fit. The criterion made the unconstrained fit weighted. The legend states the weighting for the Eq. 3a fits only, so weighted and unweighted are now both readings.
+  - fig3a-high-density-deviation. The sentence describes binned data, so the Fig. S4 bins were added as a reading next to the per-cell residuals.
+  - fig4a-vh-rises-vd-constant. The criterion judged only the bins without XE991. Fig. 4a plots both sets, so pooled bins were added as a reading.
+  - fig4d-cleq-two-limits. The -0.045 V split between limits was a choice made here. It is replaced by the V0.5 ranges that Table 3 and Discussion, Kinetic scheme, paragraph 2 give for each pathway (to -0.056 V and from -0.043 V). Added a note that the paper's limits may include rat and mouse values.
+  - fig4c-sensor-area. Noted that the paper's own numbers fit the text's exponent of -1.5 (V and nm2) and not the legend's -1.15.
+  - table3-pathway-energies. Stated the Eq. 7 signs as the paper gives them, and that Table 3 uses the all-wild-type z of 0.859 for both pathways. This reproduces 3.95 and 2.16 kB T; the per-limit z would give 4.08.
+  - alternative-limit. Noted that the text prints delta as "[n/z]", and that z / n is the reading consistent with Eq. 5 and with the values it reports.
+  - fig4f-all-rodents. Source was paragraph 4; the passage is paragraph 3 of its section.
+  - v05-temperature-corrected. Turn 3 tolerance changed from 10% (0.004 V) to the paper's stated spread "± 0.022", read as V, as the protocol asks. That the unit is V is a reading, given in the criterion.
+  - two-hyperpolarized-states. Source named a "Results, Theoretical model" paragraph 4. The Theoretical model is its own section and the quote is in the paragraph after Eq. 3.
+  - Open. The displayed equations (Eqs. 1 to 9) and Tables S1 to S4 are missing from the supplied text. The rebuilt equation forms reproduce the paper's numbers, but tables3-by-region, recording-time and molecular-model cannot be compared with Table S1, S3 or S4 values until those tables are supplied.
+  - Open. Which of the 16 pigmented XE991 cells with 144 mM chloride is left out of Table 1 row (a) (15 cells) cannot be settled from the paper.
