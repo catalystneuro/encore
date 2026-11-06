@@ -138,6 +138,38 @@ dataset:
   id: "001968"
 paper: doi:10.1038/s41593-026-02260-w
 claims:
+- id: link-unit-mice
+  kind: link
+  statement: The dandiset's tetrode subjects can be matched to the paper's animal lists (Supplementary
+    Table 2 and Supplementary Fig. 2), and the matched records agree on strain, sex and the young
+    mice's principal cell counts.
+  source: Supplementary Table 2; Supplementary Fig. 2a
+  data: with_labels
+  criterion: Added by the author (docs/protocol.md, Author, step 1.4), as the files carry no genotype,
+    age group or treatment. Records are matched by animal ID, the files' subject_id (mouseNNNNN)
+    against the Animal ID of Supplementary Table 2 and the mouse numbers of Supplementary Fig. 2a.
+    The two disagree on which five APP-KI tetrode mice are young; Supplementary Fig. 2a is followed
+    for the young groups, as the claims file's header does, and the ages from the files' dates of
+    birth are reported against both. The link holds (reproduced) when every tetrode mouse of the
+    paper is in the dandiset and, for every matched mouse, the strain label in the source file
+    names (WT; AD or NLGF read as APP-KI) agrees with the paper's group and the sex agrees with
+    Supplementary Table 2. It holds in part (partially reproduced) when at least 90% of the mice
+    are matched and some disagree, and fails (not reproduced) when fewer are matched. The per
+    mouse principal cell counts are compared with Supplementary Fig. 2a and reported, not judged,
+    as the dandiset may hold cells the paper excluded.
+- id: link-photometry-mice
+  kind: link
+  statement: The dandiset's photometry subjects can be matched to the photometry rows of
+    Supplementary Table 2, and the matched records agree on sex and on the number of recordings.
+  source: Supplementary Table 2
+  data: with_labels
+  criterion: Added by the author (docs/protocol.md, Author, step 1.4), as the photometry files carry
+    no genotype. Records are matched by animal ID against the DAT-Cre and APP-KI x DAT-Cre
+    photometry rows of Supplementary Table 2. The link holds (reproduced) when every photometry
+    mouse of the table is in the dandiset and every matched mouse agrees on sex; in part
+    (partially reproduced) when at least half are matched and some are missing or disagree; it
+    fails (not reproduced) otherwise. The hemispheres the table implies (10 and 8, the n of the
+    Fig. 4 legends) are compared with what the files hold and reported.
 - id: units-recorded
   statement: In LEC layer 2/3 of young mice, 479 neurons were recorded from 5 WT mice and 846 from
     5 APP-KI mice.
@@ -151,6 +183,9 @@ claims:
   - quantity: young APP-KI neurons
     value: 846
     tolerance: 85
+  depends_on:
+  - link-unit-mice
+  data: with_labels
   criterion: Counts of sorted units from young WT and young APP-KI tetrode sessions. The putative
     principal cells (peak-trough width above 230 us and more than 100 spikes in the session,
     Methods) are counted as well and compared with 423 and 636 (Fig. 2d legend) and with the
@@ -226,7 +261,9 @@ claims:
     statistic: Z = -4.06
     p: 4.7e-5
   depends_on:
+  - link-unit-mice
   - units-recorded
+  data: with_labels
   criterion: Mean firing rate of each cell over the associative learning session (Extended Data
     Fig. 4c), Wilcoxon rank sum test on cells, principal (RS and WS) and interneurons (NS)
     separately. The rate's definition is not given; readings (a) spike count over the whole
@@ -696,6 +733,9 @@ claims:
   - quantity: Odor-2 mean z-scored GCaMP signal at T1
     value: 0.76
     tolerance: 0.24
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: Photometry as in Shared method, correct sessions of the 10 control hemispheres, mean
     over hemispheres (Supplementary Fig. 6a shows these data by timepoint). The window of the
     reported means is "delay periods", not given; alternatives G1, G2 and (G4) 2 to 3 s, the
@@ -716,6 +756,9 @@ claims:
     value: 39
     tolerance: 3.9
     unit: percent
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: Photometry as in Shared method, APP-KI hemispheres, correct and error sessions apart
     (correct when T5 performance exceeds 80%, at or above 80% as the alternative). Signal
     significance per timepoint against the 1 s precue by Wilcoxon signed-rank at p < 0.05 in the
@@ -740,6 +783,9 @@ claims:
   - about: WT against APP-KI at T1, Odor-1
     test: two-sided Tukey post hoc test
     p: 4.2e-3
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: Per hemisphere mean z-scored GCaMP signal for Odor-1 at T1 to T5, correct and error
     sessions together, window G1 (1 to 4 s, Fig. 4d legend); two-way ANOVA strain by timepoint
     on the 90 values, Tukey post hoc. Reproduced when the interaction has p < 0.05 and WT
@@ -764,6 +810,9 @@ claims:
     test: two-way ANOVA
     statistic: F(4,80) = 2.1
     p: 0.093
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: As fig4d-app-odor1-dopamine-decreased on correct sessions only. Reproduced when,
     under G1, the Odor-1 interaction and the T1 Tukey comparison have p < 0.05 with WT higher.
 - id: fig4f-error-sessions-no-difference
@@ -777,6 +826,9 @@ claims:
     p: 0.05
     p_relation: ">"
     n: 10 WT and 8 APP-KI hemispheres
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: A claim of absence, on the paper's test. As fig4d-app-odor1-dopamine-decreased on
     error sessions, window G1, for each odor type. Supplementary Table 1 reports for these data
     strain main effects at p = 0.047 (Odor-1) and 0.0061 (Odor-2) together with no significant
@@ -803,6 +855,9 @@ claims:
   - about: Odor-B against Odor-1
     test: two-sided Tukey post hoc test
     p: 0.041
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: How a WT minus APP-KI difference is formed per unit is not given; F(3,28) implies 8
     values per odor and Supplementary Table 1 says 8 WT and 8 APP-KI units. The one construction
     the text and the degrees of freedom allow is the 8 APP-KI hemispheres each subtracted from
@@ -825,6 +880,9 @@ claims:
     quantity: Pearson r
     value: 0.78
     tolerance: 0.078
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: Per session (Supplementary Fig. 6d), the trial after which five consecutive Odor-1
     hits start, against the trial after which five consecutive Odor-1 trials have GCaMP signal
     above 3 SD; sessions without such a run are dropped. Method details left open, all run under
@@ -857,6 +915,9 @@ claims:
     value: 78.6
     tolerance: 2.1
     unit: percent
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: Behavioral performance as in Shared method (readings B1, B2), per mouse means over
     all sessions; two-way ANOVA odor pair (A/B, 1/2) by strain on the 54 values, Tukey post hoc.
     Reproduced when, under one reading, both means are within tolerance (the s.e.m.), the
@@ -902,6 +963,9 @@ claims:
     value: 59.1
     tolerance: 5.5
     unit: percent
+  depends_on:
+  - link-photometry-mice
+  data: with_labels
   criterion: Per mouse percentage of correct sessions (Odor-1/2 T5 performance above 80%, and
     at or above 80% as the variant, readings B1 and B2); unpaired t-test across mice. Reproduced
     when, under one reading, both means are within tolerance and p < 0.05.
