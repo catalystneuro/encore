@@ -1,0 +1,714 @@
+schema_version: 2
+id: crcns-pag-2-moaddab-2020-01
+dataset:
+  archive: crcns
+  id: pag-2
+  version: unversioned
+  doi: 10.6080/K0833Q7F
+paper: doi:10.1038/s41598-020-74457-3
+date: 2026-11-06
+entry: crcns-pag-2-moaddab-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42283461113
+outcomes:
+- claim: fig1bc-adversity-slows-weight-gain
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no body weights. Its data.zip contains the 354 unit files of the
+    recording sessions, the authors' cube built from them, the script vlpagAnalysis.m and three cue
+    sounds, and the data description lists nothing else. The paper names no other deposit.
+- claim: fig1ef-acquisition-equivalent-final
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The eight pre-surgery discrimination sessions are not in the data set, which holds only
+    the recording sessions (each unit file is one recording session with spikes), and are not
+    deposited elsewhere as far as the paper and the data description say.
+- claim: fig2b-baseline-poke-equivalent
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig2b-baseline-poke-equivalent
+  notes: Baseline poke rate in the 20 s before cue onset, one value per rat over its recording
+    sessions (each session counted once). Control 23.08 and EAA 19.22 pokes per minute, t(18) =
+    1.19, p = 0.25 (the paper t = 1.24, p = 0.23). Both readings (mean of session means, trials
+    pooled) give the same values, as every session has 32 trials.
+- claim: fig2c-recording-discrimination
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig2c-recording-discrimination
+  notes: Under all six readings (session means or trials pooled; 0/0 trials set to 0, dropped or
+    set to 1) the cue effect is F(2,36) = 179.5 to 194.5, p <= 1.9e-19, the group by cue
+    interaction p = 0.84 to 0.90, and all four paired tests have p <= 0.0091 with danger >
+    uncertainty > safety. Mean ratios (0/0 as 0, session means) Control 0.919, 0.715, 0.117 and EAA
+    0.900, 0.690, 0.049.
+  deviations:
+  - Sessions are counted once per rat, although several units share each session.
+  - A third treatment of trials without pokes (ratio set to 1) is added to the claims file's two,
+    because the authors' cube stores 1 for them (cer.cue).
+- claim: fig2d-cue-responsive-counts
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig2d-cue-responsive-counts
+  measured:
+  - 32
+  - 49
+  - 48
+  - 84
+  - 151
+  - 203
+  notes: With the raw rates stored in the authors' cube and reading (b) (excitation over first 1 s
+    and last 5 s, inhibition over first 5 s and last 5 s), the counts are the paper's exactly. With
+    exact rates from the spike times, reading (c) is within tolerance (30, 48, 51, 89) and reading
+    (b) gives 30, 50, 54, 87, the Control inhibited count outside the tolerance. Reading (a) is
+    outside under both rate sources. The selection used by the dependent claims is (b) with the
+    cube's rates; with exact rates 14 of 354 units change class.
+  deviations:
+  - The cube stores the raw rates truncated to whole Hz (uint8). The authors' script runs the
+    selection t tests on these stored rates (vlpagAnalysis.m, lines 9 to 67) with reading (b)
+    (lines 136 to 147 and 225 to 236); this attempt follows the script for the rates, as the Methods
+    say only raw firing rate (Hz), and shows the exact rates as a variant.
+- claim: fig2d-higher-proportion-responsive
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig2d-higher-proportion-responsive
+  measured:
+  - 0.655
+  - 0.53
+  notes: 133/203 against 80/151, chi-square = 5.68, p = 0.017 without continuity correction (the
+    paper 5.68, p = 0.02). With exact rates (b) 0.675 and 0.556, chi-square = 5.19, p = 0.023. Every
+    reading and rate source gives EAA higher with p < 0.05 (p = 0.004 to 0.030).
+- claim: fig2ef-baseline-firing
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig2ef-baseline-firing
+  notes: With the selection used here, the group t tests have p = 0.26 to 0.96 (all |t| < 1.13)
+    under both baseline windows, the type effect F(2,351) = 6.44, p = 0.0018 (10 s) and 6.78, p =
+    0.0013 (2 s), and cue-excited neurons have the lowest mean (13.9 Hz against 22.0 and 25.3).
+    With the exact-rate selection the smallest group p is 0.12 and the type effect p = 0.0001 to
+    0.0002. The paper's error df is 346 against 351 here.
+  deviations:
+  - The ANOVA uses all 354 neurons (df 351); the paper's df of 346 implies five fewer, which are
+    not named.
+- claim: fig4ab-excited-temporal-pattern
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig4ab-excited-temporal-pattern
+  notes: Group by cue by bin interaction F(110,8690) = 1.30, p = 0.019 (the paper F(110,8360) =
+    3.32, p = 3e-28). With the script's normalization F = 1.40, p = 0.004; with the exact-rate
+    selection F = 1.29, p = 0.021. The part with bregma level as a factor could not be run, as the
+    data set gives no bregma level per rat (only the number of rats at each of four levels), and
+    the authors' script does not mention bregma. The outcome is partial because only the first
+    part of the criterion could be tested; it held.
+  deviations:
+  - The ANOVA with bregma level was not run (no bregma level per rat in the data set or the
+    authors' script).
+  - Uncorrected type III mixed ANOVA on all 81 neurons; the paper's error df implies 78.
+- claim: fig4c-excited-inflated-onset
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig4c-excited-inflated-onset
+  notes: Group F(1,79) = 5.19, p = 0.025, EAA higher; safety t(79) = -3.46, p = 0.0009; paired
+    danger against uncertainty Control p = 0.0047, EAA p = 0.023, uncertainty against safety p <=
+    0.0018 in both. With the script's normalization the statistics are the paper's (group F = 4.96,
+    p = 0.029; safety t = -3.60, p = 0.0005 against 3.61, 0.001), and the exact-rate selection also
+    meets every part.
+- claim: fig4de-inhibited-temporal-pattern
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig4de-inhibited-temporal-pattern
+  notes: Group by cue by bin interaction F(110,14300) = 1.54, p = 0.00024 (the paper F(110,14190) =
+    1.69, p = 9e-6); script normalization p = 4.4e-6, exact-rate selection p = 2.5e-5. The means
+    follow the described pattern (Control danger and uncertainty -0.75 and -0.61 in the first half,
+    -0.69 and -0.67 in the second, safety near 0; EAA danger -1.06 and uncertainty -0.79 in the
+    first half, -0.74 and -0.76 in the second). The bregma part could not be tested (no bregma
+    level per rat in the data set or the authors' script); the outcome is partial for that reason
+    only.
+  deviations:
+  - The ANOVA with bregma level was not run (no bregma level per rat in the data set or the
+    authors' script).
+- claim: fig4f-inhibited-danger-decrease
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig4f-inhibited-danger-decrease
+  notes: First 5 s, group F(1,130) = 9.15, p = 0.003, EAA lower; danger t(130) = 2.58, p = 0.011,
+    EAA lower; uncertainty t(130) = 1.76, p = 0.080. The script's normalization gives the paper's
+    values (F = 10.81, danger t = 2.69, p = 0.008, uncertainty t = 2.39, p = 0.0185); the exact-rate
+    selection also meets the criterion (F = 13.08, danger p = 0.002).
+- claim: fig4f-inhibited-danger-uncertainty-discrimination
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig4f-inhibited-danger-uncertainty-discrimination
+  notes: EAA danger -1.056 against uncertainty -0.791, t(83) = -3.21, p = 0.0019, below 0.025 and
+    0.0167; Control -0.749 against -0.614, t(47) = -1.29, p = 0.20. Script normalization EAA t =
+    -3.14, p = 0.0024 and Control t = -1.40, p = 0.17 (the paper 3.14, 0.002 and 1.40, 0.17).
+- claim: fig5abc-excited-reduced-threat-probability
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig5abc-excited-reduced-threat-probability
+  notes: Under the adopted reading (the cube's trial-wise Z score, 0/0 trials set to 1, as the
+    authors' script regresses them) the whole-cue threat probability beta is higher in Control
+    (0.953 against 0.558, t(79) = 2.12, p = 0.037), the fear output betas do not differ (p = 0.87),
+    but the group by regressor interaction is F(1,79) = 3.79, p = 0.055. Of the claims file's six
+    readings none meets all three parts; (b) with 0/0 trials dropped gives the same partial
+    pattern (interaction p = 0.055, threat p = 0.047). The cube's Z score with 0/0 trials set to 0
+    meets all three (interaction p = 0.031, threat p = 0.044), but it is not the adopted combination
+    and is further from the paper's statistics. The claims file's own rule (one of its six
+    readings) gives the same outcome, partial, so the outcome does not rest on the adopted reading. Control threat betas are positive
+    from the first interval and rise (0.72 to 1.22). With the exact-rate selection no reading
+    meets the threat probability part (smallest p = 0.060). The paper's F(1,65) and t(66) imply
+    about 67 of the 81 neurons. The question of which trial-wise firing and which 0/0 treatment the
+    paper used is for its authors (see findings).
+  deviations:
+  - Reading adopted for every regression claim. The trial-wise normalized firing and the
+    treatment of trials without pokes are open in the paper (Results, Diminished threat probability signaling, paragraph 1, says only
+    "normalized firing rate for each trial ... in 1 s bins"). The authors' script in the data set
+    regresses vlPAGcube.fire.z.s1.interval (each trial's own 2 s baseline subtracted, Z scored over
+    all trials and bins) on vlPAGcube.cer.cue (which stores 1 for 0/0 trials) (vlpagAnalysis.m,
+    lines 2162 to 2171, printed in the notebook's data check). That combination is adopted for every
+    regression claim (Figs. 5, S4, 6, S5, 7, S6), the same for each, and the twelve combinations of
+    the claims file's readings and the script's are all shown. Here the claims file's readings give
+    the same outcome. Of the twelve it gives the paper's
+    printed statistics for Figs. 5A to G and 6 most closely (mean relative deviation 0.076, next
+    0.167, the claims file's six readings 0.236 to 0.724).
+  - The tests use all 81 cue-excited neurons (df 79); the paper's df implies about 67. Trials
+    without pokes, missing betas and rank-deficient designs do not explain the difference (24 of
+    the 81 come from sessions with a 0/0 trial, no beta is missing, every design is of full rank),
+    and the script has no exclusion step.
+- claim: fig5d-threat-tuning-curve
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig5d-threat-tuning-curve
+  measured:
+  - 0.5
+  - 0.5
+  notes: Under the adopted reading both curves peak at 0.500, assignment F(8,632) = 18.69, p =
+    2.8e-25, group F(1,79) = 4.15, p = 0.045 with EAA lower (0.34 to 0.60 against 0.56 to 1.00), no
+    interaction (p = 0.22). Peaks are at 0.500 under ten of twelve readings (EAA 0.625 under b with
+    0/0 dropped or set to 1) and the assignment effect holds under all; the group effect has p <
+    0.05 only with the cube's Z score and 0/0 trials dropped or set to 1 (p = 0.046, 0.045). Under
+    the claims file's readings (a to c) the group effect has p = 0.07 to 0.24 and the claim is not
+    reproduced, so the outcome rests on the assumption. The adopted combination is the script's
+    and the one whose statistics are closest to the paper's (assignment and group F 18.69 and 4.15
+    against 18.88 and 4.01; interaction F 1.34 against 1.25).
+  deviations:
+  - Assumption. The reading adopted for fig5abc-excited-reduced-threat-probability, the cube's
+    fire.z.s1 regressed on cer.cue as the script does (vlpagAnalysis.m lines 2162 to 2171, printed in
+    the notebook's data check). Here the claims file's readings give a different outcome.
+- claim: figs4-peak-assignment-same-pattern
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:figs4-peak-assignment-same-pattern
+  notes: Under the adopted reading the cue-excited whole-cue threat difference is significant with
+    0.375 (p = 0.037) and 0.5 (p = 0.040), Control higher, and the cue-inhibited last-5 s fear
+    output difference with 0.375 (p = 0.021) and 0.5 (p = 0.011), EAA more negative. Under nine of
+    the twelve readings significance and direction are the same with both values; under b with 0/0
+    dropped or set to 1 and the cube's Z score with 0/0 set to 0, one test changes side of 0.05.
+    Readings (a) and (c) of the claims file give the same significance and direction with both
+    values, so the outcome does not rest on the adopted reading; under (a) to (c) the cue-excited
+    threat difference is not significant with either value (p = 0.091 to 0.265). With Matlab's
+    solution for the one cue-inhibited design not of full rank, the cue-inhibited test has p = 0.023
+    and 0.012.
+  deviations:
+  - The supplement was not available; the comparison is the one the criterion names. Judged under
+    the reading adopted for fig5abc-excited-reduced-threat-probability; the claims file's readings
+    (a) and (c) give the same outcome.
+- claim: fig5efg-inhibited-fear-output
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig5efg-inhibited-fear-output
+  notes: Under the adopted reading the group by regressor by interval interaction is F(9,1170) =
+    2.15, p = 0.023, the last-5 s fear output beta is -0.386 in EAA against -0.220 in Control (t =
+    2.34, p = 0.021) and the threat betas do not differ (p = 0.41). Readings (a) and (c) of the
+    claims file meet all three parts under every 0/0 treatment, so the outcome does not rest on
+    the assumption; (b) misses the fear output part (p = 0.054 to 0.13). The adopted reading's
+    statistics are close to the paper's (F = 2.15, t = 2.34 and 0.82 against 2.14, 2.31 and
+    0.81). With the exact-rate
+    selection the interaction is not significant under any reading (p = 0.060 to 0.19). With
+    Matlab's solution for the one design not of full rank, F = 2.14, p = 0.024 and the fear output
+    t = 2.30, p = 0.023 (threat p = 0.41).
+  deviations:
+  - One cue-inhibited neuron (mh38101617epr38bSPK05a, EAA) comes from a session with no poke during
+    any cue, so with 0/0 trials set to 1 or dropped its suppression ratio equals the constant. The
+    regressions give it minimum-norm betas (numpy lstsq), where Matlab regress, which the script
+    uses, sets its fear output beta to 0. Matlab's solution is run as a variant for the adopted
+    reading; no outcome changes. This applies to every claim on cue-inhibited betas (Figs. 5E to G,
+    S4, 7, S6).
+- claim: fig6-excited-firing-threat-decoupled
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig6-excited-firing-threat-decoupled
+  measured:
+  - 0.257
+  - 0.008
+  notes: Firing normalized as the claims file fixes it (Methods). The danger part holds under all
+    twelve regression readings (adopted Control r = 0.51, p = 0.003; EAA r = -0.00, p = 0.98; Z =
+    2.37, one-tailed p = 0.009). The uncertainty part fails under all twelve, as the Control
+    correlation is not significant (adopted r = 0.09, p = 0.62), and EAA safety firing correlates
+    negatively with the beta (p = 0.0084 to 0.040 over the twelve readings; adopted p = 0.040). With the script's normalization
+    of the firing, run as a full variant under all twelve regression readings, every part holds
+    under nine of them (all but those with firing b), and under the adopted one the statistics are
+    the paper's (Control danger R2 = 0.566, p = 6.8e-7; uncertainty R2 = 0.218, p = 0.007; Z = 3.83
+    and 3.07, one-tailed p = 6e-5 and 0.0011). Under the Methods' normalization the safety part
+    also fails under all twelve. The verifier would give reproduced on the script's normalization;
+    the outcome is kept, as recorded under verifications.
+  deviations:
+  - The Methods' normalization (claims file) and the script's normalization give different
+    outcomes. The Methods say "Mean differential firing was Z score normalized across all trial
+    types" after averaging the trials (Methods, Z score normalization), the claims file follows
+    them, and where the Methods and the code disagree the Methods decide (reader, step 2); the
+    script's result is shown as a full variant.
+- claim: figs5-excited-firing-fear-output-unrelated
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:figs5-excited-firing-fear-output-unrelated
+  notes: Under all twelve readings none of the six correlations and none of the three comparisons
+    has p < 0.05 (adopted reading, smallest correlation p = 0.23, smallest one-tailed comparison p =
+    0.13). With the script's normalization the adopted reading also has none (smallest one-tailed
+    comparison p = 0.059), but six of the twelve readings have one comparison with one-tailed p <
+    0.05 (smallest 0.010).
+- claim: fig7-inhibited-firing-fear-output
+  outcome: not_reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:fig7-inhibited-firing-fear-output
+  notes: Under every reading the Control uncertainty firing correlates positively and significantly
+    with the last-5 s fear output beta (Methods' normalization r = 0.35 to 0.73, p <= 0.015, weakest
+    under firing c; adopted r = 0.71, p = 1.2e-8; the paper R2 = 0.04, p = 0.16), so
+    the uncertainty part fails, and with it the condition for a partial outcome. Under the adopted
+    reading the danger correlations have p = 0.054 and 0.15, both safety correlations are negative
+    with p = 0.026 and 0.004, and the uncertainty comparison is Z = 2.06, one-tailed p = 0.020. The
+    script's normalization, run under all twelve readings, also fails the uncertainty part in each
+    (adopted Control uncertainty R2 = 0.49, p = 2.8e-8). With firing over the first 5 s of the cue,
+    the only window besides the whole cue that the script computes for cue-inhibited neurons
+    (vlpagAnalysis.m lines 2796 to 2817, printed in the notebook), every part holds under the
+    adopted reading with both normalizations, and with the script's normalization the statistics are
+    the paper's (Control uncertainty R2 = 0.042, p = 0.16 against 0.04, 0.16; safety Control R2 =
+    0.14, p = 0.009 and EAA 0.218, p = 7.7e-6 against 0.14, 0.009 and 0.22, 8.9e-6; safety Z = 0.60
+    against 0.60). Under all twelve regression readings, first-5 s firing meets every part with
+    firing (b) or (d) (all six with the script's normalization, five of six with the Methods'), the
+    Control uncertainty correlation stays significant with (a) (p <= 0.004), and the danger and
+    safety parts fail with (c). With Matlab's solution for the one design not of full rank the parts
+    that hold are the same. The paper's Fig. 7 was evidently computed on first-5 s firing, while its legend
+    and Results say the last 5 s; the claims file follows the legend, so the outcome stays.
+- claim: figs6-inhibited-firing-threat-probability
+  outcome: reproduced
+  notebook: reproduce_moaddab_2020.ipynb
+  output: claim:figs6-inhibited-firing-threat-probability
+  notes: Under every reading danger firing predicts the last-5 s threat beta in both groups (adopted
+    r = 0.73 and 0.84). No comparison has p < 0.05 two-tailed under any reading; one-tailed the
+    danger comparison has p = 0.036 and 0.038 with the cube's Z score and 0/0 trials set to 0 or
+    dropped, and p = 0.052 under the adopted reading. Under readings (a) to (c) no comparison has
+    one-tailed p < 0.10. With the script's normalization every part holds under all twelve
+    readings (smallest one-tailed comparison p = 0.096).
+  deviations:
+  - The criterion shows both tails; the outcome is judged with both under the adopted reading,
+    where they agree.
+  - The design not of full rank described under fig5efg-inhibited-fear-output; with Matlab's
+    solution every part still holds (smallest one-tailed comparison p = 0.052).
+findings:
+- kind: other
+  statement: The units come from 182 recording sessions (74 Control, 108 EAA), each with its own
+    trial table, where the paper and the data description state 72 Control and 107 EAA sessions.
+    The unit counts (151 and 203) and rat counts (8 and 12) match. No session holds more than one
+    behaviour program and no two sessions share a trial table, so the extra sessions are not
+    duplicates.
+- kind: metadata_insufficient
+  statement: The group of each rat (Control or EAA) is given only by lists in the authors' script
+    vlpagAnalysis.m (lines 99 to 122), not by the data description or the files.
+- kind: metadata_insufficient
+  statement: The event codes EVT01 to EVT14 of the unit files are not described. EVT09, EVT11 and
+    EVT12 are the cue onsets, but which is danger, uncertainty or safety depends on the behaviour
+    program in the file name (epr38a, b, c); EVT08 holds the shocks, EVT13 the nose pokes, EVT14 a
+    marker about 31.5 s after each onset, and EVT02 could not be identified.
+- kind: metadata_error
+  statement: The data description says poke.base is the baseline nose poke rate 2 s prior to cue
+    presentation. It is the rate in the 20 s before cue onset (99.8% of trials; 4.2% match a 2 s
+    window), in pokes per minute, a unit the description does not give.
+- kind: metadata_error
+  statement: The data description gives the uncertainty shock rows a shock probability of 0.25;
+    the paper and the description's own summary give 0.375.
+- kind: metadata_insufficient
+  statement: No bregma recording level per rat is given; the description gives only how many rats
+    were at each of four levels, so the paper's ANOVAs with bregma level cannot be repeated.
+- kind: data_missing
+  statement: The body weights (Fig. 1B, C) and the eight pre-surgery discrimination sessions (Fig.
+    1E, F) are not in the data set.
+- kind: other
+  statement: The cube stores raw firing rates as unsigned integers truncated towards zero, so units
+    firing below 1 Hz have stored rates of 0 (775 trials with spikes have a stored 10 s baseline of
+    0). The paper's counts of cue-excited and cue-inhibited neurons follow exactly from these
+    truncated rates; with exact rates from the spike times the Control cue-inhibited count is 54,
+    not 48.
+- kind: other
+  statement: Spikes and nose pokes are stored only around the trials, from about 20 s before to
+    about 33.5 s after each cue onset (99.98% of spikes and 99.99% of nose pokes fall within 20.5 s
+    before to 33.5 s after an onset), not over the whole session, which the data description does
+    not say.
+- kind: other
+  statement: The cube stores a suppression ratio of 1 for the 255 unit-trials (143 session-trials)
+    with no nose poke in the baseline or the cue, where the ratio is 0/0; the paper does not say how
+    such trials are treated.
+- kind: code_mismatch
+  statement: The Methods describe the normalized firing as the trial-averaged differential firing Z
+    scored over all bins and trial types of a neuron. The authors' script instead averages the
+    cube's trial-wise Z scores (each trial's own 2 s baseline subtracted, Z scored over all trials
+    and bins). With the script's version the statistics of Figs. 4C, 4F and 6 are the paper's to
+    the second digit (for example group F(1,79) = 4.96 and F(1,130) = 10.81 against 4.96 and 10.82;
+    Fig. 6 Control danger R2 = 0.566 against 0.56); with the Methods' version they differ, and the
+    uncertainty part of Fig. 6 fails.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which trial-wise normalized firing entered the
+    single-unit regressions (Figs. 5 to 7), and how were trials with no nose poke in baseline and
+    cue treated? This attempt assumed the cube's fire.z.s1 regressed on cer.cue (0/0 stored as 1),
+    as vlpagAnalysis.m does; the claims file's readings (trial firing minus the cue's mean or the
+    trial's own 2 s baseline Z scored with the neuron's normalization, or raw firing Z scored over
+    all trials) give a non-significant group effect for Fig. 5D (p = 0.07 to 0.24) where the
+    adopted reading gives p = 0.045.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Several reported error degrees of freedom are
+    smaller than the selected neurons give (Fig. 5A to C t(66) and F(1,65) for 81 cue-excited
+    neurons; Fig. 4A, B F(110,8360); Fig. 2E, F F(2,346) for 354 neurons). Which neurons were left
+    out of these tests, and why? Trials without pokes, missing betas and rank-deficient designs do
+    not account for it, and the script has no exclusion step.
+- kind: code_mismatch
+  statement: The legend of Fig. 7 and the Results say cue-inhibited firing was taken over the last
+    5 s of the cue. The authors' script computes per-neuron cue-inhibited firing only over the first
+    5 s and the whole cue (vlpagAnalysis.m lines 2796 to 2817), and the paper's Fig. 7 statistics
+    follow from the first 5 s (with the script's normalization and regression, Control uncertainty R2 = 0.042, p = 0.16 against 0.04, 0.16;
+    safety Z = 0.60 against 0.60). With last-5 s firing, Control uncertainty firing correlates with
+    the fear output beta at R2 = 0.49 (p = 2.8e-8).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Was the firing in Fig. 7 taken over
+    the first 5 s of the cue, as the statistics this attempt obtains suggest, and not the last 5 s
+    the legend gives?
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier checked the archive's file list,
+    tested mixed_anova and fisher_r_to_z on synthetic data and checked the windows. Its report gave
+    its own outcome for each claim; 19 of 20 agree with the record, and it disagrees on
+    fig6-excited-firing-threat-decoupled.
+  results:
+  - claim: fig1bc-adversity-slows-weight-gain
+    agrees: true
+    outcome: blocked
+    reason: The archive's filelist.txt lists only data.zip, the description and checksums.md5; the zip
+      holds the 354 unit files, the cube, the script and 3 wav files, and the description lists no
+      body weights.
+    response: No change needed.
+  - claim: fig1ef-acquisition-equivalent-final
+    agrees: true
+    outcome: blocked
+    reason: There are no pre-surgery sessions; all 182 sessions in the zip are recording sessions with
+      units.
+    response: No change needed.
+  - claim: fig2b-baseline-poke-equivalent
+    agrees: true
+    outcome: reproduced
+    reason: t(18) = 1.19, p = 0.248 against the paper's 1.24 and 0.23. Both readings are the same by
+      construction, since every session has 32 trials (B8, which does not affect a conclusion).
+    response: No change needed; the notebook already says the two readings coincide.
+  - claim: fig2c-recording-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Cue F(2,36) = 179.5 to 194.5, p <= 1.9e-19; group by cue p = 0.84 to 0.90; all four paired
+      tests p <= 0.0091 with danger > uncertainty > safety under all six readings.
+    response: No change needed.
+  - claim: fig2d-cue-responsive-counts
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) on the cube's stored rates gives exactly 32, 49, 48, 84 and totals 151 and 203;
+      reading (c) on exact rates is also within tolerance. Selection on the cube's integer-truncated
+      rates is a data artifact the authors used, and it is disclosed (B6).
+    response: No change needed.
+  - claim: fig2d-higher-proportion-responsive
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), cube rates, 80/151 = 0.530 and 133/203 = 0.655, chi-square = 5.68, p = 0.017,
+      the paper's value exactly.
+    response: No change needed.
+  - claim: fig2ef-baseline-firing
+    agrees: true
+    outcome: reproduced
+    reason: Group t tests p >= 0.26 for every type; type ANOVA p = 0.0018 and 0.0013; cue-excited
+      neurons have the lowest mean, 13.9 Hz.
+    response: No change needed.
+  - claim: fig4ab-excited-temporal-pattern
+    agrees: true
+    outcome: partially_reproduced
+    reason: Group by cue by bin F(110,8690) = 1.30, p = 0.019 (script normalization 1.40, p = 0.004),
+      much weaker than the paper's 3.32 (B7). The bregma model was not run; the notebook searched only
+      the cube fields and the data description, not vlpagAnalysis.m, which probably holds the bregma
+      factor, so the second half may be testable (B3).
+    response: Searched the script; it has no occurrence of "bregma" (printed in the data check), so the
+      bregma part stays untestable. Notes, deviation and notebook text now say so. Outcome kept.
+  - claim: fig4c-excited-inflated-onset
+    agrees: true
+    outcome: reproduced
+    reason: Group F(1,79) = 5.19, p = 0.025, EAA higher; safety t = -3.46, p = 0.0009; all four paired
+      tests p < 0.025 with D > U > S. The script's normalization gives F = 4.96, the paper's value.
+    response: No change needed.
+  - claim: fig4de-inhibited-temporal-pattern
+    agrees: true
+    outcome: partially_reproduced
+    reason: F(110,14300) = 1.54, p = 2.4e-4 (script normalization 1.72, p = 4.4e-6, close to the
+      paper's 1.69); the bregma part was not run; the descriptive pattern roughly matches.
+    response: As for fig4ab, the script has no bregma level; notes updated, outcome kept.
+  - claim: fig4f-inhibited-danger-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Group F(1,130) = 9.15, p = 0.003, EAA lower; danger t = 2.58, p = 0.011 < 0.0167. The
+      script's normalization reproduces the paper's 10.81, 2.69 and 2.39.
+    response: No change needed.
+  - claim: fig4f-inhibited-danger-uncertainty-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: EAA t(83) = -3.21, p = 0.0019, danger lower; Control t(47) = -1.29, p = 0.20; passes under
+      both divisors.
+    response: No change needed.
+  - claim: fig5abc-excited-reduced-threat-probability
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under the authors' combination (d, one) the threat t = 2.12, p = 0.037, but the interaction
+      p = 0.055; only the hybrid (d, zero) passes everything, and none of the claims file's readings
+      does better than partial. The notebook takes the outcome under (d, one) while the criterion says
+      under one reading of a to c; the rule should be stated once and applied to every claim, as
+      taking any of 12 readings with p near 0.05 inflates false positives (B2). The paper's df imply
+      68 cue-excited neurons, and the notebook does not look for the exclusion rule (B4).
+    response: Stated one rule in the regression section and the summary, applied to every regression
+      claim, the script's combination (d, one) fixed before outcomes were compared, with the claims
+      file's own rule reported per claim. Added a table of the twelve combinations against the paper's
+      printed statistics; (d, one) is closest (mean relative deviation 0.076, next 0.167). Added counts
+      of neurons from sessions with 0/0 trials, missing betas and rank-deficient designs; none gives
+      the paper's counts and the script has no exclusion step. Outcome kept; the claims file's rule
+      gives the same.
+  - claim: fig5d-threat-tuning-curve
+    agrees: true
+    outcome: reproduced
+    reason: Under (d, drop) and (d, one) both peaks are at 0.5, assignment p about 3e-26, group p =
+      0.046 and 0.045, interaction p >= 0.16. Under the claims file's readings a to c the group effect
+      fails (p 0.07 to 0.24), so this is fragile and rests on accepting reading d (B2).
+    response: Kept, resting on the assumption, now with the evidence that (d, one) is the combination
+      closest to the paper's statistics (assignment and group F 18.69 and 4.15 against 18.88 and 4.01).
+  - claim: figs4-peak-assignment-same-pattern
+    agrees: true
+    outcome: reproduced
+    reason: Under (d, one) and (d, drop) significance and sign are unchanged at 0.5 for both tests; the
+      result flips under b drop, b one and d zero, where p values sit near 0.05.
+    response: No change needed; the rule of B2 applies.
+  - claim: fig5efg-inhibited-fear-output
+    agrees: true
+    outcome: reproduced
+    reason: Under (d, one) three-way F(9,1170) = 2.15, p = 0.023; fear output t = 2.34, p = 0.021, EAA
+      more negative; threat p = 0.41, all near the paper's values. Readings a and c also pass.
+    response: No change needed.
+  - claim: fig6-excited-firing-threat-decoupled
+    agrees: false
+    outcome: reproduced
+    reason: Reproduced only under the script's normalization (NFc) with (d, one) betas, where Control
+      danger R2 = 0.566, uncertainty R2 = 0.218, Z = 3.83 and 3.07 and all parts pass. NFc reproduces
+      the paper almost digit for digit (Figs. 4C, 4F, 6), so it is evidently what the authors computed,
+      and the Methods wording ("Z score normalized across all trial types") also allows the SD to be
+      taken over trial-level bins. NFc was run for the correlations only with (d, one) betas and should
+      have been a full reading. The claims file's opening comment lists only the Methods'
+      normalization, a gap in the claims file, not a misreading of the text (B1).
+    response: Ran the script's normalization as a full variant under all twelve regression readings for
+      Figs. 6, S5, 7 and S6; Fig. 6 then passes under nine of twelve. Outcome kept as partially
+      reproduced. The Methods Z score the trial-averaged differential firing ("Mean differential firing
+      was Z score normalized across all trial types"), the claims file fixes that normalization, and
+      where the Methods and the code disagree the Methods decide and the code's choice is a variant
+      (reader, step 2). The disagreement is recorded in the claim's notes. No reader question was
+      filed, as the verifier reports a gap, not a misreading, and the claims file follows the Methods.
+  - claim: figs5-excited-firing-fear-output-unrelated
+    agrees: true
+    outcome: reproduced
+    reason: No correlation or one-tailed comparison reaches p < 0.05 in any reading, nor under NFc.
+    response: With NFc run under all twelve readings, six have one comparison with one-tailed p < 0.05
+      (smallest 0.010), while the adopted one has none (smallest 0.059). Notes updated; outcome kept.
+  - claim: fig7-inhibited-firing-fear-output
+    agrees: true
+    outcome: not_reproduced
+    reason: Control uncertainty firing correlates strongly with the fear output beta in every reading
+      (r = 0.56 to 0.73 under the Methods' normalization, 0.70 under NFc) where the paper reports R2 =
+      0.04, p = 0.16; no reading passes the uncertainty part, so partial is excluded. NFc should be run
+      under every regression reading.
+    response: Ran NFc under all twelve readings; the uncertainty part fails in each. Added firing-window
+      variants; with first-5 s firing, the window the script computes for cue-inhibited neurons, every
+      part holds and with NFc the statistics are the paper's (Control uncertainty R2 = 0.042, p = 0.16;
+      safety Z = 0.60). Recorded as a code_mismatch finding and a question for the authors. Outcome
+      kept, as the claims file follows the legend's last 5 s.
+  - claim: figs6-inhibited-firing-threat-probability
+    agrees: true
+    outcome: reproduced
+    reason: Every reading has a significant cue in each group (danger r about 0.7 to 0.85); comparisons
+      all p >= 0.05 under a, b, c, (d, one) and NFc; only d zero and d drop give one-tailed p of 0.036
+      and 0.038.
+    response: Ran NFc under all twelve readings; every part holds in each (smallest one-tailed p =
+      0.096). Outcome kept.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and the summary, the helper
+    module, the claims file, the README and this record, with the paper. The verifier agreed with
+    all 20 outcomes and listed sentences the outputs do not support and points that remain. One
+    point is not tied to a claim, the stated storage windows of spikes and nose pokes (cell 7 and
+    the finding); the data check now prints the extents of both, and the text and the finding give
+    about 20 s before to about 33.5 s after each onset.
+  results:
+  - claim: fig1bc-adversity-slows-weight-gain
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change needed.
+  - claim: fig1ef-acquisition-equivalent-final
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change needed.
+  - claim: fig2b-baseline-poke-equivalent
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 10).
+    response: No change needed.
+  - claim: fig2c-recording-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 13).
+    response: No change needed.
+  - claim: fig2d-cue-responsive-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 16).
+    response: No change needed.
+  - claim: fig2d-higher-proportion-responsive
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 19).
+    response: No change needed.
+  - claim: fig2ef-baseline-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 22).
+    response: No change needed.
+  - claim: fig4ab-excited-temporal-pattern
+    agrees: true
+    outcome: partially_reproduced
+    reason: The script has no occurrence of "bregma" (cell 3), so the bregma part cannot be tested,
+      and the first part holds (cell 27).
+    response: No change needed.
+  - claim: fig4c-excited-inflated-onset
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 30).
+    response: No change needed.
+  - claim: fig4de-inhibited-temporal-pattern
+    agrees: true
+    outcome: partially_reproduced
+    reason: The script has no occurrence of "bregma" (cell 3), so the bregma part cannot be tested,
+      and the first part holds (cell 33).
+    response: No change needed.
+  - claim: fig4f-inhibited-danger-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 36).
+    response: No change needed.
+  - claim: fig4f-inhibited-danger-uncertainty-discrimination
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 39).
+    response: No change needed.
+  - claim: fig5abc-excited-reduced-threat-probability
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under the adopted reading (d, one) the interaction has p = 0.055 and the threat t test p =
+      0.037. The claims file's own rule gives the same result, through (b, drop) and (b, one). The
+      assumption is stated, but the outcome does not depend on it, so by the notebook's own rule it
+      should not be marked; its README row still says "on an assumption". The paper's smaller
+      degrees of freedom (B4) are only partly addressed; about 13 cue-excited neurons are
+      unaccounted for and the interaction (p = 0.055) could change with the paper's neuron set. The
+      statement that the reading was "fixed before the outcomes were seen" cannot be confirmed from
+      the outputs, and the script's regression inputs at lines 2161 to 2170 are not printed.
+    response: Removed `assumed` and the README and summary marks; the notes and the deviation say the
+      claims file's readings give the same outcome. Removed the unverifiable statement from the
+      notebook and the record. The data check now prints the script's regression lines (2149, 2150
+      and 2162 to 2171; the regress call is on line 2169, so the cited range is now 2162 to 2171).
+      The degrees of freedom stay a question for the authors, as no exclusion rule was found.
+  - claim: fig5d-threat-tuning-curve
+    agrees: true
+    outcome: reproduced
+    reason: Agree, conditionally. The outcome holds only under (d, drop) and (d, one), group p =
+      0.046 and 0.045; under readings a to c group p is 0.070 to 0.238. The assumption is stated and
+      reasonable, as (d, one) is closest to the paper's statistics, and the ranking holds without the
+      small-denominator 5ABC FO t term. Its grounding in script lines 2161 to 2170 is not shown in any
+      output.
+    response: The data check now prints the script's lines 2149, 2150 and 2162 to 2171, which regress
+      fire.z.s1.interval on cer.cue (regTotal) with the probability regressor; the cube stores 1 for
+      0/0 trials in cer.cue (printed in the data check). The notebook and the deviation cite them.
+      Outcome and `assumed` kept.
+  - claim: figs4-peak-assignment-same-pattern
+    agrees: true
+    outcome: reproduced
+    reason: The outcome does not rest on the assumption, as readings a and c give "same, True" (cell
+      57), so the claims file's rule also gives reproduced; under a to c the test is met vacuously,
+      as the threat difference is not significant at either uncertainty value. `assumed, true` is
+      unnecessary, and the Summary sentence that the S4 outcome rests on it is false.
+    response: Removed `assumed`, the README and summary marks and the sentence in the summary. The
+      result cell and the notes now say readings (a) and (c) give the same outcome and that under (a)
+      to (c) the threat difference is not significant with either value.
+  - claim: fig5efg-inhibited-fear-output
+    agrees: true
+    outcome: reproduced
+    reason: Readings a and c meet all three parts (cell 60). New point, not affecting a conclusion,
+      one cue-inhibited design is not of full rank (cell 44); lstsq returns minimum-norm betas for it
+      where Matlab regress would zero a coefficient. This touches 1 of 132 neurons in fig5efg, fig7
+      and figs6.
+    response: Added Matlab's solution (QR with column pivoting, dependent coefficients set to 0) to
+      the helper and a section re-running the adopted reading with it for Figs. 5E to G, S4, 7 and
+      S6. The neuron's fear output betas become 0; Fig. 5E to G gives F = 2.14, p = 0.024 and t =
+      2.30, p = 0.023; no outcome changes. Recorded as a deviation.
+  - claim: fig6-excited-firing-threat-decoupled
+    agrees: true
+    outcome: partially_reproduced
+    reason: The verifier now agrees, changing its round-1 outcome. The Methods Z-score the
+      trial-averaged differential firing, the claims file's normalization; it withdraws its round-1
+      view that the wording allows the SD to be taken over trial-level bins. Under the Methods'
+      normalization the danger part holds and the uncertainty part fails under all 12 readings (cell
+      65). The notes' "p = 0.03 to 0.04 in all readings" for EAA safety is wrong; cell 65 gives 0.0084
+      to 0.040.
+    response: Corrected the range in the notes (0.0084 to 0.040; adopted 0.040). Outcome kept.
+  - claim: figs5-excited-firing-fear-output-unrelated
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 68).
+    response: No change needed.
+  - claim: fig7-inhibited-firing-fear-output
+    agrees: true
+    outcome: not_reproduced
+    reason: The uncertainty part fails under all 12 readings and both normalizations (cell 71). The
+      claims file follows the legend and Results, so this is not a misreading. "Correlates strongly"
+      is not supported, as under reading c r is only 0.35 to 0.40. The statement that with first-5 s
+      firing every part holds was run only under the adopted regression reading and should say so.
+      Its own round-1 reason gave r = 0.56 to 0.73 under the Methods' normalization, where cell 71
+      shows 0.35 to 0.73.
+    response: Replaced "strongly" with the range (r = 0.35 to 0.73, p <= 0.015) in the notebook and
+      the notes. The first-5 s statement now names the adopted reading, and the first-5 s window is
+      now run under all twelve readings and both normalizations; every part holds with firing (b) or
+      (d), not with (a) or (c), which the notebook, notes and summary say. The data check prints the
+      script's cue-inhibited firing windows (lines 2796 to 2817). The round-1 reason is left as the
+      verifier gave it. Outcome kept.
+  - claim: figs6-inhibited-firing-threat-probability
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 74).
+    response: With Matlab's solution for the design not of full rank every part still holds (smallest
+      one-tailed comparison p = 0.052). Outcome kept.

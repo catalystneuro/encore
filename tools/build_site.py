@@ -225,6 +225,9 @@ def collect(executed: Path | None = None) -> dict:
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
+            # The recorder's summary for the site (docs/agents/recorder.md, step 2), when the attempt has one.
+            "summary": squash((ROOT / "summaries" / f"{a['id']}.md").read_text())
+                       if (ROOT / "summaries" / f"{a['id']}.md").is_file() else None,
             "description": squash(entry.get("description")) if entry else None,
             "notebooks": notebooks_of(entry) if entry else [],
             "outcomes": [{
@@ -1631,6 +1634,17 @@ def version_text(a: dict) -> str:
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
 
 
+def summary_block(atts: list[dict]) -> str:
+    """The recorder's summary of each attempt shown, at the top of the dataset's page, with who wrote it."""
+    shown = [a for a in atts if a.get("summary")]
+    if not shown:
+        return ""
+    paras = "".join((f'<p class="lede"><em>{e(a.get("paper_title") or a["paper"])}:</em> ' if len(shown) > 1 else '<p class="lede">')
+                    + f'{e(a["summary"])}</p>' for a in shown)
+    return (f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that recorded the attempt, '
+            f'from its claims and the agents&rsquo; reports. A failure to reproduce may be a failure of the agent.</p></div>')
+
+
 def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
     """A panel with every attempt on the dataset, oldest first, when there is more than one."""
     all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
@@ -1920,6 +1934,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
+  {summary_block(atts)}
   <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>

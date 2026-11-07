@@ -271,12 +271,18 @@ claims:
     value: 558
     tolerance: 55.8
     unit: trials
-  criterion: The paper does not say which sessions are counted. Readings (a) the sessions of the
-    241 recorded neurons after the code's behavior criteria (metrics/beh_only.json, at least 90
-    trials, 106 sessions); (b) all behavior sessions in the dataset, with and without recordings.
-    A trial is a go cue (no-go cues are part of the inter-trial interval, Methods, Data
-    analysis). Reproduced when, under one reading, the mean is within tolerance and the range
-    lies within 94 to 558 widened by 10% of each bound.
+  criterion: A trial is a go cue with a choice (a left or right lick); ignored go cues and no-go
+    cues are not counted. The Methods do not say; the code that draws Figure S12a settles it
+    (F_behavior_w_FP.ipynb cell 19, session_len = rows of makeSessionDF, which keeps trials with
+    animal_response != 2, with cut_interruptions=True, the longest stretch of trials without
+    manual or extra water). The paper does not say which sessions are counted. Readings (a) the
+    behavior sessions, with and without recordings, that pass the code's behavior criteria
+    (metrics/beh_only.json, at least 90 trials; 259 sessions, 32 mice in the code's output, the
+    sessions of Figure S12a); (b) the sessions of the 241 recorded neurons after the same criteria
+    (106 sessions); (c) all behavior sessions in the dataset. The count of all go cues, and the
+    count without the interruption cut, are shown as variants. Reproduced when, under one
+    reading, the mean is within tolerance and the range lies within 94 to 558 widened by 10% of
+    each bound.
 - id: iti-mean
   statement: Inter-trial intervals averaged 4.83 s (range 1.1 to 20 s).
   source: Methods, Behavioral task, paragraph 6
@@ -512,8 +518,9 @@ claims:
   criterion: Each neuron's CCF coordinate projected on the unit axis by dot product and correlated
     (Pearson) with its t-statistic (Methods, Relating behavioral features to spatial axes). The
     axes come from the retrograde tracing (LDA) and MERFISH (CCA) data; the code prints them
-    (F_spatial-axis-comparison.ipynb cell 25) as [-0.248, 0.499, 0.830] and [0.024, 0.332, 0.943]
-    and centres coordinates before projection. Reproduced when both r are positive with p < 0.05
+    (F_spatial-axis-comparison.ipynb cell 25) as b_z = [0.024, 0.332, 0.943] for the retrograde
+    (LDA) axis, which the legend's left value belongs to, and b_y = [-0.248, 0.499, 0.830] for
+    the MERFISH (CCA) axis, the right value, and centres coordinates before projection. Reproduced when both r are positive with p < 0.05
     and within tolerance.
   depends_on:
   - fig5b-baseline-predicts-ignore

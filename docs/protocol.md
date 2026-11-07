@@ -362,12 +362,22 @@ module.
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
   Aim for under ten minutes; CI fails a notebook over sixty. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
+- **Keep it within memory.** The runner has 16 GB of memory and 4 CPUs, shared
+  with the agent itself. Read a large file as a stream (decompress and iterate
+  over it, or read the slices needed), not whole into memory; hold one large
+  file's contents at a time; and run in parallel only as many as fit. A run
+  that exhausts the memory ends the whole job, with nothing saved: on
+  2026-11-06 an author run was killed nine times this way, each time on its
+  full run, by a helper that read four sequencing libraries at once into
+  lists of lines.
 - **Develop on a subset.** Build and debug each analysis on one or two
   sessions, or a few units, and run it on the whole dataset once, when it
   works; do not re-run whole notebooks to test a change. Time the subset and
-  estimate the whole. If the estimate is over the notebook limit, or over the
-  time left (see "Time" above), record the claim as blocked, `too_large`, with
-  the estimate, and do not run it. To survey the dataset, read each file's
+  measure its peak memory (`resource.getrusage(resource.RUSAGE_SELF).ru_maxrss`,
+  in kilobytes on Linux), and estimate the whole. If the estimate is over the
+  notebook limit, over the time left (see "Time" above), or over 12 GB of
+  memory, record the claim as blocked, `too_large`, with the estimate, and do
+  not run it. To survey the dataset, read each file's
   metadata and array shapes, not its data.
 
 The notebook has these parts, in this order:
