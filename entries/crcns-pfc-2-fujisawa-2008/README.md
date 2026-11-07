@@ -46,7 +46,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-pfc-2-fujisawa-2008-01.yaml`](../../attempts/crcns-pfc-2-fujisawa-2008-01.yaml).
 
-- `reproduce_fujisawa_2008.ipynb`: the analysis. It takes about 22 minutes: under 3 minutes to
+- `reproduce_fujisawa_2008.ipynb`: the analysis. It takes about 21 minutes: under 3 minutes to
   stream the files (the whole 2.4 GB EE.188 archive is read as a stream, for the example file and
   the nose-poke sensor channels), 5 minutes for the jitter cross-correlograms of 40,240 cell pairs,
   and the rest for the coincidence and spike-order tests.

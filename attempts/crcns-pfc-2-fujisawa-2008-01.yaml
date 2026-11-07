@@ -45,10 +45,12 @@ outcomes:
     nose-poke sensor channels (97 right, 98 left), and the position file covers the whole session. A trial is the
     run of pokes since the last arm-end visit and its choice the arm end reached next. EE188 has 46 trials, 45 correct
     and 1 error (97.8%, within 91.9 +- 9.19); with a 40 pixel radius the same, with 80 pixels 46 of 48 (95.8%).
-    41 of the table's 42 correct trials are found as correct trials of the same side, the remaining one starts within
-    a run of pokes that the detection begins 3.5 s earlier; the table leaves out 3 detected correct trials. The
-    other 12 sessions' sensor channels are in their own tars and were not read, so the claim is tested on one session
-    of 13.
+    41 of the table's 42 correct trials are found as correct trials of the same side; the remaining one (first poke
+    1133.5 s) lies within a detected correct trial of the same side whose first poke is 3.5 s earlier. The table
+    leaves out 1 detected error and 3 detected correct trials; one of these (2245.1 s) reaches the arm 25.9 s after
+    its first poke, within the 9.0 to 36.1 s of the table's trials, and the other two (822.9 and 2370.7 s) 199.8
+    and 259.9 s after it, longer than any table trial. Without these two, 43 of 44 (97.7%). The other 12 sessions'
+    sensor channels are in their own tars and were not read, so the claim is tested on one session of 13.
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:task-performance
   measured: 97.8
@@ -84,7 +86,9 @@ outcomes:
   notes: In EE188 the peak positions per tenth are 17, 0, 2, 2, 16, 7, 7, 5, 0, 61 of 117 (chi-square against uniform
     p < 0.001), and the population mean rate per tenth is 0.57 to 2.33 times its mean. The layer 5 sessions of FF
     show the same pattern (variant). The PSTHs are spike counts per unit of normalised length per trial, as the
-    Methods define them, so they are higher where the rat moves slowly (start and reward ends).
+    Methods define them, so they are higher where the rat spends more time; in EE188 it spends 0.86 s per trial
+    in the first tenth and 2.89 s in the last, against 0.47 to 0.71 s in the others (median speed 81 and 22 pixels/s,
+    against 138 to 198).
   deviations:
   - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session
     has more than 64 cells.
@@ -102,7 +106,7 @@ outcomes:
   - 0.154
   notes: Under PSTH reading a (all trials), width i (contiguous run) and cells y (all 627 cells) the width is 0.209
     +- 0.154. Readings a-ii-x (0.235 +- 0.158), b-ii-y (0.267 +- 0.171) and c-ii-y (0.239 +- 0.156) also match;
-    in the other eight combinations the mean is within tolerance and the s.d. (0.097 to 0.188) is not. Per rat (c-i)
+    in the other eight combinations the mean is within tolerance and the s.d. (0.108 to 0.188) is not. Per rat (c-i)
     0.195, 0.198 and 0.143.
   deviations:
   - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the
@@ -119,7 +123,9 @@ outcomes:
   notes: In EE188 (42 trials) the lateral coordinate first differs significantly between left and right trials (global
     level 0.01) at 0.28 (reading a), within 0.30 +- 0.03; the distance to the mean path (reading b) at 0.43, the
     x coordinate at 0.48. Head direction differs from 0.01 under every reading, against 0.24, although left and
-    right trials start 2 pixels apart. Smoothed, 0.28 for the lateral path. Other sessions give 0.01 to 0.43 for
+    right trials start 2 pixels apart. The head direction difference lies at the start of the maze (31 to 45 degrees
+    at 0.005 to 0.025, 11 at 0.055, 0 to 8 from 0.105 on), so the rat leaves the nose-poke with its head turned
+    differently on the two trial types. Smoothed, 0.28 for the lateral path. Other sessions give 0.01 to 0.43 for
     the lateral path; head direction is available only in EE152 (0.17) and EE165 (0.26).
   deviations:
   - Per trial, the mean of each variable in 100 bins of normalised position, gaps filled by linear interpolation;
@@ -228,7 +234,8 @@ outcomes:
     excitatory and 0.11 to 0.39% inhibitory over the four B and W combinations; under G-a 1.07 to 1.50%, 0.94 to
     1.09% and 0.14 to 0.47%; no combination puts the three directed values within tolerance. Reciprocal pairs are
     0.045 to 0.199% of directed pairs under G-b; 0.179% of unordered pairs under G-a B-b W-a is the only reciprocal
-    value within tolerance. G-b B-a finds 41 of the authors' 43 pairs_all connections for EE188, G-a B-a all 43.
+    value within tolerance. G-b B-a W-a finds 41 of the authors' 43 pairs_all connections for EE188, G-a B-a W-a all 43
+    (W-b 42), B-b 34.
     With every EE188 train shifted in time the detector flags 0.12 to 0.15% of pairs as excitatory and 0.04 to 0.07%
     as inhibitory (G-b B-a W-a), against 0.70% and 0.26% unshifted.
   deviations:
@@ -310,7 +317,8 @@ outcomes:
   output: claim:fig3d-hub
   notes: The largest connected circuit in EE188 holds 82 or 83 (B-a) or 59 (B-b) of 117 cells under G-b, 85 or 86
     and 64 under G-a, against 39. The authors' pairs_all graph (43 connections) has a largest component of exactly
-    39 cells, so Figure 3d draws a subset of the connections the test finds, which the paper does not describe.
+    39 cells. If Figure 3d draws pairs_all, which the matching count suggests but does not show, it draws a subset
+    of the connections found (G-a B-a W-a finds all 43, G-b B-a W-a 41, B-b 34), which the paper does not describe.
     The layer 5 value (45 of 142) cannot be tested.
   deviations:
   - 'The global band of the jitter test follows the Methods'' stepping procedure (G-b): it is stepped inwards, excluding
@@ -497,8 +505,10 @@ outcomes:
     as any spike within 40 ms, summed heights), depression under none. 27.3 to 33.3% of the significant pairs are
     on different shanks. 388 of 389 excitatory connections (529 of 530 in all) are testable. On synthetic trains
     the test finds a fourfold difference in efficacy in 20 of 20 runs in either direction and flags 3 of 20 runs
-    with equal efficacy; with labels assigned at random to the data's spikes, 16 of 121 pairs (13%) are significant
-    at P < 0.10, so the test is somewhat liberal.
+    with equal efficacy; with labels assigned at random to the data's spikes, 16 of 121 pairs (13.2%, 95% interval
+    7.8 to 20.6%) are significant at P < 0.10, consistent with 10% (binomial p = 0.23). The share of connections
+    significant either way, 10.9 to 14.9% under G-b, is at this random-label rate, so the facilitation within tolerance
+    under two readings is not partial support for the claim.
   deviations:
   - 'The global band of the jitter test follows the Methods'' stepping procedure (G-b): it is stepped inwards, excluding
     the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie
@@ -554,6 +564,8 @@ outcomes:
     test against 0 gives p = 0.00036, a small negative shift, so the distribution is not exactly symmetric around
     0. Per rat medians -0.023, -0.007 and 0.031. By CellsInfo type, pyramidal -0.007 (p = 0.065) and interneurons
     -0.078 (p = 3.2e-05); by the connection-based types (G-b B-a W-a C-a), -0.015 (p = 0.041) and -0.088 (p = 0.065).
+    The criterion tests only a shift above 0; whether a significant shift below 0 counts against the statement's
+    symmetry around zero is asked of a reader (questions/crcns-pfc-2.yaml).
   deviations:
   - Speed is the path length of the LED midpoint (LED 1 alone where LED 2 is not tracked) per 0.5 s bin, in pixels
     per second.
@@ -627,7 +639,9 @@ findings:
     attempt assumed normalisation by the peak.
 - kind: selection_undocumented
   statement: The trial table of EE188 (SessionNP) leaves out 3 trials that the nose-poke sensor channels and the
-    position file show as correct (first pokes at 822.9, 2245.1 and 2370.7 s); why they are left out is not said.
+    position file show as correct (first pokes at 822.9, 2245.1 and 2370.7 s), and 1 error trial (2687.2 s). In
+    two of the three (822.9 and 2370.7 s) the rat reaches the arm 193.4 and 176.9 s after its last poke, longer
+    than any table trial, so they may be left out for that reason; why any are left out is not said.
 - kind: metadata_insufficient
   statement: The data description defines Cells as the units whose maximum rate in the trials exceeds 1 Hz, but
     the files hold no Cells variable. By the largest rate over the tenths of the maze, 0 to 10 cells per session
@@ -877,3 +891,208 @@ verifications:
       tolerance. Raw rates give about 1.0. The s.d. over positions (about 0.03) is far below the paper's 0.087 and
       0.13, but the criterion does not test it.
     response: Added the s.d. over positions to the conclusion and the notes. Outcome unchanged.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and the summary, the helper module, the claims file,
+    the README and the attempt record, with the paper. The verifier agrees with 29 of the 30 outcomes, and with odor-unrelated-to-stem
+    as an outcome that rests on its assumption. It quoted six passages the printed outputs do not support (lifetime-width,
+    task-performance and the EE188 finding, fig6-depression-facilitation, fig3d-hub, the pairs_all coverage, fig2-population-uniform),
+    found its round-1 points resolved, and listed as remaining the odor-unrelated-to-stem dependencies, the head direction
+    diverging at 0.01, the fig6 chance rate, the speed-not-correlated reading and the EE188 finding.
+  results:
+  - claim: unit-count
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: task-performance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated. The sentence that the left-over table trial starts within a run of pokes that the detection
+      begins 3.5 s earlier is supported by no output, which neither prints 3.5 s nor says which detected trial this is.
+      The finding that the table leaves out 3 trials that the sensor channels and position file show as correct overstates
+      the evidence, as two of them (first pokes at 822.9 and 2370.7 s) reach the arm 200 and 260 s after the first poke
+      while table trials last 6.2 to 19.5 s; dropping them gives 43 of 44 correct, so the outcome is unaffected.
+    response: Cell 12 now prints, for each detected trial not in the table, its pokes, its arm arrival and the time from
+      the first and the last poke, and for the unmatched table row (first poke 1133.5 s) the detected trial that holds
+      it (first poke 3.5 s earlier, correct, same side). It also prints the performance without trials longer than the
+      table's longest (43 of 44, 97.7%). The conclusion, the notes, the summary and the finding now say that two of the
+      three left-out correct trials reach the arm 193.4 and 176.9 s after the last poke, longer than any table trial,
+      and may not be ordinary trials. Outcome unchanged.
+  - claim: fig2c-synchrony-by-layer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: fig2-population-uniform
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated. The record's sentence that the PSTHs are higher where the rat moves slowly (start and reward
+      ends) is shown by no output of speed against position.
+    response: Added the time per trial and the median speed in each tenth of the maze in EE188 (0.86 s and 2.89 s in
+      the first and last tenths against 0.47 to 0.71 s elsewhere; median speed 81 and 22 pixels/s against 138 to 198),
+      and cited them in the conclusion and the notes. Outcome unchanged.
+  - claim: lifetime-width
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as stated. The text gives the s.d. of the eight failing combinations as 0.097 to 0.188, but cell 23
+      prints 0.108 to 0.188 and 0.097 appears nowhere.
+    response: Corrected to 0.108 to 0.188 in the conclusion and the notes.
+  - claim: trajectory-divergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the change to partially reproduced is supported, as the mean paths show the stem runs along x and
+      the arms separate along y, and with y the path diverges at 0.28. Head direction diverging at 0.01 is still unexplained
+      now that the single-port explanation is ruled out; the outcome is unaffected, but the head-direction method has
+      not been validated.
+    response: 'Added the mean head direction of left and right trials at positions 0.005 to 0.305 with its s.d. over
+      trials. The difference lies at the start of the maze (31 to 45 degrees at 0.005 to 0.025, 11 at 0.055, 0 to 8 from
+      0.105 on): the rat leaves the nose-poke with its head turned differently on the two trial types and then runs down
+      the stem with the same heading. Added to the conclusion and the notes. Outcome unchanged.'
+  - claim: side-arm-selectivity-by-layer
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: central-arm-selectivity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: odor-selective-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated; the sensor-detected pokes give 30.8%.
+    response: No change needed.
+  - claim: odor-unrelated-to-stem
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees only as an assumed outcome. The Spearman assumption is stated and defensible but no more natural than
+      Pearson, which gives the opposite outcome (cell 38). The not-reproduced result rests entirely on the side arms;
+      the main text (p. 4) speaks only of the stem, and the extension to the side arms comes from the Supplementary Figure
+      6b legend, which the verifier could not check. In the stem Pearson gives an opposite-sign association (r = -0.278,
+      p = 0.0024), so whichever coefficient is used there is a significant association somewhere. The outcome depends
+      on the coefficient, the side-arm extension and the same-sign rule, which is open and has been put to a reader.
+    response: Checked the Supplementary Figure 6B legend in the supplement text, which says the nose-poke differential
+      activity was independent of the trial-type differential activity in the stem and side arms of the maze, so the
+      side arms are part of the claim as the paper states it. The assumption, the Pearson result and the same-sign question
+      to a reader are already recorded. Outcome unchanged.
+  - claim: retrospective-coding-rare
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: connection-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated. The text says the detection finds all 43 pairs_all connections under G-a B-a; this is true
+      only with W-a, as W-b gives 42 (cell 50).
+    response: The notes and the summary now give 41 of 43 under G-b B-a W-a, all 43 under G-a B-a W-a, 42 with W-b and
+      34 under B-b.
+  - claim: cell-type-fractions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: pyr-pyr-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: fig3b-session-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: fig3d-hub
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated. The sentence that Figure 3d draws a subset of the connections the test finds holds fully
+      only under G-a B-a W-a; under G-b B-a W-a 41 of the 43 pairs_all connections are detected and under B-b only 34
+      (cell 50), and equating Figure 3d with pairs_all is an inference from the matching count of 39.
+    response: 'Rewritten in the conclusion and the notes: if Figure 3d draws pairs_all, which the matching count suggests
+      but does not show, it draws a subset of the connections found (all 43 under G-a B-a W-a, 41 under G-b B-a W-a,
+      34 under B-b).'
+  - claim: fig3f-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated; unchanged under G-b.
+    response: No change needed.
+  - claim: nearby-pyr-int-probability
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: connected-cells-trajectory-specific
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated; unchanged under G-b.
+    response: No change needed.
+  - claim: no-spatial-clustering
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: position-dependent-transmission
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated; the presynaptic-only jitter gives 46 or 53 of 389.
+    response: No change needed.
+  - claim: fig5a-session-selective-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: fig4-pair-156-136
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: fig5b-example-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: thinning-preserves-dependence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the change to not reproduced follows the criterion's flatness condition (cell 95). The thinning reaches
+      its target in only 23 to 26% of runs, so the result says more about the procedure than about the data.
+    response: No change needed.
+  - claim: fig6-depression-facilitation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees as stated. The sentence that the test is somewhat liberal is not supported: 16 of 121 (expected 12.1,
+      s.d. about 3.3) and 3 of 20 are both consistent with the nominal 10%. The notebook also omits that the share of
+      all pairs significant either way (11 to 15% under G-b) is at the random-label rate, so facilitation within tolerance
+      under two readings should not be read as partial support.'
+    response: Removed the sentence. Cell 98 now prints the share of connections significant either way for every reading
+      (10.9 to 14.9% under G-b, 11.6 to 15.0% under G-a) and the random-label rate with its interval and a binomial test
+      against 10% (13.2%, 7.8 to 20.6%, p = 0.23). The conclusion and the notes now say the random-label rate is consistent
+      with 10%, the share significant either way is at that rate, and the facilitation within tolerance is not partial
+      support. Outcome unchanged.
+  - claim: fig6b-convergent-examples
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: fig7-supralinear-coincidence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as stated.
+    response: No change needed.
+  - claim: speed-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees as stated. A claims-file reading, reported and not corrected: the paper says symmetric around 0,
+      but the criterion tests only for a shift above 0; the data shift significantly below 0 (p = 0.00036), which the
+      reproduced outcome does not reflect.'
+    response: Added the question to questions/crcns-pfc-2.yaml for a reader, and a sentence in the notes; the claim is
+      not changed. Outcome unchanged.
+  - claim: population-vector-width
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assumption is stated and reasonable. With raw rates the width is about 1.0; peak-normalised and
+      z-scored rates both match (cell 47), so the outcome depends on normalising at all, not on which method.
+    response: No change needed.
