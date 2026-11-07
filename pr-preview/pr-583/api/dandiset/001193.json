@@ -1,0 +1,722 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001193",
+  "label": "DANDI:001193"
+ },
+ "page": "datasets/dandi/001193/",
+ "generated": "2026-11-07T12:32:21+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 23
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001193-zhu-2022-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001193",
+    "version": "0.240921.1006",
+    "doi": "10.48324/dandi.001193/0.240921.1006"
+   },
+   "key": "dandi:001193",
+   "label": "DANDI:001193",
+   "dataset_version": "0.240921.1006",
+   "paper": "10.1038/s41562-022-01334-6",
+   "paper_title": "Distinct spatiotemporal patterns of syntactic and semantic processing in human inferior frontal gyrus",
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41284865063"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001193-zhu-2022",
+   "entry_title": "Syntactic and semantic processing in human inferior frontal gyrus (Zhu et al. 2022)",
+   "summary": null,
+   "description": "Tests the findings of Zhu, Xu, Lu, Hu et al. (2022) on dandiset 001193, which holds the high-gamma ECoG of ten participants, four blocks each, from two 128-electrode grids. The files hold no trial or event times, condition labels, responses or electrode locations, so only the counts of participants and electrodes can be tested; the notebook checks the data against their description. The keyword frequencies of the stimuli are tested on the paper's supplement and the corpus it names.",
+   "notebooks": [
+    {
+     "path": "reproduce_zhu_2022.ipynb",
+     "title": "Reproducing Zhu et al. (2022) from dandiset 001193",
+     "executed": "notebooks/001193-zhu-2022/reproduce_zhu_2022.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "participants",
+     "statement": "Ten participants (four male, six female, 19 to 50 years) were recorded with two 128-electrode grids each; all ten did the CORR, SYN-P, SYN-C and SEM conditions, five of them the combined violation (COM) and the other five the non-linguistic task (NL).",
+     "source": "Methods, Participants, paragraph 1, and The Chinese language and stimuli design, paragraph 3; Supplementary Table 1",
+     "quote": "This study included ten participants (age range, 19\u201350 years; four males, six females) ... All the ten participants performed under CORR, SYN-P, SYN-C and SEM conditions. Five participants performed under COM and the other five performed under NL conditions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zhu_2022.ipynb",
+     "notes": "The dataset holds 10 distinct subjects (TC5, TC6, TC7, TC9, TC12, TC16 to TC20), each with 256 electrodes in two groups of 128, so the counts of participants (10) and electrodes per participant (256) match. The sex field is U (unknown) in every file, so the numbers of male and female participants (4 and 6 expected) are not determinable from the subjects; 4 and 6 appear only in the free-text subject description \"chinese, 4 males and 6 females\", copied into every file, which cannot be checked per subject. Ages are given only as the group range P19Y/P50Y, which matches the paper's 19 to 50 years but not the per-participant ages of Supplementary Table 1. No file says which task a participant did, so the 5 COM and 5 NL participants cannot be counted; the two recording periods (TC5 to TC12 in 2019-03 to 2019-05, TC16 to TC20 in 2019-11) split the subjects 5 and 5, but nothing ties them to the task groups, and they are not used as such. No `measured` is given, as four of the six expected values cannot be measured. The criterion's partial outcome is \"a subset of the participants with matching metadata\"; here all participants are present but most of their metadata is missing, which the criterion does not describe literally, and partially_reproduced is taken as its nearest reading.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task-structure",
+     "statement": "Each of the CORR, SYN-P, SYN-C, SEM and COM conditions has 32 sentences, with six words per sentence in CORR, SYN-C and SEM and seven in SYN-P and COM, each word shown for 400 ms with a 100 ms interval after an 800 ms fixation and a 500 ms blank.",
+     "source": "Methods, The Chinese language and stimuli design, paragraph 4; Supplementary Information, stimulus sentence lists",
+     "quote": "Each trial started with an 800 ms fixation followed by a 500 ms blank screen, and then each word of the sentence (or geometric shape) was displayed for 400 ms, with a 100 ms interstimulus interval. There were six words per sentence in the CORR, SYN-C and SEM conditions and seven words in the SYN-P and COM conditions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The files hold no trials table, intervals, events or photodiode signal, and no condition labels, so neither the trials per condition nor the word timing can be read. The stimulus, analysis and processing groups are empty in all 40 files. Each participant has four files named block 1 to 4, which matches the four blocks of the Methods. The supplement's lists, read for stimuli-word-frequency, hold 32 sentences each in CORR, SYN-P, SYN-C and SEM, with 6, 7, 6 and 6 words per sentence, which matches three of the expected values (32 sentences, 6 words, 7 words in SYN-P; COM has no list there); the criterion still needs the trial counts and word timing per participant, so the claim stays blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "behaviour-response-time",
+     "statement": "Most participants responded fast and accurately in the linguistic task, most response times lying around 0.5 to 1.0 s.",
+     "source": "Results, paragraph 1; Supplementary Figure 2b legend",
+     "quote": "Most of the responding time is around 0.5-1.0 second.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No button responses, response times or question onsets are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-high-gamma-best-band",
+     "statement": "High-gamma components above 70 Hz classify the linguistic conditions with the highest accuracy (above 80%), and the evoked responses are more prominent in the 70 to 150 Hz band than in other bands.",
+     "source": "Results, paragraph 3; Figure 1b; Supplementary Figure 3a to 3e",
+     "quote": "Results showed that high-gamma (HG) components (>70 Hz) discriminated conditions with the highest accuracy (>80%, Fig. 1b and Supplementary Fig. 3a) and ERPs were more prominent in the HG band (70\u2013150 Hz) compared with other frequency bands",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dataset holds only the high-gamma activity (series description \"High gamma data\"), no broadband signal and no other band, and no condition labels or resting-state periods to classify.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-responsive-in-ifg",
+     "statement": "Most electrodes showing enhanced activity to linguistic stimuli lie in the IFG.",
+     "source": "Results, paragraph 3; Figure 1c; Supplementary Figure 3f",
+     "quote": "Most of the electrodes showing enhanced activities to linguistic stimuli were located in the IFG",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The rest against stimulus test needs the fixation and word periods, and the IFG count needs anatomical labels; there are no event times, every electrode location is \"unknown\" and there are no coordinates.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-only-after-keyword",
+     "statement": "The enhanced activity for violation conditions relative to CORR appears only after the keyword.",
+     "source": "Results, paragraph 3; Figure 1d",
+     "quote": "In the linguistic task, the enhanced activity of violation conditions relative to CORR was only observed after the keywords, indicating that the responses were highly linked to the violation manipulations (Fig. 1d).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs first-word and keyword onsets and condition labels, none of which is in the dataset; also depends on fig2b-violation-electrodes, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-violation-electrodes",
+     "statement": "58 IFG electrodes respond to at least one violation type more strongly than to correct sentences.",
+     "source": "Results, paragraph 5; Figure 2b",
+     "quote": "we defined a significant effect in each electrode if its response to a certain type of violation was reliably enhanced compared with the CORR condition for more than 50 ms (P < 0.05, ANOVA, two tailed, Bonferroni correction for the number of electrodes, n = 256 for each participant); there were 58 electrodes satisfying this criterion",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs keyword onsets and condition labels (CORR, SYN-P, SYN-C, SEM) for the test of V, the rest and stimulus periods for E, and pars opercularis and pars triangularis labels; the dataset holds none of these.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-single-type",
+     "statement": "Most responding electrodes (49 of 58) respond strongly to only one violation type; few (9 of 58) are co-activated by two types, mainly SYN-P and SYN-C.",
+     "source": "Results, paragraph 5; Figure 2b",
+     "quote": "We found that most of the electrodes (49 of 58) strongly responded to only one type of violation (Fig. 2b, one-way ANOVA F statistic > 4). Only a few electrodes were co-activated by two violation types (9 of 58) and were mainly co-activated by SYN-P and SYN-C",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig2b-violation-electrodes, blocked; the F values also need condition labels.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig6a-half-split",
+     "statement": "When half of the sentences select the responding electrodes and the other half are analysed, most electrodes (46 of 62) still respond to one violation type only and 16 of 62 to two, mainly SYN-P and SYN-C.",
+     "source": "Results, paragraph 5; Supplementary Figure 6a legend",
+     "quote": "We used first half sentences to identify the linguistic responding electrodes and used the remaining sentences for further analysis, to resolve non-independence issue. We found that most of the electrodes (46/62) strongly responded to only one type of violation (below figure). Only a few electrodes were ... by two violation types (16/62) and were mainly ... by SYN-P and SYN-C",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs condition labels, keyword onsets and which sentence each trial showed, none of which is in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig6b-duration-metric",
+     "statement": "When the length of the period differing from CORR is used in place of amplitude, most electrodes (61 of 79) respond to one violation type only and 18 of 79 to two, mainly SYN-P and SYN-C.",
+     "source": "Results, paragraph 5; Supplementary Figure 6b legend",
+     "quote": "We found that most of the electrodes (61/ 79) strongly responded to only one type of violation (below figure). Only a few electrodes were ... by two violation types (18/79) and were mainly ... by SYN-P and SYN-C",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs condition labels and keyword onsets, which are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-euclidean-similarity",
+     "statement": "The response time courses of SYN-P and SYN-C are more similar (Euclidean distance 48.43) than those of the syntactic and semantic conditions (62.17).",
+     "source": "Results, paragraphs 5 and 6; Figure 2c",
+     "quote": "the similarity between SYN-P and SYN-C (Euclidean distance, 48.43) was greater than that between syntactic and semantic conditions (Fig. 2c, Euclidean distance, 62.17)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig2b-violation-electrodes, blocked; the condition time courses need condition labels and keyword onsets.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig7a-com-overlap",
+     "statement": "Of the electrodes responding to the combined violation (COM), 78.3% also respond to SYN-P but only 26.1% to SEM.",
+     "source": "Results, paragraph 6; Supplementary Figure 7a",
+     "quote": "for the electrodes responding to the combined violation condition (COM), 78.3% of them also showed enhanced activity to the syntactic violation (SYN-P), but only 26.1% of them responded to the semantic violation (SEM)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No COM labels, no record of which participants did COM, and no event times.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig7b-not-nonlinguistic",
+     "statement": "The electrodes responding to linguistic violations do not respond to the non-linguistic violation in the high-gamma band.",
+     "source": "Results, paragraph 6; Supplementary Figure 7b and 7c legend",
+     "quote": "at 70 -150 Hz, the linguistic responding electrodes were almost completely not responding to the non-linguistic task",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No NL-CORR or NL-VIO labels, no record of which participants did NL, and no event times; also depends on fig2b-violation-electrodes, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2de-no-spatial-separation",
+     "statement": "Across participants, the activation centres and epicentres of the SYN-P, SYN-C and SEM electrodes are not spatially separated in the IFG.",
+     "source": "Results, paragraph 7; Figure 2d and 2e; Supplementary Figure 8a",
+     "quote": "Unlike the result at the electrode level, we failed to observe a tendency of spatial separation for the activation centre of syntactic and semantic conditions. Likewise, the epicentre of these responses failed to show separations using a permutation test of the clusters of electrodes (Fig. 2e).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No MNI coordinates or electrode positions of any kind in the electrode table (columns location, group, group_name, filtering; location \"unknown\"); also depends on fig2b-violation-electrodes, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig8b-individual-no-separation",
+     "statement": "Even within individual participants the SYN-P, SYN-C and SEM electrodes show no clear spatial separation.",
+     "source": "Results, paragraph 7; Supplementary Figure 8b",
+     "quote": "However, even at the individual level, we were unable to obtain a clear separation pattern (Supplementary Fig. 8b).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No native or MNI coordinates; depends on fig2b-violation-electrodes, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-circuit-diameter",
+     "statement": "From the fraction of co-activated electrodes, the diameter of the functional circuits is estimated as no greater than about 3.25 mm.",
+     "source": "Results, paragraph 8; Figure 2f; Methods, Functional circuit size estimation",
+     "quote": "The results showed that the diameter of functional circuits was no greater than ~3.25 mm (Fig. 2f)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig2b-single-type, blocked for missing event times and condition labels.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig9-predict-from-corr",
+     "statement": "Electrode types (SYN-P, SYN-C, SEM, non-responding) can be predicted from responses to correct sentences above the 25% chance level, with accuracies of 45.6%, 73.0%, 69.3% and 38.4%.",
+     "source": "Results, paragraph 9; Supplementary Figure 9 legend; Methods, Predicting different types of electrodes",
+     "quote": "our data showed the predicted electrode types with accuracies significantly higher than chance level (SYN-P 45.6%, SYP-C 73.0%, SEM 69.3%, and not-responding electrodes 38.4%; all P < 0.0001 relative to chance level 25%, Supplementary Fig. 9)",
+     "statistics": [
+      {
+       "about": "each class accuracy against chance level 25%",
+       "test": "two-sided t-test",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The features come from CORR responses aligned to keyword onset, and the labels from fig2b-single-type; neither condition labels nor onsets are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-latency-values",
+     "statement": "SYN-P responses start and peak earliest (onset 113 ms, peak 480 ms), then SEM (122 ms, 524 ms) and SYN-C (283 ms, 579 ms).",
+     "source": "Results, paragraph 10; Figure 3c, 3d and 3f",
+     "quote": "The results suggested that the SYN-P (onset, 113 ms and peak, 480 ms) occurred earlier than SEM (122 ms and 524 ms) and SYN-C (283 ms and 579 ms) in terms of both onset and peak of the response, respectively.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Latencies need keyword-locked responses per condition; there are no keyword onsets or condition labels, and no precentral, pars opercularis or pars triangularis labels for E+.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-latency-differences",
+     "statement": "Onset and peak latencies differ significantly between each pair of SYN-P, SYN-C and SEM.",
+     "source": "Results, paragraph 10; Figure 3d legend",
+     "quote": "we estimated the latency differences based on ANOVA (Fig. 3d, P < 0.001, one-way ANOVA, two tailed, Bonferroni, corrected for ten participants.",
+     "statistics": [
+      {
+       "about": "SEM onset against SYN-P onset",
+       "test": "one-way ANOVA, two tailed",
+       "p": 1.83e-05,
+       "corrected": "Bonferroni, for ten participants",
+       "n": "106 electrodes in pars opercularis, pars triangularis and precentral"
+      },
+      {
+       "about": "SEM onset against SYN-C onset",
+       "test": "one-way ANOVA, two tailed",
+       "p": 1.93e-14,
+       "corrected": "Bonferroni, for ten participants"
+      },
+      {
+       "about": "SYN-C onset against SYN-P onset",
+       "test": "one-way ANOVA, two tailed",
+       "p": 5.85e-30,
+       "corrected": "Bonferroni, for ten participants"
+      },
+      {
+       "about": "SEM peak against SYN-P peak",
+       "test": "one-way ANOVA, two tailed",
+       "p": 3.26e-13,
+       "corrected": "Bonferroni, for ten participants"
+      },
+      {
+       "about": "SEM peak against SYN-C peak",
+       "test": "one-way ANOVA, two tailed",
+       "p": 1.02e-05,
+       "corrected": "Bonferroni, for ten participants"
+      },
+      {
+       "about": "SYN-C peak against SYN-P peak",
+       "test": "one-way ANOVA, two tailed",
+       "p": 9.3e-27,
+       "corrected": "Bonferroni, for ten participants"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig3-latency-values, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-sync-latency-variability",
+     "statement": "Onset and peak latencies vary more across electrodes for SYN-C than for SYN-P.",
+     "source": "Results, paragraph 10; Figure 3c and 3d",
+     "quote": "This possibility may help explain the results that relatively later (and also greater variations of) onset and peak were observed for SYN-C than SYN-P.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig3-latency-values, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-latency-not-location",
+     "statement": "Response latencies do not depend on the location of the electrodes along the anterior-posterior or superior-inferior axis, or across pars opercularis, pars triangularis and precentral gyrus.",
+     "source": "Results, paragraph 11; Figure 3e; Supplementary Figure 10c and 10d",
+     "quote": "Moreover, response latencies did not depend on the spatial location of the electrodes (Fig. 3e and Supplementary Fig. 10c,d).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No electrode coordinates or anatomical labels; depends on fig3-latency-values, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig10a-separable-400-700",
+     "statement": "The accuracy of classifying the conditions after the keyword peaks about 400 to 700 ms after keyword onset.",
+     "source": "Results, paragraph 10; Supplementary Figure 10a legend",
+     "quote": "The accuracies for classifying different conditions peaked at about 400\u2013700 ms after the keywords, which indicated they were most separable in this time frame",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Classifying conditions after the keyword needs condition labels and keyword onsets, which are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig10b-duration-differs",
+     "statement": "The total length of the significant difference from CORR differs between SYN-P, SYN-C and SEM electrodes.",
+     "source": "Results, paragraph 11; Supplementary Figure 10b legend",
+     "quote": "The discrepancy in terms of the total length of the significant difference between respect violation and correct sentence of each electrode (ANOVA). This also indicated temporal differences in processing each linguistic component",
+     "statistics": [
+      {
+       "test": "one-way ANOVA, two tailed",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig2b-violation-electrodes, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "nl-low-frequency",
+     "statement": "In the non-linguistic task, the violation enhances activity mainly at lower frequencies (4 to 10 Hz), where many electrodes respond to both linguistic and non-linguistic tasks, unlike the high-gamma band.",
+     "source": "Results, paragraph 3; Supplementary Figures 4 and 7c",
+     "quote": "In contrast, in the NL task, the violation condition showed an enhanced activity mainly at the lower frequency (Supplementary Fig. 4), indicating that neural oscillations during linguistic and NL tasks may arise in different frequency bands.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the 4 to 10 Hz amplitude, which the dataset (high gamma only) does not hold, and NL labels and onsets, which it also lacks.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "stimuli-word-frequency",
+     "statement": "Keyword frequencies are matched between CORR (shared by SYN-P and SEM; mean 31.88 per million) and SYN-C (30.25 per million).",
+     "source": "Methods, The Chinese language and stimuli design, paragraph 3",
+     "quote": "the word frequencies were matched between CORR (same in SYN-P and SEM, mean frequency = 31.88 per million, s.d. = 35.14) and SYN-C (mean frequency = 30.25 per million, s.d. = 73.58) (t(62) = 0.11, P = 0.91)",
+     "statistics": [
+      {
+       "test": "t-test",
+       "statistic": "t(62) = 0.11",
+       "p": 0.91,
+       "n": "32 CORR and 32 SYN-C keywords"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zhu_2022.ipynb",
+     "notes": "With the news and fiction sub-corpora pooled, per million bigrams, the CORR keywords (word 4 of the 32 CORR sentences) have a mean of 31.568 per million (s.d. 34.80) and the SYN-C keywords 29.955 (s.d. 72.86), within 31.88 +- 3.188 and 30.25 +- 3.025, and t(62) = 0.113, p = 0.910 (paper t(62) = 0.11, P = 0.91). The paper's two means and two s.d. are each 1.010 times these, as if the same counts were divided by about 28.0 million where the sub-corpora hold 28.3 million bigrams. The other five readings fail the tolerance on at least one mean (news per million bigrams 25.76 and 34.89; fiction 36.15 and 26.06; pooled per million characters 27.54 and 26.14), and all six give p > 0.05 (0.264 to 0.910), so the frequencies are matched under every reading. Counting each keyword once, dropping \u7518\u9999, or Welch's test leave the pooled result within tolerance (p 0.910 to 0.964). The Methods say the SYN-P and SEM keywords are the CORR ones, but in sentences 3 and 11 they differ (\u5b69\u5b50 and \u8863\u670d for \u5c0f\u5b69 and \u4e0a\u8863); with them the pooled CORR mean is 47.35 (p = 0.379), so the paper's values are those of the CORR list. The claim uses no data of the dataset. Open for the paper's authors (finding methods_unavailable) - which sub-corpus and which total the frequencies divide by; the Methods give only the site's address. The criterion names \"the Modern Chinese word frequency list\", which the site does not have; this is asked of a reader in questions/001193.yaml, and the claim is tested as the file has it, on the site's bigram counts.",
+     "deviations": [
+      "The site the Methods name (lingua.mtsu.edu/chinese-computing) has no word frequency list as such (its Modern Chinese list counts single characters); its word-level counts are bigram counts of two sub-corpora, news and general fiction. As the Methods say \"All the keywords were of two characters\", the bigram counts are used, read one keyword at a time from the site's bigram search.",
+      "Assumed reading of the corpus. The paper does not say which sub-corpus it used or what \"per million\" divides by. The counts of the two sub-corpora are pooled and divided by their total bigrams (12,470,872 and 15,807,413, Table 6 of Da 2004, the report the site cites). Basis - the t statistic does not depend on the total divided by, so it identifies the sub-corpus whatever the total; the pooled counts give t(62) = 0.113 against the paper's 0.11, where news alone gives -0.356 and fiction alone 1.126. The paper's two means and two s.d. are all the same multiple (1.0099, the four ratios within 1.0001 of each other) of the pooled values, as the same counts over a slightly different total would be. Further, the paper names the site and not a sub-corpus, the site's search returns both sub-corpora together, and a bigram's frequency is a count of bigrams. The notebook shows all six combinations of sub-corpus (news, fiction, both) and total (bigrams, characters); only this one also meets the criterion's tolerances.",
+      "The site's counts have no version, DOI or commit; the notebook reads them as served on the day it runs and prints them. The supplement is fetched from the publisher and checked by SHA-256 against the copy the claims file was written from.",
+      "Student's two-sample t-test, as the paper's t(62) with 32 and 32 keywords implies; a keyword occurring twice in a list (\u7535\u8111 in CORR, \u5e72\u51c0 in SYN-C) is counted twice for the same reason, and the one keyword absent from the news sub-corpus (\u7518\u9999) is counted as 0 there. Each of these is also shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods say the keywords of SYN-P and SEM are the same as those of CORR, but in the supplement's lists sentences 3 and 11 of SYN-P and SEM have \u5b69\u5b50 and \u8863\u670d where CORR has \u5c0f\u5b69 and \u4e0a\u8863. The frequencies the Methods report (CORR mean 31.88 per million) match the CORR keywords; with the SYN-P keywords the mean is 47.35 per million.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "No file holds trial, word or keyword event times, condition labels (CORR, SYN-P, SYN-C, SEM, COM, NL-CORR, NL-VIO), button responses or the photodiode signal the Methods describe. The stimulus, analysis and processing groups are empty and there is no trials table or intervals, so no analysis of the paper can be repeated, although the description says the dataset supports the paper's findings.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The electrode table has no coordinates (MNI or native) and no anatomical labels; every electrode's location is \"unknown\", and the two electrode groups (Grid_1 and Grid_2, location \"unknown\") do not say which covers the IFG and which the MFG or STG. The paper's selection of IFG electrodes and its spatial analyses need these.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Only the high-gamma activity is deposited. The broadband signal, or any other band, which the frequency analyses of Figure 1b and Supplementary Figures 3, 4 and 7c use, is not in the dataset.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Every subject has sex U and age P19Y/P50Y (the range of the whole group), with the sentence \"chinese, 4 males and 6 females\" as the subject description in every file. Supplementary Table 1 gives each participant's sex, age and grid coverage, but nothing maps the subject ids TC5 to TC20 to its participants 1 to 10, and nothing says which participants did the COM task and which the NL task.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The ECoG series is stated in volts, but every channel of every file has mean 0 (within 3e-6) and standard deviation 1 (within 1e-4); the values are z scores per channel and per block, as the Methods describe for the HGA.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The series' rate is stated as 400 Hz. At 400 Hz every block lasts 70 to 95 s, less than 3 s per trial for the at least 32 linguistic trials a block holds, while each trial lasts at least 4.3 s before the question; at 100 Hz, the rate the Methods give for the HGA, blocks last 282 to 381 s. The data are consistent with 100 Hz, not 400 Hz (400 Hz is the Methods' rate before the HGA was taken), unless each file holds under half of its block. A weak spectral check leans the same way (power at the 2 Hz word rate above its flanking band in 34 of 40 files under the 100 Hz reading, 19 of 40 under the 400 Hz reading). Without event times this cannot be shown directly.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The Methods give the keyword frequencies with the address of Jun Da's Chinese text computing site only. The site has no word frequency list, and its bigram counts come from two sub-corpora (news and general fiction). Which sub-corpus, or both, and which total (bigrams or characters) did the frequencies per million use? The attempt assumes both sub-corpora pooled, per million bigrams, the one reading whose t statistic (0.113) matches the paper's 0.11.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The Methods exclude bad channels and bad time intervals, but all 256 channels are present in every file and nothing marks which channels or intervals were excluded (filtering is \"none\" for every electrode); as each file is z scored on its own, bad channels cannot be told apart by scale.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module ifg_hga.py and the claims file, with the paper. The verifier queried the DANDI API at 0.240921.1006 and tested the helpers on synthetic inputs. Its problems 4 to 6 (ages checked only against the group range, the z-scoring and the 100 Hz rate, the helpers on synthetic inputs) found no error; in reply to problem 5 the notebook now says an analysis would take the files at 100 Hz and that no claim here uses time.",
+     "agreed": 24,
+     "of": 25,
+     "disagreements": [
+      {
+       "claim": "stimuli-word-frequency",
+       "outcome": "blocked",
+       "reason": "The claim is data: with_inputs and does not use the dataset. The notebook skips it as needing \"an unpinned web corpus\", which is not a reason the criterion allows. Its inputs are available, so it should have been tested: the keyword lists are in the paper's supplement, and the corpus the paper names, lingua.mtsu.edu/chinese-computing, answers HTTP 200. \"Unpinned\" could be recorded as a caveat, but it is not a reason to block; the outcome is undecided only because of that."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, the helper modules ifg_hga.py and keyword_frequency.py, the claims file and the attempt record, with the paper. The verifier agreed with all 25 outcomes and found every round-1 point resolved. Of the sentences against the outputs, it found cell 10's standard deviation 1 to within 3e-5 unsupported (cell 9 prints 0.9999 to 0.99999, about 1e-4), cell 10's list of the files with a start transient short of the 17 counted (TC17_block4 was missing), and the README's about a minute too short (cell 1 prints 76 s for reading alone). Cell 10 now says 1e-4 (0.9999 to 0.99999) and names the 17 files, all 16 of TC5, TC6, TC7 and TC9 and TC17_block4, and the README says about two minutes (93 s in this run).",
+     "agreed": 25,
+     "of": 25,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001193-zhu-2022",
+   "type": "reproduction",
+   "title": "Syntactic and semantic processing in human inferior frontal gyrus (Zhu et al. 2022)",
+   "description": "Tests the findings of Zhu, Xu, Lu, Hu et al. (2022) on dandiset 001193, which holds the high-gamma ECoG of ten participants, four blocks each, from two 128-electrode grids. The files hold no trial or event times, condition labels, responses or electrode locations, so only the counts of participants and electrodes can be tested; the notebook checks the data against their description. The keyword frequencies of the stimuli are tested on the paper's supplement and the corpus it names.",
+   "datasets": [
+    "dandi:001193"
+   ],
+   "papers": [
+    "10.1038/s41562-022-01334-6"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_zhu_2022.ipynb",
+     "title": "Reproducing Zhu et al. (2022) from dandiset 001193",
+     "executed": "notebooks/001193-zhu-2022/reproduce_zhu_2022.html"
+    }
+   ]
+  }
+ ]
+}
