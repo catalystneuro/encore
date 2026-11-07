@@ -42,9 +42,11 @@ def folder_of(attempt_id: str) -> str:
 
 
 def write(attempt_id: str, model: str) -> str:
+    rules = (step2().replace("{attempt}", attempt_id).replace("From the same sources as the notes:", "From the sources below:")
+             .replace(f"Write the attempt's summary in a new file, `summaries/{attempt_id}.md`:", "The summary is"))
     prompt = (f"You are writing the summary of a finished attempt in the reproduction registry. The attempt is `{attempt_id}`.\n\n"
-              + step2().replace("{attempt}", attempt_id).replace("From the same sources as the notes:", "From the sources below:")
-              + "\n\nReply with the paragraph only.\n\n" + sources(attempt_id))
+              + rules + "\n\nYou have no tools, and this script saves your reply as the summary: reply with the paragraph and "
+              "nothing else, no preamble and no note about files.\n\n" + sources(attempt_id))
     out = subprocess.run(["claude", "-p", "--model", model, "--tools", ""], input=prompt,
                          capture_output=True, text=True, timeout=1200)
     if out.returncode != 0 or not out.stdout.strip():
