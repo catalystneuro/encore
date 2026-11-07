@@ -35,12 +35,12 @@ reasoning and the differences from the paper's method.
 | Within-UP rate changes over sleep | Reproduced |
 | First against last REM, MA and WAKE slopes | Partially reproduced |
 | WAKE before against after sleep, by sextile | Partially reproduced |
-| LFP band power within episodes and packets | Partially reproduced (assumed) |
+| LFP band power within episodes and packets | Partially reproduced |
 | UP/DOWN dynamics within packets | Reproduced |
 | Spindles within episodes and packets | Reproduced |
 | More sigma in late-packet UP states | Reproduced |
 | Sextile, CV and burst trends within nonREM | Reproduced (assumed) |
-| Per-packet rate against LFP correlations | Partially reproduced (assumed) |
+| Per-packet rate against LFP correlations | Partially reproduced |
 | Within-UP sextile changes within packets | Not reproduced |
 | Sextile trends within WAKE and REM | Not reproduced |
 | MA-packet-MA triplets | Not reproduced (assumed) |
@@ -58,7 +58,7 @@ exactly, but holds 51 WAKE-SLEEP episodes (54 in the paper) and 434 microarousal
 (790); the 51 are every WAKE and SLEEP interval the files score. The motion signal is not z-scored
 as described. Two days of rat Dino are deposited as two sessions each (ACC and mPFC probes recorded
 together), with separate state files. Each session is one tar.gz whose member
-order varies, so the notebook streams all 27 (about 90 GB) once, which takes about 12 minutes.
+order varies, so the notebook streams all 27 (about 90 GB) once, which takes 7 to 9 minutes.
 
 "(assumed)" marks an outcome that rests on a choice the paper leaves open. Two outcomes,
 within-UP changes over sleep and WAKE before against after sleep, hold only with WAKE-rate
