@@ -36,10 +36,17 @@ Where the parameters come from:
   a standard choice for a detail that cannot change a result beyond the window.
 - Reaction time: first movement of the lick (mouth movement) trace after the cue (Methods,
   Behaviour). The paper gives no detection rule, and the trace's level, scale and sign differ
-  between sessions. The onset is the first sample after the cue at which the trace has moved
-  from its pre-cue baseline (median of the 0.2 s before the cue) by a fraction `LICK_RISE` of
-  its largest excursion in the 1 s after the cue; trials whose excursion is under five times
-  the baseline noise (or 0.02 V) have none. The fractions are readings, an assumption.
+  between sessions. Two rules are run, both assumptions. The noise rule (`rtn_<k>_<floor>`): the
+  first sample after the cue from which the trace stays, for `LICK_HOLD_S` = 5 ms, further from
+  its pre-cue baseline (median of the 0.2 s before the cue) than `k` times the baseline noise
+  (1.4826 times the median absolute deviation) and at least `floor` volts; `k` in
+  `LICK_NOISE_K` and `floor` in `LICK_FLOOR` are readings. The peak rule (`rt_<r>`): the first
+  sample at which the trace has moved from the baseline by a fraction `r` (`LICK_RISE`) of its
+  largest excursion in the 1 s after the cue; trials whose excursion is under five times the
+  baseline noise (or 0.02 V) have none. A few correct trials per session keep the trace from
+  0.1 s before to 0.3 s after the cue (`lick_examples`), to show the onsets on the traces. As a
+  control for the noise rule, `rtfa_<k>_<floor>` is 1 when the same rule, with its baseline
+  from 0.3 to 0.1 s before the cue, fires in the last 0.1 s before the cue.
 - Light pulses: onsets where the AOM input trace (`aom_input_trace`, 10 kHz) crosses half its
   trial maximum, in trials whose maximum exceeds `AOM_MIN` volts (a standard choice).
 """
@@ -71,6 +78,10 @@ RESPONSE_S = 1.3              # response epoch, reading (a); 1.5 s is reading (b
 STEP_S = 0.01                 # time-course step, standard choice
 WIN_S = 0.2                   # averaging window, Fig. 2c legend
 LICK_RISE = (0.05, 0.1, 0.25, 0.5)   # fractions of the trial's peak excursion, readings
+LICK_NOISE_K = (3, 5, 10)     # multiples of the pre-cue noise, readings
+LICK_FLOOR = (0.002, 0.005)   # volts, smallest departure counted, readings
+LICK_HOLD_S = 0.005           # the departure must last this long, an assumption
+N_LICK_EXAMPLES = 6           # correct trials per session whose lick trace is kept
 AOM_MIN = 1.0                 # volts, a trial with a light pulse
 TRIAL_TYPES = ["HitR", "HitL", "ErrR", "ErrL", "NoLickR", "NoLickL", "LickEarly", "StimTrials"]
 
@@ -112,8 +123,12 @@ def _reduce(o, animal, session):
     pos = {tid: k for k, tid in enumerate(ids)}
     extra = {k: np.full(len(ids), np.nan) for k in
              ["ts_offset", "ts_len", "aom_max", "power_max", "stim_on", "stim_off", "n_pulses",
-              "pulse_ms", "lick_base", "lick_peak", "lick_noise", "n_lick_pre"] + [f"rt_{r}" for r in LICK_RISE]}
+              "pulse_ms", "lick_base", "lick_peak", "lick_noise", "n_lick_pre"] + [f"rt_{r}" for r in LICK_RISE]
+             + [f"rtn_{k}_{f}" for k in LICK_NOISE_K for f in LICK_FLOOR]
+             + [f"rtfa_{k}_{f}" for k in LICK_NOISE_K for f in LICK_FLOOR]}
     pulses = {}
+    examples = {}
+    hold = int(round(LICK_HOLD_S * 1e4))   # samples at 10 kHz
     for a, b in zip(seg_start, seg_end):
         tid = tr[a]
         if tid not in pos:
@@ -155,6 +170,28 @@ def _reduce(o, animal, session):
                         continue
                     above = np.flatnonzero(exc * np.sign(peak) > r * abs(peak))
                     extra[f"rt_{r}"][k] = tt[post][above[0]] - cue
+                dev = np.abs(exc)
+                # control for the noise rule: the same rule before the cue, baseline from 0.3 to
+                # 0.1 s before it, detection in the last 0.1 s before it
+                cpre = (tt > cue - 0.3) & (tt <= cue - 0.1)
+                cwin = (tt > cue - 0.1) & (tt <= cue)
+                cbase = np.median(lk[cpre])
+                cnoise = 1.4826 * np.median(np.abs(lk[cpre] - cbase))
+                cdev = np.abs(lk[cwin] - cbase)
+                for kk in LICK_NOISE_K:
+                    for f in LICK_FLOOR:
+                        out = (dev > max(kk * noise, f)).astype(int)
+                        run = np.convolve(out, np.ones(hold, int), "valid")
+                        first = np.flatnonzero(run == hold)
+                        if len(first):
+                            extra[f"rtn_{kk}_{f}"][k] = tt[post][first[0]] - cue
+                        cout = (cdev > max(kk * cnoise, f)).astype(int)
+                        extra[f"rtfa_{kk}_{f}"][k] = float(np.any(np.convolve(cout, np.ones(hold, int), "valid") == hold))
+                ok = (trials.good.iat[k] == 1 and trials.ptype.iat[k] == 0 and not trials.LickEarly.iat[k]
+                      and (trials.HitR.iat[k] or trials.HitL.iat[k]))
+                if ok and len(examples) < N_LICK_EXAMPLES:
+                    w = (tt > cue - 0.1) & (tt <= cue + 0.3)
+                    examples[k] = ((tt[w] - cue).astype(np.float32), lk[w].astype(np.float32))
             samp = (tt > trials.pole_in.iat[k]) & (tt < cue)
             hi = lk > 1.0
             extra["n_lick_pre"][k] = int(np.sum(samp[1:] & hi[1:] & ~hi[:-1]))
@@ -172,12 +209,13 @@ def _reduce(o, animal, session):
                       "cell_types": tuple(_as_list(u.cellType)) if np.size(u.cellType) else (),
                       "channel": float(np.median(u.channel)),
                       "waveform": wf.mean(axis=0),
+                      "waveform_shape": wf.shape,
                       "n_spikes": len(et),
                       "spike_t": et[ok] - start[k[ok]],
                       "spike_k": k[ok].astype(np.int32),
                       "spike_t_session": et[ok]})
     return {"animal": animal, "session": session, "trials": trials, "units": units,
-            "pulses": pulses}
+            "pulses": pulses, "lick_examples": examples}
 
 
 def load_animal(animal):
@@ -274,12 +312,15 @@ def epoch_bounds(trials, response_s=RESPONSE_S):
 
 
 def unit_epoch_rates(unit, trials, lick_early="drop", response_s=RESPONSE_S, outcome="hit"):
-    """Per epoch, the spike rates (spikes/s) on lick right and lick left trials."""
+    """Per epoch, the spike rates (spikes/s) on lick right and lick left trials, and under
+    `<epoch>_count` the spike counts."""
     r, l = trial_mask(trials, unit, lick_early, outcome)
     out = {"n_right": int(r.sum()), "n_left": int(l.sum())}
     for name, (a, b) in epoch_bounds(trials, response_s).items():
         dur = b - a
-        out[name] = (counts_in(unit, trials, r, a, b) / dur[r], counts_in(unit, trials, l, a, b) / dur[l])
+        cr, cl = counts_in(unit, trials, r, a, b), counts_in(unit, trials, l, a, b)
+        out[name] = (cr / dur[r], cl / dur[l])
+        out[name + "_count"] = (cr, cl)
     return out
 
 
@@ -311,7 +352,9 @@ def cue_aligned_counts(unit, trials, sel, centers, win=WIN_S):
 def unit_table(sessions, lick_early="drop", response_s=RESPONSE_S):
     """One row per unit: labels, spike width, trial counts, per-epoch rates on lick right (R)
     and lick left (L) correct trials and on error trials (labelled by the instructed side), the
-    selectivity t-test P values (pooled and Welch), and baseline rates."""
+    selectivity t-test P values (pooled and Welch on rates, as the data set's
+    analysis_compile_all_data.m tests them; pooled on spike counts, the Methods' wording, as
+    `pc_`), and baseline rates."""
     rows = []
     for s in sessions:
         tr = s["trials"]
@@ -335,9 +378,10 @@ def unit_table(sessions, lick_early="drop", response_s=RESPONSE_S):
                 if ep in ("sample", "delay", "response", "trial"):
                     row[f"p_{ep}"] = ttest_p(r, l)
                     row[f"pw_{ep}"] = ttest_p(r, l, welch=True)
+                    row[f"pc_{ep}"] = ttest_p(*rates[ep + "_count"])
             rows.append(row)
     df = pd.DataFrame(rows)
-    for kind, col in (("p", "selective"), ("pw", "selective_welch")):
+    for kind, col in (("p", "selective"), ("pw", "selective_welch"), ("pc", "selective_count")):
         sig = df[[f"{kind}_sample", f"{kind}_delay", f"{kind}_response"]].fillna(1) < 0.05
         df[col] = sig.any(axis=1)
         df[col + "_prep"] = sig.iloc[:, 0] | sig.iloc[:, 1]
@@ -394,9 +438,30 @@ def antidromic_latencies(session, unit, ptypes, order=0, max_ms=10.0):
     return np.array(out)
 
 
+def latency_background(lat, mode, half_width_ms, max_ms=10.0, guard_ms=2.0):
+    """Spikes expected by chance within `half_width_ms` of the modal latency: the density of
+    first-spike latencies more than `guard_ms` from the mode (in 0 to `max_ms`), taken as the
+    spontaneous background, times the window's width. Returns the expected number and the number
+    observed in the window."""
+    lat = lat[np.isfinite(lat)]
+    far = np.abs(lat - mode) > guard_ms
+    span = max_ms - (min(mode + guard_ms, max_ms) - max(mode - guard_ms, 0.0))
+    density = far.sum() / span if span > 0 else np.nan
+    return density * 2 * half_width_ms, int(np.sum(np.abs(lat - mode) <= half_width_ms))
+
+
+def latency_mode(lat, bin_ms=0.2):
+    """Modal latency (centre of the fullest `bin_ms` bin)."""
+    lat = lat[np.isfinite(lat)]
+    h, e = np.histogram(lat, bins=np.arange(0, lat.max() + bin_ms, bin_ms))
+    return e[np.argmax(h)] + bin_ms / 2
+
+
 def latency_mode_stats(lat, half_width_ms=1.0, bin_ms=0.2):
     """Mean latency and jitter (s.d.) of the spikes within `half_width_ms` of the modal latency
-    (bins of `bin_ms`), with the response probability and the number of responses."""
+    (bins of `bin_ms`), with the response probability and the number of responses. The paper
+    gives no window; 1 ms is an assumption, chosen because the spikes between 0.5 and 1 ms from
+    the mode far exceed the spontaneous background (`latency_background`); 0.5 ms is a variant."""
     lat = lat[np.isfinite(lat)]
     if len(lat) < 3:
         return np.nan, np.nan, 0.0, len(lat)

@@ -20,12 +20,12 @@ are not in it.
 | No contralateral bias in the population spike count | Reproduced |
 | FS neurons fire more at baseline and are less selective | Partially reproduced |
 | 45 PT and 27 IT neurons passed the collision test | Reproduced |
-| Antidromic latency and jitter of PT and IT neurons | Reproduced (assumed window) |
+| Antidromic latency and jitter of PT and IT neurons | Partially reproduced (assumed window) |
 | IT neurons have less jitter on the second pulse | Reproduced |
 | PT and IT neurons both preparatory and movement-related | Reproduced |
 | Contra-preferring neurons outnumber ipsi among PT, not IT | Reproduced (selective neurons) |
 | Late contralateral selectivity in PT neurons, from 570 ms before the cue | Not reproduced |
-| Reaction time 61.1 ± 10.5 ms | Not reproduced (assumed detection rule) |
+| Reaction time 61.1 ± 10.5 ms | Blocked: methods underspecified |
 | Large differences in contra-preferring neurons, contra-suppression in ipsi-preferring | Partially reproduced |
 | Photoinhibition, photoactivation, imaging and anatomy (eleven claims) | Blocked: data missing |
 
@@ -37,7 +37,7 @@ response categories and contra and ipsi preference exactly. The attempt record, 
 reasons and the differences from the paper's method, is
 [`attempts/crcns-alm-1-li-2015-01.yaml`](../../attempts/crcns-alm-1-li-2015-01.yaml).
 
-- `reproduce_li_2015.ipynb`: the analysis. It takes about five minutes, most of it streaming
+- `reproduce_li_2015.ipynb`: the analysis. It takes about six minutes, most of it streaming
   about 14 GB of session files from the CRCNS bucket.
 - `alm.py`: streaming and reducing the session files, the unit table of epoch rates and
   selectivity tests, and the antidromic latency measures. Other notebooks on this data set can
