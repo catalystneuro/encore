@@ -50,6 +50,14 @@ Where the parameters come from:
   p over 5,000 permutations, distance-weighted kNN with k = 20 and 5-fold cross-validation. The
   kNN permutation count is 1,000 here to keep the run short (a standard choice; the p floor is
   1/1001).
+- Licks (`clean_licks`, `lick_train_starts`, `kernel_psth`) follow lick_utils.py,
+  ephys_functions.py and F_spont_choice_lick_neuron.ipynb of the code at 971c1ca, cited at each
+  function; the train gap is the claim's 0.5 s (Methods, Lick bout detection) with the code's
+  0.8 s as a variant.
+- Q-learning (`q_trajectory`, `fit_q_session`, `fit_q_mouse`, `simulate_q_session`) follows
+  stan_qLearning_5params (aind_stan_fit_sim at 89371ee); the per-session maximum-likelihood fit
+  and the partial pooling within each mouse are assumptions standing in for the paper's
+  hierarchical Bayesian fit (see the notebook).
 - CCF coordinates in the files are in mm, in the frame the paper's code calls LPS (x ML, y AP,
   z DV); they are referenced to bregma at (-5.7, 5.4, -0.45) mm as in
   F_spatial-axis-comparison.ipynb, so that y is posterior and z dorsal.
@@ -77,7 +85,8 @@ SWITCH_PREV_RESPONDED = True
 TRIAL_COLUMNS = ["start_time", "stop_time", "goCue_start_time", "reward_outcome_time",
                  "animal_response", "rewarded_historyL", "rewarded_historyR", "trial_type",
                  "auto_waterL", "auto_waterR", "reward_delay", "response_duration",
-                 "ITI_duration", "laser_on_trial", "auto_manual_trial", "extra_reward"]
+                 "ITI_duration", "laser_on_trial", "auto_manual_trial", "extra_reward",
+                 "reward_probabilityL", "reward_probabilityR"]
 
 UNIT_SCALARS = ["unit_id", "default_qc", "peak", "isi_violations_ratio", "location_along_probe",
                 "maximum_increase_of_p(response_cond_laser)",
@@ -239,6 +248,65 @@ def read_licks(f: h5py.File) -> dict:
         k = f"acquisition/{side}_lick_time/timestamps"
         out[side] = f[k][:] if k in f else np.array([])
     return out
+
+
+def clean_licks(left, right, crosstalk=0.1, rebound=0.05):
+    """clean_up_licks of utils/lick_utils.py (aind-beh-ephys-analysis at 971c1ca), as load_licks
+    calls it (crosstalk 100 ms, rebound 50 ms): a lick is dropped when a lick on the other side
+    came at most 100 ms before it, then a lick is dropped when it follows the previous kept lick
+    on its side by 50 ms or less."""
+    left, right = np.sort(left), np.sort(right)
+
+    def drop_cross(a, b):
+        if len(a) == 0 or len(b) == 0:
+            return a
+        j = np.searchsorted(b, a, side="left") - 1
+        prev_other = np.where(j >= 0, b[np.clip(j, 0, None)], -np.inf)
+        return a[~(a - prev_other <= crosstalk)]
+
+    out = []
+    for a in (drop_cross(left, right), drop_cross(right, left)):
+        out.append(a[np.insert(np.diff(a) > rebound, 0, True)] if len(a) else a)
+    return out[0], out[1]
+
+
+def lick_train_starts(licks, gap, max_duration=3.5):
+    """Start times of lick trains on one side (parse_lick_trains of utils/lick_utils.py): a train
+    starts after an inter-lick interval above `gap` and is kept when it lasts under 3.5 s."""
+    licks = np.sort(licks)
+    if len(licks) == 0:
+        return licks
+    brk = np.diff(licks) > gap
+    starts = licks[np.concatenate([[True], brk])]
+    ends = licks[np.concatenate([brk, [True]])]
+    return starts[(ends - starts) < max_duration]
+
+
+def kernel_psth(spk, events, tb=-5.0, tf=5.0, step=0.05, tau_rise=0.01, tau_decay=0.08, avoid_win=(0.0, 1.5)):
+    """Mean rate around events with the causal kernel of get_spike_matrix_filter
+    (utils/ephys_functions.py at 971c1ca; F_spont_choice_lick_neuron.ipynb calls it with
+    tb = -5, tf = 5, step 0.05 s, tau_rise 0.01 s, tau_decay 0.08 s, avoid_overlap=True): at each
+    time point the spikes of the preceding 10 tau_decay are summed through
+    (1 - exp(-x / tau_rise)) exp(-x / tau_decay) and divided by the kernel's integral; a point is
+    left out of an event's trace when another event of the same set starts in the window
+    [t - 10 tau_decay - avoid_win[1], t). Returns the time points and the mean over events."""
+    times = np.arange(tb, tf, step)
+    look = 10 * tau_decay
+    norm = tau_decay * tau_decay / (tau_decay + tau_rise)
+    events = np.sort(np.asarray(events))
+    mat = np.full((len(events), len(times)), np.nan)
+    for i, e in enumerate(events):
+        s = spk[(spk >= e + tb - look) & (spk < e + tf)] - e
+        dt = times[None, :] - s[:, None]
+        k = np.where((dt > 0) & (dt <= look), (1 - np.exp(-np.clip(dt, 0, None) / tau_rise)) * np.exp(-np.clip(dt, 0, None) / tau_decay), 0.0)
+        row = k.sum(0) / norm
+        others = np.delete(events, i) - e
+        # another event a with a + avoid_win[1] >= t - look and a + avoid_win[0] < t
+        n_in = (np.searchsorted(others, times - avoid_win[0], side="left")
+                - np.searchsorted(others, times - look - avoid_win[1], side="left"))
+        row[n_in > 0] = np.nan
+        mat[i] = row
+    return times, np.nanmean(mat, axis=0) if len(events) else np.full(len(times), np.nan)
 
 
 # ---------------------------------------------------------------- behavior models
@@ -472,6 +540,62 @@ def fit_q_session(choice, reward, starts=((0.3, 0.6, 0.8, 4.0, 0.0), (0.1, 0.3, 
         if best is None or r.fun < best.fun:
             best = r
     return best.x, best.fun
+
+
+def simulate_q_session(params, p_right_reward, p_left_reward, rng):
+    """Choices and rewards of stan_qLearning_5params on a session's reward probabilities (the
+    trial table's reward_probabilityL/R, as fractions), one trial per responded trial. Used only
+    to check how well the fit recovers parameters and per-trial variables; rewards are drawn
+    without baiting (a standard choice for this check)."""
+    aN, aP, aF, beta, bias = params
+    Q = np.zeros(2)
+    n = len(p_right_reward)
+    choice = np.zeros(n, dtype=int)
+    reward = np.zeros(n)
+    for t in range(n):
+        pr = 1 / (1 + np.exp(-(beta * (Q[1] - Q[0]) + bias)))
+        c = int(rng.random() < pr)
+        rw = float(rng.random() < (p_right_reward[t] if c == 1 else p_left_reward[t]))
+        d = rw - Q[c]
+        Q[c] += (aN if d < 0 else aP) * d
+        Q[1 - c] *= aF
+        choice[t], reward[t] = c, rw
+    return choice, reward
+
+
+def _q_params(z):
+    """Unconstrained to model parameters as in stan_qLearning_5params: aN, aP, aF =
+    Phi(z), beta = 10 Phi(z), bias unbounded."""
+    from scipy.stats import norm
+    return np.r_[norm.cdf(z[:3]), 10 * norm.cdf(z[3]), z[4]]
+
+
+def fit_q_mouse(sessions_cr, n_iter=4, sigma_scale=0.2):
+    """Partial pooling of the session parameters of one mouse, an approximation of the paper's
+    hierarchical fit (Methods, Behavioral model fitting: "hierarchical models with mouse-level
+    hyperparameters to govern session-level parameters"; stan_qLearning_5params). Each session's
+    parameters are the maximum a posteriori estimate under a normal prior on the unconstrained
+    scale (mouse mean mu, SD sigma; bias ~ normal(0, 20) as in the Stan file), and mu and sigma are
+    re-estimated from the session estimates (mu shrunk toward the Stan prior mean 0 with SD 1,
+    sigma toward the scale of its Cauchy(0, 0.2) prior), alternating n_iter times. This is an
+    empirical-Bayes point estimate, not the posterior mean over draws that the paper uses.
+    sessions_cr: list of (choice, reward). Returns the parameters per session."""
+    from scipy.optimize import minimize
+    k = len(sessions_cr)
+    mu, sd = np.zeros(4), np.ones(4)
+    Z = np.zeros((k, 5))
+    data = [(np.asarray(c, dtype=int), np.asarray(r, dtype=float)) for c, r in sessions_cr]
+    for _ in range(n_iter):
+        for i, (c, r) in enumerate(data):
+            def obj(z):
+                _, _, pr = q_trajectory(_q_params(z), c, r)
+                pr = np.clip(pr, 1e-9, 1 - 1e-9)
+                nll = -np.sum(c * np.log(pr) + (1 - c) * np.log(1 - pr))
+                return nll + 0.5 * np.sum(((z[:4] - mu) / sd) ** 2) + 0.5 * (z[4] / 20) ** 2
+            Z[i] = minimize(obj, Z[i], method="L-BFGS-B", bounds=[(-5, 5)] * 4 + [(-10, 10)]).x
+        mu = Z[:, :4].sum(0) / (k + 1)
+        sd = np.sqrt((((Z[:, :4] - mu) ** 2).sum(0) + 2 * sigma_scale ** 2) / (k + 2))
+    return [_q_params(z) for z in Z]
 
 
 # ---------------------------------------------------------------- circular statistics
