@@ -195,7 +195,7 @@ outcomes:
   notebook: reproduce_su_2026.ipynb
   output: claim:fig5e-switch-history
   notes: Lag-1 no-reward coefficient on switching, 41 mice, 5 lags 1.540 (95% CI 1.380 to 1.701), 10 lags
-    2.011 (1.169 to 2.853), 15 lags 1.330 (0.677 to 1.983), positive in 40 or 41 mice. Session medians of
+    2.011 (1.169 to 2.853, 41 mice), 15 lags 1.641 (1.458 to 1.823, 40 mice), positive in every mouse. Session medians of
     P(switch) are 0.178 after an unrewarded and 0.032 after a rewarded choice.
   deviations:
   - Choice history is coded as the choice at t - k - 1 relative to the choice at t - 1, as choice_hist_mat_for_switch
@@ -218,7 +218,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - L(c(t+1) = c(t)) is taken from the pooled R + C choice regression with 5 lags (the code's Figure 4c model)
     and L(c(t)) from the Q-learning model (Methods, Analyses and models of behavior), centred per session.
@@ -278,13 +278,15 @@ outcomes:
   notebook: reproduce_su_2026.ipynb
   output: claim:fig5b-baseline-predicts-ignore
   measured: 48.4
+  assumed: true
   notes: Methods regressors, 122 of 252 neurons with p < 0.05, 48.4% of all (within 46.5 +- 4.65) and 54.2%
     of the 225 with a coefficient. Code regressors 50.0% and 56.0%; trial-index stand-in 44.8% and 50.2%.
     101 of the 122 have higher rates before ignored cues. Across 231 neurons, baseline before ignored go cues
     3.77 Hz against 3.31 Hz before responded ones (paired t = 7.38, p = 2.8e-12), higher in 171. Two tetrode
     mice hold 115 of the 252 neurons (50 of 62 and 13 of 53 significant). On the 207 units of sessions passing
     the refitted aN and bias criteria, the 229 under the pooled fit and the 226 draft opto_NE_paper units
-    the fraction is 44.9%, 47.2% and 51.3% (the last just outside the tolerance).
+    the fraction is 44.9%, 47.2% and 51.3% (the last just outside the tolerance). The outcome rests on the
+    main population.
   deviations:
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
     and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca (claims file); the
@@ -297,6 +299,9 @@ outcomes:
   - The code's switch regressor is built as response_tstats_generation.py builds it (1 when the trial and
     the one before it are both responded with different choices, else 0); no-go cues are left out as the Methods
     state, where the code's table keeps them as unresponded trials.
+  - 'Assumed: the population is the units passing every selection criterion computable from the dataset. On
+    the 226 units the unpublished draft marks opto_NE_paper the fraction is 51.3%, just outside the tolerance,
+    so the outcome rests on this choice.'
 - claim: fig5c-ignore-ventral
   outcome: not_reproduced
   notebook: reproduce_su_2026.ipynb
@@ -408,11 +413,16 @@ outcomes:
     with grouping (i) (paper 7.8e-5). Every mouse has mostly positive sessions (5 of 7 to 13 of 15). Cortex-projecting
     neurons are not marked in the pinned version, so their half of the statement and grouping (ii) were not
     tested; the draft adds antidromic_tier_1, marking 9 of the selected units. On the other populations Fisher
-    p = 1.5e-4 to 1.0e-3 (switch against the previous responded trial, Methods regressors).
+    p = 1.5e-4 to 1.0e-3 (switch against the previous responded trial, Methods regressors). At other thresholds
+    than the Methods' 0.5 z, p = 0.005 at 0.25 z (94 sessions) and 0.38 at 1.0 z (13 sessions, 3 mice).
   deviations:
   - The quality threshold is applied as the mean go-cue increase of the z-scored signal (0 to 0.75 s against
     1 s before the cue) above 0.5 z; the Methods give the threshold, not the window. Sessions above 0.25 and
     1.0 z are counted (94 and 13).
+  - 'Assumed: the window of the quality threshold, 0 to 0.75 s after the go cue against the second before it,
+    the window of the switch regression. With the Methods'' 0.5 z this keeps 63 sessions from 7 mice; at 0.25
+    z Fisher p = 0.005 (73 of 94 positive, 11 mice) and at 1.0 z p = 0.38 (10 of 13, 3 mice), for switch
+    against the previous responded trial with the Methods'' regressors.'
   - The photometry signal is G_PL-L_tri-exp_mc and the isosbestic Iso_PL-L_tri-exp_mc, the channel photometry_generation.py
     uses (G_tri-exp_mc, region PL).
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
@@ -455,7 +465,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The drift regressor (mean spike amplitude around each trial, Methods, Linear regression models of spike
     rates) is not in the pinned version and is omitted; a trial-index regressor is shown as a stand-in variant.
@@ -486,7 +496,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The drift regressor (mean spike amplitude around each trial, Methods, Linear regression models of spike
     rates) is not in the pinned version and is omitted; a trial-index regressor is shown as a stand-in variant.
@@ -513,7 +523,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The drift regressor (mean spike amplitude around each trial, Methods, Linear regression models of spike
     rates) is not in the pinned version and is omitted; a trial-index regressor is shown as a stand-in variant.
@@ -530,19 +540,20 @@ outcomes:
   measured: 28.13
   assumed: true
   notes: Rayleigh z = 28.13, p = 2.8e-13 over 252 neurons, above 19.53 +- 1.953. Modes as described; 125 neurons
-    in the RPE quadrant (outcome +, chosen value -) and 103 with a negative outcome coefficient (sectors -45
-    to 0 deg with 87 neurons and 135 to 180 deg with 37). The nonuniformity holds; its size does not match.
+    in the RPE quadrant (outcome +, chosen value -) and 103 with a negative outcome coefficient (angles beyond
+    +-90 deg; 31 and 37 of them in the sectors from -180 to -135 and 135 to 180 deg). The RPE quadrant includes
+    the 87 neurons from -45 to 0 deg. The nonuniformity holds; its size does not match.
     Rayleigh z grows with the number of neurons; scaled to the paper's 241 it is 26.90 here and 22.43 to 27.12
     on the other populations and with the pooled-fit Q variables, all above 21.48. Unscaled, the 207 and 226
     units of the smaller populations give 19.56 and 21.03, within tolerance, which the scaling attributes
-    to their smaller n.
+    to their smaller n. The outcome rests on the main population.
   deviations:
   - The Q-learning variables come from a per-session maximum-likelihood fit of stan_qLearning_5params (aind_stan_fit_sim
     at 89371ee), the paper's model with the same update and choice rule; the paper fits it hierarchically
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The drift regressor (mean spike amplitude around each trial, Methods, Linear regression models of spike
     rates) is not in the pinned version and is omitted; a trial-index regressor is shown as a stand-in variant.
@@ -552,6 +563,10 @@ outcomes:
     units cannot be applied from the pinned version. The sensitivity section reruns the result on the 207
     units in sessions passing the refitted aN and bias criteria, the 229 under the pooled fit, and the 226
     units the unpublished draft marks opto_NE_paper.
+  - 'Assumed: the population is the units passing every selection criterion computable from the dataset. On
+    the 207 units of sessions passing the refitted aN and bias criteria and on the 226 draft units the unscaled
+    z is within tolerance (19.56 and 21.03), so the outcome rests on this choice; scaled to 241 neurons z is
+    above the tolerance on every population.'
 - claim: fig6f-cortex-projecting-rpe-biased
   outcome: blocked
   blocked_by: data_missing
@@ -560,8 +575,10 @@ outcomes:
     a pinned identifier. The draft (modified 2026-10-06) adds antidromic_tier_1 and related columns (45 units
     marked, 9 of the 252 selected), so a later published version would allow the test. The paper's code identifies
     them from per-session tables of cortical stimulation (site, power, pulse times; {session}_opto_session.csv,
-    read by antidromic_analysis_session.py at 971c1ca), which the dandiset does not hold; files of the pinned
-    version were inspected outside the notebook for stimulation events, and none were found.
+    read by antidromic_analysis_session.py at 971c1ca), which the dandiset does not hold. The data check (notebook, after the draft comparison) lists every
+    stimulus, interval, acquisition and processing object of the 165 files with spikes. None holds stimulation
+    events, no units column concerns antidromic tests, and the metadata's stimulus epochs are the task or the
+    go cue only, although 56 files list antidromic_tagging processing steps.
 - claim: fig6g-rpe-vs-no-reward-populations
   outcome: reproduced
   notebook: reproduce_su_2026.ipynb
@@ -578,7 +595,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
     and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca (claims file); the
@@ -604,7 +621,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
     and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca (claims file); the
@@ -630,7 +647,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - Choice side is ipsilateral = left for the left PL fibers (G_PL-L).
   - The 7 mice are those whose sessions pass the quality threshold; the legend gives 9.
@@ -650,7 +667,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
     and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca (claims file); the
@@ -698,6 +715,9 @@ outcomes:
     from both; peak from -1 to 0.5 s; at least 5 spontaneous trains.'
   - The train gap is the criterion's 0.5 s (Methods, Lick bout detection); the code's load_licks default of
     0.8 s is a variant.
+  - 'Assumed: the lick-sensor times stand in for the video-detected licks the code prefers, and the train gap
+    is the Methods'' 0.5 s. The outcome holds under every variant shown (r = 0.580 to 0.618 with the code''s
+    procedure, 0.612 and 0.803 with the earlier definition), all above the tolerance.'
   - The code prefers licks detected from video; the lick-sensor times, its fallback, are used. Bouts are kept
     within the span of the trials, not the code's ephys_cut, which the dandiset does not hold.
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
@@ -726,7 +746,7 @@ outcomes:
     in Stan and averages the variables over posterior draws (Methods, Behavioral model fitting; Extracting
     model parameters and variables). Assumed as the standard non-hierarchical estimate of the same model;
     the hierarchical fit was not run. Simulated with 40 sessions' fitted parameters, the refit recovers the
-    per-trial RPE and chosen value at a median r of 0.995 and 0.991; a partially pooled refit within each
+    per-trial RPE and chosen value at a median r of 0.995 and 0.991 (at worst 0.593 and 0.190); a partially pooled refit within each
     mouse (lcne.fit_q_mouse), an empirical-Bayes approximation of the hierarchical model, is shown as a variant.
   - The population is 252 units from 21 mice and 112 sessions (paper 241 units, 19 mice), selected with metrics/beh_all.json
     and the computable criteria of beh_only.json of aind-beh-ephys-analysis at 971c1ca (claims file); the
@@ -740,6 +760,11 @@ outcomes:
   - 'Added after verification: every variant of the respond-versus-ignore (3) and switch (6) t-statistics,
     and a null that permutes PC1 within sessions, so that pairs of one session are not treated as independent
     of the session; the paper''s bootstrap is not described.'
+  - 'Assumed: the null and the placement of a pair, which the paper does not describe. The outcome-axis part
+    holds under the label-permutation null with either placement; the absences hold only under the within-session
+    null with pairs placed by their difference, chosen after the label-permutation result was seen. Under the
+    within-session null the midpoint placement loses the outcome axis (p = 0.18), and one switch variant fails
+    the absence with differences (p = 0.048).'
 - claim: figs16-pupil-spiking
   outcome: partially_reproduced
   notebook: reproduce_su_2026.ipynb
@@ -1124,3 +1149,286 @@ verifications:
     response: Added the code's fit (lags to 20 s, rescaled; 3.08 s per session, 3.46 s weighted by units),
       linear detrending (4 positive, 39 negative) and the code's windows (5 and 35), and a breakdown by mouse.
       The files hold no confidence, so that filter cannot be applied. Outcome kept.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with its conclusions and summary, the helper module, the claims
+    file, the attempt record and the entry README, with the paper. It agrees with all 39 outcomes, including fig4c-choice-history
+    and figs15t-crosscorrelogram-outcome-axis, on which it disagreed in round 1. It found round-1 problems B1 to
+    B14 resolved, and reported unstated or unmarked assumptions, four text errors (the 15-lag CI of fig5e, the angle
+    sectors of fig6f, the run time and the README's wording on waveforms) and the inspection for antidromic stimulation
+    events made outside the notebook. Cell numbers in its reasons are those of the round-2 notebook; this revision
+    inserts two data-check cells after cell 9, so later cells move by two.
+  results:
+  - claim: lc-definition-counts
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig1-dense-axon-distribution
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: axon-length-and-branching
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig2c-primary-targets
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig2ef-dorsal-ventral-projections
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig3a-gene-expression-continuum
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig3c-pseudospace-dorsal-ventral
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig3d-retroseq-targets
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: fig3e-axes-separated
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: figs14k-patchseq-by-target
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason other, for the ten anatomy claims, which the claims
+      file marks as data held elsewhere, is acceptable.
+    response: No change needed.
+  - claim: figs12-trials-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: iti-mean
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, unchanged since round 1. The possible claims-file misreading stays open until
+      a reader answers; if the answer goes the other way, this outcome could change.
+    response: No change; the question is in questions/001950.yaml for a reader.
+  - claim: fig4c-choice-history
+    agrees: true
+    outcome: reproduced
+    reason: Disagreed in round 1, now accepted. The criterion requires only R2, the fraction predicted, and positive,
+      decaying rewarded coefficients; all three hold (cell 16). The decay constant, 1.39 trials, is reported as
+      failing. That the claims file lists 3.95 as a decay constant "in trials" remains a possible misreading, which
+      is reported, not corrected.
+    response: No change; the question is in questions/001950.yaml for a reader.
+  - claim: fig5a-engagement-reward-history
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: fig5e-switch-history
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, unchanged since round 1. Cell 23 says "15 lags 0.677 to 1.983" and the record "15 lags 1.330
+      (0.677 to 1.983)", while cell 22 prints for 15 lags a mean of 1.641, 95% CI 1.458 to 1.823, over 40 mice.
+      Both texts are stale; the outcome is unaffected.
+    response: Corrected the conclusion and the notes to the printed values (10 lags 2.011, 1.169 to 2.853, 41 mice;
+      15 lags 1.641, 1.458 to 1.823, 40 mice).
+  - claim: fig6c-choice-change-rpe
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now that
+      the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190 (cell
+      66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: fig4g-go-cue-excitation
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: fig4h-tonic-phasic-anticorrelation
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: figs15f-tonic-modulation-vs-engagement
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: fig5b-baseline-predicts-ignore
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced, unchanged since round 1. Population dependence not marked: on the draft''s units the fraction
+      is 51.3%, outside tolerance (cell 102). The outcome is not marked as resting on the population, as fig5d is.'
+    response: Marked assumed, with an 'Assumed:' deviation on the population, and the conclusion, notes and summary
+      say the outcome rests on it.
+  - claim: fig5c-ignore-ventral
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: fig5d-ignore-on-anatomy-axes
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, unchanged since round 1. The population assumption is stated explicitly, and it is reasonable.
+      The 207-unit population that reproduces the claim uses the per-session aN, which is poorly recovered (r =
+      0.78). The pooled fit, closer to the paper's hierarchical fit, gives 229 units, on which the claim is not
+      reproduced. The outcome flips between populations; it is stated, but it is fragile.
+    response: No change needed.
+  - claim: fig5g-switch-dorsal
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: fig5h-switch-on-anatomy-axes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, unchanged since round 1.
+    response: No change needed.
+  - claim: fig5k-cortical-input-switch
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, unchanged since round 1. Marked assumed, but the record does not say what is assumed;
+      presumably the window of the quality threshold, which is given only as a deviation. That the pinned files
+      hold no antidromic stimulation events is asserted from an inspection outside the notebook, so it cannot be
+      checked from the printed outputs; it supports the untested half.
+    response: Added an 'Assumed:' deviation on the window, and printed Fisher's p at 0.25 z (0.005, 94 sessions)
+      and 1.0 z (0.38, 13 sessions from 3 mice), now in the notes. Added a data-check cell that scans the 165 files
+      with spikes for stimulation objects, antidromic unit columns and stimulus epochs; none hold stimulation events.
+  - claim: figs17i-baseline-axons-vs-spiking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, unchanged since round 1. Its untested half rests on the inspection for antidromic
+      stimulation events made outside the notebook.
+    response: The inspection is now a data-check cell in the notebook.
+  - claim: fig6-outcome-responsive-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now that
+      the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190 (cell
+      66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: fig6a-outcome-space
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable
+      now that the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r =
+      0.190 (cell 66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: figs18d-outcome-not-on-anatomy-axes
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now that
+      the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190 (cell
+      66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: fig6f-outcome-angles-nonuniform
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable
+      now that the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r =
+      0.190 (cell 66); the record cites only the median, 0.991. The notes read "103 with a negative outcome coefficient
+      (sectors -45 to 0 deg with 87 neurons and 135 to 180 deg with 37)"; the angle is arctan2(chosen value, outcome),
+      so -45 to 0 deg is positive outcome with negative chosen value, in the RPE quadrant. The negative-outcome
+      sectors are +-135 to 180 deg, 31 + 37 = 68 neurons, with more beyond +-90 deg (cell 84). Population dependence
+      not marked: on the 207- and 226-unit populations the unscaled z is within tolerance (cell 102).'
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check. Corrected the sectors in the notes (103 beyond +-90 deg, 31 and 37
+      from +-135 to 180 deg). Added an 'Assumed:' deviation on the population; the conclusion and the summary say
+      the outcome rests on it.
+  - claim: fig6f-cortex-projecting-rpe-biased
+    agrees: true
+    outcome: blocked
+    reason: Blocked, unchanged since round 1. The record's reason data_missing is acceptable; the round-1 reason
+      was metadata_insufficient. That the pinned files hold no antidromic stimulation events is asserted from an
+      inspection outside the notebook, so it cannot be checked from the printed outputs.
+    response: 'Added the check to the data check: over the 165 files with spikes no stimulus, interval, acquisition
+      or processing object holds stimulation events, no units column concerns antidromic tests, and the metadata''s
+      stimulus epochs are the task or the go cue; 56 files list antidromic_tagging processing steps whose input
+      tables are not in the files. The notes cite it.'
+  - claim: fig6g-rpe-vs-no-reward-populations
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now that
+      the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190 (cell
+      66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: fig6h-opposing-behavior
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now
+      that the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190
+      (cell 66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: fig6i-axons-rpe
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now that
+      the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190 (cell
+      66); the record cites only the median, 0.991.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check.
+  - claim: fig6j-cortical-input-more-positive
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. Unchanged since round 1. The Q-learning assumption is stated, and it is reasonable now that
+      the recovery check and the pooled-fit variant are in. The worst-case chosen-value recovery is r = 0.190 (cell
+      66); the record cites only the median, 0.991. Its untested half rests on the inspection for antidromic stimulation
+      events made outside the notebook.
+    response: Added the worst case of the recovery check (RPE r = 0.593, chosen value r = 0.190) to the deviation
+      and to the notebook's text on the check. The inspection is now a data-check cell in the notebook.
+  - claim: figs14-waveform-space
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced, unchanged since round 1. Minor: the entry README says the notebook "follows the
+      paper''s code more closely for the ... waveform ... analyses"; the waveform change applies the Methods'' filter,
+      it does not port more of the code.'
+    response: The README now says the notebook applies the Methods' band-pass filter to the waveforms.
+  - claim: figs15q-spontaneous-vs-task-licks
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, unchanged since round 1. Marked assumed with no stated assumption. The outcome
+      holds under every variant (r is 0.58 to 0.62).
+    response: 'Added an ''Assumed:'' deviation: the sensor licks for the video licks the code prefers, and the Methods''
+      0.5 s train gap, with the outcome holding under every variant.'
+  - claim: figs15t-crosscorrelogram-outcome-axis
+    agrees: true
+    outcome: partially_reproduced
+    reason: Disagreed in round 1, now accepted. Under the label-permutation null, neither placement of a pair meets
+      the criterion. Under the within-session null with differences, the main variants show the paper's pattern
+      (cell 99). Calling the outcome-axis part held and the absences dependent on the null is a reasonable judgment.
+      The outcome rests on a null chosen after the result was seen; under that null the midpoint placement loses
+      the outcome axis (p = 0.18) and one switch variant fails the absence (p = 0.048). The assumption it rests
+      on, the null and the pair placement, sits in the notes, not in a stated 'Assumed:' line.
+    response: Added an 'Assumed:' deviation on the null and the pair placement, saying the within-session null was
+      chosen after the label-permutation result was seen and giving the two failures under it.
+  - claim: figs16-pupil-spiking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, unchanged since round 1.
+    response: No change needed.
