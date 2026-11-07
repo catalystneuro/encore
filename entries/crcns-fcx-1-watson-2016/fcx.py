@@ -402,8 +402,19 @@ def seconds_table(s):
                spdur=starts(spt[:, [0, 2]], sp["duration"]),
                spfreq=starts(spt[:, [0, 2]], sp["frequency"]),
                spamp=starts(spt[:, [0, 2]], sp["amplitude"] * 1e6))
-    # state of each second
-    lab = np.zeros(T, np.int8)   # 0 other, 1 WAKE (cycle), 2 packet, 3 MA, 4 REM, 5 wake interruption
+    tab["label"], tab["sleep_id"] = state_labels(s, T)
+    if "lfp" in s:
+        lf = s["lfp"]
+        # window k spans [k, k+10) s; second i takes the window centred on it, k = i - 5
+        k = np.clip(np.arange(T) - 5, 0, len(lf["t"]) - 1)
+        tab["band"] = {b: v[k].astype(float) for b, v in lf["band"].items()}
+    return tab
+
+
+def state_labels(s, T):
+    """State of each second: 0 other, 1 WAKE (cycle), 2 packet, 3 MA, 4 REM, 5 wake interruption;
+    and the cycle whose SLEEP holds the second (-1 outside SLEEP)."""
+    lab = np.zeros(T, np.int8)
     sleep_id = -np.ones(T, np.int32)
     st = s["states"]
     for c in cycles(s):
@@ -414,14 +425,35 @@ def seconds_table(s):
         for code, key in ((2, "SWSPacket"), (3, "MA"), (4, "REM"), (5, "WakeInterruption")):
             for x, y in within(st[key], a, b):
                 lab[int(x):int(y)] = code
-    tab["label"] = lab
-    tab["sleep_id"] = sleep_id
-    if "lfp" in s:
-        lf = s["lfp"]
-        # window k spans [k, k+10) s; second i takes the window centred on it, k = i - 5
-        k = np.clip(np.arange(T) - 5, 0, len(lf["t"]) - 1)
-        tab["band"] = {b: v[k].astype(float) for b, v in lf["band"].items()}
-    return tab
+    return lab, sleep_id
+
+
+def short_wi_as_ma(s, tab):
+    """MA reading (b): WakeInterruption intervals shorter than 40 s counted as MAs.
+
+    Table S1 and the Results define an MA as an arousal under 40 s between nonREM
+    packets, and the data description gives WakeInterruptions as 40 to 120 s, yet
+    the files hold WakeInterruptions shorter than 40 s. Returns a shallow copy of
+    the session and its per-second table with the states relabelled."""
+    st = dict(s["states"])
+    wi = st["WakeInterruption"]
+    short = (wi[:, 1] - wi[:, 0]) < 40 if len(wi) else np.zeros(0, bool)
+    ma = np.vstack([st["MA"], wi[short]])
+    st["MA"] = ma[np.argsort(ma[:, 0])]
+    st["WakeInterruption"] = wi[~short]
+    s2 = dict(s, states=st)
+    t2 = dict(tab)
+    t2["label"], t2["sleep_id"] = state_labels(s2, tab["T"])
+    return s2, t2
+
+
+def overview_table():
+    """The data set's WatsonSleepHomestasis2016Table.xlsx (docs/), as rows of the SleepOverview sheet."""
+    import openpyxl
+    r = requests.get(f"{BASE}/docs/WatsonSleepHomestasis2016Table.xlsx", timeout=60)
+    r.raise_for_status()
+    wb = openpyxl.load_workbook(io.BytesIO(r.content), read_only=True)
+    return [list(row) for row in wb["SleepOverview"].iter_rows(values_only=True)]
 
 
 # ---------------------------------------------------------------- per-cell rates
@@ -460,8 +492,20 @@ def cell_rates(S, reading="b"):
     return df.groupby(["session", "rat", "cell", "type"], as_index=False)[list(STATE_KEY)].mean()
 
 
+def session_wake_rates(S):
+    """Each pE and pI cell's rate over all scored WAKE intervals of its session (M2, "general WAKE
+    firing rate"; in these files the scored WAKE intervals are the WAKE of the cycles)."""
+    import pandas as pd
+    rows = [dict(session=s["session"], cell=i, type="E" if i in s["E"] else "I",
+                 WAKE=rate_in(s["spikes"][i], s["states"]["Wake"]))
+            for s in S for i in list(s["E"]) + list(s["I"])]
+    return pd.DataFrame(rows)
+
+
 def sextiles(df_b):
-    """Sextile (1 lowest .. 6 highest WAKE rate) of each pE cell, over the whole data set (M2)."""
+    """Sextile (1 lowest .. 6 highest WAKE rate) of each pE cell, over the whole data set (M2).
+
+    df_b has one row per cell (session_wake_rates, M2 reading a)."""
     e = df_b[df_b.type == "E"].copy()
     ranks = e["WAKE"].rank(method="first")
     e["sextile"] = np.ceil(ranks / len(e) * 6).astype(int)
@@ -768,7 +812,9 @@ def triplets(s, pattern, max_gap=2.0, wake_min=None):
     episode, with any MA or WakeInterruption between them: nonREM-REM-nonREM
     triplets are kept unless a WAKE of more than 120 s follows the REM before the
     second packet (Supplemental Experimental Procedures; claims file, M6), and
-    inside a SLEEP no interruption exceeds 120 s."""
+    inside a SLEEP no interruption exceeds 120 s. "RPR_after" applies that tolerance to
+    REM, packet, REM triplets: any MA or WakeInterruption may come between REM n and the
+    packet (an assumption, stated in the attempt record)."""
     out = []
     cs = cycles(s)
     for c in cs:
@@ -779,6 +825,25 @@ def triplets(s, pattern, max_gap=2.0, wake_min=None):
             for x, y, z in zip(core, core[1:], core[2:]):
                 if (x[0], y[0], z[0]) == ("R", "P", "R"):
                     out.append(dict(first=(x[1], x[2]), mid=(y[1], y[2]), second=(z[1], z[2]), kind="within"))
+            continue
+        if pattern == "RPR_after":
+            # REM n, packet, REM n+1 with any MA or WakeInterruption between REM n and the
+            # packet, the tolerance M6 gives for an arousal that follows REM; packet and
+            # REM n+1 adjacent
+            for j in range(len(seq)):
+                if seq[j][0] != "R":
+                    continue
+                m = j + 1
+                while m < len(seq) and seq[m][0] in "MW":
+                    m += 1
+                if m + 1 >= len(seq) or seq[m][0] != "P" or seq[m + 1][0] != "R":
+                    continue
+                if m == j + 1 and seq[m][1] - seq[j][2] > max_gap:
+                    continue
+                if seq[m + 1][1] - seq[m][2] > max_gap:
+                    continue
+                out.append(dict(first=(seq[j][1], seq[j][2]), mid=(seq[m][1], seq[m][2]),
+                                second=(seq[m + 1][1], seq[m + 1][2]), kind="within"))
             continue
         if pattern == "PRP":
             for j in range(1, len(seq) - 1):
