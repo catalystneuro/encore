@@ -1,0 +1,553 @@
+schema_version: 2
+id: crcns-pfc-2-fujisawa-2008-01
+dataset:
+  archive: crcns
+  id: pfc-2
+  version: unversioned
+  doi: 10.6080/K01V5BWK
+paper: doi:10.1038/nn.2134
+date: '2026-11-07'
+entry: crcns-pfc-2-fujisawa-2008
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42375947012
+outcomes:
+- claim: unit-count
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:unit-count
+  measured: 627
+  notes: 627 cells over the 13 working memory sessions (EE 446, FF 146, GG 35), within 10% of 633; 615
+    with EE188 counted as the 105 cells of EE188_Behavior_PFC.mat. The files list 1,495 clusters in all
+    (spikeph).
+  deviations:
+  - The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F
+    and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the
+    Figure 2a and 3d session by the data description, is layer 2/3. The count is over three rats, the
+    paper's over four.
+  - Each session's cells are those of its CellsInfo, a selection of the sorted clusters that the data
+    description describes only as cells firing above 1 Hz in the trials; for EE188 the 117 cells of EE188_example.mat.
+- claim: task-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The trial table lists correct trials only (data description, page 2), and the position file numbers
+    the same trials, so error trials and the performance are not in the data set.
+- claim: fig2c-synchrony-by-layer
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig2c-synchrony-by-layer
+  measured:
+  - 12.6
+  - 20.3
+  notes: Reading b (all sessions of each layer) gives 12.6% for layer 2/3 (outside 10 +- 1) and 20.3%
+    for layer 5 (within 20 +- 2); reading a gives 11.8% for EE188, the only Figure 2a session in the data
+    set. Every tenth of the maze is within 50% of the mean (layer 2/3 11.2 to 14.5%, layer 5 19.0 to 20.8%).
+    Per session 7.6 to 21.9%.
+  deviations:
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+  - The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F
+    and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the
+    Figure 2a and 3d session by the data description, is layer 2/3.
+  - Windows of 100 ms tile each trial from its start to its end; a window's position is the position file's
+    at its centre (4.7% of layer 2/3 windows have none).
+- claim: fig2-population-uniform
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig2-population-uniform
+  notes: In EE188 the peak positions per tenth are 17, 0, 2, 2, 16, 7, 7, 5, 0, 61 of 117 (chi-square
+    against uniform p < 0.001), and the population mean rate per tenth is 0.57 to 2.33 times its mean.
+    The layer 5 sessions of FF show the same pattern (variant). The PSTHs are spike counts per unit of
+    normalised length per trial, as the Methods define them, so they are higher where the rat moves slowly
+    (start and reward ends).
+  deviations:
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+  - The peak position of a cell is that of the larger of its left and right PSTH peaks; the claims file
+    gives Figure 2a's ordering without saying which condition.
+  - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the
+    end of the nose-poke and the start of reward consumption, the trial start and end the data description
+    defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.
+- claim: lifetime-width
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:lifetime-width
+  measured:
+  - 0.209
+  - 0.154
+  notes: Under PSTH reading a (all trials), width i (contiguous run) and cells y (all 627 cells) the width
+    is 0.209 +- 0.154. Readings a-ii-x (0.235 +- 0.158), b-ii-y (0.267 +- 0.171) and c-ii-y (0.239 +-
+    0.156) also match; in the other eight combinations the mean is within tolerance and the s.d. (0.097
+    to 0.188) is not. Per rat (c-i) 0.195, 0.198 and 0.143.
+  deviations:
+  - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the
+    end of the nose-poke and the start of reward consumption, the trial start and end the data description
+    defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.
+  - Widths are measured on a grid of 200 points (0.005 of the maze), a standard discretisation.
+- claim: trajectory-divergence
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:trajectory-divergence
+  measured:
+  - 0.47
+  - 0.01
+  notes: In EE188 (42 trials) the first globally significant left-right difference (level 0.01) is at
+    0.47 for the x coordinate (reading a) and 0.43 for the distance to the mean path (reading b), and
+    at 0.01 for head direction, against 0.30 and 0.24. With smoothing 0.41 and 0.40 for the path and 0.01
+    for head direction. Other sessions give 0.01 to 0.53 for the path; head direction is available only
+    in EE152 (0.17) and EE165 (0.26), as the second LED is not tracked in the other ten.
+  deviations:
+  - Per trial, the mean of each variable in 100 bins of normalised position, gaps filled by linear interpolation;
+    the binning and the absence of smoothing are standard choices, the smoothed version (kernel 0.05)
+    is shown.
+  - Head direction is the angle from LED 1 to LED 2, compared by the circular difference of the condition
+    means; the paper does not say how it was computed.
+- claim: side-arm-selectivity-by-layer
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:side-arm-selectivity-by-layer
+  measured:
+  - 62.3
+  - 54.3
+  notes: Reading a gives 62.3% of layer 5 cells (91/146) and 54.3% of layer 2/3 cells (261/481); reading
+    b 61.6% and 51.8%. Per session 28.6 to 78.1%. With shuffled labels the test flags 5.1% of 627 cells,
+    near its level of 0.05.
+  deviations:
+  - The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F
+    and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the
+    Figure 2a and 3d session by the data description, is layer 2/3.
+  - Only correct trials are in the data set, so reading T-a (correct trials only) is the one run.
+  - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the
+    end of the nose-poke and the start of reward consumption, the trial start and end the data description
+    defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.
+- claim: central-arm-selectivity
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:central-arm-selectivity
+  measured:
+  - 31.4
+  - 26.7
+  notes: Reading a gives 31.4% of layer 2/3 cells (151/481) and 26.7% of layer 5 cells (39/146); reading
+    b 28.7% and 22.6%. Per session 8.3 to 57.1%.
+  deviations:
+  - The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F
+    and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the
+    Figure 2a and 3d session by the data description, is layer 2/3.
+  - Only correct trials are in the data set, so reading T-a (correct trials only) is the one run.
+  - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the
+    end of the nose-poke and the start of reward consumption, the trial start and end the data description
+    defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.
+- claim: odor-selective-fraction
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:odor-selective-fraction
+  measured: 45.3
+  notes: In EE188, 53 of 117 cells (45.3%, Student) or 50 (42.7%, Welch) differ between left and right
+    trials during the nose-poke; 32.4% over all sessions.
+  deviations:
+  - The nose-poke runs from the first nose-poke to the end of the last (trial table, columns 1 and 2);
+    its median is 4.6 s, range 1.9 to 29.4 s in EE188. Left and right trials are taken as the two odors,
+    as the claims file says.
+- claim: odor-unrelated-to-stem
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:odor-unrelated-to-stem
+  notes: In EE188 the Fisher test gives odds 1.75 (p = 0.191) in the stem and 1.57 (p = 0.267) in the
+    side arms; the Spearman correlation of the nose-poke and arm differences is -0.184 (p = 0.047) in
+    the stem, of opposite sign, and 0.134 (p = 0.150) in the side arms. The Pearson variant is -0.411
+    (p < 0.001) in the stem, also of opposite sign.
+  deviations:
+  - The claims file asks for a correlation without naming the coefficient; Spearman is used and Pearson
+    shown.
+- claim: retrospective-coding-rare
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:retrospective-coding-rare
+  notes: With previous-trial labels 4.3% of EE188 cells (5/117) are selective, against 77.8% with current
+    labels on the same trials; over all sessions 7.3% of layer 2/3 and 8.9% of layer 5 cells, against
+    66.9% and 65.8%.
+  deviations:
+  - The trial table lists correct trials only, so where an error trial was left out the previous trial
+    is the previous correct one.
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+  - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the
+    end of the nose-poke and the start of reward consumption, the trial start and end the data description
+    defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.
+- claim: connection-counts
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:connection-counts
+  measured:
+  - 40240
+  - 1.5
+  - 1.09
+  - 0.47
+  - 0.226
+  notes: 40,240 directed pairs (three of four rats). Under G-a, 1.07 to 1.50% of pairs are connected,
+    0.94 to 1.09% excitatory and 0.14 to 0.47% inhibitory over the four B and W combinations; under G-b
+    0.83 to 1.20%, 0.73 to 0.86% and 0.11 to 0.38%; no combination puts the three directed values within
+    tolerance. Reciprocal pairs are 0.06 to 0.23% of directed pairs; 0.179% of unordered pairs under G-a
+    B-b W-a is the only reciprocal value within tolerance. The test finds all 43 of the authors' pairs_all
+    connections for EE188 (G-a B-a W-a).
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F
+    and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the
+    Figure 2a and 3d session by the data description, is layer 2/3.
+  - 1,000 jitter surrogates per session; lags are rounded to the nearest bin centre.
+- claim: cell-type-fractions
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:cell-type-fractions
+  measured:
+  - 38.4
+  - 5.4
+  - 31.8
+  - 7.73
+  notes: Under G-a, 37.8 to 41.8% of cells are putative pyramidal cells and 2.2 to 6.4% interneurons;
+    18.2 to 31.8% of the targets of excitatory cells are interneurons; the ratio is 6.53 to 18.94 per
+    session (8 or 9 of 13 sessions have an interneuron) and 6.22 to 16.67 per rat (2 rats). Under G-b
+    the pyramidal fraction is 32.2 to 33.5%, within tolerance, and interneurons 2.6 to 5.6%. The authors'
+    CellsInfo for EE188 gives 28.2% pyramidal cells and 12.8% interneurons; of the 56 EE188 cells this
+    test calls pyramidal (G-a B-a W-a), 33 are pyramidal there.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - Sessions or rats without an interneuron give no ratio and are left out (4 or 5 sessions).
+- claim: pyr-pyr-connections
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:pyr-pyr-connections
+  measured:
+  - 0.167
+  - 0.191
+  notes: Pyramidal to pyramidal excitation is in 0.164 to 0.176% of layer 2/3 pairs and 0.191 to 0.246%
+    of layer 5 pairs (reading a), or 0.82 to 0.90% and 1.33 to 1.78% of pyramidal pairs (reading b). Only
+    the layer 5 value under B-b W-a (0.246%) is within tolerance.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F
+    and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the
+    Figure 2a and 3d session by the data description, is layer 2/3.
+- claim: fig3b-session-connections
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3b-session-connections
+  notes: In EE188 (117 cells, 13,572 ordered pairs) 84 to 86 connections have a pyramidal reference cell
+    and 5 to 21 an interneuron (reading a), from 55 or 56 and 2 to 11 reference cells (reading b), against
+    48 and 30. The layer 5 values (73 and 25) cannot be tested.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+- claim: fig3d-hub
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3d-hub
+  notes: The largest connected circuit in EE188 holds 85 or 86 (B-a) or 64 (B-b) of 117 cells, against
+    39. The authors' pairs_all graph (43 connections) has a largest component of exactly 39 cells, so
+    Figure 3d draws a subset of the connections the test finds, which the paper does not describe. The
+    layer 5 value (45 of 142) cannot be tested.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+- claim: fig3f-distance
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3f-distance
+  notes: Under G-a B-a W-a, 396 connected pairs are on the same shank and 234 on others; the same-shank
+    probability is 6.98% (99% interval 6.13 to 7.89) against 1.44% (1.14 to 1.78) at 200 um, and falls
+    further with distance; connections are found up to 1,400 um (2 excitatory and 2 inhibitory of 504
+    pairs), the largest separation on the probe, not 1,200. The other combinations give the same pattern.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - Distance is the shank separation (200 um per shank), as the claims file says.
+- claim: nearby-pyr-int-probability
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:nearby-pyr-int-probability
+  measured: 33.8
+  notes: Of same-shank pairs of a putative pyramidal cell and interneuron, 33.8 to 59.4% have a pyramidal
+    to interneuron connection (reading a) and 38.8 to 60.9% a connection either way (reading b), over
+    64 to 157 pairs. The cell types are defined by the connections themselves, so most such pairs are
+    the connections that typed them.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+- claim: connected-cells-trajectory-specific
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:connected-cells-trajectory-specific
+  measured:
+  - 70.2
+  - 72.0
+  - 55.6
+  - 85.7
+  notes: Reading b (G-a B-a W-a) gives 70.2% of layer 2/3 pyramidal cells (134/191), 72.0% of layer 5
+    pyramidal cells (36/50), 55.6% of layer 2/3 interneurons (15/27) and 85.7% of layer 5 interneurons
+    (6/7); three of four are within tolerance, the layer 5 pyramidal value is not (84.7 +- 8.47). Reading
+    a (EE188) gives 75.0% and 50.0% for layer 2/3. B-b gives 65.6 to 70.0% for pyramidal cells.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+  - 1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the
+    end of the nose-poke and the start of reward consumption, the trial start and end the data description
+    defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.
+- claim: no-spatial-clustering
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:no-spatial-clustering
+  notes: In EE188 (37 left, 29 right, 15 both, 36 none) the chi-square test of shank against class gives
+    p = 0.577, Cramer's V = 0.23. In the variant over the other sessions, FF130 gives p = 0.047 (V = 0.39)
+    and the other 11 p = 0.105 to 0.942.
+  deviations:
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells.
+- claim: position-dependent-transmission
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:position-dependent-transmission
+  measured:
+  - 439
+  - 32
+  notes: Of 439 excitatory connections (G-a B-a W-a), 32 to 35 show position dependence under the four
+    readings (7.3 to 8.0%); B-b gives 31 to 36 of 387. Per rat (B-a, a, i) EE 27 of 337, FF 5 of 96, GG
+    0 of 6. With the presynaptic spikes shifted by 20 ms, 0 of 44 pairs are significant.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - Jittering the presynaptic cell only (Supplementary Figure 12B) was not run.
+  - A coincident event is placed at the presynaptic spike's original position; the jitter moves it by
+    at most 5 ms.
+- claim: fig5a-session-selective-connections
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig5a-session-selective-connections
+  measured:
+  - 105
+  - 7
+  notes: In EE188, 6 or 7 of 105 excitatory connections (B-a) and 7 to 10 of 88 (B-b) are position dependent,
+    against 15 of 36; of the 43 pairs_all connections, 5 or 6.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+- claim: fig4-pair-156-136
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig4-pair-156-136
+  measured:
+  - 0.325
+  - 0.645
+  notes: On left trials the excess coincidences of 156-136 form one region from 0.325 to 0.645 by the
+    pointwise band (global p = 0.001, global band broken from 0.372 to 0.622); the end is within tolerance
+    and the start is not. Between 0.2 and 0.5 the left PSTH of 156 varies by 49% of its maximum and that
+    of 136 by 59%. The cells are on shanks 5 and 4, and 156 to 136 is a connection under the test and
+    in pairs_all.
+  deviations:
+  - Cell numbers are those of CellsInfo in EE188_example.mat, which the data description gives as the
+    session of Figures 2a and 3d.
+- claim: fig5b-example-pairs
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig5b-example-pairs
+  measured:
+  - 0.355
+  - 0.525
+  notes: 197-201, left trials, one region from 0.355 to 0.525 (global band 0.398 to 0.432), so its start
+    misses 0.4 +- 0.04 by 0.005; none on right trials. 49-52 has no region on either side (global p =
+    0.55 left, 0.80 right). 186-201 has none on left trials (p = 0.065) and one on right trials from 0.715
+    to 0.975 (global band from 0.752), which begins before 0.75. No pair meets the criterion as written;
+    197-201 and 186-201 are close to it.
+  deviations:
+  - Region extents are given at the edges of the 0.005 grid bins.
+- claim: thinning-preserves-dependence
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:thinning-preserves-dependence
+  notes: Under reading a (region 0.2 to 0.5), 2 of the 16 position-dependent connections with a significant
+    region there keep a significant region and a non-significant part in the majority of 10 thinnings
+    (10 and 6 of 10); under reading b, 1 of 37.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - The pairs are the position-dependent connections of G-a B-a W-a, trial readings a and dependence i.
+- claim: fig6-depression-facilitation
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig6-depression-facilitation
+  measured:
+  - 9.1
+  - 3.0
+  - 34.0
+  notes: Over the eight readings, depressing pairs are 4.8 to 9.1% and facilitating pairs 3.0 to 8.2%
+    of the connections (438 of 439 excitatory, 604 of 605 in all, are testable), against 12.7% and 10.7%;
+    29.0 to 34.0% of the significant pairs are on different shanks, within 32.2 +- 3.22 under every reading.
+    With labels assigned at random, 18 of 121 pairs (15%) are significant at P < 0.10, so the test is
+    somewhat liberal.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - 100 jitter surrogates and 500 permutations per pair and reading, fewer than the 1,000 the claims file
+    names, for run time.
+- claim: fig6b-convergent-examples
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig6b-convergent-examples
+  notes: 186-201 facilitates; the later spikes drive 201 more than the first (difference of standardised
+    heights -8.21 with later spikes as any spike within 40 ms, no permutation of 500 as large; -3.91,
+    P = 0.012, with summed heights; -4.35, P = 0.162, in chained trains). 197-201 has a higher first-spike
+    height than later-spike height (difference 4.71 to 8.13) but not significantly (P = 0.454 to 0.648).
+    CellsInfo types 197 and 186 as pyramidal and 201 as interneuron.
+  deviations:
+  - 100 jitter surrogates and 500 permutations, as for fig6-depression-facilitation.
+- claim: fig7-supralinear-coincidence
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig7-supralinear-coincidence
+  measured: 15
+  notes: 15 satellites (14 in the paper). With 5 ms windows the mean transmission probability after two
+    coincident presynaptic cells is 0.058 against 0.053 after one, below 2 p1 and 1 - (1 - p1)^2 in all
+    15 satellites; after three cells (3 satellites with enough events) 0.109 against 0.086, below both
+    predictions. Every window from 2 to 20 ms gives the same.
+  deviations:
+  - The global band of the jitter test is the 99th percentile of the surrogates' maxima and the 1st percentile
+    of their minima (G-a); the Methods give the level (99%) and that the band comes from each surrogate's
+    maximum and minimum, not how the level is split between the two sides. Splitting it (0.5% per side,
+    G-b) is shown for connection-counts and cell-type-fractions and does not change their outcome. Every
+    claim that uses the connections rests on G-a.
+  - An event is a presynaptic spike with k cells spiking in the window ending at it and no presynaptic
+    spike in the 4 ms after; single events have no other presynaptic cell within the window before or
+    4 ms after; values need at least 20 events. These definitions are standard choices; the paper does
+    not give them.
+- claim: speed-not-correlated
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:speed-not-correlated
+  notes: Over 627 cells the median correlation is -0.018 (45% positive, range -0.52 to 0.64), not above
+    0; the Wilcoxon test against 0 gives p = 0.00036, a small negative shift, so the distribution is not
+    exactly symmetric around 0. Per rat medians -0.023, -0.007 and 0.031. By CellsInfo type, pyramidal
+    -0.007 (p = 0.065) and interneurons -0.078 (p = 3.2e-05).
+  deviations:
+  - Speed is the path length of the LED midpoint (LED 1 alone where LED 2 is not tracked) per 0.5 s bin,
+    in pixels per second.
+  - The groups are those of CellsInfo, not the connection-based types the claims file names; the criterion's
+    decision uses all cells.
+- claim: population-vector-width
+  outcome: reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:population-vector-width
+  measured:
+  - 0.239
+  - 0.3
+  assumed: true
+  notes: With each cell's PSTH divided by its peak (the assumption), reading a gives 0.239 +- 0.060 for
+    EE188 (layer 2/3) and 0.300 +- 0.078 for the pooled layer 5 sessions, within tolerance; reading b
+    0.265 and 0.338, also within; the pooled layer 2/3 sessions give 0.243 (a) and 0.268 (b, just outside).
+    With z-scored PSTHs all values match (0.179 to 0.216). With raw rates the correlation stays above
+    0.5 almost everywhere and the width is 0.96 to 1.00, so the claim fails.
+  deviations:
+  - Assumed that each cell's PSTH is normalised before the correlation, by its peak as Figure 2a displays
+    the rates. The paper does not say; with raw rates the high-rate cells dominate and the correlation
+    never falls to the 0.35 of the Supplementary Figure 2A colour scale. z-scoring is shown and gives
+    the same outcome.
+  - The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no
+    FF session has more than 64 cells. The layer 5 value comes from the pooled FF sessions.
+  - The width at a position is the contiguous length around the diagonal over which the correlation stays
+    above 0.5, as the claims file reads it.
+findings:
+- kind: data_missing
+  statement: The data set holds three of the paper's four rats (EE, FF, GG; the paper's rat H is absent)
+    and correct trials only, so the performance cannot be computed. The layer 5 session of Figure 2a and
+    Supplementary Figure 11 (142 cells) is not in it; the FF sessions hold 40 to 64 cells.
+- kind: metadata_error
+  statement: The data description names EE188_example.mat as a file of folder EE0708; it is a member of
+    EE0708/EE.188.tar.gz, about 2 GB into the gzip stream, and the folder holds EE188_Behavior.mat, EE188_Behavior_PFC.mat
+    and EE188_Behavior_CA1.mat instead.
+- kind: metadata_insufficient
+  statement: The CellsInfo type column is described as pyramidal (1), interneuron (2) or unknown (3).
+    In the 12 sessions of behaviors.zip and in EE188_Behavior_PFC.mat no cell is unknown (87 pyramidal
+    and 18 interneurons in EE188), while EE188_example.mat of the same session has 33, 15 and 69. How
+    either classification was made is not documented.
+- kind: selection_undocumented
+  statement: Each session's files keep a selection of the sorted clusters (627 cells of 1,495 clusters
+    listed in spikeph); the description says only that Cells are neurons whose maximum rate in the trials
+    exceeds 1 Hz. EE188_Behavior_PFC.mat holds 105 of the 117 cells of EE188_example.mat.
+- kind: metadata_insufficient
+  statement: The layer of each rat's probe is not given in the data set; it can be taken only from the
+    paper's Supplementary Figure 1, by assuming that rats EE, FF and GG are the paper's E, F and G.
+- kind: metadata_error
+  statement: The spikes' trial labels (spikeLtr, spikeRtr) and positions (spikeX) start at the first nose-poke
+    of each trial, while the description defines the trial start as the end of the last nose-poke (SessionNP
+    column 2). Spikes during the nose-poke, which lasts up to 315 s, are placed near position 0.
+- kind: metadata_insufficient
+  statement: The pairs_all list of EE188_example.mat (43 connections) is described as the cell pairs with
+    monosynaptic connections, but it holds fewer connections than the paper reports for that session (48
+    and 30 in Figure 3b) and its largest component is the 39-cell circuit of Figure 3d; which selection
+    it is, is not said.
+- kind: other
+  statement: In 10 of the 13 sessions the second LED is not tracked (zeros in the position file), so head
+    direction can be computed only in EE152, EE165 and EE188.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The jitter test's global band at 99% is built from the
+    maximum and minimum of each surrogate (Methods); is 1% left above the maxima and 1% below the minima,
+    or 0.5% on each side? This attempt used 1% on each side and found 1.1 to 1.5% of directed pairs connected
+    against 0.79%; 0.5% per side gives 0.83 to 1.20%. It also asks which bin width the cross-correlograms
+    used (1 ms or 0.5 ms) and how Figure 3d's subset of connections (pairs_all) was chosen.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For the population vector correlations of Supplementary
+    Figure 2A, were each cell's rates normalised (by the peak, or z-scored) before the correlation? With
+    raw rates the correlations stay above 0.5 along the whole maze; with normalised rates the widths match
+    the reported 0.18 and 0.27. This attempt assumed normalisation by the peak.
