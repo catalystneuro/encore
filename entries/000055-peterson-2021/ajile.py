@@ -610,7 +610,8 @@ def electrode_model(args) -> dict:
     withheld events whose columns are shuffled among them; the code shuffles the column over
     all events before splitting, here the refit is shared with the Methods' version); the
     split-averaged coefficients per feature (for day and time of day the SD of their one-hot
-    coefficients, code); and the fraction of each feature's columns selected (code,
+    coefficients within each split, averaged over splits, code; `coef_sd_of_mean` gives
+    instead the SD of the split-averaged one-hot coefficients); and the fraction of each feature's columns selected (code,
     feat_select_prob). With `full_only`, only the full model is fitted.
     """
     X, groups, y, tr, te, seed, full_only = args
@@ -639,11 +640,13 @@ def electrode_model(args) -> dict:
     r2_full = _r2(yte, pred)
     coef_all = np.zeros((S, Xn.shape[1]))
     coef_all[:, keep] = W[:S, :-1]
-    coefs = {}
+    coefs, coefs_sdm = {}, {}
     for g in names:
         ci = col_of[g]
         coefs[g] = float(coef_all[:, ci].std(1).mean() if len(ci) > 1 else coef_all[:, ci[0]].mean())
+        coefs_sdm[g] = float(coef_all[:, ci].mean(0).std() if len(ci) > 1 else coefs[g])
     out = {"selected": [X.columns[c] for c in sel], "r2": float(r2_full.mean()), "coef": coefs,
+           "coef_sd_of_mean": coefs_sdm,
            "keep_prob": {g: float(np.mean([c in keep for c in col_of[g]])) for g in names}}
     if full_only:
         return out

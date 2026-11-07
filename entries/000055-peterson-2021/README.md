@@ -39,7 +39,7 @@ reasoning and the differences from the paper's method.
 
 In three files the ECoG starts after midnight but is stored with a start time of 0; `ajile.py`
 shifts it (`ecog_offset`). The files hold 8088 events with no false positives marked, more than the
-paper analysed. The notebook reads about 8000 ECoG segments and takes about half an hour; the regression models of
+paper analysed; all are kept, in the behavioural and in the ECoG analyses. The notebook reads about 8000 ECoG segments and takes 30 to 45 minutes; the regression models of
 Figure 6 take a few minutes, as `ajile.huber_fit` solves many Huber fits at once. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/000055-peterson-2021-01.yaml`](../../attempts/000055-peterson-2021-01.yaml).
