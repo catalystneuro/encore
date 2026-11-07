@@ -33,7 +33,7 @@ the MD5 sum of each file is computed from the bytes read, compared with the data
 | Callosotomy recovery (Fig. 5) | Reproduced |
 | Callosotomy preparatory activity (ED Fig. 10) | Not reproduced |
 | Monolithic models fail to recover (ED Fig. 1) | Partially reproduced (three of five models simulated) |
-| Modular models are robust (Fig. 6) | Partially reproduced (change to not reproduced proposed) |
+| Modular models are robust (Fig. 6) | Not reproduced (the modular integrator recovers on one trial type only) |
 | Late-delay bias, recovery interval, spatial extent, photoactivation (Fig. 1d, ED Fig. 2d, 3, 5) | Blocked: data missing |
 | Reaction time and distance from the boundary (ED Fig. 9f) | Blocked: data missing (no licks in the Experiment 2 lick traces) |
 

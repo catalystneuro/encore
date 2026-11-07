@@ -495,7 +495,7 @@ outcomes:
   - Two of the five model classes could not be simulated for lack of parameters.
   assumed: true
 - claim: fig6-modular-models-robust
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_li_2016.ipynb
   output: claim:fig6-modular-models-robust
   notes: 'Modular attractor, noise drawn each step: recovery after unilateral silencing in 100% and 98%
@@ -506,8 +506,9 @@ outcomes:
     integrator with the printed matrix: after silencing module 1 its selectivity returns to 13.6 against
     14.4 on lick right trials, but to -7.2 against -14.4 on lick left trials, as its recovery neuron is
     driven only by right-preferring activity. The attractor part holds, the integrator part on one trial
-    type; the modular FORCE network was not simulated. The criterion has no partial rule; the change to
-    not_reproduced is proposed below.'
+    type; the modular FORCE network was not simulated. The criterion has no partial rule and needs both
+    the attractor and the integrator to recover in at least 90% of runs; the integrator recovers in 50%,
+    so the claim is not reproduced (set in round 3, as the verifier agreed).'
   deviations:
   - Noise taken as variance 0.01 per integration step (1 ms), the reading under which the attractor holds
     its choice; the per-unit-time reading is shown.
@@ -515,13 +516,6 @@ outcomes:
   - Bilateral silencing of the attractor is also run to 4 s, not only to the criterion's 2 s, so that every
     run settles at a fixed point; the wrong-fixed-point fractions at 4 s are used.
   assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion has no partial rule and needs the integrator to recover in at least 90% of runs;
-      it recovers on lick right trials only (selectivity -7.2 against -14.4 on lick left trials, in the
-      claim's notebook output). Outcomes of ed2e, ed7e and ed10e were set to not_reproduced by this rule
-      in round 1, and the same rule applies here, as the verifier said in round 2. Whether the printed matrix
-      is incomplete stays in the methods_unavailable finding.
 findings:
 - kind: metadata_error
   statement: The cell-type labels do not match the paper's classes. In the 58 non-callosotomy sessions
@@ -1014,3 +1008,27 @@ verifications:
     response: Agreed. The verified outcome is kept, as no outcome may change in round 2, and the change
       to not_reproduced is proposed with its reason for a third round; the notebook's result for this
       claim states it. Added the 4 s bilateral run as a deviation.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on fig6-modular-models-robust, and the analysis
+    behind it in the re-executed notebook (cells 89 to 91), models.py, the attempt record and the claims
+    file, with the paper. Nothing else was reviewed.
+  results:
+  - claim: fig6-modular-models-robust
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The numbers come from the simulation. In cell 90, models.run_integrator simulates the modular
+      integrator; its matrix (INTEGRATOR_W) matches the 8 x 8 matrix printed in the Methods row by row,
+      and tau, inputs, tonic input, linear synapses with positive rates and no noise also match. On lick-right
+      trials the selectivity returns to 13.619 against 14.401; on lick-left trials it reaches only -7.200
+      against -14.400. The integrator has no noise, so it recovers in 50% of runs where the criterion needs
+      90%. The failure follows from the printed matrix: the recovery neuron gets positive input from the
+      right-preferring neuron and negative input from the left-preferring one and cannot go below zero.
+      No choice behind the outcome was made to reach the result; the attractor choices affect only the
+      attractor part, which passes. The criterion says "for the attractor and integrator" and has no partial
+      rule, so one failing part makes the result not reproduced, the rule used for ed2e, ed7e and ed10e.
+      Whether the printed matrix lacks the gating neurons of Fig. 6c belongs in the methods_unavailable
+      finding and does not make the outcome partial.'
+    response: Outcome set to not_reproduced and the proposal removed. The claim's notes, the notebook's
+      result and summary and the README now give not reproduced.
