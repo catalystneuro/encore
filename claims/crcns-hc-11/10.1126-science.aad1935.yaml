@@ -1,0 +1,854 @@
+# Claims for Grosmark & Buzsaki (2016), Science 351:1440-1443, on CRCNS data set hc-11
+# (doi:10.6080/K0862DC5).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-07,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: the NIH author manuscript in PubMed Central (PMC4919122), as supplied under paper/,
+# with the main text and the legends of Figures 1 to 4, and its supplement (Materials and
+# Methods, Figures S1 to S22 with legends, references; PDF from PMC, text by PyMuPDF). The
+# images of the main Figures 1 to 4 are not under paper/, so numbers and significance marks
+# printed only inside those panels are not recorded here. The supplement PDF was rendered to
+# read the supplementary panels: values printed in panel titles (Figures S5, S9, S12, S13, S14,
+# S16 to S19) are marked as read from a figure; the text extraction does not hold them, so the
+# quote checker cannot find their p-values. The paper links no analysis code ("Spike and LFP
+# data are available at CRCNS.org"); none was read.
+#
+# Main-text figure numbers for supplementary figures are off by one in places: the main text
+# cites figs. S16 and S17 for pair-wise coactivity and temporal bias, which are Figures S17 and
+# S18 of the supplement, and fig. S12 for the exclusion analysis that the Methods call fig. S8.
+# The claims below cite the supplement's own numbering.
+#
+# Data the paper used. Four male Long-Evans rats, bilateral silicon probes in dorsal CA1 (two
+# with 8-shank BUZ64, two with 6-shank BUZ64SP), recorded at 20 kHz with neck EMG and a
+# head-mounted accelerometer; 562 well isolated pyramidal cells. Eight novelty sessions, each a
+# PRE epoch of about 4 hours of rest and sleep in the home cage in the familiar room A, a MAZE
+# epoch in a novel room on a 1.9 m wooden linear maze (4 sessions), a 2.3 m metal linear maze
+# (1 session) or a 1 m diameter wooden circular maze (3 sessions), then a POST epoch of about 4
+# hours in room A. Position from two head LEDs at 39.69 Hz. Linear mazes have 15 cm reward areas
+# at both ends (1.6 m or 2 m stem); the circular maze has a 30 cm reward area and clockwise
+# running. Place cells n = 491 (counted per running direction on linear mazes). The hc-11
+# description lists the same eight sessions (PRE, MAZE and POST concatenated per session),
+# spike times, cluster identities with putative cell types, LFP at 1250 Hz with EMG and
+# accelerometer channels, spike waveforms and features, and tracked position.
+#
+# Shared method, from the supplement's Materials and Methods unless stated.
+# - Offline states are quiet waking (immobility) and NREM sleep, scored from the CA1 theta/delta
+#   ratio, accelerometer and EMG as in reference 31 (Grosmark et al. 2012). No thresholds are
+#   given (open; see readings S-a and S-b below).
+# - Every PRE and POST analysis is yoked to the duration of the shorter of the two epochs of the
+#   session. Which part of the longer epoch is kept is open. Readings Y-a, the last T of PRE and
+#   the first T of POST (the parts nearest the maze); Y-b, the first T of each epoch; Y-c, T
+#   counted in offline time. T is the duration of the shorter epoch.
+# - Place fields. Spikes and occupancy in 2 cm bins, each smoothed with a 5 cm Gaussian kernel;
+#   rate is smoothed spikes over smoothed occupancy. Only running at 5 cm/s or more outside the
+#   reward areas. Circular maze linearised from the edge of the reward area, clockwise. Null,
+#   5,000 rate vectors from spikes resampled with the unsmoothed occupancy as the density. A
+#   place field is at least 5 consecutive bins above the null 99th percentile with an in-field
+#   peak of at least 1 Hz. Linear mazes are analysed separately for left and right runs. Whether
+#   "5 cm" is the kernel's SD or its width is not stated; SD is the standard reading.
+# - Ripple events. All CA1 pyramidal spikes in 1 ms bins convolved with a 15 ms Gaussian (SD,
+#   the standard reading); trigger at mean + 3 SD of all 1 ms bins in NREM of PRE and POST
+#   together; event bounds where the rate returns to that NREM mean. Kept when the event holds
+#   the peak of at least one LFP-detected sharp wave-ripple, lasts 50 to 500 ms, falls in an
+#   offline state, and has at least five distinct pyramidal cells firing. The LFP ripple
+#   detector is not described beyond the 150-250 Hz band of Figure S4; its threshold is open
+#   (readings L-a, peak 150-250 Hz power above mean + 3 SD; L-b, above mean + 5 SD).
+# - Bayesian replay. Events of at least 100 ms with at least 10% of place cells or 5 (whichever
+#   is greater) firing; 20 ms non-overlapping bins; uniform-prior Poisson decoder (equations 1
+#   and 2) on all place cells' smoothed rate maps; weighted correlation r of position and time
+#   (equations 3 to 5); 1,000 circular place-field shuffles (each cell's unsmoothed map rotated
+#   by a random number of bins, then re-smoothed); rZ = (|r observed| - mean |r null|) / SD |r
+#   null| (equation 7). On linear mazes the decoding is done separately for each running
+#   direction. Whether each event is scored with both direction templates (D-a, both scores
+#   kept, as the Figure S20 legend "we independently compared the results of each running
+#   direction to its null distribution" suggests) or assigned to one direction by the
+#   direction decoder of equation 6 (D-b, the method the Methods give for Figure 1D) is open.
+# - Per cell contribution (PCC). For each place cell, 1,000 templates in which only that cell's
+#   map is circularly shuffled; for each event the cell fired in, PCC = (rZ observed - mean rZ
+#   cell shuffle) x number of participating place cells (equation 8, Figure S9A); rZ of a
+#   cell-shuffled template uses the event's own null mean and SD (the reading the equations
+#   imply). PRE and POST PCC are the means over the cell's PRE and POST events; dPCC = POST - PRE.
+# - Strongly contributing cells, rigid and plastic cells. A cell is strongly contributing when
+#   its per-event PCC scores are significant (p < 0.05, one-tailed) in PRE or POST. The Methods
+#   name a one-tailed rank-sum test; the Figure S19B legend names a one-tailed signed-rank test
+#   (readings P-a, signed-rank test of per-event PCC against zero; P-b, rank-sum test of the
+#   event's observed rZ against its mean cell-shuffled rZ). Within each session and running
+#   direction, strongly contributing cells at or below the 50th percentile of dPCC are rigid,
+#   those above are plastic, and with an odd count the median cell is dropped.
+# - Offline excitability measures (Figure S14 legend). Firing rate, spikes per second in
+#   offline states; within-ripple rate over concatenated ripple events; within-ripple gain,
+#   within-ripple rate over offline rate; ripple participation, the percentage of ripple events
+#   with at least one spike; burstiness, the percentage of ISIs under 6 ms (all, or within
+#   ripples); within-ripple "on" rate, the within-ripple rate over events with a spike.
+# - Pair-wise coactivity. Pearson correlation of 100 ms binned rates in offline states of PRE
+#   and POST, and during running above 5 cm/s on the maze; pairs on the same shank excluded.
+# - Temporal bias. CCG of half-width 150 ms in offline PRE and POST and in running on the maze;
+#   bias = (spikes with the reference after the comparison - spikes before) / all coincident
+#   spikes; pairs on one shank or with fewer than 40 coincident spikes in either condition
+#   excluded; similarity is the median Pearson r (and its p) over 1,000 random sign flips per
+#   pair applied alike to both epochs.
+# Readings S-a and S-b for state scoring: S-a, the lab's own state epochs if the data set holds
+# them (the paper's scoring); S-b, a recomputed scoring by the theta/delta ratio and EMG with
+# thresholds the author states. Every criterion below names the readings it rests on; the
+# outcome is the one all its readings give.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-11
+  doi: 10.6080/K0862DC5
+paper: doi:10.1126/science.aad1935
+claims:
+- id: place-cell-count
+  statement: Of the 562 well isolated CA1 pyramidal cells recorded in the eight sessions, 491 had
+    place fields on the novel maze, counted separately for each running direction on the linear
+    mazes, which is 54% of pyramidal cells by running direction.
+  source: Results, paragraph 2; Materials and Methods, Animals, Surgery and Data Collection;
+    Figure S2 legend; Figure S19 legend
+  quote: constructed from the firing-rate vectors of place cells ( n = 491 cells) during track
+    running (eight novel exploration sessions) ... In total, 562 well isolated pyramidal cells
+    were included in this study ... Note that 54% of all putative pyramidal cells were
+    considered to have place fields by running direction
+  expected:
+  - quantity: place cells, per running direction
+    value: 491
+    tolerance: 49.1
+  - quantity: pyramidal cells
+    value: 562
+    tolerance: 56.2
+  - quantity: percentage of pyramidal cells with place fields, by running direction
+    value: 54
+    tolerance: 5.4
+    unit: '%'
+  criterion: Pyramidal cells as the data set's putative cell types label them. Place fields by
+    the place-field method of the opening comment, per running direction on the linear mazes
+    and once on the circular maze. The denominator of 54% is open; readings (a) pyramidal cells
+    times the number of running directions of their session (2 on linear mazes, 1 on the
+    circular maze); (b) the 562 pyramidal cells. Reproduced when the counts are within
+    tolerance under one reading.
+- id: fig1c-sequence-content
+  statement: Ripple-event sequence scores (rZ) are above chance in PRE, MAZE and POST, highest on
+    the MAZE, and higher in POST than in PRE sleep (replay).
+  source: Figure 1C; Figure S5 legend; Results, paragraph 2
+  quote: Cumulative distribution of rZ for PRE, MAZE, and POSTevents ... Sequence content
+    increases from PRE to POST
+  criterion: Events, decoding and rZ by the ripple-event and Bayesian replay methods of the
+    opening comment. Tests from the Figure 1C legend, a sign-rank test of rZ against zero within
+    each epoch, and a Kruskal-Wallis test across PRE, MAZE and POST followed by Tukey-Kramer
+    tests. Reproduced when rZ is above zero in all three epochs (p < 0.05), POST rZ exceeds PRE
+    rZ and MAZE exceeds both (Tukey-Kramer p < 0.05), under all readings of Y, L, S and D;
+    partially reproduced when POST exceeds PRE but another part fails. The Figure 1C panel
+    values are not available here, so no level is fixed. The time-bin-shuffle rZ of Figure S22B
+    is shown as a variant.
+- id: figs5b-abs-r-above-null
+  statement: Absolute weighted correlations of ripple events exceed those of the shuffled null
+    in PRE, MAZE and POST, and the POST minus PRE increase is larger in the observed than in the
+    null data.
+  source: Figure S5B
+  quote: Note that in all three epochs, a greater degree of sequence content is observed than
+    expected by chance
+  criterion: Events and shuffles as in fig1c-sequence-content. Per the Figure S5B legend,
+    observed against null |r| within each epoch by rank-sum test, and the POST - PRE change of
+    mean |r| tested by bootstrap. Reproduced when observed |r| exceeds null |r| in all three
+    epochs at p < 0.05 and the observed POST - PRE change exceeds the null change (bootstrap 95%
+    interval of the difference above zero), under the readings of fig1c-sequence-content.
+  depends_on:
+  - fig1c-sequence-content
+- id: figs5e-duration-unchanged
+  statement: Ripple-event duration did not differ between PRE and POST (median 183 ms against
+    186 ms).
+  source: Figure S5E legend
+  quote: While ripple-event duration did not differ between the PRE and POST epochs (PRE median
+    duration 183ms, POST median duration 186ms, p < 0.07, Rank-Sum test)
+  statistics:
+  - test: Rank-Sum test
+    p: 0.07
+    p_relation: "<"
+  expected:
+  - quantity: PRE median ripple-event duration
+    value: 183
+    tolerance: 18.3
+    unit: ms
+  - quantity: POST median ripple-event duration
+    value: 186
+    tolerance: 18.6
+    unit: ms
+  criterion: A claim of absence, judged by the paper's rank-sum test of PRE against POST event
+    durations at p < 0.05. Which events are plotted is open; readings (a) all ripple events of
+    the opening comment; (b) the events used for Bayesian replay (at least 100 ms, enough place
+    cells). Reproduced when the test is not significant and both medians are within tolerance
+    under one reading; the size of the difference is reported either way.
+- id: figs5f-more-participation-post
+  statement: A greater percentage of place cells participated (fired at least one spike) in POST
+    than in PRE ripple events.
+  source: Figure S5F legend
+  quote: a significantly greater percentage of place cells participated (fired at least one spike
+    in) POST epoch events
+  criterion: Per event, the percentage of the session's place cells (per running direction
+    template under reading D-a) firing at least one spike, on the events of
+    fig1c-sequence-content. The Figure S5 legend names no test for panel F; the rank-sum test it
+    names for panel E is used. Reproduced when POST exceeds PRE at p < 0.05.
+  depends_on:
+  - fig1c-sequence-content
+- id: figs9b-pcc-post-higher
+  statement: Place cells contribute more to POST than to PRE sequence content (median PCC -0.011
+    in PRE, 0.183 in POST), and the median change dPCC is 0.159.
+  source: Figure S9B (values read from the panel titles)
+  quote: Note that consistent with the main Δreplay effect (Fig. 1C, POST > PRE sequence scores
+    (rZ)), cells show significantly higher POST, compared to PRE PCC scores
+  statistics:
+  - about: PRE against POST PCC, all place cells
+    test: rank-sum test
+    p: 0
+    n: 491 place cells
+  - about: dPCC against zero
+    test: signed-rank test
+    p: 0
+    n: 491 place cells
+  expected:
+  - quantity: median PRE PCC
+    value: -0.011
+    tolerance: 0.02
+  - quantity: median POST PCC
+    value: 0.183
+    tolerance: 0.0183
+  - quantity: median dPCC
+    value: 0.159
+    tolerance: 0.0159
+  criterion: PCC by the method of the opening comment, for all place cells. Panel titles print
+    "p ~ 0", recorded as 0. The tolerance on the PRE median is not 10% of a value near zero;
+    it is about 10% of the gap between the PRE and POST medians (0.194). Reproduced when POST PCC
+    exceeds PRE PCC (rank-sum p < 0.05), dPCC exceeds zero (signed-rank p < 0.05), and the
+    three medians are within tolerance, under readings Y and D; partially reproduced when the
+    tests hold but a median falls outside its tolerance.
+  depends_on:
+  - fig1c-sequence-content
+- id: fig2b-strong-contributors
+  statement: 216 place cells contributed significantly to PRE or POST sequence content; 97 in
+    PRE, 190 in POST, 71 in both, 26 in PRE only and 119 in POST only.
+  source: Results, paragraph 2; Figure 2B; Figure S19A (counts read from the panel)
+  quote: Neurons that showed significant PCC scores in either PRE or POST were considered to be
+    strongly contributing to sequence formation ( n = 216 neurons
+  expected:
+  - quantity: strongly contributing cells
+    value: 216
+    tolerance: 21.6
+  - quantity: cells significant in PRE
+    value: 97
+    tolerance: 9.7
+  - quantity: cells significant in POST
+    value: 190
+    tolerance: 19
+  - quantity: cells significant in both
+    value: 71
+    tolerance: 7.1
+  criterion: Counts of place cells (per running direction) with per-event PCC significant at p
+    < 0.05 one-tailed, under readings P-a and P-b of the opening comment. Reproduced when all
+    four counts are within tolerance under one reading; partially reproduced when the total is
+    within tolerance but a subset count is not.
+  depends_on:
+  - figs9b-pcc-post-higher
+- id: fig2-pre-contributors-persist
+  statement: The majority (73%) of neurons strongly contributing to PRE sequences also
+    contributed to POST sequences.
+  source: Results, paragraph 2; Figure S19A
+  quote: Importantly, the majority of neurons strongly contributing to PRE (73%) also contributed
+    to POST sequences
+  expected:
+    quantity: percentage of PRE-significant cells also POST-significant
+    value: 73
+    tolerance: 7.3
+    unit: '%'
+  criterion: From the cells of fig2b-strong-contributors, the number significant in both PRE and
+    POST over the number significant in PRE, under readings P-a and P-b. Reproduced when within
+    tolerance under one reading.
+  depends_on:
+  - fig2b-strong-contributors
+- id: rigid-plastic-counts
+  statement: Splitting strongly contributing cells at each session's median dPCC gives 105 rigid
+    and 105 plastic cells.
+  source: Materials and Methods, Rigid and Plastic Cell Classification
+  quote: the strongly contributing cells equal to or below the 50th percentile of that session’s
+    ΔPCC were considered rigid cells (n = 105 cells, blue x’s), while the strongly contributing
+    cells above the 50th percentile of that session’s ΔPCC distribution were considered plastic
+    cells (n = 105 cells
+  expected:
+  - quantity: rigid cells
+    value: 105
+    tolerance: 10.5
+  - quantity: plastic cells
+    value: 105
+    tolerance: 10.5
+  criterion: Classification as in the opening comment (per session and running direction, the
+    median cell dropped for odd counts). Reproduced when both counts are within tolerance.
+  depends_on:
+  - fig2b-strong-contributors
+- id: fig2d-high-dpcc-shuffle-abolishes-replay
+  statement: Shuffling the place fields of the 10 to 20% of cells with the highest dPCC
+    eliminates the POST over PRE increase in sequence content, while it survives shuffling
+    of the cells with the lowest dPCC.
+  source: Figure 2D; Results, paragraph 2
+  quote: Replay (POST > PRE) was eliminated after shuffling or removal of the top 10 to 20% of
+    cells with the highest ΔPCC scores, whereas it remained after shuffling or removal of the
+    bottom 75%
+  expected:
+    quantity: percentage of highest-dPCC cells shuffled at which POST - PRE rZ reaches zero
+    value: 15
+    tolerance: 7
+    unit: '%'
+  criterion: Per the Methods (Per Cell Contribution, last paragraph) and the Figure 2D legend,
+    within each session an increasing percentage of place cells (ranked by dPCC, from the
+    highest or from the lowest) has its maps circularly shuffled (1,000 templates), the
+    replay analysis is rerun, and mean POST rZ - mean PRE rZ is pooled over sessions, with a
+    bootstrapped 95% interval. Percentage steps are not given; 5% steps are a standard choice.
+    The expected value stands for the range 10 to 20%, widened by 10% of each bound (9 to 22%).
+    Reproduced when, shuffling from the highest dPCC, the change first falls to zero or below
+    between 9 and 22%, and, shuffling from the lowest dPCC, it stays above zero up to 75%,
+    under readings Y and D.
+  depends_on:
+  - figs9b-pcc-post-higher
+- id: figs12-high-dpcc-exclusion
+  statement: Excluding the 10 to 20% of cells with the highest dPCC turns the POST minus PRE
+    change in sequence content negative, while excluding up to about 75% of the lowest dPCC
+    cells leaves POST above PRE.
+  source: Figure S12
+  quote: Note that even after excluding up to ~75% of ‘low’ ΔPCC cells, POST epoch sequence
+    content exceeds PRE epoch sequence content ... after the exclusion of just 10 to 20% of
+    cells PRE epoch sequence content exceeded POST epoch sequence content
+  criterion: As fig2d-high-dpcc-shuffle-abolishes-replay, with cells excluded from the template
+    and event selection (the 100 ms and 10% or 5 cell criteria applied after exclusion, per the
+    Methods) in place of shuffled. Reproduced when, excluding from the highest dPCC, POST - PRE
+    rZ falls below zero between 9 and 22% excluded, and, excluding from the lowest, the lower
+    bound of its bootstrapped 95% interval stays above zero up to 75%, under readings Y and D.
+  depends_on:
+  - figs9b-pcc-post-higher
+- id: figs2-rigid-plastic-along-track
+  statement: Rigid and plastic cells' place fields are similarly distributed along the track,
+    both enriched near the start and goal ends.
+  source: Results, paragraph 2; Figure S2 legend
+  quote: Rigid and plastic neurons were similarly distributed along the track
+  criterion: The paper shows this only as rate maps and gives no test, so the test is open.
+    Measure, each cell's peak place-field position (per running direction) as a fraction of
+    track length from the start of the run. Readings (a) a two-sample Kolmogorov-Smirnov test of
+    rigid against plastic positions; (b) a rank-sum test of the distance of each peak from the
+    nearer track end. Reproduced when neither reading finds a difference at p < 0.05; the
+    fractions of fields in the outer fifths of the track are reported for each group.
+  depends_on:
+  - rigid-plastic-counts
+- id: fig3a-plastic-more-specific
+  statement: On the novel maze plastic cells have higher place specificity than rigid cells and
+    fewer place fields.
+  source: Figure 3A; Results, paragraph 3; Figure S19E
+  quote: Plastic neurons had higher place-specific indices and fewer place fields compared with
+    rigid cells
+  statistics:
+  - test: rank-sum tests
+    p: 0.05
+    p_relation: "<"
+  criterion: The Figure 3A panels are not available here; Figure S19E, which the legend says to
+    compare to Figure 3A, shows six measures, within/outside place-field rate ratio, information
+    per spike, information per second, spatial coherence, place-field stability and number of
+    place fields. Measures as in reference 32 (Mizuseki et al. 2012) per the Methods; the
+    stability split is not given here (readings (a) first against second half of the maze
+    epoch; (b) odd against even laps). Rank-sum test, rigid against plastic (Figure 3A legend).
+    Reproduced when plastic cells are higher on at least four of the five specificity measures
+    and have fewer place fields, each at p < 0.05, under one stability reading; partially
+    reproduced when the direction holds for all six but fewer reach p < 0.05.
+  depends_on:
+  - rigid-plastic-counts
+- id: fig3b-plastic-specificity-increases
+  statement: Plastic but not rigid cells steadily increased their spatial specificity during maze
+    running.
+  source: Figure 3B; Results, paragraph 3; Figure S19F
+  quote: plastic but not rigid neurons increased their spatial specificity steadily during
+    learning
+  criterion: Per lap, each cell's percentage of spikes inside its place field(s) (the measure of
+    Figure S19F, the legend's "infield versus outside field firing ratio"), using only laps
+    with at least 5 spikes from the cell (Figure S13 legend); per cell, the Pearson
+    correlation of this value with lap number. Tests per the Figure S13C legend, a signed-rank
+    test of each group's correlations against zero and a rank-sum test between groups.
+    Reproduced when plastic cells' correlations are above zero (p < 0.05), rigid cells' are not,
+    and plastic exceeds rigid (p < 0.05). The within-field rate gain of Figure S13C is shown as
+    a variant.
+  depends_on:
+  - rigid-plastic-counts
+- id: figs13-outfield-rate-falls
+  statement: Neither group's overall or within-field firing rate changed significantly over laps;
+    plastic cells' increase in specificity came from a fall in their out-of-field firing rate,
+    which rigid cells did not show.
+  source: Figure S13A, S13D and S13E
+  quote: Notably, neither cell group showed a significant increase in within-field firing rate
+    over the course of maze running. (E) Conversely, a significant decrease was observed in
+    plastic cells’, but not rigid cells’, outside of field firing rates
+  criterion: Per cell, the Pearson correlation of lap rate (overall, within field, outside field)
+    with lap number, laps with at least 5 spikes, running above 5 cm/s. Signed-rank test of each
+    group's correlations against zero (Figure S13C legend). Reproduced when the outside-field
+    correlations of plastic cells are below zero (p < 0.05) and those of rigid cells are not,
+    and neither group's overall or within-field correlations differ from zero at p < 0.05.
+  depends_on:
+  - rigid-plastic-counts
+- id: fig4a-rigid-fire-faster
+  statement: Rigid cells fire faster than plastic cells in offline states (session-wide median
+    0.76 against 0.54 Hz; PRE 0.762 against 0.479 Hz; POST 0.753 against 0.472 Hz), but not
+    during maze running (1.09 against 1.13 Hz).
+  source: Figure 4A; Results, paragraph 4; Figure S14, firing rate row (values read from the
+    panel titles)
+  quote: Session-wide firing rates of rigid neurons were significantly higher compared with
+    plastic neurons
+  statistics:
+  - about: session-wide
+    test: rank-sum test
+    p: 0.001
+    p_relation: "<"
+    n: 105 rigid and 105 plastic cells
+  - about: PRE
+    test: rank-sum test
+    p: 0.00159
+    p_relation: "<"
+  - about: POST
+    test: rank-sum test
+    p: 0.00146
+    p_relation: "<"
+  - about: MAZE
+    test: rank-sum test
+    p: 0.976
+    p_relation: "<"
+  expected:
+  - quantity: session-wide median rate, rigid
+    value: 0.76
+    tolerance: 0.076
+    unit: Hz
+  - quantity: session-wide median rate, plastic
+    value: 0.54
+    tolerance: 0.054
+    unit: Hz
+  - quantity: PRE median rate, rigid
+    value: 0.762
+    tolerance: 0.0762
+    unit: Hz
+  - quantity: PRE median rate, plastic
+    value: 0.479
+    tolerance: 0.0479
+    unit: Hz
+  - quantity: POST median rate, rigid
+    value: 0.753
+    tolerance: 0.0753
+    unit: Hz
+  - quantity: POST median rate, plastic
+    value: 0.472
+    tolerance: 0.0472
+    unit: Hz
+  criterion: Firing rate as in Figure S14, spikes per second in offline states of each epoch, and
+    during running on the maze for MAZE (the measure for MAZE is not stated; readings (a) all
+    MAZE time; (b) running above 5 cm/s). "Session-wide" is not defined; readings (a) offline
+    time of PRE and POST together; (b) the whole recording. Rank-sum tests. Reproduced when the
+    session-wide, PRE and POST differences are significant (p < 0.05) with rigid higher and the
+    medians within tolerance under one reading; partially reproduced when the tests hold and
+    the medians do not.
+  depends_on:
+  - rigid-plastic-counts
+- id: figs14-plastic-ripple-gain
+  statement: Plastic cells have a higher within-ripple firing rate gain than rigid cells (POST
+    median 5.75 against 4.52) and a larger PRE to POST increase in gain (0.81 against 0.14).
+  source: Figure 4A; Results, paragraph 4; Figure S14, within-ripple firing rate gain row
+    (values read from the panel titles)
+  quote: Ripple-related spiking, bursting, and pair-wise coactivation were higher in plastic
+    versus rigid neurons
+  statistics:
+  - about: POST gain
+    test: rank-sum test
+    p: 0.0001
+    p_relation: "<"
+  - about: session-wide gain
+    test: rank-sum test
+    p: 0.002
+    p_relation: "<"
+  - about: PRE gain
+    test: rank-sum test
+    p: 0.04
+    p_relation: "<"
+  - about: POST - PRE change in gain
+    test: rank-sum test
+    p: 0.00306
+    p_relation: "<"
+  expected:
+  - quantity: POST median gain, plastic
+    value: 5.75
+    tolerance: 0.575
+  - quantity: POST median gain, rigid
+    value: 4.52
+    tolerance: 0.452
+  - quantity: median change in gain, plastic
+    value: 0.81
+    tolerance: 0.081
+  - quantity: median change in gain, rigid
+    value: 0.14
+    tolerance: 0.1
+  criterion: Gain as in the Figure S14 legend, within-ripple rate over offline rate, per epoch.
+    Rank-sum tests, plastic against rigid. The rigid change median is near zero, so its
+    tolerance is set at 0.1, about 10% of the gap between the two groups' changes. Reproduced
+    when plastic exceeds rigid for POST gain and for the change at p < 0.05 and the four medians
+    are within tolerance; partially reproduced when the tests hold and a median does not.
+  depends_on:
+  - rigid-plastic-counts
+- id: figs14-plastic-ripple-bursting
+  statement: Plastic cells burst more within ripples than rigid cells in POST (median 27.3%
+    against 23.3% of ISIs under 6 ms) and increase their within-ripple bursting more from PRE
+    to POST (2.81 against 1.13 percentage points).
+  source: Figure S14, within-ripple burstiness row (values read from the panel titles)
+  inferred: The main text states that ripple-related bursting was higher in plastic cells (Figure
+    4A); the numbers are only in the Figure S14 panel titles.
+  statistics:
+  - about: POST within-ripple burstiness
+    test: rank-sum test
+    p: 0.00183
+    p_relation: "<"
+  - about: POST - PRE change
+    test: rank-sum test
+    p: 0.01
+    p_relation: "<"
+  expected:
+  - quantity: POST median within-ripple burstiness, plastic
+    value: 27.3
+    tolerance: 2.73
+    unit: '%'
+  - quantity: POST median within-ripple burstiness, rigid
+    value: 23.3
+    tolerance: 2.33
+    unit: '%'
+  - quantity: median change, plastic
+    value: 2.81
+    tolerance: 0.281
+    unit: percentage points
+  - quantity: median change, rigid
+    value: 1.13
+    tolerance: 0.113
+    unit: percentage points
+  criterion: Within-ripple burstiness as the percentage of within-ripple ISIs under 6 ms. Whether
+    ISIs spanning two ripple events count is open; the reading kept is ISIs between spikes of
+    one event (standard), with all ISIs inside concatenated ripple time as a variant. Rank-sum
+    tests. Reproduced when both tests hold with plastic higher and the medians are within
+    tolerance; partially reproduced when the tests hold and a median does not.
+  depends_on:
+  - rigid-plastic-counts
+- id: figs16ab-plastic-synchrony-increase
+  statement: The PRE to POST increase in ripple-triggered firing is present in plastic but not
+    rigid cells, and the PRE to POST increase in pair-wise coactivity is larger among plastic
+    cells.
+  source: Figure S16A and S16B
+  quote: The PRE to POST increases in ripple-event triggered firing rates seen when all place
+    cells are taken into account (A, left panel) are uniquely present in plastic (A,
+    third-panel) but not rigid (A, second panel) cells ... the PRE to POST increase in pair-wise
+    co-activity observed across all place cells (B, left panel) is more robustly observed in the
+    plastic cell population
+  criterion: Ripple-triggered rate from -50 to 100 ms around event onset (the panel's axis), per
+    cell, PRE and POST. The legend gives no test for panel A; readings (a) a signed-rank test of
+    each cell's POST - PRE mean rate in 0 to 100 ms; (b) the same at the peak bin. Coactivity
+    as in the opening comment, pairs within each group. Reproduced when plastic cells' rate
+    increase is significant (p < 0.05) and rigid cells' is not under one reading of A, and
+    plastic pairs' mean coactivity increase exceeds rigid pairs' (rank-sum, p < 0.05).
+  depends_on:
+  - rigid-plastic-counts
+- id: low-high-rate-split
+  statement: Splitting place cells into equal halves by offline firing rate gives low-rate cells
+    with median 0.39 Hz and high-rate cells with median 1.12 Hz.
+  source: Results, paragraph 5
+  quote: Low-rate neurons (median, 0.39 Hz) contributed more spatial information per spike on the
+    maze and displayed increased within-ripple firing-rate gains from PRE to POST sleep than
+    high-rate cells (median, 1.12 Hz)
+  expected:
+  - quantity: median rate, low-rate cells
+    value: 0.39
+    tolerance: 0.039
+    unit: Hz
+  - quantity: median rate, high-rate cells
+    value: 1.12
+    tolerance: 0.112
+    unit: Hz
+  criterion: The Figure S16 legend points to the Methods for the split, which the Methods do not
+    give. From the text, place cells are split into equal groups by "off-line" sleep firing
+    rate, and the Methods state that cells removed from an analysis are chosen within each
+    session. Readings (a) median split within each session and running direction; (b) median
+    split within each session; (c) a pooled median split; and for the rate, (i) offline PRE
+    and POST together; (ii) offline PRE only. Reproduced when both medians are within
+    tolerance under one reading. The reading(s) that match fix the split for the claims that
+    depend on this one.
+- id: figs16c-low-rate-coding
+  statement: Low-rate cells carry more spatial information per spike (0.91 against 0.56
+    bits/spike), have a higher in/out place-field rate ratio (6.38 against 3.86), fewer place
+    fields (log-mean 1.29 against 1.59), and a larger PRE to POST increase in within-ripple gain
+    (0.71 against 0.06) than high-rate cells.
+  source: Figure S16C legend; Results, paragraph 5
+  quote: low-rate cells also contributed more information per spike (Low Rate median ... 0.91
+    bits/spike, High Rate med ... 0.56 bits/spike, p < 2.5x10-9, Rank-Sum test), had a greater
+    within/outside of place field(s) firing ratio (Low Rate med ... 6.38, High Rate med ... 3.86,
+    p < 7.9x10-14), and had fewer place fields on the maze (Low Rate log-mean ... 1.29, High Rate
+    log-mean ... 1.59, p < 3.94 x10-06). In addition, low rate cells tended to show a more
+    pronounced increase in their within-ripple firing rate gain (Low Rate Δripple-gain med ...
+    0.71, High Rate med ... 0.06, p < 7.585x10-4
+  statistics:
+  - about: information per spike
+    test: Rank-Sum test
+    p: 2.5e-09
+    p_relation: "<"
+  - about: within/outside field rate ratio
+    test: Rank-Sum test
+    p: 7.9e-14
+    p_relation: "<"
+  - about: number of place fields
+    test: Rank-Sum test
+    p: 3.94e-06
+    p_relation: "<"
+  - about: change in within-ripple gain
+    test: Rank-Sum test
+    p: 0.0007585
+    p_relation: "<"
+  expected:
+  - quantity: median information per spike, low-rate
+    value: 0.91
+    tolerance: 0.091
+    unit: bits/spike
+  - quantity: median information per spike, high-rate
+    value: 0.56
+    tolerance: 0.056
+    unit: bits/spike
+  - quantity: median in/out field ratio, low-rate
+    value: 6.38
+    tolerance: 0.638
+  - quantity: median in/out field ratio, high-rate
+    value: 3.86
+    tolerance: 0.386
+  - quantity: log-mean number of place fields, low-rate
+    value: 1.29
+    tolerance: 0.129
+  - quantity: log-mean number of place fields, high-rate
+    value: 1.59
+    tolerance: 0.159
+  - quantity: median change in within-ripple gain, low-rate
+    value: 0.71
+    tolerance: 0.071
+  - quantity: median change in within-ripple gain, high-rate
+    value: 0.06
+    tolerance: 0.07
+  criterion: Groups from low-high-rate-split under the reading that matched there. Measures as in
+    fig3a-plastic-more-specific and figs14-plastic-ripple-gain. "Log-mean" is read as the
+    geometric mean. The high-rate gain change is near zero, so its tolerance is 0.07, about 10%
+    of the gap between the groups. Reproduced when all four rank-sum tests give p < 0.05 in the
+    stated direction and the medians are within tolerance; partially reproduced when the tests
+    hold and a median does not.
+  depends_on:
+  - low-high-rate-split
+- id: fig4c-coactivation-by-rate
+  statement: In PRE sleep coactivity is dominated by fast-firing cells, whose correlations stay
+    unchanged into POST, while slow-firing cells show the largest PRE to POST increase in
+    coactivation and the greatest replay of maze coactivity.
+  source: Figure 4B and 4C; Results, paragraph 4; Figure S16C
+  quote: In PRE sleep, coactivity was dominated by fast-firing neurons, and these correlations
+    remained unchanged into POST sleep. In contrast, slow-firing neurons showed the strongest
+    increases in coactivation from PRE to POST sleep
+  criterion: Per the Figure 4B and 4C legends, place cells sorted by session firing rate and
+    grouped in overlapping windows of 20% of cells stepped by 1%; in each window, the mean
+    coactivity of its pairs (different shanks) in PRE and POST, the POST - PRE change, and the
+    partial correlation of RUN and POST coactivity given PRE. Whether ranks are taken within
+    session or pooled is open (readings (a) percentile of rate within session; (b) pooled);
+    "session firing rate" as in fig4a-rigid-fire-faster. Reproduced when PRE coactivity rises
+    with the window's rate rank, the POST - PRE change and the partial correlation fall with
+    it (Spearman over windows, both p < 0.05), the change in the top window is not
+    significant (signed-rank over pairs, p > 0.05), and, per Figure S16C, the low-rate half's
+    mean change exceeds the high-rate half's (rank-sum, p < 0.05). Partially reproduced when
+    the slow-firing increase holds and the PRE dominance or the top-window stability does not.
+  depends_on:
+  - low-high-rate-split
+- id: fig4d-slow-cells-replay
+  statement: Slow-firing, but not fast-firing, place cells increased their contribution to
+    sequences from PRE to POST sleep.
+  source: Figure 4D; Results, paragraph 5; Figures S20D, S21B and S22E
+  quote: Slow-firing, but not fast-firing, neurons increased their contribution to neuronal
+    sequences from PRE to POST sleep
+  criterion: The Bayesian replay analysis rerun with templates of only the low-rate or only the
+    high-rate place cells (low-high-rate-split), the event criteria applied to the kept cells.
+    The test of the change is open; readings (a) a rank-sum test of POST against PRE rZ within
+    each group (as in Figure 1D); (b) a bootstrapped 95% interval of mean POST - PRE rZ (as in
+    Figure 2D). Reproduced when the low-rate group's POST - PRE rZ is above zero (p < 0.05) and
+    the high-rate group's is not, under each reading; partially reproduced when the low-rate
+    increase holds and the high-rate group also increases but less. The paired-latency (Figure
+    S20D) and time-bin-shuffle (Figure S22E) versions are shown as variants.
+  depends_on:
+  - low-high-rate-split
+  - fig1c-sequence-content
+- id: fig4e-high-gain-cells-replay
+  statement: The PRE to POST increase in sequence content was limited to cells with high
+    ripple-specific recruitment (within-ripple rate gain).
+  source: Figure 4E; Results, paragraph 5; Figures S20E, S21C and S22E
+  quote: Conversely, PRE to POST increases in sequence content were limited to cells that showed a
+    high degree of ripple-specific recruitment (gain)
+  criterion: As fig4d-slow-cells-replay, with the place cells split into equal halves by
+    within-ripple firing-rate gain, under the split and epoch readings that matched in
+    low-high-rate-split. Reproduced when the high-gain group's POST - PRE rZ is above zero (p <
+    0.05) and the low-gain group's is not, under each reading of the test.
+  depends_on:
+  - low-high-rate-split
+  - fig1c-sequence-content
+- id: figs16de-more-ripples-post
+  statement: Ripple events occur more often in POST than in PRE (median inter-event interval 2.47
+    s against 3 s), as do purely LFP-detected sharp wave-ripples (1.06 s against 1.21 s).
+  source: Figure S16D and S16E (medians read from the panel titles)
+  quote: Increased synchrony (B) in the
+    POST compared to PRE epoch may be attributable to both increases in ripple-triggered
+    spiking (A) as well as to an increase in the incidence of ripple events
+  statistics:
+  - about: inter ripple-event intervals, PRE against POST
+    test: Rank-Sum test
+    p: 0
+  - about: inter LFP-SWR intervals, PRE against POST
+    test: Rank-Sum test
+    p: 0
+  expected:
+  - quantity: median inter ripple-event interval, PRE
+    value: 3
+    tolerance: 0.3
+    unit: s
+  - quantity: median inter ripple-event interval, POST
+    value: 2.47
+    tolerance: 0.247
+    unit: s
+  - quantity: median inter LFP-SWR interval, PRE
+    value: 1.21
+    tolerance: 0.121
+    unit: s
+  - quantity: median inter LFP-SWR interval, POST
+    value: 1.06
+    tolerance: 0.106
+    unit: s
+  criterion: Intervals between consecutive events within offline states, intervals under 60 s
+    only (legend); rank-sum test of PRE against POST intervals ("p ~ 0" printed, recorded as 0).
+    Ripple events as in the opening comment; LFP-SWR events under readings L-a and L-b. Reproduced
+    when POST intervals are shorter for both event types at p < 0.05 and the ripple-event
+    medians are within tolerance; the LFP-SWR medians depend on the open detector and are
+    reported, matching under one L reading counts toward reproduced.
+- id: figs17-coactivity-preservation
+  statement: Pair-wise coactivity is weakly preserved from PRE to RUN (r = 0.045), more strongly
+    from RUN to POST (r = 0.16), and most strongly from PRE to POST (r = 0.34).
+  source: Figure S17A and S17C (r values read from the panels)
+  quote: the
+    similarity between RUN and POST co-activity patterns (middle panel) was significantly ...
+    greater (corr(RUN, POST) - corr(RUN, PRE) = 0.11, p ≈ 0, Fisher's Z-test). However, the
+    similarity between RUN and POST was likewise far exceeded by the similarity between
+    PRE and POST co-activity patterns (corr(PRE, POST) - corr(RUN, POST) = 0.18, p ≈ 0,
+    Fisher's Z-test)
+  statistics:
+  - about: corr(RUN, POST) - corr(RUN, PRE)
+    test: Fisher's Z-test
+    p: 0
+  - about: corr(PRE, POST) - corr(RUN, POST)
+    test: Fisher's Z-test
+    p: 0
+  expected:
+  - quantity: Pearson r, PRE against RUN coactivity
+    value: 0.045
+    tolerance: 0.0045
+  - quantity: Pearson r, POST against RUN coactivity
+    value: 0.16
+    tolerance: 0.016
+  - quantity: Pearson r, PRE against POST coactivity
+    value: 0.34
+    tolerance: 0.034
+  - quantity: corr(RUN, POST) - corr(RUN, PRE)
+    value: 0.11
+    tolerance: 0.011
+  - quantity: corr(PRE, POST) - corr(RUN, POST)
+    value: 0.18
+    tolerance: 0.018
+  criterion: Coactivity as in the opening comment, all place-cell pairs on different shanks;
+    Pearson correlation across pairs between epochs; differences of correlations by Fisher's Z
+    test (as two independent correlations, the test's usual form; a test for dependent
+    correlations is the other reading). Reproduced when both differences are significant (p <
+    0.05) in the stated direction and the values are within tolerance; partially reproduced
+    when the order RUN-PRE < RUN-POST < PRE-POST holds but values fall outside tolerance.
+- id: figs17d-rigid-plastic-coactivity
+  statement: Rigid cell pairs preserve PRE coactivity into RUN (r = 0.139) and into POST (r =
+    0.31) more than plastic pairs (-0.02 and 0.09), while plastic pairs show higher RUN to POST
+    preservation (0.36 against 0.11).
+  source: Figure S17D (r values read from the panels); Results, paragraph 4
+  quote: Rigid cell, but not plastic cell, pairs
+    showed preservation of PRE co-activity patterns during the RUN. Conversely, plastic cell
+    pairs showed a significantly higher preservation of co-activity patterns from the RUN to
+    the POST
+  expected:
+  - quantity: rigid pairs, PRE against RUN r
+    value: 0.139
+    tolerance: 0.0139
+  - quantity: plastic pairs, PRE against RUN r
+    value: -0.02
+    tolerance: 0.05
+  - quantity: rigid pairs, RUN against POST r
+    value: 0.11
+    tolerance: 0.011
+  - quantity: plastic pairs, RUN against POST r
+    value: 0.36
+    tolerance: 0.036
+  - quantity: rigid pairs, PRE against POST r
+    value: 0.31
+    tolerance: 0.031
+  - quantity: plastic pairs, PRE against POST r
+    value: 0.09
+    tolerance: 0.009
+  criterion: As figs17-coactivity-preservation within rigid-rigid and plastic-plastic pairs;
+    groups compared by Fisher's Z test (Figure S17D legend). The plastic PRE-RUN r is near zero,
+    so its tolerance is 0.05, read as consistent with zero. Reproduced when the three group
+    differences are significant (p < 0.05) in the stated direction; the r values are reported
+    against tolerance, and a mismatch in values with the differences holding is partially
+    reproduced.
+  depends_on:
+  - rigid-plastic-counts
+- id: figs18-temporal-bias
+  statement: Pair-wise temporal biases are not preserved from PRE to RUN (r = -0.009) but are
+    preserved from RUN to POST (r = 0.117) and PRE to POST (r = 0.201); the PRE to POST
+    preservation is carried by rigid cell pairs (r = 0.29) and the RUN to POST preservation by
+    plastic cell pairs (r = 0.26).
+  source: Figure S18B and S18C (r values read from the panels); Results, paragraph 4
+  quote: When
+    all place cells are included in the analysis, no similarity is observed between PRE and
+    RUN (left panel) temporal biases. However, temporal biases are strongly preserved from
+    the RUN to POST epochs (middle panel), as well as from the PRE to POST epochs
+    (right). (C) Limiting this analysis to rigid (blue) or plastic (red) cell pairs, reveals that the
+    preservation of temporal spiking patterns from PRE to POST and from RUN to POST is
+    attributable to the rigid and plastic cell subpopulations, respectively
+  expected:
+  - quantity: all pairs, PRE against RUN r
+    value: -0.009
+    tolerance: 0.05
+  - quantity: all pairs, RUN against POST r
+    value: 0.117
+    tolerance: 0.0117
+  - quantity: all pairs, PRE against POST r
+    value: 0.201
+    tolerance: 0.0201
+  - quantity: rigid pairs, PRE against POST r
+    value: 0.29
+    tolerance: 0.029
+  - quantity: plastic pairs, RUN against POST r
+    value: 0.26
+    tolerance: 0.026
+  criterion: Temporal bias and its median r over 1,000 sign randomisations as in the opening
+    comment. The PRE-RUN value is near zero; its tolerance of 0.05 reads it as consistent with
+    zero. Reproduced when the PRE-RUN r is not significant (p > 0.05), RUN-POST and PRE-POST are
+    (p < 0.05), the rigid PRE-POST and plastic RUN-POST r are significant while the plastic
+    PRE-POST (-0.037) and rigid RUN-POST (0.024) are not, and the values are within tolerance;
+    partially reproduced when the significance pattern holds and a value does not.
+  depends_on:
+  - rigid-plastic-counts
+- id: figs11-cluster-quality-similar
+  statement: Rigid and plastic cells have similar waveforms and similar cluster quality and
+    stability across PRE, MAZE and POST, so clustering errors do not explain their differences.
+  source: Figure S11; Results, paragraph 3
+  quote: Note
+    that rigid and plastic cell waveforms are similar to each other and stable from the PRE to
+    the POST epochs
+  criterion: A claim of absence, judged by the paper's rank-sum tests of rigid against plastic
+    cells at p < 0.05 (Figure S11 legend). Quality is the median Mahalanobis distance of each
+    spike's PCA features to its cluster mean, for spikes in PRE ripple events, MAZE running and
+    POST ripple events; stability is the symmetric Mahalanobis distance between a cell's
+    clusters in two conditions; first spikes of bursts (ISI under 6 ms) only. Reproduced when no
+    comparison is significant; the effect sizes are reported either way.
+  depends_on:
+  - rigid-plastic-counts
