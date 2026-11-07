@@ -432,12 +432,13 @@ def recovery_time(sel_ctrl, sel_stim, times, t_off, t_end, rng, n_boot=1000, fra
     """
     n = len(sel_ctrl)
     win = (times > t_off) & (times < t_end)
+    sel_ctrl, sel_stim, tw = sel_ctrl[:, win], sel_stim[:, win], times[win]
     out = []
     for _ in range(n_boot):
         i = rng.integers(0, n, n)
         r = (sel_ctrl[i] - sel_stim[i]).mean(0) / sel_ctrl[i].mean(0)
-        hit = np.flatnonzero((r < frac) & win)
-        out.append(times[hit[0]] - t_off if len(hit) else np.nan)
+        hit = np.flatnonzero(r < frac)
+        out.append(tw[hit[0]] - t_off if len(hit) else np.nan)
     out = np.array(out)
     ok = np.isfinite(out)
     censored = float(np.where(ok, out, t_end - t_off).mean())
@@ -509,13 +510,18 @@ def binned_window(binned, times, width):
     return cs[:, b] - cs[:, a]
 
 
-def unit_measures(u, s, n_screen, conditions, seed, width_psth=0.2):
+def unit_measures(u, s, n_screen, conditions, seed, width_psth=0.2, screen="per_type"):
     """Measures of one unit used by the selectivity and rate analyses (code; see module doc).
 
-    n_screen: control trials per side drawn at random to set the preferred trial type (5 in the
-    unilateral code, 10 in the bilateral and callosotomy code; the Methods say "a subset of 10
-    trials"). Preference from the spike count from sample onset to 1.3 s after the cue (code,
-    first column of spk_count_*_screen). Selectivity traces on the remaining control trials.
+    n_screen: control trials drawn at random to set the preferred trial type (5 per side in the
+    unilateral code, 10 per side in the bilateral and callosotomy code; the Methods say "a subset
+    of 10 trials"). screen = "per_type" draws n_screen trials of each type (M4 reading a);
+    screen = "total" draws n_screen control trials in all, whatever their type (M4 reading b).
+    Preference from the spike count from sample onset to 1.3 s after the cue (code, first column
+    of spk_count_*_screen; M4 reading a), and, as `pref_best`, from the epoch (sample, delay or
+    response) where the screening trials differ most between types, by the difference of means
+    over the pooled standard deviation (M4 reading b; the measure of "most selective" is a
+    standard choice). Selectivity traces on the remaining control trials.
     """
     from scipy import stats
     tr = u["trials"]
@@ -531,9 +537,18 @@ def unit_measures(u, s, n_screen, conditions, seed, width_psth=0.2):
     rate = binned_window(b, GRID_T, width_psth) / width_psth
     out["fr_mean"] = float(binned_window(b[np.r_[iR, iL]], [-0.5], 5.0).mean() / 5.0) if len(iR) + len(iL) else np.nan
     rng = np.random.default_rng(seed)
-    if len(iR) > n_screen and len(iL) > n_screen:
-        pR, pL = rng.permutation(iR), rng.permutation(iL)
-        sR, sL, tR, tL = pR[:n_screen], pL[:n_screen], pR[n_screen:], pL[n_screen:]
+    if screen == "per_type":
+        enough = len(iR) > n_screen and len(iL) > n_screen
+        if enough:
+            pR, pL = rng.permutation(iR), rng.permutation(iL)
+            sR, sL, tR, tL = pR[:n_screen], pL[:n_screen], pR[n_screen:], pL[n_screen:]
+    else:
+        pick = rng.permutation(np.r_[iR, iL])[:n_screen]
+        sR, sL = np.intersect1d(pick, iR), np.intersect1d(pick, iL)
+        tR, tL = np.setdiff1d(iR, pick), np.setdiff1d(iL, pick)
+        # a preference needs screening trials of both types, and the trace test trials of both
+        enough = len(iR) + len(iL) > n_screen and min(len(sR), len(sL), len(tR), len(tL)) > 0
+    if enough:
         er = u["epoch_rates"]
         cue = s["cue"][tr]
         whole = (s["pole_in"][tr] - cue)
@@ -542,10 +557,15 @@ def unit_measures(u, s, n_screen, conditions, seed, width_psth=0.2):
         counts = er * dur
         whole_count = counts.sum(1)
         out["pref_counts"] = np.r_[whole_count[sR].mean() - whole_count[sL].mean(), (counts[sR].mean(0) - counts[sL].mean(0))]
+        diff = er[sR].mean(0) - er[sL].mean(0)
+        spread = np.sqrt((er[sR].var(0) + er[sL].var(0)) / 2) + 1e-9
+        best = int(np.argmax(np.abs(diff) / spread))
+        out["pref_best"] = (best, 1 if diff[best] >= 0 else -1)
         out["psth_ctrl"] = {1: rate[tR].mean(0), -1: rate[tL].mean(0)}
         out["n_test"] = (len(tR), len(tL))
     else:
         out["pref_counts"] = None
+        out["pref_best"] = None
     out["psth_ctrl_all"] = {1: rate[iR].mean(0) if len(iR) else None, -1: rate[iL].mean(0) if len(iL) else None}
     out["cond"] = {}
     for c in conditions:
@@ -583,7 +603,7 @@ def unit_measures(u, s, n_screen, conditions, seed, width_psth=0.2):
 POP_T = np.round(np.arange(-3.5, 1.0 + 1e-9, 0.01), 3)  # window starts; windows [t, t + 0.4]
 
 
-def population_session(s, sess_units, conds, cell_types=("pyramidal",), seed=0, split="code"):
+def population_session(s, sess_units, conds, cell_types=("pyramidal",), seed=0, split="code", min_group=5):
     """Trials x neurons x windows rates for one session, with the code's trial selection.
 
     Neurons: units of `cell_types` whose stable trials include trial 50 and the 50th from the end
@@ -596,7 +616,9 @@ def population_session(s, sess_units, conds, cell_types=("pyramidal",), seed=0, 
     "half", one random half of each type (M6 reading a); split = "loo", every control trial is both
     a training and a test trial, and the analysis leaves the test trial out of the training set
     (M6 reading b).
-    Returns None when the session has 5 or fewer neurons or fewer than 5 trials in a group (code).
+    Returns None when the session has 5 or fewer neurons or fewer than `min_group` trials in a
+    group. The code keeps groups of 5 trials (min_group = 5), which gives the paper's 16 sessions;
+    the Methods' "> 5 trials per condition" (M6) is min_group = 6, shown as a reading.
     """
     n_tr = len(s["trial_ids"])
     keep = []
@@ -629,7 +651,7 @@ def population_session(s, sess_units, conds, cell_types=("pyramidal",), seed=0, 
         n_t = n_test if split == "code" else len(g) // 2
         test[d], train[d] = g[len(g) - n_t:], g[:len(g) - n_t]
     counts = [len(train[1]), len(train[-1]), len(test[1]), len(test[-1])] + [len(groups[(c, d)]) for c in conds for d in (1, -1)]
-    if len(keep) <= 5 or min(counts) < 5:
+    if len(keep) <= 5 or min(counts) < min_group:
         return None
     X = np.stack([binned_window(u["binned"], POP_T + 0.2, 0.4) / 0.4 for u in keep], axis=1)  # trials x neurons x windows
     return {"session": s["name"], "mouse": s["mouse"], "X": X, "split": split, "side": sd, "hit": hit, "stim": st,

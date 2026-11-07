@@ -13,15 +13,15 @@ their MD5 sums printed in the notebook.
 | Selective fraction of pyramidal neurons (ED Fig. 1) | Reproduced |
 | Earlier photoinhibition has minimal behavioural effect (Fig. 1d) | Reproduced |
 | Photoinhibition silences more than 90% of activity (ED Fig. 2b) | Reproduced |
-| No rebound after photoinhibition (ED Fig. 2e) | Partially reproduced |
+| No rebound after photoinhibition (ED Fig. 2e) | Not reproduced |
 | Rate recovery in 90% of neurons (Fig. 1f) | Partially reproduced |
-| Selectivity recovery times after unilateral photoinhibition (Fig. 1g) | Reproduced |
+| Selectivity recovery times after unilateral photoinhibition (Fig. 1g) | Partially reproduced (times match; neuron count does not) |
 | Decreasing neurons return to their trajectory (ED Fig. 4) | Not reproduced |
 | Behaviour under unilateral and bilateral photoinhibition (Fig. 2b) | Partially reproduced |
 | Bilateral bias follows the cd trajectory (ED Fig. 6) | Reproduced |
 | Recovery after ipsilateral, contralateral and bilateral photoinhibition (Fig. 2) | Partially reproduced |
-| Experiment 3 recovery (ED Fig. 7d) | Partially reproduced |
-| Experiment 3 cd ROC (ED Fig. 7e) | Partially reproduced |
+| Experiment 3 recovery (ED Fig. 7d) | Not reproduced |
+| Experiment 3 cd ROC (ED Fig. 7e) | Not reproduced |
 | cd ROC at the end of the delay (Fig. 3) | Reproduced |
 | cd ROC during photoinhibition (ED Fig. 8) | Reproduced |
 | Stability of the coding direction (ED Fig. 9b) | Reproduced |
@@ -30,7 +30,7 @@ their MD5 sums printed in the notebook.
 | Persistent and ramping modes (Fig. 3d, e) | Not reproduced |
 | Callosotomy behaviour (Fig. 5b) | Partially reproduced (after the cut only) |
 | Callosotomy recovery (Fig. 5) | Reproduced |
-| Callosotomy preparatory activity (ED Fig. 10) | Partially reproduced |
+| Callosotomy preparatory activity (ED Fig. 10) | Not reproduced |
 | Monolithic models fail to recover (ED Fig. 1) | Partially reproduced (three of five models simulated) |
 | Modular models are robust (Fig. 6) | Partially reproduced |
 | Late-delay bias, recovery interval, spatial extent, photoactivation (Fig. 1d, ED Fig. 2d, 3, 5) | Blocked: data missing |
@@ -44,7 +44,7 @@ open, from the authors' MATLAB analysis scripts deposited in the data set. The a
 the reasons and the differences from the paper's method, is
 [`attempts/crcns-alm-3-li-2016-01.yaml`](../../attempts/crcns-alm-3-li-2016-01.yaml).
 
-- `reproduce_li_2016.ipynb`: the analysis. It takes about four minutes, most of it streaming the
+- `reproduce_li_2016.ipynb`: the analysis. It takes about seven minutes, most of it streaming the
   12 GB of session files.
 - `alm3.py`: streaming and reducing the session files, trial selection, spike counts, the rate
   test, selectivity recovery and the population analyses. Other notebooks on this data set can

@@ -56,12 +56,12 @@ def attractor_weights(inter=0.3, self_w=0.5235):
     return W
 
 
-def run_attractor(trial, silence, rng, W=None, noise="step", dt=0.001, tau=0.1, var=0.01):
+def run_attractor(trial, silence, rng, W=None, noise="step", dt=0.001, tau=0.1, var=0.01, t_end=T_END):
     """Simulate the attractor; trial +1 (right) or -1 (left); silence: indices held at zero."""
     W = attractor_weights() if W is None else W
     n = W.shape[0]
     pref = np.array([1, -1, 1, -1][:n])
-    steps = int(round(T_END / dt))
+    steps = int(round(t_end / dt))
     r = np.zeros(n)
     out = np.zeros((steps, n))
     for k in range(steps):
