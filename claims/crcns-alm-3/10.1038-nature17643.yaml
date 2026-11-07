@@ -1,0 +1,806 @@
+# Claims for Li, Daie, Svoboda & Druckmann (2016), Nature 532, 459-464, "Robust neuronal dynamics
+# in premotor cortex during motor planning", doi:10.1038/nature17643, on CRCNS data set alm-3
+# (doi:10.6080/K0RB72JW).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-07,
+# protocol as stated in docs/protocol.md (Reader), version pilot-13.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC5081260, NIHMS767125), as supplied
+# under paper/ (Europe PMC): main text, Methods, and the legends of Figures 1 to 6 and Extended Data
+# Figures 1 to 10. The paper has no separate Supplementary Information. No PDF of the paper was
+# supplied, so values printed only inside figures (per-condition performance in Fig. 1d and 5b,
+# fractions in ED Fig. 8a and 8b) were not read; claims on those panels rest on the text and
+# legends. The version of record was not read. The record lists a corrigendum
+# (doi:10.1038/nature18623) whose text was not supplied or read.
+#
+# Code. The paper links no analysis or simulation code. The CRCNS data set's description says it
+# holds MATLAB analysis scripts that reproduce the paper's figures; they are files of the data set
+# and were not read here. Every method below is from the paper's text.
+#
+# Data the paper used. 33 mice (age > P60). Electrophysiology during behaviour, left ALM, 12 mice
+# (5 VGAT-ChR2-EYFP, 7 PV-ires-cre x ReaChR), NeuroNexus 32-channel probes: 1012 single units in 58
+# sessions (20 unilateral, Experiment 1, Fig. 1; 38 bilateral, Experiments 2 and 3, Fig. 2 and ED
+# Fig. 7); 890 putative pyramidal (spike width > 0.45 ms), 72 FS (< 0.35 ms), 50 excluded.
+# Callosotomy, 7 mice (6 VGAT, 1 PV x ReaChR), recorded daily for 5 to 7 days from about 17 h after
+# the cut. Photoactivation (ED Fig. 5), 2 Tlx_PL56-cre x Ai32 mice. Behaviour-only photoinhibition
+# mice (Fig. 1d, 2b, ED Fig. 3) and 4 untrained mice for the spatial extent of photoinhibition (ED
+# Fig. 2d). Task: pole location discrimination, sample epoch 1.3 s, delay 1.3 s (Experiment 1),
+# 1.7 s (Experiments 2, 3), 1.2 to 1.7 s (ED Fig. 3c), auditory go cue, lick right (posterior) or
+# lick left (anterior). Photoinhibition on 40% of trials during electrophysiology. Experiment 1:
+# left ALM, 1 spot, 0.5 s with 100 ms ramp, in sample, early delay or a third delay window.
+# Experiment 2: 0.8 s with 200 ms ramp from delay onset, left ALM 1 spot (ipsilateral), right ALM 1
+# spot (contralateral), bilateral 4 spots per side. Experiment 3: ipsilateral 4 spots, contralateral
+# 4 spots, bilateral 1 spot. Variables: spike times per unit and trial, trial type, outcome (correct,
+# error, lick early), photostimulus condition, epoch times, licks. By its description the data set
+# holds 91 recording sessions from 19 mice (the 12 electrophysiology mice and the 7 callosotomy
+# mice), with spike times, cell type, trial types, photostimulation type, epoch times and lick
+# traces; its documentation says the behaviour-only sessions and the photoactivation data are not
+# included.
+#
+# Naming of the third Experiment 1 window. The Methods name the windows by when they end before the
+# go cue, 1.6 s (sample), 0.8 s (early delay), 0.3 s (late delay) and 0 s (before cue); the Results
+# call the window ending at the cue "late delay" and the one ending 0.3 s before it "middle delay".
+# The electrophysiology used sample, early delay and the window ending 0.3 s before the cue (it is
+# the one with a recovery time in Fig. 1g). Claims below say which window they mean by its end time.
+#
+# Shared method details, used by the criteria below.
+# M1. Trials. Performance is the fraction correct excluding lick-early trials (Methods, Behavioral
+#   data analysis). Whether lick-early trials enter the electrophysiology analyses is not stated;
+#   readings (a) excluded, as for performance (the data set's documentation also says to exclude
+#   them), (b) included. Selectivity changes under photoinhibition use all trials, correct and
+#   incorrect, grouped by instructed movement (Methods, Electrophysiology data analysis); the
+#   example PSTHs of ED Fig. 1a use correct trials only.
+# M2. Epochs. Sample epoch from pole movement onset to 0.1 s after pole retraction onset (1.3 s);
+#   delay epoch from then to the go cue (Methods, Behavior and surgery). The response epoch's length
+#   is not stated; readings (a) the first 400 ms after the go cue (the window ED Fig. 2e calls the
+#   first 400 ms of the response epoch), (b) the 1.5 s answer window after the go cue.
+# M3. Neurons. Putative pyramidal neurons only, spike width (trough to peak of the mean waveform)
+#   > 0.45 ms (Methods). A neuron is selective when spike counts on lick left and lick right trials
+#   differ by a two-tailed t-test at p < 0.05 in any of the sample, delay or response epochs
+#   (Methods). The trials of this test are not stated; readings (a) correct control trials, (b) all
+#   control trials grouped by instructed movement. Figure legends add "selective neurons tested for
+#   >3 trials in all conditions" (Fig. 1g, 2e, ED Fig. 5f, 7d); ED Fig. 2b, 5e and 7c exclude neurons
+#   with mean rate < 1 spike/s, and Fig. 1f, 2d and 5d do not say; readings (a) with that exclusion,
+#   (b) without.
+# M4. Selectivity and its recovery (Methods, Electrophysiology data analysis). Each neuron's
+#   preferred trial type from a subset of 10 trials, selectivity as the rate difference between
+#   preferred and non-preferred types on the remaining trials; delta selectivity is photoinhibition
+#   minus control; s.e.m. by bootstrap over neurons. Open details. Which 10 trials; readings (a) 10
+#   trials of each type drawn at random, (b) 10 trials in total drawn at random. The window that sets
+#   the preference; readings (a) the spike count over sample, delay and response epochs together,
+#   (b) the count in the epoch where the neuron is most selective. The time bins of the selectivity
+#   trace; readings (a) 200 ms windows (the PSTH window of Fig. 1e and ED Fig. 1a), (b) 400 ms
+#   windows (the rate-test window); in 50 ms steps in both (the step of the rate test; a standard
+#   choice). The recovery time is the first bin after photoinhibition offset at which the mean
+#   selectivity on photoinhibition trials reaches 80% of control (Methods), offset being the end of
+#   the ramp (ED Fig. 3b); the time stamp of a window is its centre in reading (a) and its end in
+#   reading (b) of a separate choice the paper leaves open. "Control selectivity" is read as the
+#   time-matched control value.
+# M5. Spike-rate change (Methods). Two-tailed t-test of spike counts in 400 ms windows, control
+#   against photoinhibition trials, lick right and lick left pooled, every 50 ms, significant at
+#   p < 0.01.
+# M6. Population analyses (Methods, Analysis of population dynamics). Sessions from the bilateral
+#   experiments (Experiment 2) with > 5 neurons recorded simultaneously for > 5 trials per condition
+#   (16 of 38 sessions; 7 mice). The paper does not say whether FS units enter; readings (a)
+#   putative pyramidal only (M3), (b) all single units. Spike counts in 400 ms windows in 10 ms
+#   steps. cd is the mean over windows in the sample and delay epochs of the difference of mean
+#   response vectors, correct lick right minus correct lick left trials; which windows count as in
+#   those epochs is open, readings (a) windows whose centre lies in them, (b) windows wholly inside
+#   them. cd, decision boundary and session offsets come from one set of control trials, and the
+#   projections from independent control and perturbation trials. The split is not stated; readings
+#   (a) one random half of control trials for cd, the other half projected, (b) leave-one-out over
+#   control trials. Projections are cd^T x on single trials, all trials grouped by instructed
+#   movement, minus the session offset. ROC values compare projections on lick right and lick left
+#   trials in the last 400 ms of the delay epoch, per session, reported as mean +- s.e.m. over
+#   sessions. Movement prediction uses the same window and the decision boundary of the Methods
+#   (the inverse-variance weighted mean of the two class means); a trial is predicted lick right when
+#   its projection lies on the lick right side; it is compared with the lick the mouse made.
+# M7. Behavioural tests. "Two-tailed t-test against control" across mice (Methods); whether paired
+#   is not stated, readings (a) paired over mice, (b) unpaired. A mouse's performance is read as
+#   (a) its trials pooled over sessions, (b) the mean of its session values.
+# M8. Tolerances. 10% of the reported value unless a claim says otherwise. Where the paper gives
+#   mean +- s.e.m. the s.e.m. is the tolerance. Counts of deposited units and sessions are exact
+#   (tolerance 0), as the units are sorted and labelled in the data set.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: alm-3
+  doi: 10.6080/K0RB72JW
+paper: doi:10.1038/nature17643
+claims:
+- id: units-and-sessions
+  statement: 1012 single units were recorded in left ALM during behaviour across 58 sessions (20
+    unilateral, 38 bilateral) from 12 mice; 72 are fast-spiking, 890 putative pyramidal and 50 of
+    intermediate width are excluded.
+  source: Methods, Electrophysiology data analysis, paragraph 1; Results, Preparatory activity in ALM
+  quote: 1012 single units were recorded during behavior across 58 recording sessions (20 sessions
+    of unilateral experiments, Fig. 1 ; 38 sessions of bilateral experiments ... (FS) neurons
+    (72/1012) and units with spike widths > 0.45 ms as putative pyramidal neurons (890/1012). Units
+    with intermediate values (0.35 - 0.45 ms, 50/1012) were excluded
+  expected:
+  - quantity: single units, non-callosotomy experiments
+    value: 1012
+    tolerance: 0
+  - quantity: recording sessions, unilateral experiment
+    value: 20
+    tolerance: 0
+  - quantity: recording sessions, bilateral experiments
+    value: 38
+    tolerance: 0
+  - quantity: putative pyramidal neurons
+    value: 890
+    tolerance: 0
+  - quantity: FS neurons
+    value: 72
+    tolerance: 0
+  - quantity: mice
+    value: 12
+    tolerance: 0
+  criterion: Counts over the non-callosotomy sessions, units classed by the spike-width bounds of the
+    Methods (M3). Reproduced when the counts match; partially reproduced when the unit total matches
+    and the class counts are within 10%.
+- id: ed1-selective-fraction
+  statement: Most ALM pyramidal neurons distinguish trial types (634 of 890), 176 during the sample,
+    337 during the delay and 493 during the response epoch.
+  source: Results, Preparatory activity in ALM; Extended Data Fig. 1b, e
+  quote: Most ALM pyramidal neurons distinguished trial types (634/890, p<0.05, t-test; sample
+    epoch, 176/890; delay epoch, 337/890; response epoch, 493/890, Methods)
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: selective pyramidal neurons, any epoch
+    value: 634
+    tolerance: 63.4
+  - quantity: selective in sample epoch
+    value: 176
+    tolerance: 17.6
+  - quantity: selective in delay epoch
+    value: 337
+    tolerance: 33.7
+  - quantity: selective in response epoch
+    value: 493
+    tolerance: 49.3
+  criterion: Two-tailed t-test on epoch spike counts, lick left against lick right, p < 0.05 (M3),
+    on control trials, under the readings of M1, M2 and M3. Reproduced when all four counts are
+    within tolerance under one reading; partially reproduced when the any-epoch count is.
+- id: fig1d-late-delay-ipsilateral-bias
+  statement: Unilateral photoinhibition (0.5 s) of ALM ending at the go cue causes an ipsilateral
+    response bias.
+  source: Results, Preparatory activity after unilateral silencing, paragraph 1; Figure 1d
+  quote: Transient (duration, 0.5 s) unilateral photoinhibition of ALM up to the ‘go’ cue (late
+    delay) caused an ipsilateral response bias (n = 5 mice, p < 0.01, two-tailed t-test
+  statistics:
+  - test: two-tailed t-test against control
+    p: 0.01
+    p_relation: "<"
+    n: 5 mice
+  criterion: Performance (M1) on trials instructing a lick contralateral to the inhibited hemisphere
+    (lick right for left ALM), photoinhibition against control, two-tailed t-test across mice (M7).
+    Reproduced when performance drops with p < 0.01 under one reading. These are behaviour
+    experiments (Fig. 1d, ED Fig. 3); the condition is tested only if the data set holds it.
+- id: fig1d-earlier-photoinhibition-minimal
+  statement: Unilateral photoinhibition ending at least 0.3 s before the go cue (early and middle
+    delay) has minimal behavioural effect.
+  source: Results, Preparatory activity after unilateral silencing, paragraph 1; Figure 1d; Extended
+    Data Fig. 3b, d
+  quote: In contrast, photoinhibition ending at least 0.3 s prior to the ‘go’ cue produced minimal
+    behavioral effects (middle delay, early delay; p > 0.1, two-tailed t-test)
+  statistics:
+  - test: two-tailed t-test against control
+    p: 0.1
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test. Per condition (window ending 0.8 s and
+    0.3 s before the cue), overall performance (M1), photoinhibition against control, two-tailed
+    t-test across mice (M7 reading a, paired; reading b shown as a variant). Reproduced when p > 0.1
+    for both; not reproduced when either has p < 0.05; the drop in performance is reported either
+    way. The sample-epoch condition is reported as well.
+- id: ed3-recovery-interval
+  statement: Performance is not significantly affected when photoinhibition (0.5 s or 1.3 s) ends
+    more than 0.3 s before the go cue, and 0.5 s of photoinhibition just before the cue has an effect
+    similar to photoinhibition of the whole delay epoch.
+  source: Extended Data Fig. 3b, d, e
+  quote: Performance was not significantly affected for T recovery >0.3s ... Photoinhibition (0.5 s)
+    immediately before the ‘go’ cue is similar to the behavioral effect caused by photoinhibition
+    during the entire delay epoch (1.3 s)
+  criterion: Behaviour-only experiments; the data set's documentation says these sessions are not
+    included. If they are found, judged as fig1d-earlier-photoinhibition-minimal per T recovery
+    (two-tailed t-test, p < 0.05 the threshold of the figure's asterisks).
+- id: ed2b-silencing
+  statement: Photoinhibition silences more than 90% of putative pyramidal activity, similarly with
+    ipsilateral and bilateral photoinhibition and in VGAT-ChR2 and PV x ReaChR mice, while
+    contralateral photoinhibition barely changes the average rate.
+  source: Extended Data Fig. 2b; Methods, Photoinhibition
+  quote: Ipsilateral and bilateral photoinhibition similarly silenced neuronal activity. Average
+    spike rate across the population was little affected by contralateral photoinhibition ...
+    Photoinhibition was similar in the two mouse lines (>90% activity reduction)
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: activity reduction, ipsilateral photoinhibition, Experiment 2
+    value: 0.9
+    tolerance: 0.09
+  criterion: Per neuron, spike rate during photoinhibition over the rate in the same window of
+    control trials (ED Fig. 2b), neurons with mean rate < 1 spike/s excluded; the window is the
+    photoinhibition period before the ramp (a), or the whole period with the ramp (b). Reproduced
+    when the mean normalized rate is at most 0.1 (within tolerance) for ipsilateral and bilateral
+    photoinhibition, the two mouse lines both show more than 80% reduction, and the contralateral
+    mean normalized rate lies within 0.8 to 1.2 (the 10% default applied to 1, doubled since the
+    paper gives no number; stated here as a choice).
+- id: ed2d-spatial-extent
+  statement: The standard photostimulus silences about 90% of spikes in a cortical area of 1 mm
+    radius at half maximum, through all layers.
+  source: Methods, Photoinhibition; Extended Data Fig. 2d
+  quote: The photoinhibition silenced 90% of spikes ( Extended Data Fig. 2b ) in a cortical area of
+    1mm radius (at half-max) through all cortical layers
+  expected:
+  - quantity: radius at half-maximal silencing
+    value: 1
+    tolerance: 0.1
+    unit: mm
+  criterion: Measured in 4 untrained, non-behaving mice (ED Fig. 2d), which the data set's
+    description does not list; tested only if those recordings are found.
+- id: ed2e-no-rebound
+  statement: No rebound excitation is seen on average after photoinhibition offset; a small
+    proportion of neurons show rebound, balanced by low-level sustained inhibition in a larger
+    proportion.
+  source: Extended Data Fig. 2c, e; Results, Preparatory activity after unilateral silencing,
+    paragraph 2
+  quote: No rebound excitation was detected after photoinhibition offset on average ( d ). A small
+    proportion of neurons showed rebound excitation which was balanced by a low level of sustained
+    inhibition in a larger proportion of neurons
+  criterion: Experiment 2, lick right trials, ipsilateral photoinhibition (ED Fig. 2e), windows the
+    first 400 ms and 400 to 800 ms after photoinhibition. Per neuron, a two-tailed t-test of spike
+    counts, control against photoinhibition, p < 0.01 (M5 on lick right trials). Reproduced when
+    the population mean rate after offset is not higher than control by a paired t-test over neurons
+    at p < 0.05 (a standard choice, the paper names no population test) and fewer neurons are
+    significantly excited than significantly suppressed in the first 400 ms after offset.
+- id: fig1f-rate-recovery
+  statement: Within 400 ms after unilateral photoinhibition, spike rates are indistinguishable from
+    control in 90% of neurons; only 10% keep a sustained change.
+  source: Results, Preparatory activity after unilateral silencing, paragraph 2; Figure 1f
+  quote: Within 400 ms after photoinhibition, spike rates became indistinguishable from the
+    unperturbed condition in 90% of the neurons; only 10% of neurons retained a sustained change in
+    spike rate
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: fraction of neurons with a significant rate change 400 ms after offset
+    value: 0.1
+    tolerance: 0.01
+  - quantity: neurons per condition (sample, early delay, delay ending 0.3 s before cue)
+    value: 168
+    tolerance: 0
+  criterion: Experiment 1, per neuron and condition, the rate test of M5. The fraction is over
+    neurons of a condition (n = 168, 168, 175 in Fig. 1f; the inclusion rule is open, M3). Which
+    window is "within 400 ms after" is open; readings (a) the 400 ms window starting at offset, (b)
+    the window whose time stamp, by its centre, is 400 ms after offset. Reproduced when, under one
+    reading, the fraction is within tolerance in each condition, or in their mean; partially
+    reproduced when it is below 0.2. The neuron counts are reported beside 168, 168 and 175.
+- id: fig1g-selectivity-recovery
+  statement: After unilateral photoinhibition ALM neurons recover more than 80% of their control
+    selectivity within 514 ms; recovery times are 373 +- 260 ms (sample), 510 +- 218 ms (early
+    delay) and 327 +- 112 ms (window ending 0.3 s before the cue).
+  source: Results, Preparatory activity after unilateral silencing, paragraph 2; Figure 1g
+  quote: ALM neurons recovered > 80% of their selectivity relative to the unperturbed trials within
+    514 ms after photoinhibition
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: recovery time to 80% of control, sample
+    value: 373
+    tolerance: 260
+    unit: ms
+  - quantity: recovery time to 80% of control, early delay
+    value: 510
+    tolerance: 218
+    unit: ms
+  - quantity: recovery time to 80% of control, window ending 0.3 s before cue
+    value: 327
+    tolerance: 112
+    unit: ms
+  - quantity: selective neurons tested for > 3 trials in all conditions
+    value: 55
+    tolerance: 5.5
+  criterion: Experiment 1, selective neurons with > 3 trials in every condition, M4 with all
+    readings. Reproduced when, under one reading, every condition's mean selectivity reaches 80% of
+    control within tolerance of the reported time; partially reproduced when every condition
+    reaches 80% before the go cue.
+- id: ed4-return-to-trajectory
+  statement: Neurons whose rates decrease during the delay epoch also recover after unilateral
+    photoinhibition, returning to the time-matched control trajectory and not decaying to the
+    end-point rate.
+  source: Extended Data Fig. 4b, c; Results, Preparatory activity after unilateral silencing,
+    paragraph 2; Figure 1e
+  quote: Spike rate difference relative to time-matched control show significantly smaller
+    root-mean-squared error (RMS) than spike rate difference relative to end point (p<0.001, paired
+    t-test)
+  statistics:
+  - test: paired t-test
+    p: 0.001
+    p_relation: "<"
+    n: 27 neurons from 6 mice
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: neurons with a significant delay-epoch decrease
+    value: 27
+    tolerance: 2.7
+  criterion: Experiment 1 pyramidal neurons with rate at the end of the delay lower than at its
+    start (two-tailed t-test, 400 ms windows, trial types pooled, p < 0.05; ED Fig. 4b). Rates
+    normalized to each neuron's mean rate, preferred and non-preferred types separately. Per
+    neuron, RMS over the time from photoinhibition offset to the go cue of (perturbed minus
+    time-matched control) and of (perturbed minus control rate in the last 400 ms of the delay);
+    which photoinhibition conditions are pooled is not stated, readings (a) the early-delay
+    condition, (b) all conditions ending before the cue pooled per neuron. Reproduced when the first
+    RMS is smaller by a paired t-test at p < 0.001 under one reading; partially reproduced at
+    p < 0.05. The same test on neurons with an increasing rate (Fig. 1e, neurons 1 and 2) is shown as
+    a variant.
+- id: ed5-photoactivation
+  statement: After transient photoactivation of layer 5 IT neurons, ALM selectivity recovers to 80%
+    of control in 249 +- 68 ms (sample), 275 +- 168 ms (early delay) and 250 +- 218 ms (middle delay).
+  source: Results, Preparatory activity after unilateral silencing, paragraph 2; Extended Data Fig.
+    5f
+  quote: After photostimulus offset, ALM activity and selectivity recovered with a time-course that
+    was similar to recovery after photoinhibition
+  expected:
+  - quantity: recovery time, sample
+    value: 249
+    tolerance: 68
+    unit: ms
+  - quantity: recovery time, early delay
+    value: 275
+    tolerance: 168
+    unit: ms
+  - quantity: recovery time, middle delay
+    value: 250
+    tolerance: 218
+    unit: ms
+  criterion: M4 on 26 selective neurons from 2 Tlx_PL56-cre x Ai32 mice. The data set's
+    documentation says the photoactivation data are not included; tested only if found.
+- id: fig2b-bilateral-behaviour
+  statement: Unilateral photoinhibition in the early delay reduces performance only slightly (1
+    spot 70.3%, 4 spots 67.7%), while bilateral photoinhibition degrades it severely (1 spot per
+    side 58.0%) or to near chance (4 spots per side 51.4%).
+  source: Results, Preparatory activity after bilateral silencing, paragraph 1; Figure 2b
+  quote: 'Behavioral performance was only slightly affected after unilateral photoinhibition with a
+    single spot during the early delay epoch ( Fig. 2b , 70.3% correct, p = 0.009, two-tailed t-test
+    against control); unilateral photoinhibition with four spots had small additional effect (67.7%,
+    p=0.003). In contrast, using only two spots across both hemispheres caused performance to
+    degrade severely ( Fig. 2b , 58.0%, p<0.001; difference from 4 spot unilateral: p<0.05,
+    two-tailed t-test); four spots bilaterally further reduced performance to near chance level (4
+    laser spots: 51.4%, p<0.001)'
+  statistics:
+  - about: unilateral 1 spot against control
+    test: two-tailed t-test
+    p: 0.009
+  - about: unilateral 4 spots against control
+    test: two-tailed t-test
+    p: 0.003
+  - about: bilateral 1 spot per side against control
+    test: two-tailed t-test
+    p: 0.001
+    p_relation: "<"
+  - about: bilateral 1 spot per side against unilateral 4 spots
+    test: two-tailed t-test
+    p: 0.05
+    p_relation: "<"
+  - about: bilateral 4 spots per side against control
+    test: two-tailed t-test
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: performance, unilateral 1 spot
+    value: 70.3
+    tolerance: 7.03
+    unit: '% correct'
+  - quantity: performance, unilateral 4 spots
+    value: 67.7
+    tolerance: 6.77
+    unit: '% correct'
+  - quantity: performance, bilateral 1 spot per side
+    value: 58.0
+    tolerance: 5.8
+    unit: '% correct'
+  - quantity: performance, bilateral 4 spots per side
+    value: 51.4
+    tolerance: 5.14
+    unit: '% correct'
+  criterion: Performance (M1) per condition over mice, tests of M7. The paper's numbers come from
+    13 mice including behaviour-only sessions and photoinhibition of 0.8 s and 1.3 s; the data set's
+    recording sessions hold 0.8 s photoinhibition from delay onset. Reproduced when each value is
+    within tolerance, each condition is below control with p < 0.05, and bilateral 1 spot is below
+    unilateral 4 spots; partially reproduced when the order (control > unilateral > bilateral 1 spot
+    > bilateral 4 spots) holds but some values are outside tolerance.
+- id: ed6-bilateral-bias-inconsistent
+  statement: Bilateral photoinhibition biases movements inconsistently across mice and sessions,
+    and the direction of a session's bias follows which control trajectory its perturbed cd
+    trajectories approach.
+  source: Results, Preparatory activity after bilateral silencing, paragraph 1; Extended Data Fig. 6
+  quote: Bilateral photoinhibition biased movements inconsistently across mice and sessions
+  depends_on:
+  - fig3-cd-roc
+  criterion: Experiment 2 sessions of M6, bilateral photoinhibition. Per session, bias = performance
+    on lick right trials minus performance on lick left trials under photoinhibition, and the mean
+    perturbed cd projection in the last 400 ms of the delay relative to the decision boundary. The
+    paper gives no test; as a standard choice, a session is biased when the two performances differ
+    by Fisher's exact test at p < 0.05. Reproduced when biased sessions of both signs occur and
+    the sign of the bias agrees with the side of the decision boundary in at least 80% of biased
+    sessions (the paper's five example sessions all agree; the 80% is a choice stated here).
+- id: fig2-bilateral-recovery
+  statement: Spike rate and selectivity of left ALM neurons recover within 600 ms after ipsilateral
+    photoinhibition, contralateral photoinhibition hardly affects activity, and after bilateral
+    photoinhibition the rate recovers on average but selectivity does not; selectivity recovery takes
+    538 +- 178 ms (ipsilateral), 192 +- 114 ms (contralateral) and does not occur (bilateral).
+  source: Results, Preparatory activity after bilateral silencing, paragraph 2; Figure 2c-e
+  quote: As before ( Fig. 1 ), spike rate (> 90 %) ( Fig. 2c, d ) and selectivity (> 80%) ( Fig. 2e
+    ) recovered 600 ms after ipsilateral perturbation. ALM activity was hardly affected by
+    contralateral photoinhibition ... After bilateral photoinhibition neurons recovered their spike
+    rate on average ( Fig. 2c, d ), but selectivity failed to recover
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: selectivity recovery time, ipsilateral
+    value: 538
+    tolerance: 178
+    unit: ms
+  - quantity: selectivity recovery time, contralateral
+    value: 192
+    tolerance: 114
+    unit: ms
+  - quantity: selective neurons in Fig. 2e
+    value: 143
+    tolerance: 14.3
+  criterion: Experiment 2 (1 spot ipsilateral, 1 spot contralateral, 4 spots per side bilateral),
+    M4 and M5. "Spike rate (> 90 %)" is read as (a) more than 90% of neurons without a significant
+    rate change (M5) in the window 600 ms after offset, or (b) population mean rate within 10% of
+    control there. Reproduced when, under one reading of each open detail, the ipsilateral rate and
+    selectivity recover as stated with the recovery times within tolerance, the contralateral
+    recovery time is within tolerance, and the bilateral selectivity stays below 80% of control up
+    to the go cue while the bilateral mean rate is back within 10% of control by the cue. Partially
+    reproduced when the ordering holds (ipsilateral recovers, bilateral does not) but a time is
+    outside tolerance.
+- id: ed7-unilateral-4-spots-bilateral-1-spot
+  statement: Bilateral photoinhibition with one spot per side causes a larger persistent change in
+    selectivity than unilateral photoinhibition with four spots; recovery takes 490 +- 280 ms
+    (ipsilateral 4 spots), 235 +- 156 ms (contralateral 4 spots) and does not occur (bilateral 1
+    spot).
+  source: Results, Preparatory activity after bilateral silencing, paragraph 2; Extended Data Fig.
+    7d
+  quote: Bilateral photoinhibition with one laser spot produced a larger persistent change in
+    selectivity than unilateral photoinhibiton with four laser spots
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: selectivity recovery time, ipsilateral 4 spots
+    value: 490
+    tolerance: 280
+    unit: ms
+  - quantity: selectivity recovery time, contralateral 4 spots
+    value: 235
+    tolerance: 156
+    unit: ms
+  - quantity: selective neurons
+    value: 40
+    tolerance: 4
+  criterion: Experiment 3 sessions, M4. Reproduced when the recovery times are within tolerance
+    under one reading, bilateral 1-spot selectivity does not reach 80% of control before the go
+    cue, and the mean delta selectivity in the last 400 ms of the delay is larger in magnitude for
+    bilateral 1 spot than for ipsilateral 4 spots.
+- id: ed7e-size-and-roc
+  statement: Recovery of selectivity after unilateral photoinhibition is less robust with larger
+    photoinhibition, and cd trajectories separate at the end of the delay with ROC 0.80 +- 0.08
+    (control), 0.64 +- 0.10 (ipsilateral 4 spots), 0.68 +- 0.15 (contralateral 4 spots) and 0.54
+    (bilateral 1 spot).
+  source: Results, Preparatory activity after bilateral silencing, paragraph 2; Extended Data Fig.
+    7e
+  quote: 'Recovery of selectivity after unilateral photoinhibition was less robust with larger
+    photoinhibition size ( Extended Data Fig. 7e ) ... control, 0.80 ± 0.08; ipsilateral, 0.64 ±
+    0.10; contralateral, 0.68 ± 0.15; bilateral, 0.54 ± 0.8'
+  depends_on:
+  - fig3-cd-roc
+  expected:
+  - quantity: ROC, control
+    value: 0.8
+    tolerance: 0.08
+  - quantity: ROC, ipsilateral 4 spots
+    value: 0.64
+    tolerance: 0.1
+  - quantity: ROC, contralateral 4 spots
+    value: 0.68
+    tolerance: 0.15
+  - quantity: ROC, bilateral 1 spot
+    value: 0.54
+    tolerance: 0.08
+  criterion: Experiment 3 sessions with > 5 simultaneously recorded neurons tested for > 3 trials in
+    each condition (ED Fig. 7e legend), M6 otherwise. The printed s.e.m. of the bilateral value,
+    0.8, cannot be an s.e.m. of an ROC value; 0.08 is taken as its tolerance, and this is a reading.
+    Reproduced when all four ROC values are within tolerance under one reading; "less robust with
+    larger size" is judged by the ipsilateral 4-spot ROC being below the Experiment 2 ipsilateral
+    1-spot ROC of fig3-cd-roc.
+- id: fig3-cd-roc
+  statement: Along the coding direction, trajectories for lick right and lick left recover after
+    ipsilateral photoinhibition (ROC at the end of the delay 0.73 +- 0.02 against control 0.76 +-
+    0.03), are little affected by contralateral photoinhibition (0.74 +- 0.03), and stay collapsed
+    after bilateral photoinhibition (0.58 +- 0.03).
+  source: Results, Robustness along the coding direction, paragraph 2; Figure 3b, c; Extended Data
+    Fig. 8
+  quote: 'ROC values between trajectories at the end of delay epoch: control, 0.76 ± 0.03;
+    ipsilateral, 0.73 ± 0.02; mean ± s.e.m. across sessions, Methods). Contralateral photoinhibition
+    had little effect ( Extended Data Fig. 8 ; ROC, 0.74 ± 0.03). As expected ( Fig. 2 ),
+    trajectories were permanently altered after bilateral photoinhibition, resulting in small
+    separation between the trajectories for different trial types at the time of movement onset
+    (ROC, 0.58 ± 0.03)'
+  depends_on:
+  - units-and-sessions
+  expected:
+  - quantity: sessions with > 5 simultaneous neurons and > 5 trials per condition
+    value: 16
+    tolerance: 0
+  - quantity: ROC, control
+    value: 0.76
+    tolerance: 0.03
+  - quantity: ROC, ipsilateral
+    value: 0.73
+    tolerance: 0.02
+  - quantity: ROC, contralateral
+    value: 0.74
+    tolerance: 0.03
+  - quantity: ROC, bilateral
+    value: 0.58
+    tolerance: 0.03
+  criterion: M6 with all readings. Reproduced when the 16 sessions are found and all four ROC values
+    are within tolerance under one reading; partially reproduced when the ordering holds (control,
+    ipsilateral and contralateral each above bilateral by more than 0.1) but a value is outside
+    tolerance.
+- id: ed8-roc-during-photoinhibition
+  statement: During photoinhibition the cd separation falls (ROC 0.54 +- 0.03 ipsilateral, 0.64 +-
+    0.03 contralateral, 0.54 +- 0.01 bilateral, against control 0.72 +- 0.02).
+  source: Extended Data Fig. 8 legend
+  quote: 'ROC values during the time period of photoinhibition: control, 0.72 ± 0.02; ipsilateral,
+    0.54 ± 0.03; contralateral, 0.64 ± 0.03; bilateral 0.54 ± 0.01'
+  depends_on:
+  - fig3-cd-roc
+  expected:
+  - quantity: ROC during photoinhibition, control
+    value: 0.72
+    tolerance: 0.02
+  - quantity: ROC during photoinhibition, ipsilateral
+    value: 0.54
+    tolerance: 0.03
+  - quantity: ROC during photoinhibition, contralateral
+    value: 0.64
+    tolerance: 0.03
+  - quantity: ROC during photoinhibition, bilateral
+    value: 0.54
+    tolerance: 0.01
+  criterion: M6; the window "during photoinhibition" is open, readings (a) the 400 ms window ending
+    at the start of the offset ramp, (b) projections averaged over the whole 0.8 s photoinhibition.
+    Reproduced when all four are within tolerance under one reading.
+- id: ed9b-cd-stability
+  statement: The direction of the lick right minus lick left response difference is stable through
+    the sample and delay epochs (correlation between late sample and late delay 0.61 +- 0.05).
+  source: Methods, Analysis of population dynamics in the activity space; Extended Data Fig. 9b
+  quote: During the sample and delay epochs the direction of the difference in the mean response
+    vectors, w t = x̄ lick right – x̄ lick left , was stable (correlation of w t 's between late
+    sample epoch vs. late delay epoch, 0.61 ± 0.05
+  depends_on:
+  - fig3-cd-roc
+  expected:
+    quantity: correlation of w, late sample against late delay
+    value: 0.61
+    tolerance: 0.05
+  criterion: M6 sessions. Per session, Pearson correlation of w in the last 400 ms of the sample
+    epoch and in the last 400 ms of the delay epoch (the "late" windows are read as these; a
+    reading), on correct control trials; mean +- s.e.m. over sessions. Reproduced when the mean is
+    within tolerance.
+- id: ed8a-mode-variance
+  statement: The projection on cd captures 65.6 +- 5.1% of population selectivity and 36.4 +- 6.3% of
+    task-related activity variance over the sample and delay epochs; modes 1 to 5 together explain
+    98.5 +- 0.5% of the variance and 95.8 +- 1.2% of the selectivity.
+  source: Methods, Analysis of population dynamics in the activity space; Extended Data Fig. 8a
+  quote: The projection along the cd captured 65.6±5.1% of the population selectivity ... and
+    36.4±6.3% of the total variance in ALM task-related activity ... Mode 1-5 together explained
+    98.5±0.5% of the total variance of task-related activity and 95.8±1.2% of population selectivity
+    over the sample and delay epochs
+  depends_on:
+  - fig3-cd-roc
+  expected:
+  - quantity: selectivity captured by cd
+    value: 65.6
+    tolerance: 5.1
+    unit: '%'
+  - quantity: variance captured by cd
+    value: 36.4
+    tolerance: 6.3
+    unit: '%'
+  - quantity: variance captured by modes 1-5
+    value: 98.5
+    tolerance: 0.5
+    unit: '%'
+  - quantity: selectivity captured by modes 1-5
+    value: 95.8
+    tolerance: 1.2
+    unit: '%'
+  criterion: M6 sessions; modes as in the Methods (mode 2, perturbed minus unperturbed lick right
+    mean response at the go cue; mode 3, the same for lick left, Gram-Schmidt orthogonal to mode 2;
+    modes 4 and 5, the first two singular vectors of the baseline-subtracted lick right and lick left
+    PSTHs concatenated, Gram-Schmidt orthogonal to modes 1 to 3), from correct control and
+    ipsilateral trials. Selectivity is the RMS over time of the lick right minus lick left rate
+    difference, variance the RMS of baseline-subtracted activity, over sample and delay. Open
+    details. The baseline; readings (a) the mean rate before sample onset, (b) the mean rate over the
+    whole trial. How a mode's share is computed; readings (a) the RMS of the projection over the
+    RMS of the full activity, (b) the ratio of squared norms. "At the go cue" read as the last 400
+    ms of the delay. Reproduced when all four values are within tolerance under one reading;
+    partially reproduced when the two cd values are.
+- id: fig3-cd-predicts-movement
+  statement: Deviations along the coding direction predict the upcoming movement trial by trial, in
+    control trials and after unilateral and bilateral perturbation, even when average selectivity
+    is destroyed.
+  source: Results, Robustness along the coding direction, paragraphs 2 and 4; Figure 3c; Figure 4b;
+    Extended Data Fig. 8b, 9e
+  quote: Individual trials with a deviation toward the “lick right” trajectory along the cd
+    predicted more frequent “lick right” responses and vice versa ( Fig. 4 , Extended Data Figs 6b
+    and 9 ). This analysis shows that even after average selectivity is destroyed by perturbations,
+    ALM population dynamics still dictate upcoming movements
+  depends_on:
+  - fig3-cd-roc
+  criterion: M6, trials pooled over sessions (Methods). For each condition (control, ipsilateral,
+    contralateral, bilateral), the fraction of trials whose lick matches the side of the decision
+    boundary, and performance on lick right and lick left trials binned by distance from the
+    boundary (bin 4 on the cd distance scale, ED Fig. 9e, read in the units of cd^T x after the
+    session offset; scaling of cd is open, readings (a) cd as the raw mean difference, (b) cd of
+    unit length). The paper gives no test; as a standard choice, the fraction of lick right
+    responses rises with distance toward the lick right side by logistic regression of the lick
+    on the signed distance, p < 0.05, and the prediction accuracy exceeds 0.5 by a binomial test,
+    p < 0.05. Reproduced when both hold in control and bilateral trials; partially reproduced when
+    they hold in control only.
+- id: fig3-other-modes
+  statement: The persistent mode is altered by perturbation up to and beyond movement onset but
+    neither discriminates trial type nor predicts behaviour; the ramping mode shows non-selective
+    ramping in the delay, is resistant to unilateral and bilateral perturbation and does not predict
+    behaviour.
+  source: Results, Robustness along the coding direction, paragraph 3; Figure 3d, e; Extended Data
+    Fig. 8b-e
+  quote: However, this projection did not discriminate trial type nor predict behavior on control
+    trials. Third, a mode that maximally captured the remaining activity variance, showed
+    non-selective ramping during the delay epoch, did not predict behavior, and was resistant to
+    unilateral and bilateral perturbations
+  depends_on:
+  - ed8a-mode-variance
+  criterion: Modes 2 and 4 of ed8a-mode-variance (persistent and ramping), decision boundaries as
+    for cd (Methods). The paper gives no test; standard choices stated here. Not discriminating or
+    predicting is judged by an ROC of lick right against lick left projections in the last 400 ms of
+    the delay within 0.5 +- 0.1 averaged over sessions and a prediction accuracy on control trials
+    whose binomial test against 0.5 has p > 0.05. Robustness of the ramping mode is judged by the
+    perturbed projection in the last 400 ms of the delay lying within the s.e.m. band over sessions
+    of the control projection for ipsilateral and bilateral trials, while the persistent-mode
+    projection lies outside it for ipsilateral trials. Reproduced when all hold.
+- id: ed9f-reaction-time
+  statement: Reaction times are faster on trials whose cd trajectory lies far from the decision
+    boundary at the go cue.
+  source: Extended Data Fig. 9f
+  quote: Reaction times are faster on trials in which the trajectory is far from the decision
+    boundary at the time of the ‘go’ cue
+  depends_on:
+  - fig3-cd-roc
+  criterion: M6, 16 sessions; reaction time relative to the session mean, lick right and lick left
+    trials pooled (ED Fig. 9f). The reaction time is not defined in the paper; read as the time from
+    go cue onset to the first lick. Which trials are used is open; readings (a) control trials, (b)
+    all conditions. The paper gives no test; as a standard choice, Spearman correlation of relative
+    reaction time with absolute distance from the boundary, negative with p < 0.05.
+- id: fig5b-callosotomy-behaviour
+  statement: Corpus callosum bisection leaves performance unaffected, but makes performance highly
+    sensitive to unilateral photoinhibition, with a significant interaction, dropping to the level
+    of bilateral photoinhibition in control mice.
+  source: Results, Contralateral input is required for recovery, paragraph 1; Figure 5b; Extended
+    Data Fig. 10b
+  quote: 'Remarkably, behavioral performance was unaffected ( Fig. 5b , control trials, before vs.
+    after callosotomy, p>0.05, two-tailed t-test) ... However, behavioral performance was now highly
+    sensitive to transient unilateral photoinhibition ( Fig 2b , 1 laser spot: p=0.0019, two-tailed
+    t-test against control). There was a significant interaction between callosotomy and unilateral
+    photoinhibition (p=0.0035, repeated measure two-way ANOVA)'
+  statistics:
+  - about: control performance before against after callosotomy
+    test: two-tailed t-test
+    p: 0.05
+    p_relation: ">"
+    n: 7 mice
+  - about: unilateral 1 spot against control after callosotomy
+    test: two-tailed t-test
+    p: 0.0019
+    n: 7 mice
+  - about: interaction of callosotomy and unilateral photoinhibition
+    test: repeated measure two-way ANOVA
+    p: 0.0035
+    n: 7 mice
+  criterion: Performance (M1) per mouse; tests of M7 and a repeated-measures two-way ANOVA on
+    performance with factors callosotomy (before, after) and photoinhibition (control, unilateral 1
+    spot). Reproduced when control performance after callosotomy does not differ from before
+    (p > 0.05), unilateral photoinhibition lowers it with p < 0.01, and the interaction has
+    p < 0.05; the after-callosotomy unilateral performance is compared with 58.0% (bilateral 1 spot
+    in control mice, fig2b-bilateral-behaviour). If the data set holds no sessions before the cut,
+    the before-and-after comparison and the interaction cannot be tested and the claim is judged on
+    the after-cut test alone, as partially testable.
+- id: fig5-callosotomy-recovery
+  statement: After callosotomy, ALM neurons recover their average spike rate after ipsilateral
+    photoinhibition but not their selectivity, selectivity recovers after contralateral
+    photoinhibition (217 +- 228 ms) and not after bilateral, and selectivity along cd is reduced.
+  source: Results, Contralateral input is required for recovery, paragraph 2; Figure 5c-f
+  quote: After ipsilateral photoinhibition, ALM neurons recovered their average spike rate ( Fig.
+    5c, d ), but selectivity failed to recover ( Fig. 5e ). Selectivity in the cd direction was
+    reduced ( Fig. 5f , 16 sessions)
+  expected:
+  - quantity: selectivity recovery time, contralateral, callosotomy
+    value: 217
+    tolerance: 228
+    unit: ms
+  - quantity: selective neurons in Fig. 5e
+    value: 129
+    tolerance: 12.9
+  - quantity: callosotomy sessions in Fig. 5f
+    value: 16
+    tolerance: 0
+  criterion: Callosotomy sessions (conditions ipsilateral 1 spot, contralateral 1 spot, bilateral
+    4 spots), M4, M5 and M6 (the session rule of M6 applied to these sessions). Reproduced when the
+    ipsilateral mean rate returns within 10% of control before the go cue while selectivity stays
+    below 80% of control up to the cue, the contralateral recovery time is within tolerance, the
+    bilateral selectivity does not recover, and the ipsilateral cd ROC at the end of the delay is
+    lower than the callosotomy control ROC and lower than the Experiment 2 ipsilateral ROC of
+    fig3-cd-roc.
+- id: ed10e-callosotomy-preparatory-activity
+  statement: Preparatory activity after callosotomy is similar to that of control mice, with 254 of
+    496 putative pyramidal neurons selective.
+  source: Results, Contralateral input is required for recovery, paragraph 2; Extended Data Fig.
+    10e, f
+  quote: Preparatory activity in callosotomized mice (n=7 mice) was similar to control mice ( Fig.
+    5c ; Extended Data Fig. 10 ), providing additional evidence that the two ALM hemispheres can
+    maintain preparatory activity independently
+  depends_on:
+  - ed1-selective-fraction
+  expected:
+  - quantity: selective pyramidal neurons, callosotomy
+    value: 254
+    tolerance: 25.4
+  - quantity: putative pyramidal neurons, callosotomy
+    value: 496
+    tolerance: 0
+  criterion: Selectivity test of M3 on callosotomy control trials. "Similar" is read as the selective
+    fraction within 10 percentage points of the control mice's 634/890 under the same reading (a
+    choice stated here), and the population selectivity (M4) during the delay epoch present and
+    rising toward the go cue as in ED Fig. 1c. Reproduced when the counts are within tolerance and
+    the fraction is similar.
+- id: models-monolithic-fail
+  statement: Monolithic network models (fixed-point attractor, integrators, trained recurrent
+    networks) do not recover their unperturbed trajectory after transient silencing of half of
+    their neurons.
+  source: Results, Robust model networks, paragraph 1; Figure 1c; Extended Data Fig. 1f-i, 4c
+  quote: Overall, all “monolithic” models consisting of one network were unable to explain
+    robustness
+  criterion: A simulation that uses no recorded data (the data set's title says it holds simulations
+    as well); parameters from the Methods and ED Fig. 1 legend (simple integrator N = 100, tau 100 ms,
+    one eigenvalue 0.99; corrective-feedback integrator with the synaptic time constants given;
+    FORCE network N = 400, tau 200 ms, g 1.5, p 0.1, 30 iterations; tamed chaos, 20 iterations).
+    Silencing holds half the neurons at zero for 0.2 s < t < 1.0 s. Open details, each a standard
+    choice that should not change the outcome, Euler step 1 ms and random seeds; the connectivity of
+    the simple integrator beyond its spectrum, the weight-pruning threshold of the tamed chaos
+    network and the FORCE learning rate are open and could matter, so three random draws are run.
+    Reproduced when, in each model, the output at t = 2 s after perturbation differs from the
+    unperturbed output by more than 20% of the unperturbed selectivity (a threshold chosen here)
+    in at least two of three draws.
+- id: fig6-modular-models-robust
+  statement: Modular networks of two coupled modules (attractor, integrator, trained recurrent
+    network) restore activity after transient silencing of one module but drift to a random fixed
+    point when both are silenced.
+  source: Results, Robust model networks, paragraph 2; Figure 6b-d; Methods, Modeling and simulation
+  quote: Selective commissural connections restored activity on the other side after unilateral
+    transient silencing ( Fig. 6b ). When the two sides are silenced, the network drifts to one of
+    the fixed points randomly
+  criterion: A simulation with the parameters of the Methods (modular attractor, self weight 0.5235,
+    mutual -0.5235, inter-module 0.3, tau 100 ms, the given g(x), input 0.1, tonic 0.5, noise
+    variance 0.01; modular integrator with the printed 8 x 8 matrix, tau 10 ms, inputs +-0.04, tonic
+    40; modular FORCE network). Integration step 1 ms (a standard choice; for the noise, variance per
+    step as printed, and per unit time as a second reading). Unilateral silencing holds one module
+    at zero for 0.2 s < t < 1.0 s; bilateral silencing holds both. Reproduced when, for the
+    attractor and integrator, the silenced module returns within 10% of its unperturbed state by
+    t = 2 s in at least 90% of 100 noisy runs, and after bilateral silencing the attractor ends at
+    the wrong fixed point in between 25% and 75% of runs (thresholds chosen here; "randomly" read as
+    near one half). The FORCE network is reported, as its training is not fully specified.
