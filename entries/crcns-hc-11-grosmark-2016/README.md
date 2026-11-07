@@ -15,7 +15,7 @@ types, position and state epochs); the LFP and the per-shank spike files are not
 | POST PCC above PRE PCC (Figure S9B medians) | Partially reproduced |
 | 216 strongly contributing cells (97 PRE, 190 POST, 71 both) | Partially reproduced |
 | 73% of PRE contributors also contribute in POST | Reproduced |
-| 105 rigid and 105 plastic cells | Not reproduced |
+| 105 rigid and 105 plastic cells | Partially reproduced |
 | Shuffling or excluding the top 10 to 20% dPCC cells abolishes replay (Figure 2D, S12) | Reproduced (2) |
 | Removing plastic cells abolishes replay (Figure 2E) | Reproduced |
 | Rigid and plastic fields similarly placed along the track | Reproduced |
@@ -29,7 +29,7 @@ types, position and state epochs); the LFP and the per-shank spike files are not
 | Low-rate cells code space better (Figure S16C) | Partially reproduced |
 | Coactivity by firing rate (Figure 4B, C) | Reproduced |
 | Slow-firing and high-gain cells carry the replay increase (Figure 4D, E) | Partially reproduced (2) |
-| More ripple events in POST (Figure S16D, E) | Partially reproduced |
+| More ripple events in POST (Figure S16D, E) | Not reproduced |
 | Coactivity preservation, all pairs (Figure S17A, C) | Partially reproduced |
 | Coactivity preservation, rigid and plastic pairs (Figure S17D) | Not reproduced |
 | Temporal bias preservation (Figure S18) | Not reproduced |

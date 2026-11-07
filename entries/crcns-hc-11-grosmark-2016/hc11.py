@@ -9,6 +9,7 @@ decompressed in memory. Sources of the parameters below:
 - [A] an assumption, said what and why, and listed as a deviation in the record;
 - [S] a standard choice for a detail that cannot change a result.
 """
+import hashlib
 import io
 import tarfile
 from concurrent.futures import ThreadPoolExecutor
@@ -40,9 +41,21 @@ MAZE_IMMOBILE = 0.05  # [A] on the maze, immobility is smoothed speed < 5 cm/s
 
 
 # ---------------------------------------------------------------- loading
+class _Hashing:
+    """File wrapper that computes the MD5 of the bytes read through it."""
+
+    def __init__(self, f):
+        self.f, self.md5 = f, hashlib.md5()
+
+    def read(self, n=-1):
+        b = self.f.read(n)
+        self.md5.update(b)
+        return b
+
+
 def load_sessions():
-    """Stream the tar of sessInfo files; return one dict per session."""
-    f = fsspec.open(BUCKET + SESSINFO, block_size=2**22).open()
+    """Stream the tar of sessInfo files; return one dict per session and the file's MD5."""
+    f = _Hashing(fsspec.open(BUCKET + SESSINFO, block_size=2**22).open())
     out = []
     with tarfile.open(fileobj=f, mode="r|gz") as t:
         for m in t:
@@ -50,7 +63,9 @@ def load_sessions():
                 continue
             h = h5py.File(io.BytesIO(t.extractfile(m).read()), "r")
             out.append(_session(m.name.split("/")[-1].replace("_sessInfo.mat", ""), h["sessInfo"]))
-    return sorted(out, key=lambda s: s["name"])
+    while f.read(2**22):  # hash the rest of the file
+        pass
+    return sorted(out, key=lambda s: s["name"]), f.md5.hexdigest()
 
 
 def _session(name, s):
@@ -300,8 +315,9 @@ def ripple_events(ses):
     Returns an array of (start, stop) for all candidate events, and the NREM mean.
     """
     allsp = np.concatenate([ses["spikes"][c] for c in ses["pyr"]])
+    allsp = allsp[allsp <= ses["duration"]]  # spikes past sessDuration (one session) are left out
     n = int(np.ceil(ses["duration"] * 1000)) + 1
-    r = np.bincount(np.clip((allsp * 1000).astype(np.int64), 0, n - 1), minlength=n).astype(np.float32)
+    r = np.bincount((allsp * 1000).astype(np.int64), minlength=n).astype(np.float32)
     r = gaussian_filter1d(r, 15.0, mode="constant")
     nrem = np.vstack([clip_to(ses["states"]["NREM"], *ses["pre"]), clip_to(ses["states"]["NREM"], *ses["post"])])
     msk = np.zeros(n, bool)
