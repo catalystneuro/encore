@@ -49,19 +49,27 @@
 #   Experimental Procedures), kept for all later analyses. "General WAKE firing rate" is read as the
 #   rate over all WAKE intervals of the cell's session; reading (b) is the rate over the WAKE of
 #   each cycle. The Fig. 2F groups are "based on mean rate", read as the same WAKE sextiles; reading
-#   (b) is sextiles of the nonREM rate.
+#   (b) is sextiles of the nonREM rate. Sextile numbers differ between figures: Figure S2 numbers
+#   1 as the lowest rate (1 pE Low FR, 6 pE High FR), the Figure S5 legend says sextile 1 is the
+#   highest. Criteria name sextiles by rate (top, bottom), or say which numbering they use.
 # M3. Time-normalized correlations. SLEEP, nonREM episodes and packets are time-normalized to 0 to 1
 #   and, for SLEEP, only nonREM time is used (Results, Firing pattern and LFP changes across the
 #   course of sleep; Fig. 3B legend). Correlations are Pearson (Fig. 3B legend). The unit of a sample
 #   in these correlations is not stated. Readings, (a) one point per nonREM packet (its mean value at
 #   its normalized mid-time); (b) one point per 10 s bin of nonREM (the bin the Supplemental
-#   Experimental Procedures use for the CV and burst ratio); rates normalized by the recording's mean
-#   value before pooling, as the Supplemental Experimental Procedures do for CV and burst ratio.
+#   Experimental Procedures use for the CV and burst ratio); (c) 50 equal bins of normalized time,
+#   values averaged over episodes per bin (every R and p printed in Figure S5A and S5B equals a
+#   Pearson test on exactly 50 points, so the paper used 50 bins there); rates normalized by the
+#   recording's mean value before pooling, as the Supplemental Experimental Procedures do for CV and
+#   burst ratio. The Figure S3C R and p (-0.19849, 3.3168e-09) equal a Pearson test on about 873
+#   points, about the number of nonREM packets in 54 SLEEP periods, which agrees with reading (a)
+#   but does not settle it.
 # M4. Judging correlations and tests. Where the paper reports an R and a p bound, the claim is
 #   reproduced when R has the reported sign and p is below the reported bound under one reading,
 #   partially reproduced when the sign holds and p < 0.05 but not below the bound, and not
 #   reproduced otherwise; the R obtained is reported beside the paper's. Reported R values are kept
-#   as test statistics and are not targets with a tolerance.
+#   as test statistics and are not targets with a tolerance. Where the paper prints an exact p
+#   (Figures S3C, S5C to S5G), the bound is the next power of ten above it.
 # M5. Rate-rate slopes (Fig. 2B, 3D, S2D, S3A). The figures plot log rates and the S2D legend speaks
 #   of log firing rates, so the slope is an ordinary least-squares fit of log10 later (or nonREM)
 #   rate on log10 earlier (or WAKE) rate, with a 95% interval; cells with a zero rate in either
@@ -73,8 +81,14 @@
 #   REM before the second packet. The change is per cell rate(A n+1) minus rate(A n) (Fig. 5B legend);
 #   the S5 correlations use log(rate n+1) minus log(rate n). The per-sextile test for Fig. 5B is not
 #   named; readings (a) Wilcoxon signed-rank against zero, the test the paper uses for paired rate
-#   comparisons elsewhere; (b) one-sample t-test against zero.
-# M7. Tolerances. 10% of the reported value unless a claim gives another.
+#   comparisons elsewhere; (b) one-sample t-test against zero. The R and p printed in Figures S5C
+#   to S5G equal Pearson tests on about 947 (S5C), 136 (S5D), 576 (S5E), 952 (S5F) and 972 (S5G)
+#   points, counts of cells, so those correlations have one point per cell, its changes averaged
+#   over its triplets (M1 reading b).
+# M7. Tolerances. 10% of the reported value unless a claim gives another. Where the paper gives a
+#   median or mean +- SD (Table S1, Results), the SD is the spread of values over cells, events or
+#   sessions, not an uncertainty of the median or mean, and is often larger than the value (pE
+#   WAKE median 0.76 +- 1.53 Hz), so it is not used as the tolerance.
 schema_version: 2
 dataset:
   archive: crcns
@@ -157,6 +171,10 @@ claims:
     value: 111
     tolerance: 11.1
     unit: s
+  criterion: Packets are the scored nonREM packets (20+ s of uninterrupted nonREM, Table S1) in
+    WAKE-SLEEP cycles. Reproduced when the median is within tolerance; the ratio of the longest to
+    the shortest packet is reported for the two orders of magnitude, which Table S1's 20 s minimum
+    bounds from below.
 - id: fig2a-pe-rate-distribution
   statement: Per-cell mean firing rates of pyramidal cells are strongly positively skewed and span
     three orders of magnitude, from 0.05 to 5 Hz, with medians of 0.76 Hz in WAKE, 0.69 Hz in
@@ -193,22 +211,23 @@ claims:
     tolerance: 0.425
     unit: Hz
   criterion: Per-cell rates per state as in M1 (reading a or b for cells in two cycles), median
-    over cells. The shape holds when the pE rate distribution in each state has positive skew in
-    linear rate and the 5th to 95th percentile range covers at least 0.05 to 5 Hz within 10% of each
-    bound. Reproduced when the shape holds and the six medians are within tolerance; partially
+    over cells. The paper does not say what range "spanning" means, and 0.05 to 5 Hz is two
+    orders of magnitude, not the three it states. The shape holds when the pE rate distribution in
+    each state has positive skew in linear rate and the range covers at least 0.05 to 5 Hz within 10%
+    of each bound; readings of the range (a) 5th to 95th percentile, (b) 1st to 99th percentile. Reproduced when the shape holds and the six medians are within tolerance; partially
     reproduced when the shape holds and at least four medians are.
 - id: fig2b-wake-nrem-slope
   statement: Per-cell nonREM and WAKE rates are highly correlated (R = 0.82), but the slope of
     their relation is below 1 (95% interval 0.66 to 0.71), so state transitions affect cells
     differently across the rate spectrum, fast cells decreasing and slow cells increasing in nonREM.
-  source: Results, Assessment of firing patterns in different brain states; Figure 2B
+  source: Results, Assessment of firing patterns in different brain states; Figure 2B and legend
   quote: Whereas nonREM and WAKE firing rates remained highly correlated on a per-cell basis (R =
     0.82, p < 1 −10 ), the slope of this relationship significantly deviated from 1 ( Figure 2B ),
     demonstrating that state transitions exert a differential effect across the firing rate spectrum
     (95% confidence interval of slope ... 0.66 - 0.71)
   statistics:
   - about: correlation of nonREM and WAKE rates
-    test: Pearson correlation
+    test: correlation
     statistic: R = 0.82
     p: 1.0e-10
     p_relation: "<"
@@ -225,8 +244,7 @@ claims:
     value: 0.82
     tolerance: 0.082
   criterion: Slope by M5 over pE cells, rates per state per M1. Reproduced when, under one reading,
-    the slope is within tolerance (or its 95% interval overlaps 0.66 to 0.71 and lies below 1) and
-    R is within tolerance; partially reproduced when the interval lies below 1 but the slope is
+    the slope is within tolerance and R is within tolerance; partially reproduced when the interval lies below 1 but the slope is
     outside tolerance.
 - id: fig2a-fraction-above-2hz
   statement: The right tail of the rate distribution is longer in WAKE and REM than in nonREM; the
@@ -283,7 +301,7 @@ claims:
     Supplemental Experimental Procedures compute it per neuron in 10 s bins as the proportion of ISIs
     of 15 ms or less. Readings, (a) per cell and state, the fraction of ISIs <= 15 ms over all the
     state's time; (b) the mean over the cell's 10 s bins in that state; ISIs spanning two intervals
-    of a state are dropped. Median over pE cells. Kruskal-Wallis across the three states on per-cell
+    of a state are dropped (a standard choice). Median over pE cells. Kruskal-Wallis across the three states on per-cell
     values; the post hoc test for REM against WAKE is not named (readings Dunn's test, or a
     Wilcoxon rank-sum test, at p < 0.05). Reproduced when under one reading the medians are within
     tolerance, the Kruskal-Wallis p < 0.05 and REM exceeds WAKE at p < 0.05.
@@ -306,6 +324,10 @@ claims:
     value: 8
     tolerance: 0.8
     unit: ms
+  - quantity: autocorrelogram secondary peak lag, REM and WAKE
+    value: 125
+    tolerance: 12.5
+    unit: ms
   - quantity: median decay exponent, nonREM
     value: -1.35
     tolerance: 0.135
@@ -318,9 +340,10 @@ claims:
   criterion: The paper does not give the autocorrelogram bin, range, normalization or the decay
     model. A negative "exponent" is read as a power law fitted to the normalized autocorrelogram
     from its peak outward. Readings, (a) power-law fit (log count on log lag) from the peak to 100
-    ms; (b) to 500 ms; 1 ms bins, autocorrelogram normalized to its peak (standard choices).
+    ms; (b) to 500 ms; (c) exponential fit, count proportional to exp(k t) with t in seconds, from
+    the peak to 500 ms; 1 ms bins, autocorrelogram normalized to its peak (standard choices).
     Reproduced when under one reading the nonREM peak lag is within tolerance, REM and WAKE show a
-    local maximum between 100 and 150 ms, the three medians are within tolerance and the
+    local maximum within tolerance of 125 ms, the three medians are within tolerance and the
     Kruskal-Wallis test gives p < 0.05 with nonREM the most negative; partially reproduced when the
     ordering and test hold but the medians are outside tolerance.
 - id: synchrony-skew
@@ -372,7 +395,8 @@ claims:
   criterion: From UP and DOWN states detected as in the Supplemental Experimental Procedures
     (OFF periods of population silence of 75 to 1250 ms; ON periods of at least 10 spikes lasting
     200 to 4000 ms; low power above 100 Hz, 0.5 SD below the mean, 75 to 1250 ms; DOWN as OFF
-    coinciding with low gamma; UP as ON following DOWN). Readings, (a) the deposited detections;
+    coinciding with low gamma, DOWN states separated by a single spike combined; UP as ON
+    immediately following DOWN, truncated by DOWN or OFF). Readings, (a) the deposited detections;
     (b) a new detection by these rules. Reproduced when under one reading both medians are within
     tolerance and both distributions are right-skewed; counts are reported and judged with the
     same tolerance as a variant.
@@ -391,8 +415,10 @@ claims:
     (fraction of pE cells over the fraction of pE and pI cells spiking in 50 ms bins) per bin,
     averaged over all UP states. Reproduced when the pE rate, pI rate, synchrony and E/(E+I) are
     each lower in the last bin than in the first two bins and Pearson R against normalized time is
-    negative; the spectral part (gamma peak before sigma peak in the UP-onset-triggered spectrogram)
-    is reported. Partially reproduced when three of the four decrease.
+    negative, and in the time-normalized UP state spectrogram (Fig. 1E, top) the gamma (40 to 100
+    Hz) power peak precedes the sigma (9 to 25 Hz) peak. The bins, the first-two-bins comparison and
+    the sign rule are choices the paper does not make; it reports no test. Partially reproduced when
+    three of the four decrease, or the four decrease and the spectral order fails.
 - id: fig2de-fast-before-slow
   statement: In the early UP state pE cells fire in sequences stable across the first and second
     halves of SLEEP, and a cell's onset latency is negatively correlated with its firing rate.
@@ -402,13 +428,17 @@ claims:
     ( Figure 2D ). Additionally, the spike onset times of individual neurons in the sequences were
     negatively correlated with their firing rates
   criterion: Per cell, the mean latency of its first spike after each DOWN-UP transition (Fig. 2D
-    and E legends), within 200 ms, in the first and second halves of SLEEP. The rate used is not
-    named; readings the cell's WAKE rate (M2) or its nonREM rate. Reproduced when the first-half and
-    second-half latencies are positively correlated (Pearson p < 0.05) and latency is negatively
-    correlated with log rate (Pearson p < 0.05) under one reading.
+    and E legends), within 200 ms (Results), in the first and second halves of SLEEP. The Fig. 2D
+    legend and the Results say halves of SLEEP, the Fig. 2E legend halves of the recording session;
+    readings (a) halves of each SLEEP, (b) halves of the session. The rate used is not named;
+    readings the cell's WAKE rate (M2) or its nonREM rate. The paper names no test; Pearson at p <
+    0.05, with log10 rate, is a standard choice. Reproduced when the first-half and second-half
+    latencies are positively correlated and latency is negatively correlated with rate under one
+    reading.
 - id: fig2f-rate-group-correlations
-  statement: In nonREM, pairwise spike-count correlations depend on firing rate group; fast-firing
-    pairs are highly correlated and fast and slow cells are negatively correlated with each other.
+  statement: In nonREM, pairwise spike-count correlations depend on firing rate group; pairs within
+    the fastest group and within the slowest group are positively correlated, fast-firing pairs most
+    highly, and fast and slow cells are negatively correlated with each other.
   source: Results, Assessment of firing patterns in different brain states; Figure 2F
   quote: the fastest and slowest firing neurons tended to be positively correlated within groups, but
     were actually negatively correlated across groups ( Figure 2F )
@@ -417,7 +447,9 @@ claims:
     groups (M2). The legend's significance test is not described. Reproduced when the mean
     correlation of group 6 with group 6 (fastest) is positive and the mean for group 1 with group 6
     is negative, each different from zero by a Wilcoxon signed-rank test at p < 0.05 (a standard
-    choice); the full 6 x 6 matrix is reported.
+    choice), and the mean for group 1 with group 1 (slowest) is positive at p < 0.05 by the same
+    test; the full 6 x 6 matrix is reported. Partially reproduced when the 6 with 6 and 1 with 6
+    parts hold and the 1 with 1 part does not.
 - id: fig3ab-population-rate-declines
   statement: The mean population firing rate of pE cells declines over SLEEP.
   source: Results, Firing pattern and LFP changes across the course of sleep; Figure 3A and 3B
@@ -453,7 +485,8 @@ claims:
     tolerance: 0.088
     unit: Hz
   criterion: Per cell, rate in the first and last nonREM packet of each SLEEP (M1 readings a and b),
-    mean +- SD over cells; Wilcoxon signed-rank test, paired by cell. Reproduced when under one
+    mean +- SD over cells. The paper says "Wilcoxon test"; readings (a) signed-rank, paired by
+    cell, (b) rank-sum. Reproduced when under one
     reading both means are within tolerance and p < 0.02 with the last lower; partially reproduced
     when the decrease is significant at p < 0.05 but a mean is outside tolerance.
 - id: post-sleep-wake-lower
@@ -468,8 +501,8 @@ claims:
     p_relation: "<"
   criterion: Per cell, rate in the last 5 min of the WAKE that precedes SLEEP and the first 5 min of
     WAKE after it (Fig. S3A legend); "WAKE after" read as the next scored WAKE interval (7+ min); the
-    cycles without a following WAKE are left out. Wilcoxon signed-rank, paired by cell (M1 readings).
-    Judged by M4.
+    cycles without a following WAKE are left out. The paper says "Wilcoxon test"; readings (a)
+    signed-rank, paired by cell, (b) rank-sum, each with M1 readings. Judged by M4.
 - id: fig3d-first-last-packet-slope
   statement: Comparing the same cells in the first and last nonREM packets of SLEEP, the slope of
     last on first rate is below 1 (95% interval 0.827 to 0.880); fast cells decrease and slow cells
@@ -583,7 +616,7 @@ claims:
   depends_on:
   - updown-durations
   criterion: UP/DOWN detections as in updown-durations, nonREM time of SLEEP only, M3 and M4 for
-    each of the four changes; UP duration a claim of absence, reproduced when p >= 0.05. Reproduced
+    each of the four changes; "other" is nonREM time in neither a detected UP nor a DOWN state; UP duration a claim of absence, reproduced when p >= 0.05. Reproduced
     when all five hold under one reading; partially reproduced when at least three do.
 - id: fig3f-within-up-changes
   statement: Within UP states, pE rates decrease over SLEEP, and from first to last packet the
@@ -603,7 +636,7 @@ claims:
     within-UP rate. The sextile part, per cell, within-UP rate in the last packet minus the first
     packet of SLEEP (Fig. 3F legend), mean per group; no test is named, so a Wilcoxon signed-rank
     test against zero per group at p < 0.05 is used (a standard choice). Reproduced when the S3C
-    correlation holds and the fastest sextile and pI change is negative and the slowest positive,
+    correlation holds (p < 1e-8 by M4) and the fastest sextile and pI change is negative and the slowest positive,
     each significant; partially reproduced when the correlation holds and two of the three signs
     are right.
 - id: figs3a-first-last-rem-ma-slopes
@@ -631,6 +664,10 @@ claims:
       level: 0.95
       low: 0.8
       high: 0.86
+  - about: correlation of WAKE before and WAKE after SLEEP rates (Figure S3A legend)
+    test: Pearson
+    p: 1.0e-10
+    p_relation: "<"
   expected:
   - quantity: slope, last REM on first REM
     value: 0.795
@@ -677,12 +714,15 @@ claims:
     statistic: R = 0.31
     p: 0.05
     p_relation: "<"
-  criterion: Band power (delta 0.5 to 4 Hz, sigma 9 to 25 Hz, gamma 40 to 100 Hz) from the
-    session's spectrogram (10 s window every 1 s, Supplemental Experimental Procedures, Brain state
-    scoring), z-scored per session (a standard choice; the paper normalizes delta by mean nonREM
-    delta for the packet-length correlation), on the default LFP channel. M3 and M4 for each band,
-    within episodes and packets; the gamma change over packets is a claim of absence, reproduced
-    when p >= 0.05. Reproduced when all five trends and the packet-length correlation hold;
+  criterion: Band power (delta 0.5 to 4 Hz, Results and Fig. 1B legend; the Fig. 4 legend gives 1
+    to 4 Hz, a variant; sigma 9 to 25 Hz, gamma 40 to 100 Hz) from the session's spectrogram (10 s
+    window every 1 s, Supplemental Experimental Procedures, Brain state scoring; the paper does not
+    say this spectrogram is the one used here, a choice), z-scored per session (a standard choice),
+    on the state-scoring LFP channel. M3 and M4 for each band, within episodes and packets; the
+    gamma change over packets is a claim of absence, reproduced when p >= 0.05. The packet-length
+    correlation has one point per packet, its mean delta power divided by the session's mean nonREM
+    delta power (Results), against packet duration, Pearson, M4. Reproduced when all six trends
+    (delta, sigma and gamma, each in episodes and packets) and the packet-length correlation hold;
     partially reproduced when the delta and sigma increases hold.
 - id: fig4-updown-within-packets
   statement: Within packets UP and DOWN incidence increase, UP duration decreases and DOWN duration
@@ -714,7 +754,9 @@ claims:
     p_relation: "<"
   depends_on:
   - updown-durations
-  criterion: As fig3c-updown-over-sleep, over time-normalized packets. Reproduced when all five
+  criterion: As fig3c-updown-over-sleep, over time-normalized packets. The UP/DOWN ratio is not
+    defined; readings (a) UP duration over DOWN duration, (b) time in UP over time in DOWN, per
+    time bin. Reproduced when all five
     hold under one reading; partially reproduced when at least three do. The paper also reports the
     fraction of time neither UP nor DOWN as increasing with R = -0.04, a sign that contradicts the
     word; it is reported and not judged.
@@ -778,10 +820,12 @@ claims:
     increased sigma power ( Figure 4E ; p < 10 −10 ; Wilcoxon rank-sum test and per-pixel
     significance; Figure S4B )
   statistics:
-  - test: Wilcoxon rank-sum test
+  - about: UP state sigma power, first against last third of packets
+    test: Wilcoxon rank-sum test
     p: 1.0e-10
     p_relation: "<"
-  - test: t-test
+  - about: DOWN-UP transition-triggered sigma power, late against early packet (Results, Figure S4B)
+    test: t-test
     p: 1.0e-5
     p_relation: "<"
   depends_on:
@@ -802,7 +846,8 @@ claims:
     ; R and p values in figure), resulting in a decreasing coefficient of variation of binned
     population firing rates ( Figure 4 A-B v ; R episode = −0.13, p < 10 −10 ; R packet = - 0.12, p <
     10 −10 ). An additional metric, the 15ms spike burst index of pyramidal neurons, also showed a
-    positive slope within both nonREM episodes and packets
+    positive slope within both nonREM episodes and packets ( Figure 4 A–B vi ; R episode = 0.09, p <
+    10 −10 ; R packet = 0.08, p < 10 −10 )
   statistics:
   - about: CV within episodes
     statistic: R = -0.13
@@ -898,8 +943,10 @@ claims:
   depends_on:
   - updown-durations
   criterion: The Results say first against second third, the Fig. 4E legend first against last
-    third; readings (a) first against second third, (b) first against last third. Per UP state, the
-    group's mean rate within the UP state; Wilcoxon rank-sum of the two sets of UP states. Judged by
+    third; readings (a) first against second third, (b) first against last third. The unit of the
+    rank-sum test is not stated; readings (i) per UP state, the group's mean rate within the UP
+    state, rank-sum of the two sets of UP states; (ii) per cell, its within-UP rate in each third,
+    rank-sum of the two sets of cells. Judged by
     M4 per group; reproduced when all three hold under one reading, partially when two do.
 - id: figs5-within-wake-rem
   statement: Within WAKE the two highest sextiles increase and the two lowest decrease their rates,
@@ -911,12 +958,16 @@ claims:
     opposing the effects seen in SLEEP and nonREM. During REM, all sextile groups except the fourth
     showed an increase in firing rate
   criterion: Sextiles by M2; rate in WAKE and REM episodes against normalized episode time, M3
-    reading a with 20 equal bins of normalized time (a standard choice), Pearson. For REM,
-    reproduced when five sextiles other than the fourth show positive R at p < 0.05. For WAKE, the
+    reading c (50 equal bins of normalized time, the n implied by every R and p printed in Figure
+    S5A and S5B), Pearson. Sextile numbers follow the S5 legend (1 highest), so "the fourth" is the
+    third from the bottom. For REM, reproduced when the five sextiles other than the fourth show
+    positive R at p < 0.05. For WAKE, the
     S5A legend says the divergence is strongest "towards the beginning of the state" and the
     extracted S5A values do not match the Results sentence in an order that could be confirmed, so
     the Results sentence is judged; reproduced when the two highest sextiles have positive and the
-    two lowest negative R, each p < 0.05. Figure S5B as extracted gives, for sextiles 1 to 6, R 0.652, 0.526,
+    two lowest negative R, each p < 0.05. As extracted, Figure S5A gives R 0.267, 0.302, 0.184,
+    -0.049, 0.531 and -0.192 with p 0.061, 0.033, 0.200, 0.737, 7.2e-05 and 0.181, which do not
+    support the Results sentence in either sextile order. Figure S5B as extracted gives, for sextiles 1 to 6, R 0.652, 0.526,
     0.422, 0.268, 0.437 and 0.410 with p 2.97e-07, 8.67e-05, 0.00226, 0.0600, 0.00151 and 0.00309.
 - id: fig5b-ma-nrem-ma
   statement: An intervening nonREM packet reduces the rates of the top two sextiles from one MA to
@@ -933,8 +984,9 @@ claims:
     statistic: R = -0.14923
     p: 3.9886e-06
   criterion: Triplets MA, packet, MA by M6; per-sextile test by M6 readings. The S5C correlation is
-    Pearson of log(MA n+1 rate) minus log(MA n rate) against WAKE rate (log axis), one point per cell
-    (the S5 legend says "for each cell"); cells with zero rate in either MA are left out. Reproduced
+    Pearson of log(MA n+1 rate) minus log(MA n rate) against WAKE rate, one point per cell (the S5
+    legend says "for each cell"; M6); the WAKE rate is plotted on a log axis, readings (a) log10
+    WAKE rate, (b) linear WAKE rate; cells with zero rate in either MA are left out. Reproduced
     when both top sextiles decrease at p < 0.01 and the S5C correlation is negative at p < 1e-5;
     partially reproduced when one of the two parts holds.
 - id: figs5d-rem-nrem-rem
@@ -963,8 +1015,9 @@ claims:
   depends_on:
   - fig5b-ma-nrem-ma
   criterion: One point per MA, packet, MA triplet; the mean change of the lowest sextile's cells
-    against the packet's sigma (9 to 25 Hz) power in its last 20 s, z-scored per session. Judged
-    by M4.
+    against the packet's sigma (9 to 25 Hz) power in its last 20 s, z-scored per session (a
+    standard choice; the paper does not say how this sigma power is normalized), Pearson (the test
+    is not named). Judged by M4.
 - id: fig5b-wake-between-packets
   statement: WAKE between nonREM packets increases the rate of the fastest sextile, more so with
     more movement; its decrease of slow cells is not significant (24 triplets).
@@ -991,7 +1044,7 @@ claims:
   criterion: Triplets packet, WAKE, packet by M6. "WAKE" between packets is not defined further;
     readings (a) a scored WAKE interval (7+ min), (b) any arousal over 40 s (including the 40 to
     120 s WAKE interruptions within SLEEP). Movement is the mean of the session's motion signal over
-    the WAKE period. Reproduced when under one reading the fastest sextile increases (M6 test, p <
+    the WAKE period (a standard choice; the paper does not define the measure). Reproduced when under one reading the fastest sextile increases (M6 test, p <
     0.05) and the movement correlation is positive at p < 0.05; partially reproduced when one holds.
     The absence of a significant slow-cell change is judged at p < 0.05 on the same test, and the
     S5E correlation at p < 0.05, both reported.
@@ -1038,8 +1091,9 @@ claims:
     p: 0.2372
   criterion: Triplets packet, REM, packet by M6. All six sextiles show a decrease, each by the M6
     test at p < 0.05. Duration correlation, one point per triplet, mean change over all cells
-    against REM duration (Fig. 5C legend, "across all cells"), M4. Theta power is the 5-10/2-16 Hz
-    ratio averaged over the REM episode. The absence of a rate-dependent effect is judged by the
+    against REM duration (Fig. 5C legend, "across all cells"), M4. "REM theta power" is not defined;
+    readings (a) the 5-10/2-16 Hz theta ratio used for scoring, averaged over the REM episode, (b)
+    5 to 10 Hz power averaged over the episode. The absence of a rate-dependent effect is judged by the
     S5F correlation at p < 0.05. Reproduced when all of these hold under one reading; partially
     reproduced when at least four of the six sextiles decrease and the duration correlation holds.
 - id: fig5c-delta-change-slow-cells
@@ -1090,3 +1144,39 @@ claims:
   criterion: A summary of the claims it depends on. Reproduced when fig3d-first-last-packet-slope,
     fig3e-wake-before-after-sextiles and cv-decreases-over-sleep are reproduced, and partially
     reproduced when one or two of them are; the sub-state claims are reported beside it.
+checks:
+- date: 2026-11-07
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header M2, added that sextile numbers run in opposite directions in Figure S2 (1 lowest) and the Figure S5 legend (1 highest), which the WAKE and REM criteria need.
+  - Header M3, added reading (c), 50 bins of normalized time, because every R and p printed in Figure S5A and S5B equals a Pearson test on exactly 50 points; noted that the Figure S3C R and p imply about 873 points, in line with one point per packet.
+  - Header M4, stated the rule for exact printed p values (next power of ten above), which the S3C and S5 criteria already used without saying so.
+  - Header M6, recorded that the R and p of Figures S5C to S5G imply one point per cell (about 947, 136, 576, 952 and 972 points).
+  - Header M7, gave the reason for keeping 10% tolerances where the paper prints a median or mean +- SD; the protocol asks for a reason for any tolerance other than the stated spread.
+  - packet-duration, added a criterion (scored packets in WAKE-SLEEP cycles, the range reported) since the statement's two-orders-of-magnitude part had none.
+  - fig2a-pe-rate-distribution, the 5th to 95th percentile range was a choice presented as fixed; now two readings, and the paper's own mismatch (0.05 to 5 Hz is two orders of magnitude, not three) is named.
+  - fig2b-wake-nrem-slope, test name changed from Pearson to correlation since the Results do not name it; removed the interval-overlap alternative to the slope tolerance, which widened the paper's 95% interval without a source; source cites the legend for the fast-down, slow-up part.
+  - fig2c-autocorrelogram, the 100 to 150 ms window for the theta peak was invented; it is now an expected value of 125 ms with the 10% tolerance; added an exponential-fit reading of "decay fit exponent", which the paper does not define.
+  - updown-durations, added two detection rules from the Supplemental Experimental Procedures that the criterion left out (DOWN states merged across a single spike; UP states truncated by DOWN or OFF).
+  - fig1e-up-state-dynamics, the statement's gamma-then-sigma part was only reported; it is now judged, and the bins and comparisons are named as choices the paper does not make.
+  - fig2de-fast-before-slow, added readings for halves of SLEEP (Fig. 2D legend, Results) against halves of the session (Fig. 2E legend); Pearson and log rate labelled as standard choices.
+  - fig2f-rate-group-correlations, the Results say both the fastest and the slowest groups are positively correlated within group; the statement and criterion now include the slowest group.
+  - first-last-packet-mean-rate and post-sleep-wake-lower, the paper says only "Wilcoxon test"; signed-rank and rank-sum are now both readings.
+  - figs3a-first-last-rem-ma-slopes, added the Pearson p < 1e-10 of the WAKE before and after correlation given in the S3A legend.
+  - fig3f-within-up-changes, the S3C p bound is now stated (p < 1e-8).
+  - fig3c-updown-over-sleep, defined the "other" fraction as nonREM time in neither a detected UP nor DOWN state.
+  - fig4-lfp-within-nrem, the criterion counted five trends where the statement has six; the packet-length correlation is now described as in the Results (delta divided by mean nonREM delta); the Fig. 4 legend's 1 to 4 Hz delta named as a variant; the use of the scoring spectrogram labelled a choice.
+  - fig4-updown-within-packets, the UP/DOWN ratio is not defined in the paper; two readings named.
+  - fig4e-late-packet-sigma, added what each of the two tests compares.
+  - fig4-sextiles-within-nrem, extended the quote to include the burst index R and p recorded under statistics.
+  - fig4e-within-up-sextiles, the unit of the rank-sum test (UP states or cells) is not stated; both are readings.
+  - figs5-within-wake-rem, the 20 bins were a free choice; replaced by the 50 bins implied by the figure's printed R and p; the sextile numbering for "the fourth" is fixed from the S5 legend; recorded the extracted S5A values and that they do not support the Results sentence in either order.
+  - fig5b-ma-nrem-ma, the WAKE rate on a log axis is now two readings (log10 or linear).
+  - fig5c-sigma-ma-change, fig5b-wake-between-packets, fig5b-rem-between-packets, labelled the sigma normalization and movement measure as standard choices and gave two readings of "REM theta power".
+  - burst-index-by-state, labelled the dropping of ISIs that span two intervals as a standard choice.
+  - Open, not settled. The main paper PDF is not supplied, so values printed only inside Figures 2 to 5 (per-sextile R and p of Fig. 3B and 4A-B iv, triplet n and asterisks of Fig. 5B) remain unread; fig3b-sextile-changes, fig4-sextiles-within-nrem and the Figure 5B claims rest on the Results and legends.
+  - Open, not settled. Figure S5A as extracted contradicts the Results sentence on WAKE; the claim judges the Results sentence.
+  - Open, not settled. The tolerance for medians and means given +- SD is 10% (M7), not the SD; the protocol's "stated spread" could be read as the SD, which would make most of these values untestable.
+  - Open, not covered. The late-packet sudden sigma rise and delta fall (Results, Figure 4A-B i) has no claim; it is a minor finding next to fig4-lfp-within-nrem.
