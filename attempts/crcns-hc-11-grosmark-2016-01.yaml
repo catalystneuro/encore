@@ -51,9 +51,9 @@ outcomes:
   assumed: true
   notes: Under all 12 combinations of yoking (Y-a, Y-b, Y-c), direction (D-a, D-b) and maze offline reading, mean
     rZ is above zero in PRE (0.173 to 0.208), MAZE (0.506 to 0.561) and POST (0.283 to 0.304), sign-rank p < 1e-30,
-    and Kruskal-Wallis with Tukey-Kramer comparisons of mean ranks gives MAZE > POST > PRE (largest p 7.0e-12).
+    and Kruskal-Wallis with Tukey-Kramer comparisons of mean ranks gives MAZE > POST > PRE (largest p 3.2e-10, Y-c, D-b, 2D).
     Events, Y-a and D-a, 35,665 PRE, 7,806 MAZE and 41,888 POST (event and template pairs). By animal POST exceeds
-    PRE in all four (rank-sum p 7.3e-08 to 0.020) and MAZE is highest in three; in Buddy POST (0.504) exceeds MAZE
+    PRE in all four (rank-sum p 1.6e-19 to 0.020) and MAZE is highest in three; in Buddy POST (0.504) exceeds MAZE
     (0.484). The paper's Figure S6 has MAZE highest in all four and POST above PRE in three (not B). Gatsby_08282013
     has negative mean rZ in PRE and POST. Within session (Y-a, D-a) POST mean rZ exceeds PRE in 13 of 13 templates;
     stratified test (Stouffer over per-template rank-sum z) z = 10.3, p = 2.5e-25. The L readings the criterion
@@ -141,7 +141,7 @@ outcomes:
   assumed: true
   notes: Y-a, D-a, 565 units; median PRE PCC 0.0121, POST 0.1023, dPCC 0.1138; POST > PRE rank-sum p = 2.5e-06,
     dPCC > 0 signed-rank p = 1.9e-14. Both tests hold under all six Y and D readings (largest p 1.3e-04). PRE medians
-    range 0.0035 to 0.0202 over readings (within -0.011 +- 0.02 only under Y-b, D-b), POST medians 0.099 to 0.105
+    range 0.0035 to 0.0202 over readings (within -0.011 +- 0.02 under Y-b, D-b and Y-c, D-b), POST medians 0.099 to 0.105
     and dPCC 0.083 to 0.117, all below 0.183 +- 0.018 and 0.159 +- 0.016. Per session the dPCC median ranges from
     -0.016 (Cicero_09102014) to 0.287 (Achilles_10252013).
   deviations:
@@ -244,7 +244,7 @@ outcomes:
   - 100 partially shuffled templates per step in place of the paper's 1,000 (the step at 15% from the highest, rerun
     with 1,000, gives the same value to 0.001); 5% steps (a standard choice, criterion); steps from the highest
     dPCC run to 30% and from the lowest to 75%, the ranges the criterion judges.
-  - Only readings Y-a and D-a were run, for time; the claim's criterion asks for the Y and D readings.
+  - Cells are ranked by dPCC under Y-a, D-a only; the change is pooled under all six Y and D readings.
   - Each template's rZ uses the null mean and SD of the unshuffled analysis, as the null does not depend on which
     cells are shuffled in the template.
 - claim: figs12-high-dpcc-exclusion
@@ -268,7 +268,7 @@ outcomes:
     S-b needs the LFP and was not run.
   - 200 circular shuffles per step for the null in place of 1,000, for time.
   - Steps of 5% from the highest dPCC to 30%, and 10% from the lowest to 70% and 75%.
-  - Only readings Y-a and D-a were run, for time.
+  - Cells are ranked by dPCC under Y-a, D-a only; the change is pooled under all six Y and D readings.
 - claim: figs2-rigid-plastic-along-track
   outcome: reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -478,10 +478,20 @@ outcomes:
     bits (p = 1.1e-14 one-sided), in/out ratio 6.71 against 4.05 (p = 5.7e-14), geometric mean number of fields
     1.216 against 1.404 (p = 1.8e-04), change in gain 0.636 against 0.310 (p = 0.0049). Outside tolerance are the
     high-rate information (0.56 +- 0.056), the high-rate field count (1.59 +- 0.159) and both gain changes. The
-    other splits give the same directions for information and in/out ratio; on PRE rate alone the gain change goes
-    the other way (0.37 against 0.555). Under the three PRE-rate splits (ii) the change in gain reverses (low 0.37
-    against high 0.555), so the gain part fails under half of the matching splits.
+    other splits give the same directions for information and in/out ratio. Under the three PRE-rate splits (ii)
+    the change in gain reverses (low 0.37 against high 0.555; two-sided p 0.046 (a, ii), 0.082 (b, ii), 0.037 (c,
+    ii)), so the gain test fails under half of the matching splits. The outcome rests on split (a, i).
+  assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: All six splits match in low-high-rate-split, and the claims file says the matching readings fix the
+      split. Under the three PRE-rate splits (ii) the change in gain goes the other way (low 0.37 against high
+      0.555, two-sided p 0.046, 0.082 and 0.037), so the four tests do not all hold and the claim fails under those
+      splits. By the rule that the outcome is the one all readings give, the outcome is not reproduced. Analysis
+      in the claim's section of the notebook (split table and conclusion).
   deviations:
+  - Assumed split (a, i), median split within session and direction on offline PRE and POST rate, the first reading
+    that matches in low-high-rate-split; the PRE-rate splits (ii) reverse the gain change.
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
     an LFP-detected ripple (Materials and Methods, Ripple Event Detection); the LFP is only in tar.gz archives of
     70 GB in all, measured to stream at about 23 MB/s (about 55 minutes), and the detector's channel and threshold
@@ -501,6 +511,14 @@ outcomes:
     -0.787), the top window does not change (p = 0.084), but the halves do not differ (p = 0.64). Within-session
     ranks are adopted, since pairs exist only within a session and the paper selects cells within sessions (Materials
     and Methods, Per Cell Contribution, last paragraph). Question for the paper's authors.
+  proposed:
+    outcome: partially_reproduced
+    reason: The criterion names both rank readings, (a) within session and (b) pooled, and the outcome is the one
+      all readings give. Under (b) PRE coactivity rises with rate rank (rho +0.847), the change and the partial
+      correlation fall (rho -0.569 and -0.787) and the top window does not change (p = 0.084), but the low-rate
+      half's change does not exceed the high-rate half's (+0.0050 against +0.0049, p = 0.64), the Figure S16C
+      condition. The claim holds only in part under (b), so partially reproduced. Analysis in the claim's section
+      of the notebook.
   deviations:
   - Assumed that the off-line states (quiet waking and NREM) are the data set's NREM, Drowsy (drowsy wake, low movement)
     and Intermediate (a sub-type of NREM per the data descriptor) epochs, the lab's own scoring (reading S-a); reading
@@ -518,7 +536,8 @@ outcomes:
     against 0.050 to 0.078). Under all six rate splits (100 shuffles for the five not adopted) the low-rate increase
     holds in all six Y x D readings (0.040 to 0.113). The high-rate increase is significant in 6 of 6 readings under
     (a, ii), (b, i), (c, i) and (b, ii), and 4 of 6 under (c, ii); the low-rate increase is the larger in 3 to 6
-    of 6 readings depending on the split. No split gives the reproduced pattern; the outcome rests on split (a,
+    of 6 readings depending on the split (the high-rate increase is the larger in 2 of 6 readings under (b, i)
+    and (b, ii) and 3 of 6 under (c, i)). No split gives the reproduced pattern; the outcome rests on split (a,
     i), the first that matches.
   deviations:
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
@@ -529,7 +548,15 @@ outcomes:
     and Intermediate (a sub-type of NREM per the data descriptor) epochs, the lab's own scoring (reading S-a); reading
     S-b needs the LFP and was not run.
   - The paired-latency and time-bin-shuffle variants were not run.
+  - Assumed split (a, i), the first reading that matches in low-high-rate-split.
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: All six rate splits match in low-high-rate-split and fix the split together. Under (b, i), (b, ii)
+      and (c, i) the high-rate increase is significant in all six Y x D readings and exceeds the low-rate increase
+      in 2, 2 and 3 of 6 readings (100 shuffles per template), so even the partial pattern, a smaller high-rate
+      increase, fails there. By the rule that the outcome is the one all readings give, not reproduced. Analysis
+      in the notebook (rate-split table and the fig4d conclusion).
 - claim: fig4e-high-gain-cells-replay
   outcome: partially_reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -564,7 +591,7 @@ outcomes:
     ripples were not tested, as the LFP was not read. Outcome changed after verification round 1 from partially
     reproduced: the criterion requires the ripple-event medians within tolerance, and both are less than half the
     paper''s (1.35 and 1.24 s against 3 and 2.47 s); the LFP-SWR half was not tested. Over all sessions there are
-    1,855 events per hour of NREM (mean interval 1.94 s); these events lack the LFP condition, so they are not the
+    1,855 events per hour of NREM (mean interval 1.94 s, median interval within one NREM interval 1.19 s); these events lack the LFP condition, so they are not the
     claim''s events.'
   deviations:
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
@@ -654,8 +681,35 @@ outcomes:
     Buddy_06272013.tar.gz streamed at 24 MB/s, so about 8 minutes for all eight). The data are there; the analysis
     was not written. The archive lists .clu, .fet and .res files for every shank. The verifier found that the per-session
     tar.gz files hold the .fet, .clu and .res files (11.7 GB in total), so cluster quality and stability can be
-    tested; waveform similarity needs the _spk.tar.gz files (87 GB). The test was not written within this revision's
-    time.
+    tested; waveform similarity needs the _spk.tar.gz files (87 GB). After verification round 2 the test was run
+    (notebook section figs11, cell tag claim:figs11-cluster-quality-similar); the outcome stays blocked as verified,
+    and the change is proposed. All 118 shanks were read; each of the 562 pyramidal cells (id % 100 on shank id //
+    100) has exactly its sessInfo spike count. With the D-a groups and burst reading (a) quality in PRE events is
+    5.534 against 5.525 (rigid against plastic, p = 0.83), MAZE running 5.501 against 5.440 (p = 0.25), POST events
+    5.573 against 5.552 (p = 1.00), stability PRE-POST 5.622 against 5.629 (p = 0.13), PRE-MAZE p = 0.98, MAZE-POST
+    p = 0.82. None of the 60 comparisons over two burst readings and five group sets (D-a, D-a once per cell, D-b
+    under Y-a, Y-b, Y-c) is significant (smallest p 0.126). Waveform similarity, in the statement but not the
+    criterion, was not tested.
+  proposed:
+    outcome: reproduced
+    reason: Tested after round 2 from the .clu and .fet files of the per-session archives. No rank-sum comparison
+      of rigid and plastic units in quality (PRE events, MAZE running, POST events) or stability (three pairs)
+      is significant, under either reading of the burst rule and with every group set (smallest p 0.126; medians
+      differ by 0.13 or less). The criterion's condition, no comparison significant, holds. It rests on assumptions
+      (covariance of all the cluster's kept spikes, PCA features from the .xml channel groups). Waveforms were not
+      compared.
+  deviations:
+  - Tested after verification round 2, from the .clu and .fet files of the eight <session>.tar.gz archives, streamed
+    in a background thread of the notebook.
+  - Quality is the median Mahalanobis distance of a condition's spikes to the centre of all the cluster's kept spikes,
+    and stability the median distance of one condition's spikes to the other's centre, averaged over both orders;
+    the covariance is that of all the cluster's kept spikes (an assumption, which keeps it defined when a condition
+    has few spikes). A cell needs 10 spikes in a condition (a standard choice).
+  - The PCA features are the first 3 per channel of the shank's channel group in the session .xml (Figure S11 legend,
+    'the PCA features (used in clustering)').
+  - '"Only the first spike of bursts" is read two ways: (a) spikes not preceded by one within 6 ms, (b) only spikes
+    that start a burst; both give the same result.'
+  - PRE and POST ripple events are the selected events in the yoked windows Y-a; MAZE is running at 5 cm/s or more.
 - claim: fig2e-plastic-removal
   outcome: reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -663,8 +717,11 @@ outcomes:
   assumed: true
   notes: Removing all plastic units of each session and direction; POST - PRE rZ -0.019 (Y-a, D-a; interval -0.036
     to -0.002), the interval reaching zero or below under every reading. Removing the rigid units; 0.124 (interval
-    0.108 to 0.141), above zero under every reading. With all cells 0.096. The group removal was run with the D-a
-    groups only.
+    0.108 to 0.141), above zero under every reading. With all cells 0.096. With the D-b groups (200 shuffles per
+    template), removing the plastic units leaves the interval above zero in all six readings with the Y-a groups
+    (0.031 to 0.044), in four of six with the Y-b groups and in two of six with the Y-c groups; removing the rigid
+    units leaves it above zero everywhere (0.089 to 0.170), and removing plastic units always lowers the change
+    more. The outcome rests on the D-a groups.
   deviations:
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
     an LFP-detected ripple (Materials and Methods, Ripple Event Detection); the LFP is only in tar.gz archives of
@@ -677,6 +734,15 @@ outcomes:
     both direction templates, as the Figure S20 legend 'we independently compared the results of each running direction
     to its null distribution' suggests) and P-a (one-tailed signed-rank test of per-event PCC against zero, the
     Figure S19B legend), an assumption; under D-b the group sizes are 108 to 113.
+  - The D-b groups were run with 200 circular shuffles per template in place of 1,000, for run time.
+  proposed:
+    outcome: partially_reproduced
+    reason: The criterion asks for the result under readings Y and D. With the D-b groups, which match the paper's
+      105 per group, removing the plastic units leaves POST - PRE rZ above zero in all six readings with the Y-a
+      groups (0.031 to 0.044, intervals above zero), in four of six with the Y-b groups and two of six with the
+      Y-c groups, while removing the rigid units leaves it above zero (0.089 to 0.170). Removing plastic units lowers
+      the change more than removing rigid units in every reading, which is the partial criterion. By the rule that
+      the outcome is the one all readings give, partially reproduced. Analysis in the fig2e section of the notebook.
 - claim: figs19c-pcc-change-per-cell
   outcome: not_reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -722,6 +788,11 @@ findings:
     test over each cell's per-event PCC scores for strongly contributing cells; the Figure S19B legend names a one-tailed
     signed-rank test. With the signed-rank test 222 to 252 units are strongly contributing; with a rank-sum test
     of observed against cell-shuffled rZ only 22 to 39.
+- kind: other
+  statement: The per-session archives hold one .clu and one .fet file per shank. The cluster ids of the sessInfo
+    files are shank * 100 + cluster; every pyramidal cell has the same spike count in both. The descriptor does not say
+    which columns of the .fet files are the PCA features; they were taken as the first 3 per channel of the shank's
+    group in the session .xml, the last column being the time in 20 kHz samples.
 - kind: methods_unavailable
   statement: Questions for the paper's authors. (1) Is the 5 cm Gaussian kernel of the place-field analysis its
     SD or its width? As an SD 565 place units are found, as a full width at half maximum 504 (paper 491). (2) On
@@ -806,7 +877,9 @@ verifications:
       every downstream claim, there are 121 to 123, outside. The notebook calls D-a an assumption without justification
       (problem 2).
     response: Outcome changed to partially reproduced, as the counts match under one of the two direction readings.
-      Every group claim is now repeated with the D-b groups under Y-a, Y-b and Y-c; no group claim's outcome changes.
+      Every group claim is now repeated with the D-b groups under Y-a, Y-b and Y-c; the verdicts stay the same
+      except figs13 under the Y-b groups (plastic overall rate falls, p = 0.047), whose outcome rests on the D-a
+      groups.
   - claim: fig2d-high-dpcc-shuffle-abolishes-replay
     agrees: true
     outcome: reproduced
@@ -955,4 +1028,208 @@ verifications:
     outcome: not_reproduced
     reason: PRE > POST is 3.7 to 6.4% (expected 2.2 +- 0.22) and POST > PRE 13.5 to 15.9% (expected 21.4 +- 2.14);
       the PRE > POST value is at the 5% chance level, while the paper's 2.2% is below it.
+    response: No change needed.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and summary, the helper module, the claims
+    file and the attempt record, with the paper. The verifier agreed with 28 of 31 outcomes (not fig4c-coactivation-by-rate,
+    figs16c-low-rate-coding and fig4d-slow-cells-replay). No outcome was changed in reply; five changes are proposed
+    for a third round (fig4c, figs16c, fig4d, fig2e, figs11).
+  results:
+  - claim: place-cell-count
+    agrees: true
+    outcome: partially_reproduced
+    reason: SD kernel assumption stated. Only the FWHM kernel matches the count. Remaining issue, the downstream
+      claims use the SD kernel (565 units), not the FWHM kernel that matches 491.
+    response: Kept. Rerunning every downstream claim with the FWHM kernel repeats the whole pipeline, which already
+      takes 38 to 76 minutes; not done, stated in the notes and the notebook summary.
+  - claim: fig1c-sequence-content
+    agrees: true
+    outcome: reproduced
+    reason: Holds in 12 of 12 combinations run. The L and S-b readings the criterion requires were not run; this
+      is stated. The conclusion's largest p 7.0e-12 is the Y-a, D-a, 2D row only (largest is 3.18e-10), and the
+      per-animal range starts at 1.6e-19 (Cicero), not 7.3e-08.
+    response: Corrected both numbers in the conclusion and the notes (largest p 3.2e-10; per-animal p 1.6e-19 to
+      0.020) and marked the outcome as resting on an assumption in the summary table. The LFP readings stay unrun
+      (70 GB of LFP in tar.gz, detector channel and threshold not given).
+  - claim: figs5b-abs-r-above-null
+    agrees: true
+    outcome: reproduced
+    reason: Assumptions stated and reasonable.
+    response: No change needed.
+  - claim: figs5e-duration-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Assumptions stated and reasonable.
+    response: No change needed.
+  - claim: figs5f-more-participation-post
+    agrees: true
+    outcome: reproduced
+    reason: Assumptions stated and reasonable.
+    response: No change needed.
+  - claim: figs9b-pcc-post-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: Assumptions stated and reasonable. The PRE median is said to be inside only under Y-b, D-b, but Y-c,
+      D-b gives 0.0086, also within -0.011 +- 0.02.
+    response: Corrected in the conclusion and the notes (inside under Y-b, D-b and Y-c, D-b); marked as resting
+      on an assumption in the summary table.
+  - claim: fig2b-strong-contributors
+    agrees: true
+    outcome: partially_reproduced
+    reason: Assumptions stated and reasonable.
+    response: No change needed.
+  - claim: fig2-pre-contributors-persist
+    agrees: true
+    outcome: reproduced
+    reason: Yes, as assumed. Matches only under D-a, where the fig2b counts miss. Under D-b it is 59.7 to 65.1%.
+      Stated.
+    response: No change needed.
+  - claim: rigid-plastic-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, 109/113/108 under D-b, 121 to 123 under D-a. The response "no outcome of a group
+      claim changes" is wrong, as figs13 fails under D-b, Y-b and fig2e was not rerun. D-a stays the main reading
+      although only D-b matches 105.
+    response: Corrected the sentence in the notebook and in the round-1 response. fig2e is now rerun with the D-b
+      groups (a change to partially reproduced is proposed there). D-a stays the main reading; the D-b results of
+      every group claim are shown.
+  - claim: fig2d-high-dpcc-shuffle-abolishes-replay
+    agrees: true
+    outcome: reproduced
+    reason: Now pooled under all six Y x D readings. The first step at or below zero is 10 or 15%, inside 9 to 22%
+      everywhere. The ranking stays Y-a, D-a. Stated. The conclusion and the deviation saying only readings Y-a
+      and D-a were run are wrong, since the pooling covers all six.
+    response: Corrected the conclusion and the deviation (cells ranked under Y-a, D-a; change pooled under all six
+      readings).
+  - claim: figs12-high-dpcc-exclusion
+    agrees: true
+    outcome: reproduced
+    reason: Now pooled under all six Y x D readings. The ranking stays Y-a, D-a. Stated. The conclusion and the
+      deviation saying only readings Y-a and D-a were run are wrong.
+    response: Corrected the conclusion and the deviation.
+  - claim: figs2-rigid-plastic-along-track
+    agrees: true
+    outcome: reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: fig3a-plastic-more-specific
+    agrees: true
+    outcome: partially_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: fig3b-plastic-specificity-increases
+    agrees: true
+    outcome: not_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged. Cicero_09102014 still has 2.3 laps per running
+      minute against 5.0 to 7.5 in the other circular sessions, and this is unexplained.
+    response: Not investigated further in this revision; the lap table stays printed.
+  - claim: figs13-outfield-rate-falls
+    agrees: true
+    outcome: reproduced
+    reason: Yes, with a reservation. With the D-b groups under Y-b, the plastic overall rate falls (two-sided p =
+      0.047), which the criterion excludes. The groups that match the paper's 105 therefore fail under one Y reading.
+      The record states the outcome rests on D-a, but cell 52 does not mention this.
+    response: The conclusion now says the outcome rests on the D-a groups and gives the Y-b result. Outcome kept,
+      as the verifier agreed.
+  - claim: fig4a-rigid-fire-faster
+    agrees: true
+    outcome: not_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: figs14-plastic-ripple-gain
+    agrees: true
+    outcome: not_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: figs14-plastic-ripple-bursting
+    agrees: true
+    outcome: not_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: figs16ab-plastic-synchrony-increase
+    agrees: true
+    outcome: reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged. Reading (c) p = 0.035 is one-sided, and this
+      is not said; two-sided it is 0.07.
+    response: The conclusion now gives reading (c) as one-sided p = 0.035, two-sided 0.07, and says the outcome
+      rests on reading (d).
+  - claim: low-high-rate-split
+    agrees: true
+    outcome: reproduced
+    reason: Agreed.
+    response: No change needed.
+  - claim: figs16c-low-rate-coding
+    agrees: false
+    outcome: not_reproduced
+    reason: The claims file says "the reading(s) that match fix the split", and all six splits match. Under the
+      (ii) splits the gain change reverses, (a, ii) p = 0.046, (c, ii) p = 0.037, (b, ii) p = 0.082. Under those
+      splits the tests fail. The record does not mark this outcome as assumed, though it rests on split (a, i).
+    response: Outcome kept as verified in round 1 (round 2 allows no change); marked assumed with a deviation for
+      split (a, i), the duplicate note removed, the conclusion now gives the other splits, and not reproduced is
+      proposed under proposed.
+  - claim: fig4c-coactivation-by-rate
+    agrees: false
+    outcome: partially_reproduced
+    reason: The criterion names readings (a) and (b). Under (b) the low-half > high-half condition fails (p = 0.64).
+      By the all-readings rule this cannot be reproduced. The within-session argument is reasonable as a preference,
+      but it does not override the rule.
+    response: Outcome kept (round 2 allows no change); partially reproduced is proposed under proposed, with the
+      pooled-rank result in the conclusion.
+  - claim: fig4d-slow-cells-replay
+    agrees: false
+    outcome: not_reproduced
+    reason: Under (b, i), (b, ii) and (c, i), high-rate increases exceed low-rate ones in 2 or 3 of 6 readings.
+      There even the partial pattern ("high also increases but less") fails. Partially reproduced holds only on
+      split (a, i).
+    response: Outcome kept (round 2 allows no change); the conclusion now gives the other splits, a deviation states
+      split (a, i), and not reproduced is proposed under proposed.
+  - claim: fig4e-high-gain-cells-replay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reproduced under (b, ii) and under D-b; partial elsewhere. Partially reproduced is the weakest result
+      across readings.
+    response: No change needed.
+  - claim: figs16de-more-ripples-post
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Events lack the LFP-ripple condition (1,855 events per NREM hour, mean interval 1.94 s, against
+      the paper's 3 s median), which affects every event-based claim. Cell 7 compares a mean NREM interval with
+      the paper's medians.
+    response: Cell 6 now prints the median interval within one NREM interval (1.19 s), and cell 7 compares it with
+      the paper's medians. The LFP condition is still not applied (70 GB of LFP; detector not given).
+  - claim: figs17-coactivity-preservation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed.
+    response: No change needed.
+  - claim: figs17d-rigid-plastic-coactivity
+    agrees: true
+    outcome: not_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: figs18-temporal-bias
+    agrees: true
+    outcome: not_reproduced
+    reason: The D-b reruns (cell 76) leave each verdict unchanged.
+    response: No change needed.
+  - claim: figs11-cluster-quality-similar
+    agrees: true
+    outcome: blocked
+    reason: Agreed. Quality and stability are testable from <session>.tar.gz but were not done.
+    response: Done. The .clu and .fet files of all eight archives are streamed in a background thread and quality
+      and stability compared under two burst readings and five group sets; no comparison is significant. The outcome
+      stays blocked as verified, and reproduced is proposed under proposed.
+  - claim: fig2e-plastic-removal
+    agrees: true
+    outcome: reproduced
+    reason: Yes, as assumed. Not rerun with D-b groups. Under Y-b D-a and Y-c the upper bound is only 0.004 to 0.009.
+    response: Rerun with the D-b groups (200 shuffles). Removing the plastic units leaves the interval above zero
+      in 6, 4 and 2 of 6 readings with the Y-a, Y-b and Y-c groups, so the reproduced criterion fails there; partially
+      reproduced is proposed under proposed. Outcome kept.
+  - claim: figs19c-pcc-change-per-cell
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed.
     response: No change needed.

@@ -2,7 +2,8 @@
 
 Everything is read from the eight sessInfo .mat files in
 NoveltySessInfoMatFiles.tar.gz, streamed from the public CRCNS bucket and
-decompressed in memory. Sources of the parameters below:
+decompressed in memory, except the cluster quality of Figure S11, which streams
+the .clu, .fet and .xml files of the per-session archives <session>.tar.gz. Sources of the parameters below:
 
 - [M] the paper's supplement, Materials and Methods, as cited by the claims file's
   opening comment or by the section named;
@@ -591,3 +592,125 @@ def analyse_session(ses, seed, n_shuf=N_SHUF):
         rep[d] = replay_set(ses, rip, cells, maps, raw, rng, n_shuf=n_shuf, with_pcc=True)
         rep[d]["cells"] = cells
     return dict(name=ses["name"], pm=pm, all_events=table, ripples=rip, rate_mu=mu, rate_thr=thr, rep=rep)
+
+
+# ---------------------------------------------------------------- cluster quality (Figure S11)
+FET_RATE = 20000.0   # [M] 20 kHz; the last .fet column is the spike time in samples (session .xml)
+BURST_ISI = 0.006    # [M] Figure S11 legend, bursts are spikes within 6 ms of each other
+MIN_COND_SPIKES = 10  # [S] spikes a cell needs in a condition for its quality and stability
+
+
+def _burst_rules(t):
+    """Masks of the spikes kept under the two readings of 'only the first spike of bursts'.
+
+    'a' [A]: every spike not preceded by a spike of the cell within 6 ms (single spikes and
+    first spikes of bursts); 'b' [A]: only first spikes of bursts (not preceded, and followed
+    within 6 ms).
+    """
+    d = np.diff(t)
+    not_prev = np.r_[True, d >= BURST_ISI]
+    has_next = np.r_[d < BURST_ISI, False]
+    return {"a": not_prev, "b": not_prev & has_next}
+
+
+def _cell_quality(X, t, windows):
+    """Quality and stability of one cell's cluster [M, Figure S11 legend].
+
+    Quality: median Mahalanobis distance of the spikes of a condition to the cluster centre
+    (mean over all kept spikes). Stability of two conditions: median distance of the spikes
+    of one condition to the centre of the other, averaged over both orders. The covariance
+    is that of all kept spikes of the cluster [A], which keeps it defined when a condition
+    has few spikes.
+    """
+    out = {}
+    for rule, keep in _burst_rules(t).items():
+        Xk, tk = X[keep], t[keep]
+        out[f"n_all_{rule}"] = len(tk)
+        if len(tk) <= X.shape[1] + 1:
+            continue
+        mu = Xk.mean(0)
+        P = np.linalg.pinv(np.cov(Xk, rowvar=False))
+        cond = {}
+        for name, iv in windows.items():
+            m = in_intervals(tk, iv)
+            out[f"n_{name}_{rule}"] = int(m.sum())
+            if m.sum() >= MIN_COND_SPIKES:
+                cond[name] = Xk[m]
+
+        def dist(A, c):
+            D = A - c
+            return np.sqrt(np.maximum(np.einsum("ij,jk,ik->i", D, P, D), 0))
+
+        for name, A in cond.items():
+            out[f"q_{name}_{rule}"] = float(np.median(dist(A, mu)))
+        names = list(windows)
+        for i in range(len(names)):
+            for j in range(i + 1, len(names)):
+                a, b = names[i], names[j]
+                if a in cond and b in cond:
+                    out[f"s_{a}-{b}_{rule}"] = float(np.mean([np.median(dist(cond[a], cond[b].mean(0))),
+                                                              np.median(dist(cond[b], cond[a].mean(0)))]))
+    return out
+
+
+def quality_windows(ses):
+    """Conditions of Figure S11: PRE and POST ripple events (yoked windows Y-a) and MAZE running."""
+    ev, _, _ = ripple_events(ses)
+    rip = ripple_selected(event_table(ses, ev, None))
+    mid = ((rip.start + rip.stop) / 2).values
+    pre, post = yoke(ses, "a")
+    iv = rip[["start", "stop"]].values
+    run = clip_to(mask_intervals(ses["pos_t"], ses["running"], ses["pos_dt"]), *ses["mz"])
+    return {"PRE": iv[in_intervals(mid, pre)], "MAZE": run, "POST": iv[in_intervals(mid, post)]}
+
+
+def cluster_quality(ses):
+    """Stream <session>.tar.gz (the .clu and .fet files of every shank, and the .xml) and return
+    one row per pyramidal cell with its cluster quality and stability [M, Figure S11 legend].
+
+    Cell ids of the sessInfo file are shank * 100 + cluster (checked by the spike counts
+    returned). The PCA features are the first nFeatures (3) per channel of each .fet row, with
+    the channels of each shank's group in the session's .xml (spikeDetection, in shank order);
+    the columns after them and the time (last column) are not used.
+    """
+    import re
+    import pandas as pd
+    windows = quality_windows(ses)
+    pyr = set(ses["pyr"])
+    clu, cells, ncol, xml = {}, {}, {}, None
+    f = fsspec.open(f"{BUCKET}data/{ses['name']}.tar.gz", block_size=2**22).open()
+    with tarfile.open(fileobj=f, mode="r|gz") as t:
+        for m in t:
+            base = m.name.split("/")[-1]
+            if base == f"{ses['name']}.xml":
+                xml = t.extractfile(m).read().decode()
+                continue
+            parts = base.split(".")
+            if len(parts) != 3 or parts[1] not in ("clu", "fet"):
+                continue
+            sh = int(parts[2])
+            if parts[1] == "clu":
+                clu[sh] = pd.read_csv(t.extractfile(m), header=None, dtype=np.int32, engine="c").values.ravel()[1:]
+                continue
+            fh = t.extractfile(m)
+            nf = int(fh.readline())
+            fet = pd.read_csv(fh, sep=r"\s+", header=None, dtype=np.int64, engine="c").values
+            ncol[sh] = (nf, len(fet), len(clu[sh]) == len(fet))
+            tt = fet[:, -1] / FET_RATE
+            for c in sorted(x for x in pyr if x // 100 == sh):
+                idx = np.flatnonzero(clu[sh] == c % 100)
+                idx = idx[np.argsort(tt[idx], kind="stable")]
+                cells[c] = (fet[idx, :-1].astype(np.float32), tt[idx])
+            del fet, tt
+            clu.pop(sh)
+    groups = re.findall(r"<group>(.*?)</group>", xml.split("<spikeDetection>")[1].split("</spikeDetection>")[0], re.S)
+    npca = {k + 1: len(re.findall(r"<channel>", g)) * int(re.search(r"<nFeatures>(\d+)</nFeatures>", g).group(1))
+            for k, g in enumerate(groups)}
+    info = pd.DataFrame([dict(session=ses["name"], shank=sh, n_spikes=n, n_columns=nf, n_pca=npca[sh], clu_matches=ok)
+                         for sh, (nf, n, ok) in sorted(ncol.items())])
+    rows = []
+    for c, (X, tc) in sorted(cells.items()):
+        row = dict(session=ses["name"], cell=c, n_fet=len(tc), n_sessinfo=len(ses["spikes"][c]))
+        row.update(_cell_quality(X[:, :npca[c // 100]].astype(float), tc, windows))
+        rows.append(row)
+    return pd.DataFrame(rows), info
