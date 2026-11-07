@@ -167,7 +167,9 @@ def check(number: int) -> None:
         notes = ["This request cannot be queued yet:", *[f"- {n}" for n in notes], "", "Edit the request to fix it."]
     elif new == "awaiting-approval" and "awaiting-approval" not in have:
         notes.append("Waiting for someone in queue/priority.yaml to approve it with the `approved` label.")
-    elif new == "queued" and "queued" not in have:
+    elif new == "queued" and "queued" not in have and (issue.get("author") or {}).get("login", "").lower() not in allowed():
+        # Only for someone outside queue/priority.yaml: its people queue many requests at a time (20 on 2026-11-05),
+        # and a note on each mailed them once per request; the label and the queue board already say it is queued.
         place = next((k for k, i in enumerate(order(open_requests()), 1) if i["number"] == number), None)
         notes.append(f"Queued{f', number {place} in line' if place else ''}. The runner comments here when it starts.")
     if new not in have or any(d in have for d in drop):

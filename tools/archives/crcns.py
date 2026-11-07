@@ -5,6 +5,7 @@ ARCHIVE = Archive(
     access=("Read the files anonymously from the public S3 bucket crcnsarchive "
             "(https://crcnsarchive.s3-us-west-2.amazonaws.com/{id}/), as docs/archives.md says under "
             "\"CRCNS\": stream them, opening a zip in place with fsspec and zipfile; do not download them "
-            "to disk."),
+            "to disk. Some data sets keep their files under {id}/live/. Read the data set's data descriptor first: "
+            "paper/{id}.data-description.txt, its documentation from the bucket, which describes the files."),
     list="crcns.json", hosts=("crcns.org", "*.amazonaws.com"),
 )

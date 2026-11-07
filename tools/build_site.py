@@ -225,6 +225,9 @@ def collect(executed: Path | None = None) -> dict:
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
+            # The recorder's summary for the site (docs/agents/recorder.md, step 2), when the attempt has one.
+            "summary": squash((ROOT / "summaries" / f"{a['id']}.md").read_text())
+                       if (ROOT / "summaries" / f"{a['id']}.md").is_file() else None,
             "description": squash(entry.get("description")) if entry else None,
             "notebooks": notebooks_of(entry) if entry else [],
             "outcomes": [{
@@ -999,13 +1002,17 @@ def progress_data(data: dict) -> dict:
         m = re.fullmatch(r"([a-z]+)-(\d+)", v)
         return (0, m[1], int(m[2])) if m else (1, v, 0)
     protocols = sorted({protocol(a) for a in data["attempts"]}, key=version_order)
+    # Datasets are also counted by their archive, in the registry's order of archives, so that each keeps its colour
+    # (its slot in that order) whichever archives have attempts.
+    order = list(ARCHIVES)
+    archives = sorted({split_key(a["key"])[0] for a in data["attempts"]}, key=lambda k: (order.index(k) if k in order else 99, k))
     start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
     series = {}
     for subset, keep in (("all", lambda d: True),):
         new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES},
-                     **{f"protocol:{v}": 0 for v in protocols}} for day in days}
+                     **{f"protocol:{v}": 0 for v in protocols}, **{f"archive:{k}": 0 for k in archives}} for day in days}
         first_dandiset: dict = {}
         first_paper: dict = {}
         for a in data["attempts"]:
@@ -1015,8 +1022,9 @@ def progress_data(data: dict) -> dict:
             new[a["date"]][f"protocol:{protocol(a)}"] += 1
             first_dandiset[a["key"]] = min(first_dandiset.get(a["key"], a["date"]), a["date"])
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
-        for day in first_dandiset.values():
+        for key, day in first_dandiset.items():
             new[day]["datasets"] += 1
+            new[day][f"archive:{split_key(key)[0]}"] += 1
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
@@ -1030,7 +1038,9 @@ def progress_data(data: dict) -> dict:
         series[subset] = {k: [new[day][k] for day in days] for k in new[days[0]]}
     return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
             "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()},
-            "protocols": protocols}
+            "protocols": protocols,
+            "archives": [{"key": k, "label": ARCHIVES[k]["name"].removeprefix("the ") if k in ARCHIVES else k,
+                          "slot": (order.index(k) if k in order else len(order)) % 8 + 1} for k in archives]}
 
 
 def progress_panel(data: dict) -> str:
@@ -1056,13 +1066,16 @@ def progress_panel(data: dict) -> str:
     <span class="muted small">Totals so far; the small line is the last 7 days.</span>
   </div>
   <div class="tiles metrics">{tiles}</div>
-  <div class="grid2" style="margin-top:16px">
-    <div class="panel"><h2 id="progress-title">Datasets attempted over time</h2>
-      <p class="small muted" style="margin:0">Running total, by day.</p>
-      <div class="chart" id="progress-line"></div></div>
-    <div class="panel"><h2 id="progress-day-title">Datasets attempted, new each day</h2>
-      <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
-      <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
+  <div class="panel progress-charts">
+    <div class="grid2">
+      <div><h2 id="progress-title">Datasets attempted over time</h2>
+        <p class="small muted" style="margin:0">Running total, by day.</p>
+        <div class="chart" id="progress-line"></div></div>
+      <div><h2 id="progress-day-title">Datasets attempted, new each day</h2>
+        <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
+        <div class="chart" id="progress-outcomes"></div></div>
+    </div>
+    <div id="progress-legend" class="progress-legend"></div>
   </div>
   <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
     <div class="scroll"><table><thead><tr><th>Date</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
@@ -1621,6 +1634,17 @@ def version_text(a: dict) -> str:
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
 
 
+def summary_block(atts: list[dict]) -> str:
+    """The recorder's summary of each attempt shown, at the top of the dataset's page, with who wrote it."""
+    shown = [a for a in atts if a.get("summary")]
+    if not shown:
+        return ""
+    paras = "".join((f'<p class="lede"><em>{e(a.get("paper_title") or a["paper"])}:</em> ' if len(shown) > 1 else '<p class="lede">')
+                    + f'{e(a["summary"])}</p>' for a in shown)
+    return (f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that recorded the attempt, '
+            f'from its claims and the agents&rsquo; reports. A failure to reproduce may be a failure of the agent.</p></div>')
+
+
 def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
     """A panel with every attempt on the dataset, oldest first, when there is more than one."""
     all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
@@ -1910,6 +1934,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
+  {summary_block(atts)}
   <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
