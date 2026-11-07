@@ -51,6 +51,17 @@ Where the parameters come from:
 - Time of day: the files start at midnight local time (data descriptor, Methods: "each file
   contained data from one entire 24-hour recording day that started and ended at midnight"),
   so the hour of an event is its start time in the file divided by 3600.
+- Regression (claims file's opening comment; code regression_utils.py): forward selection over
+  design columns by OLS adjusted R2 (`_forward_selected_new`), unselected columns set to 0,
+  Huber regression with sklearn's HuberRegressor defaults over 200 day-balanced splits
+  (`train_test_split_day_balance`), Delta R2 by refitting with a feature shuffled, the SD of the
+  day and time-of-day one-hot coefficients, and the selection probability (`feat_select_prob`).
+  The Huber fits solve sklearn's objective by a batched Newton method (`huber_fit`), a standard
+  choice of solver that reaches the same minimum; the notebook compares it with sklearn. The
+  time-of-day bins are 0-8, 8-16 and 16-24 h without overlap (the code's bins share their edges,
+  which no event time hits exactly). The code tests whether a day or time-of-day feature was
+  selected by looking at one fixed column; here a feature counts as selected when any of its
+  columns is.
 """
 
 from __future__ import annotations
@@ -204,8 +215,9 @@ def read_roi_matrix(subject: str, files: dict) -> pd.DataFrame:
     return pd.read_csv(url)
 
 
-def roi_weights(df: pd.DataFrame, good: np.ndarray) -> np.ndarray:
+def roi_weights(df: pd.DataFrame, good: np.ndarray, normalise: bool = True) -> np.ndarray:
     """Electrodes x 8 weights as load_project_spectral_power(rem_bad_chans=True) builds them.
+    With `normalise=False`, the rows of the file for every electrode, as they are.
 
     The code keeps the rows whose mean is not zero. Where the file has one row per electrode
     of the NWB file (10 of 12 subjects, with all-zero rows for some depth electrodes), every
@@ -219,6 +231,8 @@ def roi_weights(df: pd.DataFrame, good: np.ndarray) -> np.ndarray:
     w = df.iloc[rows][ROI_COLUMNS].to_numpy(float)
     if len(w) != len(good):
         raise ValueError(f"{len(w)} projection rows for {len(good)} electrodes")
+    if not normalise:
+        return w
     w[~good] = 0
     return w / w.sum(0, keepdims=True)
 
@@ -416,46 +430,60 @@ def ecog_jobs(sessions: list, weights: dict, offset: bool = True) -> list:
     return jobs
 
 
-# ---------------------------------------------------------------- regression (timing only)
+# ---------------------------------------------------------------- regression
 
-def regression_design(ev: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
-    """The ten features of one subject's events as the claims file's opening comment sets them:
-    day one-hot, time of day one-hot in 0-8, 8-16, 16-24 h, log duration, log magnitude, folded
-    angle, onset speed, speech ratio, bimanual ratio, overlap and class, all z-scored."""
+def regression_design(ev: pd.DataFrame, log_plus_one: bool = False) -> tuple[pd.DataFrame, dict]:
+    """The ten features of one subject's events, as the claims file's opening comment sets them.
+
+    Columns in the code's order (regression_utils.single_subj_regression): the eight continuous or
+    binary features, z-scored over the subject's events with pandas' SD (code,
+    standardize_feats), then the day one-hot columns and the three time-of-day one-hot columns
+    (0-8, 8-16, 16-24 h), not standardised (the code joins them after standardising). Reach
+    duration and magnitude are log transformed (Methods); `log_plus_one` gives the code's
+    log(duration), log(magnitude + 1), log(speed + 1). Returns the design and, per feature,
+    its columns.
+    """
     cols, groups = {}, {}
-    for d in sorted(ev["day"].unique()):
-        cols[f"day_{d}"] = (ev["day"] == d).astype(float)
-    groups["day"] = [c for c in cols]
-    for b in range(3):
-        cols[f"tod_{b}"] = (ev["tod_bin"] == b).astype(float)
-    groups["time_of_day"] = [f"tod_{b}" for b in range(3)]
-    cols["duration"] = np.log(ev["duration"])
-    cols["magnitude"] = np.log(ev["magnitude"])
-    groups["duration"], groups["magnitude"] = ["duration"], ["magnitude"]
-    for c in ["angle", "speed", "speech", "bimanual_ratio", "bimanual_overlap", "bimanual_class"]:
+    if log_plus_one:
+        cols["duration"], cols["magnitude"] = np.log(ev["duration"]), np.log(ev["magnitude"] + 1)
+        cols["speed"] = np.log(ev["speed"] + 1)
+    else:
+        cols["duration"], cols["magnitude"] = np.log(ev["duration"]), np.log(ev["magnitude"])
+        cols["speed"] = ev["speed"].astype(float)
+    for c in ["angle", "speech", "bimanual_ratio", "bimanual_overlap", "bimanual_class"]:
         cols[c] = ev[c].astype(float)
-        groups[c] = [c]
     X = pd.DataFrame(cols, index=ev.index)
-    sd = X.std(ddof=0).replace(0, 1)
-    return (X - X.mean()) / sd, groups
+    X = (X - X.mean()) / X.std().replace(0, 1)
+    for c in X.columns:
+        groups[c] = [c]
+    for d in sorted(ev["day"].unique()):
+        X[f"day_{d}"] = (ev["day"] == d).astype(float)
+    groups["day"] = [c for c in X.columns if c.startswith("day_")]
+    for b in range(3):
+        X[f"tod_{b}"] = (ev["tod_bin"] == b).astype(float)
+    groups["time_of_day"] = [f"tod_{b}" for b in range(3)]
+    return X, groups
 
 
-def _adj_r2(X, y):
-    A = np.column_stack([np.ones(len(y)), X])
-    beta, *_ = np.linalg.lstsq(A, y, rcond=None)
-    res = y - A @ beta
-    r2 = 1 - (res @ res) / ((y - y.mean()) @ (y - y.mean()))
-    n, k = len(y), A.shape[1] - 1
-    return 1 - (1 - r2) * (n - 1) / (n - k - 1)
-
-
-def forward_select(X: pd.DataFrame, groups: dict, y: np.ndarray) -> list:
-    """Forward selection by OLS adjusted R2 (code, _forward_selected_new), over feature groups."""
-    remaining, selected, current = list(groups), [], 0.0
+def forward_select(X: np.ndarray, y: np.ndarray) -> list:
+    """Forward selection over columns by OLS adjusted R2 with an intercept (code,
+    _forward_selected_new, which adds one column at a time, a day or time-of-day one-hot column
+    being a column like any other). Adjusted R2 uses the rank of the design, as statsmodels does,
+    so a column that adds nothing (the last day column beside the intercept) is not taken.
+    Returns the selected column indices in the order taken."""
+    n = len(y)
+    yc = y - y.mean()
+    tss = yc @ yc
+    remaining, selected, current = list(range(X.shape[1])), [], 0.0
     while remaining:
-        scores = [(_adj_r2(X[sum((groups[g] for g in selected + [c]), [])].to_numpy(), y), c)
-                  for c in remaining]
-        best, cand = max(scores)
+        best, cand = -np.inf, None
+        for c in remaining:
+            A = np.column_stack([np.ones(n), X[:, selected + [c]]])
+            beta, _, rank, _ = np.linalg.lstsq(A, y, rcond=None)
+            res = y - A @ beta
+            adj = 1 - (n - 1) / (n - rank) * (res @ res) / tss
+            if adj > best:
+                best, cand = adj, c
         if best > current:
             selected.append(cand)
             remaining.remove(cand)
@@ -465,40 +493,174 @@ def forward_select(X: pd.DataFrame, groups: dict, y: np.ndarray) -> list:
     return selected
 
 
-def regression_model(X, groups, y, days, rng, n_splits=200, per_train=0.9):
-    """One electrode and band: Huber regression over day-balanced splits, full R2 and Delta R2.
+def _huber_obj(Z, y, th, alpha, eps, pen):
+    q = Z.shape[-1]
+    s = th[:, q]
+    r = y - np.einsum("bnq,bq->bn", Z, th[:, :q])
+    a = np.abs(r)
+    out = a > eps * s[:, None]
+    per = np.where(out, 2 * eps * a - eps ** 2 * s[:, None], r * r / s[:, None])
+    return Z.shape[1] * s + per.sum(1) + alpha * (pen * th[:, :q] ** 2).sum(1)
 
-    Used here only to time one model (sklearn HuberRegressor defaults, as the code)."""
-    from sklearn.linear_model import HuberRegressor
-    from sklearn.metrics import r2_score
-    sel = forward_select(X, groups, y)
-    cols = sum((groups[g] for g in sel), [])
-    Xs = X[cols].to_numpy()
+
+def huber_fit(Z: np.ndarray, y: np.ndarray, alpha: float = 1e-4, epsilon: float = 1.35,
+              max_iter: int = 100, tol: float = 1e-10) -> tuple[np.ndarray, np.ndarray]:
+    """Many Huber regressions at once: Z is B x n x q (the last column all ones, the intercept),
+    y is B x n. Minimises the objective of sklearn's HuberRegressor (defaults epsilon 1.35,
+    alpha 1e-4 on the coefficients, not the intercept, with the scale estimated jointly):
+    n*sigma + sum(H(r/sigma))*sigma + alpha*|w|^2. sklearn minimises it by L-BFGS, one problem
+    at a time; here Newton's method with a backtracking line search solves all problems
+    together, which reaches the same minimum (the objective is jointly convex). The notebook
+    compares the two. Returns the coefficients (B x q, intercept last) and the scale."""
+    B, n, q = Z.shape
+    eps = epsilon
+    pen = np.ones(q)
+    pen[-1] = 0
+    G = np.einsum("bnq,bnr->bqr", Z, Z) + 1e-8 * np.eye(q)
+    w = np.linalg.solve(G, np.einsum("bnq,bn->bq", Z, y)[..., None])[..., 0]
+    r = y - np.einsum("bnq,bq->bn", Z, w)
+    s = np.maximum(np.median(np.abs(r), 1) / 0.6745, 1e-6)
+    th = np.column_stack([w, s])
+    f = _huber_obj(Z, y, th, alpha, eps, pen)
+    active = np.ones(B, bool)
+    for _ in range(max_iter):
+        idx = np.nonzero(active)[0]
+        if not len(idx):
+            break
+        Za, ya, ta = Z[idx], y[idx], th[idx]
+        s = ta[:, q]
+        r = ya - np.einsum("bnq,bq->bn", Za, ta[:, :q])
+        inl = np.abs(r) <= eps * s[:, None]
+        rin = np.where(inl, r, 0.0)
+        sgn = np.where(inl, 0.0, np.sign(r))
+        g = np.empty((len(idx), q + 1))
+        g[:, :q] = (-2 / s[:, None] * np.einsum("bnq,bn->bq", Za, rin)
+                    - 2 * eps * np.einsum("bnq,bn->bq", Za, sgn) + 2 * alpha * pen * ta[:, :q])
+        g[:, q] = n - (rin ** 2).sum(1) / s ** 2 - (~inl).sum(1) * eps ** 2
+        H = np.empty((len(idx), q + 1, q + 1))
+        H[:, :q, :q] = 2 / s[:, None, None] * np.matmul((Za * inl[..., None]).transpose(0, 2, 1), Za)
+        H[:, :q, :q] += 2 * alpha * np.diag(pen)
+        H[:, :q, q] = 2 / s[:, None] ** 2 * np.einsum("bnq,bn->bq", Za, rin)
+        H[:, q, :q] = H[:, :q, q]
+        H[:, q, q] = 2 * (rin ** 2).sum(1) / s ** 3
+        H += 1e-10 * np.eye(q + 1)
+        d = -np.linalg.solve(H, g[..., None])[..., 0]
+        dec = -(g * d).sum(1)
+        t = np.ones(len(idx))
+        fa = f[idx].copy()
+        todo = np.ones(len(idx), bool)
+        new = ta.copy()
+        for _ls in range(40):
+            ti_ = np.nonzero(todo)[0]
+            cand = ta[ti_] + t[ti_, None] * d[ti_]
+            okpos = cand[:, q] > 0
+            fc = np.full(len(ti_), np.inf)
+            if okpos.any():
+                fc[okpos] = _huber_obj(Za[ti_[okpos]], ya[ti_[okpos]], cand[okpos], alpha, eps, pen)
+            acc = fc <= fa[ti_] - 1e-4 * t[ti_] * dec[ti_]
+            new[ti_[acc]] = cand[acc]
+            fa[ti_[acc]] = fc[acc]
+            todo[ti_[acc]] = False
+            t[todo] *= 0.5
+            if not todo.any():
+                break
+        th[idx] = new
+        f[idx] = fa
+        active[idx[(dec / 2 < tol * (np.abs(fa) + 1)) | todo]] = False
+    return th[:, :q], th[:, q]
+
+
+def _r2(y, pred):
+    """Coefficient of determination per row (sklearn r2_score on each split's test events)."""
+    res = ((y - pred) ** 2).sum(-1)
+    tot = ((y - y.mean(-1, keepdims=True)) ** 2).sum(-1)
+    return 1 - res / tot
+
+
+def day_balanced_splits(days: np.ndarray, rng: np.random.Generator, n_splits: int = 200,
+                        per_train: float = 0.9) -> tuple[np.ndarray, np.ndarray]:
+    """Random train/test splits with equal numbers of test events from each day (code,
+    train_test_split_day_balance; 90/10 from the Methods, 80/20 in the code). Returns
+    n_splits x n_train and n_splits x n_test index arrays."""
     days = np.asarray(days)
     uni = np.unique(days)
     n_test_day = int(((1 - per_train) * len(days)) // len(uni))
-    r2s, dr2 = [], {g: [] for g in groups}
+    trs, tes = [], []
     for _ in range(n_splits):
         tr, te = [], []
         for d in uni:
             idx = rng.permutation(np.nonzero(days == d)[0])
             tr.extend(idx[:-n_test_day])
             te.extend(idx[-n_test_day:])
-        tr, te = np.array(tr), np.array(te)
-        if not cols:
-            r2s.append(0.0)
-            continue
-        m = HuberRegressor().fit(Xs[tr], y[tr])
-        full = r2_score(y[te], m.predict(Xs[te]))
-        r2s.append(full)
-        for g in groups:
-            if g not in sel:
-                dr2[g].append(0.0)
-                continue
-            Xsh = Xs[tr].copy()
-            gi = [cols.index(c) for c in groups[g]]
-            Xsh[:, gi] = Xsh[rng.permutation(len(tr))][:, gi]
-            ms = HuberRegressor().fit(Xsh, y[tr])
-            dr2[g].append(full - r2_score(y[te], ms.predict(Xs[te])))
-    return {"selected": sel, "r2": float(np.mean(r2s)),
-            "delta_r2": {g: float(np.mean(v)) if v else 0.0 for g, v in dr2.items()}}
+        trs.append(tr)
+        tes.append(te)
+    return np.array(trs), np.array(tes)
+
+
+def electrode_model(args) -> dict:
+    """One electrode and band: forward selection on all events, then a Huber fit per split of
+    the full model and, per selected feature, of a refit with that feature's columns shuffled
+    among the training events (all day columns together, all time-of-day columns together, as
+    the code shuffles them). Unselected columns are set to 0 (code), which is the same as
+    leaving them out, as their coefficients are then 0; a feature with no selected column gets
+    Delta R2 0 (code).
+
+    Returns the split-averaged withheld R2 of the full model; per feature the Delta R2 of the
+    Methods (refit scored on the unshuffled withheld events) and of the code (refit scored on
+    withheld events whose columns are shuffled among them; the code shuffles the column over
+    all events before splitting, here the refit is shared with the Methods' version); the
+    split-averaged coefficients per feature (for day and time of day the SD of their one-hot
+    coefficients, code); and the fraction of each feature's columns selected (code,
+    feat_select_prob). With `full_only`, only the full model is fitted.
+    """
+    X, groups, y, tr, te, seed, full_only = args
+    rng = np.random.default_rng(seed)
+    names = list(groups)
+    if not np.std(y) > 0:
+        return None                     # a flat electrode: nothing to fit
+    col_of = {g: [i for i, c in enumerate(X.columns) if c in groups[g]] for g in names}
+    Xn = X.to_numpy(float)
+    sel = forward_select(Xn, y)
+    keep = sorted(sel)
+    Z = np.column_stack([Xn[:, keep], np.ones(len(y))])
+    S = tr.shape[0]
+    Ztr, ytr, Zte, yte = Z[tr], y[tr], Z[te], y[te]
+    sel_groups = [g for g in names if any(c in keep for c in col_of[g])]
+    probs = [Ztr]
+    if not full_only:
+        for g in sel_groups:
+            zi = [keep.index(c) for c in col_of[g] if c in keep]
+            Zs = Ztr.copy()
+            perm = np.argsort(rng.random(Ztr.shape[:2]), axis=1)
+            Zs[:, :, zi] = np.take_along_axis(Ztr[:, :, zi], perm[..., None], axis=1)
+            probs.append(Zs)
+    W, _ = huber_fit(np.concatenate(probs), np.tile(ytr, (len(probs), 1)))
+    pred = np.einsum("bnq,bq->bn", Zte, W[:S])
+    r2_full = _r2(yte, pred)
+    coef_all = np.zeros((S, Xn.shape[1]))
+    coef_all[:, keep] = W[:S, :-1]
+    coefs = {}
+    for g in names:
+        ci = col_of[g]
+        coefs[g] = float(coef_all[:, ci].std(1).mean() if len(ci) > 1 else coef_all[:, ci[0]].mean())
+    out = {"selected": [X.columns[c] for c in sel], "r2": float(r2_full.mean()), "coef": coefs,
+           "keep_prob": {g: float(np.mean([c in keep for c in col_of[g]])) for g in names}}
+    if full_only:
+        return out
+    dr2, dr2_code = {g: 0.0 for g in names}, {g: 0.0 for g in names}
+    for k, g in enumerate(sel_groups):
+        Wg = W[(k + 1) * S:(k + 2) * S]
+        dr2[g] = float((r2_full - _r2(yte, np.einsum("bnq,bq->bn", Zte, Wg))).mean())
+        zi = [keep.index(c) for c in col_of[g] if c in keep]
+        Zts = Zte.copy()
+        perm = np.argsort(rng.random(Zte.shape[:2]), axis=1)
+        Zts[:, :, zi] = np.take_along_axis(Zte[:, :, zi], perm[..., None], axis=1)
+        dr2_code[g] = float((r2_full - _r2(yte, np.einsum("bnq,bq->bn", Zts, Wg))).mean())
+    out["delta_r2"], out["delta_r2_code"] = dr2, dr2_code
+    return out
+
+
+def run_models(jobs: list, workers: int = 4) -> list[dict]:
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    with ProcessPoolExecutor(workers) as ex:
+        return list(ex.map(electrode_model, jobs, chunksize=4))

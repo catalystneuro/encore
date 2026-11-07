@@ -27,13 +27,19 @@ event features. Region power uses the paper's projection matrices from
 | Band power differs across days (Figure 5, Table 2) | Reproduced |
 | Baseline subtraction reduces day variability | Reproduced |
 | Day changes small next to absolute power | Reproduced |
-| Regression models (Figure 6, Extended Data Figure 6-2), six claims | Blocked: too large |
+| All regression R2 at most 0.25 | Reproduced |
+| Best models over frontoparietal sensorimotor areas | Reproduced |
+| Reach angle and day most informative (Delta R2) | Reproduced |
+| Reach angle most often retained, then four features in order | Partially reproduced |
+| Upward reaches enhance the movement pattern | Reproduced |
+| Reach angle and day have the largest coefficients | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 In three files the ECoG starts after midnight but is stored with a start time of 0; `ajile.py`
 shifts it (`ecog_offset`). The files hold 8088 events with no false positives marked, more than the
-paper analysed. The notebook reads about 8000 ECoG segments and takes about half an hour. The attempt
+paper analysed. The notebook reads about 8000 ECoG segments and takes about half an hour; the regression models of
+Figure 6 take a few minutes, as `ajile.huber_fit` solves many Huber fits at once. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/000055-peterson-2021-01.yaml`](../../attempts/000055-peterson-2021-01.yaml).
