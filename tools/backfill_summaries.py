@@ -22,7 +22,7 @@ def step2() -> str:
     text = (ROOT / "docs" / "agents" / "recorder.md").read_text()
     m = re.search(r"\n2\. Write the attempt's summary.*?(?=\n\nWrite prose plainly)", text, re.S)
     style = re.search(r"Write prose plainly:.*?the sources do not state\.", text, re.S)
-    return m.group(0).strip() + "\n\n" + style.group(0)
+    return m.group(0).strip() + "\n\n" + style.group(0).replace(" Do not commit or push: the workflow commits your changes.", "")
 
 
 def sources(attempt_id: str) -> str:
@@ -41,15 +41,33 @@ def folder_of(attempt_id: str) -> str:
     return re.sub(r"-[a-z][^-]*-\d{4}-\d{2}$", "", attempt_id)
 
 
+META = re.compile(r"write tool|file-writing|no tools|I could(?:n't| not) (?:write|save)|I did not (?:write|save)|<invoke|parameter name|the paragraph above", re.I)
+
+
+def paragraph(reply: str) -> str:
+    """The summary in a reply: inside <summary> tags, or a mock Write call's content, without notes about files."""
+    for pat in (r"<summary>(.*?)</summary>", r'<parameter name="content">(.*?)</parameter>'):
+        m = re.search(pat, reply, re.S)
+        if m:
+            reply = m.group(1); break
+    sentences = re.split(r"(?<=[.!?])\s+", " ".join(reply.split()))
+    return " ".join(x for x in sentences if not META.search(x)).strip()
+
+
 def write(attempt_id: str, model: str) -> str:
     prompt = (f"You are writing the summary of a finished attempt in the reproduction registry. The attempt is `{attempt_id}`.\n\n"
               + step2().replace("{attempt}", attempt_id).replace("From the same sources as the notes:", "From the sources below:")
               + "\n\nReply with the paragraph only.\n\n" + sources(attempt_id))
-    out = subprocess.run(["claude", "-p", "--model", model, "--tools", ""], input=prompt,
-                         capture_output=True, text=True, timeout=1200)
-    if out.returncode != 0 or not out.stdout.strip():
-        raise RuntimeError((out.stderr or out.stdout)[-400:])
-    text = " ".join(out.stdout.split())
+    for _ in range(2):
+        out = subprocess.run(["claude", "-p", "--model", model, "--tools", ""], input=prompt,
+                             capture_output=True, text=True, timeout=1200)
+        if out.returncode != 0 or not out.stdout.strip():
+            raise RuntimeError((out.stderr or out.stdout)[-400:])
+        text = paragraph(out.stdout)
+        if text and not META.search(out.stdout):
+            break
+    if not text:
+        raise RuntimeError("no paragraph in the reply")
     (ROOT / "summaries" / f"{attempt_id}.md").write_text(text + "\n")
     return text
 
