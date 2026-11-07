@@ -4,8 +4,9 @@ Tests the findings of [Li et al. (2016)](https://doi.org/10.1038/nature17643) th
 on CRCNS data set [alm-3](https://doi.org/10.6080/K0RB72JW), which holds the sorted single units,
 trial tables, photostimulus types and lick and laser traces of 91 recording sessions from 19 mice:
 unilateral photoinhibition (Experiment 1), bilateral experiments (Experiments 2 and 3) and
-callosotomy. CRCNS data sets are not versioned; the files are streamed from the public bucket and
-their MD5 sums printed in the notebook.
+callosotomy. CRCNS data sets are not versioned; the files are streamed from the public bucket, and
+the MD5 sum of each file is computed from the bytes read, compared with the data set's
+`checksums.md5` and printed in the notebook.
 
 | Claim | Outcome |
 |---|---|
@@ -18,7 +19,7 @@ their MD5 sums printed in the notebook.
 | Selectivity recovery times after unilateral photoinhibition (Fig. 1g) | Partially reproduced (times match; neuron count does not) |
 | Decreasing neurons return to their trajectory (ED Fig. 4) | Not reproduced |
 | Behaviour under unilateral and bilateral photoinhibition (Fig. 2b) | Partially reproduced |
-| Bilateral bias follows the cd trajectory (ED Fig. 6) | Reproduced |
+| Bilateral bias follows the cd trajectory (ED Fig. 6) | Reproduced (under one of the criterion's two readings) |
 | Recovery after ipsilateral, contralateral and bilateral photoinhibition (Fig. 2) | Partially reproduced |
 | Experiment 3 recovery (ED Fig. 7d) | Not reproduced |
 | Experiment 3 cd ROC (ED Fig. 7e) | Not reproduced |
@@ -32,7 +33,7 @@ their MD5 sums printed in the notebook.
 | Callosotomy recovery (Fig. 5) | Reproduced |
 | Callosotomy preparatory activity (ED Fig. 10) | Not reproduced |
 | Monolithic models fail to recover (ED Fig. 1) | Partially reproduced (three of five models simulated) |
-| Modular models are robust (Fig. 6) | Partially reproduced |
+| Modular models are robust (Fig. 6) | Partially reproduced (change to not reproduced proposed) |
 | Late-delay bias, recovery interval, spatial extent, photoactivation (Fig. 1d, ED Fig. 2d, 3, 5) | Blocked: data missing |
 | Reaction time and distance from the boundary (ED Fig. 9f) | Blocked: data missing (no licks in the Experiment 2 lick traces) |
 
@@ -44,8 +45,8 @@ open, from the authors' MATLAB analysis scripts deposited in the data set. The a
 the reasons and the differences from the paper's method, is
 [`attempts/crcns-alm-3-li-2016-01.yaml`](../../attempts/crcns-alm-3-li-2016-01.yaml).
 
-- `reproduce_li_2016.ipynb`: the analysis. It takes about seven minutes, most of it streaming the
-  12 GB of session files.
+- `reproduce_li_2016.ipynb`: the analysis. It takes about six minutes (the run time is printed at the end), more than half of it
+  streaming the 12 GB of session files.
 - `alm3.py`: streaming and reducing the session files, trial selection, spike counts, the rate
   test, selectivity recovery and the population analyses. Other notebooks on this data set can
   import it.

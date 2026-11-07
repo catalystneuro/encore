@@ -35,6 +35,7 @@ paper's figures; the claims file did not read them. They are cited by file name.
   photodiode signal) over a threshold set per session halfway between the trace's median and its
   99.9th percentile; a standard choice, as neither the paper nor the code defines it.
 """
+import hashlib
 import io
 import re
 import time
@@ -236,7 +237,7 @@ def _reduce(obj, name):
 
 
 def load_session(name, retries=3):
-    """Stream one session file into memory and reduce it."""
+    """Stream one session file into memory, compute its MD5 sum and reduce it."""
     url = f"{BUCKET}/{PREFIX}data/data_structure_files/data_structure_{name}.mat"
     for attempt in range(retries):
         try:
@@ -247,9 +248,12 @@ def load_session(name, retries=3):
             if attempt == retries - 1:
                 raise
             time.sleep(5)
+    digest = hashlib.md5(raw).hexdigest()
     obj = sio.loadmat(io.BytesIO(raw), squeeze_me=True, struct_as_record=False)["obj"]
     del raw
-    return _reduce(obj, name)
+    s = _reduce(obj, name)
+    s["md5"] = digest  # computed from the bytes read
+    return s
 
 
 def load_all(names=None, workers=3):
