@@ -623,3 +623,29 @@ def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
     assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
                                                 "kind": "metadata_error"}]
     assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"
+
+
+def _response(name, labels, attempt="crcns-stc-1-gu-2011-01"):
+    body = (f"### Dataset\n\nCRCNS:stc-1\n\n### Attempt\n\n{attempt}\n\n### Your name\n\n{name}\n\n"
+            "### Your role in the paper\n\nfirst author\n\n### ORCID iD\n\n_No response_\n\n"
+            "### Your view of the attempt\n\nSome outcomes are wrong\n\n### Claims you are responding to\n\nC3\n\n"
+            "### Your response\n\nThe intervals in Figure 3 are bootstrapped.\n\n### Supporting links\n\n_No response_\n")
+    return {"url": f"https://github.com/x/y/issues/{len(name)}", "body": body, "state": "OPEN",
+            "createdAt": "2026-11-07T00:00:00Z", "labels": [{"name": n} for n in ["author-response", *labels]]}
+
+
+def test_the_response_link_fills_in_the_dataset_and_the_attempt():
+    url = site.respond_link("crcns:stc-1", {"id": "crcns-stc-1-gu-2011-01"})
+    assert "template=author-response.yml" in url and "dataset=CRCNS%3Astc-1" in url and "attempt=crcns-stc-1-gu-2011-01" in url
+
+
+def test_only_confirmed_author_responses_are_shown():
+    rs = site.responses_by_dataset([_response("A. Author", ["author-confirmed"]), _response("Someone", [])])
+    assert list(rs) == ["crcns:stc-1"] and [r["shown"] for r in rs["crcns:stc-1"]] == [True, False]
+    html = site.responses_block({"responses": rs}, "crcns:stc-1", None)
+    assert "A. Author" in html and "bootstrapped" in html and "Someone" not in html
+    assert "1 response from someone who says they are an author awaits confirmation" in html
+
+
+def test_a_dataset_without_responses_has_no_responses_section():
+    assert site.responses_block({"responses": {}}, "crcns:stc-1", None) == ""

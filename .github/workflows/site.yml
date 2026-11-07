@@ -14,9 +14,10 @@ on:
     workflows: ["Check entries"]
     types: [completed]
     branches: [main]
-  # A needs-you issue opened or closed (tools/notify.py) changes the pipeline page's links.
+  # A needs-you issue opened or closed (tools/notify.py) changes the pipeline page's links; an author response
+  # (docs/author-responses.md) labelled, closed or edited changes its dataset's page.
   issues:
-    types: [opened, closed, reopened, labeled, unlabeled]
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
   workflow_dispatch:
 
 permissions:
@@ -33,7 +34,8 @@ jobs:
   build:
     if: >-
       github.event_name != 'issues' || github.event.label.name == 'needs-you' ||
-      contains(github.event.issue.labels.*.name, 'needs-you')
+      contains(github.event.issue.labels.*.name, 'needs-you') ||
+      contains(github.event.issue.labels.*.name, 'author-response')
     runs-on: ubuntu-latest
     steps:
       # The whole history, so that the queue can tell the attempt branches merged into main from the open ones.
@@ -63,6 +65,8 @@ jobs:
         run: |
           gh issue list --repo "$GITHUB_REPOSITORY" --label needs-you --state open --limit 500 \
             --json title,url > "$RUNNER_TEMP/issues.json" || echo '[]' > "$RUNNER_TEMP/issues.json"
+          gh issue list --repo "$GITHUB_REPOSITORY" --label author-response --state all --limit 1000 \
+            --json url,body,labels,state,createdAt > "$RUNNER_TEMP/responses.json" || echo '[]' > "$RUNNER_TEMP/responses.json"
 
       # The runners' queues and how long a chain takes, for the pipeline page's estimates. The numbers of
       # lanes come from the repository variables RUNNER_LANES and CLAIMS_LANES, when they are set.
@@ -81,6 +85,7 @@ jobs:
         run: |
           # Page views are counted only when the repository variable CF_ANALYTICS_TOKEN is set (tools/build_site.py, beacon).
           python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json" --queue "$RUNNER_TEMP/queue.json" \
+            --responses "$RUNNER_TEMP/responses.json" \
             --analytics "${{ vars.CF_ANALYTICS_TOKEN }}"
           touch site/.nojekyll
           # The site's domain. Each publish replaces the branch, so the file is written with every build;

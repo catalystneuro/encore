@@ -38,6 +38,7 @@ import datetime
 import hashlib
 import html
 import json
+import urllib.parse
 import random
 import re
 import shutil
@@ -58,6 +59,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
                     "outcome and what they find about the data.")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import datasets  # noqa: E402
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
 import paper_match  # noqa: E402
@@ -933,7 +935,7 @@ def caution_block() -> str:
     differs from what the paper analysed. “Blocked” means the claim could not be tested at all.</p>
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
-    from the paper’s. Authors who think an attempt is wrong can <a href="{REPO_URL}/issues">open an issue</a>.</p>
+    from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
   </div>
 </div>'''
 
@@ -1449,7 +1451,7 @@ def page_about(data: dict) -> str:
       partly fixed or still present. Earlier attempts stay in the record.</p></div>
     <div class="panel"><h2>Disagreeing with an attempt</h2>
       <p>The agents make mistakes. If you are an author of a paper here, or know the data, and think an attempt is
-      wrong, <a href="{REPO_URL}/issues">open an issue</a> on the registry. Every attempt links to its notebook, its
+      wrong, <a href="{RESPOND_URL}">respond to it</a> with the form for authors. Every attempt links to its notebook, its
       claims and the reasoning behind each outcome.</p></div>
   </div>
 </main>'''
@@ -1632,6 +1634,70 @@ def version_text(a: dict) -> str:
         return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
     doi = a["dataset"].get("doi")
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
+
+
+RESPOND_URL = f"{REPO_URL}/issues/new?template=author-response.yml"
+
+
+def respond_link(dandiset: str, attempt: dict | None) -> str:
+    """The author response form, filled in for this dataset (and attempt)."""
+    q = {"dataset": dataset_label(dandiset), "title": f"Author response: {dataset_label(dandiset)}"}
+    if attempt:
+        q["attempt"] = attempt["id"]
+    return RESPOND_URL + "&" + urllib.parse.urlencode(q)
+
+
+def form_answers(body: str) -> dict:
+    """The answers of an issue form, by the label of each field (tools/runner/run_requests.py, form)."""
+    fields, name = {}, None
+    for line in (body or "").splitlines():
+        if line.startswith("### "):
+            name = line[4:].strip(); fields[name] = ""
+        elif name is not None:
+            fields[name] += line + "\n"
+    return {k: ("" if v.strip() == "_No response_" else v.strip()) for k, v in fields.items()}
+
+
+def responses_by_dataset(issues: list[dict]) -> dict:
+    """Author responses (issues labelled author-response) by dataset key: shown once a maintainer confirmed who wrote
+    them (`author-confirmed` for an author of the paper, `confirmed` for anyone else); the rest are only counted."""
+    out: dict = {}
+    for i in issues:
+        f = form_answers(i.get("body", ""))
+        try:
+            key = datasets.parse(f.get("Dataset", "").splitlines()[0]) if f.get("Dataset") else None
+        except (ValueError, IndexError):
+            key = None
+        if not key:
+            continue
+        labels = {lab["name"] for lab in i.get("labels", [])}
+        out.setdefault(key, []).append({
+            "url": i["url"], "state": i.get("state", "OPEN").lower(), "date": (i.get("createdAt") or "")[:10],
+            "name": f.get("Your name", ""), "role": f.get("Your role in the paper", ""), "view": f.get("Your view of the attempt", ""),
+            "attempt": f.get("Attempt", ""), "claims": f.get("Claims you are responding to", ""), "text": f.get("Your response", ""),
+            "author": "author-confirmed" in labels, "shown": bool(labels & {"author-confirmed", "confirmed"}),
+            "disputed": "disputed" in labels})
+    return out
+
+
+def responses_block(data: dict, dandiset: str, attempt: dict | None) -> str:
+    """The confirmed author responses to the dataset's attempts, and how many await confirmation."""
+    rs = [r for r in (data.get("responses") or {}).get(dandiset, []) if not attempt or r["attempt"] in ("", attempt["id"])]
+    shown = [r for r in rs if r["shown"]]; waiting = len(rs) - len(shown)
+    link = f'<a href="{e(respond_link(dandiset, attempt))}">Respond to this attempt</a>'
+    if not rs:
+        return ""
+    items = "".join(
+        f'<li><p class="small"><strong>{e(r["name"])}</strong>, {e(r["role"]) if r["author"] else "not an author of the paper"}'
+        f' &middot; {e(r["date"])} &middot; <em>{e(r["view"])}</em>{" &middot; under review" if r["disputed"] else ""}'
+        f'{(" &middot; claims " + e(r["claims"])) if r["claims"] else ""}</p>'
+        f'<p>{e(squash(r["text"])[:900])}{"&hellip;" if len(squash(r["text"])) > 900 else ""} '
+        f'<a href="{e(r["url"])}">Read it in full</a></p></li>' for r in shown)
+    wait = (f'<p class="sub small">{waiting} response{"s" if waiting != 1 else ""} from someone who says they are an author '
+            f'await{"" if waiting != 1 else "s"} confirmation.</p>') if waiting else ""
+    return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
+            f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">{link}: authors can say whether the '
+            f'outcomes are right (<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>).</p></div>')
 
 
 def summary_block(atts: list[dict]) -> str:
@@ -1844,7 +1910,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                f'{e(ARCHIVES.get(split_key(dandiset)[0], {}).get("label", split_key(dandiset)[0]))}</a>']
     actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>' for a in atts] if len(atts) == 1 else []
     actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>',
-                f'<a href="{root}#caution">How to read outcomes</a>']
+                f'<a href="{root}#caution">How to read outcomes</a>',
+                f'<a href="{e(respond_link(dandiset, attempt or (atts[0] if len(atts) == 1 else None)))}">Respond to this attempt</a>']
 
     tags = ""
     if target:
@@ -1935,6 +2002,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
   {summary_block(atts)}
+  {responses_block(data, dandiset, attempt)}
   <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
@@ -2142,6 +2210,8 @@ def main() -> int:
                         help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
     parser.add_argument("--queue", type=Path, metavar="JSON",
                         help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
+    parser.add_argument("--responses", type=Path, metavar="JSON",
+                        help="the author-response issues (gh issue list --label author-response --state all --json url,body,labels,state,createdAt)")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     parser.add_argument("--analytics", metavar="TOKEN", default="",
@@ -2156,6 +2226,8 @@ def main() -> int:
     data["analytics"] = args.analytics
     if args.queue and args.queue.is_file():
         data["queue"] = json.loads(args.queue.read_text())
+    if args.responses and args.responses.is_file():
+        data["responses"] = responses_by_dataset(json.loads(args.responses.read_text()))
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
         data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
