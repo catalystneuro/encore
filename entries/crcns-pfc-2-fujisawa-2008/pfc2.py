@@ -14,7 +14,8 @@ written to disk:
 - `EE188_example.mat`, a member of `pfc-2/live/data/EE0708/EE.188.tar.gz`, the file the data
   description names as the session of the paper's Figures 2a and 3d: 117 cells (the paper's
   117), their types, and the paper's connected pairs (`pairs_all`). The tar is gzip, so it is
-  read as a stream until the member is reached (about 2 GB of the 2.4 GB file).
+  read as a stream (about 2 GB of the 2.4 GB file before the member); the stream also gives
+  the list of the tar's members and the nose-poke sensor channels of the session's `.eeg` file.
 
 Parameters and where they come from.
 
@@ -29,10 +30,14 @@ Parameters and where they come from.
 - Jitter: every spike of each neuron uniform on [-5, +5] ms, 1,000 surrogates, CCG over
   [-5, +5] ms, pointwise and global bands at 99 %, global band from the maximum and minimum of
   each surrogate; connection when the counts break the global band in [1, 4] ms (Methods,
-  "Identifying monosynaptic interactions"). The global upper band is the 99th percentile of the
-  surrogates' maxima and the lower the 1st percentile of their minima: the Methods say "at
-  acceptance level 99%" and "from the maximum and minimum of each jitter surrogate"; taking 1 %
-  on each side is a reading (stated in the notebook). Bin width 1 ms (B-a) or 0.5 ms (B-b),
+  "Identifying monosynaptic interactions"). The Methods define a band's global acceptance level
+  as "the proportion of the original and the resampled data sets i that lie completely within
+  the pointwise bands", and the global band at level a as "the minimal pointwise band with global
+  acceptance level a", found by "a stepping procedure" ("Multiple hypothesis testing and global
+  bands"). So the band is stepped inwards, excluding the k largest maxima and the k smallest
+  minima of the surrogates, for as long as at least 99 % of the surrogates lie entirely within
+  both sides (G-b, the reading used). The 99th percentile of the maxima and the 1st percentile of
+  the minima (1 % on each side, G-a) is run as a variant. Bin width 1 ms (B-a) or 0.5 ms (B-b),
   lag rounded to the nearest bin centre (claims file, shared method).
 - Coincidences: 1 <= tdiff <= 4 ms, placed at the presynaptic spike's position, smoothed with
   the same kernel, divided by the number of trials; one-sided bands for excess (Methods,
@@ -78,13 +83,31 @@ def read_raw():
     for name in ["EE0708/EE188_Behavior.mat", "EE0708/EE188_Behavior_PFC.mat"]:
         with fsspec.open(BASE + name, block_size=2**22) as f:
             raw[name.split("/")[-1]] = f.read()
+    # Every member of the session's tar is listed (name, size), to show what the session holds.
+    # From the 1,250 Hz .eeg file only channels 97 and 98 are kept: the optic sensors of the
+    # nose-poke, right and left trials, of the 104 channels of rat EE (data description, page 1).
+    members = []
     with fsspec.open(BASE + "EE0708/EE.188.tar.gz", block_size=2**24) as f:
         t = tarfile.open(fileobj=f, mode="r|gz")
         for m in t:
+            members.append((m.name, m.size))
             if m.name.endswith("EE188_example.mat"):
                 raw["EE188_example.mat"] = t.extractfile(m).read()
-                break
-    return raw
+            elif m.name.endswith(".eeg"):
+                fe, parts = t.extractfile(m), []
+                while b := fe.read(208 * 100000):
+                    parts.append(np.frombuffer(b, np.int16).reshape(-1, 104)[:, 96:98].copy())
+                raw["EE188 nose-poke sensors"] = np.concatenate(parts)
+    return raw, members
+
+
+def poke_intervals(v, rate=1250.0, thr=-15000):
+    """Intervals (s) when a nose-poke sensor channel is low (the sensor's beam broken). The
+    channels sit near 0 and drop to about -30,000 during a poke; the threshold halfway is a
+    standard choice (the trial table's nose-poke times are matched to within a sample)."""
+    on = v < thr
+    d = np.diff(on.astype(int), prepend=0, append=0)
+    return np.c_[np.flatnonzero(d == 1), np.flatnonzero(d == -1)] / rate
 
 
 class Session:
@@ -288,16 +311,18 @@ def ccg_jitter(t, u, n, rng, bw, nsur=1000, maxlag=0.005, jit=0.005):
     return obs, sur
 
 
-def detect_connections(obs, sur, bw, level=0.01, gside=None):
+def detect_connections(obs, sur, bw, level=0.01, gside="step"):
     """Excitatory and inhibitory connections from the jitter bands.
 
     Returns dict of boolean n x n arrays (ref i -> target j): exc, inh (global band broken in
     [1, 4] ms), and the width in ms of the run of bins around the largest [1, 4] ms excess that
-    break the pointwise 99 % band (for the 2 ms width reading W-b). gside: the fraction of
-    surrogate maxima (minima) above (below) the global band; by default the level (1 %), half of
-    it for the reading that splits the 99 % level between the two sides.
+    break the pointwise 99 % band (for the 2 ms width reading W-b). gside: "step" for
+    the Methods' stepping procedure (G-b): the band excludes the k largest surrogate maxima and
+    the k smallest minima, with k the largest for which a fraction 1 - level of the surrogates lie
+    entirely within both sides; or a number, the fraction of surrogate maxima (minima) above
+    (below) the band on each side (0.01 for G-a). Also returns `joint`, the fraction of
+    surrogates lying entirely within both global bands.
     """
-    gside = level if gside is None else gside
     n = obs.shape[0]
     nb = obs.shape[2]
     K = nb // 2
@@ -305,8 +330,19 @@ def detect_connections(obs, sur, bw, level=0.01, gside=None):
     win = (lags >= 1 - 1e-9) & (lags <= 4 + 1e-9)
     gmax = sur.max(axis=3)
     gmin = sur.min(axis=3)
-    gup = np.quantile(gmax, 1 - gside, axis=0)
-    gdn = np.quantile(gmin, gside, axis=0)
+    if gside == "step":
+        M = sur.shape[0]
+        smax = np.sort(gmax, axis=0)
+        smin = np.sort(gmin, axis=0)
+        gup, gdn = smax[-1], smin[0]
+        for k in range(1, int(level * M) + 1):
+            up_k, dn_k = smax[M - 1 - k], smin[k]
+            ok = ((gmax <= up_k) & (gmin >= dn_k)).mean(axis=0) >= 1 - level
+            gup = np.where(ok, up_k, gup)
+            gdn = np.where(ok, dn_k, gdn)
+    else:
+        gup = np.quantile(gmax, 1 - gside, axis=0)
+        gdn = np.quantile(gmin, gside, axis=0)
     pup = np.quantile(sur, 1 - level / 2, axis=0)
     pdn = np.quantile(sur, level / 2, axis=0)
     o = obs.astype(float)
@@ -332,7 +368,9 @@ def detect_connections(obs, sur, bw, level=0.01, gside=None):
         width[i, j] = (b - a + 1) * bw * 1000 if above[k] else 0.0
     mean = sur.mean(axis=0)
     sd = sur.std(axis=0)
-    return {"exc": exc, "inh": inh, "width": width, "mean": mean, "sd": sd, "lags": lags, "win": win}
+    joint = ((gmax <= gup[None]) & (gmin >= gdn[None])).mean(axis=0)
+    return {"exc": exc, "inh": inh, "width": width, "mean": mean, "sd": sd, "lags": lags, "win": win,
+            "joint": joint}
 
 
 # ---------------------------------------------------------------- coincidences along the maze
@@ -410,7 +448,10 @@ def coincidence_test(s, i, j, rng, nsur=1000, alpha=0.01, trials_mask=None, jitt
 def thin(t, x, keep_mask, lo, hi, rng):
     """Thinning (Methods, "Controlling for power"): spikes in the trials are removed one at a time,
     chosen at random within [-s, +s] of the PSTH maximum in the region [lo, hi], until the PSTH
-    minimum in the region is within 10% of its maximum. Returns the kept spikes (boolean)."""
+    minimum in the region is within 10% of its maximum. The loop also stops when no spike is left
+    within [-s, +s] of the maximum, before the target is met. Returns the kept spikes (boolean)
+    and the ratio of the PSTH minimum to its maximum in the region at the end (0.9 or more when
+    the target was met)."""
     keep = keep_mask.copy()
     reg = (GRID >= lo) & (GRID <= hi)
     b = np.minimum((x * NGRID).astype(int), NGRID - 1)
@@ -428,7 +469,8 @@ def thin(t, x, keep_mask, lo, hi, rng):
         k = rng.choice(cand)
         keep[k] = False
         P -= kern[b[k]]
-    return keep
+    pr = np.clip(P[reg], 0, None)  # the running subtraction can leave rounding errors below 0
+    return keep, (pr.min() / pr.max() if pr.max() > 0 else np.nan)
 
 
 # ---------------------------------------------------------------- spike transmission by spike order
@@ -475,8 +517,16 @@ def _lag_counts(tpre, tpost, edges):
 def order_effect(tpre, tpost, first, later, rng, how, nsur=200, nperm=1000):
     """Standardised peak height (h - jitter mean) / jitter s.d. (Supplementary Figure 9B) for first
     and later presynaptic spikes, their difference, and its two-sided permutation P (labels shuffled
-    between the two groups). how: 'i' largest 1 ms bin in [1, 4] ms, 'ii' sum over [1, 4] ms.
-    Surrogates jitter every spike of both cells on [-5, +5] ms."""
+    between the two groups; Figure 6c legend, Supplementary Figure 16). how: 'i' largest 1 ms bin in
+    [1, 4] ms, 'ii' sum over [1, 4] ms. Surrogates jitter every spike of both cells on [-5, +5] ms.
+
+    The standardised heights grow with the square root of the number of spikes, so with groups of
+    different sizes the permutation distribution of the difference is not centred on 0. The P-value
+    is therefore taken from the two tails of that distribution, as the Methods define a two-sided
+    permutation P (P+- = min(1, 2P+, 2P-), counted over j = 0..M): the original difference above
+    the permuted ones (P+ small) means the first spikes are more effective than under shuffled
+    labels (depression), below them (P- small) facilitation. Returns z first, z later, difference,
+    P, n first, n later, side (+1 when P+ < P-, else -1) and the mean permuted difference."""
     edges = np.array([0.0005, 0.0015, 0.0025, 0.0035, 0.0045])
     sel = first | later
     tp = tpre[sel]
@@ -507,5 +557,11 @@ def order_effect(tpre, tpost, first, later, rng, how, nsur=200, nperm=1000):
         return (h[:, 0] - mu) / np.where(sd > 0, sd, np.nan)
     zf, zl = z(SF), z(SL)
     d = zf - zl
-    p = np.mean(np.abs(d[1:]) >= np.abs(d[0]) - 1e-12) if np.isfinite(d[0]) else np.nan
-    return zf[0], zl[0], d[0], p, int(grp.sum()), int((~grp).sum())
+    if not np.isfinite(d[0]):
+        return zf[0], zl[0], d[0], np.nan, int(grp.sum()), int((~grp).sum()), 0, np.nan
+    dd = d[np.isfinite(d)]
+    pp = np.mean(dd >= d[0] - 1e-12)
+    pm = np.mean(dd <= d[0] + 1e-12)
+    p = min(1.0, 2 * pp, 2 * pm)
+    return (zf[0], zl[0], d[0], p, int(grp.sum()), int((~grp).sum()), (1 if pp < pm else -1),
+            float(dd[1:].mean()))
