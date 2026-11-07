@@ -1,0 +1,1255 @@
+schema_version: 2
+id: crcns-fcx-1-watson-2016-01
+dataset:
+  archive: crcns
+  id: fcx-1
+  version: unversioned
+  doi: 10.6080/K02N506Q
+paper: doi:10.1016/j.neuron.2016.03.036
+date: '2026-11-07'
+entry: crcns-fcx-1-watson-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42353046463
+outcomes:
+- claim: table1-dataset-counts
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:table1-dataset-counts
+  notes: 995 pE and 126 pI cells (mean 36.85 pE per session, range 10 to 104; pI mean 4.67, range 0 to 13),
+    27 sessions and 11 rats match exactly. The WAKE-SLEEP cycles in _WSRestrictedIntervals.mat number 51, not
+    54; each session's Wake and Sleep intervals are exactly its WakeSleep pairs (51, 51 and 51 in all), with
+    no unpaired WAKE or SLEEP, so no cycle was lost in parsing. The criterion names no partial outcome; partial
+    is given because five of six counts match, and whether a partial rule applies is asked of a reader.
+  measured:
+  - 995
+  - 126
+  - 51
+  - 27
+  - 11
+  - 36.85
+- claim: ma-statistics
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:ma-statistics
+  notes: 434 MA intervals lie inside SLEEP (2130 in the files). Median duration 11.0 s over all MAs (11.5 s
+    over session medians), per-session median incidence 0.184 per minute, per-session median 3.70% of SLEEP,
+    against 790, 15.9 s, 0.32 and 9.1%; none within tolerance. The MA fraction falls over normalized episodes
+    (20 bins, bin means R = -0.956, p = 4.5e-11; 10 bins R = -0.970, p = 3.3e-06), and over SLEEP the bin means
+    are not significant (p = 0.15, 0.098; pooled period-bins p = 0.0057, 0.00061). The criterion names no partial
+    outcome; partial is given because the trends hold and the four values do not. The 345 WakeInterruptions
+    shorter than 40 s are not MAs by the paper's definition, since none lies between two packets (123 between
+    two REM intervals, 80 between REM and a packet). Variant, MA reading (b), counting them as MAs, 779 events,
+    0.318 per minute (within tolerance), median 13.0 s, 7.85% of SLEEP, episodes R = -0.960 (p = 1.9e-11),
+    SLEEP p = 0.93. With the Dino ACC sessions left out, episodes R = -0.949 (p = 1.7e-10), SLEEP p = 0.089.
+  measured:
+  - 434
+  - 11.0
+  - 0.184
+  - 3.7
+  deviations:
+  - The episode correlation uses the MA fraction in 10 or 20 normalized bins, both as bin means over episodes
+    and as pooled episode-bins, as the criterion allows; episodes include MA and packet seconds.
+- claim: packet-duration
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:packet-duration
+  notes: Median of the 701 packets in SLEEP 111.0 s. Longest over shortest 52.5 (14 to 735 s), less than the
+    two orders of magnitude of the statement, which the criterion only reports.
+  measured: 111.0
+- claim: fig2a-pe-rate-distribution
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-pe-rate-distribution
+  notes: Reading (a) medians pE 0.755, 0.706, 0.936 Hz and pI 6.001, 4.565, 5.724 Hz; reading (b) pE 0.784,
+    0.691, 0.922 and pI 5.632, 4.637, 5.724. Five of six within 10% under both; pI REM is 5.724 against 4.25.
+    pE skew 2.18 to 2.83. The 1st to 99th percentile range covers 0.05 to 5 Hz within 10% in WAKE (0.004 to
+    7.14 Hz, reading b) and REM (0.008 to 6.03) but not nonREM (0.014 to 4.17; 4.05 under reading a); 5th to
+    95th percentiles stop below 4.5 Hz in every state. The criterion requires the shape for both the reproduced
+    and the partial outcome, so the outcome is not reproduced. Whether the range applies to each state, when
+    the paper itself says the nonREM tail is shorter, is asked of a reader. The pI REM median is equal under
+    both readings because the middle cell is the same (Dino_061814_mPFC cell 46, 5.706 and 5.743 Hz in its
+    two cycles); reading (a) has no duplicated rows.
+  measured:
+  - 0.755
+  - 0.706
+  - 0.936
+  - 6.001
+  - 4.565
+  - 5.724
+  deviations:
+  - The range test is applied in each state, as the criterion's 'in each state' reads.
+- claim: fig2b-wake-nrem-slope
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2b-wake-nrem-slope
+  notes: Reading (a) slope of log10 nonREM on log10 WAKE 0.684 (0.661 to 0.708), R 0.803; reading (b) 0.687
+    (0.658 to 0.717), R 0.824. Linear rates give slope 0.45. 82% of cells above the median WAKE rate fire less
+    in nonREM, 55% of those below fire more.
+  measured:
+  - 0.684
+  - 0.803
+- claim: fig2a-fraction-above-2hz
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-fraction-above-2hz
+  notes: Reading (a) 18.8% WAKE, 20.6% REM, 9.3% nonREM; chi-square nonREM against WAKE p = 4.1e-16, against
+    REM p = 4.4e-21. Reading (b) fractions 18.4, 19.5, 9.1% with p = 3.2e-09 and 8.3e-11.
+  measured:
+  - 18.8
+  - 20.6
+  - 9.3
+- claim: burst-index-by-state
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:burst-index-by-state
+  notes: Medians (nonREM, WAKE, REM) reading (a) 6.26, 2.43, 3.56%; (b) 4.93, 1.58, 2.33%; (c) 11.47, 4.51,
+    6.39%. Kruskal-Wallis p from 3.4e-46 to 3.6e-54; REM above WAKE by Dunn (p 1.3e-06 to 1e-05) and rank-sum.
+    The order and the tests hold under every reading; no reading puts all three medians within tolerance.
+  measured:
+  - 6.26
+  - 2.43
+  - 3.56
+  deviations:
+  - Reading (c), the fraction of spikes with an ISI <= 15 ms before or after them, is added from the Results'
+    wording, 'the fraction of spikes with ISIs below 15 ms' (Results, Assessment of firing patterns in different
+    brain states), beside the claims file's readings of a proportion of ISIs.
+- claim: fig2c-autocorrelogram
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2c-autocorrelogram
+  notes: Average nonREM autocorrelogram peaks at 8.5 ms; WAKE and REM have local maxima at 125 and 126 ms (nonREM
+    also at 125 ms). Median decay, reading (a) WAKE -0.108, nonREM -0.538, REM -0.169; (b) -0.118, -0.336,
+    -0.112; (c) -0.582, -1.623, -0.574. nonREM is the most negative and Kruskal-Wallis p <= 1.7e-95 under all
+    three; no medians within tolerance. Cells with fewer than 100 counts dropped (158 of 995 in WAKE, 131 in
+    nonREM, 284 in REM). The 125 ms bump is small, the average autocorrelogram at 115 to 135 ms being 1.027
+    (WAKE), 1.026 (REM) and 0.981 (nonREM) times its mean at 80 to 100 and 150 to 170 ms; the local-maximum
+    test also fires at 125 ms in nonREM.
+  measured:
+  - 8.5
+  - 125
+  - -0.538
+  - -0.108
+  - -0.169
+  deviations:
+  - Per-cell peaks are found on a 5 ms boxcar-smoothed autocorrelogram in 1 to 50 ms, and cells with fewer
+    than 100 counts are dropped; both are standard choices the paper does not state.
+- claim: synchrony-skew
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:synchrony-skew
+  notes: Reading (a) 62.9% of pE cells fire with another pE cell in at most 4% of windows and 0.00% in at least
+    half; reading (b) 54.2% and 0.00%. Per-cell distributions skewed (2.31, 2.26); population synchrony per
+    window skew 1.28. The criterion's bounds hold with wide margins.
+  measured:
+  - 62.9
+  - 0.0
+- claim: updown-durations
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:updown-durations
+  notes: Deposited detections, 43230 UP and 86839 DOWN states (the paper's counts exactly), medians 0.473 and
+    0.188 s, skew 2.56 and 2.15. All start inside scored packets of the cycles.
+  measured:
+  - 0.188
+  - 0.473
+  - 43230
+  - 86839
+  deviations:
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+- claim: fig1e-up-state-dynamics
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig1e-up-state-dynamics
+  notes: Per normalized bin over 43230 UP states, pE rate 1.823, 1.359 ... 1.310, 1.619 Hz (last not below
+    the first two; R = -0.293); pI 15.88 to 11.63 Hz (R = -0.983); synchrony 0.079 to 0.071 (last below first
+    two, R = -0.447); E/(E+I) 0.373 to 0.396 (R = +0.470). Sigma power peaks in bin 0 and gamma in bin 3, the
+    reverse of the statement. Two of four measures decrease and the spectral order fails.
+  deviations:
+  - The criterion's 50 ms bins for synchrony and E/(E+I) are taken as the 10 normalized UP-state bins (47 ms
+    for a median UP state).
+  - Gamma and sigma power come from an 8 ms band-power series (4th order Butterworth, mean of the squared signal)
+    on goodeegchannel, log10 and z-scored per session; the paper's spectrogram method is not given.
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+  - The 8 ms series is zero-phase band-passed, which at 9 to 25 Hz spreads power over tens of ms, so the sigma
+    peak in the first bin may carry power from the DOWN-UP edge; the outcome fails on the pE rate and E/(E+I)
+    regardless.
+- claim: fig2de-fast-before-slow
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2de-fast-before-slow
+  notes: First and second half latencies correlate across cells, R = 0.733 (halves of each SLEEP, n 932) and
+    0.660 (halves of the session, n 758). Latency against log10 WAKE rate R = -0.127, p = 7.6e-05; against
+    log10 nonREM rate R = -0.238, p = 6e-14. Per session the WAKE-rate correlation is negative in 20 of 27
+    sessions.
+  deviations:
+  - A cell's mean latency in a half is computed when it has at least 5 UP states with a spike within 200 ms
+    (a standard choice).
+- claim: fig2f-rate-group-correlations
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2f-rate-group-correlations
+  notes: Mean 100 ms count correlations in nonREM, WAKE sextiles, 6-6 0.0328 (p = 2.9e-70), 1-1 0.0062 (p =
+    2.1e-20), 1-6 0.0064 (p = 2e-12, positive). Correlations rise with rate group across the whole matrix;
+    no negative group pair. nonREM sextiles, the claims file's reading (b) for this figure, give 1-6 0.0095
+    (p = 8.5e-66).
+  deviations:
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: fig3ab-population-rate-declines
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3ab-population-rate-declines
+  notes: Normalized mean pE rate against normalized SLEEP time, clock (i), R = -0.273 (a, p = 1.7e-13), -0.154
+    (b, p = 2.5e-57), -0.732 (c, p = 1.5e-09); clock (ii) R = -0.283, -0.163, -0.796. By rat (reading b) the
+    decline is significant in 8 of 11 rats; Rizzo, Splinter and Templeton show R = -0.017, -0.049, -0.014.
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+- claim: first-last-packet-mean-rate
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:first-last-packet-mean-rate
+  notes: Reading (a) first 1.027 +- 1.086, last 0.905 +- 0.936 Hz, signed-rank p = 1e-18; reading (b) 1.048
+    and 0.883 Hz, signed-rank p = 1.9e-20, rank-sum p = 0.0012. All 51 SLEEP periods have at least 2 packets.
+  measured:
+  - 1.027
+  - 0.905
+- claim: post-sleep-wake-lower
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:post-sleep-wake-lower
+  notes: Only 23 cycles have a scored WAKE after their SLEEP; in 17 it starts 166 to 10344 s later. pE rates
+    are lower after, signed-rank p = 0.018 (reading a, 703 cell-cycles) and 0.048 (b, 494 cells); rank-sum
+    p = 0.95 and 0.98. M4 gives partial (sign right, p < 0.05, not below 1e-6). Restricted to the 6 cycles
+    whose next WAKE starts within 1 s, signed-rank p = 0.00026. Variant, the paper's wording read as the first
+    5 min after SLEEP ends (47 cycles), signed-rank p = 3.9e-10 (a) and 2.8e-06 (b); on average 0.18 of those
+    5 min is scored as a cycle's WAKE (none in 38 cycles). Whether that is the paper's window is asked of a
+    reader; the outcome is the claims file's reading.
+  deviations:
+  - The data hold scored WAKE only as the WAKE of a WAKE-SLEEP cycle, so the WAKE after a SLEEP is the next
+    cycle's WAKE, often hours later; the variant restricted to an immediate WAKE is shown.
+- claim: fig3d-first-last-packet-slope
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3d-first-last-packet-slope
+  notes: Reading (b) slope 0.872 (0.840 to 0.904), within 0.8535 +- 0.0265; reading (a) 0.788 (0.760 to 0.817).
+    Zero-rate cells dropped, 23 (b) and 70 (a). 72% of cells above the median first-packet rate decrease; 49%
+    of those below increase.
+  measured: 0.872
+- claim: fig3b-sextile-changes
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3b-sextile-changes
+  notes: Top sextile R = -0.333, -0.190, -0.716 (readings a, b, c; p <= 5e-09), bottom sextile R = +0.092,
+    +0.046, +0.311 (p = 0.022, 8.5e-06, 0.028); clock (ii) agrees (top R = -0.344, -0.203, -0.799; bottom +0.090,
+    +0.044, +0.360). M2 reading (b) agrees (top R = -0.291, -0.200, -0.756; bottom +0.167, +0.090, +0.550,
+    p <= 3.6e-05).
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: cv-decreases-over-sleep
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:cv-decreases-over-sleep
+  notes: Reading (b), the criterion's, R = -0.003, p = 0.73 (clock ii R = -0.012, p = 0.2). Variants, one point
+    per packet R = -0.101, p = 0.0073; 50 bins clock (ii) R = -0.483, p = 0.00039; 50 bins clock (i) R = -0.025,
+    p = 0.86.
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+- claim: fig3c-spindles-over-sleep
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3c-spindles-over-sleep
+  notes: Deposited spindles (5201 of 5203 start in nonREM of SLEEP); per-session mean incidence 2.852 +- 0.490
+    per minute, duration 0.616 s, frequency 13.923 Hz, amplitude 208.4 uV. Frequency and amplitude match; incidence
+    matches Table S1 (0.049 Hz, 2.94 per minute) not the Results' 1.94; duration is outside 0.52 +- 0.052.
+    Incidence over SLEEP, reading (b) R = -0.021, p = 0.03 (partial by M4); (a) p = 0.44; (c) p = 0.66; clock
+    (ii) p >= 0.19. Absence of change holds for duration (p >= 0.068, clock i) but frequency changes under
+    (b) (p = 0.011) and amplitude under (a) (p = 0.047). Over all 5201 spindles the duration is 0.614 +- 0.320
+    s, median 0.524 s, which matches the paper's 0.52 +- 0.32. With the two Dino ACC sessions left out, the
+    incidence decrease is not significant (reading b p = 0.15).
+  measured:
+  - 2.852
+  - 0.616
+  - 13.923
+  - 208.4
+  deviations:
+  - Uses the deposited spindle detections (_Spindles.mat), reading (a) of the criterion; a new detection was
+    not run. Amplitude converted from V to uV.
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+  - The outcome depends on the normalization clock, which the paper does not state (Results; Fig. 3B legend);
+    clock (i), the period's clock time, and clock (ii), the cumulative nonREM time, give different outcomes
+    here. As for every trend, the outcome takes the result under one of them, as M4 does for readings; the
+    question is put to the paper's authors.
+  - The incidence decrease also depends on the two Dino days that were recorded with two probes and are deposited
+    as two sessions each (ACC and mPFC); without the ACC copies, reading (b) clock (i) gives p = 0.15. Both
+    copies are kept, since the paper's 27 sessions, which the data set matches, include them.
+  assumed: true
+- claim: fig3c-updown-over-sleep
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3c-updown-over-sleep
+  notes: Reading (b), UP incidence R = -0.013 (p = 0.19), DOWN incidence R = -0.031 (p = 0.0015), DOWN duration
+    R = 0.117 (p = 2.4e-32), UP duration R = 0.020 (p = 0.067), other fraction R = -0.007 (p = 0.44). At most
+    2 of 5 parts hold under any reading and clock. With the Dino ACC sessions left out, reading (b) gives the
+    same pattern (DOWN incidence p = 0.0023, DOWN duration p = 1.5e-30, UP incidence p = 0.23).
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+- claim: fig3f-within-up-changes
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3f-within-up-changes
+  notes: Within-UP pE rate against SLEEP time, reading (b) R = -0.087, p = 9.4e-16 (meets p < 1e-8); (a) R
+    = -0.159, p = 5.5e-05; (c) R = -0.568, p = 1.7e-05. Last minus first packet, M2 reading (a), fastest sextile
+    -0.637 Hz (p = 1.2e-07, n 159), pI -0.572 Hz (p = 0.045, n 118), slowest +0.071 Hz (p = 0.27, n 151), which
+    would be partial. M2 reading (b), one entry per cell and cycle, fastest -0.425 Hz (p = 3.7e-07, n 276),
+    slowest +0.123 Hz (p = 0.047, n 262); every part holds under one reading of the claims file. On one unit
+    throughout, M2 reading (b) gives all three parts with one entry per cell and cycle (M1 reading a, fastest
+    -0.425 Hz, p = 3.7e-07; pI -0.672 Hz, p = 0.047, n 182; slowest +0.123 Hz, p = 0.047) and with one entry
+    per cell (M1 reading b, fastest -0.573 Hz, p = 3.3e-07, n 181; pI -0.572 Hz, p = 0.045; slowest +0.141 Hz,
+    p = 0.023, n 189). Under M2 reading (a) the slowest sextile is not significant with either unit (p = 0.48
+    and 0.27). The pI and slowest-sextile tests lie between 0.023 and 0.047.
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: figs3a-first-last-rem-ma-slopes
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs3a-first-last-rem-ma-slopes
+  notes: Reading (b) REM 0.807 (0.769 to 0.845), MA 0.656 (0.601 to 0.710), WAKE 0.687 (0.627 to 0.746); reading
+    (a) 0.742, 0.530, 0.713. REM and MA within tolerance under (b), WAKE outside under both; all intervals
+    below 1. MA reading (b), short WakeInterruptions as MAs, MA slope 0.618 (0.563 to 0.674, reading b). With
+    the post-sleep window read as the first 5 min after SLEEP, the WAKE slope is 0.793 (0.759 to 0.828, reading
+    b) and 0.787 (reading a), still outside tolerance.
+  measured:
+  - 0.807
+  - 0.656
+  - 0.687
+  deviations:
+  - WAKE windows as in post-sleep-wake-lower, the next cycle's WAKE, which follows SLEEP immediately in only
+    6 of 23 cycles.
+- claim: fig3e-wake-before-after-sextiles
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3e-wake-before-after-sextiles
+  notes: One-tailed signed-rank per sextile. M2 reading (a), M1 reading (a), sextile 6 p = 0.0018, 5 p = 0.032,
+    4 p = 0.48, lowest (increase) p = 0.15, 2 of 4 parts; M1 reading (b) 0.00032, 0.073, 0.61, 0.1, 1 of 4.
+    M2 reading (b), per-cycle sextiles, sextile 6 p = 3.2e-06, 5 p = 0.00013, 4 p = 0.23, lowest p = 2e-05,
+    3 of 4, the criterion's partial outcome. That sextile is ranked on the WAKE that holds the 5 min before
+    SLEEP, so part of the change can be regression to the mean (the session-wide WAKE of reading a holds the
+    window too). Under M2 reading (b) the second-lowest sextile, which the paper does not report as changing,
+    also increases (p = 0.012, against 0.83 under M2 reading a), which fits that concern. Immediate-WAKE variant, 6 cycles, sextile 6 p = 0.00037, 5 p = 0.028, 4 p = 0.11, lowest p
+    = 0.7. With the post-sleep window read as the first 5 min after SLEEP (asked of a reader), 6 p = 9.7e-13,
+    5 p = 1.7e-06, 4 p = 0.084, lowest p = 0.00096.
+  deviations:
+  - WAKE windows as in post-sleep-wake-lower.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: fig4-lfp-within-nrem
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-lfp-within-nrem
+  notes: Delta and sigma increase within episodes and packets under every reading (packets, reading b, delta
+    R = 0.329, sigma R = 0.306; episodes R = 0.276, 0.209). Gamma within episodes R = -0.220 (a), -0.129 (b),
+    -0.155 (c, p = 0.28) with clock (i), and -0.245, -0.131, -0.121 (p = 0.4) with clock (ii); within packets R = -0.052, p = 6e-08 (b), +0.187, p = 0.19 (c). Packet delta against
+    length R = 0.387, p = 1.8e-26. No single reading gives all six trends; the delta and sigma increases hold
+    under all. Variant, seconds whose 10 s window reaches outside the packet left out, gamma within episodes
+    R = -0.300, p = 0.034 (c) and within packets R = -0.059, p = 3.1e-09 (b), p = 0.14 (c), so under reading
+    (c) all six trends hold with this variant; the claims file does not name it and the outcome is judged on
+    its spectrogram. With the Dino ACC sessions left out, the trends are unchanged (gamma within packets, reading
+    b, R = -0.064, p = 2.2e-10).
+  deviations:
+  - Band power from a spectrogram of goodeegchannel (10 s Hann windows every 1 s), as the claims file allows.
+  - Band power is log10-transformed before the per-session z-scoring the criterion names (a standard choice
+    for power, not stated in the paper).
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+- claim: fig4-updown-within-packets
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-updown-within-packets
+  notes: Reading (b), UP incidence R = 0.042 (p = 1.3e-05), DOWN incidence R = 0.168 (p = 3.5e-68), UP duration
+    R = -0.101 (p = 9.2e-21), DOWN duration R = 0.190 (p = 3.6e-83), UP/DOWN ratio R = -0.156 (durations) and
+    -0.035 (time), p = 8.1e-48 and 0.00051. Reading (c) gives at most 1 of 5. Fraction in neither state R =
+    -0.176 (b), the sign the paper prints. With the Dino ACC sessions left out, the four incidence and duration
+    trends keep their signs (reading b, p <= 1.5e-05).
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+- claim: fig4-spindles-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-spindles-within-nrem
+  notes: Reading (b), incidence within episodes R = 0.083 (p = 1.1e-17), packets R = 0.142 (p = 2.5e-49); duration
+    R = 0.075 (p = 5.4e-06) and 0.091 (p = 3.9e-08). First and last tenth durations 0.597 and 0.650 s (episodes),
+    0.603 and 0.651 s (packets), all within tolerance. The criterion's reproduced condition (increases and
+    durations) holds. Amplitude does not change (p >= 0.16); frequency does not change within episodes (p =
+    0.11) but falls within packets (R = -0.043, p = 0.0096), so that part of the statement fails; the criterion's
+    final rule does not judge it. With the Dino ACC sessions left out, incidence and duration still increase
+    (reading b, p <= 2e-06).
+  measured:
+  - 0.597
+  - 0.65
+  - 0.603
+  - 0.651
+  deviations:
+  - Deposited spindle detections.
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+- claim: fig4e-late-packet-sigma
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4e-late-packet-sigma
+  notes: UP states of at least 1 s, late third mean sigma z 0.153 against early 0.009 (n 1708 and 1866), rank-sum
+    p = 3.7e-34; UP states over 500 ms, 0.151 against 0.031, p = 2.5e-76.
+  deviations:
+  - Sigma power per UP state is the mean of an 8 ms band-power series (log10, z-scored per session), not an
+    UP-onset-triggered spectrogram.
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+- claim: fig4-sextiles-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-sextiles-within-nrem
+  notes: Reading (b), top sextile R = -0.139 (episodes), -0.137 (packets); bottom R = +0.029 (p = 0.0048),
+    +0.044 (p = 2.3e-05); CV R = -0.103 (p = 1e-26), -0.139 (p = 5.2e-47); burst ratio within packets R = +0.089
+    (p = 2.9e-20). Within episodes the burst ratio meets p < 1e-10 with clock (ii) (R = 0.063, p = 8.5e-11)
+    and misses it with clock (i) (R = 0.061, p = 2.6e-10), which would make that correlation partial by M4.
+    The outcome takes the better of the two clocks, here clock (ii), as for every trend.
+  deviations:
+  - Trends over normalized time follow M3 and M4 of the claims file; every reading (a, b, c) is run and, for
+    SLEEP and episodes, two normalization clocks, (i) the period's clock time and (ii) the cumulative time
+    of the used state, since the paper says only that SLEEP is time-normalized with nonREM time used (Results,
+    Firing pattern and LFP changes across the course of sleep; Fig. 3B legend). Values are divided by the session
+    mean before pooling (M3).
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  - The outcome depends on the normalization clock, which the paper does not state (Results; Fig. 3B legend);
+    clock (i), the period's clock time, and clock (ii), the cumulative nonREM time, give different outcomes
+    here. As for every trend, the outcome takes the result under one of them, as M4 does for readings; the
+    question is put to the paper's authors.
+  assumed: true
+- claim: fig4cd-packet-rate-lfp-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4cd-packet-rate-lfp-correlations
+  notes: M2 reading (a), top sextile against delta R = -0.200 (p = 1.6e-06), DOWN duration R = -0.387 (p =
+    1.7e-21), DOWN incidence R = -0.300 (p = 2.9e-13), UP duration R = 0.248 (p = 2.8e-09), gamma R = 0.358
+    (p = 1.4e-18); bottom sextile against last-20 s sigma R = 0.215 (p = 7.7e-08). Four meet the paper's bounds
+    and two have its sign at p < 0.05; 4 of 6, the criterion's partial outcome. (With the sextiles of the first
+    revision, the mean of per-cycle WAKE rates, 3 of 6 held.) M2 reading (b) also gives 4 of 6, with no sigma
+    correlation (R = 0.062, p = 0.12). Other combinations, bottom sextile against UP duration R = 0.110, p
+    = 0.01, top sextile against late sigma R = -0.093, p = 0.026; the rest p >= 0.23. Sigma from 10 s windows
+    inside the last 20 s, R = 0.199, p = 6.9e-07.
+  deviations:
+  - Band power is log10-transformed before the per-session z-scoring the criterion names (a standard choice
+    for power, not stated in the paper).
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: fig4e-within-up-sextiles
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4e-within-up-sextiles
+  notes: Per UP state, first against second third, fastest 3.43 to 3.39 Hz (p = 5.8e-05), pI 13.11 to 13.65
+    Hz (p = 0.00078), slowest 0.29 to 0.31 Hz (p = 0.64, rising); against the last third, fastest p = 0.0069,
+    pI p = 3.1e-05, slowest rising p = 5.3e-07. Per cell (unit ii, one entry per cell, its within-UP rate in
+    each third over all its packets; 166, 126 and 165 cells) no group meets its bound (p >= 0.11). At most
+    1 of 3 holds under any reading, M2 reading (b) included.
+  deviations:
+  - Uses the deposited UP/DOWN detections (_UPDOWNINtervals.mat), reading (a) of updown-durations; a new detection
+    was not run, since the LFP reduction kept has no power above 100 Hz.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  - Unit (ii) has one entry per cell, its spikes and UP time summed over all its packets in each third (the
+    first revision had one entry per cell and packet).
+- claim: figs5-within-wake-rem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs5-within-wake-rem
+  notes: 50 bins, sextiles numbered 1 lowest, M2 reading (a). WAKE, sextile 6 R = 0.107 (p = 0.46), 5 R = 0.471
+    (p = 0.00055), 2 R = 0.603 (p = 3.5e-06, increasing), 1 R = -0.286 (p = 0.044). REM, sextiles 1 to 6 R
+    = -0.245, 0.443, 0.358, 0.394, -0.064, 0.308 (p = 0.086, 0.0013, 0.011, 0.0047, 0.66, 0.029); of the five
+    other than sextile 3, three increase. M2 reading (b) holds less (WAKE sextile 6 p = 0.58; REM sextiles
+    1, 4, 5, 6 p >= 0.065).
+  deviations:
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: fig5b-ma-nrem-ma
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-ma-nrem-ma
+  notes: 169 MA-packet-MA triplets. Top two sextiles mean change -0.011 and -0.010 Hz (cells averaged), signed-rank
+    and t-test p >= 0.24 under M1 a and b. S5C correlation R = 0.016 (p = 0.65, log10 WAKE rate, 843 cells),
+    R = 0.006 (linear). M2 reading (b), top two p >= 0.12. MA reading (b), short WakeInterruptions as MAs,
+    234 triplets, top two p >= 0.28, S5C R = -0.054 (p = 0.11).
+  deviations:
+  - Triplets use adjacent scored intervals inside a SLEEP with gaps of at most 2 s (a standard choice for intervals
+    scored at 1 s); the paper does not say how adjacency is decided. Assumed, as the reading closest to the
+    Supplemental Experimental Procedures' description of consecutive sub-states.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  assumed: true
+- claim: figs5d-rem-nrem-rem
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs5d-rem-nrem-rem
+  notes: Adopted rule, MA or WakeInterruption allowed between REM n and the packet, 80 triplets in 17 sessions,
+    660 pE cells (paper about 136). S5D correlation R = -0.097 (p = 0.015, linear WAKE rate, reading b) and
+    R = -0.077 (p = 0.054, log10, reading a); the paper's sign at p < 0.05, short of p < 1e-5, partial by M4.
+    All states adjacent, 25 triplets in 3 sessions, 57 cells, R = 0.019 (p = 0.89) and -0.055 (p = 0.69). Interruptions
+    allowed on both sides, 84 triplets, R = -0.071 (p = 0.071) and -0.103 (p = 0.0089). No rule gives the paper's
+    number of cells.
+  deviations:
+  - REM n, packet, REM n+1 triplets allow an MA or WakeInterruption between REM n and the packet, the packet
+    and REM n+1 being adjacent (gap at most 2 s). Assumed because the Supplemental Experimental Procedures
+    tolerate an arousal after REM in nonREM-REM-nonREM triplets (claims file, M6), and REM in these files is
+    followed by a WakeInterruption more often than by a packet, so the same tolerance is applied after REM
+    n. The all-adjacent rule (the first revision's) and a rule allowing interruptions on both sides are shown;
+    the question is put to the paper's authors.
+  assumed: true
+- claim: fig5c-sigma-ma-change
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-sigma-ma-change
+  notes: 150 MA-packet-MA triplets with lowest-sextile cells; R = -0.042, p = 0.61. Sigma from 10 s windows
+    inside the last 20 s R = -0.018 (p = 0.83); MA reading (b) R = -0.013 (p = 0.86, 209 triplets); M2 reading
+    (b) R = -0.053 (p = 0.52).
+  deviations:
+  - Triplets use adjacent scored intervals inside a SLEEP with gaps of at most 2 s (a standard choice for intervals
+    scored at 1 s); the paper does not say how adjacency is decided. Assumed, as the reading closest to the
+    Supplemental Experimental Procedures' description of consecutive sub-states.
+  - Band power is log10-transformed before the per-session z-scoring the criterion names (a standard choice
+    for power, not stated in the paper).
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  assumed: true
+- claim: fig5b-wake-between-packets
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-wake-between-packets
+  notes: Reading (a) 8 triplets, reading (b) 52 (paper 24). Fastest sextile change +0.092 Hz (p = 0.21) and
+    +0.063 Hz (p = 0.15), cells averaged. Movement correlation, reading (a), raw motion R = 0.436 (p = 0.33,
+    n 7), motion z-scored per session R = 0.869 (p = 0.011, n 7); reading (b) R = 0.124 and 0.248 (p = 0.43,
+    0.11). M2 reading (b), z-scored R = 0.924 (p = 0.0029, n 7). Slow cells, no significant decrease (lowest
+    sextile p >= 0.12), as in the paper; S5E correlation absent (p >= 0.75), as in the paper. Partial rests
+    on the z-scored motion under reading (a), with 7 triplets. The stored motion's per-session means run from
+    0.55 to 4076, so the raw values pooled across sessions mostly compare sessions.
+  measured:
+  - 8
+  deviations:
+  - Triplets use adjacent scored intervals inside a SLEEP with gaps of at most 2 s (a standard choice for intervals
+    scored at 1 s); the paper does not say how adjacency is decided. Assumed, as the reading closest to the
+    Supplemental Experimental Procedures' description of consecutive sub-states.
+  - The motion signal is z-scored per session before averaging over the WAKE period. Assumed because the data
+    description says the signal is z-scored while the stored values are not (non-negative, per-session means
+    0.55 to 4076); the raw signal gives no correlation.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  assumed: true
+- claim: fig5b-ma-between-packets
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-ma-between-packets
+  notes: 264 packet-MA-packet triplets. Lowest sextile, one entry per cell and triplet (M1 a), mean +0.0075
+    Hz, median +0.0017 Hz, 51% positive, signed-rank p = 0.015, t-test p = 0.016; cells averaged +0.007 Hz,
+    p = 0.36; lowest two together p = 0.92. M2 reading (b), lowest sextile +0.012 Hz cells averaged (p = 0.022),
+    per cell and triplet p = 0.00088. Top sextile decreases (-0.140 Hz, p = 5.4e-08), where the paper finds
+    no change. S5G R = -0.174, p = 4.9e-08 (log10), misses p < 1e-10. MA reading (b) gives the same 264 triplets.
+  deviations:
+  - Triplets use adjacent scored intervals inside a SLEEP with gaps of at most 2 s (a standard choice for intervals
+    scored at 1 s); the paper does not say how adjacency is decided. Assumed, as the reading closest to the
+    Supplemental Experimental Procedures' description of consecutive sub-states.
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  assumed: true
+- claim: fig5b-rem-between-packets
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-rem-between-packets
+  notes: 110 packet-REM-packet triplets. Sextile changes (1 lowest, cells averaged) -0.016, -0.041, -0.012,
+    +0.006, +0.036, +0.164 Hz (signed-rank p 0.11, 0.00056, 0.72, 0.5, 0.23, 0.065). Duration correlation R
+    = -0.019 (p = 0.85). Theta against slowest change R = 0.143 (ratio, p = 0.18), 0.068 (power, p = 0.53).
+    S5F R = 0.068 (p = 0.06, log10), 0.122 (p = 0.00069, linear), where the paper finds none. M2 reading (b),
+    one sextile decreases (the second lowest, p = 0.01).
+  deviations:
+  - Triplets use adjacent scored intervals inside a SLEEP with gaps of at most 2 s (a standard choice for intervals
+    scored at 1 s); the paper does not say how adjacency is decided. Assumed, as the reading closest to the
+    Supplemental Experimental Procedures' description of consecutive sub-states.
+  - The second packet is the next packet after the REM episode with any MA or WakeInterruption between them
+    (M6, Supplemental Experimental Procedures).
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+  assumed: true
+- claim: fig5c-delta-change-slow-cells
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-delta-change-slow-cells
+  notes: 567 consecutive packet pairs; slowest sextile change against delta change R = 0.003 (p = 0.95); fastest
+    R = -0.285 (p = 2.8e-11, 524 pairs). Delta from windows inside the packets R = -0.008 (p = 0.86); M2 reading
+    (b) R = -0.011 (p = 0.78).
+  deviations:
+  - Band power is log10-transformed before the per-session z-scoring the criterion names (a standard choice
+    for power, not stated in the paper).
+  - Sextiles follow M2. Reading (a) ranks each pE cell's rate over all scored WAKE of its session (before round
+    1's revision, the mean of its per-cycle WAKE rates, which put 65 of 995 cells in another sextile); reading
+    (b) ranks each cell's rate in each cycle's WAKE and uses the cycle that holds the analysed period.
+- claim: figs2d-interneurons-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs2d-interneurons-unchanged
+  notes: pI slope of log10 last on first packet rate, reading (a) 0.836 (0.766 to 0.906, n 192), reading (b)
+    0.888 (0.802 to 0.973, n 123); neither interval includes 1.
+  measured: 0.836
+- claim: sleep-homogenizes-rates
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:sleep-homogenizes-rates
+  notes: fig3d-first-last-packet-slope reproduced (0.872, 0.840 to 0.904); fig3e-wake-before-after-sextiles
+    partially reproduced (3 of 4 parts under M2 reading b, 2 under reading a); cv-decreases-over-sleep not
+    reproduced (R = -0.003, p = 0.73). Of the sub-state claims reported beside it, fig5b-ma-between-packets
+    is partially reproduced and fig5b-rem-between-packets is not.
+findings:
+- kind: metadata_error
+  statement: The files hold 51 WAKE-SLEEP cycles (WakeSleepTimePairFormat over the 27 sessions), where the
+    paper reports 54; the Wake and Sleep intervals are the same 51 pairs, with none unpaired. All other counts
+    (995 pE, 126 pI, 27 sessions, 11 rats, 43230 UP and 86839 DOWN states, 5203 spindles) match the paper exactly.
+- kind: metadata_error
+  statement: The paper reports 790 microarousals; 434 MA intervals lie inside SLEEP (2130 MA intervals in the
+    files, most outside SLEEP). 345 WakeInterruption intervals inside SLEEP are shorter than the 40 s minimum
+    the data description gives for them; none lies between two packets (123 between two REM intervals, 80 between
+    REM and a packet), so they are not MAs by the paper's definition either, though counted with the MAs they
+    give 779 events. One nonREM packet (14 s) is shorter than the 20 s minimum of Table S1.
+- kind: metadata_error
+  statement: In Rizzo_022715 and Splinter_020515 a WAKE-SLEEP cycle's WAKE starts before the previous cycle's
+    SLEEP ends (WAKE 9919-14394 s against SLEEP 5655-10010 s; WAKE 5335-7210 s against SLEEP 3543-5455 s),
+    so the cycles overlap.
+- kind: other
+  statement: Dino_061914 and Dino_062014 each appear as two sessions, ACC and mPFC probes recorded at the same
+    time (the data set's WatsonSleepHomestasis2016Table.xlsx lists the same days), each with its own state
+    files, and the two scorings of Dino_062014 differ (mean SLEEP per cycle 59.5 min in ACC and 27.1 min in
+    mPFC; 41 and 17 packets). State- and LFP-level analyses over the 27 sessions count these days twice.
+- kind: metadata_error
+  statement: The data description says the motion signal in _Motion.mat is z-scored; it is non-negative in
+    every session, with per-session means from 0.55 to 4076, and BWRat19_032513 holds NaN values.
+- kind: metadata_error
+  statement: RecordingFileIntervals in _BasicMetaData.mat ends at infinity in the three sessions of rat JennBuzsaki22,
+    and the UP/DOWN file is named _UPDOWNINtervals.mat, where the description says _UPDOWNInts.mat and _UPDOWNIntervals.mat.
+- kind: paper_inconsistency
+  statement: The Results give spindle incidence as 1.94 +- 0.39 per minute; Table S1 gives 0.049 +- 0.008 Hz
+    (2.94 per minute). The deposited spindles give 2.85 per minute, matching Table S1.
+- kind: metadata_insufficient
+  statement: Scored WAKE exists only as the WAKE of a WAKE-SLEEP cycle, so the WAKE that follows a SLEEP is
+    in most cycles absent or hours later (23 of 51 cycles have a later scored WAKE, 6 within 1 s). The 5 min
+    post-sleep WAKE windows of the paper cannot be located for most cycles.
+- kind: other
+  statement: Each session is one tar.gz of 0.9 to 6 GB, and the order of members differs between files (the
+    LFP .eeg comes before the spike and state files in some), so reading any one small file needs the whole
+    archive streamed. Reading all 27 takes 7 to 9 minutes from the bucket.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) The sampling unit of the correlations against normalized
+    time (per packet, 10 s bins, or bins of normalized time averaged over periods) and whether SLEEP is normalized
+    by its clock time or by its concatenated nonREM time; the readings give different outcomes for the CV,
+    spindle and UP/DOWN trends over SLEEP. (2) Whether the burst index is the proportion of ISIs <= 15 ms (Supplemental
+    Experimental Procedures) or the fraction of spikes with such an ISI (Results); the latter gives the reported
+    nonREM median. (3) The model and fit range of the autocorrelogram decay exponent. (4) How triplets are
+    formed (adjacency of scored intervals, which WAKE counts between packets, giving the 24 nonREM-WAKE-nonREM
+    triplets) and whether REM-packet-REM triplets allow an arousal after the first REM; the attempt assumes
+    they do, which gives 80 triplets and 660 cells against the about 136 cells of Figure S5D. (5) Whether the
+    motion signal was z-scored before the movement correlation. (6) How the WAKE sextiles are computed for
+    cells recorded over several cycles (session WAKE or each cycle's WAKE); fig3e-wake-before-after-sextiles
+    and fig3f-within-up-changes differ between the two.
+verifications:
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. Its report had no attempt record and gave its own outcome for
+    each claim; 35 of 41 agree with the record as it then stood.
+  results:
+  - claim: table1-dataset-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 9, pE 995, pI 126, 27 sessions, 11 rats and mean 36.85 all match. WAKE-SLEEP cycles are 51
+      against 54, and the tolerance is 0. The criterion has no partial rule.
+    response: Added a data check printing every session's WakeSleep, Wake and Sleep intervals, 51 of each,
+      none unpaired, so the deposit holds 51 cycles. The missing partial rule is asked of a reader. Outcome
+      kept.
+  - claim: ma-statistics
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 11, from the files' MA intervals, n 434 (790), median 11.0 s (15.9), 0.184/min (0.32) and
+      3.7% (9.1) are all outside tolerance. The episode trend holds (20 bins R -0.956, p 4.5e-11), and the
+      SLEEP trend shows no change on bin means (p 0.10-0.15).
+    response: Outcome changed from not reproduced to partially reproduced, as the trends hold. Added the neighbours
+      of the short WakeInterruptions (none between two packets) and the MA trends under MA reading (b) and
+      without the Dino ACC sessions.
+  - claim: packet-duration
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, median 111.0 s. The range ratio is only 52.5 (14-735 s), which is short of two orders
+      of magnitude, but the criterion only asks for it to be reported.
+    response: No change needed.
+  - claim: fig2a-pe-rate-distribution
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 16, 5 of 6 medians are within tolerance (pI REM 5.72 vs 4.25 is not). The shape test fails
+      because the nonREM pE range stops short of 4.5 Hz under both percentile readings (1-99th; 4.05 and 4.17
+      Hz). See B11 on the criterion.
+    response: Outcome changed from partially reproduced to not reproduced, as the criterion requires the shape
+      for a partial outcome. The range in each state is asked of a reader. Added the cells at the pI REM median
+      (the same cell under both readings) and a check for duplicated rows (none).
+  - claim: fig2b-wake-nrem-slope
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19, log slope 0.684 [0.661, 0.708] with R 0.803 (a), and 0.687 with R 0.824 (b).
+    response: No change needed.
+  - claim: fig2a-fraction-above-2hz
+    agrees: true
+    outcome: reproduced
+    reason: Cell 21, reading (a), 18.8 / 20.6 / 9.3%, chi-square p 4e-16 and 4e-21. Under reading (b) the nonREM-vs-WAKE
+      p is 3.2e-9, which would make it partial (B6). Reading (a) counts each cell once per cycle (1787 rows
+      for 995 cells), which is pseudo-replicated, although the claims file allows it.
+    response: Outcome kept, as the criterion's readings include (a); the notes give the reading (b) result.
+  - claim: burst-index-by-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 23, Kruskal-Wallis and REM>WAKE hold under every reading. The medians miss under (a) and (b).
+      The best reading, (c), matches nonREM only (4.51 / 11.47 / 6.39%).
+    response: No change needed.
+  - claim: fig2c-autocorrelogram
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 25, nonREM peak at 8.5 ms, local maxima near 125 ms in WAKE and REM, nonREM most negative,
+      KW p < 1e-95. No reading puts the medians within tolerance. The 125 ms local-maximum test also fires
+      in nonREM, so it cannot tell theta apart from noise (B10).
+    response: Added the size of the 125 ms bump against its flanks (1.027 WAKE, 1.026 REM, 0.981 nonREM). Outcome
+      kept.
+  - claim: synchrony-skew
+    agrees: true
+    outcome: reproduced
+    reason: Cell 28 (a), 62.9% of cells at or below 4% of windows, 0% at or above 50%. This passes only because
+      the criterion treats 15% as a lower bound (B11).
+    response: Outcome kept; the reading of 15% as a bound is asked of a reader.
+  - claim: updown-durations
+    agrees: true
+    outcome: reproduced
+    reason: Cell 30, deposited n 43230 / 86839, medians 0.473 / 0.188 s, both right-skewed.
+    response: No change needed.
+  - claim: fig1e-up-state-dynamics
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 32, only pI rate and synchrony decrease. The pE rate rises in the last bin and E/(E+I) rises
+      (R +0.47). The sigma peak (bin 0) comes before the gamma peak (bin 3). The zero-phase band-passed power
+      smears about 50-100 ms at 9-25 Hz, so the sigma peak in bin 0 may come from the DOWN-UP edge (B8).
+    response: Recorded the spread of the zero-phase series as a deviation. Outcome kept, as it fails on the
+      pE rate and E/(E+I).
+  - claim: fig2de-fast-before-slow
+    agrees: true
+    outcome: reproduced
+    reason: Cell 34, latency in the two halves R 0.733. Latency vs log rate is negative (R -0.127 to -0.29).
+      First-spike latency is negatively correlated with rate almost by construction (B11).
+    response: Outcome kept; the construction of the rate test is asked of a reader.
+  - claim: fig2f-rate-group-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 36, the 1-6 group mean is positive (+0.0063 WAKE sextiles, +0.0095 nonREM sextiles), not negative.
+    response: Sextiles now follow M2's primary reading, the rate over the session's WAKE (B7); 1-6 is +0.0064.
+      Outcome kept.
+  - claim: fig3ab-population-rate-declines
+    agrees: true
+    outcome: reproduced
+    reason: Cell 38, R -0.15 to -0.80 with p <= 1.5e-9 under every reading.
+    response: No change needed.
+  - claim: first-last-packet-mean-rate
+    agrees: true
+    outcome: reproduced
+    reason: Cell 40 (b), 1.048 vs 0.883 Hz, signed-rank p 1.9e-20.
+    response: No change needed.
+  - claim: post-sleep-wake-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 42, lower after, signed-rank p 0.018 (a) and 0.048 (b), against a bound of 1e-6. The immediate-WAKE
+      variant gives p 2.6e-4. The window follows the claims file, the next scored WAKE of 7+ min; only 23 of
+      51 cycles have one, and in 17 it starts 166 s to 2.9 h after SLEEP ends, at odds with the paper's 5-min
+      post-sleep WAKE (B2).
+    response: Added the reading of the first 5 min after SLEEP (47 cycles, signed-rank p 3.9e-10 and 2.8e-06)
+      and asked a reader whether it is the paper's window. Outcome kept as tested on the claims file.
+  - claim: fig3d-first-last-packet-slope
+    agrees: true
+    outcome: reproduced
+    reason: Cell 44 (b), 0.872 [0.840, 0.904], inside 0.8535 +- 0.0265.
+    response: No change needed.
+  - claim: fig3b-sextile-changes
+    agrees: true
+    outcome: reproduced
+    reason: Cell 46, top sextile R < 0 with p <= 3e-8 and bottom sextile R > 0 under every reading.
+    response: Sextiles now follow M2's primary reading, and M2 reading (b) is shown; both agree. Outcome kept.
+  - claim: cv-decreases-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 49, criterion reading (b); R -0.003, p 0.73 (clock ii, p 0.2).
+    response: No change needed.
+  - claim: fig3c-spindles-over-sleep
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 51, the incidence decrease reaches only reading (b), R -0.021, p 0.03. The incidence of 2.85/min
+      matches Table S1 (2.94) but not the Results (1.94), and the duration of 0.616 s is outside tolerance.
+      Frequency and amplitude match. Only the mean of session means is printed for duration.
+    response: Added the duration over all spindles (mean 0.614 +- 0.320 s, median 0.524 s) and the incidence
+      trend without the Dino ACC sessions (p = 0.15). Marked as resting on the normalization clock. Outcome
+      kept.
+  - claim: fig3c-updown-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 53, at most 2 of 5 parts hold (DOWN duration, UP-duration absence).
+    response: Added the trends without the Dino ACC sessions. Outcome kept.
+  - claim: fig3f-within-up-changes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 55, the S3C trend holds under (b) (p 9e-16). Fastest sextile -0.65 Hz (p 8e-8) and pI -0.57
+      Hz (p 0.045) are right. The slowest sextile change is n.s. (p 0.36).
+    response: Outcome changed to reproduced. M2 reading (b), which the verifier noted was not run (B7), gives
+      the slowest sextile +0.123 Hz, p = 0.047, and the fastest -0.425 Hz, p = 3.7e-07; under M2 reading (a)
+      the slowest is n.s. (p = 0.27).
+  - claim: figs3a-first-last-rem-ma-slopes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 57, REM and MA slopes are within tolerance under (b), WAKE is 0.687 (outside). All intervals
+      lie below 1.
+    response: Added the MA slope under MA reading (b) (0.618) and the WAKE slope with the first 5 min after
+      SLEEP (0.793, still outside). Outcome kept.
+  - claim: fig3e-wake-before-after-sextiles
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 59, only sextiles 6 and 5 hold under (a); 4 and 1 do not (2 of 4).
+    response: Outcome changed to partially reproduced. M2 reading (b), per-cycle sextiles, gives 3 of 4 (sextile
+      6 p = 3.2e-06, 5 p = 0.00013, lowest p = 2e-05; 4 p = 0.23). The notes say that part of it can be regression
+      to the mean. The first-5-min window is shown as a variant (3 of 4).
+  - claim: fig4-lfp-within-nrem
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 61, delta and sigma increases and the packet-length correlation (R 0.387) hold. No single
+      reading has gamma falling over episodes and flat over packets; (b) packets p 6e-8, (c) episodes p 0.28.
+      The 10 s windows spill +-5 s across packet edges and the size of the effect was never checked (B9).
+    response: Added the trends with edge seconds left out (under reading c all six then hold) and without the
+      Dino ACC sessions. Outcome kept, as the claims file fixes the spectrogram.
+  - claim: fig4-updown-within-packets
+    agrees: true
+    outcome: reproduced
+    reason: Cell 63, reading (b), all 5 parts hold under either ratio definition.
+    response: Added the trends without the Dino ACC sessions. Outcome kept.
+  - claim: fig4-spindles-within-nrem
+    agrees: false
+    outcome: reproduced
+    reason: Cell 65 (b), all four increases are below their bounds and all four durations are within tolerance.
+      The packet frequency does change (p 0.0096), against the absence claim, but the criterion's final rule
+      leaves this part out.
+    response: Outcome changed from partially reproduced to reproduced, following the criterion's final rule;
+      the notes say the frequency part fails.
+  - claim: fig4e-late-packet-sigma
+    agrees: true
+    outcome: reproduced
+    reason: Cell 67 (a), late > early, rank-sum p 3.7e-34.
+    response: No change needed.
+  - claim: fig4-sextiles-within-nrem
+    agrees: false
+    outcome: reproduced
+    reason: Cell 69 (b), all sextile, CV and burst parts hold under clock (ii). Under clock (i) the episode
+      burst p is 2.6e-10, just above the 1e-10 bound.
+    response: Outcome changed from partially reproduced to reproduced, judged under clock (ii) as for other
+      trends, and marked as resting on the clock.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 71, 3 of 6 meet their bounds; the criterion needs 4. All six have the right sign at p < 0.05.
+    response: The verifier was right that 3 of 6 is below the criterion's 4. With sextiles from the session's
+      WAKE (M2's primary reading, B7) 4 of 6 meet their bounds (DOWN duration, DOWN incidence, UP duration,
+      gamma), so the outcome stays partially reproduced, now by the criterion's rule.
+  - claim: fig4e-within-up-sextiles
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 73, at most 1 of 3 groups holds. The slowest sextile increases. Unit (ii) is one entry per
+      cell and packet (n 4128 for about 165 cells), not one per cell as the criterion says (B5).
+    response: Unit (ii) now has one entry per cell (166, 126, 165 cells); 0 of 3 hold. Outcome kept.
+  - claim: figs5-within-wake-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 75, both the WAKE and the REM parts fail (for example, WAKE sextile 6 p 0.77; REM sextiles
+      1, 4 and 5 n.s.).
+    response: Added M2 reading (b); both parts fail. Outcome kept.
+  - claim: fig5b-ma-nrem-ma
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 79, no sextile changes at p < 0.05, and S5C R is +0.016 (p 0.64). The combined MA reading
+      (MA plus WakeInterruptions under 40 s) was not run for the MA triplets (B1).
+    response: Added MA reading (b) and M2 reading (b); neither changes the result. Outcome kept.
+  - claim: figs5d-rem-nrem-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 81, R 0.025, p 0.85, from 25 triplets in 3 sessions. The interruption-tolerant variant gives
+      R -0.105, p 0.0076. The adjacency rule (gap <= 2 s) is the author's own choice; the paper's tolerance
+      for the arousal at the end of REM plausibly applies to the REM-packet step too, and the bridge variant
+      under the linear reading would make figs5d partial by M4 (B3).
+    response: Outcome changed to partially reproduced, resting on an assumption. The tolerance after REM is
+      now applied after REM n (80 triplets, linear R = -0.097, p = 0.015); the adjacent and both-sides rules
+      are shown.
+  - claim: fig5c-sigma-ma-change
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 83, R 0.008, p 0.92.
+    response: Added MA reading (b), M2 reading (b) and sigma from windows inside the last 20 s; none is correlated.
+      Outcome kept.
+  - claim: fig5b-wake-between-packets
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 85, 8 or 52 triplets (paper 24). The fastest sextile does not increase. Motion vs change;
+      R 0.48, p 0.28 with raw motion. Raw motion is pooled across sessions whose means run from 0.55 to 4076;
+      pooled that way the correlation is not meaningful. The z-scored variant matches the data description's
+      own definition and would make the claim partially reproduced, but it rests on only n = 7 (B4).
+    response: Outcome kept as partially reproduced, resting on the z-scored motion, which the verifier says
+      matches the data description; the notes state that it rests on 7 triplets. The disagreement is recorded
+      here.
+  - claim: fig5b-ma-between-packets
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 87, the lowest sextile per cell-triplet gives p 0.0083 (direction not printed). The top sextile
+      falls significantly, where the claim says no change. S5G R -0.169, p 1.3e-7, against a bound of 1e-10.
+    response: Printed the direction (mean +0.0075 Hz, median +0.0017 Hz, 51% positive; p = 0.015 with the new
+      sextiles) and added M2 reading (b) (increase, p = 0.022 cells averaged). Outcome kept.
+  - claim: fig5b-rem-between-packets
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 89, sextiles 4-6 increase. REM duration R -0.019, p 0.85.
+    response: Added M2 reading (b). Outcome kept.
+  - claim: fig5c-delta-change-slow-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 91, slowest sextile R 0.008, p 0.86.
+    response: Added delta from windows inside the packets and M2 reading (b). Outcome kept.
+  - claim: figs2d-interneurons-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 93, slope 0.836 / 0.888, and neither interval includes 1.
+    response: No change needed.
+  - claim: sleep-homogenizes-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 95, only fig3d is reproduced; fig3e and cv are not.
+    response: fig3e is now partially reproduced; the outcome, partial when one or two of the three are reproduced,
+      is unchanged.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the first revision, the helper module, the claims file and
+    the attempt record, with the paper. It agreed with all 41 outcomes. Also corrected in reply to its general points,
+    the read time in the README, the header cell and the findings (7 to 9 minutes; cell 2 printed 9.1 and 7.2 min in this round's two runs).
+  results:
+  - claim: table1-dataset-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. C item on the 51 cycles resolved.
+    response: No change needed.
+  - claim: ma-statistics
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. B1, the MA set, resolved; the neighbours of the short WakeInterruptions
+      are printed (none lies between two packets).
+    response: No change needed.
+  - claim: packet-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig2a-pe-rate-distribution
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. C item on the pI REM median resolved (same middle cell under
+      both readings). B11 reported and handed to a reader; it does not change an outcome.
+    response: No change needed.
+  - claim: fig2b-wake-nrem-slope
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig2a-fraction-above-2hz
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes. B6, pseudo-replication, still open; fig2a-fraction-above-2hz
+      still passes only under reading (a). Under reading (b) it would be partial.
+    response: Outcome kept, as the criterion's readings include (a); the notes already give the reading (b) result.
+      The disagreement over the unit stays open.
+  - claim: burst-index-by-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. The record's 'Kruskal-Wallis p from 1.1e-48 to 3.6e-54' is not
+      supported; reading (a) gives 3.4e-46 (cell 30).
+    response: Corrected the notes to p from 3.4e-46 to 3.6e-54.
+  - claim: fig2c-autocorrelogram
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. B10 reported and handed to a reader; it does not change an outcome.
+    response: No change needed.
+  - claim: synchrony-skew
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes. B11 reported and handed to a reader; it does not change an outcome.
+    response: No change needed.
+  - claim: updown-durations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig1e-up-state-dynamics
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. B8 resolved, recorded as a deviation.
+    response: No change needed.
+  - claim: fig2de-fast-before-slow
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes. B11 reported and handed to a reader; it does not change an outcome.
+    response: No change needed.
+  - claim: fig2f-rate-group-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. B7, the sextile readings, resolved.
+    response: No change needed.
+  - claim: fig3ab-population-rate-declines
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: first-last-packet-mean-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: post-sleep-wake-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. B2, the post-sleep window, is still open and decides this claim.
+      The first-5-min variant would make it reproduced, but in 38 of the 47 cycles none of that window is scored
+      as WAKE, so the variant may not be the paper's WAKE either. Cell 59 cites the first-5-min numbers that are
+      printed later, in cell 65 under fig3b-sextile-changes.
+    response: Moved the variant cell into this claim's section, before its conclusion. Outcome kept as tested on
+      the claims file; the window stays with a reader (questions file).
+  - claim: fig3d-first-last-packet-slope
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig3b-sextile-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes. B7 resolved.
+    response: The post-sleep variant cell that sat in this section was moved to post-sleep-wake-lower.
+  - claim: cv-decreases-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig3c-spindles-over-sleep
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. The only significant incidence decrease is reading (b) with clock
+      (i), p 0.03. Without the duplicated Dino ACC sessions it is p 0.15 (cell 71). The clock assumption is stated;
+      the dependence on counting one day twice is in the notes but not marked as part of the assumption.
+    response: Added a deviation saying the decrease depends on the two Dino days counted twice (p = 0.15 without
+      the ACC copies), and that both copies are kept because the paper's 27 sessions, which the data set matches,
+      include them. The Summary now gives both p values. Outcome and assumed flag kept.
+  - claim: fig3c-updown-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig3f-within-up-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes. This rests on M2 reading (b), and the parts use different units.
+      The sextile tests use one entry per cell and cycle (slowest p 0.047); the pI test uses one entry per cell
+      (p 0.045); pI per cell and cycle, and M2(b) per cell, are not printed.
+    response: Added each group under every combination of M2 and M1 readings. M2 reading (b) gives all three parts
+      on one unit, per cell and cycle (pI -0.672 Hz p = 0.047, slowest p = 0.047, fastest p = 3.7e-07) and per cell
+      (pI p = 0.045, slowest p = 0.023, fastest p = 3.3e-07). Under M2 reading (a) the slowest is not significant
+      with either unit. Conclusion and notes updated; outcome kept.
+  - claim: figs3a-first-last-rem-ma-slopes
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig3e-wake-before-after-sextiles
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. 3 of 4 holds only under M2(b). Under M2(a) it is 2 of 4, which
+      the criterion counts as not reproduced. The second-lowest sextile also increases under M2(b) (p 0.012, against
+      0.83 under M2(a)), which fits the regression-to-the-mean worry. B2 partly decides it.
+    response: Added the second-lowest sextile result to the conclusion and the notes as a sign of regression to
+      the mean. Outcome kept.
+  - claim: fig4-lfp-within-nrem
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. No assumption stated; the partial rule (delta and sigma increase)
+      holds under every reading, clock and variant (cell 86), so the flag should come off or the assumption be named.
+      Cell 87 and the notes say gamma R -0.223 under reading (a); cell 86 prints -0.220 (clock i) and -0.245 (clock
+      ii). The edge-trimmed spectrogram would make it reproduced under reading (c); the record keeps partial because
+      the claims file names the plain spectrogram. B9 checked.
+    response: Removed the assumed flag. Corrected the gamma values in the conclusion and notes to -0.220 and -0.129
+      (clock i) and -0.245 and -0.131 (clock ii). Outcome kept, judged on the claims file's spectrogram.
+  - claim: fig4-updown-within-packets
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes. B12 resolved.
+    response: No change needed.
+  - claim: fig4-spindles-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig4e-late-packet-sigma
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig4-sextiles-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 41 recorded outcomes. The clock assumption is stated and reasonable. The response
+      saying it was judged under clock (ii) as for other trends is a wording error: fig3c-spindles-over-sleep was
+      judged under clock (i). The rule applied is the best of the two clocks, which the shared deviation text does
+      say.'
+    response: Added to the notes that the outcome takes the better of the two clocks, here clock (ii), as for every
+      trend. Outcome kept.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. No assumption stated; 4 of 6 holds under both M2 readings (cell
+      101), and the deviations list only standard choices, so the flag should come off or the assumption be named.
+    response: Removed the assumed flag. Outcome kept.
+  - claim: fig4e-within-up-sextiles
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. B5, the unit, resolved.
+    response: No change needed.
+  - claim: figs5-within-wake-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: fig5b-ma-nrem-ma
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. The triplet adjacency of 2 s or less is stated and reasonable.
+      B1 resolved; B3, the triplet set, still open.
+    response: No change needed.
+  - claim: figs5d-rem-nrem-rem
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. The adopted rule is reasonable given M6, but it gives 660 cells
+      against the paper's about 136, so the triplet set is not the paper's (B3, still open).
+    response: No change; the cell count against the paper's is in the notes and the triplet rule is asked of the
+      paper's authors.
+  - claim: fig5c-sigma-ma-change
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. The triplet adjacency of 2 s or less is stated and reasonable.
+    response: No change needed.
+  - claim: fig5b-wake-between-packets
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. In round 1 I disagreed; I now accept it, because the record states
+      the assumption (motion z-scored per session, which is what the data description says) and says the result
+      rests on 7 triplets (cell 122, R 0.869, p 0.011). It is still thin; reading (b), with 43 triplets, shows no
+      correlation (p 0.11). B3 and B4 still open (8 or 52 triplets against 24; n = 7).
+    response: No change; the notes already state that the outcome rests on 7 triplets and give the reading (b) result.
+  - claim: fig5b-ma-between-packets
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes. The triplet adjacency is stated and reasonable. C item on the
+      lowest sextile's direction resolved.
+    response: No change needed.
+  - claim: fig5b-rem-between-packets
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes. The triplet adjacency is stated and reasonable.
+    response: No change needed.
+  - claim: fig5c-delta-change-slow-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: figs2d-interneurons-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
+  - claim: sleep-homogenizes-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 41 recorded outcomes.
+    response: No change needed.
