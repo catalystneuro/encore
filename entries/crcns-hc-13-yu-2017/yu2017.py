@@ -37,9 +37,12 @@ Where each parameter comes from:
   mode mirrored about it; threshold its 99.99th percentile; events above it
   for >= 20 ms, start and end where the envelope returns to the mean (z = 0);
   events at speed < 4 cm/s at their start kept. Readings O5 (a) envelope
-  amplitude, (b) its square. The LFP is used as stored: the data set holds one
-  channel per tetrode, recorded against the corpus callosum reference (Methods,
-  Recording), so no re-referencing is done.
+  amplitude, (b) its square. A fixed threshold of 3 SD of the amplitude
+  (``fixed3sd``), the standard method the Methods say they replaced, is kept as a
+  sensitivity check only. The LFP is used as stored: the data set holds one
+  channel per tetrode and does not say how it is referenced; the paper's Methods
+  (Recording) say CA1 LFP was referenced to a corpus callosum tetrode, and no
+  re-referencing is done.
 - Spectral power per SWR (Methods, Spectrograms): multitaper (time-bandwidth 3,
   5 tapers, claims file), 100 ms windows (150 samples, padded to 256 as
   Chronux does by default), z-scored per frequency over the session; the window
@@ -422,23 +425,35 @@ def process_animal(animal, files):
                                                                      starttimes=[tets[t][0] for t in use])
         if not envs:
             continue
-        for reading, power in (("amplitude", 1), ("squared", 2)):
+        for reading, power in (("amplitude", 1), ("squared", 2), ("fixed3sd", 1)):
             vals = {ep: v["env"] ** power for ep, v in envs.items()}
             imm = np.concatenate([vals[ep][v["speed"] < SPEED_THR] for ep, v in envs.items()])
             mu, sd = imm.mean(), imm.std()
             zimm = (imm - mu) / sd
             mode, thr = noise_threshold(zimm)
+            if reading == "fixed3sd":
+                # Sensitivity check, not the paper's method: the fixed 3 SD threshold the Methods name as
+                # the standard one they replaced (Methods, SWR detection, paragraph 2).
+                thr = 3.0
             rows = []
+            n_imm = n_imm_in = 0
             for ep, v in envs.items():
                 z = (vals[ep] - mu) / sd
                 ev = detect_events(z, v["fs"], thr)
+                inside = np.zeros(len(z), bool)
                 for a, b, pk in ev:
                     a, b = int(a), int(b)
+                    inside[a:b] = True
                     rows.append((ep, v["t"][a], v["t"][min(b, len(z) - 1)], pk, v["speed"][a]))
+                im = v["speed"] < SPEED_THR
+                n_imm += im.sum()
+                n_imm_in += (inside & im).sum()
             ev = np.array(rows).reshape(-1, 5)
             keep = ev[:, 4] < SPEED_THR
             dd["swr"][reading] = dict(epoch=ev[keep, 0].astype(int), start=ev[keep, 1], end=ev[keep, 2],
-                                      peak=ev[keep, 3], n_all=len(ev), mode=mode, thr=thr, mu=mu, sd=sd)
+                                      peak=ev[keep, 3], n_all=len(ev), mode=mode, thr=thr, mu=mu, sd=sd,
+                                      frac_imm_in_events=n_imm_in / max(n_imm, 1),
+                                      frac_imm_above_thr=float((zimm > thr).mean()))
         # spectral power for the main reading's SWRs
         sw = dd["swr"]["amplitude"]
         p_rip = np.full(len(sw["start"]), np.nan)
@@ -652,11 +667,13 @@ def ccg_peak(a, b, maxlag, binw=0.010, sigma_s=0.150):
     return cen[np.argmax(hs)], h.sum()
 
 
-def occupancy_map(pos_list, spikes, binsize=2.0, sigma=2.0, extent=(0, 320, 0, 260)):
+def occupancy_map(pos_list, spikes, binsize=2.0, sigma=2.0, extent=(0, 320, 0, 260), min_occ=0.0):
     """Occupancy-normalized rate map, 2 cm bins, Gaussian sigma 2 cm (Methods, Occupancy normalized firing maps).
 
     The rate in visited bins is smoothed with normalized convolution, so unvisited
-    bins do not pull the rate down (a standard choice).
+    bins do not pull the rate down (a standard choice). ``min_occ`` (s) leaves out
+    bins visited for less than that; the paper sets no minimum, so 0 is the main
+    choice and a minimum is a variant.
     """
     xe = np.arange(extent[0], extent[1] + binsize, binsize)
     ye = np.arange(extent[2], extent[3] + binsize, binsize)
@@ -677,7 +694,7 @@ def occupancy_map(pos_list, spikes, binsize=2.0, sigma=2.0, extent=(0, 320, 0, 2
             c, _, _ = np.histogram2d(sx, sy, [xe, ye])
             cnt += c
     from scipy.ndimage import gaussian_filter
-    vis = occ > 0
+    vis = occ > min_occ
     rate = np.where(vis, cnt / np.where(vis, occ, 1), 0.0)
     num = gaussian_filter(rate, sigma / binsize, truncate=3.0)
     den = gaussian_filter(vis.astype(float), sigma / binsize, truncate=3.0)
