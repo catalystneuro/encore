@@ -60,8 +60,10 @@
 #   (a) between beam-break entry and exit at a well, when the data set holds those times; (b) each
 #   immobility period (speed < 4 cm/s) assigned to the nearest of the wells, the wells located as
 #   the centres of the clusters of immobile positions (the Methods say almost all immobility is at
-#   wells). Well entry and exit times (Figure 2, Figure 6) are the beam-break times under (a) and
-#   the starts and ends of those immobility periods under (b).
+#   wells). Well entry and exit times (Figure 2) are the beam-break times under (a) and the starts
+#   and ends of those immobility periods under (b). For Figure 6 the Methods (PFC and CA1 spiking
+#   activity) fix well entry as the infrared beam break, so only (a) applies there; the Methods
+#   (Pre-training) say the beam is crossed by the animal's nose at the well.
 # - O2, "excluding spikes during SWRs". Methods exclude the spikes; the Results say "excluding
 #   activity during SWRs". Readings: (a) SWR spikes removed and SWR time kept in the denominator;
 #   (b) both removed. The rate at a well is taken over all task sessions of the day, as the cell
@@ -185,9 +187,14 @@ claims:
     test: Wilcoxon rank-sum test
     p: 0.0001
     p_relation: "<"
-  - about: per task (Figure 1, supplement 4E); the legend does not say which task has which bound
+  - about: per task (Figure 1, supplement 4E), one task; the legend does not say which task has
+      which bound
     test: Wilcoxon rank-sum test
     p: 0.005
+    p_relation: "<"
+  - about: per task (Figure 1, supplement 4E), the other task
+    test: Wilcoxon rank-sum test
+    p: 0.0005
     p_relation: "<"
   data: with_inputs
   depends_on:
@@ -312,10 +319,16 @@ claims:
     strongly coactivated during SWRs, whereas those cell pairs with place fields located at
     different reward well locations showed no more coactivation than expected by chance
   statistics:
-  - test: Kruskal-Wallis test
+  - about: one comparison; the legend gives n.s., p < 0.05 and p < 0.005 without saying which
+      comparison carries which
+    test: Kruskal-Wallis test
     p: 0.005
     p_relation: "<"
     n: 12 same-well pairs (all SWRs), 11 same-well pairs (not in field SWRs), 14 different-well pairs
+  - about: another comparison
+    test: Kruskal-Wallis test
+    p: 0.05
+    p_relation: "<"
   data: with_inputs
   depends_on:
   - fig1-iap-map-counts
@@ -422,8 +435,8 @@ claims:
   - fig4b-coactivity
   criterion: Pairs binned by the absolute offset of their peak (O7) in 1 s bins from 0 to 5 s;
     per bin a two-sided Wilcoxon rank-sum of MAP-MAP against MAP-IAP coactivity. Reproduced when
-    the MAP-MAP mean is higher in all four bins from 1 to 5 s and at least three of them give p <
-    0.05; partially reproduced when one or two do.
+    the MAP-MAP mean is higher in all four bins from 1 to 5 s and all four give p < 0.05, as the
+    legend reports; partially reproduced when one to three do.
 - id: fig4s2c-spatial-proximity-control
   statement: Among pairs with place field peaks less than 0.5 m apart, MAP-IAP pairs still have
     lower SWR coactivity than MAP-MAP and IAP-IAP pairs, and MAP-MAP pairs have higher coactivity
@@ -446,6 +459,10 @@ claims:
     p: 0.001
     p_relation: "<"
     n: 1056 MAP-MAP, 18 IAP-IAP and 211 MAP-IAP pairs
+  - about: pairs with field peaks < 0.5 m apart (panel C), the other comparison
+    test: Kruskall-Wallis test
+    p: 0.0001
+    p_relation: "<"
   data: with_inputs
   depends_on:
   - fig4b-coactivity
@@ -463,10 +480,16 @@ claims:
     cell pairs with overlapping spikes during the transition period between movement and immobility
     at reward location entry or exit
   statistics:
-  - test: Wilcoxon rank-sum test
+  - about: some of the comparisons; the legend gives p < 0.05 and p < 0.0001 without saying which
+      comparison carries which
+    test: Wilcoxon rank-sum test
     p: 0.05
     p_relation: "<"
     n: entry 333 MAP-MAP, 207 MAP-IAP, 24 IAP-IAP pairs; exit 512, 217 and 24
+  - about: the other comparisons
+    test: Wilcoxon rank-sum test
+    p: 0.0001
+    p_relation: "<"
   data: with_inputs
   depends_on:
   - fig2c-continuous-transition
@@ -494,7 +517,7 @@ claims:
     foraging task alone (Figure 4, supplement 4A shows the same in each task).
 - id: fig4d-iap-swr-lower-power
   statement: IAP-SWRs have lower 150 to 250 Hz power than MAP-SWRs, and MAP & IAP-SWRs the highest;
-    all groups show the increase in slow gamma (about 30 Hz) power of SWRs.
+    IAP-SWRs show the increase in gamma (about 30 Hz) LFP power characteristic of SWRs.
   source: Figure 4D; Results, Distinct properties for SWRs, paragraphs 1 and 2
   quote: The mean of spectral power between 150–250 Hz is significantly different between groups
   statistics:
@@ -504,13 +527,14 @@ claims:
   data: with_inputs
   depends_on:
   - fig4a-swr-counts
-  criterion: As in the Methods (Spectrograms). Broadband CA1 LFP, multitaper spectrogram (Chronux) in
-    100 ms windows stepped by 10 ms, z-scored per frequency over the session; per SWR the mean over
-    the first 100 ms after onset and over 150 to 250 Hz. Taper parameters and which tetrode (or the
-    mean over CA1 tetrodes) are not given; a standard choice (time-bandwidth 3, 5 tapers; the mean
-    over CA1 tetrodes) is used. Reproduced when the three pairwise two-sided rank-sum tests give p
-    < 0.05 with IAP-SWR < MAP-SWR < MAP & IAP-SWR, and each group's mean normalized power at 25 to
-    35 Hz in that window is above 0.
+  criterion: As in the Methods (Spectrograms). Broadband CA1 LFP referenced to ground, multitaper
+    spectrogram (Chronux) in 100 ms windows stepped by 10 ms, z-scored per frequency over all times
+    of the session; per SWR the mean over the first 100 ms after onset and over 150 to 250 Hz.
+    Taper parameters and which tetrode (or the mean over CA1 tetrodes) are not given; a standard
+    choice (time-bandwidth 3, 5 tapers; the mean over CA1 tetrodes) is used. Reproduced when the
+    three pairwise two-sided rank-sum tests give p < 0.05 with IAP-SWR < MAP-SWR < MAP & IAP-SWR,
+    and the IAP-SWR mean normalized power at 25 to 35 Hz in that window is above 0 (the paper
+    reports no test for the gamma increase; the 25 to 35 Hz band is a choice around its ~30 Hz).
 - id: fig4s5-cells-spikes-per-swr
   statement: IAP-SWRs contain fewer active cells (mean 1.03 against 1.31) and fewer spikes (mean
     2.04 against 2.49) than MAP-SWRs.
@@ -558,7 +582,9 @@ claims:
     is not given; readings are (a) draws weighted so that each group follows the IAP-SWR
     distribution, (b) draws weighted to the overlap (minimum) of the two distributions. Reproduced
     when, for both matchings and both measures, the median subsample p-value is below 0.05 and the
-    MAP-SWR median exceeds the IAP-SWR median in at least 95% of subsamples, under one reading.
+    MAP-SWR median exceeds the IAP-SWR median in at least 95% of subsamples, under one reading. The
+    paper shows the subsample p-values and median differences as boxplots and gives no bound; the
+    median p-value and the 95% are choices.
 - id: fig4s8-interspersed
   statement: There is no strong relation in timing between IAP-SWRs and MAP-SWRs; they are
     temporally interspersed.
@@ -612,8 +638,11 @@ claims:
     unit: units
   criterion: Foraging rats only. Units on PFC tetrodes (tetrode area), counted per day (O4). Mean
     rate over all movement (> 4 cm/s) or all immobility (< 4 cm/s) time in the day's task sessions.
-    The paper does not say how many SWRs of each type a session needs; read as at least one of
-    each. Reproduced when both counts are within tolerance under one reading.
+    The Results require sessions where both MAP- and IAP-SWRs could be identified, the Methods
+    (Cell selection) units simultaneously recorded with CA1 IAPs and MAPs. Readings are (a) at
+    least one MAP-SWR and one IAP-SWR in the session, (b) at least one IAP and one MAP recorded on
+    the same day; how many SWRs of each type a session needs is not said. Reproduced when both
+    counts are within tolerance under one reading.
 - id: fig5-pfc-modulated-fraction
   statement: About 63% of the selected PFC units (70 of 112) are significantly modulated during one
     or both types of SWRs, almost twice the fraction found without separating SWR types.
@@ -634,9 +663,10 @@ claims:
     following Jadhav et al. 2016. A PETH aligned to SWR starts; 1000 controls with each SWR's
     surrounding spikes circularly shifted by an amount drawn per SWR; the squared deviation of
     the observed PETH from the control mean over the mean SWR duration of that type, against the
-    controls' deviations; significant at p < 0.05 (Figure 5, supplement 2). Not given here, and
-    taken as the readings to run, the PETH window and bin (+-0.5 s around SWR start, 10 ms bins) and
-    the shift range (the whole +-0.5 s window). Reproduced when the fraction is within tolerance.
+    controls' deviations; significant at p < 0.05 (Figure 5, supplement 2). The paper does not
+    give the PETH window and bin or the shift range, and they could change which units pass. The
+    choice run is +-0.5 s around SWR start, as the 1 s window of the modulation index, in 10 ms
+    bins, with the shift drawn over the whole window. The outcome rests on this choice. Reproduced when the fraction is within tolerance.
 - id: fig5dg-pfc-groups
   statement: Significantly modulated PFC units fall into units excited only during IAP-SWRs (14),
     excited only during MAP-SWRs (20) and inhibited during either or both (33); only 3 are excited
@@ -686,7 +716,9 @@ claims:
     duration from SWR start, against the rate in the 1 s window centred on the SWR; whether centred
     on SWR start or on its midpoint is not said, both are readings). Groups and expected counts as
     in the Methods (PFC cell classification), 2, 2, 3 and 1 of 8 combinations times the number of
-    modulated units. Binomial test, two-sided, of each observed count against probability k/8.
+    modulated units. Binomial test of each observed count against probability k/8; the paper does
+    not say whether it is one- or two-sided, so both are readings (on the paper's counts both give
+    p < 0.05 for 3 of 70 at 1/8 and p >= 0.05 for the other groups).
     Reproduced when the excited-during-both group is below its expectation with p < 0.05 and the
     other three groups are not significantly different (p >= 0.05), under one reading; the counts
     are judged against tolerance (for the count of 3, a tolerance of 1 unit is used, as 10% of 3 is
@@ -728,7 +760,7 @@ claims:
   depends_on:
   - fig5-pfc-modulated-fraction
   expected:
-    quantity: R2 of MAP & IAP-SWR index on MAP-SWR and IAP-SWR indices
+  - quantity: R2 of MAP & IAP-SWR index on MAP-SWR and IAP-SWR indices
     value: 0.73
     tolerance: 0.073
   criterion: Ordinary least squares of the MAP & IAP-SWR index on the MAP-SWR and IAP-SWR indices
@@ -752,8 +784,9 @@ claims:
     n: pairwise comparisons, IAP-SWR+ 1082067, MAP-SWR+ 1921500, IAP/MAP-SWR- 3606768
   depends_on:
   - fig5dg-pfc-groups
-  criterion: Per unit, mean instantaneous rate over a 10 s window centred on well entry (O1) over
-    all entries, divided by its maximum (Methods). The rate's bin and smoothing are not given; 100
+  criterion: Per unit, mean instantaneous rate over a 10 s window centred on well entry, the
+    infrared beam break (Methods, PFC and CA1 spiking activity; O1 reading (a)), over all entries,
+    divided by its maximum (Methods). The rate's bin and smoothing are not given; 100
     ms bins with Gaussian sigma 200 ms is a standard choice. Pearson correlation for every PFC-CA1
     pair; the index is every difference of a PFC-IAP correlation and a PFC-MAP correlation within a
     PFC group (as the n of pairwise comparisons implies). The rank-sum comparison is read as
@@ -800,3 +833,41 @@ claims:
     mean over all spike pairs; the paper does not define it) and (B) the absolute offset of the
     cross-correlation peak in a 20 s window. Reproduced when neither test gives p < 0.05; the
     medians are reported either way.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, O1. Well entry for Figure 6 is the infrared beam break (Methods, PFC and CA1
+    spiking activity), so reading (b) no longer applies there; Pre-training cited for the beam.
+  - fig1f-iap-smaller-coverage. Added the second per-task bound p < 0.0005; the Figure 1, supplement
+    4E legend gives both p < 0.005 and p < 0.0005.
+  - fig3s3-iap-same-well-coactivity. Added the p < 0.05 Kruskal-Wallis entry the legend also gives,
+    and said which comparison carries which bound is not stated.
+  - fig4s1b-offset-matched-coactivity. Full reproduction now needs p < 0.05 in all four bins from 1
+    to 5 s, as the legend reports it for each bin; three of four was less than the paper says.
+  - fig4s2c-spatial-proximity-control. Added the p < 0.0001 Kruskal-Wallis entry the panel C legend
+    also gives.
+  - fig4s3-overlapping-pairs. Added the p < 0.0001 rank-sum entry the legend also gives.
+  - fig4d-iap-swr-lower-power. Statement said all groups show a slow gamma increase; the paper says
+    IAP-SWRs contained the characteristic gamma (~30 Hz) increase and does not say slow. Statement
+    and criterion now test IAP-SWRs, the band named as a choice; the LFP reference to ground
+    (Methods, Spectrograms) added to the criterion.
+  - fig4s67-matched-subsamples. Named the median p-value and the 95% bound as choices; the paper
+    gives only boxplots.
+  - pfc-unit-selection. Added the Methods reading (units simultaneously recorded with CA1 IAPs and
+    MAPs) beside the Results reading (sessions with both MAP- and IAP-SWRs).
+  - fig5-pfc-modulated-fraction. The PETH window, bin and shift range were presented as given; they
+    are not in the paper. Now named as a choice the outcome rests on, with the +-0.5 s window tied
+    to the 1 s window of the modulation index.
+  - fig5dg-pfc-groups. The binomial test's side is not given; one- and two-sided are both readings
+    (both give the paper's outcome on its counts, checked by computation).
+  - pfc-regression-joint-swr. expected written as a list, as in the other claims.
+  - fig6c-similarity-index. Well entry fixed to the beam break from the Methods in place of O1.
+  - Open. fig5-pfc-modulated-fraction depends on PETH window, bin and shift range that the paper
+    leaves to Jadhav et al. 2016; the unit count may vary with them.
+  - Open. fig2c-continuous-transition judges the tail by a made-up rule (lower notch above zero in
+    half the bins from 0 to 0.5 s); the paper gives no measure, and the rule is named a choice.
+  - Open. fig1-iap-map-counts. The per-task MAP counts (244 + 435 = 679) disagree with the pooled 659;
+    the file judges against either, which the paper does not settle.
