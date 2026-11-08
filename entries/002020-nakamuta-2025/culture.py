@@ -19,8 +19,8 @@ paper for each; "claims" below means that comment or a claim's criterion):
   descending order, all positive ones (claims; Methods, paragraph 2).
 - Fit f(x) = a x^-c exp(-b x), b >= 0, least squares (claims; Methods, Parameter fitting).
   F1 on log values, F2 on raw values. For avalanches, sizes 1 to 128 (Methods). Sizes with no
-  cascade are left out of both fits (a standard choice: the log of zero is undefined for F1).
-  A fit needs at least `MIN_POINTS` points (a standard choice).
+  cascade are left out of F1 (the log of zero is undefined) and kept in F2, where a zero is a
+  valid value. A fit needs at least `MIN_POINTS` points (a standard choice).
 - Shuffle: independent circular shift of each electrode's binned series (Figure 1D legend);
   the seed is a standard choice.
 - Local Moran's I with w_ij = 1 within 200 um, row-normalized, threshold 0.0001 (Methods,
@@ -38,7 +38,9 @@ paper for each; "claims" below means that comment or a claim's criterion):
 - PC time scales (claim no-temporal-structure): (a) the first lag at which the autocorrelation
   of a PC's projection falls below 1/e, (b) the integral of the autocorrelation from lag 0 to
   its first non-positive lag (the reading chosen here of "the integral of the positive part",
-  a choice stated as one), both in seconds; lags up to `MAX_LAG_BINS`.
+  a choice stated as one), both in seconds; lags up to `MAX_LAG_BINS`. As (a) is a whole number
+  of 100 ms bins, (a') interpolates the 1/e crossing linearly between the two lags around it
+  (a variant, to see the effect of the quantization).
 - Days in vitro are not in the dataset (the files say so). `day` is days since the dish's
   first recording in the dataset; DIV = day + d0 is an assumption made in the notebook.
 """
@@ -119,6 +121,9 @@ def load_recording(asset_id):
             first_frame=int(prov["first_spike_frame_number"][0]),
             unresolved_events=int(prov["unresolved_event_count"][0]),
             subject_age=f["general/subject/age"][()].decode(),
+            subject_description=f["general/subject/description"][()].decode(),
+            experiment_description=f["general/experiment_description"][()].decode(),
+            session_description=f["session_description"][()].decode(),
             mapping_xy=np.c_[f[ecp + "source_mapping/source_x"][:], f[ecp + "source_mapping/source_y"][:]],
             mapping_el=f[ecp + "source_mapping/source_electrode"][:],
         )
@@ -234,12 +239,18 @@ def avalanche_distribution(t, e):
 
 
 def fit_decay(y, method, x=None):
-    """Fit y = a x^-c exp(-b x) with b >= 0; returns (a, b, c). F1 on log values, F2 on raw."""
+    """Fit y = a x^-c exp(-b x) with b >= 0; returns (a, b, c). F1 on log values, F2 on raw.
+
+    F1 uses the points with y > 0; F2 uses every finite point, zeros included.
+    """
     y = np.asarray(y, float)
     if x is None:
         x = np.arange(1, len(y) + 1, dtype=float)
-    ok = y > 0
-    x, y = x[ok], y[ok]
+    x = np.asarray(x, float)
+    fin = np.isfinite(y)
+    xa, ya = x[fin], y[fin]
+    ok = ya > 0
+    x, y = xa[ok], ya[ok]
     if len(y) < MIN_POINTS:
         return (np.nan, np.nan, np.nan)
     # log y = log a - c log x - b x, linear in (log a, c, b).
@@ -249,6 +260,7 @@ def fit_decay(y, method, x=None):
     if method == "F1":
         return (float(np.exp(la)), float(b), float(c))
     scale = y[0]
+    x, y = xa, ya
 
     def resid(p):
         return (np.exp(p[0]) * x ** (-p[2]) * np.exp(-p[1] * x) - y) / scale
@@ -268,10 +280,14 @@ def fit_decay(y, method, x=None):
 
 
 def fit_power(y, x=None):
-    """Pure power law y = a x^-c on log values (claim fig1e-example-dish, reading c)."""
+    """Pure power law y = a x^-c on log values; returns c (claim fig1e-example-dish, reading c).
+
+    For pooled spectra, pass the concatenated ranks as x and values as y.
+    """
     y = np.asarray(y, float)
     if x is None:
         x = np.arange(1, len(y) + 1, dtype=float)
+    x = np.asarray(x, float)
     ok = y > 0
     if ok.sum() < MIN_POINTS:
         return np.nan
@@ -279,7 +295,8 @@ def fit_power(y, x=None):
 
 
 def time_scales(V, Xc):
-    """Per PC, (a) first lag below 1/e and (b) integral to the first non-positive lag, in seconds."""
+    """Per PC, (a) first lag below 1/e, (a') the same interpolated, (b) integral to the first
+    non-positive lag; in seconds."""
     P = V.T @ Xc
     n = P.shape[1]
     nfft = 1 << int(np.ceil(np.log2(2 * n)))
@@ -289,13 +306,18 @@ def time_scales(V, Xc):
     ac = np.divide(ac, ac0, out=np.zeros_like(ac), where=ac0 > 0)
     below = ac < np.exp(-1)
     below[:, -1] = True
-    tau_e = below.argmax(axis=1) * BIN_S
+    k = below.argmax(axis=1)
+    tau_e = k * BIN_S
+    rows = np.arange(len(k))
+    lo, hi = ac[rows, np.maximum(k - 1, 0)], ac[rows, k]
+    frac = np.divide(lo - np.exp(-1), lo - hi, out=np.zeros_like(lo), where=(k > 0) & (lo > hi))
+    tau_e_interp = (np.maximum(k - 1, 0) + np.where(k > 0, frac, 0.0)) * BIN_S
     nonpos = ac <= 0
     nonpos[:, -1] = True
     first = nonpos.argmax(axis=1)
     cum = np.cumsum(ac, axis=1)
     tau_i = cum[np.arange(len(first)), np.maximum(first - 1, 0)] * BIN_S
-    return tau_e, tau_i
+    return tau_e, tau_e_interp, tau_i
 
 
 def synchrony(X):
@@ -315,10 +337,10 @@ def analyse(asset, seed):
     t, e, x, y, meta = load_recording(asset["asset_id"])
     n_el = len(x)
     X_all = bin_counts(t, e, n_el)
-    rates = np.bincount(e, minlength=n_el) / DURATION_S
+    rates = np.bincount(e[t < DURATION_S], minlength=n_el) / DURATION_S
     out = dict(meta=meta, dish=asset["dish"], date=asset["date"], n_el=n_el,
                mean_rate=float(rates.mean()), n_above=int((rates > RATE_HZ).sum()),
-               max_rate=float(rates.max()), pop=X_all.sum(axis=0).astype(np.int32))
+               max_rate=float(rates.max()), pop=X_all.sum(axis=0).astype(np.int32), rates=rates)
     rng = np.random.default_rng(seed)
     shifts_X, shifts = circular_shuffle(X_all, rng)
     for sel in ("S1", "S2"):
@@ -340,7 +362,7 @@ def analyse(asset, seed):
                     key = f"{mname}{'_self' if sw else ''}"
                     res["loc_" + key] = locality(V, W, norm)
                     res["locshuf_" + key] = locality(Vs, W, norm)
-            res["tau_e"], res["tau_i"] = time_scales(V, Xc)
+            res["tau_e"], res["tau_e_interp"], res["tau_i"] = time_scales(V, Xc)
             ks = np.isin(e, np.flatnonzero(keep))
             res["aval"] = avalanche_distribution(t[ks], e[ks])
             res["aval_shuf"] = avalanche_distribution(*shuffle_spikes(t[ks], e[ks], shifts))
