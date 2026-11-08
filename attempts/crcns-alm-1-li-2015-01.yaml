@@ -1,0 +1,869 @@
+schema_version: 2
+id: crcns-alm-1-li-2015-01
+dataset:
+  archive: crcns
+  id: alm-1
+  version: unversioned
+  doi: 10.6080/K0RF5RZT
+paper: doi:10.1038/nature14178
+date: 2026-11-07
+entry: crcns-alm-1-li-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42414841408
+outcomes:
+- claim: fig1d-photoinhibition-ipsilateral-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The photoinhibition behaviour (VGAT-ChR2-EYFP and PV-ires-Cre x ReaChR mice) is not in
+    the data set, which holds only the 19 electrophysiology mice; its trials carry axonal
+    tagging stimulation, not ALM photoinhibition. The data description names no other deposit,
+    and none was found on CRCNS.
+- claim: fig1d-sample-epoch-smaller-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Same data as fig1d-photoinhibition-ipsilateral-bias, not in the data set.
+- claim: task-performance
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:task-performance
+  measured: 76.84
+  notes: Control trials, mean over sessions (reading a), 76.84% correct and 10.88% lick early
+    trials; over mice 76.37% and 14.06%; pooled 77.28% and 12.59%. With all trials except the
+    NaN-type test trials, 76.09% to 76.59% correct. Every reading puts the per cent correct within
+    78.4 +/- 7.84; the lick early fraction is below 14.3% under every reading but the mean over
+    mice with all trials but NaN-type (14.69%).
+    Per mouse 60.4% to 87.0% correct.
+  deviations:
+  - Measured on the 19 electrophysiology mice in the data set; the paper's figure is over 42
+    mice, and the behaviour-only mice are not deposited.
+  - No-lick trials are left out of the denominator, as the data set's Demo_get_performance.m
+    does; the Methods say only that lick early trials are excluded.
+- claim: unit-counts
+  outcome: partially_reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:unit-counts
+  measured:
+  - 1408
+  - 1245
+  - 158
+  - 5
+  notes: 1,408 units, 19 mice, 99 sessions. The trough-to-peak widths of the deposited mean
+    waveforms (the criterion's measure) give 1,245 units above 0.45 ms, 158 below 0.35 ms and 5
+    in between, so the FS and intermediate counts are outside tolerance; 34 of the 39 units
+    without a label have widths below 0.35 ms. A spline-interpolated variant gives 1,241, 158
+    and 9. The data set's cellType labels give exactly 1,245 pyramidal, 124 FS and 39 unlabelled
+    units. The waveform arrays hold 29 samples per spike and one row per spike in every unit,
+    with the trough at sample 15. The labels split the deposited widths cleanly - FS 0.154 to
+    0.256 ms, unlabelled 0.307 (34) or 0.410 ms (5), pyramidal 0.461 to 0.666 ms - so the
+    labels put the FS boundary between 5 and 6 samples, not at 0.35 ms. The paper's
+    classification is in the labels but its stated thresholds do not give it from the deposited
+    waveforms.
+  deviations:
+  - Waveforms are the deposited 29-sample snippets at 19531.25 Hz, so widths come in steps of
+    0.0512 ms; the paper does not say whether its widths were interpolated.
+- claim: fig2-selective-fraction
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig2-selective-fraction
+  measured:
+  - 0.7325
+  - 912
+  notes: With lick early trials dropped and a 1.3 s response epoch, 912 of 1,245 pyramidal
+    neurons (73.25%) are selective, exactly the paper's count. The other readings give 910 to
+    950; Welch's test 903 to 947; the t-test on spike counts 912 under the main readings and 910
+    to 944 under the others. All within tolerance. Per mouse 0.417 to 0.852.
+  deviations:
+  - The t-test is on spike rates (count over each trial's epoch length), as the data set's
+    analysis_compile_all_data.m runs it (lines 217 to 221 and 300, printed in the notebook); the
+    Methods say spike counts, which differ where an epoch is not 1.3 s (3,707 trials), and the
+    test on counts is shown as a variant.
+  - Trials with axonal photostimulation (types 1 to 5 and NaN) and trials with GoodTrials 0 are
+    left out, and each unit's trials are limited to the span from its first to its last trial
+    with a spike, as the data set's analysis_compile_all_data.m does; the paper does not state
+    either.
+- claim: fig2d-response-categories
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig2d-response-categories
+  measured:
+  - 219
+  - 304
+  - 389
+  notes: 219 preparatory only, 389 with both and 304 peri-movement only, exactly the figure's
+    reading (b), under the main readings; the text's reading (a), 389 peri-movement only and 304
+    both, does not match under any reading of the response epoch or lick early trials. Measured
+    values are given in the order of the expected values (preparatory only, peri-movement only,
+    both).
+  deviations:
+  - The text and Fig. 2d disagree on which of 389 and 304 is the peri-movement-only count; the
+    data match the figure (recorded as a paper inconsistency).
+- claim: fig2c-selectivity-time-course
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig2c-selectivity-time-course
+  notes: Significant neurons in 200 ms windows, 60 before sample onset (shuffled labels median
+    54), 246 at the end of the sample, 298 and 379 at the start and end of the delay, peak 554 at
+    0.19 s after the cue. Population selectivity of 880 selective neurons with at least 11
+    trials of each type, 0.005, 1.19, 1.46 and 2.28 spikes/s at those times, peak 3.38 at 0.20 s.
+    All three conditions hold for both measures under both readings.
+  deviations:
+  - The 10 trials that set each neuron's preference are drawn at random with a fixed seed; the
+    preference uses spike counts from sample onset to the end of the response epoch, as the data
+    set's compile script does. Neurons need 11 trials of each type for the split (848 with more
+    than 15, as the script requires, give the same).
+- claim: fig2c-dynamic-single-neurons
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig2c-dynamic-single-neurons
+  notes: Mean population response correlation with the cue-time vector over the sample epoch
+    and the first 0.5 s of the delay is -0.168 (reading a) and -0.159 (reading b); -0.041 and
+    -0.084 with division by the s.d. Population selectivity stays above 0 from the end of the
+    sample epoch through the delay (minimum 1.19 spikes/s).
+  deviations:
+  - The 0.5 bound is the claims file's assumption read from Fig. 2c; the paper gives no
+    threshold.
+- claim: ed2-error-trials-predict-choice
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:ed2-error-trials-predict-choice
+  notes: Pearson's r between correct and error selectivity is negative in every epoch under both
+    readings and the script's selection; sample -0.085 to -0.123 (P 0.006 to 0.017), delay -0.43
+    to -0.48, response -0.44 to -0.50 (printed P < 0.0001). The fraction of neurons switching
+    sign is 0.507 to 0.652, above one half in all epochs; in the sample epoch the effect is
+    weak. Under the four readings of the shared methods the sample r is -0.082 to -0.097 (P
+    0.004 to 0.018) and the switched fractions 0.502 to 0.627. 69 of 912 selective neurons have
+    no error trials of one type.
+- claim: fig2e-equal-contra-ipsi
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig2e-equal-contra-ipsi
+  measured:
+  - 427
+  - 485
+  notes: 427 contra-preferring and 485 ipsi-preferring selective pyramidal neurons by total
+    counts (reading a), the Fig. 2c counts exactly; bootstrap P for more contra-preferring
+    neurons 0.97. With the 10-trial split 436 and 444 (P = 0.60). The four readings of the shared
+    methods give 427 to 458 contra and 479 to 492 ipsi (P 0.86 to 0.97). A binomial test against
+    0.5 gives p = 0.059.
+- claim: ed1-no-population-contra-bias
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:ed1-no-population-contra-bias
+  notes: Mean lick right minus lick left rate, 0.090 spikes/s for selective pyramidal neurons
+    (P = 0.44), 0.061 for all pyramidal (P = 0.48), 0.071 for all units (P = 0.39); not
+    significant under any reading; the four readings of the shared methods give P 0.18 to 0.62.
+    The paper reports P = 0.13.
+- claim: ed1-fast-spiking-properties
+  outcome: partially_reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:ed1-fast-spiking-properties
+  notes: FS baseline rates are higher under both readings (mean 9.03 against 3.97 spikes/s,
+    median 6.40 against 2.37). FS are not less selective under either criterion reading - 79.8%
+    selective against 73.3%, mean absolute rate difference 2.29 against 1.53 spikes/s. Only the
+    rate difference relative to the mean rate, a variant the criterion does not name, makes FS
+    less selective (median 0.21 against 0.33). The four readings of the shared methods give the
+    same (FS 79.8% to 84.7% selective against 73.1% to 76.3%). The baseline half holds, the
+    selectivity half does not, so the claim holds in part.
+- claim: tagging-counts
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:tagging-counts
+  notes: The labels give 45 PT neurons (8 mice) and 27 IT neurons (7 mice), the paper's counts.
+    The activated neurons that failed the collision test (22 and 106) and the 7 untestable ones
+    carry no label, so those counts cannot be reported, and no measured list is given.
+- claim: antidromic-latency-jitter
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_li_2015.ipynb
+  output: claim:antidromic-latency-jitter
+  notes: First pulses, spikes within +/-1 ms of each neuron's modal latency. PT 2.672 ms and
+    0.126 ms jitter (45 neurons), within tolerance; IT 4.98 ms (21 neurons with type 2 trials) or
+    4.56 ms (27 neurons, types 2 to 5), within tolerance and longer than PT. IT jitter 0.310 ms
+    (0.265 with types 2 to 5) and the tagged mean 0.184 ms (0.178) are outside tolerance. The
+    order and the PT values hold, the IT jitter and the tagged mean do not; the four
+    activated-neuron values cannot be computed, as those neurons are not labelled, so no measured
+    list is given. Readings without a window agree with +/-1 ms - a per-neuron fit of a Gaussian
+    peak plus a uniform background gives IT jitter 0.341 ms and a tagged mean of 0.185 ms, the
+    same fit with a broad component added 0.282 and 0.166 ms, and the +/-1 ms window without the
+    four IT neurons with broad humps 0.289 and 0.170 ms. A robust s.d. (1.4826 times the median
+    absolute deviation within +/-1 ms) gives 0.289 and 0.166 ms. Only the +/-0.5 ms window gives
+    values within tolerance (IT 0.198 ms, 0.177 with types 2 to 5; tagged mean 0.140 ms). PT
+    jitter is 0.112 to 0.126 ms under every reading. This claim and reaction-time each turn on a
+    detection rule the paper does not give, but they differ. Here the PT values, the latencies
+    and their order hold under every window, and five of the six jitter readings agree on the IT
+    jitter. For reaction-time the single value falls inside or outside tolerance with the rule,
+    and the data give no reason to prefer any rule.
+  deviations:
+  - The paper does not say how antidromic spikes are told from spontaneous ones. Assumed - the
+    first spike within 10 ms of a pulse, kept when within +/-1 ms of the neuron's modal latency
+    (0.2 ms bins). Between 0.5 and 1 ms from the mode the IT neurons have 783 spikes where the
+    spontaneous background (latencies more than 2 ms from the mode) predicts 69.7. This shows the
+    spikes are locked to the pulse, not that they are antidromic - several IT neurons show humps
+    several ms wide, and the four broadest hold 316 of the 783 spikes. The window rests instead on
+    the readings that need none (fits of a narrow peak plus background, with and without a broad
+    component), which give IT jitter near the +/-1 ms value. The +/-0.5 ms window, adopted before
+    verification, is shown as a variant.
+  - Pulse onsets are read from the AOM input trace at 10 kHz, so they are quantised to 0.1 ms,
+    and any delay between the AOM input and the light is not known.
+  - IT tagging trials are type 2; types 3 to 5, undocumented, are included as a variant.
+- claim: ed5g-it-second-pulse-jitter
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:ed5g-it-second-pulse-jitter
+  notes: Mean IT jitter is lower for the second pulse in all four variants (type 2 trials,
+    +/-0.5 ms, 0.156 against 0.204 ms; types 2 to 5, +/-1 ms, 0.232 against 0.280 ms), and 65% to
+    87% of IT neurons decrease (Wilcoxon p 0.004 to 0.098). 4 to 8 IT neurons with fewer than
+    three responses to a pulse are left out.
+  deviations:
+  - Antidromic spikes are selected as in antidromic-latency-jitter.
+- claim: fig3ei-both-types-preparatory-and-movement
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig3ei-both-types-preparatory-and-movement
+  notes: Selective PT neurons 7 preparatory only, 16 both, 15 peri-movement only of 38 (0.184,
+    0.421, 0.395; Fig. 3e about 0.18, 0.43, 0.40); selective IT neurons 5, 13, 5 of 23 (0.217,
+    0.565, 0.217; Fig. 3i about 0.22, 0.56, 0.22). Both populations hold both kinds under every
+    reading.
+- claim: fig3fj-contra-preferring-pt-not-it
+  outcome: reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig3fj-contra-preferring-pt-not-it
+  notes: Selective neurons (reading b), lick early dropped, 1.3 s response epoch; PT 24 of 38
+    contra-preferring (0.632, P = 0.033), IT 10 of 23 (0.435, P = 0.74, the paper's value). With
+    lick early kept PT P = 0.017 (1.3 s) and 0.037 (1.5 s); with a 1.5 s response epoch and
+    lick early dropped P = 0.068. All tagged neurons (reading a) give PT 27 of 45 (0.600, P =
+    0.089) and IT P = 0.58, so the PT part does not hold under reading a (P 0.089 to 0.23 over
+    the four readings of the shared methods). Selective neurons with more than 15 correct trials
+    of each type, a variant outside the criterion's readings, give PT 19 of 32 (0.594, P = 0.11;
+    0.054 to 0.20 over the four readings), so the PT part does not hold under that filter either.
+    The data set's IT_PT script applies that filter to the curve of all selective pyramidal
+    neurons (line 25) and takes the PT and IT fractions from the selective neurons without it
+    (lines 170 and 195).
+- claim: fig3f-late-contra-selectivity-pt
+  outcome: not_reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:fig3f-late-contra-selectivity-pt
+  measured:
+  - 310
+  - 34.4
+  - -16.4
+  - 9.2
+  notes: Over the 570 ms before the cue, PT modulation is 34.4% of the window rate (P = 0.027),
+    the paper's value, and IT -16.4% (P = 0.11), but all task-selective neurons give 9.2% with P
+    = 0.024, significant where the paper has P = 0.13. Over the window to the end of the
+    response epoch all task-selective neurons are not significant (P = 0.96) but neither is PT
+    (20.6%, P = 0.068). No combination of readings gives the paper's pattern of significance.
+    The PT contra-selectivity stays significant from 310 ms before the cue (reading a; first
+    significant 2,480 ms before, reading b), against 570 ms. Under the four readings of the
+    shared methods (lick early trials dropped or kept, response epoch 1.3 or 1.5 s) all
+    task-selective neurons give P = 0.022 to 0.024 in the pre-cue window, the onset is 190 to 310
+    ms (a) or 2,470 to 2,490 ms (b), and none of the 32 combinations has the paper's pattern. The
+    PT and IT part of the claim holds in the pre-cue window; the comparison with all selective
+    neurons and the onset do not.
+- claim: reaction-time
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_li_2015.ipynb
+  output: claim:reaction-time
+  notes: The paper does not say how the first mouth movement is found in the photodiode trace,
+    and the result crosses the tolerance within the range of plausible rules. Noise rule (first
+    sample from which the trace stays for 5 ms further from its pre-cue median than k times the
+    noise and at least a floor), correct trials of type 0, mean over 19 mice of per-mouse means
+    - 65.0 ms (s.d. 21.1) at k = 3 and 2 mV, within 61.1 +/- 10.5; 71.7 ms at k = 3 and 5 mV,
+    just outside; 77.7 to 103.7 ms at k = 5 and 10. On all responses k = 3 gives 65.0 and 71.3
+    ms, both within. The peak rule (a fraction of each trial's largest excursion) gives 81.7 to
+    176.8 ms (s.d. 57 to 65 ms). Neither threshold is better founded - in the 0.1 s before the cue
+    the noise rule fires in 11.6% to 16.0% of correct trials at k = 3 and 6.5% to 8.2% at k = 5.
+    The spread across mice is 21 to 36 ms under the noise rule, two to three times the paper's
+    10.5 ms. Per-session means (k = 5, 5 mV) range from 34 to 212 ms, and in some sessions the
+    trace is a two-level signal or carries cue-locked deflections (example traces in the
+    notebook).
+  deviations:
+  - The paper does not say how the first movement is found in the photodiode trace, and the
+    trace's baseline (0.07 to 4.83 V), scale and sign differ between sessions. Two rules are
+    run, the noise rule (k = 3, 5, 10; floor 2 or 5 mV; 5 ms hold) and the peak rule (5% to 50%
+    of the trial's peak excursion). No choice among them has a basis in the paper, and they give
+    different outcomes.
+  - Measured on the 19 electrophysiology mice; the paper's mice for this number are not stated.
+- claim: fig4-imaging-intermingled
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two-photon calcium imaging (4 C57Bl/6Crl mice, 59 fields of view) is not in the
+    data set, which holds only extracellular recordings; the paper names no deposit of it.
+- claim: fig4h-imaging-pt-contra-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the data set (see fig4-imaging-intermingled).
+- claim: imaging-overall-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the data set (see fig4-imaging-intermingled).
+- claim: contra-ipsi-selectivity-forms
+  outcome: partially_reproduced
+  notebook: reproduce_li_2015.ipynb
+  output: claim:contra-ipsi-selectivity-forms
+  notes: Contra-preferring neurons are 0.535 of the top quarter of absolute rate differences (228
+    neurons, binomial p = 0.32) and 0.522 of the top tenth (p = 0.75), a slight majority.
+    Contra-suppression in ipsi-preferring neurons (0.365) is not more frequent than
+    ipsi-suppression in contra-preferring neurons (0.389, Fisher p = 0.49); the whole
+    pre-sample baseline gives 0.367 against 0.391. The four readings of the shared methods give
+    the same (contra fractions 0.522 to 0.558; contra-suppression 0.360 to 0.388 against
+    ipsi-suppression 0.389 to 0.418). The first part holds weakly, the second does not, so the
+    claim holds in part.
+  deviations:
+  - The paper does not define a large difference or contra-suppression; the claims file's
+    readings are used, with the 0.5 s before sample onset as baseline (the data set's compile
+    script's baseline) and the whole pre-sample period as a variant.
+- claim: fig5-pt-activation-contralateral-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The photoactivation behaviour of 7 Sim1_KJ18-Cre x Ai32 and 7 Tlx_PL56-Cre x Ai32 mice
+    is not in the data set. In its one Sim1 x Ai32 mouse (ANM218693) all 520 trials with light are
+    of type NaN ("do not analyse"), with eight 1 ms pulses at about 23 mW (session medians), not the
+    20 Hz trains of 2 ms pulses of Fig. 5.
+- claim: ed6b-pt-dose-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photoactivation behaviour not in the data set (see fig5-pt-activation-contralateral-bias).
+- claim: ed6d-it-activation-inconsistent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photoactivation behaviour not in the data set (see fig5-pt-activation-contralateral-bias).
+- claim: ed3-high-power-contralateral-licking
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The high-power photostimulation of trained and untrained mice and of vibrissal motor
+    cortex is not in the data set.
+- claim: ed3d-non-overlapping-it-pt
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The retrograde tracer anatomy is not in the data set.
+- claim: ed7-pt-stimulation-persistent-activity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The recordings with somatic PT photoactivation during the sample epoch (2 mice, 8
+    sessions, 91 neurons) are not identified in the data set. Its photostimulation types are
+    axonal tagging (1 and 2), undocumented types 3 to 5 (pulses at 1.8 to 2.8 s) and NaN ("do not
+    analyse"). The NaN-type trials with light, tabulated by mouse and session in the notebook,
+    start in the sample epoch in 367 trials, 347 of them in the two Tlx x Ai32 mice (IT) and the
+    only Sim1 x Ai32 mouse (ANM218693, 3 sessions, 59 units, 135 trials), all as eight 1 ms
+    pulses, at about 23 mW in all but 2 (47 mW), the configuration of the IT test trials. One mouse with 3 sessions
+    cannot be the ED Fig. 7 set, nothing marks a session or trial as an ED Fig. 7 recording, and
+    the description says NaN-type trials are not to be analysed.
+findings:
+- kind: data_missing
+  statement: The data set holds only the electrophysiology of Figures 2 and 3 and Extended Data
+    Figures 1, 2 and 5. The photoinhibition and photoactivation behaviour (Fig. 1, Fig. 5, ED
+    Figs 3 and 6), the calcium imaging (Fig. 4), the anatomy (ED Fig. 3) and the recordings with
+    somatic PT photoactivation (ED Fig. 7) are not in it, and the paper names no other deposit.
+    Eleven of the paper's findings cannot be tested.
+- kind: metadata_insufficient
+  statement: PhotostimulationType takes the values 3, 4 and 5 in 495 trials, all in the two
+    Tlx_PL56-Cre x Ai32 mice ANM218453 and ANM218457 (eight 1 ms pulses at about 23 mW starting
+    1.8, 2.3 or 2.8 s into the trial), but the data description lists only 0, 1, 2 and NaN. The data set's own compile
+    script treats 1 to 5 as tagging trials.
+- kind: metadata_insufficient
+  statement: The NaN-type trials ("photostimulation configurations for testing purposes") carry
+    light in 3,756 trials of all 19 mice, in configurations the description does not give. In
+    three Sim1_KJ18-Cre mice (ANM210861 to ANM210863) they are 50 ms pulses at about 47 mW starting
+    0.70 to 4.98 s into the trial (session medians 1.9 to 3.2 s). In the other mice without Ai32
+    they fall mostly outside performing trials, as 50 ms pulses mostly at about 23 mW (session
+    median onset 0.70 s) or 1 ms pulses at about 47 mW (session median onset 0.97 s). In the three
+    Ai32 mice they are eight 1 ms pulses at about 23 mW starting 0.49 to 2.8 s into the trial, 135
+    of them in the sample epoch of the Sim1 x Ai32 mouse. Which of these, if any, are the ED Fig. 7 PT
+    photostimulation sessions cannot be told.
+- kind: metadata_error
+  statement: In session ANM210862_20130627, 43 trials have PhotostimulationType 0 ("non-stimulation
+    trials") but their AOM and laser power traces carry 8 to 22 light pulses of 50 ms at 47.1 mW,
+    starting 1.9 to 4.35 s into the trial (median 3.2 s).
+- kind: metadata_insufficient
+  statement: Only neurons that passed the collision test are labelled (45 PT, 27 IT). The 22
+    pyramidal-tract-activated and 106 intratelencephalic-activated neurons and the 7 untestable
+    ones are not identified, so their counts, latencies and jitter cannot be checked.
+- kind: other
+  statement: The trough-to-peak widths of the deposited mean waveforms put 34 of the 39
+    unlabelled units below 0.35 ms (158 in all), where the paper and the data description call
+    all 39 intermediate (0.35 to 0.45 ms). The labels split the deposited widths cleanly (FS 0.154
+    to 0.256 ms, unlabelled 0.307 or 0.410 ms, pyramidal 0.461 to 0.666 ms), so the FS boundary
+    the labels use lies between 0.256 and 0.307 ms, not at the stated 0.35 ms. The cellType
+    labels match the paper's counts; the stated thresholds do not reproduce them from the
+    deposited waveforms.
+- kind: format_error
+  statement: 10 units have spike times out of order (7 in session ANM214429_20130806, and
+    ANM219030_20130829 unit 12, ANM219030_20130831 unit 5, ANM219247_20130920 unit 5).
+- kind: metadata_insufficient
+  statement: The lick trace is described only as "licking movement from photodiode"; its baseline
+    (0.07 to 4.83 V per session), scale and sign of excursion differ between sessions, and no
+    detection rule or calibration is given, so the paper's reaction time cannot be recomputed
+    reliably.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was the reaction time (61.1 +/- 10.5 ms) found
+    from the photodiode trace, with what threshold, which trials and which mice? On correct trials
+    of the 19 electrophysiology mice, detecting the first departure from the pre-cue baseline by
+    3, 5 or 10 times the baseline noise gives a mean of per-mouse means of 65 to 104 ms (s.d.
+    across mice 21 to 36 ms), and 5% to 50% of each trial's peak excursion gives 82 to 177 ms.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were antidromic spikes told from spontaneous
+    spikes when measuring latency and jitter, and were spikes locked to the pulse over several
+    milliseconds counted? Taking spikes within 1 ms of each neuron's modal latency gives PT 2.7 ms
+    and 0.13 ms and IT 4.6 to 5.0 ms and 0.27 to 0.31 ms, and per-neuron fits of a narrow peak
+    plus background give IT 0.28 to 0.34 ms; only a 0.5 ms window gives the paper's IT jitter of
+    0.2 ms (0.18 to 0.20 ms).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Do the PT and IT bootstraps of Fig. 3f, j use all
+    tagged neurons or only the selective ones, and which neurons and window give the P = 0.13 for
+    all task-selective neurons in the late contralateral selectivity? With selective neurons PT
+    is significant (P = 0.033) and IT gives P = 0.74 as printed; with all tagged neurons PT gives
+    P = 0.089. Over the 570 ms before the cue all 912 selective neurons give 9.2% modulation with
+    P = 0.024 (0.022 to 0.024 with lick early trials kept or a 1.5 s response epoch).
+- kind: paper_inconsistency
+  statement: The Results give 389 neurons with peri-movement selectivity only and 304 with both,
+    while Fig. 2d shows about 0.43 with both and 0.33 with peri-movement only. The data give 389
+    with both and 304 peri-movement only, as the figure has.
+- kind: other
+  statement: In 3,707 of 28,465 performing trials the sample or delay epoch differs from 1.3 s by
+    more than 50 ms (up to 14 s), which the data description does not mention. The NWB copies of
+    the sessions omit the photostimulation type, the AOM and laser power traces and GoodTrials,
+    which the analysis needs, so only the MATLAB files support it.
+verifications:
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier tested the helper functions on synthetic inputs
+    and listed the CRCNS bucket itself for the blocked claims. It did not download the data or read the
+    MATLAB scripts the notebook cites. 26 of its 29 outcomes agree with the record as it then stood; it gives
+    not_reproduced for ed1-fast-spiking-properties and contra-ipsi-selectivity-forms and
+    partially_reproduced for antidromic-latency-jitter.
+  results:
+  - claim: fig1d-photoinhibition-ipsilateral-bias
+    agrees: true
+    outcome: blocked
+    reason: The bucket holds only the 99 electrophysiology sessions, their NWB copies, voltage traces, scripts
+      and docs. It has no photoinhibition behaviour.
+    response: No change needed.
+  - claim: fig1d-sample-epoch-smaller-bias
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig1d-photoinhibition-ipsilateral-bias.
+    response: No change needed.
+  - claim: task-performance
+    agrees: true
+    outcome: reproduced
+    reason: 76.4 to 77.3% correct with 10.9 to 14.1% lick early under all three ways of averaging on control
+      trials, all within tolerance. Only 19 of the paper's 42 mice are in the data. The "all trials" reading
+      includes NaN-type trials, which the description says are not to be analysed; the control-trial reading
+      alone passes.
+    response: The second reading now leaves out the NaN-type trials (76.09% to 76.59% correct). Outcome
+      unchanged.
+  - claim: unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 1,408 units, 19 mice, 99 sessions and 1,245 units over 0.45 ms come out of the recomputed widths.
+      The width rule gives 158 FS and 5 intermediate units; those two counts match only through the
+      deposited cellType labels. 34 of the 39 unlabelled units measure under 0.35 ms, and the notebook does
+      not investigate why (waveform array orientation, polarity, noise in low-amplitude units).
+    response: Added the waveform array shapes (29 samples, one row per spike, in all 1,408 units; trough at
+      sample 15 in every unit), the exact widths by label, the trough amplitudes and the normalised mean
+      waveforms of each group. The labels split the widths cleanly, with the FS boundary between 0.256 and
+      0.307 ms (5 and 6 samples), not at 0.35 ms; the unlabelled units are as small as the FS units. The
+      finding on the widths now says so. Outcome unchanged.
+  - claim: fig2-selective-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Exactly 912 of 1,245 (0.733) with lick early trials dropped and a 1.3 s response epoch; all 8
+      reading and test combinations fall within tolerance. The t-test is on rates, while the Methods say
+      spike counts; 3,707 trials have epoch lengths other than 1.3 s. The 912 match exactly regardless.
+    response: Added the t-test on spike counts as a variant (912 under the main readings, 910 to 944 under the
+      others) and printed the lines of the data set's compile script that test rates (217 to 221 and 300),
+      cited as a deviation. Outcome unchanged.
+  - claim: fig2d-response-categories
+    agrees: true
+    outcome: reproduced
+    reason: 219, 389 and 304 exactly under the figure reading (389 is the "both" count). The text reading
+      fails. The text versus figure disagreement is a deviation.
+    response: No change needed.
+  - claim: fig2c-selectivity-time-course
+    agrees: true
+    outcome: reproduced
+    reason: Both measures rise from pre-sample to the end of the sample epoch and through the delay, and peak
+      at +0.19 or +0.20 s. Shuffled labels give a median of 54 neurons and the pre-sample value is 60, near
+      the 5% chance level of 62. Run under dropped lick early trials and a 1.3 s response only; the margins
+      make a flip unlikely.
+    response: Not re-run under the other readings of the shared methods, as the verifier judged a flip
+      unlikely. Outcome unchanged.
+  - claim: fig2c-dynamic-single-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Mean r from sample onset to 0.5 s into the delay is -0.17 to -0.04 (below 0.5) under every
+      reading. Population selectivity stays at or above 1.19 spikes/s.
+    response: No change needed.
+  - claim: ed2-error-trials-predict-choice
+    agrees: true
+    outcome: reproduced
+    reason: r is negative with P < 0.05 in all three epochs and all three readings. The switched fraction
+      exceeds 0.5 throughout, though in the sample epoch it is only 0.507 to 0.524. Run under dropped lick
+      early trials and a 1.3 s response only.
+    response: Added the four readings of the shared methods (sample r -0.082 to -0.097, P 0.004 to 0.018;
+      switched fractions 0.502 to 0.627). Outcome unchanged.
+  - claim: fig2e-equal-contra-ipsi
+    agrees: true
+    outcome: reproduced
+    reason: 427 contra and 485 ipsi exactly, bootstrap P = 0.97 (an exact binomial gives 0.971). The 10-trial
+      reading also passes (436/444, P = 0.60).
+    response: Added the four readings of the shared methods (427 to 458 contra, 479 to 492 ipsi, P 0.86 to
+      0.97). Outcome unchanged.
+  - claim: ed1-no-population-contra-bias
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.44, 0.48 and 0.39 for the three neuron sets, none significant. The variants give 0.36 and
+      0.62.
+    response: Added the four readings of the shared methods for the three neuron sets (P 0.18 to 0.62).
+      Outcome unchanged.
+  - claim: ed1-fast-spiking-properties
+    agrees: false
+    outcome: not_reproduced
+    reason: FS baseline rates are higher, but FS are more selective under both of the criterion's measures
+      (0.80 vs 0.73 fraction selective; mean absolute difference 2.29 vs 1.53 spikes/s). Only the
+      out-of-criterion normalised variant agrees with the paper.
+    response: Added the four readings of the shared methods, which give the same. Kept partially_reproduced -
+      the claim has two parts, the baseline part holds under every reading and the selectivity part does
+      not, which is the protocol's "holds only in part"; the disagreement is recorded.
+  - claim: tagging-counts
+    agrees: true
+    outcome: reproduced
+    reason: 45 PT and 27 IT, but these are counts of the deposited labels, not re-derived; the test is
+      circular. Re-deriving the collision test would need the raw voltage traces, about 750 GB. The
+      activated-neuron counts (22 and 106) carry no labels and cannot be tested.
+    response: No change; the notes already say the counts are those of the labels.
+  - claim: antidromic-latency-jitter
+    agrees: false
+    outcome: partially_reproduced
+    reason: PT latency and jitter (2.67 ms, 0.11 to 0.13 ms) and PT shorter than IT hold under all readings.
+      IT jitter (0.18 to 0.20) and the tagged mean (0.14) match only with the author's +/-0.5 ms window; with
+      +/-1 ms they are 0.27 to 0.31 and 0.18, out of tolerance. In a synthetic test the +/-0.5 ms window
+      shrinks the s.d. (true 0.3 ms reads as 0.24) and the +/-1 ms window lets in spontaneous spikes, so
+      neither choice is neutral and the match is not robust.
+    response: Added, per tagged neuron, the spikes observed between 0.5 and 1 ms from the mode against those
+      expected from the spontaneous background, a robust s.d., and the latency histograms of the IT neurons
+      with both windows marked. IT neurons have 783 spikes in that band against 69.7 expected, so the narrow
+      window cuts off antidromic responses; the +/-1 ms window is now the assumption and the outcome is
+      changed to partially_reproduced, with IT jitter 0.310 ms and the tagged mean 0.184 ms.
+  - claim: ed5g-it-second-pulse-jitter
+    agrees: true
+    outcome: reproduced
+    reason: Second-pulse jitter is below first-pulse jitter in every variant, and 65 to 87% of IT neurons
+      decrease.
+    response: No change needed.
+  - claim: fig3ei-both-types-preparatory-and-movement
+    agrees: true
+    outcome: reproduced
+    reason: Both types have preparatory and peri-movement neurons under all readings. With lick early trials
+      dropped and a 1.3 s response epoch, fractions are PT 0.18/0.42/0.40 and IT 0.22/0.57/0.22, matching
+      the values read from the figure.
+    response: No change needed.
+  - claim: fig3fj-contra-preferring-pt-not-it
+    agrees: true
+    outcome: reproduced
+    reason: With selective neurons only, PT P = 0.033 and IT P = 0.74 (drop, 1.3 s); also passes for keep at
+      1.3 s and keep at 1.5 s. It fails with all neurons (PT P = 0.08 to 0.23), so the result rests on one
+      reading.
+    response: The notes and conclusion now give the PT P values of all four readings for both neuron sets,
+      and the notebook prints the line of the data set's IT_PT script that selects the selective neurons.
+      Outcome unchanged.
+  - claim: fig3f-late-contra-selectivity-pt
+    agrees: true
+    outcome: not_reproduced
+    reason: Onset is 310 ms (or 2,480 ms under the second rule), against 570 +/- 100. In the window ending at
+      the cue, all task-selective neurons are significant (P = 0.024, 9.2%), against the paper's P = 0.13. In
+      the window ending at response end, PT is not significant. The claim runs only with lick early trials
+      dropped, though the shared methods require the "kept" reading as well, and P = 0.024 is close to 0.05.
+    response: The whole analysis now runs under the four readings of the shared methods. All task-selective
+      neurons give P = 0.022 to 0.024 in the pre-cue window, the onset is 190 to 310 ms (a) or 2,470 to
+      2,490 ms (b), and none of the 32 combinations has the paper's pattern. Outcome unchanged.
+  - claim: reaction-time
+    agrees: true
+    outcome: not_reproduced
+    reason: The mean across mice is 81.7 to 188 ms under all 8 settings (expected 61.1 +/- 10.5), and the s.d.
+      across mice is about 51 to 65 ms. The onset rule is the author's own, with thresholds at a fraction of
+      each trial's peak excursion, and is not validated against example traces; session baselines and the
+      sign of the excursion differ, and the 5th-percentile onset of 20 ms is implausibly fast. The failure
+      may reflect the detector, not the data. The second trial reading also includes NaN-type and tagging
+      trials.
+    response: Added a second detector (first sustained departure from the pre-cue baseline by 3, 5 or 10
+      times its noise), example traces of every mouse with both detectors' onsets marked, per-mouse onset
+      histograms, and a pre-cue control of the detector; both trial readings now use type 0 trials only. The
+      noise rule gives 65.0 to 103.7 ms, within tolerance at 3 times the noise and outside at 5 and 10 times,
+      and neither threshold has a basis in the paper. Changed to blocked, methods_underspecified.
+  - claim: fig4-imaging-intermingled
+    agrees: true
+    outcome: blocked
+    reason: No imaging files in the archive.
+    response: No change needed.
+  - claim: fig4h-imaging-pt-contra-bias
+    agrees: true
+    outcome: blocked
+    reason: No imaging files in the archive.
+    response: No change needed.
+  - claim: imaging-overall-counts
+    agrees: true
+    outcome: blocked
+    reason: No imaging files in the archive.
+    response: No change needed.
+  - claim: contra-ipsi-selectivity-forms
+    agrees: false
+    outcome: not_reproduced
+    reason: Contra-preferring neurons are a majority of the large group (0.54 and 0.52), but ipsi-preferring
+      neurons show contra-suppression less often than contra-preferring neurons show ipsi-suppression (0.365
+      vs 0.389). The criterion needs both.
+    response: Added the four readings of the shared methods, which give the same. Kept partially_reproduced -
+      the first part holds and the second does not, which is the protocol's "holds only in part"; the
+      disagreement is recorded.
+  - claim: fig5-pt-activation-contralateral-bias
+    agrees: true
+    outcome: blocked
+    reason: No photoactivation behaviour sessions. The data description says the NaN-type stimulation trials
+      are test configurations not to be analysed.
+    response: Added a table of the NaN-type light trials by mouse and session (onset, epoch, pulses, pulse
+      width, power). Outcome unchanged.
+  - claim: ed6b-pt-dose-response
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5-pt-activation-contralateral-bias.
+    response: No change needed.
+  - claim: ed6d-it-activation-inconsistent
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5-pt-activation-contralateral-bias.
+    response: No change needed.
+  - claim: ed3-high-power-contralateral-licking
+    agrees: true
+    outcome: blocked
+    reason: No untrained mice and no vM1 stimulation sessions.
+    response: No change needed.
+  - claim: ed3d-non-overlapping-it-pt
+    agrees: true
+    outcome: blocked
+    reason: No anatomy files.
+    response: No change needed.
+  - claim: ed7-pt-stimulation-persistent-activity
+    agrees: true
+    outcome: blocked
+    reason: The 2-mouse, 8-session, 91-neuron data set is not identifiable among the 99 sessions, and
+      NaN-type trials are excluded by the description. This was not checked against the trials themselves;
+      the 3,756 NaN-type light trials, about 50 ms pulses from around 0.97 s, are not broken down by animal.
+    response: Added the table of NaN-type light trials by mouse and session. Light starts in the sample epoch
+      in 367 of them, 347 in the three Ai32 mice as eight 1 ms pulses at about 23 mW; the one Sim1 x Ai32
+      mouse has 3 sessions and 59 units, so it cannot be the ED Fig. 7 set. Outcome unchanged; a finding
+      records the undocumented configurations.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with its conclusions and summary, the helper module, the
+    attempt record, the README and the claims file, with the paper. The verifier agrees with every outcome;
+    it withdraws its round-1 not_reproduced for ed1-fast-spiking-properties and
+    contra-ipsi-selectivity-forms. It quotes sentences the printed numbers do not support (cells 8, 10 and
+    49, the summary, and the record's findings on the type-0 light trials, types 3 to 5, the NaN-type light
+    trials and the ANM218693 trials), and asks for two outputs - the IT jitter without the broad-hump
+    neurons or from a per-neuron fit of a narrow peak plus background, and the fig3fj PT P value with the
+    IT_PT script's filter of more than 15 correct trials of each type. In reply to the points that belong to
+    no single claim, cell 5 now prints the type-0 light trials per trial (47.1 mW, onsets 1.9 to 4.35 s) and
+    types 3 to 5 by mouse, cell 6 the sample-epoch NaN-type configurations and the ANM218693 light trials by
+    type, and the findings and cell 8 are corrected to match; cell 10 now says the 90% range is over the
+    96.6% of correct trials with a detected onset.
+  results:
+  - claim: fig1d-photoinhibition-ipsilateral-bias
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: fig1d-sample-epoch-smaller-bias
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: task-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome.
+    response: No change needed.
+  - claim: unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Round-1 point B3 is resolved - waveform orientation is verified, and the labels split the
+      widths cleanly.
+    response: No change needed.
+  - claim: fig2-selective-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome. B5 is resolved - the count test is added and the script lines
+      are printed.
+    response: No change needed.
+  - claim: fig2d-response-categories
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome.
+    response: No change needed.
+  - claim: fig2c-selectivity-time-course
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. fig2c was not re-run under the four readings, which it accepts.
+    response: No change needed.
+  - claim: fig2c-dynamic-single-neurons
+    agrees: true
+    outcome: reproduced
+    reason: The outcome rests on the claims file's 0.5 bound, which is stated and reasonable. The Methods
+      divide by the variance "to equalize the contributions", which reads more like dividing by the s.d. The
+      result holds either way - r is at most 0.25 everywhere in the window (cell 29).
+    response: No change needed; the notes already give both normalisations.
+  - claim: ed2-error-trials-predict-choice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B2 is resolved - the four readings are now run.
+    response: No change needed.
+  - claim: fig2e-equal-contra-ipsi
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B2 is resolved - the four readings are now run.
+    response: No change needed.
+  - claim: ed1-no-population-contra-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B2 is resolved - the four readings are now run.
+    response: No change needed.
+  - claim: ed1-fast-spiking-properties
+    agrees: true
+    outcome: partially_reproduced
+    reason: Withdraws the round-1 not_reproduced. The criterion defines no partial outcome, and the claim has
+      two parts with one holding. The notes say plainly that the selectivity half is reversed (FS neurons
+      are more selective under every reading, cell 41).
+    response: No change needed.
+  - claim: tagging-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as counts of the deposited labels, as the notes say. B7, the circularity of the counts,
+      cannot be changed.
+    response: No change needed.
+  - claim: antidromic-latency-jitter
+    agrees: true
+    outcome: partially_reproduced
+    reason: The ±1 ms window assumption is stated, and partially_reproduced is the outcome it gave in round 1,
+      but the stated reason for the window is weaker than the record says. The excess of 783 spikes against
+      69.7 between 0.5 and 1 ms from the mode shows that these spikes are locked to the stimulus, not that
+      they are antidromic; several IT histograms show broad humps several ms wide, and
+      ANM219253_20140122/4 alone contributes 203 of the 783 spikes. Whether the outcome is reproduced (±0.5
+      ms) or partially reproduced (±1 ms) depends on the window; the IT jitter at ±1 ms without the
+      broad-hump neurons, or a per-neuron fit of a narrow peak plus background, would settle it. The record
+      should explain why this claim and reaction-time are handled differently.
+    response: Added per-neuron maximum-likelihood fits of a Gaussian peak plus a uniform background, with and
+      without a broad Gaussian component, and the ±1 ms jitter without the four broad-hump IT neurons it
+      named. They give IT jitter 0.341, 0.282 and 0.289 ms and tagged means 0.185, 0.166 and 0.170 ms, all
+      outside tolerance; only ±0.5 ms is within. Outcome unchanged, nothing proposed. The conclusion, the
+      deviation and the question for the authors no longer say the excess shows antidromic spikes; the
+      window now rests on the window-free readings. The notes explain the difference from reaction-time.
+  - claim: ed5g-it-second-pulse-jitter
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome.
+    response: No change needed.
+  - claim: fig3ei-both-types-preparatory-and-movement
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome.
+    response: No change needed.
+  - claim: fig3fj-contra-preferring-pt-not-it
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but the data set's IT_PT script line printed in cell 4 also requires more than 15 correct
+      trials of each type; the notebook's selective-neuron reading does not apply that filter, and PT P =
+      0.033 is close to 0.05. The PT P value under that filter would show whether the reproduced outcome
+      holds.
+    response: Added the filter as reading c. PT gives 19 of 32 contra-preferring, P = 0.11 (0.054 to 0.20 over
+      the four readings), not significant. Line 25 applies the filter to the curve of all selective pyramidal
+      neurons; the script's PT and IT fractions (lines 170 and 195, now printed) take the selective neurons
+      without it. The criterion counts the claim reproduced when one of its readings holds, and the filtered
+      set is not one of them, so the outcome is unchanged; the notes and conclusion report the variant and
+      correct the line cited. The bootstrap P values moved slightly with the added draws (keep 1.3 s 0.017,
+      drop 1.5 s 0.068).
+  - claim: fig3f-late-contra-selectivity-pt
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; 0 of 32 combinations (cell 60).
+    response: No change needed.
+  - claim: reaction-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Only the 3 x noise, 2 mV rule gives a value within tolerance (64.97 ms), every other rule
+      falls outside, and the paper gives no rule. The example traces show the noise-rule onsets at visible
+      departures, and also the two-level and cue-locked artefacts. Before the cue the 3 x rule fires in 16%
+      of trials, so choosing it would be arbitrary. The summary's "within tolerance at the lowest noise
+      threshold and outside it at higher ones" is not supported - at 3 x noise with the 5 mV floor reading a
+      gives 71.70 ms, outside tolerance.
+    response: The summary now says the value is within tolerance only at 3 times the noise with a 2 mV floor
+      and outside it under every other rule.
+  - claim: fig4-imaging-intermingled
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: fig4h-imaging-pt-contra-bias
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: imaging-overall-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: contra-ipsi-selectivity-forms
+    agrees: true
+    outcome: partially_reproduced
+    reason: Withdraws the round-1 not_reproduced. The criterion defines no partial outcome, and the claim has
+      two parts with one holding. The notes say plainly that the contra majority is not significant
+      (binomial p = 0.32 and 0.75, cell 67).
+    response: No change needed.
+  - claim: fig5-pt-activation-contralateral-bias
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block. The notes say "every stimulation trial [of ANM218693] is of
+      type NaN", which no output prints.
+    response: Cell 6 now prints the ANM218693 light trials by type (all 520 are NaN-type); the notes give the
+      count.
+  - claim: ed6b-pt-dose-response
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: ed6d-it-activation-inconsistent
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: ed3-high-power-contralateral-licking
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: ed3d-non-overlapping-it-pt
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 11 data_missing blocks.
+    response: No change needed.
+  - claim: ed7-pt-stimulation-persistent-activity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block. The notes' "always as eight 1 ms pulses at about 23 mW" is not
+      shown; cell 6 prints medians per session only.
+    response: Cell 6 now prints the sample-epoch NaN-type light trials by mouse and per-trial configuration;
+      345 of the 347 are at about 23 mW and 2 at 47 mW, and the notes say so.
