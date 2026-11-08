@@ -299,18 +299,21 @@ def _shuffle(rates: np.ndarray, how: str, rng: np.random.Generator) -> np.ndarra
     raise ValueError(how)
 
 
-def synchrony_events(rates: np.ndarray, rule: str, how: str, rng: np.random.Generator) -> dict:
+def synchrony_events(rates: np.ndarray, rule: str, how: str, rng: np.random.Generator,
+                     n_shuffles: int = N_SHUFFLES) -> dict:
     """Peaks of synchrony of one recording (Online Methods), under an active rule and a shuffle.
 
     Both shuffles keep each cell's mean rate, as the Methods require. Returns the threshold
     (percent of cells), the events as (start, end) frame indices (end exclusive), and the
     participation measures Q-a (per event, fraction of cells active in any frame of the event,
-    averaged over events) and Q-b (fraction of cells active in at least one event)."""
+    averaged over events) and Q-b (fraction of cells active in at least one event). The Methods
+    use 100 shuffles; n_shuffles changes it only to check how much the threshold's sampling noise
+    moves a result."""
     T, N = rates.shape
     act = _active(rates, rule)
     pct = 100.0 * act.mean(1)
-    peaks = np.empty(N_SHUFFLES)
-    for s in range(N_SHUFFLES):
+    peaks = np.empty(n_shuffles)
+    for s in range(n_shuffles):
         peaks[s] = 100.0 * _active(_shuffle(rates, how, rng), rule).mean(1).max()
     thr = float(np.percentile(peaks, SHUFFLE_PERCENTILE))
     above = pct > thr

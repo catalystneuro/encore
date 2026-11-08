@@ -113,8 +113,8 @@ outcomes:
   notes: At P14-16 the means are within the paper's s.e.m. (WT 0.169 +/- 0.010, 8 mice; KO 0.204 +/-
     0.013, 10 mice) and KO is higher, but the unpaired Student's t-test gives t = 2.05, p = 0.057
     (Welch's test, not the Methods' test, gives p = 0.049). The KO minus WT difference is 0.062 at
-    P9-11, 0.035 at P14-16 and 0.015 at P30-40, so it is not largest at P14-16; as a ratio it is (1.21
-    against 1.17 and 1.13). The Spearman variant gives p = 0.058. The variances do not differ (s.d.
+    P9-11, 0.035 at P14-16 and 0.015 at P30-40, so it is not largest at P14-16; as a ratio, a variant the criterion does not use, it is largest
+    there (1.21 against 1.17 and 1.13). The Spearman variant gives p = 0.058. The variances do not differ (s.d.
     0.029 and 0.040, Levene p = 0.31, Bartlett p = 0.39, F-test p = 0.40), so the Methods' check of
     variances leads to Student's test. The outcome is fragile. With one mouse left out in turn,
     Student p runs from 0.018 to 0.109 and is below 0.05 in 1 of 8 WT and 3 of 10 KO cases; leaving
@@ -139,7 +139,7 @@ outcomes:
   notebook: reproduce_goncalves_2013.ipynb
   output: claim:fig2b-peak-frequency
   measured: [0.060, 0.054]
-  notes: P14-16, 10 KO and 8 WT mice. No reading finds a difference (p = 0.13 to 0.64). Under R-a
+  notes: P14-16, 10 KO and 8 WT mice. No reading finds a difference (p = 0.13 to 0.96). Under R-a
     (active when the rate is above 0) both means are within the paper's s.e.m. with either shuffle;
     with S-a (given as measured) KO 0.060 +/- 0.006 and WT 0.054 +/- 0.007 peaks per s, p = 0.52; with
     S-b 0.061 and 0.057, p = 0.64. Under R-b (at least one estimated spike in the frame) with the
@@ -165,12 +165,20 @@ outcomes:
     Q-a is 0.17 against 0.13 to 0.14 and Q-b 0.66 against 0.49 to 0.54, KO higher, p = 0.15 to 0.37.
     Under R-b with the rates per frame (rate >= 1) Q-a is KO 0.437 against WT 0.391 with S-a (p =
     0.052) and 0.429 against 0.385 with S-b (p = 0.053), KO higher and near significance, both
-    outside tolerance; Q-b is 0.998 in both (p = 0.76). No mouse lacks events.
+    outside tolerance; Q-b is 0.998 in both (p = 0.76). No mouse lacks events. As that p sits at 0.05
+    and the threshold comes from 100 seeded shuffles, the reading was run with 20 further seeds per
+    shuffle. With S-a p is 0.056 to 0.116 (median 0.069), below 0.05 in none of 20; with S-b p is
+    0.044 to 0.116 (median 0.060), below 0.05 with KO higher in 3 of 20. With 1000 shuffles per
+    threshold p is 0.056 (S-a) and 0.051 to 0.054 (S-b, three seeds). The typical draw and the limit
+    of the Methods' procedure do not reach p < 0.05; the outcome is close to the boundary. In every
+    draw both means are outside tolerance (KO 0.426 to 0.436, WT 0.383 to 0.397), so where the test
+    holds the outcome would be partially reproduced.
   deviations:
   - 8 WT mice at P14-16, not 9 or 10.
   - The definition of the proportion, of an active cell and of the shuffle are not given in the paper;
     the claims file's readings were run, with R-b under both rate units (twelve readings), and give
-    the same outcome.
+    the same outcome. The threshold uses 100 shuffles (Online Methods, network events); the seed
+    check in the notes shows how much its sampling noise moves the closest reading.
 - claim: imaging-firing-rate-no-genotype-difference
   outcome: reproduced
   notebook: reproduce_goncalves_2013.ipynb
@@ -315,8 +323,9 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. For peaks of synchrony, when is a cell active in a frame, how was
     each trace shuffled, and how is the proportion of neurons participating in an event formed? With
-    an active cell as any non-zero rate the frequencies match the paper's, but every reading gives
-    proportions above the paper's 0.300 and 0.380.
+    an active cell as any non-zero rate the frequencies match the paper's, but no reading gives
+    proportions within the paper's s.e.m. (0.300 and 0.380). Q-a with R-b and the rates in Hz gives
+    proportions below them (0.13 to 0.17), and every other reading gives proportions above them.
 - kind: methods_unavailable
   statement: Question for the authors. How was the pooled average correlation (0.230 and 0.265) formed,
     and how was the unequal-variance 2 x 3 ANOVA fitted? The paper's s.e.m. fit an average of the
@@ -529,4 +538,189 @@ verifications:
     agrees: true
     outcome: blocked
     reason: There is no isoflurane imaging.
+    response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of commit 2b12840e (author-revise-1), with its
+    conclusions and summary, the helper module, the claims file, the attempt record and the README,
+    with the paper. It checked each conclusion and the summary against the outputs. In reply, the
+    sentences it quoted were corrected (fig2b range in the conclusion and notes, the peaks of synchrony
+    finding, the s.e.m. range in the genotype-pooled-ages conclusion, the fig1ef ratio sentence in the
+    notes, and the count of mice in the fig1d section), and the seed check it asked for on fig2c was
+    added. No outcome changed and none is proposed.
+  results:
+  - claim: group-sizes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 11).
+    response: No change.
+  - claim: fig1d-distance-dependent-decorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cells 14 and 15). The criterion has no partial outcome; its reasoning is unchanged
+      from round 1, and the new test on the 16 mice with all three bins gives the same pattern. The
+      assumption that the outcome under the deposited rates (T-a) holds for the paper's trace is stated
+      and reasonable, as T-a reproduces the paper's P14-16 values and its P30-40 WT value. Outside the
+      scope of its check, the sentence in cell 13 "Six mice (P9-11) have no pairs over 200 um, or few"
+      is wrong, as cell 15 shows 5 mice with none, 1 at P9-11 and 4 at P14-16.
+    response: The sentence in the section's introduction now says that some mice have no pairs over
+      200 um, or few, and that they are counted below, where cell 15 gives the counts.
+  - claim: fig1e-age-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 18).
+    response: No change.
+  - claim: genotype-pooled-ages
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 21). The T-a assumption is stated and reasonable. The conclusion's "those over
+      mice (0.024 to 0.030) are not" is not supported; for this claim the per-mouse s.e.m. are 0.024 and
+      0.026 for pairs under 100 um, and 0.030 is the Pearson value of cell 24, carried over from its
+      round-1 range. The attempt record's "0.024 and 0.026" is correct.
+    response: The conclusion now gives 0.024 and 0.026.
+  - claim: pearson-genotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 24). The T-a assumption is stated and reasonable.
+    response: No change.
+  - claim: fig1ef-p14-16-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cells 27 and 28). Student p is 0.057, and the variance tests now printed support
+      using Student's test. The T-a assumption carries most weight here, where p = 0.057 sits next to the
+      threshold; the notes say the result is fragile. The fragility cannot be resolved, as the outcome
+      depends on p = 0.057, on the one WT P14-16 mouse missing from the data set, and on the T-a
+      assumption. In the record's notes, "as a ratio it is (1.21 against 1.17 and 1.13)" lacks the word
+      "largest", and omits that the ratio is a variant the criterion does not use, as cell 29 says.
+    response: The notes now say that as a ratio, a variant the criterion does not use, the difference
+      is largest at P14-16.
+  - claim: p30-40-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 31).
+    response: No change.
+  - claim: fig2b-peak-frequency
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 34). All six readings give p >= 0.13. The conclusion (cell 35) says "under any of
+      the four readings (p = 0.13 to 0.64)", but there are six readings and the two R-b/U-b readings give
+      p = 0.82 and 0.96, so the range is 0.13 to 0.96; the record's notes carry the same stale range.
+    response: The conclusion now says six readings, p = 0.13 to 0.96, and the notes give the same range.
+  - claim: fig2c-participation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 37). All twelve readings give p >= 0.052. Under R-b/U-b with Q-a, p = 0.052 (S-a)
+      and 0.053 (S-b), with thresholds from 100 seeded shuffles and one seed per reading; if another
+      seed gave p < 0.05 with KO higher the test would hold, and as both means are outside tolerance the
+      outcome would then be partially reproduced, not not reproduced. Re-running this reading over
+      several seeds would settle it. The finding on peaks of synchrony, "every reading gives
+      proportions above the paper's 0.300 and 0.380", is false, as R-b (rates in Hz) with Q-a gives WT
+      0.133 to 0.141 and KO 0.170 to 0.171.
+    response: Added a cell that runs R-b/U-b with Q-a over 20 further seeds per shuffle and with 1000
+      shuffles per threshold. With S-a p is 0.056 to 0.116 (median 0.069), below 0.05 in none of 20
+      seeds; with S-b 0.044 to 0.116 (median 0.060), below 0.05 with KO higher in 3 of 20. With 1000
+      shuffles p is 0.056 (S-a) and 0.051 to 0.054 (S-b). The outcome is kept and no change is
+      proposed. The seed only samples the threshold of the Methods' procedure, it is not a reading of
+      the criterion, and choosing among seeds the ones that pass would select on the result; the
+      typical draw and the limit with many shuffles both give p above 0.05. The notes and conclusion
+      say the outcome is close to the boundary and would be partial in the few draws where the test
+      holds. The finding now says Q-a with R-b and rates in Hz is below the paper's values and every
+      other reading above them.
+  - claim: imaging-firing-rate-no-genotype-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 40).
+    response: No change.
+  - claim: unanesthetized-p14-16-values
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 43). It rests on reading the rates as Hz (U-a) and is not flagged as assumed, but
+      needs no flag, as the criterion accepts one reading of rate unit and the notes say the argument
+      for U-a is partly circular.
+    response: No change.
+  - claim: wholecell-updown-firing
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: wholecell-state-modulation
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig3f-foa-time
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: ap-kinetics-similar
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig4-updown-properties-similar
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig4f-spikes-per-up-state
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig4g-up-state-firing-probability
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig5c-firing-vs-lh-p14-16
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: p30-40-firing-vs-lh
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig5d-correlation-vs-lh
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig5ef-slow-wave-epochs
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: suppl4a-firing-vs-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agree. It is now metadata_insufficient, with data_missing named as also possible, as it suggested. The variant is restricted to the 2160-frame recordings with the brightness-step ratio of each printed (cell 46); KO entry 4, at 1.08, is marginal, but the variant decides nothing.
+    response: No change.
+  - claim: fig5g-lh-power-similar
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fast-imaging-control
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig6-isoflurane-wt-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig6-isoflurane-ko-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
+    response: No change.
+  - claim: fig6-isoflurane-firing
+    agrees: true
+    outcome: blocked
+    reason: Agree with the 17 blocked claims.
     response: No change.
