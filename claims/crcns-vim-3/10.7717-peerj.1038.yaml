@@ -1,0 +1,409 @@
+# Claims for Mannion (2015), PeerJ 3:e1038, "Sensitivity to the visual field origin of natural image
+# patches in human low-level visual cortex", doi:10.7717/peerj.1038, on CRCNS data set vim-3
+# (doi:10.6080/K0JS9NC2).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-08,
+# protocol as stated in docs/protocol.md (Reader), version pilot-13.
+#
+# Text read: the version of record, PMC4485252, from the Europe PMC full-text XML as supplied under
+# paper/: Abstract, Introduction, Materials & Methods, Results and Discussion, Conclusion, the legends
+# of Figures 1 to 5 and the legends of Figures S2 and S3. No PDF was supplied, so values printed only
+# inside figures (the psc differences of Figure 4, the points of Figure 5) were not read. The
+# supplementary files themselves (Fig. S1 stimulus set, Table S1 complete ANOVA output, the Fig. S2 and
+# S3 images) are not under paper/; only their titles and legends are. Table S1 holds the main effects
+# and the other interactions of the three-way ANOVA; the paper's text states the two effects the
+# results rest on, so no claim needs Table S1.
+#
+# Code. The paper links https://bitbucket.org/djmannion/ul_sens_fmri_analysis, which no longer
+# exists. The same repository is on GitHub as mannion-lab/ul_sens_fmri_analysis (also archived by
+# Software Heritage from the Bitbucket origin). Read at commit
+# 571e9312c251ff2166be91a57201112036e5e80d (2015-05-22). It holds the single-subject pipeline
+# (preproc_template.py, loc_glm.py localiser GLM, glm_prep.py masks and ROI timecourses, glm.py
+# experiment GLM and conversion to psc), the group step (group.py response amplitudes, the
+# upper minus lower difference term, the simple-effect t-tests, task performance), resid.py
+# (Fig. S3), task.py (Fig. S2), imstats.py (DKL conversion, pixel statistics, Gabor filters,
+# correlations, radial-bias test) and figures.py. The three-way ANOVA was run in SPSS (README); the
+# code only writes its input table, the per-participant means over images. The experiment code its
+# README names (mannion-lab/ul_sens_fmri, commit 5e98dd81512fa3d226a971a6217426535b682d85) was read
+# for the design constants only: 30 images, 8 prepended events, 4 s events, 1 s stimulus, 10 runs.
+# It uses helper packages that are not linked (fmri_tools, monitors.conversions, runcmd).
+#
+# Method details fixed from the code where the Methods leave them open, used by the claims below.
+# Localiser masks: a node is in a mask when it lies in V1, V2 or V3 and the localiser t value is
+# above 2.58 (glm_prep.py, loc_glm_thresh), one-sided positive, which is the Methods' p < 0.01. ROI
+# timecourses: the mean over mask nodes per hemisphere, then the mean of the two hemispheres
+# (glm_prep.py). Experiment GLM: one regressor per image and source location (60 per presentation
+# field), SPM canonical HRF for a 1 s event (AFNI SPMG1(1)), first 16 volumes of each run censored
+# (glm.py, config.py); psc is the beta divided by the baseline timecourse (fmri_tools.beta_to_psc).
+# The Methods' "separate regressors for image patches sourced from the lower and upper visual fields"
+# together with "an estimate of the response ... elicited by each image (30)" fit this. Group values
+# are averaged over images (and, for the combined tests, over V1 to V3) before testing (group.py).
+#
+# Data the paper used. Seven participants (code ids p1001, p1003, p1004, p1006, p1008, p1010, p1011),
+# one experimental session each of 10 runs, 332 s per run, TR 2 s (166 volumes), 35 coronal slices,
+# 2 mm isotropic, Philips 3T. Each run holds two interleaved sequences of 83 events, one for the upper
+# and one for the lower visual field (the second offset by 2 s), each with 60 image events (30 images
+# by 2 source locations, above or below fixation) and 15 null events, plus 8 prepended events.
+# Conditions: presentation location (upper, lower) by source location (above, below), per image.
+# Measured variables: BOLD in V1, V2 and V3, button presses on a central digit task. V1 to V3 were
+# defined from a separate retinotopic mapping session, on surfaces from a separate T1 session. The
+# data descriptor says the archive holds the 10 functional runs per participant, the run sequence,
+# the task lookup and the button presses, and stimulus screenshots, and that anatomical images and
+# visual area definitions are not part of it; whether the author can obtain them is the author's
+# to find.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: vim-3
+  doi: 10.6080/K0JS9NC2
+paper: doi:10.7717/peerj.1038
+claims:
+- id: localiser-masks-ventral-dorsal
+  statement: The localiser masks for upper visual field presentation lie largely in ventral
+    subregions of V1 to V3 and those for lower visual field presentation in dorsal subregions.
+  source: Materials & Methods, Localiser, paragraph 1; Figure 2B
+  quote: "These upper and lower presentation masks were largely confined to ventral and dorsal
+    subregions, respectively"
+  data: dataset
+  criterion: Masks as in the Methods, Localiser, and glm_prep.py (a GLM with one regressor for all
+    image events of a presentation field; nodes of V1, V2 or V3 with t above 2.58). Reproduced when,
+    for most participants, most mask nodes of the upper masks lie in the ventral half of each area
+    and most of the lower masks in the dorsal half. The paper gives no measure of "largely confined";
+    the split into ventral and dorsal halves follows the retinotopic definition of each area. Needs
+    the participants' cortical surfaces and V1 to V3 definitions.
+- id: presentation-source-interaction
+  statement: Response amplitude shows a significant interaction between presentation location (upper,
+    lower visual field) and source location (above, below fixation), F(1,6) = 11.19, p = 0.016.
+  source: Results and Discussion, paragraph 1; Figure 3
+  quote: "We find a significant interaction between the presentation and source locations ( F 1,6 =
+    11.19, p = 0.016), as is apparent in Fig. 3"
+  statistics:
+  - test: three-way repeated measures ANOVA (visual area, presentation, source), presentation by source
+      interaction
+    statistic: F(1,6) = 11.19
+    p: 0.016
+    n: 7 participants
+  expected:
+  - quantity: F for the presentation by source interaction
+    value: 11.19
+    tolerance: 1.12
+  data: dataset
+  criterion: From the Methods, Response amplitude, and glm.py and group.py. Per participant, area,
+    presentation and source, the psc response averaged over the 30 images; a three-way repeated
+    measures ANOVA (area 3, presentation 2, source 2). Reproduced when the presentation by source
+    interaction has p < 0.05 and F is within tolerance; partially reproduced when p < 0.05 with F
+    outside tolerance.
+- id: interaction-not-area-dependent
+  statement: The presentation by source interaction does not depend on visual area (three-way
+    interaction F(1.9,11.4) = 1.52, p = 0.260), which justifies combining V1, V2 and V3.
+  source: Results and Discussion, paragraph 1
+  quote: "Because there was little evidence to indicate that this interaction depended on the visual
+    area ( F 1.9,11.4 = 1.52, p = 0.260), we combined across the visual areas"
+  statistics:
+  - test: three-way repeated measures ANOVA, area by presentation by source interaction, Huynh-Feldt
+      corrected degrees of freedom
+    statistic: F(1.9,11.4) = 1.52
+    p: 0.26
+    n: 7 participants
+  expected:
+  - quantity: F for the three-way interaction
+    value: 1.52
+    tolerance: 0.15
+  data: dataset
+  depends_on:
+  - presentation-source-interaction
+  criterion: A claim of absence, judged on the paper's test, the same three-way repeated measures ANOVA
+    as presentation-source-interaction with Huynh-Feldt correction of the degrees of freedom for the
+    area factor (Methods, Response amplitude). Reproduced when the three-way interaction has p of 0.05
+    or more; not reproduced when p < 0.05. F, the corrected degrees of freedom and p are reported
+    either way.
+- id: lower-field-below-greater
+  statement: For presentation in the lower visual field, combined over V1 to V3, patches sourced from
+    below fixation evoke larger responses than patches from above (0.80 against 0.72 psc), a
+    significant difference (t(6) = 5.17, p = 0.002).
+  source: Results and Discussion, paragraph 1
+  quote: "Responses to images sourced from below fixation were higher than those from above fixation
+    when presented in the lower visual field ... 0.80 psc (SE = 0.02) and 0.72 psc (SE = 0.02),
+    respectively. This difference was statistically significant ( t 6 = 5.17, p = 0.002)"
+  statistics:
+  - test: paired t-test, below against above source, lower field presentation
+    statistic: t(6) = 5.17
+    p: 0.002
+    n: 7 participants
+  expected:
+  - quantity: mean response, lower field, below source
+    value: 0.80
+    tolerance: 0.02
+    unit: psc
+  - quantity: mean response, lower field, above source
+    value: 0.72
+    tolerance: 0.02
+    unit: psc
+  - quantity: t for below against above, lower field
+    value: 5.17
+    tolerance: 0.52
+  data: dataset
+  depends_on:
+  - presentation-source-interaction
+  criterion: From group.py stats(). Per participant, the psc response averaged over images and over
+    V1, V2 and V3, for each presentation and source; a paired t-test (scipy ttest_rel, two-sided) of
+    above against below for lower field presentation. The means are taken over participants; the
+    tolerance on each mean is the paper's SE. The SE in group.py is computed after removing each
+    participant's mean over the four conditions and adding the grand mean (the normalisation the
+    Figure 3 legend names), with ddof 1 over the square root of 7; it is reported, and that
+    normalisation leaves the means and the t value unchanged. Reproduced when both means and t are
+    within tolerance and p < 0.05 with below higher; partially reproduced when the test holds and a
+    value is outside tolerance.
+- id: upper-field-no-source-difference
+  statement: For presentation in the upper visual field, patches sourced from below and above fixation
+    evoke comparable responses (0.84 against 0.85 psc; t(6) = 0.38, p = 0.719), so the predicted
+    preference for above-sourced patches in the upper field was not found.
+  source: Results and Discussion, paragraphs 1 and 2
+  quote: "When presented in the upper visual field, images sourced from below fixation elicited
+    comparable response amplitudes to those from above fixation (below: mean = 0.84 psc, SE = 0.03;
+    above: mean = 0.85 psc, SE = 0.02; t 6 = 0.38, p = 0.719)"
+  statistics:
+  - test: paired t-test, below against above source, upper field presentation
+    statistic: t(6) = 0.38
+    p: 0.719
+    n: 7 participants
+  expected:
+  - quantity: mean response, upper field, below source
+    value: 0.84
+    tolerance: 0.03
+    unit: psc
+  - quantity: mean response, upper field, above source
+    value: 0.85
+    tolerance: 0.02
+    unit: psc
+  data: dataset
+  depends_on:
+  - presentation-source-interaction
+  criterion: A claim of absence, judged on the paper's test, the paired t-test of group.py stats() on
+    per-participant responses averaged over images and V1 to V3, upper field presentation. Reproduced
+    when p is 0.05 or more; not reproduced when p < 0.05. The two means (tolerance the paper's SE),
+    t and the mean difference are reported either way.
+- id: fig4-top-five-matching-source
+  statement: Ranking the 60 image patch pairs by the difference between upper and lower field
+    responses, four of the five most upper-preferred pairs are sourced from above fixation and four of
+    the five most lower-preferred pairs from below fixation.
+  source: Results and Discussion, paragraph 3; Figure 4
+  quote: "We find that four out of the top five patches for both upper-preferred and lower-preferred
+    are from the matching source location"
+  expected:
+  - quantity: above-sourced pairs among the five most upper-preferred
+    value: 4
+    tolerance: 0
+  - quantity: below-sourced pairs among the five most lower-preferred
+    value: 4
+    tolerance: 0
+  data: dataset
+  criterion: From group.py difference_term() and the Figure 4 legend. For each image and source
+    location, the psc response averaged over V1 to V3, upper minus lower presentation, averaged over
+    participants; the 60 values are sorted, the five largest are upper-preferred and the five smallest
+    lower-preferred. Counts are exact, so the tolerance is zero. Reproduced when both counts are 4;
+    partially reproduced when both are at least 3 (still a majority matching the source); not
+    reproduced otherwise. The ten pairs and their differences are reported.
+- id: fig4-qualitative-content
+  statement: The upper-preferred patch pairs are regions of largely uniform luminance and mostly depict
+    sky; the lower-preferred pairs are more variegated and mostly depict the ground.
+  source: Results and Discussion, paragraph 3; Figure 4
+  quote: "The image patch pairs preferred by the upper visual field consist of regions of largely
+    uniform luminance (either bright or dark), whereas those preferred by the lower visual field are
+    more variegated"
+  data: with_inputs
+  depends_on:
+  - fig4-top-five-matching-source
+  criterion: The paper gives no measure; this is a visual judgement of the ten pairs selected in
+    fig4-top-five-matching-source, viewed in the stimulus screenshots. Reproduced when the five
+    upper-preferred pairs are mostly uniform and sky and the five lower-preferred mostly variegated
+    and ground, as judged by eye and shown in the notebook. The result is marked as resting on that
+    judgement.
+- id: fig5a-mean-luminance
+  statement: Higher mean luminance of a patch pair goes with a larger upper minus lower response
+    difference (Spearman r = 0.31, p = 0.016).
+  source: Results and Discussion, paragraph 4; Figure 5A
+  quote: "higher levels of mean luminance were related to greater differences in the responses evoked
+    by upper and lower visual field presentation (Spearman's r = 0.31, p = 0.016)"
+  statistics:
+  - test: Spearman correlation
+    statistic: r = 0.31
+    p: 0.016
+    n: 60 image and source location pairs (30 images by 2 source locations), from imstats.py
+  expected:
+  - quantity: Spearman r, mean luminance against upper minus lower difference
+    value: 0.31
+    tolerance: 0.031
+  data: with_inputs
+  depends_on:
+  - fig4-top-five-matching-source
+  criterion: From the Methods, Image patch analysis, and imstats.py. Each patch is cut as a 353 by 353
+    pixel square from the stimulus screenshot at its aperture, converted to DKL space with the
+    monitor's measured CIE coordinates; the mean is over pixels inside a circular mask of radius 0.8
+    of the square (run_hist); the left and right patches are averaged; Spearman correlation over the
+    60 image and source values with the difference term of fig4-top-five-matching-source.
+    Reproduced when r is within tolerance and p < 0.05; partially reproduced when r is positive with
+    p < 0.05 and outside tolerance. The monitor's CIE coordinates are not given in the paper or the
+    code (they come from a local PsychoPy monitor calibration), nor is the DKL conversion function
+    (monitors.conversions, not linked); the author decides whether a substitute can be used (author,
+    step 4).
+- id: fig5-no-other-pixel-relations
+  statement: Neither the mean of the two chromatic channels nor the standard deviation of pixel
+    values in any channel is significantly related to the upper minus lower response difference.
+  source: Results and Discussion, paragraph 4
+  quote: "No significant relationship was evident for the mean values in the chromatic channels, or for
+    the standard deviation of the pixel intensities for any of the channels"
+  data: with_inputs
+  depends_on:
+  - fig5a-mean-luminance
+  criterion: A claim of absence, judged on the paper's test, Spearman correlation at p < 0.05, computed
+    as in fig5a-mean-luminance for the five statistics (mean of the two chromatic channels, standard
+    deviation of the luminance and the two chromatic channels). Reproduced when none has p < 0.05; not
+    reproduced when any does. Each r and p are reported.
+- id: fig5bc-spatial-frequency
+  statement: Higher output of luminance Gabor filters at 1 and 2 cycles per degree goes with a larger
+    upper minus lower response difference (Spearman r = 0.32, p = 0.013 and r = 0.26, p = 0.049).
+  source: Results and Discussion, paragraph 5; Figures 5B and 5C
+  quote: "(Spearman's r = 0.32, p = 0.013; Spearman's r = 0.26, p = 0.049; for spatial frequencies of 1
+    and 2 cycles per degree of visual angle, respectively)"
+  statistics:
+  - about: 1 cycle per degree
+    test: Spearman correlation
+    statistic: r = 0.32
+    p: 0.013
+    n: 60 image and source location pairs
+  - about: 2 cycles per degree
+    test: Spearman correlation
+    statistic: r = 0.26
+    p: 0.049
+    n: 60 image and source location pairs
+  expected:
+  - quantity: Spearman r, 1 cpd luminance filter output
+    value: 0.32
+    tolerance: 0.032
+  - quantity: Spearman r, 2 cpd luminance filter output
+    value: 0.26
+    tolerance: 0.026
+  data: with_inputs
+  depends_on:
+  - fig5a-mean-luminance
+  criterion: Patches as in fig5a-mean-luminance, multiplied by a circular mask of radius 0.9
+    (run_filter); filters as in the Methods and _get_filter_bank (odd-symmetric Gabors, one octave
+    bandwidth, 1 to 16 cpd, 0 to 135 degrees); the response is the square root of the summed squared
+    convolution output; averaged over orientation and over left and right patches. The paper names
+    Spearman correlation; imstats.py compare_filt_with_data uses Pearson for spatial frequency. Spearman
+    is the main test (Methods first) and Pearson is shown as a variant. Reproduced when both r are
+    within tolerance and both p < 0.05 (p rounding to 0.049 or less for 2 cpd counts as
+    significant); partially reproduced when one holds.
+- id: fig5def-orientation
+  statement: Higher output of luminance Gabor filters at 45, 90 and 135 degrees goes with a larger
+    upper minus lower response difference (Spearman r = 0.34, 0.25 and 0.39; p = 0.008, 0.050 and
+    0.002).
+  source: Results and Discussion, paragraph 5; Figures 5D, 5E and 5F
+  quote: "(Spearman's r = 0.34, p = 0.008; Spearman's r = 0.25, p = 0.050; Spearman's r = 0.39, p =
+    0.002; for orientations of 45°, 90°, and 135°, respectively)"
+  statistics:
+  - about: 45 degrees
+    test: Spearman correlation
+    statistic: r = 0.34
+    p: 0.008
+    n: 60 image and source location pairs
+  - about: 90 degrees
+    test: Spearman correlation
+    statistic: r = 0.25
+    p: 0.05
+    n: 60 image and source location pairs
+  - about: 135 degrees
+    test: Spearman correlation
+    statistic: r = 0.39
+    p: 0.002
+    n: 60 image and source location pairs
+  expected:
+  - quantity: Spearman r, 45 degree luminance filter output
+    value: 0.34
+    tolerance: 0.034
+  - quantity: Spearman r, 90 degree luminance filter output
+    value: 0.25
+    tolerance: 0.025
+  - quantity: Spearman r, 135 degree luminance filter output
+    value: 0.39
+    tolerance: 0.039
+  data: with_inputs
+  depends_on:
+  - fig5bc-spatial-frequency
+  criterion: Filter outputs as in fig5bc-spatial-frequency, averaged over spatial frequency instead of
+    orientation; orientation convention from _get_filter_bank (0 horizontal, angles counter-clockwise,
+    so 45 is right-tilted as the paper says); Spearman correlation as in the paper and imstats.py.
+    The paper counts p = 0.050 as significant, so a p that rounds to 0.050 or less counts.
+    Reproduced when all three r are within tolerance and significant in that sense; partially
+    reproduced when two of the three hold.
+- id: fig5-no-other-filter-relations
+  statement: No other luminance spatial frequency (4, 8, 16 cpd) or orientation (0 degrees), and no
+    spatial frequency or orientation in the chromatic channels, is significantly related to the upper
+    minus lower response difference.
+  source: Results and Discussion, paragraph 5
+  quote: "No significant relationships were evident for any other spatial frequencies or orientations
+    in the luminance channel, or for any spatial frequency or orientation in the chromatic channels"
+  data: with_inputs
+  depends_on:
+  - fig5bc-spatial-frequency
+  criterion: A claim of absence, judged on the paper's test, Spearman correlation at p < 0.05, for the
+    22 filter measures not in fig5bc-spatial-frequency or fig5def-orientation (luminance 4, 8, 16 cpd
+    and 0 degrees; each chromatic channel at 5 spatial frequencies and 4 orientations), computed as in
+    those claims. Reproduced when none has p < 0.05; not reproduced when any does. The Pearson
+    variant of imstats.py for spatial frequency is shown. Each r and p are reported.
+- id: no-radial-bias-in-patches
+  statement: The output of Gabor filters oriented at 45 and 135 degrees does not differ significantly,
+    so the patches show no reliable radial bias.
+  source: Results and Discussion, paragraph 6
+  quote: "there were no significant differences between the output of Gabor filters oriented at 45° and
+    135°, which would be expected if a reliable radial bias was present in the image patches"
+  data: with_inputs
+  depends_on:
+  - fig5bc-spatial-frequency
+  criterion: A claim of absence. The paper names no test; imstats.py test_radial_bias settles it. Filter
+    outputs as in fig5bc-spatial-frequency, averaged over spatial frequency; for each DKL channel,
+    source location and side (left, right), a paired t-test over the 30 images of 45 against 135
+    degree output, 12 tests, uncorrected, at p < 0.05 (the paper's level throughout). Reproduced when
+    none has p < 0.05; not reproduced when any does. The luminance channel alone (4 tests) is shown
+    as a variant. Each t and p are reported.
+- id: figs2-task-no-condition-difference
+  statement: Performance on the central fixation task does not differ across the presentation and
+    source location conditions.
+  source: Results and Discussion, paragraph 7; Figure S2 legend
+  quote: "there are no apparent differences in performance on the behavioural task (Fig. S2)"
+  data: dataset
+  criterion: A claim of absence. The paper reports no test. Performance as in the Figure S2 legend
+    and task.py, the correlation of target presence assigned to a condition with button responses
+    at lags of 0 to 1.9 s in 0.1 s bins; group.py tasks() averages lags 0.4 to 0.9 s (bins 4 to 9)
+    and runs a two-way repeated measures ANOVA (presentation by source). No threshold is printed in
+    the paper; 0.05 is used as for its other tests. Reproduced when no effect of presentation,
+    source or their interaction has p < 0.05; not reproduced when any does. task.py bins targets
+    and responses in absolute run time but assigns a target to a condition by comparing event onsets
+    with the bin time plus 32 s, and redefines the targets for p1004 runs 1 to 5. The readings are
+    (a) task.py as written; (b) assignment with the bin time taken as absolute run time, which the
+    legend ("target onsets occurring near to a particular presentation ... condition") describes.
+    Both are run, with the p1004 rule kept.
+- id: figs3-residual-no-condition-difference
+  statement: The residual error of the GLM after event onset does not differ across source location
+    conditions within each presentation location.
+  source: Results and Discussion, paragraph 7; Figure S3 legend
+  quote: "or in the quality of the GLM model after event onset (Fig. S3) across conditions"
+  data: dataset
+  criterion: A claim of absence with no test in the paper or the code. Residual error as in the Figure
+    S3 legend and resid.py, the squared GLM residuals in psc, aligned to each image event onset over 12
+    volumes (24 s), averaged per presentation and source, then over participants and V1 to V3. The
+    paper allows two readings of the comparison, (a) above against below at each of the 12 time
+    points within each presentation field, paired t-tests over participants (averaged over areas),
+    and (b) a two-way repeated measures ANOVA (presentation by source) on the residual error averaged
+    over the window, judged on the source effect and the interaction, the presentation effect being
+    the difference the legend itself reports. Reproduced when no test in either reading has p < 0.05
+    (0.05 as for the paper's other tests); the traces are shown.
+- id: figs3-residual-upper-larger
+  statement: The residual error of the GLM is larger for upper than for lower visual field presentation.
+  source: Figure S3 legend
+  quote: "the residual error was larger for the upper presentation than the lower"
+  data: dataset
+  criterion: Residual error as in figs3-residual-no-condition-difference, averaged over participants,
+    areas, sources and the 12 time points. The paper reports no test. Reproduced when the mean for
+    upper presentation exceeds that for lower; the ratio and, as a variant, a paired t-test over
+    participants are reported.
