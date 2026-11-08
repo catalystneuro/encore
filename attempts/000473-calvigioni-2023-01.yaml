@@ -39,8 +39,8 @@ outcomes:
     give the code's tmu units index for index (4 of these have no units), below the 22 the criterion asks; 1,937
     units are common, 61 are fitted here only (58 on ILA6a or ORBm6a channels, 38 in session 128516) and none are
     in the code's outputs only. Per genotype 492/482 (Ctl), 743/738 (Vglut2), 445/406 (Npy), 318/311 (Esr1), all
-    within 10%. Over the whole session 4 sessions match and the counts are not within 10%. With the Methods' saturation
-    removal, 16 sessions match. The own mean rate is a median 1.03 to 1.09 times the code's Mean_FR rate per session;
+    within 10%. Over the whole session 4 sessions match and the counts are not within 10%. With the spikes within 1 s of the
+    files' 'spike saturation' periods removed (the code's series), 16 sessions match. The own mean rate is a median 1.03 to 1.09 times the code's Mean_FR rate per session;
     the selection differs by 5 units (4,159 against 4,154). The dandiset's tuning scores correlate with the code's
     (Spearman r 0.95 to 0.99) and the tuned flags agree for 90 to 92% of units.
   deviations:
@@ -85,7 +85,7 @@ outcomes:
   assumed: true
   notes: Reading (a), count per 100 ms bin above 0.2, over blocks 1 to 4, gives 1,995 (Ctl 492, Vglut2 743, Npy
     443, Esr1 317), all within 10%. Reading (b), 0.2 Hz, gives 3,758 and fails. Over the whole session reading (a)
-    gives 2,195 and fails for Ctl, Npy and Esr1. With the 'LFP saturation' series reading (a) gives 1,970 (Ctl 492,
+    gives 2,195, outside 10% of 1,945 (limit 2,139.5), and Ctl, Npy and Esr1 are also outside 10%. With the 'LFP saturation' series reading (a) gives 1,970 (Ctl 492,
     Vglut2 737, Npy 425, Esr1 316), also within 10%.
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
@@ -108,7 +108,7 @@ outcomes:
     1 (41 to 64% tuned) and air puff (37 to 50%), binomial p below 1e-290 against 0.11% and below 1e-246 against
     0.25%, above the false-positive rate measured for the tuned flags on null copies of the units (18 of 7,980 tests,
     0.23%, 95% CI 0.13 to 0.36%; the excess over 0.11% comes from the extreme percentiles of 1,000 shifts, which the
-    paper's code uses too). These parts hold under every seed, period and saturation series shown. The part 'Npy does not'
+    paper's code uses too). These parts hold over the ten seeds, the whole session and the 'LFP saturation' series. Vglut2 and Esr1 are above Ctl at p of 1.1e-14 or less in each, and the lowest sound 1 and air-puff fractions of any genotype are 28.8% and 32.3% (whole session), with the largest binomial p against 0.25% at 1.3e-185. The part 'Npy does not'
     fails on the criterion's test with seed 0 (p = 0.044), so the claim holds in part. That failure is fragile.
     Over ten seeds of the shifts Npy is above Ctl at p < 0.05 in 5 (p 0.014 to 0.357); with Bonferroni for three
     comparisons p = 0.132; over mice the Npy fractions (0.009 to 0.277, 4 mice) do not differ from Ctl (0.037 to
@@ -207,6 +207,7 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_calvigioni_2023.ipynb
   output: claim:ed8h-waveform-classes
+  assumed: true
   measured:
   - 606
   - 3484
@@ -214,6 +215,8 @@ outcomes:
     576 of the 606 FS units have a peak-to-trough below 0.38 ms and all RS units lie above 0.44 ms. Opto-positive units, Vglut2
     213 WS and 71 NS, Esr1 57 WS and 31 NS (Supplementary Table 7, 253 and 33, 77 and 13).
   deviations:
+  - The opto-tuned units counted in each class come from the GLM fitted over blocks 1 to 4, an assumption (see
+    code-outputs-link); the whole-session period is not run for this claim. The class counts do not depend on it.
   - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
     periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
     series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
@@ -243,7 +246,7 @@ outcomes:
   notes: With the window before each event as baseline (1 s before the tone, 0.5 s before the air puff), tone latencies
     are 20 to 50 ms and lie within 20 ms across genotypes in 4 of 4 subregions under both thresholds; air-puff latencies
     are 60 to 90 ms and lie within 20 ms in 3 of 4 (PL spreads 30 ms). With the 1 s before the trial start as baseline,
-    the air puff agrees in 2 (3 s.d.) or 1 (2 s.d.) of 4 subregions, because the Vglut2 rate in ORBm and PL is still
+    the air puff agrees in 2 of 4 subregions under both thresholds, because the Vglut2 rate in ORBm and PL is still
     above the pre-trial baseline at puff onset (0.7 s after the blue noise).
   deviations:
   - The criterion says 'pre-event baseline' without its length; 1 s before the tone (the Methods' pre-tone baseline)
@@ -311,10 +314,13 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_calvigioni_2023.ipynb
   output: claim:ed9bg-state-clusters
+  assumed: true
   notes: '13 of 15 clusters have a significant block pair (Wilcoxon, Bonferroni 6) with monotonic or one-block-rise
     baseline means; with the code''s rank-sum test, 9. Both opto clusters are among them. The rule is weak: only
     clusters 6 and 8 fail it, so the count cannot single out five state clusters, which the paper names subjectively.'
   deviations:
+  - The clustered units are the units fitted with the GLM over blocks 1 to 4, an assumption (see code-outputs-link);
+    the whole-session period is not run for this claim.
   - What counts as a rise in one block is read here as the block with the highest mean being significantly above
     at least one other block, a choice.
 - claim: fig4i-activity-modes
@@ -326,6 +332,9 @@ outcomes:
     (a), Vglut2 199.4, Esr1 26.4, Ctl 1.9, Npy 1.6), and (ii) the ranges of the four blocks on the 'state' mode
     do not overlap (0 of 6 pairs).
   deviations:
+  - Readings (a) and (b) of the units use the GLM fitted over blocks 1 to 4, an assumption (see code-outputs-link).
+    Reading (c), all selected units, does not use the GLM and gives the same outcome, so the outcome does not rest on
+    the period and is not flagged as assumed.
   - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
     periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
     series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
@@ -756,6 +765,210 @@ verifications:
     reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
       anatomy or behavior data are in it.'
     response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with the conclusions and the summary, the helper module,
+    the claims file, the attempt record and the README, with the paper under paper/. The verifier agreed with all 33 outcomes.
+  results:
+  - claim: code-outputs-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree. The blocks 1 to 4 GLM period is stated and reasonable because the code's tmu units match it (no tmu unit
+      missing; 18 of 25 sessions identical against 4). Four of those 18 sessions have no units on either side, so 14 of 21
+      sessions with units match. The 'reproduced' branch also requires the session table's genotypes, but the files label
+      216300 and 216301 Vglut2-cre, which would block 'reproduced' even if 22 sessions matched. Cell 7 and the notes said
+      'the Methods' removal of spikes near LFP saturation', but the removal used is the code's 'spike saturation' series.
+    response: Kept. Cell 7 and the notes now say the removal uses the files' 'spike saturation' series (the code's).
+  - claim: ed7a-unit-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agree.
+    response: No change.
+  - claim: fig4g-glm-units
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The assumption (GLM period) is stated and reasonable. Cell 19 and the notes say that over the whole session
+      Ctl, Npy and Esr1 are outside 10%, but the total is also outside, 2,195 against a limit of 2,139.5.
+    response: Kept. Cell 19 and the notes now say the whole-session total is outside 10% too.
+  - claim: fig4e-opto-modulation-genotypes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree. The criterion defines only 'reproduced', so 'partially' is a judgment, and the record explains it. The
+      Npy failure depends on the seed (p < 0.05 in 5 of 10 seeds, Bonferroni p = 0.132, mouse-level p = 0.905). Cell 24 says
+      the Vglut2, Esr1 and sensory parts 'hold under every seed, period and saturation series shown', but for sound 1 and
+      air puff tuned fractions and binomial tests are printed only for seed 0, the whole session and the LFP variant (fractions
+      only). The round-1 reasons leave out that the whole-session variant reverses Npy (p = 8e-12, lower) and that the code's
+      own flags give p = 0.128.
+    response: 'Kept. Cell 22 now prints, for sound 1 and air puff, the lowest tuned fraction of any genotype and the largest
+      binomial p against 0.25% for each of the ten seeds, the whole session and the ''LFP saturation'' series: the lowest
+      fractions are 28.8% and 32.3% and the largest p 1.3e-185. Cell 24 and the notes state this and that Vglut2 and Esr1
+      are above Ctl at p of 1.1e-14 or less in each run. The whole-session reversal and the code''s flags (p = 0.128) were
+      already in the notes.'
+  - claim: fig4g-opto-tuning-score
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The Esr1 corrected p is 0.072 to 0.11 over all seeds, with the LFP series, and 0.159 on the code's own
+      scores. This fails even the 'partial' branch. The round-1 reasons leave out that the criterion needs the tests to hold
+      even for a partial outcome.
+    response: No change.
+  - claim: fig4g-tuned-unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree for seed 0. 4 of 10 seeds would give 'reproduced'. The record says so, so the outcome sits on a boundary
+      that the seed decides.
+    response: No change; the notes already give the spread over seeds.
+  - claim: ed8h-waveform-classes
+    agrees: true
+    outcome: reproduced
+    reason: Agree. It also uses the GLM-fitted units or tuned flags but is not flagged assumed; the margins make this immaterial.
+    response: Flagged assumed, with a deviation naming the GLM period, and marked as resting on an assumption in the notebook,
+      the Summary and the README.
+  - claim: ed8r-comodulated-units
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The assumption (GLM period) is stated only as a deviation, but the margins are large. The record marks
+      it assumed, while the README and the Summary list it without '(assumption)'.
+    response: The result cell, the Summary and the README now say it rests on the GLM period.
+  - claim: ed7bd-latency-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agree under the pre-event baseline, a literal reading of 'pre-event baseline'. Cell 41, the notes and the methods_unavailable
+      finding on latency say the pre-trial air-puff latencies agree in 2 (3 s.d.) or 1 (2 s.d.) of 4 subregions, but cell
+      40 prints 2 of 4 under both thresholds. This does not change the outcome.
+    response: Corrected cell 41, the notes and the finding to 2 of 4 under both thresholds.
+  - claim: ed8o-conditioned-units
+    agrees: true
+    outcome: reproduced
+    reason: Agree.
+    response: No change.
+  - claim: ed9a-pca-divergent-block2
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The statement's 'similar ... in block 4' is contradicted by the data and not tested; this is pending the
+      reader question.
+    response: No change; the question stays in questions/000473.yaml.
+  - claim: fig4h-opto-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, as a conservative judgment. Taken literally, the criterion's rule (two opto clusters, each at least 90%
+      Vglut2 and Esr1) gives 'reproduced'; the claims file does not say how the failed expected count of 1,770 enters the
+      outcome, and its 'partial' branch does not describe this case. The 1,995 against 1,770 gap is unexplained. The criterion
+      puts z-scoring before the quality control, unlike the code; the z-scored variant keeps 1,974, which does not change
+      the outcome. The record marks it assumed, while the README and the Summary list it without '(assumption)'.
+    response: Kept. The result cell, the Summary and the README now say it rests on the GLM period. The cause of 1,770 stays
+      open, asked of the authors in the methods_unavailable finding.
+  - claim: ed9bg-state-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agree. It also uses the GLM-fitted units but is not flagged assumed; the margins make this immaterial.
+    response: Flagged assumed, with a deviation naming the GLM period, and marked as resting on an assumption in the notebook,
+      the Summary and the README.
+  - claim: fig4i-activity-modes
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Readings (a) and (b) also use the GLM-fitted units or tuned flags but are not flagged assumed; the margins
+      make this immaterial.
+    response: 'Not flagged: reading (c), all selected units, does not use the GLM and gives the same outcome. A deviation
+      now says so.'
+  - claim: fig4k-decoding-pl
+    agrees: true
+    outcome: reproduced
+    reason: Agree.
+    response: No change.
+  - claim: ed9no-decoding-other-regions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree.
+    response: No change.
+  - claim: fig4jl-pl-esr1
+    agrees: true
+    outcome: reproduced
+    reason: Agree under the rule, as weak evidence. With measure 1 a tie, the outcome needs measures 2 and 3. Measure 2 holds
+      only because the ranking is by magnitude (that choice is stated). Measure 3's PL lead (0.104 against 0.099) is smaller
+      than the s.d. of about 0.02, and ed9no contradicts PL specificity. The record marks it assumed, while the README and
+      the Summary list it without '(assumption)'.
+    response: Kept. The result cell, the Summary and the README now say it rests on the GLM period and the ranking by magnitude.
+  - claim: fig4f-pupil-persistent
+    agrees: true
+    outcome: blocked
+    reason: Agree. Cells 71 to 74 now support the eye/pupil claims (one Npy mouse).
+    response: No change.
+  - claim: fig4f-pupil-ctl-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agree. Cells 71 to 74 now support the eye/pupil claims (one Npy mouse).
+    response: No change.
+  - claim: ed7g-eye-closing-airpuff
+    agrees: true
+    outcome: blocked
+    reason: Agree. Cells 71 to 74 now support the eye/pupil claims (one Npy mouse).
+    response: No change.
+  - claim: ed1j-optotagged-tonic
+    agrees: true
+    outcome: blocked
+    reason: Agree. Cells 71 to 74 now support it (0 of 5,046 non-PFC units have an LH label).
+    response: No change.
+  - claim: fig2d-markers
+    agrees: true
+    outcome: blocked
+    reason: Agree. Cells 71 to 74 now support it (Ephys_Category codes 1 to 6 with no names).
+    response: No change.
+  - claim: fig1l-six-types
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig2fh-topography
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig3f-esr1-rtpa
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig3f-telc-necessary
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig3i-aversive-behaviors
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig3jkl-npy-rearing
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig3mn-persistent-cpa
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: ed10-female-mild-aversive
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig5f-stress-index-female
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig5g-firing-shift
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
+  - claim: fig5kl-burst-female-intrinsic
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change.
 findings:
 - kind: metadata_error
   statement: Sessions 216300 and 216301 are labelled Vglut2-cre in the files' subject genotype, while the paper's
@@ -807,7 +1020,7 @@ findings:
 - kind: methods_unavailable
   statement: 'Question for the paper''s authors: how was the onset latency of Extended Data Fig. 7b-d detected,
     and against which baseline? With the window before the air puff the genotypes agree within 20 ms in 3 of 4 subregions;
-    with the pre-trial baseline only in 1 or 2.'
+    with the pre-trial baseline only in 2.'
 - kind: metadata_insufficient
   statement: The Patch-seq deposit (BioStudies S-BSST1069) labels cells with Ephys_Category codes 1 to 6 and gives
     no mapping of the codes to the paper's six neuron types.

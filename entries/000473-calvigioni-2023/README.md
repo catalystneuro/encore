@@ -13,17 +13,17 @@ behavior and pupil data of the paper are not in it.
 | Light modulates mPFC units in Vglut2 and Esr1, not Npy mice; sound and air puff in all | Partially reproduced (assumption) |
 | Mean opto tuning score above controls in Vglut2 and Esr1 | Not reproduced (assumption) |
 | Counts of opto-tuned units per genotype | Partially reproduced (assumption) |
-| Narrow- and wide-spiking classes, both opto-tuned | Reproduced |
-| Units comodulated by light and air puff above chance | Reproduced |
+| Narrow- and wide-spiking classes, both opto-tuned | Reproduced (assumption) |
+| Units comodulated by light and air puff above chance | Reproduced (assumption) |
 | Similar response latency to tone and air puff | Reproduced (assumption) |
 | Conditioned units in Vglut2 and Esr1 mice | Reproduced |
 | Block-2 trajectories diverge in Vglut2 and Esr1 | Reproduced |
-| Opto clusters from Vglut2 and Esr1 mice | Partially reproduced |
-| State clusters | Reproduced |
+| Opto clusters from Vglut2 and Esr1 mice | Partially reproduced (assumption) |
+| State clusters | Reproduced (assumption) |
 | Activity modes | Reproduced |
 | PL baseline decodes block 1 vs 2 better in Vglut2 and Esr1 | Reproduced |
 | No genotype difference in decoding elsewhere | Not reproduced |
-| Esr1 effects concentrated in PL, Vglut2 spread | Reproduced |
+| Esr1 effects concentrated in PL, Vglut2 spread | Reproduced (assumption) |
 | Pupil, eye-closing and optotagging claims (4) | Blocked: data missing |
 | Ex vivo, anatomy and behavior claims (11) | Blocked: data missing |
 | Patch-seq markers (BioStudies) | Blocked: metadata insufficient |
