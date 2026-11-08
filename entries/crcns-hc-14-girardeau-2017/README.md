@@ -25,15 +25,17 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 Claims on hippocampus-BLA pairs, state firing rates and ripple modulation use the authors' summary
-tables, after checking them against the raw spikes. Claims that need NREM or REM elsewhere use sleep
+tables. The pair table is checked against the raw spikes (units and run correlations), the state firing
+rates (StatesFR) only for their whole-session rates and the bound of the wake column, and the ripple
+modulation table (PoissonRippleMod) only for its internal consistency. Claims that need NREM or REM elsewhere use sleep
 states decoded from the authors' per-state firing rates (StatesFR) in immobile epochs of the home cage
 sleep, an assumption of this attempt checked against the authors' NREM and REM pair correlations.
 Several of these outcomes sit near p = 0.05 and change with the decoder's settings. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/crcns-hc-14-girardeau-2017-01.yaml`](../../attempts/crcns-hc-14-girardeau-2017-01.yaml).
 
-- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 30 minutes, 12 of them streaming the
-  61 session archives (tar.gz, 1 to 2.5 GB each) from the CRCNS bucket.
+- `reproduce_girardeau_2017.ipynb`: the analysis. Its last run took 29 minutes, 12 of them streaming the
+  61 sessions' clu archives (tar.gz, 0.1 to 2.5 GB each in the bucket) from CRCNS.
 - `hc14.py`: streaming the tar.gz archives, reading the summary tables and sessions, the danger zone and
   lap measures, EV and REV, the decoded sleep states and the reactivation strength. Other notebooks on this
   data set can import it.

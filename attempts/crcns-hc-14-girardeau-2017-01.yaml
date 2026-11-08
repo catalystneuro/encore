@@ -238,7 +238,8 @@ outcomes:
     signed-rank p = 1.5e-5, 0.00021, 0.035; Kruskal-Wallis p = 0.024. Variants give other outcomes: with the table''s pre-NREM
     (20 sessions; 2.51, 1.52, 1.30%; Kruskal-Wallis p = 0.021) the third window gives p = 0.067 (partial); with 30-s smoothing
     the first mean is 3.44% (partial); with the first revision''s immobility substitute the decay test gives p = 0.074 (not
-    reproduced).'
+    reproduced). In the table pre-NREM variant Rat10-20140622 has window 2 undefined because its hippocampal cells fire
+    no spike there (0, against 20,844 and 19,394 in windows 1 and 3) while its BLA cells fire 31,040.'
   deviations:
   - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
     each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
@@ -585,7 +586,7 @@ outcomes:
 findings:
 - kind: data_missing
   statement: The hand-scored sleep states (NREM, REM, wake intervals) are not deposited, nor the run intervals and lap classifications
-    the analyses used. Rescoring states from the LFP would mean streaming about 470 GB of tar.gz archives; this attempt decoded
+    the analyses used. Rescoring states from the LFP would mean streaming 461 GB of tar.gz archives; this attempt decoded
     them from the per-state firing rates of the StatesFR table, which reproduces the authors' NREM and REM pair correlations
     closely but not exactly.
 - kind: metadata_insufficient
@@ -620,12 +621,16 @@ findings:
     from the puff events, or from elsewhere, and where is it for the 49 sessions without an airpuffloc file? This attempt
     used the median head position at the air puffs, and the location-bias test (airpuff-location-no-bias) depends on it.
 - kind: other
-  statement: The session archives are tar.gz files without an index, and each clu archive (1 to 2.5 GB) is mostly RawKK, .fet
+  statement: The session archives are tar.gz files without an index, and each clu archive (0.1 to 2.5 GB) is mostly RawKK, .fet
     and .klg files; reading the sorted spikes of one session means decompressing the whole archive (99 GB over 65 sessions),
-    and the LFP archives are 3 to 9 GB each.
+    and the 65 LFP archives are 3.0 to 9.0 GB each (461 GB).
 - kind: metadata_error
   statement: 'Rat08''s two structure lists disagree on one shank-day: StructureMapping.ods labels shank 13 of session 5 (Rat08-20130712)
     BLA, and Structures.batch does not list it.'
+- kind: data_missing
+  statement: In Rat10-20140622 the hippocampal cells of the pair table (shanks 17 to 20) fire no spike over a 20-min stretch
+    of decoded post-sleep NREM, while the session's BLA cells fire 31,040 spikes in it; the hippocampal spikes of that stretch
+    are missing from the clu files, or the hippocampal shanks stopped recording.
 verifications:
 - date: '2026-11-08'
   kind: agent
@@ -886,4 +891,265 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: 'Reading (a): top quartile r=0.130, p=8e-33; bottom quartile r=0.014, p=0.20 (cell 68).'
+    response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the first revision, with its conclusions and summary, the helper module,
+    the attempt record and the claims file, with the paper. The report also lists sentences the outputs did not support (cells
+    11 and 13 stale; the Summary''s list of decoder-sensitive outcomes; the 470 GB and LFP archive sizes in cell 97, cell
+    0 and the findings; the README run time and its statement on checking the tables; cell 33''s qualifier), all corrected,
+    with the archive sizes and the run time now printed (cells 2 and 146).'
+  results:
+  - claim: units-recorded
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig1b-dz-speed-anova
+    agrees: true
+    outcome: partially_reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig1b-dz-speed-posthoc
+    agrees: true
+    outcome: partially_reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. With the corrected location and all samples it would be not reproduced.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig1b-speed-ratio
+    agrees: true
+    outcome: reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. With the corrected location and all samples it would be partially reproduced.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: figs1b-ratio-each-rat
+    agrees: true
+    outcome: reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. With the corrected location and all samples it would be not reproduced.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig1c-slower-in-dz-post-run
+    agrees: true
+    outcome: reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. Cell 33's Result lacks the qualifier on the estimated air puff location that the record
+      and the Summary attach.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: figs1c-habituation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: airpuff-location-no-bias
+    agrees: true
+    outcome: not_reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig2c-bla-pyr-higher-in-sleep
+    agrees: true
+    outcome: reproduced
+    reason: 'The REM column assumption is now well supported: epochs decoded as column 5 give pair correlations that follow
+      the table''s REM columns (r = 0.78 and 0.81) and not its NREM columns (r = 0.09).'
+    response: No change.
+  - claim: fig2c-bla-interneurons
+    agrees: true
+    outcome: reproduced
+    reason: 'The REM column assumption is now well supported: epochs decoded as column 5 give pair correlations that follow
+      the table''s REM columns (r = 0.78 and 0.81) and not its NREM columns (r = 0.09).'
+    response: No change.
+  - claim: fig2c-skewed-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig3c-hpc-bla-ev-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig3c-hpc-bla-ev-rem-absent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig3c-decay
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Reproduced only under the main decoder: the table''s pre-NREM gives partial
+      (window 3 p = 0.067), 30-s smoothing partial, the immobility substitute not reproduced. Sessions with EV > REV in the
+      first window number 17, against an expected 19 +- 1.9. The criterion lists only the three means, so I accept reproduced,
+      but this is the weakest outcome in the attempt. In the table pre-NREM variant Rat10-20140622 has window 2 undefined
+      while windows 1 and 3 are defined, and nothing explains this.'
+    response: 'Outcome kept. The Result now says the count of 17 is just outside the tolerance. The undefined window is explained
+      with a new output in cell 101: the session''s hippocampal cells fire no spike in window 2 (0, against 20,844 and 19,394
+      in windows 1 and 3) while its BLA cells fire 31,040, so no pair is defined there; added to the notes and as a data_missing
+      finding.'
+  - claim: figs5a-hpc-bla-all-cells
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: fig3d-pir-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Decoded REM is a stated and reasonable assumption, but less faithful than
+      decoded NREM (per-session EV - REV against the table''s REM has Spearman 0.71, and 0.53 with 30-s smoothing), so these
+      absence outcomes are weaker evidence than the NREM ones. Holds under the main decoder only: NREM p = 0.042, and p =
+      0.094 with the immobility substitute.'
+    response: Outcome kept; the Summary lists it among the outcomes that change with the decoder.
+  - claim: fig3d-pir-weaker-than-bla
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. The Summary leaves out that it gives p = 0.083 with the immobility substitute
+      and would then be not reproduced (cell 145); the record's notes include it.
+    response: Outcome kept. Added fig3d-pir-weaker-than-bla to the Summary's list of outcomes that change with the decoder.
+  - claim: fig3e-cen-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Decoded REM is a stated and reasonable assumption, but less faithful than decoded NREM (per-session EV - REV against
+      the table's REM has Spearman 0.71, and 0.53 with 30-s smoothing), so these absence outcomes are weaker evidence than
+      the NREM ones.
+    response: No change.
+  - claim: figs4-intra-structure-nrem
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: figs4-intra-structure-rem-absent
+    agrees: true
+    outcome: reproduced
+    reason: Decoded REM is a stated and reasonable assumption, but less faithful than decoded NREM (per-session EV - REV against
+      the table's REM has Spearman 0.71, and 0.53 with 30-s smoothing), so these absence outcomes are weaker evidence than
+      the NREM ones.
+    response: No change.
+  - claim: fig4-bla-ripple-modulation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: figs5b-ripple-modulated-pairs-reactivate-more
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: run-correlated-pairs
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig5a-up-positive-pairs-change-most
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: figs6b-ev-nine-groups
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: figs9-ev-independent-of-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig5b-top-contributors-gain-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig6a-airpuff-trajectory-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: fig6a-safe-trajectory-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Holds under the main decoder only: p = 0.060, and p = 0.048 under both
+      variants.'
+    response: Outcome kept; the Summary lists it among the outcomes that change with the decoder.
+  - claim: fig6b-airpuff-greater-than-safe
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Holds under the main decoder only: p = 0.035, and p = 0.15 with the immobility
+      substitute.'
+    response: Outcome kept; the Summary lists it among the outcomes that change with the decoder.
+  - claim: figs11a-whole-run-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: figs11b-all-cells-both-trajectories
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: figs11c-all-cells-difference-absent
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: bla-rates-safe-airpuff-absent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: ripple-rate-pre-post-absent
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: fig7b-strong-pairs-correlated-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig7b-weak-pairs-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig7c-quartiles
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
     response: No change.
