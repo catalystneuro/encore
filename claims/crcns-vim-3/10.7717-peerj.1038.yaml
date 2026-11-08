@@ -29,7 +29,8 @@
 #
 # Method details fixed from the code where the Methods leave them open, used by the claims below.
 # Localiser masks: a node is in a mask when it lies in V1, V2 or V3 and the localiser t value is
-# above 2.58 (glm_prep.py, loc_glm_thresh), one-sided positive, which is the Methods' p < 0.01. ROI
+# above 2.58 (glm_prep.py, loc_glm_thresh, config.py), positive t only; 2.58 is the two-sided p < 0.01
+# value for large degrees of freedom, which is the Methods' p < 0.01. ROI
 # timecourses: the mean over mask nodes per hemisphere, then the mean of the two hemispheres
 # (glm_prep.py). Experiment GLM: one regressor per image and source location (60 per presentation
 # field), SPM canonical HRF for a 1 s event (AFNI SPMG1(1)), first 16 volumes of each run censored
@@ -65,11 +66,13 @@ claims:
     subregions, respectively"
   data: dataset
   criterion: Masks as in the Methods, Localiser, and glm_prep.py (a GLM with one regressor for all
-    image events of a presentation field; nodes of V1, V2 or V3 with t above 2.58). Reproduced when,
-    for most participants, most mask nodes of the upper masks lie in the ventral half of each area
-    and most of the lower masks in the dorsal half. The paper gives no measure of "largely confined";
-    the split into ventral and dorsal halves follows the retinotopic definition of each area. Needs
-    the participants' cortical surfaces and V1 to V3 definitions.
+    image events of a presentation field; nodes of V1, V2 or V3 with t above 2.58). The paper gives
+    no measure of "largely confined" and shows one example participant (Figure 2B), so the rule below
+    is not from the paper and the outcome rests on it as an assumption. Reproduced when, for most
+    participants, most mask nodes of the upper masks lie in the ventral half of each area and most of
+    the lower masks in the dorsal half, the split into ventral and dorsal halves following the
+    retinotopic definition of each area. The fraction of nodes in the expected half is reported per
+    participant, area and mask. Needs the participants' cortical surfaces and V1 to V3 definitions.
 - id: presentation-source-interaction
   statement: Response amplitude shows a significant interaction between presentation location (upper,
     lower visual field) and source location (above, below fixation), F(1,6) = 11.19, p = 0.016.
@@ -247,8 +250,8 @@ claims:
     (monitors.conversions, not linked); the author decides whether a substitute can be used (author,
     step 4).
 - id: fig5-no-other-pixel-relations
-  statement: Neither the mean of the two chromatic channels nor the standard deviation of pixel
-    values in any channel is significantly related to the upper minus lower response difference.
+  statement: Neither the mean pixel value of either chromatic channel nor the standard deviation of
+    pixel values in any channel is significantly related to the upper minus lower response difference.
   source: Results and Discussion, paragraph 4
   quote: "No significant relationship was evident for the mean values in the chromatic channels, or for
     the standard deviation of the pixel intensities for any of the channels"
@@ -256,8 +259,8 @@ claims:
   depends_on:
   - fig5a-mean-luminance
   criterion: A claim of absence, judged on the paper's test, Spearman correlation at p < 0.05, computed
-    as in fig5a-mean-luminance for the five statistics (mean of the two chromatic channels, standard
-    deviation of the luminance and the two chromatic channels). Reproduced when none has p < 0.05; not
+    as in fig5a-mean-luminance for the five statistics (mean of each of the two chromatic channels,
+    standard deviation of the luminance and of each chromatic channel; compare_hist_with_data). Reproduced when none has p < 0.05; not
     reproduced when any does. Each r and p are reported.
 - id: fig5bc-spatial-frequency
   statement: Higher output of luminance Gabor filters at 1 and 2 cycles per degree goes with a larger
@@ -289,7 +292,11 @@ claims:
   criterion: Patches as in fig5a-mean-luminance, multiplied by a circular mask of radius 0.9
     (run_filter); filters as in the Methods and _get_filter_bank (odd-symmetric Gabors, one octave
     bandwidth, 1 to 16 cpd, 0 to 135 degrees); the response is the square root of the summed squared
-    convolution output; averaged over orientation and over left and right patches. The paper names
+    convolution output; averaged over orientation and over left and right patches. The filter
+    wavelengths in pixels come from psychopy deg2pix with the local "BOLDscreen" monitor profile,
+    which is not in the code; the paper's 1,920 pixels over 24.4 degrees gives about 78.7 pixels per
+    degree, and its 128 pixel patches upsampled by 2.75 to fill a 4.5 degree aperture give about 78.2.
+    The value is open; use about 78.7 and show the other. The paper names
     Spearman correlation; imstats.py compare_filt_with_data uses Pearson for spatial frequency. Spearman
     is the main test (Methods first) and Pearson is shown as a variant. Reproduced when both r are
     within tolerance and both p < 0.05 (p rounding to 0.049 or less for 2 cpd counts as
@@ -407,3 +414,32 @@ claims:
     areas, sources and the 12 time points. The paper reports no test. Reproduced when the mean for
     upper presentation exceeds that for lower; the ratio and, as a variant, a paired t-test over
     participants are reported.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, localiser threshold. Said t above 2.58 one-sided is p < 0.01; 2.58 is the two-sided
+    p < 0.01 value (one-sided would be about 2.33), and the code keeps positive t only (glm_prep.py,
+    config.py at the cited commit). Reworded.
+  - localiser-masks-ventral-dorsal. The rule for "largely confined" (most nodes in the expected half,
+    most participants) is not in the paper, which shows one example participant in Figure 2B; the
+    criterion now says so, marks the outcome as resting on that assumption, and asks for the
+    per-participant fractions.
+  - fig5-no-other-pixel-relations. "Mean of the two chromatic channels" could be read as one averaged
+    measure; the paper and compare_hist_with_data test the mean of each chromatic channel. Reworded
+    statement and criterion.
+  - fig5bc-spatial-frequency. Pixels per degree for the Gabor wavelengths come from a PsychoPy monitor
+    profile the code does not hold; named as open with the two values the paper's display and stimulus
+    numbers give (about 78.7 and 78.2).
+  - Checked against the code at 571e9312 and found as stated - group.py stats() normalisation and
+    ttest_rel, difference_term(), tasks() bins 4 to 9 and two-way ANOVA, imstats.py mask radii 0.8 and
+    0.9, Pearson for spatial frequency and Spearman for orientation and pixel statistics, 12 paired
+    t-tests in test_radial_bias, the filter orientation convention, task.py timing and the p1004 rule,
+    and resid.py 12-volume window. No change.
+  - Open, not settled. The partial outcome levels in several criteria (for example both counts at
+    least 3 in fig4-top-five-matching-source) are judgement scales not taken from the paper; the full
+    outcome rules rest on the paper's numbers.
+  - Open, not settled. The Figure 4 psc differences and the Figure 5 points are printed only in the
+    figures, which were not available as images, so they are not expected values.
