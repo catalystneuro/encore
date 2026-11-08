@@ -38,6 +38,16 @@ Where parameters come from:
   data set, so here the mask is every voxel of the brain mask above
   threshold. This is a substitute, not the paper's region, and no outcome
   rests on it.
+- Image patches and Gabor filters (`patch_crops` to `radial_bias_tests`)
+  follow imstats.py get_fragments, _get_filter_bank, run_filter and
+  test_radial_bias, as the claims no-radial-bias-in-patches and
+  fig5bc-spatial-frequency cite them; the 353 pixel square is the Methods'
+  (Image patch analysis) and the aperture position the experiment's
+  config.py. The monitor's CIE coordinates are not public, so the DKL axes
+  are formed under assumed calibrations (`CALIBRATIONS`, an assumption: two
+  common LCD gamuts, to show how far the result depends on the choice). The
+  OpenCV Gabor kernel and filter2D are written out in numpy and scipy, to
+  avoid a dependency (same formula and border rule).
 """
 
 import io
@@ -69,8 +79,11 @@ def stream_participants(url=URL, read_images=True):
     'series' (NIfTI series numbers, sorted), 'images' (list of int16 arrays
     in series order, or None), 'affine', 'scale', and 'md5' (per file). After
     the last participant a final dict with id 'stim' lists the stimulus PNG
-    names, their md5 sums and colour content (`colour`), and the md5 and size of the whole tar.gz as
-    streamed (to compare with the data set's checksums.md5).
+    names, their md5 sums, colour content (`colour`) and bytes (`png`), the
+    count of every member of the archive by kind and parent directory
+    (`members`), the files outside the participant and stimulus directories
+    (`other_files`), and the md5 and size of the whole tar.gz as streamed (to
+    compare with the data set's checksums.md5).
     """
     import hashlib
 
@@ -89,11 +102,15 @@ def stream_participants(url=URL, read_images=True):
         del p["nii"]
         return p
 
+    members = defaultdict(int)
     with tarfile.open(fileobj=resp, mode="r|gz") as tf:
         for m in tf:
+            parts = m.name.split("/")
+            # every member, by kind and parent directory, so that nothing is skipped unseen
+            members[("file" if m.isfile() else "directory" if m.isdir() else "other",
+                     "/".join(parts[:-1]))] += 1
             if not m.isfile():
                 continue
-            parts = m.name.split("/")
             if len(parts) == 4 and parts[1] == "data":
                 pid = parts[2]
                 if current is None or current["id"] != pid:
@@ -130,6 +147,10 @@ def stream_participants(url=URL, read_images=True):
                 stim["names"].append(parts[2])
                 stim["md5"][parts[2]] = hashlib.md5(b).hexdigest()
                 stim.setdefault("colour", {})[parts[2]] = _png_colour(b)
+                stim.setdefault("png", {})[parts[2]] = b
+            else:
+                stim.setdefault("other_files", []).append((m.name, m.size))
+    stim["members"] = dict(members)
     if current is not None:
         yield finish(current)
     while resp.read(2**22):
@@ -188,8 +209,22 @@ def task_performance(p, reading="a", n_runs=10, trial_len_s=4.0, n_lags=20, bin_
     """Performance on the central task per presentation, source and lag (task.py).
 
     Returns (perf, info): perf is (2 pres [upper, lower], 2 src [above, below],
-    n_lags) correlations; info counts targets, assigned targets and presses.
+    n_lags) correlations; info counts targets, assigned targets and presses,
+    and 'by_condition' the assigned targets per presentation and source.
+
+    Readings (a), (b) and (c) are described in the module docstring. Two more
+    variants of this attempt, both on the timing of reading (b), change only
+    the assignment window (task.py: an event starting strictly between 0 and
+    2 s after the bin): (d) the same window with its start included
+    (0 <= difference < 2 s), so that targets falling exactly on an event onset
+    are kept; (e) the event in progress, starting up to 2 s before the target
+    (-2 < difference <= 0 s).
     """
+    lo, hi, lo_incl, hi_incl = 0.0, trial_len_s / 2.0, False, False
+    if reading == "d":
+        lo_incl = True
+    elif reading == "e":
+        lo, hi, hi_incl = -trial_len_s / 2.0, 0.0, True
     if reading == "c":
         edges = np.arange(32.0, RUN_LEN_S, bin_res)
         offset = 0.0
@@ -221,7 +256,8 @@ def task_performance(p, reading="a", n_runs=10, trial_len_s=4.0, n_lags=20, bin_
         seq = p["seq"][i_run + 1]
         for i_bin in np.flatnonzero(targets[i_run]):
             time_diff = seq[..., 0] - (edges[i_bin] + offset)
-            ok = (time_diff > 0) & (time_diff < trial_len_s / 2.0)
+            ok = (((time_diff >= lo) if lo_incl else (time_diff > lo))
+                  & ((time_diff <= hi) if hi_incl else (time_diff < hi)))
             if ok.sum() == 0:
                 info["unassigned"] += 1
                 continue
@@ -242,7 +278,9 @@ def task_performance(p, reading="a", n_runs=10, trial_len_s=4.0, n_lags=20, bin_
                 perf[i_pres, i_src, lag] = np.corrcoef(
                     tasks[:, i_pres, i_src, :].ravel(),
                     np.roll(responses, -lag, axis=1).ravel())[0, 1]
-    return perf, dict(info)
+    info = dict(info)
+    info["by_condition"] = tasks.sum(axis=(0, 3)).astype(int)
+    return perf, info
 
 
 def rm_anova_2x2(values):
@@ -440,3 +478,184 @@ def process_participant(p, shifts=tuple(range(-12, 14, 2))):
         res["resid_ms"] = float(np.mean((100.0 * resid[:, 0] / roi.mean()) ** 2))
         out["fields"][field] = res
     return out
+
+
+# ---------------------------------------------------------------- image patches (radial bias)
+
+# Patch geometry: the experiment's config.py (mannion-lab/ul_sens_fmri at
+# 5e98dd81) gives 4.5 degree apertures centred at 5.37 degrees eccentricity on
+# the diagonals; the Methods, Image patch analysis, give the 353 by 353 pixel
+# square cut from the screenshot. imstats.py get_fragments takes the patches
+# from the upper presentation screenshots ("pres_loc_a", here "pres_loc_u").
+AP_ECC_DEG = 5.37
+PATCH_PIX = 353
+# Pixels per degree: psychopy deg2pix with the local "BOLDscreen" profile,
+# which is not public. The claim fig5bc-spatial-frequency fixes about 78.7
+# (1,920 pixels over the Methods' 24.4 degrees) and asks for 78.2 as the other value.
+PIX_PER_DEG = 1920 / 24.4
+SCREEN_ROWS, SCREEN_COLS = 1200, 1920
+
+# Assumed monitor calibrations (an assumption of this attempt: the paper's
+# measured CIE coordinates of the BOLDscreen primaries are not public). CIE
+# 1931 xy of the red, green and blue primaries and their luminance at full
+# output relative to the white, for two common LCD gamuts: sRGB (ITU-R BT.709
+# primaries, D65 white) and Adobe RGB (1998), a wide-gamut LCD standard.
+CALIBRATIONS = {
+    "sRGB": {"xy": [(0.64, 0.33), (0.30, 0.60), (0.15, 0.06)], "Y": [0.2126, 0.7152, 0.0722]},
+    "Adobe RGB": {"xy": [(0.64, 0.33), (0.21, 0.71), (0.15, 0.06)], "Y": [0.2974, 0.6273, 0.0753]},
+}
+# Smith and Pokorny cone fundamentals from (Judd-Vos) XYZ, as used by Brainard
+# (1996), which the Methods cite for the DKL transform; L + M = Y.
+XYZ_TO_LMS = np.array([[0.15514, 0.54312, -0.03286],
+                       [-0.15514, 0.45684, 0.03286],
+                       [0.0, 0.0, 0.00801]])
+
+
+def read_png(b):
+    """RGB screenshot as a uint8 array (rows, columns, 3)."""
+    import png
+    w, h, rows, info = png.Reader(bytes=b).asRGB8()
+    return np.vstack([np.frombuffer(r, np.uint8) for r in rows]).reshape(h, w, 3)
+
+
+def patch_crops(img, pix_per_deg=PIX_PER_DEG, size=PATCH_PIX, field="upper"):
+    """The left and right patch squares of a screenshot.
+
+    Same arithmetic as imstats.py get_fragments, which uses the upper
+    presentation screenshots: the aperture centre is at (+-ecc / sqrt 2,
+    +ecc / sqrt 2) degrees from the screen centre (-ecc / sqrt 2 vertically
+    for field='lower', used only to check the screenshots), and the square
+    starts at int(centre - size / 2). Returns float array (2 [left, right],
+    size, size, 3) of pixel values / 255.
+    """
+    off = AP_ECC_DEG / np.sqrt(2.0) * pix_per_deg
+    centre = np.array([SCREEN_ROWS, SCREEN_COLS]) / 2.0
+    y = off if field == "upper" else -off
+    out = []
+    for x in (-off, +off):
+        r0 = int(centre[0] - y - size / 2.0)
+        c0 = int(centre[1] + x - size / 2.0)
+        out.append(img[r0:r0 + size, c0:c0 + size, :].astype(float) / 255.0)
+    return np.array(out)
+
+
+def rgb_to_dkl_matrix(cal, background=(0.5, 0.5, 0.5)):
+    """Matrix taking linear RGB (0 to 1, minus the background) to DKL axes.
+
+    The Methods say the display was linearised, and imstats.py converts pixel
+    value / 255 directly, so pixel values are taken as linear. RGB to XYZ from
+    the primaries' xy and Y, XYZ to LMS (Smith and Pokorny), then the DKL axes
+    about the background (Brainard 1996): luminance L + M; L - M at constant
+    luminance, L - (L0 / M0) M; and S - (S0 / (L0 + M0)) (L + M). Each axis is
+    scaled to unit length in cone-increment units here; the scale of an axis
+    does not change a paired test within that axis.
+    """
+    cols = []
+    for (x, y), Y in zip(cal["xy"], cal["Y"]):
+        cols.append([x / y * Y, Y, (1 - x - y) / y * Y])
+    rgb_to_xyz = np.array(cols).T
+    rgb_to_lms = XYZ_TO_LMS @ rgb_to_xyz
+    L0, M0, S0 = rgb_to_lms @ np.asarray(background)
+    lms_to_dkl = np.array([[1.0, 1.0, 0.0],
+                           [1.0, -L0 / M0, 0.0],
+                           [-S0 / (L0 + M0), -S0 / (L0 + M0), 1.0]])
+    lms_to_dkl /= np.linalg.norm(lms_to_dkl, axis=1, keepdims=True)
+    return lms_to_dkl @ rgb_to_lms
+
+
+def circle_mask(n, radius):
+    """psychopy.filters.makeMask(n, 'circle', radius, range=[0, 1]): 1 inside radius (of the half width), else 0."""
+    x = np.linspace(-1.0, 1.0, n)
+    xx, yy = np.meshgrid(x, x)
+    return (np.sqrt(xx ** 2 + yy ** 2) <= radius).astype(float)
+
+
+def gabor_kernel(ksize, sigma, theta, lambd, gamma=1.0, psi=np.pi / 2):
+    """cv2.getGaborKernel, written out in numpy (OpenCV 2/3 imgproc/gabor.cpp)."""
+    half = ksize // 2
+    c, s = np.cos(theta), np.sin(theta)
+    sx, sy = sigma, sigma / gamma
+    k = np.zeros((ksize, ksize))
+    for y in range(-half, half + 1):
+        for x in range(-half, half + 1):
+            xr = x * c + y * s
+            yr = -x * s + y * c
+            k[half - y, half - x] = np.exp(-0.5 * (xr ** 2 / sx ** 2 + yr ** 2 / sy ** 2)) * np.cos(2 * np.pi / lambd * xr + psi)
+    return k
+
+
+def filter_bank(pix_per_deg=PIX_PER_DEG, sfs=(1.0, 2.0, 4.0, 8.0, 16.0), oris_deg=(0, 45, 90, 135)):
+    """imstats.py _get_filter_bank: odd-symmetric Gabors with a one octave bandwidth.
+
+    Returns a list over spatial frequency of arrays (n_ori, k, k). The
+    orientation convention is that of imstats.py (0 horizontal, angles
+    counter-clockwise), passed to the kernel as mod(-ori - pi / 2, 2 pi).
+    """
+    bank = []
+    for sf in sfs:
+        wl = pix_per_deg / sf
+        sigma = wl / np.pi * np.sqrt(np.log(2) / 2.0) * (2 ** 1 + 1) / (2 ** 1 - 1)
+        k = int(sigma * 6)
+        if k % 2 == 0:
+            k += 1
+        bank.append(np.array([gabor_kernel(k, sigma, np.mod(-np.radians(o) - np.pi / 2, 2 * np.pi), wl)
+                              for o in oris_deg]))
+    return bank
+
+
+def filter_output(chan, bank):
+    """imstats.py run_filter for one patch channel (already masked).
+
+    cv2.filter2D (correlation, border reflected without repeating the edge
+    pixel) by FFT; the output is the square root of the summed squared
+    response. Returns (n_sf, n_ori).
+    """
+    from scipy.signal import fftconvolve
+    out = np.zeros((len(bank), bank[0].shape[0]))
+    for i_sf, b in enumerate(bank):
+        h = b.shape[-1] // 2
+        pad = np.pad(chan, h, mode="reflect")
+        for i_o in range(b.shape[0]):
+            r = fftconvolve(pad, b[i_o, ::-1, ::-1], mode="valid")
+            out[i_sf, i_o] = np.sqrt((r ** 2).sum())
+    return out
+
+
+def patch_filter_outputs(screens, cal, pix_per_deg=PIX_PER_DEG, img_ids=None):
+    """Filter outputs of every patch: array (n_img, 2 src [above, below], 2 side [left, right], 3 DKL, n_sf, n_ori).
+
+    `screens` maps (img_id, src 'a' or 'b') to the upper presentation
+    screenshot. The patch is converted to DKL about the background, multiplied
+    by a circular mask of radius 0.9 (run_filter) and filtered.
+    """
+    M = rgb_to_dkl_matrix(cal)
+    bank = filter_bank(pix_per_deg)
+    mask = circle_mask(PATCH_PIX, 0.9)
+    ids = sorted({k[0] for k in screens}) if img_ids is None else img_ids
+    out = np.zeros((len(ids), 2, 2, 3, len(bank), bank[0].shape[0]))
+    for i, img_id in enumerate(ids):
+        for j, src in enumerate("ab"):
+            crops = patch_crops(screens[(img_id, src)], pix_per_deg)
+            for side in range(2):
+                dkl = (crops[side] - 0.5) @ M.T
+                for c in range(3):
+                    out[i, j, side, c] = filter_output(dkl[..., c] * mask, bank)
+    return out
+
+
+def radial_bias_tests(filt):
+    """imstats.py test_radial_bias: mean over spatial frequency, paired t-test over images of 45 against 135 degrees.
+
+    `filt` as from patch_filter_outputs. Returns rows (channel, source, side,
+    t, p, mean difference, median difference).
+    """
+    f = filt.mean(-2)
+    rows = []
+    for c in range(f.shape[3]):
+        for j in range(2):
+            for side in range(2):
+                d = f[:, j, side, c, :]
+                t, p = stats.ttest_rel(d[:, 1], d[:, 3])
+                rows.append((c, j, side, float(t), float(p), float((d[:, 1] - d[:, 3]).mean()),
+                             float(np.median(d[:, 1] - d[:, 3]))))
+    return rows
