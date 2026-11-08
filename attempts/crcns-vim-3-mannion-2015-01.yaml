@@ -1,0 +1,172 @@
+schema_version: 2
+id: crcns-vim-3-mannion-2015-01
+dataset:
+  archive: crcns
+  id: vim-3
+  version: unversioned
+  doi: 10.6080/K0JS9NC2
+paper: doi:10.7717/peerj.1038
+date: 2026-11-08
+entry: crcns-vim-3-mannion-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42461502178
+outcomes:
+- claim: localiser-masks-ventral-dorsal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion needs the participants' cortical surfaces and their V1, V2 and V3 definitions
+    with the ventral and dorsal halves of each area. The data set holds the functional runs only; its
+    descriptor says anatomical images and visual area definitions are not part of it, and the paper's
+    code reads them from a local database (config.py roi_dir /sci/anat/db_ver1). They are not public
+    elsewhere. As a volume check, not the paper's test, the voxels responding to upper-field
+    presentation lie below those responding to lower-field presentation in 6 of 7 participants (by
+    1.6 to 13.7 mm; p1011 the reverse).
+- claim: presentation-source-interaction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs psc responses in V1, V2 and V3 (localiser masks restricted to each area), and the area
+    definitions are not in the data set or public elsewhere. A volume variant on all localiser voxels
+    of the occipital slab, without motion correction and without the area factor, gives a presentation
+    by source interaction of F(1,6) = 2.94, p = 0.137; it is not the paper's region and decides
+    nothing.
+- claim: interaction-not-area-dependent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the area factor (V1, V2, V3), whose definitions are not in the data set. Also depends on
+    presentation-source-interaction, which is blocked.
+- claim: lower-field-below-greater
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs responses averaged over V1 to V3, whose definitions are not in the data set. In the volume
+    variant (not V1 to V3) lower-field responses are 0.997 psc for patches from below and 0.870 from
+    above, t(6) = 2.73, p = 0.034; it decides nothing.
+- claim: upper-field-no-source-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs responses averaged over V1 to V3, whose definitions are not in the data set. In the volume
+    variant upper-field responses are 0.963 and 0.965 psc for below and above, t(6) = -0.06, p = 0.957;
+    it decides nothing.
+- claim: fig4-top-five-matching-source
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs per-image responses averaged over V1 to V3, whose definitions are not in the data set. In
+    the volume variant 4 of the 5 most upper-preferred pairs are from above and 5 of the 5 most
+    lower-preferred from below; it decides nothing.
+- claim: fig4-qualitative-content
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-top-five-matching-source, which is blocked for missing V1 to V3 definitions. The
+    stimulus screenshots it would view are in the data set (120 PNG files).
+- claim: fig5a-mean-luminance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-top-five-matching-source (the upper minus lower response difference in V1 to
+    V3), which is blocked. The DKL conversion also needs the CIE coordinates of the monitor's primaries
+    and the conversion function, which the claims file says come from a local PsychoPy calibration and
+    the unlinked package monitors.conversions; neither the paper, its code at 571e9312, nor the data set
+    gives them, so this outside input is not public.
+- claim: fig5-no-other-pixel-relations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5a-mean-luminance, blocked for the same reasons (V1 to V3 responses and the
+    monitor calibration).
+- claim: fig5bc-spatial-frequency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5a-mean-luminance, blocked for the same reasons (V1 to V3 responses and the
+    monitor calibration).
+- claim: fig5def-orientation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5bc-spatial-frequency, blocked for the same reasons.
+- claim: fig5-no-other-filter-relations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5bc-spatial-frequency, blocked for the same reasons.
+- claim: no-radial-bias-in-patches
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The test uses only the stimulus screenshots, which are in the data set, but it is computed per
+    DKL channel, and the DKL conversion needs the monitor calibration, which is not public (see
+    fig5a-mean-luminance). All 120 screenshots hold pixels whose R, G and B values differ (by up to
+    192 levels, over the whole screen), and the paper analyses chromatic channels of the patches, so
+    the channels cannot be formed without it. The claims file also
+    lists fig5bc-spatial-frequency under depends_on, which is blocked. A substitute calibration was not
+    used, since outside data must be public and pinned.
+- claim: figs2-task-no-condition-difference
+  outcome: reproduced
+  notebook: reproduce_mannion_2015.ipynb
+  output: claim:figs2-task-no-condition-difference
+  notes: Window 0.4 to 0.9 s, two-way repeated measures ANOVA over 7 participants. Reading (a), task.py
+    as written, presentation F(1,6) = 2.60, p = 0.158, source F = 0.00, p = 0.979, interaction F = 0.45,
+    p = 0.529. Reading (b), assignment by absolute run time, presentation F = 0.00, p = 0.987, source
+    F = 0.01, p = 0.947, interaction F = 1.04, p = 0.347. Variant (c), binning the whole of 32 to 332 s,
+    no effect below p = 0.27. Condition means 0.036 to 0.041, range over mean 0.046 to 0.060; the
+    response peaks at 0.6 s in all four conditions. Of six other window and reading combinations shown,
+    one gives a presentation effect (reading (a), 0.6 to 0.9 s, p = 0.034); under reading (a) the
+    condition labels are taken from events 32 s away from the target. 6214 targets after 32 s; 3642
+    were assigned to an image event under reading (a), 3821 under (b) and 4979 under (c), the others
+    falling on null events or on no event.
+  deviations:
+  - The paper reports no test for Figure S2; the test is group.py tasks(), as the criterion says. The
+    ANOVA is computed as paired contrasts over participants (exact for a 2 by 2 within-subject design,
+    F = t squared) in place of the code's fmri_tools.stats.anova, which is not public.
+  - Variant (c), with bins over the whole of 32 to 332 s, is an addition of this attempt shown for
+    information; task.py puts every press and target after 300 s into its last bin.
+- claim: figs3-residual-no-condition-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The residuals are taken from the GLM of the V1 to V3 localiser regions, whose area definitions
+    are not in the data set.
+- claim: figs3-residual-upper-larger
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As figs3-residual-no-condition-difference. In the volume variant the region's mean squared
+    residual is larger for upper presentation in 5 of 7 participants, not on average (p1011 dominates);
+    it decides nothing.
+findings:
+- kind: data_missing
+  statement: The data set holds the raw functional runs, event sequences, task records and stimulus
+    screenshots, but not the anatomical images, cortical surfaces, retinotopic mapping or V1, V2 and V3
+    definitions that every response measure of the paper uses. The descriptor says so and asks users to
+    request them on the CRCNS forum. 15 of the 16 claims are blocked, 14 of them for this reason.
+- kind: data_missing
+  statement: The image statistics of Figure 5 and the radial-bias test are computed in DKL space from the
+    monitor's measured CIE coordinates, which are given neither in the paper, nor in its code (a local
+    PsychoPy monitor profile and the unlinked package monitors.conversions), nor in the data set.
+- kind: metadata_error
+  statement: The data set's README.txt says it contains fMRI measurements in areas V1, V2 and V3. The
+    files are whole volumes of a 35-slice occipital slab with no area labels, so no measurement in V1,
+    V2 or V3 can be formed from the data set alone.
+- kind: metadata_insufficient
+  statement: The NIfTI files are named by scanner series number (for p1003 series 3, 4, 6 to 13, for
+    p1010 series 4 to 13), while the sequence and task files are named by run, and the descriptor does
+    not give the mapping. The participant configurations of the paper's code take the series in order
+    as runs 1 to 10; a leave-one-run-out fit supports this for six participants, and for p1011 it could
+    not be confirmed.
+- kind: other
+  statement: For p1011 the timing of the event sequences and the run order could not be confirmed from
+    the data without motion correction; the held-out runs barely follow their own sequences (mean t 0.7
+    and 1.1, against 2.6 to 4.9 in the others), and a coarse motion index reaches 3.6 mm by run 10,
+    against at most 1.8 mm in the other participants. Its upper-field responsive voxels also lie above
+    its lower-field ones, the reverse of the other six.
+- kind: metadata_insufficient
+  statement: For p1004 runs 1 to 5 the target column of the task lookup does not describe the task the
+    participant performed; the paper's code redefines the targets as white 9 and black 5 for those runs
+    (the participant misunderstood the instructions). The descriptor does not say so, and the four
+    button keys used in the task files are not described.
+- kind: code_mismatch
+  statement: The Figure S2 legend describes task performance for target onsets near each condition, but
+    task.py bins targets and button presses in absolute run time and assigns each target to the event
+    starting within 2 s of the bin time plus 32 s, so the condition labels come from events about 32 s
+    after the target. It also puts every press and target after 300 s into one last bin. With the
+    assignment by absolute time the conclusion of no difference is unchanged.
