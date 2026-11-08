@@ -66,10 +66,15 @@
 #   the 5% is applied per tail or split between tails is not stated; readings (a) 0.05 per tail,
 #   (b) 0.025 per tail. An electrode shows an effect of a sign when any of its points lies in a
 #   significant cluster of that sign; its percentage is over all of the subject's analysed
-#   electrodes, averaged (mean +- SD) over the subjects showing that effect.
-# P1. Phase slope index (Methods, Directional Connectivity, Task-Induced PSI). Correct trials; the
-#   mean over the correct trials is subtracted from each trial (readings (a) over all correct
-#   trials, (b) over the trials of the condition); PFC-parietal pairs in the same hemisphere;
+#   electrodes, averaged (mean +- SD) over the subjects showing that effect. The paper does not
+#   say how an electrode is assigned an effect; the rule above is reading (a), under which an
+#   electrode in clusters of both signs counts for both. Figures 2A and 3A give each electrode one
+#   colour, which allows reading (b), such an electrode counted for the sign with the larger
+#   summed t over its significant points.
+# P1. Phase slope index (Methods, Directional Connectivity, Task-Induced PSI). Correct trials; "the
+#   raw trial-wise mean" is subtracted from each trial (readings (a) the mean over all correct
+#   trials, (b) the mean over the trials of the condition, (c) each segment's own temporal mean);
+#   PFC-parietal pairs in the same hemisphere;
 #   positive PSI means PFC leads. Spectra "using the same parameters described above, but over the
 #   full delay interval"; readings (a) one Hanning-tapered FFT of each 900 ms segment, zero-padded
 #   to 7500 ms, read at 1-Hz steps, (b) the 3-cycle windows of S1 averaged over time. PSI per band,
@@ -78,7 +83,11 @@
 #   bandwidth, averaged over the band. Null: the frequencies of one signal shuffled and PSI
 #   recomputed 1000 times; PSI z-scored on the null mean and SD. Whether one permutation serves all
 #   trials or each trial gets its own is open; readings (a) one per shuffle, (b) one per trial.
-#   PFC leads at z > 1.96, parietal leads at z < -1.96.
+#   PFC leads at z > 1.96, parietal leads at z < -1.96. Whether PSI is computed once per pair from
+#   cross-spectra averaged over trials or per trial is not stated; readings (a) cross-spectra
+#   averaged over trials, one PSI z per pair (Nolte et al. 2008, and one value per pair and
+#   interval fits F(1,2256)), (b) PSI z per trial, averaged over trials per pair (Figure 4A legend,
+#   "mean +- SEM per subject across all trials").
 # P2. Group models. Task-induced PSI z per pair and interval in a linear mixed-effects model with
 #   interval fixed and subject and pair random (Methods, Task-Induced PSI, paragraph 3);
 #   F(1,2256) equals 2 x 1129 - 2, residual degrees of freedom. Time-resolved PSI (Methods,
@@ -127,8 +136,8 @@ claims:
     no more than 10%.
 - id: trial-counts
   statement: After artifact rejection subjects kept on average 96 correct trials, 32 +- 3 (26 to 35)
-    identity, 33 +- 4 (27 to 39) spatial and 31 +- 6 (20 to 39) temporal, and made 17 +- 8 (4 to
-    25) incorrect responses.
+    identity, 33 +- 4 (27 to 39) spatial and 31 +- 6 (20 to 39) temporal, and had 17 +- 8 (4 to
+    25) incorrect trials per subject.
   source: Methods, Data Acquisition and Preprocessing, paragraph 3
   quote: The final dataset included an average of 96 correct trials per subject, mean ± SD (range)
     trials... 32 ± 3 (26–35) identity, 33 ± 4 (27–39) spatial relation, 31 ± 6 (20–39) temporal
@@ -312,9 +321,11 @@ claims:
     temporal) are taken from the two power claims. Per subject, accuracy (B1) and mean correct RT
     per condition. What identity is compared with is not stated; readings (a) in each contrast,
     identity against that contrast's condition (spatial for the spatial contrast, temporal for the
-    temporal one), (b) identity against the mean of spatial and temporal. Reproduced when, under
-    one reading, every subject with an identity > spatial or temporal effect has identity RT longer
-    and identity accuracy lower than the comparison, and no other subject has both.
+    temporal one), (b) identity against the mean of spatial and temporal. "The same subjects" is
+    read as (i) every subject with an identity > spatial or temporal effect has both, or (ii) as
+    (i), and no other subject has both. Reproduced when, under one reading, every subject with an
+    identity > spatial or temporal effect has identity RT longer and identity accuracy lower than
+    the comparison; whether any other subject has both is reported.
 - id: power-low-frequencies
   statement: Significant processing-interval power effects were most prominent at low frequencies,
     in distinct delta-theta (2 to 7 Hz) and alpha-beta (9 to 24 Hz) ranges, whatever the contrast.
@@ -330,7 +341,10 @@ claims:
     and processing time points (Results, Spectral Effects, paragraph 3), and the spectral density,
     "mean significant t-values per frequency" (Figure 2B legend). Whether points outside the mask
     enter the mean as zeros is open; readings (a) mean over masked points only, (b) mean over all
-    points with unmasked points as zero. Reproduced when, under one reading, the mean density over
+    points with unmasked points as zero. The paper gives no quantitative rule for "most prominent"
+    or "distinct"; the comparison of bands and the local-maximum rule below are this file's reading
+    of those words, not the paper's method. Densities of identity > effects are negative and are
+    compared in absolute value. Reproduced when, under one reading, the mean absolute density over
     subjects of each of the three effects is larger over 2 to 24 Hz than over 25 to 40 Hz and has
     local maxima inside 2 to 7 Hz and inside 9 to 24 Hz; partially reproduced when the first part
     holds and only one band has a maximum.
@@ -390,7 +404,7 @@ claims:
 - id: fig4c-alpha-beta-shift
   statement: Alpha-beta directionality also shifted with the test cue, but all subjects remained
     net parietal-led during processing (z < -12.60 +- 7.51).
-  source: Results, Task-Induced Effects, paragraph 3; Figure 4C and 4D
+  source: Results, Task-Induced Effects, paragraph 2; Figure 4C and 4D
   quote: In the alpha-beta range, there was again a shift in directionality with presentation of
     the test cue (processing > maintenance, F (1,2256) = 2302.30, p = 0; Figures 4C,D ). Despite
     the shift, however, all subjects continued to exhibit net parietal → PFC connectivity at
@@ -531,7 +545,9 @@ claims:
     averaged is not stated; readings (a) the grand mean over subjects (each the mean over its
     pairs) averaged over the epoch's time points, (b) the same over all pairs pooled, (c) the
     least extreme time point of the grand mean within the epoch (reading the printed bound). The
-    epochs are the reported ones; the epochs found in fig5a-delta-theta-epochs are shown as a
+    text labels the values "identity > spatial" and "identity < spatial", so what they measure is
+    also read two ways; (A) identity-trial PSI z, as the text's "PFC led" and "parietal cortex led"
+    read them, (B) identity minus spatial (or temporal) PSI z. The epochs are the reported ones; the epochs found in fig5a-delta-theta-epochs are shown as a
     variant. Reproduced when, under one reading, all four values have the reported sign, |z| >
     1.96, and lie within tolerance or beyond the bound (T1); partially reproduced when sign and
     |z| > 1.96 hold for at least three.
@@ -549,11 +565,12 @@ claims:
   depends_on:
   - directional-pairs
   criterion: Spatial-trial and temporal-trial time-resolved delta-theta PSI z (P2). A claim of
-    absence, judged on the paper's measure; the averaging readings of fig5a-identity-direction
-    apply, the paper's "all" read as every 10-ms time point of 0 to 900 ms (reading (i)) or every
-    reported epoch (reading (ii)). Reproduced when |z| < 1.96 (the paper's PSI threshold, Methods,
-    Task-Induced PSI) at every point under one reading; not reproduced when any point exceeds it
-    under all readings. The largest |z| is reported and compared with the paper's 1.60.
+    absence, judged on the paper's measure alone; "throughout the processing interval" means
+    every 10-ms time point of 0 to 900 ms. The measure is the grand mean over subjects, the
+    quantity Figure 5A plots (reading (a) of fig5a-identity-direction); readings (b) and (c) are
+    shown as variants. Reproduced when |z| < 1.96 (the paper's threshold for bidirectionality,
+    Methods, Time-Resolved PSI) at every time point; not reproduced when any point exceeds it. The
+    largest |z| is reported and compared with the paper's 1.60.
 - id: fig5b-alpha-beta-no-sustained
   statement: Time-resolved alpha-beta PSI showed significant condition differences at some time
     points but no sustained effect for either condition in either contrast.
@@ -574,3 +591,21 @@ claims:
     significant points of one sign lasts 100 ms in either contrast; not reproduced when a
     sustained run exists. Partially reproduced when no time point is significant. Run lengths are
     reported either way.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, S2. Named as open how an electrode is assigned an effect when it lies in clusters of both signs; the paper does not say, and Figures 2A and 3A colour each electrode once. Readings (a) counted for both signs, (b) counted for the sign with the larger summed t.
+  - Header, P1. Added reading (c) for "the raw trial-wise mean" (each segment's own temporal mean), which the wording allows.
+  - Header, P1. Named as open whether PSI comes from cross-spectra averaged over trials or per trial; the Figure 4A legend ("mean +- SEM per subject across all trials") allows the per-trial reading, and the file had fixed neither.
+  - trial-counts. The statement said subjects "made" 17 incorrect responses, which assumes the all-trials reading; the paper gives 17 +- 8 incorrect trials in the context of the final dataset. Now "had 17 +- 8 incorrect trials", leaving both readings of the criterion open.
+  - power-difficulty-subjects. The criterion required that no other subject had both longer RT and lower accuracy, one reading of "the same subjects"; the text also allows the one-way reading. Both are now named, and the converse is reported.
+  - power-low-frequencies. Stated that the band comparison and local-maximum rule are this file's reading of "most prominent" and "distinct", not a method of the paper, and that negative (identity >) densities are compared in absolute value.
+  - fig4c-alpha-beta-shift. Source was paragraph 3; the quoted text is the second paragraph of Task-Induced Effects.
+  - fig5a-identity-direction. Named as open whether the z values are identity-trial PSI or the identity minus spatial or temporal difference, which the labels "identity > spatial" and "identity < spatial" allow.
+  - fig5a-spatiotemporal-bidirectional. Removed the reading of "all" as the reported epochs only, which "throughout the processing interval" excludes. As a claim of absence it is now judged on one measure, the grand mean over subjects that Figure 5A plots, with the other averaging readings as variants. The threshold 1.96 is cited to Time-Resolved PSI, where the paper defines bidirectionality, in place of Task-Induced PSI.
+  - Open. The analysis scripts deposited with the data set were not read (they are among the data set's files); the author may settle the open details from them and should say so.
+  - Open. erp-no-condition-difference and the power claims rest on which electrodes are neighbours in the cluster test, which the paper does not state; the readings of S2 stand.
+  - Open. The 1129 same-hemisphere pairs cannot be derived from Table 1, since S1, S2 and S4 have bilateral coverage without per-hemisphere counts.
