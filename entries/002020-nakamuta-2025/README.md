@@ -19,7 +19,7 @@ Tests the findings of [Nakamuta et al. (2025)](https://doi.org/10.1101/2025.01.1
 | Locality spectrum becomes steeper | Blocked: methods underspecified |
 | Locality slope emerges progressively from zero | Blocked: methods underspecified |
 | Shuffling removes the spatial structure of PCs | Blocked: methods underspecified |
-| Avalanches emerge at about 15 DIV, exponent 1.5 | Blocked: metadata insufficient (change to not reproduced proposed) |
+| Avalanches emerge at about 15 DIV, exponent 1.5 | Not reproduced |
 | Decay rates of PCA and avalanches correlated | Not reproduced |
 | Groups by PCA decay rate show both power laws or neither | Blocked: methods underspecified |
 | Groups by avalanches show the same | Blocked: methods underspecified |
@@ -31,7 +31,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The files give recording dates but no days in vitro, so results are placed on an assumed DIV axis
-(days since the first recording plus 2, with other offsets shown), and claims whose result is a DIV are blocked. The fitted
+(days since the first recording plus 2, with other offsets shown), and claims whose result is a DIV are blocked, except the avalanche claim, which fails under
+every shared offset. The fitted
 exponential decay rate of the variance spectra is far below the paper's 0.1 group boundary in nearly
 every recording (two active recordings reach it under one fit reading, and it does not separate early
 from late recordings), so the claims that rest on that boundary are blocked, and how that rate is
