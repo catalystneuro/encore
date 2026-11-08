@@ -4400,6 +4400,10 @@
     "ready": true,
     "date": "2026-11-07"
    },
+   "crcns:apl-1": {
+    "ready": true,
+    "date": "2026-11-08"
+   },
    "crcns:bf-1": {
     "ready": true,
     "date": "2026-11-06"
@@ -60743,6 +60747,228 @@
     ]
    }
   ],
+  "crcns:apl-1": [
+   {
+    "path": "claims/crcns-apl-1/10.7554-elife.27342.yaml",
+    "paper": "10.7554/elife.27342",
+    "check": {
+     "ready": true,
+     "date": "2026-11-08"
+    },
+    "claims": [
+     {
+      "id": "dataset-size",
+      "statement": "Three bouts of fictive locomotion were evoked in each of 10 isolated preparations (30 population responses); each recorded population held 120 to 180 neurons, 1131 neurons in all.",
+      "source": "Results, paragraph 1; Figure 7B legend",
+      "quote": "We sequentially evoked three bouts of fictive locomotion in each of 10 isolated central nervous system preparations ... Recorded populations from the pedal ganglion comprised 120\u2013180 neurons each",
+      "criterion": "Counts of preparations, recordings and spike-sorted neurons, with zero tolerance as they are counts of what was deposited. The range of neurons per recording is reproduced when every recording holds between 108 and 198 neurons (120 to 180 widened by 10% of each bound). Neurons are counted as the distinct units of a recording (as DataSet_Properties.m counts them); the count of units that spike after stimulation onset is shown as a variant."
+     },
+     {
+      "id": "fig1d-slow-oscillation",
+      "statement": "After stimulation the spike-train power spectra of the populations are dominated by a slow oscillation at or below 0.1 Hz.",
+      "source": "Results, paragraph 1; Figure 1D",
+      "quote": "A dominant, slow ( \u2264 0.1 Hz) oscillation in neural firing ( Figure 1D ) is consistent with the periodic activity necessary to generate rhythmic locomotion",
+      "criterion": "As the Methods (Spike-train analysis) and DataSet_Properties.m, a multitaper spectrum (Chronux mtspectrumpt, spike times at 1 ms, averaged over the neurons of a recording, fpass 0 to 1 Hz, default tapers) of each neuron's spikes after stimulation onset; the mean over neurons for each recording, then the mean over the 30 recordings. The peak frequency is the code's, the power-weighted mean frequency of the region more than 2 SD above the spectrum's mean. Reproduced when the peak of the grand mean spectrum, and the peaks of a majority of the 30 recordings, lie above 0 and at or below 0.11 Hz. The frequency of maximum power above 0 Hz is shown as a variant."
+     },
+     {
+      "id": "fig1e-decaying-rate",
+      "statement": "The population firing rate decays slowly after the stimulus, decreasing in most evoked responses.",
+      "source": "Results, paragraph 1; Figure 1E (cited as Figure 1F in the text); Results, Heterogenous population activity arises from a common attractor, paragraph 5",
+      "quote": "the slowly decaying population firing rate ( Figure 1F ) post-stimulus ... corresponding to the decreasing population spike rate in most evoked responses ( Figure 1E )",
+      "criterion": "The network firing rate in 1 s bins, as the Figure 1E legend gives. The paper fixes no measure of decay, so two readings, one from the Methods' own test of rate change for ensembles. (a) The Methods' ensemble rule applied to the whole population, spike counts in 20 s windows advanced by 5 s from stimulation onset, Pearson R of window time against count, decreasing when R < -0.2. (b) The slope of a least-squares line of the 1 s binned rate on time from stimulation offset (32.5 s) to the end, decreasing when negative. Reproduced when, under a reading, more than half of the 30 responses are decreasing."
+     },
+     {
+      "id": "fig2b-dimensions",
+      "statement": "Capturing 80% of the population variance needs 4 to 8 embedding dimensions in the evoked responses, a reduction by more than a factor of 10 from the number of neurons.",
+      "source": "Results, Joint population activity forms a low-dimensional periodic orbit, paragraph 1; Figure 2B and inset",
+      "quote": "Capturing a significant proportion (80%) of the population variance generally required 4\u20138 embedding dimensions ( Figure 2B ), representing a dimension reduction by more than a factor of 10 compared to the number of neurons",
+      "criterion": "PCA on the covariance of the spike-density functions from stimulation onset to the end (Methods, Recurrence analysis; DataSet_Properties.m). Two details are open. The Gaussian SD (a) median ISI / sqrt(12), (b) median ISI / 12, as printed, (c) the median ISI, as the code; each with the median of the recording's own post-onset ISIs, and for (c) also the code's pooled running median. The count (i) the smallest number of PCs reaching at least 80% (the Methods), (ii) the number whose cumulative variance is at most 80% (the code that makes the Figure 2B inset). Reproduced when, under a reading, at least 27 of the 30 counts lie in 3.6 to 8.8 (the paper says \"generally\"; the rule of 27 is fixed here) and the number of neurons divided by the count exceeds 10 in every response."
+     },
+     {
+      "id": "fig2ef-periodic-recurrence",
+      "statement": "The evoked low-dimensional activity recurs with a regular period; strongly periodic recurrence on the scale of 10 to 15 s is found in many but not all of the 30 responses.",
+      "source": "Results, Joint population activity forms a low-dimensional periodic orbit, paragraph 3; Figure 2D to 2F",
+      "quote": "We found strongly periodic recurrence on the scale of 10\u201315 s in many but not all of the 30 evoked population responses ( Figure 2E,F )",
+      "criterion": "Dominant period per response as the Methods (Recurrence analysis) with the code's settings in the opening comment, theta at the 10th percentile, in the dimensions of claim fig2b-dimensions. The period of the dominant peak is (a) the mean of its recurrence times (the Methods and Figure 2F legend) or (b) their median (the code). Reproduced when, under a reading, more than half of the 30 dominant periods lie in 9 to 16.5 s and at least one does not (\"not all\"; the paper does not count \"many\", so more than half is a rule fixed here). The SD and the readings of claim fig2b-dimensions are carried over; the author reports each."
+     },
+     {
+      "id": "fig2e-single-dominant-orbit",
+      "statement": "Almost all populations are dominated by a single periodic orbit; the majority of programs have more than 50% of their recurrent points in the dominant peak.",
+      "source": "Results, Joint population activity forms a low-dimensional periodic orbit, paragraph 3; Materials and methods, Recurrence analysis, paragraph 3; Figure 2E",
+      "quote": "the majority of programs had more than 50% of their recurrent points in this peak (blue-scale vectors in Figure 2E )",
+      "criterion": "Per response, the proportion of recurrent points (delays of 5 s or more, as the histogram counts them, and, as a variant, all recurrent points as propInMaxPeriod in recurrence_point_results_Viz.m) falling in the dominant peak. Reproduced when more than 15 of the 30 responses exceed 50%. The number of peaks per response is reported against the Methods' \"between one and four\"."
+     },
+     {
+      "id": "fig2s2-threshold-robust",
+      "statement": "The periodic orbits are robust to the threshold for recurrence, with similar periodicity at thresholds of 10%, 5% and 2%.",
+      "source": "Figure 2, figure supplement 2; Materials and methods, Recurrence analysis, paragraph 2",
+      "quote": "similar periodicity of recurrence was maintained at all tested thresholds from 2% upwards",
+      "criterion": "Dominant periods per response at theta of the 2nd, 5th and 10th percentiles, as the code computes all three. The paper gives no measure of similarity, so two readings. (a) Across the responses with a dominant peak at both thresholds, the period at 5% and at 2% correlates positively with that at 10% (Spearman, p < 0.05). (b) The median absolute difference from the 10% period is under 10% of the median 10% period. Reproduced when one reading holds for both lower thresholds."
+     },
+     {
+      "id": "fig3a-coalescence",
+      "statement": "Almost all evoked responses reach a state of high recurrence within one oscillation period of stimulation and are thereafter dominated by recurrence.",
+      "source": "Results, Joint population activity meets the conditions for a periodic attractor, paragraph 2; Figure 3A",
+      "quote": "We found that almost all evoked population responses quickly reached a state of high recurrence, within one oscillation period ( Figure 3A ), and were thereafter dominated by recurrence",
+      "criterion": "Coalescence time as the Methods and the Figure 3A legend, the mid-point of the first 5 s window (step 1 s) in which at least 90% of the points recur, measured from stimulation onset; stability as the proportion of recurrent points after it. Reproduced when the coalescence time is no longer than the response's dominant period (claim fig2ef-periodic-recurrence) in at least 27 of the 30 responses and the proportion of recurrent points exceeds 50% in at least 27 (\"almost all\" is not counted by the paper; the rule of 27 is fixed here). The coalescence time is also reported from stimulation offset."
+     },
+     {
+      "id": "fig3c-same-manifold",
+      "statement": "Sequentially evoked responses of a preparation fall on the same manifold; their distance is below that of random projections for all pairs except two, pairs (1,2) and (1,3) of preparation 4.",
+      "source": "Results, Joint population activity meets the conditions for a periodic attractor, paragraph 4; Figure 3C legend",
+      "quote": "pairs of evoked population responses from the same preparation fell close to each other throughout ( Figure 3C ), well in excess of the expected agreement between random projections of the data onto the same embedding dimensions",
+      "criterion": "As the Methods (Testing convergence to the same manifold) and Are_sequential_attractors_the_same.m. All three programs of a preparation projected onto the PCA axes of program 1 (code; raw spike-density functions times the eigenvectors, not mean-centred), in the smallest number of program 1's PCs reaching 80%. Hausdorff distance between the pair's point sets; control, as the Methods, max{min d(A,B*), min d(B,A*)}, with A* and B* the programs after shuffling the assignment of time series to neurons and projecting onto the same axes, 100 shuffles, mean taken. The point sets are (a) the recurrent points (Methods) or (b) all points of runs of 5 s windows with at least 90% recurrence, from the later of the two programs' first such point (the code). Reproduced when, under a reading, at least 26 of the 30 pairs (28 less its tolerance of 2.8) have a distance below their control mean; the pairs that fail are named against those of preparation 4."
+     },
+     {
+      "id": "fig3s1a-common-axes",
+      "statement": "The convergence of sequential responses to the same manifold holds when the three programs are projected onto common axes from a PCA of their concatenated activity.",
+      "source": "Figure 3, figure supplement 1A",
+      "quote": "We obtain the same results: sequentially-evoked programs converge to the same manifold",
+      "criterion": "As claim fig3c-same-manifold, with the axes from a PCA of the three programs' concatenated post-onset spike-density functions (Methods; Are_sequential_attractors_the_same_CommonAxes.m, which keeps the PCs whose cumulative variance is at most 80%). The legend says the results are the same as Figure 3C, where 28 of 30 pairs pass, so reproduced when at least 26 of the 30 pairs have a distance below their control mean, as claim fig3c-same-manifold."
+     },
+     {
+      "id": "fig3d-initial-conditions",
+      "statement": "Stimulation drives responses of the same preparation far apart before coalescence, more than at stimulus onset or after both have coalesced, so the same manifold is reached from different initial conditions.",
+      "source": "Results, Joint population activity meets the conditions for a periodic attractor, paragraph 5; Figure 3D",
+      "quote": "We found that the stimulation caused population responses within the same preparation to diverge far more than in either the spontaneous activity or after coalescing to the manifold ( Figure 3D )",
+      "criterion": "Three distances per pair, as the Figure 3D legend and Initial_Conditions.m, in the common axes of claim fig3s1a-common-axes. Onset, the distance between the two programs' points at stimulation onset; transient, the maximum over points between onset and coalescence of the maximum distance to the other program's points in that span; coalesced, the Hausdorff distance of claim fig3s1a-common-axes. The paper reports no test. Reproduced when the transient distance exceeds both other distances in more than half of the 30 pairs and its median exceeds both medians (a rule fixed here)."
+     },
+     {
+      "id": "fig3f-pairwise-similarity",
+      "statement": "Pairwise similarity between neurons is preserved across responses of the same preparation, above a null model, except for pairs (1,3) and (2,3) of preparation 7.",
+      "source": "Results, Joint population activity meets the conditions for a periodic attractor, paragraph 6; Figure 3F legend",
+      "quote": "We found that pair-wise similarity is indeed well-preserved across population responses in the same preparation ( Figure 3F )",
+      "criterion": "Similarity S as the correlation coefficient between neurons' post-onset spike-density functions, negative values set to zero and the diagonal to zero (StaticEnsembles.m, Are_sequential_attractors_the_same.m); data, the correlation of S(A) with S(B); control, the correlation of S(A) with the null model E_ij = s_i s_j / T (Methods). Open details, all run, the correlation is Spearman (the code that is plotted) or Pearson; the control for a pair is that of its first program, or the larger of its two programs' controls. Reproduced when, under a reading, at least 26 of the 30 pairs (28 less its tolerance of 2.8) have a data correlation above their control."
+     },
+     {
+      "id": "fig3h-perturbations-return",
+      "statement": "Of 19 spontaneous divergences from the trajectory, 17 (90%) returned to a recurrent state; the two that did not were consistent with the end of the evoked locomotion.",
+      "source": "Results, Joint population activity meets the conditions for a periodic attractor, paragraph 7; Materials and methods, Testing return to the same manifold after perturbation; Figure 3H",
+      "quote": "For the remaining 19 divergent periods, we then determined if the population activity returned to a recurrent state after the divergent point; that is, whether the density of recurrence returned above 90% or not. The majority (17/19) did",
+      "criterion": "As the Methods and recurrence_point_results_Viz.m with Are_jumps_perturbations_or_transitions2.m. After coalescence, a divergent period is a run of 5 s windows with recurrence density below 90% that falls below 50% at least once; its divergent point is the window of lowest density; periods whose divergent point lies within two cycles (dominant period) of the recording's end are removed. Reproduced when both counts are within tolerance and the returned fraction is at least 80%."
+     },
+     {
+      "id": "fig3i-same-manifold-after",
+      "statement": "Of the 17 divergences that returned to a recurrent state, all but three returned to the same manifold; the three appeared to move to a different periodic attractor.",
+      "source": "Results, Joint population activity meets the conditions for a periodic attractor, paragraph 7; Figure 3I",
+      "quote": "Of those that returned, all but three clearly returned to the same manifold ( Figure 3I )",
+      "criterion": "As the Methods, the final window before the divergent period, and the proportion of its recurrent points whose recurrence falls after (a) the end of the divergent period, as the Methods say, or (b) the divergent point, as the code's blnSame uses; same manifold when that proportion exceeds 0.2 (the code's jumppars.theta; the Methods give no value). Reproduced when, under a reading, the count is within tolerance."
+     },
+     {
+      "id": "fig4bc-stable-spiral",
+      "statement": "The evoked responses have highly clustered maximum eigenvalues of the local linear dynamics, dominated by negative complex values, so the pedal ganglion implements a contracting periodic orbit, a stable spiral attractor, found in every preparation.",
+      "source": "Results, Heterogenous population activity arises from a common attractor, paragraph 2; Introduction, last paragraph; Figure 4B",
+      "quote": "Doing so, we found that the evoked population responses had highly clustered maximum eigenvalues ( Figure 4B,C ), and thus highly similar underlying dynamics ... The dominance of negative complex eigenvalues implies the pedal ganglion network implements a contracting periodic orbit - it is a stable spiral attractor",
+      "criterion": "As the Methods (Statistical estimation of the attractor's parameters) with the code's settings in the opening comment; per response, the means of the real (a) and imaginary (b) parts of the maximum eigenvalue over the recurrent points of the dominant orbit with at least 100 neighbours. Stable spiral when a < -0.0001 and b > 0.0005, the edges of the grey bands drawn in Figure 4B by Figure_LinearDynamics.m. Reproduced when the mean over the 30 responses is a stable spiral and each of the 10 preparations has at least two of its three responses in the stable spiral region (the paper does not count responses per preparation; this rule is fixed here); partially reproduced when the grand mean holds but fewer preparations do. The spread (SD over responses of a and b) is reported."
+     },
+     {
+      "id": "fig4c-orbital-period",
+      "statement": "The linear model estimates a mean orbital period of about 10 s, consistent with the period from the recurrent points.",
+      "source": "Results, Heterogenous population activity arises from a common attractor, paragraph 5; Figure 4C",
+      "quote": "The linear model estimated a mean orbital period of around 10 s ( Figure 4C ), consistent with the directly-derived estimate from the recurrent points ( Figure 2F )",
+      "criterion": "Per response, the period 2 pi / b times 0.01 s from the mean imaginary part b of claim fig4bc-stable-spiral (Figure_LinearDynamics.m; the Methods' printed formula is garbled), then the mean over the 30 responses. The mean over responses of the per-point rotation periods (RcrStats.mRot) is shown as a variant. Consistency is reported as the Pearson correlation of the 30 linear-model periods with the 30 recurrence periods."
+     },
+     {
+      "id": "fig4s1a-contracting-dimensions",
+      "statement": "In most responses the trajectory contracts in all embedding dimensions; a few responses have a positive real eigenvalue in one low-variance dimension, a minor expansion.",
+      "source": "Results, Heterogenous population activity arises from a common attractor, paragraph 3; Figure 4, figure supplement 1A",
+      "quote": "In most population responses, the low-dimensional trajectory had negative, complex eigenvalues in all embedding dimensions ... Intriguingly, a few population responses had a positive real eigenvalue in one low-variance dimension",
+      "criterion": "As Check_All_Real_Eigenvalues.m, per response the mean real part of each unique eigenvalue dimension (conjugate pairs counted once) over the points of claim fig4bc-stable-spiral. Reproduced when more than 15 of the 30 responses have all means negative and at least one response, but fewer than half, has one positive mean in a dimension other than the first."
+     },
+     {
+      "id": "fig4s1b-rotation-dominant",
+      "statement": "Local trajectories were dominated by rotation throughout; in every preparation most local models have a complex eigenvalue among their top two.",
+      "source": "Figure 4, figure supplement 1B",
+      "quote": "Population responses were dominated by rotation throughout",
+      "criterion": "As Check_All_Real_Eigenvalues.m (Pcomplex12), per response the proportion of local models in which either of the two largest eigenvalues is complex. Reproduced when the proportion exceeds 0.5 in every response; partially reproduced when it does so in a majority of responses of every preparation."
+     },
+     {
+      "id": "fig5b-period-changes",
+      "statement": "Over a response the orbital period may slow, speed up or not change; all three occur among the 30 responses.",
+      "source": "Results, Heterogenous population activity arises from a common attractor, paragraph 5; Figure 5B",
+      "quote": "We found that the population responses included all possible changes in periodic orbit: slowing, speeding up, and not changing ( Figure 5B )",
+      "criterion": "As the Methods (Tracking changes in periodicity) and Does_Oscillation_Period_Change.m, the mean recurrence time of all recurrent points in each 5 s window, from coalescence to the final window with at least 90% recurrent points; weighted Spearman correlation of window time and mean recurrence time, weights 1/SD of recurrence times times the proportion of recurrent points (windows with zero or undefined SD weighted 0, as the code); permutation p-value with 10000 permutations (Methods; the code's 100000 permutations of pooled values is a variant). Reproduced when at least one response has rho > 0 with p < 0.01, at least one rho < 0 with p < 0.01, and at least one p of 0.01 or more, and the number of windows per response lies in 27.9 to 79.2."
+     },
+     {
+      "id": "fig5c-no-relation-contraction",
+      "statement": "There is no relationship between the change in orbital period over a response and its rate of contraction, as a stable spiral predicts.",
+      "source": "Results, Heterogenous population activity arises from a common attractor, paragraph 5; Figure 5C legend",
+      "quote": "As predicted there was no relationship between the contraction of the periodic orbit and its change in period ( Figure 5C )",
+      "criterion": "A claim of absence, judged on the paper's test, Pearson's R across the 30 responses between the weighted rho of claim fig5b-period-changes and the mean real part of the maximum eigenvalue of claim fig4bc-stable-spiral (Figure_LinearDynamics.m). The paper prints no threshold and no R or p; p < 0.05, the conventional level, is taken here. Reproduced when p is 0.05 or more; R and p are reported either way, and with the contraction in %/s as a variant."
+     },
+     {
+      "id": "fig6d-decode-p10",
+      "statement": "P10 nerve activity can be fitted and forecast from the low-dimensional trajectory in all nine responses with P10 recordings, so the trajectory encodes muscle commands.",
+      "source": "Results, The locomotion motor program can be decoded from the low-dimensional orbit, paragraphs 2 and 3; Figure 6B to 6D",
+      "quote": "The model could accurately fit and forecast P10 activity from the low-dimensional trajectory in all nine population responses ( Figure 6D )",
+      "criterion": "As the Methods (Decoding motor output). P10 spikes convolved with a Gaussian of the program's width; a Poisson GLM with log link of the P10 rate on the past history of the PCs (80% variance, as claim fig2b-dimensions), histories 50 to 200 ms in 10 ms steps, the history with the smallest median absolute error of forecast kept per program; fit on a 40 s window and forecast the next 10 s, windows stepped by 1 s from 33 s (after the stimulus, as the code) to the end. Forecast R (correlation coefficient) and MAE (median absolute error) per window. Reproduced when in each of the nine responses the mean forecast R minus 2 s.e.m. over its windows is above 0 (Figure 6D shows means plus or minus 2 s.e.m.; \"accurately\" is otherwise unquantified). The code's windowing (training on 50% of the series, 0.2 s steps, histories to 250 ms) is a variant, and so are histories up to 100 ms, as the Results say (\"recent history (up to 100 ms)\"), against the Methods' 50 to 200 ms. The paper's 173 forecast windows are reported against the count each windowing gives, not judged."
+     },
+     {
+      "id": "fig6s1-no-p10-motorneurons",
+      "statement": "No recorded neuron is a P10 motorneuron; no neuron comes close to one-to-one locking of its spikes with P10 spikes at any delay, nor locks consistently across programs.",
+      "source": "Figure 6, figure supplement 1; Materials and methods, Decoding motor output, paragraph 1",
+      "quote": "We see that no neuron in our dataset comes close to P ( s p i k e 10 | s p i k e ) \u2248 1 at any delay, and there are no neurons with consistently high locking between programs",
+      "criterion": "As the legend and P10_ID_motorneurons.m, for each neuron and each program with P10, spikes after 33 s, the proportion of its spikes followed by a P10 spike at delays 0 to 25 ms (1 ms steps) within plus or minus 2 ms, maximum over delays. The paper gives no cut-off for \"close to 1\"; 0.9 is taken here. Reproduced when no neuron has a maximum of 0.9 or more in any program (no neuron close to 1 at any delay) and hence none in two programs of its preparation (no consistent locking); the largest values, and how many neurons reach 0.9 in one program and in two, are reported."
+     },
+     {
+      "id": "fig6s2-dimensions-p10",
+      "statement": "The nine recordings with P10 activity need only 3 to 5 embedding dimensions for 80% variance, and at least double that for 90%; using the 90% dimensions does not improve the P10 forecasts.",
+      "source": "Results, The locomotion motor program can be decoded from the low-dimensional orbit, paragraph 4; Figure 6, figure supplement 2",
+      "quote": "The successful decoding of future P10 activity was achieved despite needing only 3\u20135 embedding dimensions to account for 80% variance ... Increasing the number of embedding dimensions to account for 90% variance, at least doubling the number of embedding dimensions, did not improve the forecasts of P10 activity",
+      "criterion": "Dimension counts as claim fig2b-dimensions, under its readings, for the nine responses; reproduced in part when all nine lie in 2.7 to 5.5 and the 90% count is at least twice the 80% count in each. The forecasts of claim fig6d-decode-p10 repeated with the 90% dimensions; the paper reports no test, so a two-sided Wilcoxon signed-rank test over the nine paired mean MAEs and mean forecast R-squared values is fixed here. The absence holds when neither test finds the 90% models better at p < 0.05. Reproduced when the counts and the absence both hold."
+     },
+     {
+      "id": "fig7a-long-tailed-participation",
+      "statement": "Every response has a long-tailed distribution of single-neuron participation, a minority of neurons dominating its dynamics.",
+      "source": "Results, Variable neuron participation in stable motor programs, paragraph 2; Figure 7A",
+      "quote": "Every population response had a long-tailed distribution of participation ( Figure 7A ), indicating that a minority of neurons dominated the dynamics of any given response",
+      "criterion": "Participation as the Methods (Single neuron participation), the sum over the d principal axes of the program of the absolute eigenvalue-weighted eigenvector weights, normalised to the program's maximum. d is (a) the program's own count for 80% (Methods) or (b) the count from the PCA of the three programs concatenated, cumulative variance at most 80%, used for all three (Quantifying_Participation_by_PCA_Contribution.m). The paper does not quantify \"long-tailed\"; fixed here, reproduced when, under a reading, in every response the skewness of participation is positive and fewer than half of the neurons exceed 50% of the maximum."
+     },
+     {
+      "id": "fig7f-strongly-variable-neurons",
+      "statement": "Neurons with high participation in one response often have low participation in another; every preparation contains neurons whose change in participation well exceeds that predicted by a noise model.",
+      "source": "Results, Variable neuron participation in stable motor programs, paragraph 2; Figure 7B to 7F",
+      "quote": "Every preparation\u2019s pedal ganglion contained neurons whose change in participation between responses well-exceeded that predicted by the noise model ( Figure 7F )",
+      "criterion": "Participation as claim fig7a-long-tailed-participation. Per preparation, the changes in participation of each neuron between programs, pooled over (a) all three pairs (Methods, \"all pairs\") or (b) the consecutive pairs (1,2) and (2,3) (the code); a Gaussian fitted by the Methods' iterative maximum likelihood (iterateoutliers.m, drop the point furthest from the mean, refit, stop when the log likelihood falls); a neuron is strongly variable when its maximum absolute change between consecutive programs is at least the larger of |mean - 3 SD| and |mean + 3 SD|. Reproduced when, under a reading, each of the 10 preparations has at least one strongly variable neuron. The proportion per preparation (Figure 7F) is reported."
+     },
+     {
+      "id": "halving-participation",
+      "statement": "Even the most strongly participating neurons in a response could more than halve their participation in other evoked responses.",
+      "source": "Discussion, Insights and challenges of variable neuron participation, paragraph 1",
+      "quote": "Even the most strongly participating neurons in a given population response could more than halve their participation in other evoked responses",
+      "criterion": "Participation as claim fig7a-long-tailed-participation, normalised to each program's maximum. The most strongly participating neurons are read as (a) the neuron at 100% in a program, or (b) the top 10% of a program's neurons. Reproduced when, under a reading, such a neuron has under half its participation in another program of its preparation in more than one preparation; the count of preparations is reported."
+     },
+     {
+      "id": "fig7s1-rate-synchrony",
+      "statement": "A neuron's participation reflects both its firing rate and its synchrony; firing rate explains on average 50% of the variation in participation within a response, and rate changes 23% of the change in participation between responses.",
+      "source": "Figure 7, figure supplement 1B and 1D",
+      "quote": "Firing rate explains on average (R 2 , red line) 50% of the variation in participation within an evoked response ... Firing rate changes explain on average 23% of the variation in the change of participation",
+      "criterion": "As What_is_Participation.m, Pearson correlation per program of normalised participation with the firing rate, squared, and the mean over the 30 programs; and per pair (1,2), (1,3), (2,3) of a preparation, of the change in rate with the change in participation, mean of R-squared over the 30 pairs. The rate is the spike count divided by duration from (a) stimulation offset to the end (the legend) or (b) stimulation onset (the code). In the code the rate changes are ordered (1,2), (1,3), (2,3) and the participation changes (1,2), (2,3), (1,3), so two of the three pairs are mismatched; the matched pairs are the main reading and the code's pairing a variant."
+     },
+     {
+      "id": "fig7s2-no-invariant-core",
+      "statement": "No small invariant core of strongly participating, phasically active neurons, such as a classic central pattern generator, is found across preparations.",
+      "source": "Results, Variable neuron participation in stable motor programs, paragraph 3; Figure 7, figure supplement 2",
+      "quote": "in our observed portion of the ganglion we found no evidence for a core of strongly participating, invariant, and phasically active neurons across the preparations",
+      "criterion": "Ensembles and their types (tonic, oscillator, burster, pauser) as the Methods and Bruno et al. (2015), with the code's toolbox (consensus_cluster_spike_data_binless.m and Analyse_Spike_Train_Properties.m), from stimulation onset. Neurons typed oscillator in all three programs; the top 10% of them by maximum participation per preparation, and the median of their maximum change in participation between consecutive programs (panel C). The paper gives no cut-off; fixed here, an invariant core is a preparation whose top 10% have a median maximum change under 10% of the program maximum. Reproduced when fewer than half of the preparations have one (\"most preparations showed high variation\"). The legend's statement that only the oscillator class had a consistently typed neuron in all ten preparations is reported."
+     },
+     {
+      "id": "fig7gh-robust-to-participation",
+      "statement": "The distance between a pair of responses does not correlate with the total change in neuron participation between them nor with the distance between their participation distributions; the program is robust to the participation of single neurons.",
+      "source": "Results, Variable neuron participation in stable motor programs, paragraph 4; Figure 7G and 7H",
+      "quote": "We found that the distance between a pair of population responses did not correlate with either the total change in neuron participation between the two responses ( Figure 7G ) or the distance between their participation distributions ( Figure 7H )",
+      "criterion": "A claim of absence. Distance, the Hausdorff distance of claim fig3c-same-manifold divided by its control mean; total change, the sum over neurons of the absolute change in normalised participation; distribution distance, the Hellinger distance between histograms of normalised participation in bins of 0.05 on 0 to 1 (Methods; RobustnessOfAttractor_to_single_neuron_variability.m). The pairs containing response 1 of preparation 4 are excluded as the legend says (the code keeps pairs with normalised distance below 1). The paper names no test; the code fits a linear regression (fitlm), so the test is the slope's p-value at the conventional p < 0.05. Reproduced when neither slope is significant; slopes and R-squared are reported, and the robust (bisquare) fit as a variant."
+     },
+     {
+      "id": "fig8-caudolateral",
+      "statement": "Neurons with strong participation across the three responses, and those with highly variable participation, lie mainly in the caudo-lateral quadrant of the ganglion.",
+      "source": "Results, Participation maps identify potential locations of the pattern generator network, paragraph 1; Figure 8",
+      "quote": "We found that neurons with strong participation across the three evoked population responses were robustly located in the caudo-lateral quadrant of the ganglion ( Figure 8A,B )",
+      "criterion": "Neuron positions from the data set's maps, 4 left and 4 right preparations (the code's LEFT and RIGHT lists in ParticipationMapsSummary.m), each preparation's maximum (A,B) and range (C,D) of normalised participation over the three programs; the top fifth by the code's equal-width division of the range of values into five (\"quintile\" in the legend; true quintiles are a variant). The orientation of the array (which quadrant is caudo-lateral) is not stated in the paper or the code, and must come from the data set's documentation or map files; if it cannot be found the claim is blocked. Reproduced when, for both sides, the caudo-lateral quadrant holds more of the top-fifth neurons than any other quadrant, for maximum and for range. The right ganglia's rostro-medial strength, which the paper leaves unresolved, is reported."
+     }
+    ]
+   }
+  ],
   "crcns:bf-1": [
    {
     "path": "claims/crcns-bf-1/10.1073-pnas.1712431115.yaml",
@@ -74488,7 +74714,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-11-08T12:04:01+00:00",
+ "generated": "2026-11-08T12:07:14+00:00",
  "queue_generated": "2026-11-05T14:39:45+00:00",
  "queue_counts": {
   "public_dandisets": 672,
@@ -326154,7 +326380,6 @@
    "001354",
    "001609",
    "002028",
-   "crcns-hc-13",
    "crcns-hc-31",
    "crcns-fcx-3",
    "crcns-fcx-2",
@@ -326265,6 +326490,7 @@
    "crcns-alm-2",
    "crcns-apl-1",
    "crcns-hc-11",
+   "crcns-hc-13",
    "crcns-hc-28",
    "crcns-hc-8",
    "crcns-ppc-1",
@@ -326281,17 +326507,21 @@
    "claims": 0.3145833333333333
   },
   "running": {
-   "crcns-hc-28": {
-    "kind": "full",
-    "hours": 3.309925470277778
-   },
    "crcns-ssc-10": {
     "kind": "full",
-    "hours": 4.0483976925
+    "hours": 3.994868350277778
    },
    "crcns-apl-1": {
     "kind": "full",
-    "hours": 4.1742310258333335
+    "hours": 4.120701683611111
+   },
+   "crcns-hc-13": {
+    "kind": "full",
+    "hours": 3.5130627947222224
+   },
+   "crcns-hc-28": {
+    "kind": "full",
+    "hours": 3.2551461280555554
    }
   }
  },
