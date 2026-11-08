@@ -1,0 +1,1137 @@
+schema_version: 2
+id: crcns-hc-28-jadhav-2016-01
+dataset:
+  archive: crcns
+  id: hc-28
+  version: unversioned
+  doi: 10.6080/K02N50G9
+paper: doi:10.1016/j.neuron.2016.02.010
+date: '2026-11-08'
+entry: crcns-hc-28-jadhav-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42479457972
+outcomes:
+- claim: wtrack-learning
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:wtrack-learning
+  measured:
+  - 0.88
+  notes: Proportion correct on day 3 was 0.85, 0.80 and 0.75 (HPa, HPb, HPc; binomial p <= 0.0006 against 0.5) and
+    on day 8 0.93, 0.88 and 0.92. The 10 and 20 cm well zones give the same conclusion. The binomial test puts HPa
+    and HPb above chance from day 1 and HPc from day 2. 25 to 145 trials were scored per day.
+  deviations:
+  - A well visit is an entry into a 15 cm zone around a well (the claims file leaves the radius open); 10 and 20
+    cm are shown. The first outbound run of each epoch has no previous side and is not scored.
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+- claim: ytrack-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The Y-track rats are not in CRCNS hc-28: the bucket holds HPa, HPb and HPc, all W-track rats, and the
+    data descriptor describes only the W-track task. No other public copy is named by the paper.'
+- claim: tables1-cell-counts
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:tables1-cell-counts
+  measured:
+  - 509
+  - 81
+  - 193
+  - 167
+  notes: Cell-days with spikes in the W-track runs, after the fast-spiking exclusion, are 509 CA1 (446 expected),
+    81 iCA1 (69) and 193 PFC (172), all 12 to 17% above Table S1. After the 50-spike criterion 167 PFC cell-days
+    remain against 165, within tolerance (173 with -1 to +1 s rasters). Per animal, CA1 213, 203 and 93 against
+    195, 165 and 86, and PFC 45, 94 and 54 against 40, 80 and 51. 104 units have spikes only in the pre-rest and
+    are not counted. Which units Table S1 counts is not documented.
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - SWR-aligned rasters span -500 to +500 ms, the shortest span holding the paper's background window; the -1 to
+    +1 s reading is run for the PFC counts and fractions only.
+  - Spike width is the spikes file's spikewidth divided by 30 (30 kHz samples); rate is spikes over the day's run
+    time.
+  assumed: true
+- claim: swr-detection-stats
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:swr-detection-stats
+  measured:
+  - 414.6
+  - 79.2
+  - 0.171
+  notes: 'Reading (a), run epochs: 414.6 +- 20.3 SWRs per day (within 381 +- 38.1), mean duration 79.2 ms from the
+    mean crossing and 54.4 ms from the threshold crossing (outside 96.7 +- 9.67), rate 0.171 Hz over run time and
+    0.335 Hz over time below 4 cm/s (outside 0.12 +- 0.012). Reading (b), mean envelope: 139.5 per day, 94.4 ms,
+    0.057 and 0.113 Hz. With the pre-rest added, reading (a) gives 1002.9 per day and 96.5 ms. Dorsal-CA1 tetrodes
+    only: 353.3 per day, 80.1 ms, 0.145 Hz. No reading matches all three values.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - A third reading, any one dorsal-CA1 ripple tetrode, is shown because the ripple tetrodes of HPa and HPb include
+    intermediate-CA1 tetrodes and the paper detects SWRs 'on multiple CA1 tetrodes'.
+  assumed: true
+- claim: figs2-swr-at-reward-wells
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:figs2-swr-at-reward-wells
+  measured:
+  - 0.703
+  notes: Fraction of run SWRs within 20 cm of a well at onset 0.703 +- 0.032 over 24 days (within 0.71 +- 0.03);
+    0.680 at 15 cm and 0.588 at 10 cm. Per animal at 20 cm 0.582, 0.827 and 0.701. The Y-track comparison cannot
+    be made.
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Wells are the end points of the task's linearcoord polylines.
+  assumed: true
+- claim: fig3-pfc-swr-modulation-fractions
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig3-pfc-swr-modulation-fractions
+  measured:
+  - 12
+  - 7
+  - 148
+  - 0.072
+  - 0.042
+  notes: 'Of 167 PFC cell-days 12 are SWR-excited (0.072), 7 SWR-inhibited (0.042) and 148 unmodulated, against
+    30, 26 and 109 of 165. Excited and inhibited differ by 0.263 of the modulated cells (rule 0.10). Variants give
+    12 to 22 excited and 2 to 9 inhibited cells: -1 to +1 s rasters 12 and 5 of 173; mean-envelope SWRs 22 and 2;
+    threshold-crossing onset 17 and 4; dorsal-CA1 tetrodes 14 and 9; 50 ms bins 19 and 8. Per animal (main) 4/2/32,
+    6/4/68 and 2/1/48. On synthetic data (prepared, not in the notebook) the shuffle detected a 50% rate drop in
+    a 2 Hz cell and had a 3% false-positive rate. Question for the paper''s authors: how SWRs were detected across
+    tetrodes (any one tetrode or a consensus, whether intermediate-CA1 tetrodes took part), where the onset was
+    set, and whether the SWR-PSTH was binned or smoothed in another way for the modulation measure; these are the
+    choices that could explain the difference.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - SWR-aligned rasters span -500 to +500 ms, the shortest span holding the paper's background window; the -1 to
+    +1 s reading is run for the PFC counts and fractions only.
+  - PSTH bin 10 ms and a circular jitter uniform over the raster span (standard choices named in the claims file);
+    50 ms bins shown as a variant.
+  assumed: true
+- claim: ca1-swr-modulated
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:ca1-swr-modulated
+  measured:
+  - 0.651
+  notes: 255 of 392 CA1 cell-days (0.651) are SWR modulated, below 0.80 +- 0.08; 0.599 with the threshold-crossing
+    onset and 0.676 with dorsal-CA1 tetrodes only. Per animal 0.694, 0.538 and 0.800; iCA1 cells 0.439, dorsal CA1
+    cells 0.687. Most CA1 cells are modulated, as stated, but the fraction is outside the tolerance.
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - SWR-aligned rasters span -500 to +500 ms, the shortest span holding the paper's background window; the -1 to
+    +1 s reading is run for the PFC counts and fractions only.
+  assumed: true
+- claim: fig3-transient-responses
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig3-transient-responses
+  notes: 'The population of 12 excited cells peaks at 55 ms and that of 7 inhibited cells is lowest at 95 ms. Reading
+    (a), baseline mean +- 1 SD: both return to baseline only from 480 ms. Reading (b), baseline 2.5-97.5 percentiles:
+    excited 330 ms, inhibited 480 ms. Neither reading has both back by 330 ms.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - PSTHs are z-scored over the whole -500 to +500 ms PSTH before averaging (a standard choice).
+  assumed: true
+- claim: fig3de-ca1-precedes-pfc-peak
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig3de-ca1-precedes-pfc-peak
+  measured:
+  - 46.2
+  - 59.2
+  - 86.4
+  notes: 'Search 0-200 ms: CA1 46.2 +- 2.5 ms (255 cells), excited 59.2 +- 14.6 ms (12), inhibited trough 86.4 +-
+    13.7 ms (7); CA1 against excited p = 0.35, against inhibited p = 0.0036; excited against inhibited p = 0.12.
+    Search 0-500 ms: 53.7, 74.2 and 135.0 ms; p = 0.22, 0.0039 and 0.19. CA1 is not significantly earlier than the
+    excited peak under either reading. The excited and inhibited absence holds (p >= 0.01).'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Peak and trough at the centre of 10 ms bins of the unsmoothed PSTH.
+  assumed: true
+- claim: fig3e-onset-later-in-pfc
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig3e-onset-later-in-pfc
+  notes: 'Baseline SD (a): CA1 10.1 ms, excited 13.3 ms, inhibited 20.7 ms; p = 0.58 and 0.093 against CA1. Whole-PSTH
+    SD (b): 13.4, 19.2 and 29.3 ms; p = 0.40 and 0.036. Excited and inhibited do not differ (p = 0.35 and 0.31).'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  assumed: true
+- claim: fig3f-swr-cross-covariance-lag
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig3f-swr-cross-covariance-lag
+  measured:
+  - 20
+  - 200
+  notes: '127 excited and 71 inhibited pairs. Reading (a): the mean cross-covariance peaks at 20 ms for excited
+    pairs (within 13 +- 7) and is lowest at 200 ms for inhibited pairs, the edge of the search window (outside 20
+    +- 7). Reading (b): mean per-pair extremum 1.3 +- 7.3 ms (excited) and 35.9 +- 15.1 ms (inhibited), both outside.
+    All extrema are after 0 ms (PFC after CA1), so the direction holds and the values do not.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Cross-covariance of PFC spikes relative to CA1 spikes within the SWR rasters, expected coincidences from the
+    raster mean rates, Poisson z normalization and the theta cross-covariance's Gaussian (SD 16.7 ms), as the claims
+    file says.
+  assumed: true
+- claim: fig4-theta-locked-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig4-theta-locked-fraction
+  measured:
+  - 0.533
+  notes: 89 of 167 PFC cell-days (0.533) are theta locked at Rayleigh p < 0.05, just outside 0.60 +- 0.06; 89 of
+    163 with at least 50 theta spikes (0.546). Per animal 0.763, 0.500 and 0.412. 344 of 392 CA1 cell-days are locked.
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  assumed: true
+- claim: fig4a-preferred-phases
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig4a-preferred-phases
+  notes: 'Histogram peaks, reference as recorded: CA1 circular mean 39 deg (falling phase), PFC 156 deg, modal 45-deg
+    bin of PFC 90-135 deg (counts 6, 14, 18, 8, 15, 9, 13, 6 from 0 deg), which does not contain 180 deg. Inverted
+    reference: CA1 219 deg, PFC modal bin 270-315. Von Mises means: modal bins 225-270 and 45-90. CA1 precedes PFC
+    under every convention, but no convention puts CA1 in the falling phase and the PFC mode at the trough.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  - Histogram bin of 20 deg for each cell's preferred phase (a standard choice).
+  assumed: true
+- claim: fig4-swr-modulated-more-theta-locked
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig4-swr-modulated-more-theta-locked
+  measured:
+  - 0.917
+  - 0.857
+  - 0.486
+  notes: 'Theta locked: excited 11 of 12 (0.917), inhibited 6 of 7 (0.857), unmodulated 72 of 148 (0.486). z tests:
+    excited against unmodulated p = 0.0041, inhibited against unmodulated p = 0.055, excited against inhibited p
+    = 0.68. The inhibited test fails at the paper''s 0.01 with 7 cells; the direction holds.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  assumed: true
+- claim: fig4b-kappa
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig4b-kappa
+  measured:
+  - 0.271
+  - 0.101
+  - 0.194
+  notes: 'Reading (a), locked cells: kappa 0.271 +- 0.070 (excited, 11), 0.101 +- 0.019 (inhibited, 6), 0.194 +-
+    0.026 (unmodulated, 72); p = 0.16, 0.14 and 0.056. Reading (b), cells with 50 theta spikes: 0.264, 0.095 and
+    0.134; excited against unmodulated p = 0.0024, inhibited against unmodulated p = 0.78. Inhibited cells lock
+    less strongly than unmodulated cells here.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  assumed: true
+- claim: fig4c-theta-locked-more-swr-modulated
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig4c-theta-locked-more-swr-modulated
+  measured:
+  - 1.382
+  - 0.993
+  notes: '89 theta-modulated and 78 other PFC cell-days. Index readings: (a) ratio 1.382 against 0.993, p = 0.0013;
+    (b) z 1.177 against -0.011, p = 0.0017; (c) raw 27.5 against 9.65, p = 7.8e-05. The difference holds at p <
+    0.01 under every reading; no reading gives values within 5.2 +- 0.8 and 2.5 +- 0.4. The paper does not define
+    the index.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  - SWR-aligned rasters span -500 to +500 ms, the shortest span holding the paper's background window; the -1 to
+    +1 s reading is run for the PFC counts and fractions only.
+  assumed: true
+- claim: fig4-preferred-phase-concentration
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig4-preferred-phase-concentration
+  notes: 'Kuiper tests over all cells with a preferred phase: excited against unmodulated p = 0.32 (12 and 144 cells),
+    excited against inhibited p = 0.050, inhibited against unmodulated p = 0.27; locked cells only p = 0.75, 0.20
+    and 0.30. The resultant length of preferred phases is 0.49 (excited), 0.47 (inhibited) and 0.013 (unmodulated).'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - The paper's n are all cells of each group; cells with fewer than 50 theta spikes have no preferred phase and
+    are left out (163 of 167).
+  assumed: true
+- claim: theta-lag-past
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:theta-lag-past
+  measured: -25
+  notes: 89 theta-locked PFC cell-days; shifts -100 to +100 ms in 5 ms steps. Reading (b), median of each cell's
+    best shift, is -25 ms, theta in the past and at the edge of -15 +- 10 ms. Reading (a), the shift maximizing
+    mean kappa, is +5 ms; mean kappa is nearly flat (0.173 to 0.198), so the outcome rests on reading (b).
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Theta phase from the tetrode tetinfo marks CA1Ref (the corpus callosum reference, SEP); a 3rd-order Butterworth
+    6-12 Hz band-pass applied forward and back at 150 Hz and the Hilbert phase, with 0 deg at the peak (standard
+    choices named in the claims file).
+  - Shift range and step and kappa as the locking measure are the claims file's standard choices.
+  assumed: true
+- claim: fig5b-mean-rates
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig5b-mean-rates
+  measured:
+  - 4.51
+  - 6.87
+  - 2.77
+  notes: 'Reading (a), theta periods: excited 4.51 +- 1.00 Hz, inhibited 6.87 +- 1.27 Hz, unmodulated 2.77 +- 0.24
+    Hz; excited against unmodulated p = 0.048, inhibited against unmodulated p = 0.0020, excited against inhibited
+    p = 0.15. Readings (b) and (c) give p = 0.043 and 0.051 for excited against unmodulated. The excited test fails
+    at 0.01.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  assumed: true
+- claim: fig5c-spatial-coverage
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig5c-spatial-coverage
+  measured:
+  - 0.268
+  - 0.532
+  - 0.276
+  notes: Coverage excited 0.268 +- 0.076 (11 cells with peak > 3 Hz), inhibited 0.532 +- 0.091 (7), unmodulated
+    0.276 +- 0.020 (141), CA1 0.085 +- 0.004 (361). Excited against inhibited p = 0.042 and against unmodulated
+    p = 0.60, with excited lower; inhibited against unmodulated p = 0.011; CA1 against excited p = 0.14. Without
+    the speed filter the order is the same. Coverage values are low overall because the maps are unsmoothed.
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Rate maps use 2 cm bins without smoothing and speed > 5 cm/s (standard choices named in the claims file); trajectories
+    are well-to-well runs read from position with a 15 cm well zone, wells at the end points of the task's linearcoord
+    polylines.
+  assumed: true
+- claim: figs3-arm-and-direction-selectivity
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:figs3-arm-and-direction-selectivity
+  notes: 'Mean rates: arm index CA1 0.367 against excited 0.087, inhibited 0.101, unmodulated 0.129 (p = 0.00029,
+    0.0074, 6.8e-20); direction index CA1 0.384 against 0.122, 0.083 and 0.120 (p = 0.00028, 0.00094, 2.1e-29).
+    Excited against unmodulated direction index p = 0.90. Peak rates: CA1 does not exceed excited cells (p = 0.88
+    and 0.80) and excited cells are more direction selective than unmodulated (p = 0.039). The CA1 part holds under
+    the mean reading; the excited-unmodulated part fails under both.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Rate maps use 2 cm bins without smoothing and speed > 5 cm/s (standard choices named in the claims file); trajectories
+    are well-to-well runs read from position with a 15 cm well zone, wells at the end points of the task's linearcoord
+    polylines.
+  assumed: true
+- claim: fig5e-speed-correlation
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig5e-speed-correlation
+  notes: 'Time-bin correlation, 200 ms: medians excited -0.009, inhibited 0.033, unmodulated 0.012; excited against
+    inhibited p = 0.87; inhibited median below circular-shift shuffles p = 0.97. 1 s bins: p = 0.61 and 0.95. Speed-bin
+    correlation: medians -0.336, -0.331 and -0.224 (200 ms), excited against inhibited p = 0.50, inhibited median
+    below speed-bin permutations p = 0.012; 1 s p = 0.40 and 0.002. Excited never exceeds inhibited.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Speed bins of 2 cm/s from 0 to 40 cm/s with at least 5 time bins each (a standard choice).
+  assumed: true
+- claim: fig5f-pre-swr-vs-movement
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig5f-pre-swr-vs-movement
+  notes: Index excited -0.086 +- 0.077 (12), inhibited -0.125 +- 0.150 (7), unmodulated -0.045 +- 0.025; inhibited
+    against excited p = 0.87. Both modulated groups fire more at high speed than before SWRs.
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  assumed: true
+- claim: figs3e-reward-modulation
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:figs3e-reward-modulation
+  notes: 'Reading (a), arrival at the well: excited -0.147 +- 0.080, inhibited 0.103 +- 0.167, p = 0.091. Reading
+    (b), first sample below 4 cm/s: -0.006 and -0.128, p = 0.80. Rewarded trials per day, median 52.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Rewards are the correct trials of the alternation rule scored from position (15 cm well zone).
+  assumed: true
+- claim: fig5g-ensemble-cofiring
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig5g-ensemble-cofiring
+  measured:
+  - 2
+  - 1
+  - 3
+  - 515
+  notes: 'Pairs with same-tetrode pairs: excited-excited 2, inhibited-inhibited 1, excited-inhibited 3, unmodulated-unmodulated
+    515 (expected 42, 36, 73, 369). Peak readings: the 3 excited-inhibited pairs have mean -1.08 against 7.61 (EE)
+    and 1.05 (UU), smallest p = 0.083; zero-lag reading smallest p = 0.11. Without same-tetrode pairs there are
+    0 EE and 2 EI pairs. Too few modulated cells to test the claim''s comparison; it fails at 0.01.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Theta cross-covariance with the Poisson z normalization (reading a of the claims file) and a smoothing kernel
+    of 5 bins (50 ms) with SD 1.67 bins; bins are centred on zero lag.
+  assumed: true
+- claim: fig6-swr-correlated-pairs
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig6-swr-correlated-pairs
+  measured:
+  - 0.227
+  - 0.22
+  - 0.239
+  notes: 'CA1 reading (a), Pearson over all SWRs: 45 of 198 pairs significant (0.227) against 0.045 shuffled, z
+    = 5.27, p = 6.8e-08; excited PFC 28 of 127 (0.220), inhibited 17 of 71 (0.239). All CA1 cells: 63 of 286 (0.220),
+    z = 6.00. Correlation over joint SWRs only: 8 of 198 (0.040), not above the shuffle. Spearman gives the same
+    as Pearson. The test holds; the fractions are above their tolerances and the pairs fewer (198 against 713).'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - The shuffle permutes the PFC counts across SWRs once per pair.
+  assumed: true
+- claim: fig6ab-both-signs
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig6ab-both-signs
+  notes: 'Significant pairs: excited PFC 21 positive and 7 negative, inhibited PFC 7 positive and 10 negative; with
+    all CA1 cells 22/11 and 13/17.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  assumed: true
+- claim: fig6c-theta-predicts-swr-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig6c-theta-predicts-swr-correlation
+  measured:
+  - 0.479
+  - 0.46
+  - 0.58
+  notes: 'Poisson z normalization: r = 0.479 (198 pairs, p = 9.2e-13), excited 0.460 (p = 5.4e-08), inhibited 0.580
+    (p = 1.1e-07); group difference shuffle p = 0.26. Rate normalization: 0.230, 0.189 and 0.383, p = 0.40. The
+    relation holds in every group and the groups do not differ; r is outside 0.39 +- 0.039 except for inhibited
+    pairs under rate normalization.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Theta cross-covariance with the Poisson z normalization (reading a of the claims file) and a smoothing kernel
+    of 5 bins (50 ms) with SD 1.67 bins; bins are centred on zero lag.
+  - The 1000-shuffle group comparison uses the SEP's mixed-population shuffle, as the claims file assumes.
+  assumed: true
+- claim: figs4b-ca1-leads-in-theta
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:figs4b-ca1-leads-in-theta
+  measured:
+  - 21
+  - 7
+  notes: 'Positive significant pairs: 21 excited (46 expected), 7 inhibited (26). The mean theta cross-covariance
+    peaks at 20 ms (excited) and 60 ms (inhibited), after zero, so CA1 leads. Per-pair peak lags average -2.4 +-
+    20.1 ms and 64.3 +- 21.7 ms. Direction holds, counts are outside tolerance.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Theta cross-covariance with the Poisson z normalization (reading a of the claims file) and a smoothing kernel
+    of 5 bins (50 ms) with SD 1.67 bins; bins are centred on zero lag.
+  assumed: true
+- claim: fig6e-glm-swr-prediction
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig6e-glm-swr-prediction
+  notes: '105 of 167 PFC cell-days converged (62 dropped). Modulated cells (16): performance 0.055 +- 0.011, signed-rank
+    p = 6.1e-05; no cell beats its shuffles in 95% of splits (reading b fails). Equal-width size groups (3-12, 14-22,
+    23-32 CA1 cells): means 0.052, 0.033, 0.101, one-way p = 0.019; modulated against unmodulated (0.026) two-way
+    p = 0.0051; excited against inhibited p = 0.58. Tertiles: size p = 0.62. The 1, 2-3, > 3 grouping cannot be
+    formed: ensembles hold 3 to 32 CA1 cells. The claim holds under chance reading (a) with equal-width groups;
+    the size effect is not monotonic.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - The CA1 ensemble is all included CA1 cell-days of the day; CA1 cells that never spike in SWRs are dropped from
+    a model. A fit whose coefficients exceed 15 in magnitude (separation) or that does not converge in 100 iterations
+    counts as not converged.
+  assumed: true
+- claim: fig6e-theta-trained-glm
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig6e-theta-trained-glm
+  notes: 'Movement-trained models on 19 modulated cells: 0.038 +- 0.008, signed-rank p = 1.9e-05, 12 cells above
+    their shuffle; modulated against unmodulated (0.021) p = 0.034; size group p = 0.00082 (tertiles). Model type
+    by size group interaction p = 0.49 (tertiles), 0.28 (1, 2-3, > 3); model type main effect p = 0.023, theta-to-SWR
+    0.024 against SWR-to-theta 0.016. All parts hold except the interaction test the criterion names.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Movement bins are 200 ms bins lying wholly in theta periods (speed > 5 cm/s, no SWR).
+  assumed: true
+- claim: figs4c-pfc-predicts-ca1
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:figs4c-pfc-predicts-ca1
+  notes: 'Converged models: modulated 226, excited 175, inhibited 107, unmodulated 289. Performance 0.005 (modulated)
+    against 0.011 (unmodulated); two-way p = 0.90 and one-way p = 0.00056 with unmodulated higher. Size group p
+    = 6.7e-05 for modulated ensembles (groups of 1 and 2-3 cells only); excited against inhibited p = 0.34.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - 500 splits per model where the SEP uses 5000, to keep the notebook within its time; each performance is a mean
+    over splits.
+  assumed: true
+- claim: fig7c-spatial-correlation
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig7c-spatial-correlation
+  measured:
+  - 0.172
+  - 0.359
+  notes: 'Concatenated maps: excited r = 0.172 (p = 0.053, 127 pairs), inhibited r = 0.359 (p = 0.0021, 71); inhibited
+    stronger, shuffle p = 0.079. Correlated pairs 0.076, anticorrelated -0.056, uncorrelated 0.012 (p = 0.035 and
+    0.038). Mean of per-trajectory correlations: r = 0.263 (p = 0.0028) and 0.380 (p = 0.0011), shuffle p = 0.16.
+    The relation and the group ordering hold in direction, but the excited relation (main reading) and the difference
+    between groups are not significant.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Rate maps use 2 cm bins without smoothing and speed > 5 cm/s (standard choices named in the claims file); trajectories
+    are well-to-well runs read from position with a 15 cm well zone, wells at the end points of the task's linearcoord
+    polylines.
+  assumed: true
+- claim: figs5-matched-selectivity
+  outcome: not_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:figs5-matched-selectivity
+  notes: 'Inhibited coverage IQR 0.385 to 0.678 from 7 cells. Matched pairs: excited r = 0.236 (p = 0.18, 34 pairs),
+    inhibited r = 0.586 (p = 0.0013, 27); difference shuffle p = 0.155. Subsampling to 27 pairs: median r 0.232
+    and 0.586. The excited relation is not significant.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Rate maps use 2 cm bins without smoothing and speed > 5 cm/s (standard choices named in the claims file); trajectories
+    are well-to-well runs read from position with a 15 cm well zone, wells at the end points of the task's linearcoord
+    polylines.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  assumed: true
+- claim: figs6-replay-content
+  outcome: blocked
+  blocked_by: other
+  notes: Not run. The notebook counts 1797 candidate events (at least 4 included CA1 cells spiking in 0-200 ms)
+    of 9951 run SWRs and times the line-fit shuffle at 0.73 s per event, 22 min for the shuffles alone before decoding.
+    Writing and running the decoding and the per-cell analysis on top of the 20-minute notebook did not fit in the
+    time left in this run. With 19 modulated PFC cells and the paper's 10 significant events per cell, few cells
+    would qualify.
+- claim: fig8a-no-prerest-swr-correlation-relation
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig8a-no-prerest-swr-correlation-relation
+  measured:
+  - 120
+  - 71
+  notes: 'Pre-rest against task SWR correlation: excited r = 0.065, p = 0.48 (120 pairs); inhibited r = 0.127, p
+    = 0.29 (71); all r = 0.110, p = 0.13. Neither group is significant. Pairs are fewer than 219 and 196. Pre-rest
+    epochs hold 411 to 631 SWRs per day.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Pairs enter when both cells have spikes in the pre-rest and the pre-rest correlation is defined.
+  assumed: true
+- claim: fig8bc-no-prerest-theta-spatial-relation
+  outcome: reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig8bc-no-prerest-theta-spatial-relation
+  notes: 'Theta cross-covariance: excited r = -0.025 (p = 0.79), inhibited 0.146 (p = 0.22). Spatial correlation:
+    -0.102 (p = 0.27) and 0.176 (p = 0.14). None of four significant.'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - Pairs are SWR-modulated CA1 cells with SWR-modulated PFC cells of the same day with at least 5 joint SWRs (reading
+    a of fig6-swr-correlated-pairs), and the SWR correlation is the Pearson correlation over all SWRs of the day
+    (reading a).
+  - Theta cross-covariance with the Poisson z normalization (reading a of the claims file) and a smoothing kernel
+    of 5 bins (50 ms) with SD 1.67 bins; bins are centred on zero lag.
+  - Rate maps use 2 cm bins without smoothing and speed > 5 cm/s (standard choices named in the claims file); trajectories
+    are well-to-well runs read from position with a 15 cm well zone, wells at the end points of the task's linearcoord
+    polylines.
+  assumed: true
+- claim: fig8d-glm-epoch-specific
+  outcome: partially_reproduced
+  notebook: reproduce_jadhav_2016.ipynb
+  output: claim:fig8d-glm-epoch-specific
+  measured:
+  - 16
+  - 16
+  - 11
+  - 11
+  notes: 'SWR-modulated PFC cells in both epochs: task to task 0.056 +- 0.011 (16), task to pre-rest 0.003 +- 0.004
+    (16; signed-rank p = 0.60; 3 cells pass their own shuffle), pre-rest to task 0.009 +- 0.005 (11), pre-rest to
+    pre-rest 0.022 +- 0.010 (11). Both cross-epoch predictions are below task to task (p = 0.00030 and 0.0019).
+    Pre-rest to pre-rest exceeds task to pre-rest (p = 0.048) but not pre-rest to task (p = 0.49).'
+  deviations:
+  - SWR detection details that the paper leaves to Karlsson and Frank (2009), which is not under paper/, are assumptions
+    (Frank-lab practice). A 4th-order Butterworth 150-250 Hz band-pass applied forward and back, the Hilbert envelope
+    smoothed with a Gaussian of SD 4 ms, mean and SD over the epoch, at least 15 ms above 3 SD. An event on any
+    one ripple tetrode is used (reading a; the SEP excludes from theta periods SWRs 'detected on any of the CA1
+    tetrodes with a 3 s.d. criterion'). The onset is the time the envelope last rose above its mean before the threshold
+    crossing (the Frank-lab event start; the paper's 96.7 ms mean duration is closer to durations measured from
+    there than from the threshold crossing, 79 against 54 ms).
+  - Both W-track runs of each day are used, including the second run of days 6 to 8, which the task files place
+    in an environment named wtr2; the paper pools all sessions within a day and says the rats ran 2 W-track sessions
+    a day for 8 days (SEP, Behavioral Tasks). The linear-track run of day 1 is left out.
+  - Units are cell-days (reading a of the claims file). The data set has no identifier that links a unit across
+    days, so reading (b), unique units, could not be run.
+  - Only the three W-track rats are in the data set; pooled values are judged by the claims file's pooled-value
+    rule.
+  - The PFC groups are those of fig3-pfc-swr-modulation-fractions, 12 excited, 7 inhibited and 148 unmodulated cell-days,
+    far fewer modulated cells than the paper's 30 and 26 on the W-track, so the group comparisons have little power.
+  - Restricted to SWR-modulated PFC cells, the population of Figure 6E (the claims file says GLMs as in fig6e-glm-swr-prediction);
+    the CA1 ensemble is the CA1 cells with spikes in both epochs. Task to pre-rest is judged over cells by a signed-rank
+    test of performance against 0, with each cell's 1000-shuffle p shown.
+  assumed: true
+- claim: figs7-both-tracks
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Y-track rats, which are not in CRCNS hc-28 (the bucket and the data descriptor hold only HPa,
+    HPb and HPc on the W-track).
+findings:
+- kind: metadata_error
+  statement: The data descriptor gives cellinfo spikewidth as peak to trough width in ms, but the values (0.98 to
+    23.12, median 9.89) are 30 kHz samples, identical to the spikes files' spikewidth, which the descriptor gives
+    in points. Read as ms, every cell would be excluded from the paper's fast-spiking rule.
+- kind: metadata_error
+  statement: The data descriptor says pos data is Nx7; the run-epoch position files have 9 columns (time x y dir
+    vel x-sm y-sm dir-sm vel-sm) and the rest-epoch files 5 (time x y dir vel). In run epochs the unsmoothed columns
+    start with NaN.
+- kind: metadata_insufficient
+  statement: On days 6 to 8 the second run of each rat is in an environment named wtr2, which the descriptor does
+    not define; it says the rats ran the W-track for 8 days and then novel and familiar environments for the final
+    3 days, while the files hold 8 days with wtr2 runs in the last 3. Which epochs are novel, and whether the 2016
+    paper used them, is not stated.
+- kind: identifier_missing
+  statement: Units are indexed by day, tetrode and cluster number only; no identifier links a unit across days,
+    so the paper's unique-unit counts (Table S1) cannot be checked.
+- kind: selection_undocumented
+  statement: The files hold 509 CA1, 81 iCA1 and 193 PFC non-fast-spiking cell-days with spikes in the W-track runs,
+    against 446, 69 and 172 cells in Table S1; which units the table counts is not documented. After the paper's
+    50-spike criterion 167 PFC cell-days remain, close to the 165 of Table S2.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors on SWR detection: was an SWR an event on any one ripple tetrode,
+    on the mean of tetrodes, or on several tetrodes at once; did the intermediate-CA1 tetrodes that tetinfo marks
+    riptet take part; where was the onset set (threshold crossing or the earlier return to the mean); and what envelope
+    smoothing and minimum duration were used? Here an event on any one ripple tetrode with the onset at the return
+    to the mean gives 415 SWRs per W-track day but only 19 of 167 SWR-modulated PFC cell-days, against 56 of 165
+    in the paper.'
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors on SWR modulation: what span did the SWR-aligned rasters and the
+    circular jitter cover, and what PSTH bin or smoothing entered the squared-difference measure? With a -500 to
+    +500 ms raster, 10 ms bins and jitter over the whole raster, 12 PFC cell-days are excited and 7 inhibited, against
+    30 and 26 in Table S2; 50 ms bins and a -1 to +1 s raster do not close the gap.'
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: did the W-track analyses include the second run of days 6 to 8
+    (environment wtr2 in the task files)? This attempt includes it, following the SEP''s statement that data were
+    pooled across all sessions within a day.'
