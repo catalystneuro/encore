@@ -1,0 +1,297 @@
+schema_version: 2
+id: crcns-ssc-8-goncalves-2013-01
+dataset:
+  archive: crcns
+  id: ssc-8
+  version: unversioned
+  doi: 10.6080/K0X63K3X
+paper: doi:10.1038/nn.3415
+date: 2026-11-08
+entry: crcns-ssc-8-goncalves-2013
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42461891472
+outcomes:
+- claim: group-sizes
+  outcome: not_reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:group-sizes
+  measured: [13, 8, 7, 9, 10, 6]
+  notes: The MAT file and the TIFF archive agree on 13, 8 and 7 WT and 9, 10 and 6 KO mice at P9-11,
+    P14-16 and P30-40 (28 WT and 25 KO), against 12, 9, 8 and 9, 10, 8 in Fig. 1e (29 and 27). Two of
+    six groups match (KO P9-11 and KO P14-16). The P14-16 counts (8 WT, 10 KO) match neither the Fig. 1e
+    counts nor the reversed n of the peaks of synchrony sentence (10 WT, 9 KO). No recording is
+    deposited twice (no identical movie or cell trace).
+- claim: fig1d-distance-dependent-decorrelation
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:fig1d-distance-dependent-decorrelation
+  measured: [0.191, 0.105, 0.025]
+  notes: WT mice, 13 at P9-11 and 8 at P14-16. Under the main reading (C-b, zero-lag normalised
+    cross-correlation of the estimated rates) the P9-11 minus P14-16 difference is 0.191 under 100 um,
+    0.105 at 100 to 200 um and 0.025 over 200 um, against 0.223, 0.159 and 0.067. The Bonferroni
+    corrected p are 6.6e-08, 0.0019 and 1.0 under A-a and 2.4e-05, 0.0066 and 1.0 under A-b, so the
+    significance pattern holds, and the difference falls with distance; none of the three
+    differences is within the 10% tolerance. The Spearman variant gives 0.175, 0.108 and 0.051. Only
+    4 of 8 P14-16 mice and 12 of 13 P9-11 mice have pairs over 200 um; on the mice with all three
+    bins the differences are 0.188, 0.102 and 0.025.
+  deviations:
+  - The data set holds 13 and 8 WT mice at these ages, not 12 and 9.
+  - The trace is the deposited estimated firing rate (reading T-a). Reading T-b, the low-pass filtered
+    dF/F, cannot be run, as the data set holds no cell contours or dF/F traces; the outcome is
+    assumed to hold for the trace the paper used. The Methods say only "pair-wise continuous-trace
+    cross-correlations as previously described 15".
+  - The post hoc test of A-a uses the two-way ANOVA's pooled residual mean square; that of A-b is a
+    t-test within each bin, both with Bonferroni over three bins. The text does not give the form.
+- claim: fig1e-age-decrease
+  outcome: reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:fig1e-age-decrease
+  notes: Pairs under 100 um, reading C-b. WT 0.360, 0.169 and 0.119 at the three ages (13, 8, 7 mice),
+    KO 0.421, 0.204 and 0.134 (9, 10, 6 mice). The 2-df age contrast within genotype of the
+    unequal-variance model gives F = 52.5 (df2 14.9, p = 1.8e-07) for WT and F = 64.3 (df2 14.1,
+    p = 8.1e-08) for KO. Welch's one-way ANOVA gives the same numbers, as the Welch-James test reduces
+    to it for a one-way design, so readings E-a and E-b agree. The Spearman variant agrees.
+  deviations:
+  - Group sizes differ from the paper's (see group-sizes).
+- claim: genotype-pooled-ages
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:genotype-pooled-ages
+  measured: [0.245, 0.265]
+  notes: The genotype main effect of the unequal-variance 2 x 3 model is significant with KO higher,
+    p = 0.0064 (F = 8.48, df2 33.5) for pairs under 100 um and p = 0.0028 for all pairs (paper
+    0.0057). No reading puts both means within the paper's s.e.m. Under 100 um over all mice (P-a,
+    M-a, given as measured) WT 0.245 and KO 0.265, KO within and WT not; all pairs over mice (P-b,
+    M-a) WT 0.223 and KO 0.251, WT within and KO not; mean of the age means (M-b) WT 0.216 and KO
+    0.253 under 100 um, 0.198 and 0.240 for all pairs. The s.e.m. under M-b (0.0088 and 0.0093) is
+    close to the paper's (0.008 and 0.009), while that over mice is 0.024 and 0.026, which suggests
+    the paper's pooled values are averages of age means, or model estimates, on a different sample.
+  deviations:
+  - Group sizes differ from the paper's (see group-sizes), which moves the pooled means.
+  - The trace is the estimated firing rate (T-a); T-b cannot be run (see
+    fig1d-distance-dependent-decorrelation). The outcome is assumed to hold for the paper's trace.
+  - The unequal-variance ANOVA is fitted on the six cell means with their variances of the mean,
+    and the genotype contrast tested with the Welch-James statistic and Satterthwaite degrees of
+    freedom; the claims file names this standard choice.
+- claim: pearson-genotype
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:pearson-genotype
+  measured: [0.179, 0.193]
+  notes: Pearson correlation. The genotype effect is significant with KO higher, p = 0.023 for pairs
+    under 100 um (paper 0.026) and 0.012 for all pairs. No reading puts both means within the paper's
+    s.e.m. Under 100 um over mice (given as measured) WT 0.179 and KO 0.193, KO within; all pairs over
+    mice WT 0.155 and KO 0.178, WT within; means of the age means WT 0.146 and KO 0.180, with s.e.m.
+    0.0092 and 0.0107 against the paper's 0.009 and 0.010.
+  deviations:
+  - Group sizes differ from the paper's; the trace is the estimated firing rate (T-a), and T-b cannot
+    be run; the outcome is assumed to hold for the paper's trace.
+- claim: fig1ef-p14-16-difference
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:fig1ef-p14-16-difference
+  measured: [0.169, 0.204]
+  notes: At P14-16 the means are within the paper's s.e.m. (WT 0.169 +/- 0.010, 8 mice; KO 0.204 +/-
+    0.013, 10 mice) and KO is higher, but the unpaired Student's t-test gives t = 2.05, p = 0.057
+    (Welch's test, not the Methods' test, gives p = 0.049). The KO minus WT difference is 0.062 at
+    P9-11, 0.035 at P14-16 and 0.015 at P30-40, so it is not largest at P14-16; as a ratio it is (1.21
+    against 1.17 and 1.13). The Spearman variant gives p = 0.058. The data set has one WT mouse fewer
+    at P14-16 than the paper.
+  deviations:
+  - 8 WT mice at P14-16, not 9.
+  - The trace is the estimated firing rate (T-a); T-b cannot be run; the outcome is assumed to hold
+    for the paper's trace.
+- claim: p30-40-no-difference
+  outcome: reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:p30-40-no-difference
+  measured: [0.134, 0.119]
+  notes: KO 0.134 +/- 0.011 (6 mice) against WT 0.119 +/- 0.005 (7 mice), difference 0.015, Student
+    p = 0.22 (Welch 0.25), reading C-b. WT is within the paper's s.e.m. (0.123 +/- 0.008); KO is below
+    it (0.144 +/- 0.008). The Spearman variant gives p = 0.62.
+  deviations:
+  - 6 KO and 7 WT mice, not 8 and 8.
+- claim: fig2b-peak-frequency
+  outcome: reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:fig2b-peak-frequency
+  measured: [0.060, 0.054]
+  notes: P14-16, 10 KO and 8 WT mice. No reading finds a difference (p = 0.13 to 0.64). Under R-a
+    (active when the rate is above 0) both means are within the paper's s.e.m. with either shuffle;
+    with S-a (given as measured) KO 0.060 +/- 0.006 and WT 0.054 +/- 0.007 peaks per s, p = 0.52; with
+    S-b 0.061 and 0.057, p = 0.64. Under R-b (at least one estimated spike in the frame) events are
+    rarer, 0.016 to 0.027 per s, outside the tolerances. Thresholds under R-a are 23 to 37.5% of
+    cells active. At 4 Hz the frequencies rise by 2.6% and the tests do not change.
+  deviations:
+  - 8 WT mice, against 10 in the text (and 9 in Fig. 1e).
+  - The definition of an active cell and the shuffle are not given in the paper; all four readings of
+    the claims file were run and give the same outcome. The shuffle seeds are a standard choice.
+- claim: fig2c-participation
+  outcome: not_reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:fig2c-participation
+  measured: [0.444, 0.411]
+  notes: No reading gives a significant genotype difference (p = 0.15 to 0.37). Under R-a, S-a and Q-a
+    (given as measured) KO 0.444 +/- 0.020 and WT 0.411 +/- 0.019, p = 0.25; both are above the paper's
+    0.380 and 0.300. Under R-a nearly every cell joins at least one event (Q-b 0.998 to 1.0). Under R-b
+    Q-a is 0.17 against 0.13 to 0.14 and Q-b 0.66 against 0.49 to 0.54, KO higher, p = 0.15 to 0.37.
+    No mouse lacks events.
+  deviations:
+  - 8 WT mice at P14-16, not 9 or 10.
+  - The definition of the proportion, of an active cell and of the shuffle are not given in the paper;
+    all eight readings of the claims file were run and give the same outcome.
+- claim: imaging-firing-rate-no-genotype-difference
+  outcome: reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:imaging-firing-rate-no-genotype-difference
+  notes: KO minus WT is 0.017 Hz at P9-11 (0.446 against 0.429, p = 0.73), 0.0002 Hz at P14-16 (0.304
+    against 0.304, p = 0.997) and 0.014 Hz at P30-40 (0.371 against 0.356, p = 0.76). Reading the rates
+    as per frame scales both groups by 3.9 and does not change the tests.
+  deviations:
+  - Group sizes differ from the paper's (see group-sizes).
+- claim: unanesthetized-p14-16-values
+  outcome: reproduced
+  notebook: reproduce_goncalves_2013.ipynb
+  output: claim:unanesthetized-p14-16-values
+  measured: [0.304, 0.304, 0.169]
+  notes: With the rates read as Hz (U-a), WT 0.304 +/- 0.027 Hz (8 mice) and KO 0.304 +/- 0.027 Hz (10
+    mice), within 0.30 +/- 0.03 and 0.29 +/- 0.03; the WT correlation of pairs under 100 um is 0.169 +/-
+    0.010 (C-b), within 0.17 +/- 0.01. Read as per frame (U-b) the rates would be 1.19 Hz. The data
+    descriptor gives no unit; the values, which are 0 in about 90% of frames and average 0.19 to 0.74
+    per recording, fit Hz.
+  deviations:
+  - The unanesthetized groups of Fig. 6 are taken to be the P14-16 mice of Fig. 1e, as the claims file
+    reads them; the data set has 8 WT, not 9.
+- claim: wholecell-updown-firing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only calcium imaging (the bucket's ssc-8/live/ lists the TIFF archive, the
+    MAT file of rates and distances, and the descriptor). The descriptor and the paper name no
+    deposit of the whole-cell recordings.
+- claim: wholecell-state-modulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Whole-cell recordings are not in the data set (see wholecell-updown-firing).
+- claim: fig3f-foa-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Whole-cell recordings are not in the data set (see wholecell-updown-firing).
+- claim: ap-kinetics-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Whole-cell recordings are not in the data set (see wholecell-updown-firing).
+- claim: fig4-updown-properties-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Whole-cell recordings are not in the data set (see wholecell-updown-firing).
+- claim: fig4f-spikes-per-up-state
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Whole-cell recordings are not in the data set (see wholecell-updown-firing).
+- claim: fig4g-up-state-firing-probability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Whole-cell recordings are not in the data set (see wholecell-updown-firing).
+- claim: fig5c-firing-vs-lh-p14-16
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The EEG is not in the data set, nor named as deposited anywhere by the paper or the
+    descriptor, and the data set does not say which recordings had EEG.
+- claim: p30-40-firing-vs-lh
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No EEG in the data set (see fig5c-firing-vs-lh-p14-16).
+- claim: fig5d-correlation-vs-lh
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No EEG in the data set (see fig5c-firing-vs-lh-p14-16).
+- claim: fig5ef-slow-wave-epochs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No EEG in the data set (see fig5c-firing-vs-lh-p14-16).
+- claim: suppl4a-firing-vs-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_goncalves_2013.ipynb
+  output: variant:suppl4a-firing-vs-correlation
+  notes: The claim's sample is the 3-min recordings of the EEG subset (13 WT and 10 KO), which the data
+    set does not identify; it holds one concatenated recording per mouse and no EEG. As a variant that
+    decides nothing, the P14-16 recordings cut into 720-frame segments give KO r2 = 0.157 (slope
+    positive, p = 0.050, 25 segments from 10 mice) and WT r2 = 0.006 (p = 0.76, 18 segments from 8 mice);
+    segments of one mouse are not independent.
+- claim: fig5g-lh-power-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No EEG in the data set (see fig5c-firing-vs-lh-p14-16).
+- claim: fast-imaging-control
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 15.6 Hz recordings are not in the data set; all its movies are in folders named 4Hz, and
+    the descriptor lists 3.9 Hz recordings only.
+- claim: fig6-isoflurane-wt-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds unanesthetized mice only (descriptor, Summary); no isoflurane imaging is
+    deposited, here or elsewhere as far as the paper and descriptor say.
+- claim: fig6-isoflurane-ko-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No isoflurane imaging in the data set (see fig6-isoflurane-wt-correlation).
+- claim: fig6-isoflurane-firing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No isoflurane imaging in the data set (see fig6-isoflurane-wt-correlation).
+findings:
+- kind: selection_undocumented
+  statement: The data set holds 13, 8 and 7 WT mice and 9, 10 and 6 Fmr1 -/- mice at P9-11, P14-16 and
+    P30-40 (53), while the paper analysed 12, 9 and 8 and 9, 10 and 8 (56). Neither the descriptor nor
+    the files say which mice differ from the paper's sample or why.
+- kind: metadata_error
+  statement: The descriptor gives 40 to 149 neurons per animal; two WT P9-11 recordings have 164 and 198.
+    It gives about 7 to 8 min per recording; at the stated 3.9 Hz the recordings last 3.8 to 15.4 min,
+    and 27 of 53 are 2160 frames (9.2 min).
+- kind: metadata_insufficient
+  statement: The descriptor gives no unit for the estimated firing rates; their values fit Hz. It does
+    not say that the k-th matrix of each group belongs to Movie_k.tif, which the frame counts and the
+    correlation of the population rate with each movie's brightness show.
+- kind: other
+  statement: The movie folders are named "4Hz" where the paper and the descriptor give 3.9 Hz, and most
+    recordings are 2160 frames, three 3-min movies at 4 Hz. Frames are 128 x 256 pixels in 50 movies
+    (and 357, 404 and 512 wide in one each), where the Methods give 512 x 128. The TIFFs carry no time
+    stamps, so the frame rate cannot be checked.
+- kind: data_missing
+  statement: No cell contours or dF/F traces are deposited, so the paper's correlations cannot be
+    computed from the filtered dF/F if that is what the paper used; only the estimated firing rates
+    are given. The whole-cell recordings, the EEG, the isoflurane imaging and the 15.6 Hz imaging are
+    not deposited, and 17 of the paper's 28 claims cannot be tested.
+- kind: format_error
+  statement: The TIFF archive holds five macOS resource-fork files (._.DS_Store and ._Movie_1.tif) beside
+    the 53 movies.
+- kind: methods_unavailable
+  statement: Question for the authors. Which trace and which measure give the pairwise correlation of
+    Fig. 1 (the Methods refer to ref. 15 for "continuous-trace cross-correlations")? Was it the
+    deconvolved trace deposited here or the filtered dF/F, was the mean subtracted, and at which lag?
+    The zero-lag normalised cross-correlation of the deposited rates gives the paper's P14-16 values
+    (WT 0.169, KO 0.204) but pooled means that differ from the paper's.
+- kind: methods_unavailable
+  statement: Question for the authors. For peaks of synchrony, when is a cell active in a frame, how was
+    each trace shuffled, and how is the proportion of neurons participating in an event formed? With
+    an active cell as any non-zero rate the frequencies match the paper's, but every reading gives
+    proportions above the paper's 0.300 and 0.380.
+- kind: methods_unavailable
+  statement: Question for the authors. How was the pooled average correlation (0.230 and 0.265) formed,
+    and how was the unequal-variance 2 x 3 ANOVA fitted? The paper's s.e.m. fit an average of the
+    three age means, not the mean over mice.
