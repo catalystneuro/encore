@@ -51,9 +51,14 @@
 #   second stimulus, taken as 400 to 1300 ms if the stimuli are contiguous.
 # M2. Spectral decomposition. 24 logarithmically spaced bandpass FIR filters between 1 and 192 Hz
 #   (162 Hz for Oslo data), Hilbert amplitude squared, segments zero padded to 7500 ms (Spectral
-#   decomposition). The filters' band edges and order are not given; frequencies the paper names
-#   (9.5, 13.5, 16, 22.5, 64, 90.5, 128, 152.5 Hz) are to be matched by the chosen centres. This
-#   could move a peak by one bin; a standard log spacing is used and the centres stated.
+#   decomposition). The filters' band edges and order are not given. The paper constrains the bank
+#   (24 filters; 16 amplitude centres from 9.5 to 128 Hz plus 152.5 Hz, PAC and Cross-spectral
+#   directionality; 6 ranges between 1.5 and 10 Hz, PAC paragraph 1; theta phase bands centred at
+#   3.5 to 6.5 Hz, 3 Hz wide, Results), and the centres it names (9.5, 13.5, 16, 22.5, 64, 90.5,
+#   128, 152.5 Hz) do not lie on one log grid from 1 to 192 Hz (13.5 to 16 is a ratio of 1.19,
+#   16 to 22.5 of 1.41). The bank is to be taken from the analysis scripts deposited with the data;
+#   failing those, centres that reproduce the named frequencies and counts are chosen and stated,
+#   as an assumption. This could move a peak by one bin.
 # M3. Task-induced power z. Baseline power pooled per channel and frequency, r points (r = trials
 #   in the subject's data set) drawn and averaged, 1000 times; encoding and delay power z-scored
 #   on that distribution, then down-sampled to 50 ms (Spectral decomposition). The paper does not
@@ -120,7 +125,8 @@ claims:
 - id: behavior-proficient
   statement: All ten subjects performed the task well above chance, with accuracy from 0.79 to
     0.97 (chance 0.5).
-  source: Results, paragraph 3 (before Theta activity is sustained during encoding and delay)
+  source: Results, paragraph 2 (We first confirmed), before Theta activity is sustained during
+    encoding and delay
   quote: We first confirmed that all subjects were proficient at the task (accuracy range
     0.79–0.97, chance 0.5)
   expected:
@@ -139,8 +145,8 @@ claims:
   statement: Accuracy and correct-trial response time did not differ between the identity,
     spatial and temporal conditions (mean accuracy 0.90, 0.92, 0.89; mean response time 1659,
     1335, 1475 ms).
-  source: Results, paragraph 3 (before Theta activity is sustained during encoding and delay);
-    Materials and methods, Behavioral task, paragraph 3
+  source: Results, paragraph 2 (We first confirmed), before Theta activity is sustained during
+    encoding and delay; Materials and methods, Behavioral task, paragraph 3
   quote: 'any condition effects observed in the neural data could not be attributed to difficulty
     (mixed-effects model, accuracy: F 1,28 < 0.10, p > 0.75; correct-trial response time: F 1,28
     < 2.55, p > 0.12; mean ± SD, identity: 0.90 ± 0.04, 1659 ± 701 ms; spatial relation: 0.92 ±
@@ -187,7 +193,10 @@ claims:
     are reported either way. The F(1,28) the paper prints does not match a 3-level factor;
     the readings named are (a) each relation condition tested against identity in turn (two
     tests per measure, the claim holding when no test reaches p < 0.05), (b) a single 3-level
-    condition term. The tolerances are the paper's SDs across subjects; the means are taken
+    condition term. Accuracy per subject and condition is taken under the two readings of
+    behavior-proficient, (a) all 40 trials, (b) the trials kept in the preprocessed data (correct
+    over correct plus incorrect); the kept-trial counts of correct-trial-counts (100 correct, 10
+    incorrect) give a mean near 0.91, which favours (b). The tolerances are the paper's SDs across subjects; the means are taken
     over subjects (the mean of each subject's condition value), as the reported SDs imply.
 - id: electrode-counts
   statement: After bipolar rereferencing there were 254 electrodes, 36 MTL, 116 lateral PFC and
@@ -289,7 +298,9 @@ claims:
     sustained in each of MTL, PFC and OFC in the majority of the subjects with that region, and
     the MTL alpha z (filters centred in 8 to 13 Hz) is below -1.96 over at least half of the
     time points in the majority of subjects with MTL electrodes. The half and the majority are
-    choices made here, as the paper gives none.
+    choices made here, as the paper gives none. The "variable, transient" activity above 16 Hz has
+    no measure in the paper; the number of electrodes with any z > 1.96 above 16 Hz is reported but
+    not judged.
 - id: power-condition-exclusions
   statement: Power did not differ between conditions at any time and frequency in 246 of 254
     electrodes; the 8 that differed (5 PFC and 3 OFC, in 4 of 10 subjects) were excluded from
@@ -333,18 +344,19 @@ claims:
     trial-wise mean removed, Hilbert filters from 2 to 20 Hz (M2 spacing), PLV across correct
     trials at each time point, averaged over the segment and normalized by the maximum over
     electrodes (Figure 3A legend). The paper computes PLV "from the imaginary part" without
-    a formula; readings (a) the absolute value of the mean over trials of the imaginary part of
-    the unit phase-difference vector (imaginary PLV), (b) the absolute value of the imaginary
-    part of the mean unit vector (the same quantity), (c) the phase-lag index. Figure 3A shows
-    one representative subject. Reproduced when, under one reading, the mean spectrum over MTL to
-    MTL pairs and over MTL to PFC and MTL to OFC pairs has a local maximum between 3 and 7 Hz, in
-    at least one subject for each of the three groups; the number of subjects with such a peak is
-    reported.
+    a formula; readings (a) the absolute value of the imaginary part of the mean over trials of
+    the unit phase-difference vector (imaginary PLV), (b) the phase-lag index. Pairs are within
+    the same hemisphere (PLV section). Figure 3A shows one representative subject. Reproduced
+    when, under one reading, the mean spectrum over MTL to MTL pairs and over MTL to PFC and MTL to
+    OFC pairs has a local maximum between 3 and 7 Hz (the theta range shaded in Figure 3A, legend),
+    in at least one subject for each of the three groups; the number of subjects with such a peak
+    is reported. The one-subject rule is a choice made here, matching the paper's single
+    representative subject. The alpha synchrony is reported, not judged.
 - id: psi-theta-shift
   statement: Theta-band PSI showed frontal-to-MTL leads during the precue delay and shifted toward
     MTL leads (a bidirectional network) after the test cue, for MTL to PFC and MTL to OFC pairs.
-  source: Results, Theta oscillations direct local and long-range activity, paragraph 3; Figure
-    3B
+  source: Results, Theta oscillations direct local and long-range activity, paragraph 2 (The
+    900-ms pre- and postcue delay data segments); Figure 3B
   quote: 'The precue delay was characterized by unidirectional frontal-to-MTL theta band
     connectivity (threshold z < −1.96, p < 0.05) ... directionality shifted between frontotemporal
     regions from a unidirectional to bidirectional network (postcue > precue, MTL–PFC: F 1,342 >
@@ -369,18 +381,19 @@ claims:
   - quantity: MTL-OFC electrode pairs in the same hemisphere
     value: 303
     tolerance: 30.3
-  criterion: Theta PSI and its z as in M5, on all same-hemisphere MTL-PFC and MTL-OFC pairs,
-    precue and postcue segments (M1). Group test as in M7. Reproduced when, under one reading of
+  criterion: Theta PSI and its z as in M5, on all same-hemisphere MTL-PFC and MTL-OFC pairs
+    after the 8 exclusions (power-condition-exclusions), precue and postcue segments (M1). Group test as in M7. Reproduced when, under one reading of
     M1 and M7, for both networks (1) the mean precue PSI z over pairs is negative, with more pairs
     below -1.96 than above 1.96, and (2) the mixed model finds postcue PSI greater than precue at
     p < 0.05. Partially reproduced when (2) holds for one network only, or (2) holds for both but
-    (1) does not.
+    (1) does not. Part (1) is a measure chosen here; the paper states the precue frontal lead at
+    the z < -1.96 threshold and gives no count.
 - id: crossspectral-shift
   statement: Theta phase to amplitude directionality (cross-spectral PSI) was absent in the precue
     delay and shifted to theta phase leading amplitude after the test cue, within MTL, PFC and OFC
     and in all four interregional directions.
-  source: Results, Theta oscillations direct local and long-range activity, paragraph 5; Figure
-    4A
+  source: Results, Theta oscillations direct local and long-range activity, paragraph 4 (None of
+    the electrodes); Figure 4A
   quote: 'None of the electrodes or interregional electrode pairs were identified as
     significantly theta phase directing during the precue delay ... cross-spectral directionality
     shifted within and between all frontotemporal regions to a theta phase–driven network during
@@ -453,8 +466,8 @@ claims:
   statement: In the postcue delay, theta phase significantly led higher-frequency amplitude in 13
     MTL, 52 PFC and 38 OFC electrodes, and in 56 MTL to PFC, 85 PFC to MTL, 93 MTL to OFC and 115
     OFC to MTL electrode pairs.
-  source: Results, Theta oscillations direct local and long-range activity, paragraph 5; Figure
-    4B; Materials and methods, Cross-spectral directionality, paragraph 3
+  source: Results, Theta oscillations direct local and long-range activity, paragraph 4 (None of
+    the electrodes); Figure 4B; Materials and methods, Cross-spectral directionality, paragraph 3
   quote: we submitted only the electrodes and electrode pairs that showed significant theta phase
     leads over amplitude to further analysis of cross-spectral directionality and PAC ( n = 13
     MTL, 52 PFC, 38 OFC, 56 MTL→PFC, 85 PFC→MTL, 93 MTL→OFC, and 115 OFC→MTL)
@@ -497,7 +510,8 @@ claims:
   statement: Among phase-directing pairs, the strength of theta phase directionality did not
     differ across amplitude frequencies or between the MTL to frontal and frontal to MTL
     directions.
-  source: Results, Theta oscillations direct local and long-range activity, paragraph 6; S1 Table
+  source: Results, Theta oscillations direct local and long-range activity, paragraph 5
+    (Importantly, the observation); S1 Table
   quote: We used linear mixed-effects models to confirm that the strength of theta phase
     directionality was equal across the amplitude frequency ranges (alpha through high-frequency
     broadband) and in both MTL→PFC/OFC and PFC/OFC→MTL directions (uncorrected p > 0.11; S1
@@ -512,8 +526,10 @@ claims:
   criterion: A claim of absence, judged on the paper's test (Cross-spectral directionality,
     paragraph 3) per network (MTL-PFC, MTL-OFC), a linear mixed-effects model of the postcue
     cross-spectral PSI z of the phase-directing pairs with 16 amplitude frequencies (9.5 to
-    128 Hz) and 2 directions as fixed effects (with their interaction) and subject and pair as
-    random effects. Reproduced when no frequency, direction or interaction effect has
+    128 Hz) and 2 directions as fixed effects and subject and pair as random effects. The Methods
+    do not say whether the frequency by direction interaction is in the model; readings (a) main
+    effects only, (b) with the interaction. Reproduced when no frequency, direction or
+    interaction effect has
     uncorrected p < 0.05 in either network; not reproduced when any does; the effects are
     reported either way. The paper's S1 Table, which holds these models, was not supplied; the
     text also calls these models confirmatory with p > 0.11, so p < 0.05 is used as the
@@ -541,9 +557,10 @@ claims:
   criterion: Peak as in M8. The paper does not say which electrodes are averaged; readings (a) all
     of a subject's analysed electrodes, (b) only the electrodes entering the PAC analysis
     (phase-directing). Counts of subjects must match exactly (10% of a count of 2 or 3 is below
-    one). Reproduced when, under one reading, all four counts match; partially reproduced when
-    at least seven subjects fall in the same band under one reading as the distribution implies
-    (the per-subject assignment is not given).
+    one). Reproduced when, under one reading, all four counts match. The paper gives no
+    per-subject assignment, so partial agreement is judged on the counts alone; partially
+    reproduced when the sum over the four bands of the smaller of the paper's and the attempt's
+    count is at least 7 (a threshold chosen here).
 - id: pac-mtl-spatial
   statement: Within the MTL, theta PAC was greater for spatial than identity information, with
     peak differences at beta and gamma amplitudes (centred at 22.5 and 64 Hz); PAC did not differ
@@ -581,7 +598,8 @@ claims:
     when, under one reading of M9 and M10, (1) the spatial model has a condition effect and a
     condition by frequency effect below 0.05/7 with spatial above identity, (2) the largest
     spatial minus identity difference over amplitude frequencies (averaged over time and
-    electrodes) is at a frequency within one filter of 22.5 Hz or of 64 Hz, and (3) the temporal
+    electrodes, a measure chosen here as the paper does not say how peaks were located) is at a
+    frequency within one filter of 22.5 Hz or of 64 Hz, and (3) the temporal
     model has no condition effect or condition interaction below 0.05/7. Partially reproduced
     when (1) holds but (2) or (3) does not.
 - id: pac-frontal-no-condition
@@ -649,7 +667,8 @@ claims:
     one reading of M9 and M10, (1) the condition, condition by frequency, condition by time and
     three-way effects are each below 0.05/7 with spatial above identity, and (2) the largest
     spatial minus identity difference (averaged over pairs) lies at an amplitude frequency within
-    one filter of 13.5 to 16 Hz and in a 50 ms time bin within 100 to 250 ms or 800 to 900 ms.
+    one filter of 13.5 to 16 Hz and in a 50 ms time bin within 100 to 250 ms or 800 to 900 ms (a
+    measure chosen here, as the paper does not say how peaks were located).
     Partially reproduced when the condition effect holds with spatial above identity but some
     of the rest does not.
 - id: pac-mtl-pfc-temporal
@@ -726,10 +745,12 @@ claims:
   criterion: PAC as in M9, models as in M10. Reproduced when, under one reading of M9 and M10,
     (1) in the MTL to OFC spatial model the condition and condition by frequency effects are below
     0.05/7 with spatial above identity, (2) the largest spatial minus identity difference over
-    amplitude frequencies is within one filter of 9.5 Hz, and (3) no effect reaches 0.05/7 in the
-    MTL to OFC temporal model or in either OFC to MTL model ("no effects" read as no condition
-    main effect or interaction with condition, the paper's test for absence; all effects are
-    reported). Partially reproduced when (1) holds and (2) or (3) does not.
+    amplitude frequencies (averaged over time and pairs, a measure chosen here) is within one
+    filter of 9.5 Hz, and (3) neither the condition main effect nor any interaction with condition
+    reaches 0.05/7 in the MTL to OFC temporal model or in either OFC to MTL model. "No effects" is
+    read as no condition effects, from the Figure 7 legend ("No condition differences were
+    observed in the OFC → MTL direction") and the Methods (the models test "condition
+    differences"); all effects are reported. Partially reproduced when (1) holds and (2) or (3) does not.
 - id: pac-mtl-pfc-direction
   statement: Modelling both MTL-PFC directions together, the MTL directed the PFC preferentially
     for spatial and temporal over identity information (condition by direction), while PAC was
@@ -814,3 +835,23 @@ claims:
     (2) no effect in the temporal model reaches the threshold (the paper's test for absence,
     judged on all effects as the text says "No effects"). Partially reproduced when (1) holds and
     (2) does not, or one part of (1) holds.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - behavior-proficient, behavior-no-difficulty-difference. Source corrected from Results paragraph 3 to paragraph 2; the sentence is in the second paragraph of the Results.
+  - psi-theta-shift, crossspectral-shift, phase-directing-counts, crossspectral-equal-strength. Sources corrected to paragraphs 2, 4, 4 and 5 of that Results section (counted without figure legends, as in the other sources), with the opening words added.
+  - Header M2. Replaced "a standard log spacing is used"; the frequencies the paper names do not lie on one log grid from 1 to 192 Hz, so the constraints the paper gives on the filter bank are listed and the bank is to come from the deposited scripts or be stated as an assumption.
+  - behavior-no-difficulty-difference. Added the two readings of the accuracy denominator, already named in behavior-proficient; the kept-trial counts (Data acquisition and preprocessing, paragraph 3) favour kept trials.
+  - power-theta-sustained. Said that the transient activity above 16 Hz in the statement has no measure in the paper and is reported, not judged.
+  - plv-theta-peak. Dropped reading (b), which the file itself called the same quantity as (a); added the same-hemisphere pairing (PLV section) and the 3 to 7 Hz range from the Figure 3A legend; marked the one-subject rule as a choice made here.
+  - psi-theta-shift. Added the 8 electrode exclusions (they apply to "further analysis"); marked part (1) of the criterion as a measure chosen here.
+  - crossspectral-equal-strength. The Methods name only the frequency and direction fixed effects; the interaction, which the file had added, is now a reading (with or without it).
+  - theta-peak-bands. Rewrote the partial rule, which compared per-subject bands the paper does not give, as an overlap of the band counts, marked as a choice.
+  - pac-mtl-spatial, pac-mtl-pfc-spatial, pac-mtl-ofc-spatial. Marked the peak-location measure as a choice made here; the paper does not say how peaks were located.
+  - pac-mtl-ofc-spatial. Part (3) said "no effect" and then read it as condition effects; made it condition effects throughout, citing the Figure 7 legend and the Methods.
+  - Open. The analysis scripts are among the dataset's files and were not read; several method details (filter bank, PSI window averaging, PAC shuffle, mixed-model structure) may be settled there.
+  - Open. pac-mtl-ofc-direction judges "No effects" in the MTL-OFC temporal direction model on all effects, literally; the paper may mean condition effects only, as in pac-mtl-ofc-spatial. Not settled from the text.
+  - Open. S1 to S4 Table were not supplied, so degrees of freedom and full model outputs could not be checked.
