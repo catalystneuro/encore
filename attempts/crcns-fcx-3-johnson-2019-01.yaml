@@ -1,0 +1,373 @@
+schema_version: 2
+id: crcns-fcx-3-johnson-2019-01
+dataset:
+  archive: crcns
+  id: fcx-3
+  version: unversioned
+  doi: 10.6080/K06971S9
+paper: doi:10.3389/fnsys.2018.00065
+date: 2026-11-08
+entry: crcns-fcx-3-johnson-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42513613232
+outcomes:
+- claim: table1-electrodes
+  outcome: partially_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:table1-electrodes
+  measured:
+  - 187
+  - 1135
+  - 19.0
+  - 7.71
+  notes: The data set's list of analysed channels (docs/summary_channel_analysis.csv) holds 187
+    channels, not 192. S4 has 5 right parietal channels where Table 1 gives 10; every other
+    subject's PFC and parietal counts and hemispheres equal Table 1. PFC counts per subject are 4 to
+    54 (mean 19.00) and parietal 2 to 16 (mean 7.71). The list gives 1135 same-hemisphere
+    PFC-parietal pairs, 6 more than 1129 (+0.5%); with 10 parietal channels in S4 it would give 1165,
+    so neither count yields 1129. The totals differ by less than 10% (channels -2.6%), the
+    criterion's partial match.
+  deviations:
+  - Counted from the data set's channel list, which every analysis here uses; all listed channels are
+    present in the derived epochs.
+- claim: trial-counts
+  outcome: reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:trial-counts
+  measured:
+  - 95.71
+  - 32.14
+  - 32.86
+  - 30.71
+  - 17.29
+  notes: Correct trials kept average 95.71 per subject; identity 32.14 +- 3.13 (26 to 35), spatial
+    32.86 +- 4.30 (27 to 39), temporal 30.71 +- 6.47 (20 to 39). Incorrect trials kept (reading (b))
+    average 17.29 +- 8.44 (4 to 25), the paper's values. Incorrect trials of all 120 (reading (a), from
+    the per-subject accuracy of docs/summary_file.csv) average 18.29 with range 6 to 29, outside the
+    widened range, so (b) is the matching reading and its mean is recorded. In S1 to S5 every correct
+    trial of the 120 was kept.
+  deviations:
+  - Correct trials are those of the derived epochs with accuracy 1, the selection of the deposited
+    scripts (power_compute.m, erp_compute.m).
+- claim: fig1b-accuracy
+  outcome: reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig1b-accuracy
+  measured:
+  - 0.625
+  - 0.975
+  notes: Under reading (b), per subject and condition, accuracy runs from 0.625 to 0.975; under
+    reading (a), per subject over conditions, from 0.758 to 0.950, whose lowest value is outside 0.63
+    +- 0.063. All values lie inside the widened range under both readings. The logit mixed model on
+    all 120 trials finds no effect of condition (likelihood ratio p = 0.283 with condition as one
+    term, p = 0.160 as two terms; kept trials p = 0.276). The paper reports p > 0.50; the p here is
+    lower but above 0.05.
+  deviations:
+  - Accuracy over all 120 trials comes from docs/summary_file.csv (per subject and condition, over all
+    trials by the data description), rebuilt as counts out of 40 per condition (Methods, "120 trials
+    divided evenly"); the trial tables of S6 and S7 list only the kept trials.
+  - The logit mixed model is fitted by maximum likelihood with Gauss-Hermite quadrature in Python;
+    the paper names the model, not the software. Condition enters as one numeric term (the single
+    degree of freedom of the paper's F(1,19)), with two dummy terms as a variant.
+- claim: fig1b-rt-identity-slower
+  outcome: reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig1b-rt-identity-slower
+  notes: On subject-condition mean RTs (reading (a)), condition affects RT (F(1,19) = 6.04, p =
+    0.024); identity RT is longer than spatial (by 513 ms, F(1,12) = 11.81, p = 0.005) and temporal
+    (by 392 ms, F(1,12) = 9.39, p = 0.010); spatial and temporal do not differ (p = 0.254). Identity
+    RT is the longest in all 7 subjects. The F values are below the paper's bounds (F > 6.50, >
+    13.78, > 10.95) and the d values (1.30 and 1.16, mean paired difference over its SD) below its
+    2.14 and 1.91. Single kept correct trials (reading (b)) give p = 0.018, 0.037, 0.004 and 0.844.
+  deviations:
+  - Mean correct RT per subject and condition from docs/summary_file.csv (all correct trials, by the
+    data description). Reading (b) uses the kept trials only, as the trial tables of S6 and S7 hold
+    no others.
+  - The paper does not say how Cohen's d was computed; d is reported, not judged.
+- claim: erp-no-condition-difference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:erp-no-condition-difference
+  notes: With neighbours adjacent by contact number and clusters judged at 0.05 per tail, no subject
+    has a significant cluster in either contrast (smallest p 0.053, S2 identity against temporal).
+    Under the distance reading of neighbours S5 has a cluster at p = 0.028 (identity against
+    spatial); with no spatial clustering S2 has one at p = 0.033; at 0.025 per tail no reading has a
+    significant cluster. The paper reports all p > 0.10; 2 of the 14 subject-contrasts have p <= 0.10
+    under the adopted reading. The question of the neighbour rule is put to the paper's authors (see
+    findings).
+  deviations:
+  - Assumption. The paper says only that clusters were formed over "neighboring electrodes". The
+    readings give different outcomes, so neighbours adjacent by contact number on the same lead or
+    strip are adopted. This uses only the channel labels and follows the bipolar montage, which
+    re-references each electrode "to the next adjacent electrode" (Methods, Data Acquisition and
+    Preprocessing); the distance reading rests on placing numbered contacts on the grids of the
+    MNI files, whose numbering the files do not document.
+  - Clusters are judged at 0.05 per tail (the Methods' "fewer than 5% of randomizations yielded a
+    larger effect", and FieldTrip's default); 0.025 is shown as a variant.
+  - Filter, padding and baseline follow erp_compute.m (30-Hz FIR, 7.5-s padding, pretrial
+    [0.65, 0.85] s mean); the FIR order 3*fix(fs/30), forwards and backwards, is FieldTrip's default
+    for the script's settings, implemented in scipy (a standard choice). FieldTrip itself was not run.
+- claim: fig2-spatial-power
+  outcome: partially_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig2-spatial-power
+  measured:
+  - 5
+  - 2
+  - 39.7
+  - 22.5
+  notes: With adjacent neighbours, 0.05 per tail and reading (a) of the assignment, 5 subjects show
+    spatial > identity effects (S2, S3, S4, S5, S6) and 2 identity > spatial (S4, S7), the paper's
+    counts; the percentages of electrodes are 39.7 +- 15.0% and 22.5 +- 15.3% (paper 54 +- 22% and 36
+    +- 12%). No reading matches both percentages; the distance reading gives 49.7% (within tolerance)
+    and 28.4%. The significant clusters have p <= 0.024.
+  deviations:
+  - Power follows power_compute.m (3-cycle Hanning windows, 2 to 40 Hz, 10-ms steps, processing
+    [0.3, 1.2] s of the derived epoch), computed in numpy; the derived epochs extend 1.5 s beyond the
+    windows, so no window holds padding and the S1 padding readings do not arise.
+  - The baseline z-score of zbaseline.m (r = all correct trials) is computed in closed form, the limit
+    of its 1000 draws; it is the same affine map for every trial at a channel and frequency, so it
+    cannot change the condition t-tests.
+  - Neighbour rule and threshold as in erp-no-condition-difference; every reading is shown.
+- claim: fig3-temporal-power
+  outcome: partially_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig3-temporal-power
+  measured:
+  - 5
+  - 3
+  - 37.9
+  - 17.4
+  notes: With adjacent neighbours, 0.05 per tail and reading (a), 5 subjects show temporal > identity
+    effects (paper 4) and 3 identity > temporal (paper 2), each within one subject; adjacent
+    neighbours at 0.025 per tail with reading (b) of the assignment give the paper's 4 and 2. The
+    percentages (37.9 +- 15.3% and 17.4 +- 14.2%) are below the paper's 68 +- 30% and 37 +- 10% under
+    every reading. S4's identity > temporal cluster has p = 0.049, above the paper's "all p < 0.04".
+  deviations:
+  - As fig2-spatial-power.
+- claim: power-difficulty-subjects
+  outcome: reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:power-difficulty-subjects
+  notes: The subjects with identity > spatial or temporal effects are S1, S4 and S7 under every
+    neighbour reading. Under reading (b), identity against the mean of spatial and temporal, each has
+    longer identity RT and lower identity accuracy; under reading (a) S1 fails for the temporal
+    contrast, where its identity and temporal accuracy are equal (0.825). S3 also has both without
+    an identity > effect, so the converse does not hold. Identity RT is the longest in all 7
+    subjects, so only accuracy separates subjects.
+  deviations:
+  - Accuracy (all 120 trials) and RT from docs/summary_file.csv.
+- claim: power-low-frequencies
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:power-low-frequencies
+  notes: With neighbours by distance and the density over all points (reading (b)), each effect is
+    larger over 2 to 24 Hz than over 25 to 40 Hz (0.127 against 0.032, 0.115 against 0.037, 0.045
+    against 0.016) and has local maxima in 2 to 7 Hz and in 9 to 24 Hz. With adjacent neighbours,
+    reading (b), the first part holds for all three, but the spatial > identity density has one
+    maximum (14 Hz), none in 2 to 7 Hz (a partial match). Over masked points only (reading (a)) the
+    identity > other density is larger above 24 Hz under every neighbour reading.
+  deviations:
+  - The match rests on the distance reading of neighbours, which places bipolar channels at the
+    midpoint of their two contacts, contact n being the n-th electrode of the grid named by the
+    label in the subject's MNI file (S3's RH labels on its grid HD_Grid); this placement is an
+    assumption, as the files do not document how grid contacts are numbered.
+- claim: fig4-maintenance-parietal-led
+  outcome: not_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig4-maintenance-parietal-led
+  measured:
+  - 0.03
+  - -0.12
+  notes: Under reading (a) of P1 (trial-averaged coherency) subject means are -0.52 to 0.56
+    (delta-theta) and -0.45 to 0.21 (alpha-beta), none below -1.96 (group 0.03 +- 0.36 and -0.12 +-
+    0.23, recorded as measured). Under reading (b) (per-trial PSI averaged over trials) 4 of 7
+    subjects are below -1.96 in delta-theta (mean -0.31 +- 10.67) and none in alpha-beta (2.12 +-
+    2.07). The paper reports -40.03 +- 8.73 and -30.37 +- 2.60. The deposited psianalysis.m, run as
+    written (no conjugate) with the parietal channel first and the sign reversed, gives every subject
+    below -1.96 (means -55.56 and -69.73), which would meet the criterion; with the PFC channel first
+    the same code gives +58.54 and +69.33, so its sign follows the channel order and it does not
+    measure direction.
+  deviations:
+  - P1 details taken from psi_compute.m and subtracterp.m, ERP removed as the mean over all correct
+    trials ("raw trial-wise mean", reading (a)); one Hanning-tapered FFT of each 900-ms segment
+    padded to 7.5 s, read at the nearest bins to the integer frequencies ('mtmfft', spectra reading
+    (a)); one PSI per band over all its bins; one shuffle for all pairs; the null shuffles the bins
+    of the trial-mean normalised spectrum (psianalysis.m).
+  - P1's last reading (PSI from trial-averaged cross-spectra or per trial) is not settled by
+    psianalysis.m, which computes per-trial PSI but omits the conjugate of the cross-spectrum; both
+    readings are run with the conjugate, and the deposited code as a variant.
+  - The time-resolved null uses one set of 1000 shuffles per time point, the task-induced one a set
+    per frequency bin averaged as psianalysis.m does (a standard choice; it changes only Monte Carlo
+    noise).
+- claim: fig4a-delta-theta-shift
+  outcome: partially_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig4a-delta-theta-shift
+  measured:
+  - 4
+  - -0.17
+  - 59.1
+  notes: Under reading (b), processing delta-theta PSI z exceeds maintenance (by 9.18, F(1,2268) =
+    59.1, p = 2.2e-14; paper F = 1936.10) and 4 subjects (S2, S3, S6, S7) have net z above 0 (paper
+    6), the criterion's partial match; mean of seven -0.17 +- 9.53, of the four above 0 6.26 (paper
+    6.01 +- 6.42). Under reading (a) the interval effect is absent (0.07, p = 0.272) with 2 subjects
+    above 0. The deposited code puts all 7 subjects above 0 with PFC first and none with parietal
+    first.
+  deviations:
+  - As fig4-maintenance-parietal-led. The mixed model is computed as the paired test over pairs,
+    which equals it when each pair has both intervals (checked against statsmodels MixedLM; F 61.5
+    against 59.1 under reading (b), where the pair variance is estimated at zero). Degrees of freedom
+    2268 follow from 1135 pairs.
+- claim: fig4c-alpha-beta-shift
+  outcome: not_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig4c-alpha-beta-shift
+  measured:
+  - -0.03
+  - 6.2
+  notes: Processing alpha-beta PSI z exceeds maintenance under both readings ((a) 0.12, F = 6.2, p =
+    0.013; (b) 8.83, F = 115.2, p = 3.0e-26; paper F = 2302.30), but only 5 of 7 subjects stay below 0
+    in processing under either reading (criterion all 7, or 6 for a partial match), with means -0.03
+    and -1.89 (paper -12.60). The deposited code with the parietal channel first gives all 7 below 0
+    (mean -73.15).
+  deviations:
+  - As fig4a-delta-theta-shift.
+- claim: directional-pairs
+  outcome: reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:directional-pairs
+  measured:
+  - 1014
+  - 1043
+  notes: Under reading (b), 1014 of 1135 pairs have processing |z| > 1.96 in delta-theta and 1043 in
+    alpha-beta, within tolerance of 1008 and 984. Reading (a) gives 264 and 118. Under reading (b) the
+    observed per-trial PSI is z-scored against a null built from the trial-mean spectrum (as in
+    psianalysis.m); a 5% null would give about 57 pairs, and 89 to 92% pass, so the count reflects
+    this scaling as much as directionality.
+  deviations:
+  - As fig4-maintenance-parietal-led; 1135 pairs, not 1129 (table1-electrodes).
+- claim: fig5a-delta-theta-epochs
+  outcome: not_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig5a-delta-theta-epochs
+  notes: Under reading (a) no time point differs between conditions after FDR (264 directional
+    pairs). Under reading (b) (1014 pairs) the sustained differences are, identity against spatial,
+    110-230 ms (identity higher), 300-400 ms (lower) and 460-600 ms (higher), and identity against
+    temporal 120-250, 290-390 and 680-840 ms with the same signs. Neither contrast has an epoch from 0
+    ms, and the late epochs have the opposite sign to the paper's.
+  deviations:
+  - Time-resolved PSI per psi_compute.m ('mtmconvol', per-condition ERP removed by subtracterp.m with
+    three conditions). subtracterp.m selects temporal trials by trialinfo column 5 (the delay), which
+    selects none; the condition column is used.
+  - The per-time-point mixed model is computed as the paired test over pairs (checked against
+    statsmodels at three time points); FDR is Benjamini-Hochberg over the 91 points; a run is
+    sustained when it spans at least 100 ms.
+- claim: fig5a-identity-direction
+  outcome: not_reproduced
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig5a-identity-direction
+  measured:
+  - 0.35
+  - 0.38
+  - -0.25
+  - -0.21
+  notes: Under PSI reading (a), identity-trial delta-theta z in the paper's four epochs is below 1.96
+    in absolute value under every averaging reading and under the identity-minus-other reading
+    (grand means 0.35, 0.38, -0.25, -0.21; paper > 2.62, > 2.35, < -3.04, < -3.57). Under reading (b)
+    the early values are below 1.96 (largest 1.58) and every late value is positive (up to 7.61), the
+    opposite sign to the paper's.
+  deviations:
+  - As fig5a-delta-theta-epochs; the paper's epochs are used.
+- claim: fig5a-spatiotemporal-bidirectional
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig5a-spatiotemporal-bidirectional
+  notes: With PSI reading (b), the grand mean of spatial-trial delta-theta PSI z reaches |z| = 5.44
+    (110 ms) and temporal-trial 6.36 (630 ms), with 42 and 40 of 91 time points at |z| >= 1.96
+    (paper, all |z| < 1.60). Under reading (a) the grand means stay at or below 0.35 and 0.72, which
+    would meet the criterion.
+  deviations:
+  - Assumption. For this claim of absence one PSI reading must be chosen; reading (b) is adopted
+    because it is the structure of the deposited psianalysis.m (per-trial PSI averaged over trials)
+    and it gives the paper's counts of directional pairs (1014 and 1043 against 1008 and 984), which
+    reading (a) does not (264 and 118).
+- claim: fig5b-alpha-beta-no-sustained
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_johnson_2019.ipynb
+  output: claim:fig5b-alpha-beta-no-sustained
+  notes: With PSI reading (b), 66 (identity against spatial) and 75 (against temporal) of 91 time
+    points differ after FDR, and the longest run of one sign lasts 80 and 90 ms, so no difference is
+    sustained. Under reading (a) no point is significant after FDR (smallest p 0.0048 and 0.0016),
+    the criterion's partial match.
+  deviations:
+  - Assumption, PSI reading (b), as in fig5a-spatiotemporal-bidirectional.
+findings:
+- kind: metadata_error
+  statement: The data set's list of analysed channels (docs/summary_channel_analysis.csv) holds 187
+    channels where the paper reports 192 (Table 1). S4 has 5 right parietal channels (RLD6 to RLD8,
+    RC10, RC11) where Table 1 gives 10. The list yields 1135 same-hemisphere PFC-parietal pairs,
+    where the paper reports 1129; Table 1's counts would give 1165.
+- kind: metadata_error
+  statement: The description says summary_file_trial.csv holds information about each trial, with
+    120 trials per subject. In S6 and S7 it holds only the trials kept after artifact rejection (101
+    and 90 rows, numbered up to 120), matching their derived epochs; in S1 to S5 it holds all 120.
+    Single-trial accuracy over all 120 trials cannot be rebuilt for S6 and S7 (summary_file.csv gives
+    it per condition).
+- kind: other
+  statement: A timing contrast between trials with 900-ms and 1150-ms delays (70-150 Hz amplitude)
+    shows, in S2, S3 and S4, responses in the processing epoch of the 1150-ms trials 0.21 to 0.26 s
+    later relative to the trial table's processing column than in the 900-ms trials, and in S4 the
+    same shift in the encoding epoch, while the pretrial epochs show shifts of 0.03 s or less. This is
+    consistent with the encoding and processing columns (computed at fixed offsets from the pretrial
+    start) lying about 0.25 s before the events in 1150-ms trials, which would put the end of the cue
+    in their processing window. The test is weak in the other subjects and does not prove it.
+- kind: code_mismatch
+  statement: The deposited psianalysis.m computes the cross-spectrum as the product of the two
+    channels' Fourier coefficients without the conjugate, unlike the cross-spectral density of the
+    Methods and of Nolte et al. (2008). The resulting normalised spectrum depends essentially on one
+    channel's phase, and the PSI z it gives is not antisymmetric; on these data it is +58.5
+    (delta-theta maintenance, mean over subjects) with the PFC channel first and -55.6 (sign
+    reversed) with the parietal channel first.
+- kind: code_mismatch
+  statement: The deposited psi_compute.m does not run as written. It uses an undefined `freq` (the
+    signature takes subid and elecs only), saves to an undefined `savDir`, and tests the electrode
+    argument with `nargin > 2`. Its subfunction subtracterp.m selects temporal trials with
+    `trialinfo(:,5)==2`, the delay column, which selects no trial.
+- kind: other
+  statement: S7's derived epochs record a continuous recording of 431506 samples (hdr.nSamples)
+    while the deposited data_primary.mat of S7 has 445952; the derived traces still match the
+    deposited continuous data at the trial table's samples (r >= 0.9989). S3's elec_labels.mat is a
+    MATLAB 5 file, the others MATLAB 7.3.
+- kind: metadata_insufficient
+  statement: The electrode position files (s<n>_MNI_grid.csv) name grids and list positions in
+    order, but do not say how the contact numbers of the channel labels map to grid positions, and
+    S3's labels (RH1 to RH256) do not match the name of its grid (HD_Grid). The derived channels are
+    bipolar, labelled by one contact, with the reference contact found here only from the data (the
+    next contact on strips and depth leads, the next grid row on S3's and S6's grids).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which electrodes were neighbours in the per-subject
+    cluster tests (Methods, Event-Related Potentials, "neighboring electrodes"), and were clusters of
+    each sign judged at 0.05 or 0.025? The outcome of the ERP test depends on it here (adjacent
+    contacts, smallest p 0.053; positions within 1.5 contact spacings, S5 p = 0.028). This attempt
+    assumed contacts adjacent on the same lead and 0.05 per tail.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Was task-induced and time-resolved PSI computed from
+    cross-spectra averaged over trials (Nolte et al. 2008) or per trial and averaged, as
+    psianalysis.m does, and with which channel first, given that the deposited code omits the
+    conjugate? The readings differ in every PSI claim (directional pairs 264 and 118 against 1014 and
+    1043; the paper reports 1008 and 984). This attempt adopted the per-trial reading, with the
+    conjugate, for the claims of absence.
