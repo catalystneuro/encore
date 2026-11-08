@@ -462,7 +462,7 @@ outcomes:
   deviations:
   - Equal halves drop the middle unit when the count is odd (a standard choice).
 - claim: figs16c-low-rate-coding
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:figs16c-low-rate-coding
   measured:
@@ -474,24 +474,20 @@ outcomes:
   - 1.404
   - 0.636
   - 0.31
-  notes: Split (a) on offline PRE and POST rate, 281 units per group. Information per spike 0.842 against 0.469
+  notes: Split (a, i) on offline PRE and POST rate, 281 units per group. Information per spike 0.842 against 0.469
     bits (p = 1.1e-14 one-sided), in/out ratio 6.71 against 4.05 (p = 5.7e-14), geometric mean number of fields
     1.216 against 1.404 (p = 1.8e-04), change in gain 0.636 against 0.310 (p = 0.0049). Outside tolerance are the
-    high-rate information (0.56 +- 0.056), the high-rate field count (1.59 +- 0.159) and both gain changes. The
+    high-rate information (0.56 +- 0.056), the high-rate field count (1.59 +- 0.159) and both gain changes. All
+    six splits match in low-high-rate-split, and the claims file says the matching readings fix the split. The
     other splits give the same directions for information and in/out ratio. Under the three PRE-rate splits (ii)
     the change in gain reverses (low 0.37 against high 0.555; two-sided p 0.046 (a, ii), 0.082 (b, ii), 0.037 (c,
-    ii)), so the gain test fails under half of the matching splits. The outcome rests on split (a, i).
-  assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: All six splits match in low-high-rate-split, and the claims file says the matching readings fix the
-      split. Under the three PRE-rate splits (ii) the change in gain goes the other way (low 0.37 against high
-      0.555, two-sided p 0.046, 0.082 and 0.037), so the four tests do not all hold and the claim fails under those
-      splits. By the rule that the outcome is the one all readings give, the outcome is not reproduced. Analysis
-      in the claim's section of the notebook (split table and conclusion).
+    ii)), and under (c, ii) the field-count test also fails (p = 0.21), so the four tests do not all hold under
+    half of the matching splits. The outcome is the one all splits give. Under the (ii) splits cells are split
+    on PRE rate and the PRE gain divides by the same PRE rate, so the reversal may come partly from that coupling.
+    Outcome changed after verification round 3 from partially reproduced.
   deviations:
-  - Assumed split (a, i), median split within session and direction on offline PRE and POST rate, the first reading
-    that matches in low-high-rate-split; the PRE-rate splits (ii) reverse the gain change.
+  - All six rate splits of low-high-rate-split are run; the measured values are those of split (a, i), median split
+    within session and direction on offline PRE and POST rate.
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
     an LFP-detected ripple (Materials and Methods, Ripple Event Detection); the LFP is only in tar.gz archives of
     70 GB in all, measured to stream at about 23 MB/s (about 55 minutes), and the detector's channel and threshold
@@ -518,7 +514,12 @@ outcomes:
       correlation fall (rho -0.569 and -0.787) and the top window does not change (p = 0.084), but the low-rate
       half's change does not exceed the high-rate half's (+0.0050 against +0.0049, p = 0.64), the Figure S16C
       condition. The claim holds only in part under (b), so partially reproduced. Analysis in the claim's section
-      of the notebook.
+      of the notebook. Verification round 3 did not agree and would give not reproduced. The partial clause needs
+      the slow-firing increase to hold and the PRE dominance or the top-window stability not to; under (b) the
+      slow-firing part is the one that fails while PRE dominance and top-window stability hold, so neither condition
+      is met and the claim is not reproduced under (b). The clause does not cover the case where only the Figure
+      S16C condition fails, a gap in the claims file. The verified outcome is kept, since the third round settles
+      only the change proposed, and a change to not reproduced waits for a new attempt.
   deviations:
   - Assumed that the off-line states (quiet waking and NREM) are the data set's NREM, Drowsy (drowsy wake, low movement)
     and Intermediate (a sub-type of NREM per the data descriptor) epochs, the lab's own scoring (reading S-a); reading
@@ -527,7 +528,7 @@ outcomes:
   - The Spearman and signed-rank tests are the criterion's standard choices; session firing rate is the offline
     PRE and POST rate.
 - claim: fig4d-slow-cells-replay
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig4d-slow-cells-replay
   notes: Low-rate templates; POST - PRE rZ 0.050 (Y-a, D-a; interval 0.027 to 0.073, rank-sum p = 4.2e-04), above
@@ -537,8 +538,11 @@ outcomes:
     holds in all six Y x D readings (0.040 to 0.113). The high-rate increase is significant in 6 of 6 readings under
     (a, ii), (b, i), (c, i) and (b, ii), and 4 of 6 under (c, ii); the low-rate increase is the larger in 3 to 6
     of 6 readings depending on the split (the high-rate increase is the larger in 2 of 6 readings under (b, i)
-    and (b, ii) and 3 of 6 under (c, i)). No split gives the reproduced pattern; the outcome rests on split (a,
-    i), the first that matches.
+    and (b, ii) and 3 of 6 under (c, i)). No split gives the reproduced pattern, and under (b, i), (b, ii) and (c,
+    i) the partial pattern (high-rate increase smaller) fails too, so the outcome all splits give is not reproduced.
+    The "smaller" comparison uses point estimates, as the criterion names no test; with 100 shuffles per template
+    some gaps are small (for example (c, i), Y-a, D-a low 0.062 against high 0.055). Outcome changed after verification
+    round 3 from partially reproduced.
   deviations:
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
     an LFP-detected ripple (Materials and Methods, Ripple Event Detection); the LFP is only in tar.gz archives of
@@ -548,15 +552,8 @@ outcomes:
     and Intermediate (a sub-type of NREM per the data descriptor) epochs, the lab's own scoring (reading S-a); reading
     S-b needs the LFP and was not run.
   - The paired-latency and time-bin-shuffle variants were not run.
-  - Assumed split (a, i), the first reading that matches in low-high-rate-split.
-  assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: All six rate splits match in low-high-rate-split and fix the split together. Under (b, i), (b, ii)
-      and (c, i) the high-rate increase is significant in all six Y x D readings and exceeds the low-rate increase
-      in 2, 2 and 3 of 6 readings (100 shuffles per template), so even the partial pattern, a smaller high-rate
-      increase, fails there. By the rule that the outcome is the one all readings give, not reproduced. Analysis
-      in the notebook (rate-split table and the fig4d conclusion).
+  - All six rate splits of low-high-rate-split are run; the measured values in the notes are those of split (a,
+    i), and the five other splits use 100 shuffles per template.
 - claim: fig4e-high-gain-cells-replay
   outcome: partially_reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -674,30 +671,23 @@ outcomes:
     and Intermediate (a sub-type of NREM per the data descriptor) epochs, the lab's own scoring (reading S-a); reading
     S-b needs the LFP and was not run.
 - claim: figs11-cluster-quality-similar
-  outcome: blocked
-  blocked_by: other
-  notes: Not tested within the author run's time. The test needs the per-shank spike features, cluster labels and
-    spike times, which are only in the eight session archives <session>.tar.gz (0.8 to 2.3 GB each, 11.6 GB in all;
-    Buddy_06272013.tar.gz streamed at 24 MB/s, so about 8 minutes for all eight). The data are there; the analysis
-    was not written. The archive lists .clu, .fet and .res files for every shank. The verifier found that the per-session
-    tar.gz files hold the .fet, .clu and .res files (11.7 GB in total), so cluster quality and stability can be
-    tested; waveform similarity needs the _spk.tar.gz files (87 GB). After verification round 2 the test was run
-    (notebook section figs11, cell tag claim:figs11-cluster-quality-similar); the outcome stays blocked as verified,
-    and the change is proposed. All 118 shanks were read; each of the 562 pyramidal cells (id % 100 on shank id //
-    100) has exactly its sessInfo spike count. With the D-a groups and burst reading (a) quality in PRE events is
-    5.534 against 5.525 (rigid against plastic, p = 0.83), MAZE running 5.501 against 5.440 (p = 0.25), POST events
-    5.573 against 5.552 (p = 1.00), stability PRE-POST 5.622 against 5.629 (p = 0.13), PRE-MAZE p = 0.98, MAZE-POST
-    p = 0.82. None of the 60 comparisons over two burst readings and five group sets (D-a, D-a once per cell, D-b
-    under Y-a, Y-b, Y-c) is significant (smallest p 0.126). Waveform similarity, in the statement but not the
-    criterion, was not tested.
-  proposed:
-    outcome: reproduced
-    reason: Tested after round 2 from the .clu and .fet files of the per-session archives. No rank-sum comparison
-      of rigid and plastic units in quality (PRE events, MAZE running, POST events) or stability (three pairs)
-      is significant, under either reading of the burst rule and with every group set (smallest p 0.126; medians
-      differ by 0.13 or less). The criterion's condition, no comparison significant, holds. It rests on assumptions
-      (covariance of all the cluster's kept spikes, PCA features from the .xml channel groups). Waveforms were not
-      compared.
+  outcome: reproduced
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs11-cluster-quality-similar
+  assumed: true
+  notes: Tested after verification round 2 from the .clu and .fet files of the eight <session>.tar.gz archives
+    (0.8 to 2.3 GB each, 11.6 GB in all). All 118 shanks were read; each of the 562 pyramidal cells (id % 100 on
+    shank id // 100) has exactly its sessInfo spike count. With the D-a groups and burst reading (a) quality in
+    PRE events is 5.534 against 5.525 (rigid against plastic, p = 0.83), MAZE running 5.501 against 5.440 (p = 0.25),
+    POST events 5.573 against 5.552 (p = 1.00), stability PRE-POST 5.622 against 5.629 (p = 0.13), PRE-MAZE p =
+    0.98, MAZE-POST p = 0.82. None of the 60 comparisons over two burst readings and five group sets (D-a, D-a once
+    per cell, D-b under Y-a, Y-b, Y-c) is significant (smallest p 0.126; medians differ by 0.13 or less on values
+    of 4.0 to 8.2). The outcome covers cluster quality and stability only. Waveform similarity, in the statement
+    and the Figure S11A legend but not in the criterion, was not tested (the waveforms are in the _spk.tar.gz archives,
+    87 GB). The measure has little power, since a cluster's own spikes sit near the square root of the number of
+    features by construction, and the feature count varies from 12 to 30 between shanks. It rests on assumptions
+    (covariance of all the cluster's kept spikes, PCA features from the .xml channel groups). Outcome changed after
+    verification round 3 from blocked.
   deviations:
   - Tested after verification round 2, from the .clu and .fet files of the eight <session>.tar.gz archives, streamed
     in a background thread of the notebook.
@@ -711,7 +701,7 @@ outcomes:
     that start a burst; both give the same result.'
   - PRE and POST ripple events are the selected events in the yoked windows Y-a; MAZE is running at 5 cm/s or more.
 - claim: fig2e-plastic-removal
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig2e-plastic-removal
   assumed: true
@@ -721,7 +711,9 @@ outcomes:
     template), removing the plastic units leaves the interval above zero in all six readings with the Y-a groups
     (0.031 to 0.044), in four of six with the Y-b groups and in two of six with the Y-c groups; removing the rigid
     units leaves it above zero everywhere (0.089 to 0.170), and removing plastic units always lowers the change
-    more. The outcome rests on the D-a groups.
+    more. Every reading therefore gives at least the partial pattern and some give no more, so by the rule that
+    the outcome is the one all readings give, partially reproduced. D-a groups under Y-b and Y-c were not run;
+    they could not raise the outcome above partial. Outcome changed after verification round 3 from reproduced.
   deviations:
   - Ripple events are the paper's population synchrony events without the condition that each holds the peak of
     an LFP-detected ripple (Materials and Methods, Ripple Event Detection); the LFP is only in tar.gz archives of
@@ -735,14 +727,6 @@ outcomes:
     to its null distribution' suggests) and P-a (one-tailed signed-rank test of per-event PCC against zero, the
     Figure S19B legend), an assumption; under D-b the group sizes are 108 to 113.
   - The D-b groups were run with 200 circular shuffles per template in place of 1,000, for run time.
-  proposed:
-    outcome: partially_reproduced
-    reason: The criterion asks for the result under readings Y and D. With the D-b groups, which match the paper's
-      105 per group, removing the plastic units leaves POST - PRE rZ above zero in all six readings with the Y-a
-      groups (0.031 to 0.044, intervals above zero), in four of six with the Y-b groups and two of six with the
-      Y-c groups, while removing the rigid units leaves it above zero (0.089 to 0.170). Removing plastic units lowers
-      the change more than removing rigid units in every reading, which is the partial criterion. By the rule that
-      the outcome is the one all readings give, partially reproduced. Analysis in the fig2e section of the notebook.
 - claim: figs19c-pcc-change-per-cell
   outcome: not_reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -1233,3 +1217,69 @@ verifications:
     outcome: not_reproduced
     reason: Agreed.
     response: No change needed.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The five proposed changes of outcome (figs16c-low-rate-coding, fig4c-coactivation-by-rate,
+    fig4d-slow-cells-replay, figs11-cluster-quality-similar, fig2e-plastic-removal), with the re-executed notebook,
+    the helper module, the claims file and the attempt record. The verifier agreed with four and not with fig4c.
+  results:
+  - claim: figs16c-low-rate-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'All six splits match, and the criterion says the matching readings fix the split. Under (a, ii), (b,
+      ii) and (c, ii) the change in gain goes the wrong way (low 0.37 against high 0.555; two-sided p 0.046, 0.082,
+      0.037). The criterion needs all four tests to hold for any outcome above not reproduced, so they fail there.
+      One more failure is not in the reason: under (c, ii) the field-count test also fails (p = 0.21, cell 82). Under
+      the (ii) splits, cells are split on PRE rate, and the PRE gain divides by that same PRE rate, so the reversal
+      may be partly this coupling and not a property of the cells. Reading (ii) comes from the claims file, so the
+      outcome stands as written.'
+    response: Outcome changed to not reproduced and the proposal removed. The notes, the conclusion and the summary
+      now give the (c, ii) field-count failure and the coupling of the (ii) splits with the PRE gain. The split
+      deviation now says that all six splits are run, and the outcome is no longer marked as resting on split (a,
+      i).
+  - claim: fig4c-coactivation-by-rate
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Under reading (b), pooled ranks, PRE coactivity rises, the change and the partial r fall, and the top
+      window does not change, but the low half does not exceed the high half (p = 0.64). The partial clause as written
+      needs two things: the slow-firing increase holds, and the PRE dominance or the top-window stability does not.
+      Under (b) the slow-firing part is the one that fails, and both PRE dominance and top-window stability hold,
+      so neither condition is met. Under (b) the claim is therefore not reproduced, and by the all-readings rule so
+      is the claim. The partial clause does not cover the case where only the Figure S16C condition fails; that
+      gap is the claims file''s.'
+    response: Outcome kept as verified in round 2 (reproduced), and the proposal left with the verifier's view added
+      to its reason. The verifier's reading of the partial clause is the literal one, and a change to not reproduced
+      waits for a new attempt. The conclusion and the summary say so.
+  - claim: fig4d-slow-cells-replay
+    agrees: true
+    outcome: not_reproduced
+    reason: Under every split the low-rate increase holds in 6 of 6 readings, and the high-rate increase is significant
+      in most readings, so the reproduced pattern fails everywhere. Under (b, i) and (b, ii) the high-rate increase
+      is the larger in 2 of 6 readings, and under (c, i) in 3 of 6, so the partial clause fails under those splits.
+      The "less" comparison uses point estimates, which the criterion allows since it names no test. These variants
+      use 100 shuffles per template and the gaps are small, but the outcome follows as written.
+    response: Outcome changed to not reproduced and the proposal removed. The notes and the conclusion now say that
+      the comparison uses point estimates with 100 shuffles per template and give the smallest gap.
+  - claim: figs11-cluster-quality-similar
+    agrees: true
+    outcome: reproduced
+    reason: All 118 shanks were read and all 562 pyramidal cells match their sessInfo spike counts. The measures
+      follow the Figure S11 legend. 0 of 60 rank-sum comparisons are significant (smallest p 0.126), and medians
+      differ by at most 0.13 on values of 4.0 to 8.2. The criterion holds as written. The measure has little power,
+      as a cluster's own spikes sit near the square root of the number of features by construction and the feature
+      count varies from 12 to 30 between shanks; waveform similarity, which is in the statement, was not tested.
+      The record entry needs assumed true and the notebook and output fields.
+    response: Outcome changed to reproduced, blocked_by and the proposal removed, and assumed, notebook and output
+      added. The notes say that the outcome covers cluster quality and stability only and give the power caveat.
+  - claim: fig2e-plastic-removal
+    agrees: true
+    outcome: partially_reproduced
+    reason: With the D-b groups, which match 105 per group, removing the plastic units leaves the interval above
+      zero in 6 of 6 readings with the Y-a groups, 4 of 6 with Y-b and 2 of 6 with Y-c. Removing the rigid units
+      leaves it above zero in all 18, and removing the plastic units lowers the change more in every reading. Under
+      the D-a groups the reproduced pattern holds. Every reading gives at least the partial pattern, and some give
+      no more, so by the all-readings rule the outcome is partially reproduced. D-a groups under Y-b and Y-c are
+      still not run, but they could not raise the outcome above partial.
+    response: Outcome changed to partially reproduced and the proposal removed; the notes, the conclusion and the
+      summary follow.

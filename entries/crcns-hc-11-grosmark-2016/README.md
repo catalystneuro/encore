@@ -18,7 +18,7 @@ per-session archives; the LFP and the waveforms are not read.
 | 73% of PRE contributors also contribute in POST | Reproduced |
 | 105 rigid and 105 plastic cells | Partially reproduced |
 | Shuffling or excluding the top 10 to 20% dPCC cells abolishes replay (Figure 2D, S12) | Reproduced (2) |
-| Removing plastic cells abolishes replay (Figure 2E) | Reproduced (proposed: partially reproduced) |
+| Removing plastic cells abolishes replay (Figure 2E) | Partially reproduced |
 | Rigid and plastic fields similarly placed along the track | Reproduced |
 | Plastic cells more place specific, fewer fields (Figure 3A) | Partially reproduced |
 | Plastic cells' specificity rises over laps (Figure 3B) | Not reproduced |
@@ -27,21 +27,23 @@ per-session archives; the LFP and the waveforms are not read.
 | Plastic cells' ripple gain and bursting (Figure S14, two claims) | Not reproduced |
 | Ripple-triggered firing and coactivity rise in plastic cells (Figure S16A, B) | Reproduced |
 | Low and high rate split, 0.39 and 1.12 Hz | Reproduced |
-| Low-rate cells code space better (Figure S16C) | Partially reproduced (proposed: not reproduced) |
-| Coactivity by firing rate (Figure 4B, C) | Reproduced (proposed: partially reproduced) |
-| Slow-firing and high-gain cells carry the replay increase (Figure 4D, E) | Partially reproduced (2; proposed for 4D: not reproduced) |
+| Low-rate cells code space better (Figure S16C) | Not reproduced |
+| Coactivity by firing rate (Figure 4B, C) | Reproduced (proposed: partially reproduced; the verifier would give not reproduced) |
+| Slow-firing cells carry the replay increase (Figure 4D) | Not reproduced |
+| High-gain cells carry the replay increase (Figure 4E) | Partially reproduced |
 | More ripple events in POST (Figure S16D, E) | Not reproduced |
 | Coactivity preservation, all pairs (Figure S17A, C) | Partially reproduced |
 | Coactivity preservation, rigid and plastic pairs (Figure S17D) | Not reproduced |
 | Temporal bias preservation (Figure S18) | Not reproduced |
 | Per-cell PRE against POST PCC, 2.2% and 21.4% (Figure S19C) | Not reproduced |
-| Rigid and plastic cluster quality similar (Figure S11) | Blocked (proposed: reproduced, now tested) |
+| Rigid and plastic cluster quality similar (Figure S11) | Reproduced (quality and stability; waveforms not compared) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-Proposed changes of outcome, found after verification round 2, await a third verification round; the
-verified outcomes stand until then.
+Five changes of outcome were proposed after verification round 2. The third round agreed with four,
+which are applied (Figures S16C, 4D, 2E and S11). It did not agree with the change for Figure 4B and C,
+which stays at its verified outcome with the proposal recorded.
 
 Ripple events here lack the paper's condition that each holds an LFP-detected ripple, as the LFP is
 only in tar.gz archives of 70 GB in all. Many outcomes rest on choices the paper leaves open (how the
