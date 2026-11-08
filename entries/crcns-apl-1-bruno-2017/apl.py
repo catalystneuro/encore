@@ -406,7 +406,7 @@ def summarise(o, k=-1):
         s.update(period_mean=np.nan, period_median=np.nan, dom_n=0, prop_dom_hist=np.nan,
                  prop_dom_all=np.nan)
     w = o["windows"][k]
-    hi = np.flatnonzero(w["dens"] > 0.9)
+    hi = np.flatnonzero(w["dens"] >= 0.9)   # Methods: "at least 90%"
     s["coalesce_t"] = float(w["mid_t"][hi[0]]) if hi.size else np.nan
     if hi.size:
         after = np.flatnonzero(o["pt_time"] >= w["mid_t"][hi[0]])
@@ -424,7 +424,7 @@ def divergences(o, period, k=-1, cycles=2.0):
     proportions for the same-manifold test."""
     w = o["windows"][k]
     dens = w["dens"]
-    hi = np.flatnonzero(dens > 0.9)
+    hi = np.flatnonzero(dens >= 0.9)
     if not hi.size:
         return []
     first = hi[0]
@@ -758,13 +758,14 @@ HISTORIES_CODE = [5, 10, 15, 20, 25]         # 50..250 ms (code DecodeP10_states
 
 
 def decode_program(args):
-    """Decoding of one P10 program under one windowing and dimension count; the history with
+    """Decoding of one P10 program under one windowing and dimension count (``frac`` of the
+    variance, under count ``rule``, as claim fig2b-dimensions); the history with
     the smallest mean forecast MAE is kept (Methods: "the smallest median absolute error";
     code Best_P10_StateSpace_GLMmodels.m takes the mean over windows of the per-window
     median absolute error)."""
-    rec, p10_t, sd, frac, windowing, hists = args
+    rec, p10_t, sd, frac, windowing, hists, rule = args
     P = Program(rec, sd, "min80")
-    d = n_pcs(P.ev, frac, "min80")
+    d = n_pcs(P.ev, frac, rule)
     pcs = P.proj[:, :d]
     rate = sdf_matrix([p10_t], sd, P.t_end)[P.ix_stim, 0]
     res = {}
@@ -786,3 +787,219 @@ def run_decoding(jobs, workers=4):
     import multiprocessing as mp
     with ProcessPoolExecutor(workers, mp_context=mp.get_context("fork")) as ex:
         return list(ex.map(decode_program, jobs))
+
+
+# ---------------- ensembles and their types (claim fig7s2-no-invariant-core) ----------------
+# A port of the code's ensemble pipeline: Analysis/Ensembles/StaticEnsembles.m (clustering from
+# stimulation onset to the end), Functions/consensus_cluster_spike_data_binless.m (Gaussian
+# functions, rectified correlation), Functions/allevsplitConTransitive.m (consensus community
+# detection), Analysis/Ensembles/Analyse_Spike_Train_Properties.m (autocorrelogram of each
+# ensemble's pooled spikes against 100 interval shuffles, Functions/shuffle_intervals.m and
+# spike_xcorr.m) and Types_of_Ensemble_Across_Dataset.m (the four types). Parameters are the
+# code's: quantisation 0.01 s (Data.GaussQt), the recording's median ISI as SD (Data.GaussSD),
+# 50 k-means runs per number of groups, autocorrelogram bins of 1 s to 20 s, 100 shuffles,
+# troughs of 2 SD and peaks of 3 SD over at least two consecutive bins. MATLAB's kmeans is
+# replaced by Lloyd's algorithm from the code's own k-means++ start (at most 100 iterations, an
+# empty cluster restarted at the farthest point, as MATLAB's 'singleton' default).
+
+def _kmeans(X, k, rng, start=None, iters=100):
+    n = X.shape[0]
+    if start is None:                         # code kmeansplus
+        C = np.empty((k, X.shape[1]))
+        C[0] = X[int(np.ceil(n * rng.random())) - 1]
+        v = np.full(n, np.inf)
+        for i in range(1, k):
+            v = np.minimum(v, np.sqrt(((X - C[i - 1]) ** 2).sum(1)))
+            p = np.cumsum(v / v.sum())
+            C[i] = X[min(int(np.searchsorted(p, rng.random(), "right")), n - 1)]
+    else:
+        C = np.array(start, float).reshape(k, -1)
+    lab = None
+    for _ in range(iters):
+        D = ((X[:, None, :] - C[None]) ** 2).sum(-1)
+        new = D.argmin(1)
+        for j in range(k):
+            if not np.any(new == j):
+                far = int(D[np.arange(n), new].argmax())
+                new[far] = j
+        if lab is not None and np.array_equal(new, lab):
+            break
+        lab = new
+        C = np.array([X[lab == j].mean(0) for j in range(k)])
+    return lab
+
+
+def _modularity(B, lab, m):
+    S = (lab[:, None] == np.unique(lab)[None, :]).astype(float)
+    return float(np.trace(S.T @ B @ S) / (2 * m))
+
+
+def _dosplit(A, rng, nreps=50):
+    Abar = (A + A.T) / 2
+    m = A.sum() / 2
+    k_in, k_out = A.sum(0), A.sum(1)
+    P = np.outer(k_out, k_in) / k_in.sum()
+    B = Abar - (P + P.T) / 2
+    eg, V = np.linalg.eigh(B)
+    Vpos = V[:, eg > 1e-3]
+    ndivs = Vpos.shape[1]
+    Q = np.zeros((nreps, ndivs))
+    G = np.zeros((A.shape[0], nreps * ndivs), int)
+    qmax = []
+    for j in range(ndivs):
+        for r in range(nreps):
+            lab = _kmeans(Vpos, j + 2, rng)
+            G[:, j * nreps + r] = lab
+            Q[r, j] = _modularity(B, lab, m)
+        qmax.append(Q[:, j].max())
+        if j > 1 and qmax[j] <= 0 and qmax[j - 1] <= 0:
+            break
+    return G, Q
+
+
+def consensus_communities(A, rng, nreps=50, max_iter=50):
+    """Functions/allevsplitConTransitive.m: k-means on the positive eigenvectors of the
+    modularity matrix, consensus over the clusterings with Q > 0, repeated on the consensus
+    matrix until thresholding it at the lower edge of its upper mode gives transitive groups.
+    Returns group labels 1..k (zeros when nothing can be grouped)."""
+    n = A.shape[0]
+    Aorig = A
+    for it in range(max_iter):
+        G, Q = _dosplit(A, rng, nreps)
+        if it == 0 and (G.size == 0 or np.all(Q <= 0)):
+            return np.zeros(n, int)
+        allowed = Q.T.ravel() > 0
+        Gs = G[:, allowed]
+        A = (Gs[:, None, :] == Gs[None, :, :]).mean(2)
+        np.fill_diagonal(A, 0)
+        w = A[np.triu_indices(n, 1)]
+        w = w[w > 0]
+        if np.all(w == 1):
+            theta = -np.inf
+        else:
+            s = np.percentile(w, [5, 95], method="hazen")     # MATLAB prctile
+            idx = _kmeans(w[:, None], 2, rng, start=s)
+            hi = 0 if w[idx == 0].mean() > w[idx == 1].mean() else 1
+            theta = w[idx == hi].min()
+        Au = np.where(A < theta, 0, A)
+        lab = np.zeros(n, int)
+        g, trans = 1, True
+        for i in range(n):
+            if lab[i]:
+                continue
+            members = np.concatenate([[i], np.flatnonzero(Au[i] > 0)])
+            if np.any(lab[members[1:]] > 0):
+                trans = False
+                break
+            lab[members] = g
+            g += 1
+        if trans:
+            return lab
+    # not converged in 50 iterations: the code groups by any link of the consensus matrix
+    lab = np.zeros(n, int)
+    g = 1
+    for i in range(n):
+        if not lab[i]:
+            lab[np.concatenate([[i], np.flatnonzero(A[i] > 0)])] = g
+            g += 1
+    return lab
+
+
+def ensembles(rec, sd, rng, qt=0.01, t0=STIM_ON):
+    """StaticEnsembles.m: consensus clustering of the spike trains from ``t0`` to the end.
+    Returns the ids (1-based) of the neurons with spikes and their group labels."""
+    trains = neuron_trains(rec)
+    t_end = rec["t"].max()
+    nb = int(np.floor((t_end - t0) / qt + 1e-9)) + 1
+    sig = int(round(sd / qt))
+    x = np.arange(-5 * sig, 5 * sig + 1)
+    h = np.exp(-x ** 2 / (2 * sig ** 2))
+    h /= h.sum()
+    ids, F = [], []
+    for i, tr in enumerate(trains):
+        tr = tr[(tr >= t0) & (tr <= t_end)]
+        if tr.size == 0:
+            continue
+        c = np.bincount(np.round((tr - t0) / qt).astype(int), minlength=nb)[:nb].astype(float)
+        F.append(np.convolve(c, h, "same"))
+        ids.append(i + 1)
+    F = np.array(F)
+    S = np.corrcoef(F)
+    S[S < 0] = 0
+    np.fill_diagonal(S, 0)
+    n = len(ids)
+    if n < 6 or (S != 0).sum() <= np.log(n):
+        return np.array(ids), np.zeros(n, int)
+    return np.array(ids), consensus_communities(S, rng)
+
+
+def _acorr(ts, maxlag=20, binsize=1.0):
+    """Functions/spike_xcorr.m: histogram of all spike-time differences within maxlag, on MATLAB
+    hist centres -maxlag:binsize:maxlag."""
+    centres = np.arange(-maxlag, maxlag + binsize / 2, binsize)
+    if ts.size < 2:
+        return np.zeros(centres.size)
+    edges = np.concatenate([[-maxlag], (centres[:-1] + centres[1:]) / 2, [maxlag]])
+    q = np.searchsorted(ts, (ts[:, None] + edges[None, :]).ravel(), "left").reshape(ts.size, -1)
+    q[:, -1] = np.searchsorted(ts, ts + maxlag, "right")
+    return (q[:, 1:] - q[:, :-1]).sum(0).astype(float)
+
+
+def _shuffle_intervals(ts, T, dt, rng):
+    """Functions/shuffle_intervals.m for one train: intervals permuted, start drawn at random in
+    the free time and quantised to dt; raises after 20 failed attempts, as the code."""
+    iei = np.diff(ts)
+    free = (ts[0] - T[0]) + (T[1] - ts[-1])
+    for _ in range(21):
+        start = T[0] + np.ceil(rng.random() * free / dt) * dt
+        out = np.concatenate([[start], start + np.cumsum(iei[rng.permutation(iei.size)])])
+        if out.max() <= T[1]:
+            return out
+    raise RuntimeError("cannot shuffle")
+
+
+def acorr_type(ts, T, rng, n_perm=100, qt=0.001, n_thresh=2, p_thresh=3):
+    """Analyse_Spike_Train_Properties.m and Types_of_Ensemble_Across_Dataset.m: type of an
+    ensemble from its pooled spikes, 1 tonic (no peak, no trough), 2 oscillator (both),
+    3 burster (peak only), 4 pauser (trough only)."""
+    ts = np.sort(ts)
+    A = _acorr(ts)
+    try:
+        perm = np.array([_acorr(np.sort(_shuffle_intervals(ts, T, qt, rng))) for _ in range(n_perm)])
+        with np.errstate(divide="ignore", invalid="ignore"):
+            Z = (A - perm.mean(0)) / perm.std(0, ddof=1)
+    except RuntimeError:
+        Z = np.full(A.size, np.nan)
+    Z[(Z.size + 1) // 2 - 1] = 0
+    neg = np.any(np.diff(np.flatnonzero(Z < -n_thresh)) == 1)
+    pos = np.any(np.diff(np.flatnonzero(Z > p_thresh)) == 1)
+    return {(False, False): 1, (True, True): 2, (True, False): 3, (False, True): 4}[(bool(pos), bool(neg))]
+
+
+def type_neurons(args):
+    """Ensembles and the type of every neuron of one recording (0 for neurons without spikes
+    after onset). The pooled spikes of an ensemble are its neurons' spikes from onset, each
+    neuron's last spike left out, as the code pools ts(1:end-1)."""
+    rec, sd, seed = args
+    rng = np.random.default_rng(seed)
+    ids, lab = ensembles(rec, sd, rng)
+    trains = neuron_trains(rec)
+    T = (STIM_ON, float(rec["t"].max()))
+    types = np.zeros(len(trains), int)
+    groups = []
+    for g in np.unique(lab[lab > 0]):
+        members = ids[lab == g]
+        pooled = np.concatenate([trains[i - 1][trains[i - 1] >= STIM_ON][:-1] for i in members])
+        ty = acorr_type(pooled, T, rng)
+        types[members - 1] = ty
+        groups.append({"size": int(members.size), "type": ty, "spikes": int(pooled.size)})
+    return {"file": rec["file"], "prep": rec["prep"], "bout": rec["bout"], "types": types,
+            "groups": groups, "n_clustered": int(ids.size), "ungrouped": bool(np.all(lab == 0))}
+
+
+def run_types(recs, sds, seed=7, workers=4):
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing as mp
+    jobs = [(r, float(s), seed * 1000 + i) for i, (r, s) in enumerate(zip(recs, sds))]
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("fork")) as ex:
+        return list(ex.map(type_neurons, jobs))

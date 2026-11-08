@@ -29,11 +29,11 @@ them, and neuron positions on the photodiode array.
 | No relation between period change and contraction | Reproduced |
 | No P10 motorneurons recorded | Reproduced |
 | P10 decoded in all nine responses | Partially reproduced |
-| 3 to 5 dimensions for the P10 recordings; 90% no better | Partially reproduced |
+| 3 to 5 dimensions for the P10 recordings; 90% no better | Reproduced (under the code's count rule) |
 | Long-tailed, variable participation (three claims) | Reproduced |
 | Rate explains 50% of participation, 23% of its change | Reproduced |
-| Distance between bouts unrelated to participation change | Not reproduced (assumed) |
-| No invariant core of oscillator neurons | Blocked: not runnable |
+| Distance between bouts unrelated to participation change | Partially reproduced (assumed) |
+| No invariant core of oscillator neurons | Reproduced (port of the code's ensemble toolbox) |
 | Strong participation in the caudo-lateral quadrant | Blocked: metadata insufficient |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -42,11 +42,14 @@ reasoning and the differences from the paper's method.
 Several outcomes depend on two details the paper leaves open: the width of the Gaussian kernel
 (the Methods' printed formula gives 21 to 76 dimensions; the code uses the median ISI) and whether
 the number of PCs is the smallest reaching 80% (Methods) or the largest at most 80% (code). The
-notebook runs every reading. The attempt record, with the reasons and the differences from the
+notebook runs every reading, and its summary tabulates the outcome under each for the claims that
+change; no single reading makes all of them hold. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/crcns-apl-1-bruno-2017-01.yaml`](../../attempts/crcns-apl-1-bruno-2017-01.yaml).
 
-- `reproduce_bruno_2017.ipynb`: the analysis, about 18 minutes on 4 CPUs (the recurrence analysis
-  under eight readings, the manifold comparisons with 100 shuffles, and the P10 decoding).
+- `reproduce_bruno_2017.ipynb`: the analysis, about 36 minutes on 4 CPUs (the recurrence analysis
+  under eight readings, the manifold comparisons with 100 shuffles, the P10 decoding under four
+  readings, and the ensemble typing).
 - `apl.py`: streaming the files from the CRCNS bucket, spike-density functions, PCA, the
   recurrence analysis, local linear models, Hausdorff comparisons, a port of Chronux
-  `mtspectrumpt`, P10 decoding and participation. Other notebooks on this data set can import it.
+  `mtspectrumpt`, P10 decoding, participation, and a port of the code's consensus clustering and
+  ensemble typing. Other notebooks on this data set can import it.
