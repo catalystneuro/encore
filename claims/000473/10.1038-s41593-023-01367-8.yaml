@@ -191,9 +191,11 @@ claims:
   - about: immediate state, Esr1:ChR2 against Ctl
     test: two-sided unpaired t-test
     p: 9.56e-5
+    n: 7 Esr1:ChR2 and 6 Ctl mice
   - about: sustained state, Esr1:ChR2 against Ctl
     test: two-sided unpaired t-test
     p: 7.58e-4
+    n: 7 Esr1:ChR2 and 6 Ctl mice
 - id: ed1j-optotagged-tonic
   statement: Optotagged LHA-LHb neurons recorded with Neuropixels in awake head-fixed Vglut2-cre mice
     fire tonically.
@@ -210,12 +212,16 @@ claims:
     value: 9
     tolerance: 0.9
     unit: units
-  criterion: The paper does not say how a unit was called optotagged beyond more than 100 light
-    pulses of 1 to 10 ms (Methods, Extracellular electrophysiological head-fixed recordings), nor how
-    tonic activity was judged. Reproduced when LHA recordings from 5 Vglut2-cre mice are found, about
-    165 units, and light-responsive units fire continuously over a 25 min recording as in Extended
-    Data Fig. 1j; the latency and reliability rule used to call a unit light-responsive is open and
-    is to be reported.
+  criterion: Optotagged as in the Methods (In vivo optotagged LHA-LHb units; Extracellular
+    electrophysiological head-fixed recordings), a unit with light responses in more than 10% of
+    trials in the 10 ms bin after the laser pulse (more than 100 pulses of 1 to 10 ms), significant by
+    the stimulus-associated spike latency test at alpha 0.01, and a light-evoked waveform correlated
+    with the spontaneous waveform at Pearson r > 0.9. How tonic activity was judged is not stated; it
+    is read from Extended Data Fig. 1j as firing without pauses over the 25 min recording, a choice
+    here. The legend gives N = 5 Vglut2-cre mice for the 165 units (h) and N = 9 mice for the 9
+    optotagged units (j); which is right is open. Reproduced when LHA recordings from Vglut2-cre mice
+    are found, the unit and optotagged counts are within tolerance, and the optotagged units fire
+    tonically.
 - id: ed7a-unit-counts
   statement: The analysis holds 4,152 well-isolated units in ACAd, PL, ILA and ORBm from 25 mice (Ctl
     1,147, Vglut2 1,413, Npy 981, Esr1 611).
@@ -331,16 +337,16 @@ claims:
   expected:
   - quantity: Esr1 mean pupil area, block 2 (z to block 1)
     value: 0.611
-    tolerance: 0.0611
+    tolerance: 0.347
   - quantity: Esr1 mean pupil area, block 3 (z to block 1)
     value: 0.751
-    tolerance: 0.0751
+    tolerance: 0.369
   - quantity: Vglut2 mean pupil area, block 2 (z to block 1)
     value: 0.5222
-    tolerance: 0.0522
+    tolerance: 0.386
   - quantity: Vglut2 mean pupil area, block 3 (z to block 1)
     value: 0.463
-    tolerance: 0.0463
+    tolerance: 0.288
   criterion: As in the Methods (Pupillometry) and Fig4e_Pupil_boxplots.jl, pupil area per frame from
     the DeepLabCut ellipse, z-scored to block 1 per mouse, a value per trial, averaged over the mice
     of a genotype trial by trial (trial k of block b), and the blocks compared by a two-sided
@@ -411,12 +417,17 @@ claims:
   criterion: The comparison is block 1 against block 4, as in Extended_Data_Fig7g_boxplots.jl. The
     paper does not define an eye-closing event; Extended Data Fig. 7f shows the normalized eye area
     trace from which events are presumably counted. Readings, both run, an event is a downward
-    crossing of the eye area (normalized to its block-1 median) below (a) 50% or (b) 75%. The paper's
-    unit of observation is also open, as an exact signed-rank test on 5 mice cannot reach p below
-    0.0625; readings are (i) per mouse, the event count per block, and (ii) per trial, the event
-    count in each trial averaged over the genotype's mice, paired trial by trial. Reproduced when,
-    under a reading, block 4 has more events than block 1 in all four genotypes at p < 0.0083;
-    partially reproduced when the direction holds in all four and the test in at least two.
+    crossing of the eye area (normalized to its block-1 median) below (a) 50% or (b) 75%; these
+    thresholds are choices here. The code settles the unit of observation, one event count per mouse
+    and block (the 5-mouse columns are padded with 5 NaN to the 10 rows of Esr1), paired block 1
+    against block 4 by SignedRankTest. An exact signed-rank test on 5 mice cannot go below p =
+    0.0625, so the printed p-values of the 5-mouse groups (0.002, 0.0078) are consistent with a test
+    over 10 pairs in which the NaN padding entered as data; this is open. Esr1 (10 mice) is judged by
+    the two-sided signed-rank test at p < 0.0083. Ctl, Vglut2 and Npy are judged by block 4 exceeding
+    block 1 in every mouse (p = 0.0625, the strongest result 5 pairs allow), a choice here; the
+    code's NaN-padded computation is shown as a variant. Reproduced when, under a threshold reading,
+    all four genotypes pass; partially reproduced when the direction of the genotype means holds in
+    all four and at least two pass.
 - id: fig4g-glm-units
   statement: 1,945 units were fitted with the GLM (Ctl 482, Vglut2 738, Npy 406, Esr1 319).
   source: Results, Pathway-specific aversive signals in the PFC, paragraph 3; Extended Data Figure 8b
@@ -472,16 +483,16 @@ claims:
   expected:
   - quantity: mean absolute opto tuning score, Ctl
     value: 1.176
-    tolerance: 0.118
+    tolerance: 0.258
   - quantity: mean absolute opto tuning score, Vglut2
     value: 3.337
-    tolerance: 0.334
+    tolerance: 0.409
   - quantity: mean absolute opto tuning score, Npy
     value: 1.126
-    tolerance: 0.113
+    tolerance: 0.599
   - quantity: mean absolute opto tuning score, Esr1
     value: 1.896
-    tolerance: 0.19
+    tolerance: 0.612
   criterion: Tuning scores as in the Methods (Tuning scores) and the code, the true beta minus the
     mean of 1,000 circularly shifted betas, over their standard deviation; one random shift point per
     iteration for the whole session. Supplementary Table 6 gives, per genotype, the mean and s.d. over
@@ -587,9 +598,11 @@ claims:
     both run, (a) a unit whose tone response and light response are both significant in block 2;
     (b) a unit with a significant light response whose tone response differs between the first and
     last 10 trials of block 2 (Extended Data Fig. 8p,q) by a Wilcoxon rank-sum test at 0.001/4. For
-    block 2, the 50 trials are every other trial, as in the Methods for heatmaps. Reproduced when,
-    under a reading, Vglut2 and Esr1 mice each have conditioned units in block 2 at a fraction above
-    that of Ctl; the fractions per genotype and block are reported.
+    block 2, the 50 trials are every other trial, as in the Methods for heatmaps (the first 50 trials
+    are shown as a variant). The paper states only that conditioned units were found in Vglut2-cre
+    and Esr1-cre mice; comparing their fraction with Ctl is a choice here. Reproduced when, under a
+    reading, Vglut2 and Esr1 mice each have conditioned units in block 2 at a fraction above that of
+    Ctl; the fractions per genotype and block are reported.
 - id: ed8r-comodulated-units
   statement: Vglut2-cre and Esr1-cre mice have more units comodulated by the optogenetic stimulation
     and the air puff than expected by chance.
@@ -659,18 +672,17 @@ claims:
     increase in baseline firing rate in one block or ramping baseline activity across blocks
   depends_on:
   - fig4h-opto-clusters
-  expected:
-  - quantity: state clusters among the 15
-    value: 5
-    tolerance: 0
-    unit: clusters
   criterion: Baseline is the mean rate over the 1 s before the sound onset, per unit and block
     (Methods; Extended Data Fig. 9b-g). Per cluster, the six block pairs are compared by a two-sided
     Wilcoxon signed-rank test over the cluster's units with Bonferroni correction for six comparisons
-    (Methods and Supplementary Table 9; the code's rank-sum test is a variant). A state cluster is
-    one not named opto, air puff or sound by its most common primary tuning that has at least one
-    significant pair (Methods). Reproduced when exactly five clusters are state clusters, partially
-    reproduced for four or six; a tolerance of zero as the number is a small count.
+    (Methods and Supplementary Table 9; the code's rank-sum test is a variant). The Methods call the
+    cluster names subjective, and neither they nor the code give a rule that yields the five state
+    clusters; every cluster has a most common primary tuning, and in Supplementary Table 9 the
+    clusters 'Air puff' 1, 'Sound' 2 and 'Sound' 6 also have significant baseline pairs (eight of the
+    15 clusters in all). The claim is therefore judged on what the sentence states, clusters whose
+    baseline shows at least one significant block pair with block means that rise in one block or
+    change monotonically across blocks 1 to 4. Reproduced when at least five of the 15 clusters meet
+    this; the count, and which of them are opto clusters by fig4h-opto-clusters, are reported.
 - id: fig4i-activity-modes
   statement: Projection onto the 'opto OR air puff' mode separates block 2 from block 1 only in
     Esr1-cre and Vglut2-cre mice, and the 'state' mode separates the four blocks completely across
@@ -713,7 +725,9 @@ claims:
     significantly tuned to the optogenetic regressor, (2) the mean over time of the block 2 minus
     block 1 projection on the 'state' mode with W and X restricted to the genotype's units in the
     subregion (from -2 to 5 s around trial start in the code), (3) the decoding accuracy of block 1
-    against block 2 in Esr1 minus that in Ctl, from fig4k-decoding-pl. Reproduced when PL ranks first
+    against block 2 in Esr1 minus that in Ctl, from fig4k-decoding-pl. The paper gives no test or
+    threshold for "primarily" or "widely distributed"; the rule that follows is a choice here.
+    Reproduced when PL ranks first
     among the four subregions in Esr1 for at least two of the three measures, and in Vglut2 at least
     three subregions show measure (1) above the Ctl maximum over subregions; partially reproduced
     when only the Esr1 part holds.
@@ -766,15 +780,19 @@ claims:
   - about: fear conditioning extinction freezing, Esr1:TeLC against Ctl, males
     test: one-way ANOVA with Tukey's multiple comparisons test
     p: 0.0163
+    n: 6 Ctl and 14 Esr1:TeLC male mice
   - about: fear conditioning extinction freezing, Esr1:TeLC against Ctl, females
     test: one-way ANOVA with Tukey's multiple comparisons test
     p: 0.0028
+    n: 6 Ctl and 13 Esr1:TeLC female mice
   - about: acoustic startle immobility, Esr1:TeLC female against Ctl female
     test: one-way ANOVA with Tukey's multiple comparisons test
     p: 2.3e-4
+    n: 6 Ctl and 13 Esr1:TeLC female mice
   - about: looming aversive behavior, Ctl female against Esr1:TeLC female
     test: one-way ANOVA with Tukey's multiple comparisons test
     p: 0.0013
+    n: 16 Ctl and 13 Esr1:TeLC female mice
 - id: fig5f-stress-index-female
   statement: Unpredictable mild shocks raise the stress index only in female mice, and TeLC silencing
     of Esr1+ LHA-LHb neurons reduces it.
@@ -831,3 +849,38 @@ claims:
     test: two-sided DABEST test
     p: 0
     n: 15 and 18 neurons
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - ed1j-optotagged-tonic, criterion said the paper does not define optotagging; the Methods (In vivo
+    optotagged LHA-LHb units) give the rule (responses in more than 10% of trials in the 10 ms bin, SALT
+    at alpha 0.01, waveform r > 0.9), now used. The tonic rule is marked as a choice.
+  - ed1j-optotagged-tonic, open, the legend gives N = 5 mice for the 165 units and N = 9 mice for the 9
+    optotagged units; named in the criterion.
+  - ed7g-eye-closing-airpuff, the per-trial reading was not in the paper; the code
+    (Extended_Data_Fig7g_boxplots.jl) and Extended Data Fig. 7g use one count per mouse, so that
+    reading is removed and the event thresholds are marked as choices.
+  - ed7g-eye-closing-airpuff, open, an exact signed-rank test on 5 mice cannot reach the printed p-values
+    (0.002, 0.0078); they match a 10-pair test with the code's NaN padding counted as data. The 5-mouse
+    groups are judged by direction in every mouse, a choice, with the code's computation as a variant.
+  - fig4f-pupil-persistent and fig4g-opto-tuning-score, tolerances changed from 10% to the s.d. that
+    Supplementary Tables 5 and 6 print with each mean, as the protocol prescribes the stated spread and
+    the file gave no reason for another tolerance.
+  - ed9bg-state-clusters, the rule (a state cluster is one not named by its most common primary tuning)
+    could never yield a state cluster, as every cluster has a most common primary tuning. The Methods
+    call the names subjective, and Supplementary Table 9 shows significant baseline pairs in eight of
+    the 15 clusters. The criterion now tests that at least five clusters show the baseline change the
+    sentence describes, and the expected exact count of 5 with tolerance 0 is removed.
+  - ed9bg-state-clusters, open, the paper's naming of which clusters are state clusters cannot be
+    reproduced by any rule in the paper or code.
+  - fig4jl-pl-esr1, the ranking and Ctl-maximum thresholds are not from the paper; now marked as a
+    choice.
+  - ed8o-conditioned-units, the comparison with Ctl is not from the paper; now marked as a choice, and the
+    first 50 block-2 trials added as a variant to the every-other-trial reading.
+  - fig3mn-persistent-cpa and ed10-female-mild-aversive, added the numbers of mice from the Fig. 3m,n and
+    Extended Data Fig. 10b-d legends.
+  - Checker, two values reported not found are present, 6.20e-9 in the Fig. 3f legend and 0.045 in
+    Supplementary Table 6 (an image in the supplement PDF).
