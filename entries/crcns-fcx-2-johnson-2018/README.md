@@ -8,7 +8,7 @@ task, with trial tables and the paper's MATLAB analysis scripts.
 | Claim | Outcome |
 |---|---|
 | All subjects proficient (accuracy 0.79 to 0.97) | Reproduced |
-| Accuracy and response time do not differ by condition | Not reproduced |
+| Accuracy and response time do not differ by condition | Reproduced, resting on assumptions |
 | 254 electrodes, 36 MTL, 116 PFC, 102 OFC | Reproduced |
 | About 100 correct trials per subject | Reproduced |
 | ERPs do not differ by condition | Not reproduced |
@@ -28,6 +28,8 @@ reasoning and the differences from the paper's method.
 The trial table and the descriptor place the task events 1.5 s earlier than the time axes of the
 derived data, which the paper's code follows, and the data show no task-locked response that
 settles it. The PSI of the paper's Methods selects no phase-directing units; the PAC claims use the
-units of the deposited code's own form of PSI. The attempt record, with the reasons and the
+units of the deposited code's own form of PSI. The behaviour claim is reproduced with condition as one numeric
+term, as the amended claims file judges it, on the response times of `summary_file.csv`; the trial
+tables' response times differ from those in 7 of 10 subjects and would show a condition effect. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/crcns-fcx-2-johnson-2018-01.yaml`](../../attempts/crcns-fcx-2-johnson-2018-01.yaml).
