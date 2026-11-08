@@ -35,10 +35,14 @@
 #   estimated firing rates); reading T-b, the low-pass filtered dF/F traces, which would need the
 #   cells to be segmented anew from the raw movies, as no contours are deposited.
 # - Correlation measure. The Results report "Similar results ... using the Pearson method", so
-#   the main measure is not Pearson, and the text does not name it. Readings: C-a, Spearman rank
-#   correlation at zero lag; C-b, the zero-lag normalised cross-correlation of the traces without
-#   mean subtraction (sum of x times y over the square root of the product of the sums of
-#   squares). Pearson is the paper's own variant (claim pearson-genotype).
+#   the main measure is not Pearson, and the text does not name it beyond "continuous-trace
+#   cross-correlations" (Methods). Reading C-b, the zero-lag normalised cross-correlation of the
+#   traces without mean subtraction (sum of x times y over the square root of the product of the
+#   sums of squares), is the one that wording supports. C-a, Spearman rank correlation at zero
+#   lag, is not supported by the text (it names cross-correlations, not ranks) and is shown as a
+#   variant only, not as a reading that can decide a claim. Whether the cross-correlation is
+#   taken at zero lag or at its peak over lags is open; the text gives no lag window, so zero lag
+#   is used. Pearson is the paper's own variant (claim pearson-genotype).
 # - Pairs and units. "Cells within 100 um" is read as pairs whose distance in the data set's
 #   distance matrix is below 100 um. The n in every calcium imaging comparison is mice (or
 #   recordings for the EEG subset), so each mouse's value is the mean over its pairs (or cells),
@@ -136,7 +140,8 @@ claims:
     over its pairs in each of the three distance bins the text names (under 100, 100 to 200,
     over 200 um), with the shared correlation readings. A two-way ANOVA on age (P9-11, P14-16)
     and distance bin, then per bin the age difference with Bonferroni correction over the three
-    bins. The two-way ANOVA's form is not given (the text does not say whether bin is a repeated
+    bins (the text does not name the family of comparisons; three is read from the three corrected
+    p values it reports). The two-way ANOVA's form is not given (the text does not say whether bin is a repeated
     factor); readings A-a, ordinary two-way ANOVA with bin as a between factor; A-b, mouse as a
     repeated measure over bins. Reproduced when, under one reading of trace, measure and ANOVA,
     the three differences are within tolerance, the first two have corrected p < 0.05 and the
@@ -394,9 +399,9 @@ claims:
     by state on recording rates, Bonferroni corrected post hoc for genotype within Up/Down.
     Reproduced when p < 0.05 with KO higher and both rates within tolerance (the paper's s.e.m.).
 - id: wholecell-state-modulation
-  statement: Neither genotype shows a significant change of firing rate between brain states in
-    whole-cell recordings; WT neurons tend to fire more in FOA (0.290 +/- 0.158 Hz) than in Up/Down
-    segments (0.133 +/- 0.036 Hz), and Fmr1 -/- neurons tend the other way.
+  statement: In whole-cell recordings, WT neurons tend to fire more in FOA (0.290 +/- 0.158 Hz) than
+    in Up/Down segments (0.133 +/- 0.036 Hz), but not significantly; Fmr1 -/- neurons show the
+    opposite tendency, for which the paper gives no values or test.
   source: Results, High firing rates during Up/Down states Fmr1 -/- mice, paragraph 1; Fig. 3e
   quote: There was a trend toward higher firing rates in WT mice during FOA segments compared to
     Up/Down states, but this was not significant (0.133 ± 0.036 Hz, n = 5 recordings from 5 cells
@@ -421,8 +426,9 @@ claims:
   criterion: A claim of absence, judged on the paper's test, the Bonferroni corrected post hoc of
     the 2-way ANOVA of wholecell-updown-firing, state within genotype, at alpha 0.05. The values
     are read with 0.133 Hz as Up/Down, since it has the n of the WT Up/Down group above. Reproduced
-    when neither genotype shows a significant state effect; the direction in each genotype is
-    reported.
+    when the WT state effect is not significant and the Fmr1 -/- rate is higher in Up/Down than in
+    FOA segments; the Fmr1 -/- state contrast and its p are reported but do not decide the claim,
+    as the paper reports no test for it.
 - id: fig3f-foa-time
   statement: Neurons of Fmr1 -/- and WT mice spend about the same fraction of time in the FOA state
     (56% and 52%).
@@ -447,9 +453,10 @@ claims:
   quote: we established that action potential kinetics were indistinguishable between WT and Fmr1
     –/– mice
   criterion: A claim of absence. Which kinetic measures and which test are in Suppl. Fig. 2, which
-    was not supplied; the Methods' default is the unpaired two-tailed t-test at alpha 0.05.
-    Readings for the measures are AP half-width, amplitude and threshold, each tested per cell.
-    Reproduced when none differs.
+    was not supplied, are open; the Methods' default is the unpaired two-tailed t-test at alpha
+    0.05, per cell. "Kinetics" allows measures of spike time course; readings K-a, spike width at
+    half amplitude; K-b, rise and decay times. Amplitude and threshold are not kinetics and are
+    shown as variants only. Reproduced when no kinetic measure of a reading differs.
 - id: fig4-updown-properties-similar
   statement: L2/3 Up states do not differ between WT and Fmr1 -/- mice at P14-16 in duration (1.30
     +/- 0.06 s against 1.29 +/- 0.14 s), frequency (0.38 against 0.36 Hz) or Up-Down step (7.05
@@ -467,11 +474,11 @@ claims:
   - about: Up state frequency
     test: t-test
     p: 0.64
-    n: 5 WT and 6 Fmr1 -/- cells
+    n: 5 WT and 6 Fmr1 -/- cells, given for duration and read as the same
   - about: Up-Down step
     test: t-test
     p: 0.21
-    n: 5 WT and 6 Fmr1 -/- cells
+    n: 5 WT and 6 Fmr1 -/- cells, given for duration and read as the same
   expected:
   - quantity: Up state duration, WT
     value: 1.30
@@ -571,8 +578,8 @@ claims:
     tolerance: 0.0676
   criterion: Needs the EEG recorded with each 3-min imaging recording. Per recording, the mean
     extrapolated firing rate and L/H power (0.5-4 Hz over 20-60 Hz, Chronux spectra); linear
-    regression, F-test. Reproduced when the KO slope is significant (p < 0.05) and the WT one is
-    not, with r2 within tolerance.
+    regression, F-test. Reproduced when the KO slope is significant (p < 0.05) and positive (firing
+    rises with L/H power, Results) and the WT one is not, with r2 within tolerance.
 - id: p30-40-firing-vs-lh
   statement: At P30-40 firing rate still correlates with L/H power in Fmr1 -/- mice (r2 = 0.73) but
     not in WT mice (r2 = 0.027).
@@ -655,7 +662,9 @@ claims:
     value: 0.20
     tolerance: 0.015
   criterion: Needs the EEG. Recordings with L/H power above 200, P14-16; unpaired two-tailed
-    t-tests. Reproduced when both tests give p < 0.05 with KO higher and the values are within
+    t-tests. Correlation of pairs within 100 um, as for Fig. 5d in the same paragraph, with the
+    shared readings of trace and measure; the Pearson result (Suppl. Fig. 3, not supplied) is a
+    variant. Reproduced when both tests give p < 0.05 with KO higher and the values are within
     tolerance (the paper's s.e.m.).
 - id: suppl4a-firing-vs-correlation
   statement: Across recordings, firing rate and correlation are strongly correlated in Fmr1 -/- mice
@@ -803,3 +812,19 @@ claims:
     two-tailed t-tests. Reproduced when WT shows p < 0.05 with isoflurane lower and KO shows no
     difference at alpha 0.05, with the values within tolerance (the paper's s.e.m.); the
     unanesthetized values are claim unanesthetized-p14-16-values.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, correlation measure. Spearman (C-a) is not supported by the text, which says "continuous-trace cross-correlations"; demoted to a variant. Named zero lag as a choice, since no lag window is given.
+  - fig1d-distance-dependent-decorrelation. Criterion now says Bonferroni over three bins is read from the three corrected p values; the text does not name the family.
+  - wholecell-state-modulation. The statement said neither genotype changes significantly; the paper tests only WT (p = 0.41) and gives the Fmr1 -/- case as a "tendency" with no values or test. Statement and criterion now judge WT on the paper's test and Fmr1 -/- on direction only.
+  - ap-kinetics-similar. The readings included amplitude and threshold, which are not kinetics; readings are now spike half-width or rise and decay times, with the measures marked open (Suppl. Fig. 2 not supplied).
+  - fig4-updown-properties-similar. The n for Up state frequency and Up-Down step is not printed; marked as read from the duration n.
+  - fig5c-firing-vs-lh-p14-16 (and so p30-40-firing-vs-lh, fast-imaging-control). The criterion now requires the Fmr1 -/- slope to be positive, as the Results say firing rises with L/H power.
+  - fig5ef-slow-wave-epochs. Criterion now names the pairs (within 100 um, as for Fig. 5d in the same paragraph) and the shared readings, with the Pearson result of Suppl. Fig. 3 as a variant.
+  - Checked all other claims against the Results and Online Methods. Statements, quotes, sources, statistics and tolerances match; the Discussion's three main findings are covered.
+  - Open. No figure legends or supplement were supplied (Suppl. Figs. 1 to 4). The Fig. 1d binning, the correlation measure of ref. 15, how "active" is defined for peaks of synchrony, and the shuffle method stay open, with readings named.
+  - Open. The Power delta over Power theta control ("similar results", not shown) has no claim; the paper gives no bands or numbers to test.
