@@ -114,3 +114,75 @@ def nucleus_diameter_um(arr: np.ndarray, pixel_um: float) -> tuple[float, int]:
     d = 2 * np.sqrt(areas / np.pi)
     keep = d[(d >= 3) & (d <= 20)]
     return (float(np.median(keep)) if len(keep) else float("nan")), int(len(keep))
+
+
+def blocks(scans: pd.DataFrame) -> pd.DataFrame:
+    """Split each mouse's images, in run order, into blocks: a run of 12.5X overviews and the
+    100X/200X fields that follow it up to the next overview (README, "ORGANIZATION").
+
+    Adds `block` (numbered per mouse) and `is_overview`."""
+    out = scans.sort_values(["participant_id", "run"]).copy()
+    out["is_overview"] = out.magnification == "12.5X"
+    prev = out.groupby("participant_id").is_overview.shift(fill_value=False)
+    start = out.is_overview & ~prev
+    out["block"] = start.groupby(out.participant_id).cumsum()
+    return out
+
+
+def _bandpass(arr: np.ndarray, scale: float | None = None) -> np.ndarray:
+    """Log intensity, optionally resampled by `scale`, band-passed (Gaussian sigma 2 minus sigma
+    20 pixels of the overview). A standard choice for matching tissue structure across stains
+    and exposures; it cannot change a claim's outcome."""
+    from scipy import ndimage
+    from skimage.transform import rescale
+
+    a = np.log1p(arr.astype(float))
+    if scale is not None:
+        a = rescale(a, scale, anti_aliasing=True)
+    return ndimage.gaussian_filter(a, 2) - ndimage.gaussian_filter(a, 20)
+
+
+def place(field: np.ndarray, overviews: dict, field_um: list[float]) -> pd.DataFrame:
+    """Normalized cross-correlation of a field with each overview, for each assumed field pixel
+    size (um). The overview's pixel size is the README's 5.16 um. Returns one row per overview
+    and pixel size: the peak correlation, its height in standard deviations of the correlation
+    map, and its position (overview pixels, top left)."""
+    from skimage.feature import match_template
+
+    bp = {k: _bandpass(v) for k, v in overviews.items()}
+    rows = []
+    for um in field_um:
+        f = _bandpass(field, um / PIXEL_UM["12.5X"])
+        for k, ov in bp.items():
+            if f.shape[0] >= ov.shape[0] - 10 or f.shape[1] >= ov.shape[1] - 10 or min(f.shape) < 16:
+                continue
+            c = match_template(ov, f)
+            i = np.unravel_index(int(c.argmax()), c.shape)
+            rows.append({"overview": k, "field_um": um, "ncc": float(c.max()),
+                         "z": float((c.max() - c.mean()) / c.std()), "y": int(i[0]), "x": int(i[1])})
+    return pd.DataFrame(rows)
+
+
+def bright_objects(arr: np.ndarray, k: float = 10.0, min_px: int = 9) -> pd.DataFrame:
+    """Compact bright objects in an Abeta42 image: the log image minus a Gaussian background
+    (sigma 50 pixels), thresholded at the median plus `k` scaled MADs, connected components of at
+    least `min_px` pixels. Returns each object's area and equivalent diameter in pixels and its
+    peak raw value. A descriptive count of candidate label sites, not the paper's identification
+    of cells and plaques, which was by eye on cell morphology across focal depths and against
+    wild-type autofluorescence (Methods, "Imaging, boundary determination, and quantification").
+    The threshold and size are standard choices, and the notebook shows the counts at two."""
+    from scipy import ndimage
+
+    a = np.log1p(arr.astype(float))
+    hp = a - ndimage.gaussian_filter(a, 50)
+    med = np.median(hp)
+    mad = 1.4826 * np.median(np.abs(hp - med))
+    mask = hp > med + k * mad
+    lab, n = ndimage.label(mask)
+    if n == 0:
+        return pd.DataFrame(columns=["area_px", "diam_px", "peak"])
+    idx = np.arange(1, n + 1)
+    area = ndimage.sum(mask, lab, idx)
+    peak = ndimage.maximum(arr, lab, idx)
+    df = pd.DataFrame({"area_px": area, "diam_px": 2 * np.sqrt(area / np.pi), "peak": peak})
+    return df[df.area_px >= min_px].reset_index(drop=True)

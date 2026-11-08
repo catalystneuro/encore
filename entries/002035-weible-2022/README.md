@@ -13,5 +13,8 @@ The dandiset holds the raw widefield images of 62 5XFAD mice. The region of 93% 
 recorded, no sampled image carries a stage position or section number, and the dandiset holds no
 counts, boundaries or atlas alignments, so no per-region value of the paper can be formed. The
 wild-type controls were not imaged. The notebook checks the subjects, the files and the stated
-image scales, and shows the region coverage. The attempt record is
+image scales, and shows the region coverage. It matches a sample of fields to the low-magnification
+overviews before them (26 of 66 placed, none at its stated scale, and no overview aligned to an
+atlas), and lists and shows the 561 region-labelled 200X Abeta42 images with the reasons they cannot
+be scored by the paper's criteria. The attempt record is
 [`attempts/002035-weible-2022-01.yaml`](../../attempts/002035-weible-2022-01.yaml).
