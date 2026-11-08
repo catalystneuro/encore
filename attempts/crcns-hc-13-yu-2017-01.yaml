@@ -1,0 +1,1279 @@
+schema_version: 2
+id: crcns-hc-13-yu-2017-01
+dataset:
+  archive: crcns
+  id: hc-13
+  version: unversioned
+  doi: 10.6080/K0H41PK8
+paper: doi:10.7554/elife.27621
+date: '2026-11-08'
+entry: crcns-hc-13-yu-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42480524315
+outcomes:
+- claim: fig1-iap-map-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pooled counts (83 IAPs, 659 or 679 MAPs) need the six W-track rats, which are not in
+    hc-13. CRCNS hc-6 (Karlsson, Carr and Frank, doi:10.6080/K0NK3BZJ) is public and holds nine
+    W-track rats, but the paper does not say which six rats or which days it used, and some come from
+    Kay et al. 2016, so the paper's W-track data cannot be identified in a public archive. The block
+    was not_runnable in the first round and is data_missing now, as the round-1 verifier gave it. The
+    foraging part of the count is under fig1s4b-foraging-counts (14 IAPs and 180 MAPs, not
+    reproduced), so the pooled count could not be reached on the foraging cells in any case.
+- claim: fig1s4b-foraging-counts
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig1s4b-foraging-counts
+  measured:
+  - 14
+  - 180
+  notes: 14 IAPs and 180 MAPs under O2 (a), 17 and 177 under (b), against 33 (tolerance 3.3) and 244 (24.4).
+    Unsmoothed speed (O3) gives 19 and 175. Of 395 CA1 unit-days 194 pass the width, rate and spike-count
+    rules; R1 gives none and N2 seven. Without the width rule in R1 and N2 (a variant the paper does not
+    state) there are 16 IAPs and 250 MAPs; the MAP count then falls within tolerance, the IAP count does
+    not. IAP threshold 2 Hz gives 21 IAPs. Unique units across days cannot be counted (no identifier across
+    days).
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  - Units counted per day (O4); the unique-unit variant cannot be run.
+  assumed: true
+- claim: fig1d-well-specificity
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig1d-well-specificity
+  notes: Median well specificity of the 14 foraging IAPs 0.998 (IQR 0.995 to 1.000; O2 b 0.997 over 17),
+    above 0.8 and 0.9. With rates divided by the maximum, as the Methods have it, the index exceeds 1
+    for 2 of 14 IAPs; divided by their sum the median is 0.989. MAPs also have a high median (0.992).
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  assumed: true
+- claim: fig1e-iap-lower-speed
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig1e-iap-lower-speed
+  notes: Foraging cells only. Median speed at spike times 11.80 cm/s for 14 IAPs and 27.79 cm/s for 180
+    MAPs, rank-sum p = 2e-05.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - Speed smoothed with a Gaussian of 0.25 s full width at half maximum (O3, standard choice); unsmoothed
+    speed gives p = 2.3e-05.
+  assumed: true
+- claim: fig1s4d-foraging-speed
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig1s4d-foraging-speed
+  notes: Median spike speed 11.80 cm/s for IAPs against 27.79 cm/s for MAPs, p = 2e-05 (O2 b p = 1.1e-06;
+    unsmoothed speed p = 2.3e-05). Per animal, T1 11.02 against 32.27 and S2 12.72 against 26.63 cm/s;
+    Q1, R1 and N2 have no IAP. The paper reports p < 1e-05; the direction and significance at 0.05 hold.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  assumed: true
+- claim: fig1f-iap-smaller-coverage
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig1f-iap-smaller-coverage
+  notes: 'Coverage (bins > 2 Hz) medians, IAPs against MAPs. 2 cm square bins 208 against 203 (p =
+    0.62); linearized on the four perimeter segments joining the wells 20 against 23 (p = 0.67); with
+    movement only (> 4 cm/s, a variant from the legend''s ''place fields on path segments'') 207
+    against 203 (p = 0.62) and 20 against 23 (p = 0.70). Variants: the linearization with the two
+    diagonals added (21 to 31% of moving frames are near a diagonal only) 32 against 31 (p = 0.47);
+    bins visited for at least 0.1 s 166 against 162 (p = 0.41, square) and 20 against 23 (p = 0.67,
+    linearized).'
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - The occupancy map is smoothed by normalized convolution over visited bins, a standard choice.
+  - Reading (b) projects positions on the four perimeter segments joining the wells, an assumption;
+    the maze also has diagonal paths ('Paths connect all reward wells', Figure 1, supplement 1A), so
+    the projection with the diagonals is a variant. Neither map sets a minimum occupancy (the paper
+    gives none); 0.1 s is a variant.
+  assumed: true
+- claim: fig1s1d-transition-interval
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig1s1d-transition-interval
+  measured: 14.3
+  notes: The peak of the autocorrelation of pooled entry and exit times after its first trough is at
+    14.3 s for all immobility periods (periods of at least 0.5 s 14.3 s, at least 1 s 16.5 s; well
+    visits as used for Figure 2, 14.1 s), outside 5.76 to 7.26 s. Runs of frames within 15 cm of a
+    well (a variant, radius not in the paper) give 4.1 s. No definition tried gives a peak in the
+    paper's range.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - The criterion's 'peak away from zero lag' is taken as the maximum after the first local minimum at
+    positive lag; 0.2 s bins and Gaussian sigma 0.5 s as the claims file gives.
+  - The well-visit variant of the entry and exit analyses (immobility periods of at least 0.5 s within 15
+    cm of a well) are shown as a further variant; the outcome is the same under every definition
+    run.
+  assumed: true
+- claim: fig2c-continuous-transition
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig2c-continuous-transition
+  notes: With every immobility period (O1 (b) as written), 94 MAP-IAP pairs at entry and 93 at exit
+    with > 100 coincident events (paper 207 and 217 over both tasks); the lower notch of the median
+    correlogram is above zero in all 50 bins from 0 to 0.5 s at entry and in all 50 bins from -0.5 to 0
+    s at exit. With the well-visit variant (81 and 81 pairs) it is above zero in 46 of 50 and 50 of 50.
+    It is above zero in 0.94 to 1.00 of the bins on the other side of zero lag too, and the median
+    correlogram holds about as much mass there (0.148 against 0.132 at entry, 0.138 against 0.146 at
+    exit, every immobility period), so the criterion as written does not separate the paper's smooth
+    and abrupt scenarios sharply. The first round printed the 'other side' from the criterion's own
+    side; that is corrected.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - Spikes are restricted to the union of the +-1.5 s windows and correlated over +-1.5 s, not window
+    by window; a standard choice.
+  - A variant takes entries and exits from well visits, immobility periods of at least 0.5 s whose
+    mean position is within 15 cm of the nearest well (visit_mask in the notebook); it is not a reading
+    in the claims file, and its radius and minimum duration are the attempt's own choices. Every
+    immobility period, as O1 (b) is written, numbers 326 to 1977 a day, with a median length of 0.23 to
+    0.37 s, and their +-1.5 s windows cover 32 to 62% of task time (median 53%); the visit windows
+    cover 9 to 37% (median 25%). Whether O1 (b) misreads the paper's entries, which appear to be visits
+    to a well (Figure 1, supplement 1B and C, 'periods at wells'), is asked in questions/crcns-hc-13.yaml.
+  assumed: true
+- claim: fig2s1cd-theta-autocorrelation
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig2s1cd-theta-autocorrelation
+  notes: 'With every immobility period (O1 (b) as written), at > 4 cm/s the mean autocorrelation has
+    a local maximum at 0.115 to 0.125 s for MAPs (150 and 151 cells) and IAPs (14), at entry and exit,
+    and its depth exceeds that at < 1 cm/s in all four cases (MAP 0.00653 against 0.00140 and 0.00636
+    against 0.00193; IAP 0.00104 against 0.00043 and 0.00135 against 0.00053). With the well-visit
+    variant three of four hold, MAPs at entry (0.00479 against 0.00244) and exit (0.00526 against
+    0.00255) and IAPs at exit (0.00147 against 0.00119), not IAPs at entry (0.00089 against 0.00093),
+    a near tie on small IAP depths. The outcome was partially reproduced after round 1, on the well
+    visits; round 3 agreed to take it from the claims file''s reading. The windows cover about half
+    of task time, so the test only weakly isolates transitions. If O1 (b) is revised to well visits,
+    the claim should be tested again.'
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - A variant takes entries and exits from well visits, immobility periods of at least 0.5 s whose
+    mean position is within 15 cm of the nearest well (visit_mask in the notebook); it is not a reading
+    in the claims file, and its radius and minimum duration are the attempt's own choices. Every
+    immobility period, as O1 (b) is written, numbers 326 to 1977 a day, with a median length of 0.23 to
+    0.37 s, and their +-1.5 s windows cover 32 to 62% of task time (median 53%); the visit windows
+    cover 9 to 37% (median 25%). Whether O1 (b) misreads the paper's entries, which appear to be visits
+    to a well (Figure 1, supplement 1B and C, 'periods at wells'), is asked in questions/crcns-hc-13.yaml.
+  assumed: true
+- claim: fig2s1ij-theta-behavior-correlation
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig2s1ij-theta-behavior-correlation
+  notes: Theta-scale and behavioural-scale peak offsets are uncorrelated. With every immobility period
+    (O1 (b) as written), entry MAP-IAP r = 0.030 (p = 0.78, 92 pairs), MAP-MAP r = -0.052 (p = 0.41,
+    248); exit -0.027 (p = 0.80) and 0.001 (p = 0.99). With the well-visit variant, 0.047 (p = 0.68,
+    79), -0.025 (p = 0.81, 99), 0.072 (p = 0.53) and 0.076 (p = 0.47). Spearman p >= 0.38. Leaving out pairs whose 3.3 s peak is
+    pinned within 0.15 s of the window edge (29 MAP-IAP, 108 MAP-MAP pairs) gives p >= 0.14.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The theta-scale peak is the largest raw 10 ms bin within +-125 ms; the legend does not say whether
+    it is smoothed.
+  - A variant takes entries and exits from well visits, immobility periods of at least 0.5 s whose
+    mean position is within 15 cm of the nearest well (visit_mask in the notebook); it is not a reading
+    in the claims file, and its radius and minimum duration are the attempt's own choices. Every
+    immobility period, as O1 (b) is written, numbers 326 to 1977 a day, with a median length of 0.23 to
+    0.37 s, and their +-1.5 s windows cover 32 to 62% of task time (median 53%); the visit windows
+    cover 9 to 37% (median 25%). Whether O1 (b) misreads the paper's entries, which appear to be visits
+    to a well (Figure 1, supplement 1B and C, 'periods at wells'), is asked in questions/crcns-hc-13.yaml.
+  assumed: true
+- claim: fig2s2-fewer-coincident-spikes
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig2s2-fewer-coincident-spikes
+  notes: Proportion of spike pairs within +-50 ms of those within +-3.3 s. All task spikes, MAP-IAP median
+    0.0075 (112 pairs) against MAP-MAP 0.0076 (630), p = 0.70; outside SWRs 0.0077 against 0.0060, p =
+    0.41. Only 2 IAP-IAP pairs (medians about 0.016, p = 0.28 and 0.31).
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  assumed: true
+- claim: fig3c-iap-swr-activation
+  outcome: partially_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig3c-iap-swr-activation
+  notes: MAPs, not-in-field SWRs, 0.14 to 0.25 Hz, p = 9e-11 over cells (a) and 1.7e-16 over SWRs (b).
+    IAPs, not-in-field SWRs, 0.51 to 0.84 Hz, p = 0.089 (a) and 0.0044 (b). IAPs, in-field SWRs, 7.32
+    to 6.99 Hz, p = 0.63 under both, 29% of cells higher after. Two of the three comparisons hold
+    under reading (b); the criterion needs all three. The criterion has no partial outcome; the effect
+    holds in part. With a fixed 3 SD threshold (sensitivity check) the MAP increase holds (p =
+    2.8e-30), the in-field IAP comparison fails (4.22 to 4.00 Hz, p = 1 and 0.53) and the not-in-field
+    IAP increase is not significant (p = 0.38 and 0.10).
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - An SWR is in the field of an IAP when its start is nearest the IAP's best well.
+  assumed: true
+- claim: fig3s3-iap-same-well-coactivity
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig3s3-iap-same-well-coactivity
+  notes: Under the claim's own selection only 2 IAP pairs are recorded on the same day, both at different
+    wells; there are no same-well pairs, so no test can be run (paper 12, 11 and 14 pairs over both tasks).
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+- claim: fig4a-swr-counts
+  outcome: partially_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4a-swr-counts
+  measured:
+  - 0.72
+  - 0.238
+  - 0.042
+  - 4998
+  - 1651
+  - 293
+  notes: Of 6942 SWRs with MAP or IAP spikes, 0.720 MAP only, 0.238 IAP only, 0.042 both; the first
+    two are within tolerance, 0.042 is below 0.063. Expected both 1482 (0.213); observed 293,
+    chi-square 1212, p = 1e-265. O2 (b) gives 0.678, 0.277 and 0.044. Counts are lower than the
+    paper's pooled 12881, 5009 and 1311, as expected from one task. Per animal, T1 0.024 and S2 0.072
+    with both. The expected count pools days without IAPs; on the 12 days with at least one IAP and
+    one MAP the fractions are 0.534, 0.396 and 0.070 (293 against 1175 expected, p = 2.5e-202), so the
+    third fraction is within tolerance there and the first two are not. A fixed 3 SD threshold
+    (sensitivity check, not the paper's method) gives 0.862, 0.090 and 0.049 over all days and 0.715,
+    0.184 and 0.101 on the 12 days, with SWRs with both again below expectation (p = 4e-24 and 3e-21).
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  assumed: true
+- claim: fig4b-coactivity
+  outcome: partially_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4b-coactivity
+  notes: Pairs with peak offset within 3.3 s. MAP-IAP lower than MAP-MAP under all four readings (O7 5
+    s and O6 a, medians -0.01 against 1.58, p = 2.3e-05; others p = 0.00015 to 0.016). Only one IAP-IAP
+    pair passes (z = -0.48, p = 0.66), so the second comparison cannot be made. The criterion needs both;
+    the effect holds in part.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  - Coactivity z-scores use the exact mean and SD of the permutation distribution (hypergeometric), the
+    limit of the paper's 5000 permutations (Methods, SWR coactivity); a standard choice.
+  assumed: true
+- claim: fig4s1b-offset-matched-coactivity
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4s1b-offset-matched-coactivity
+  notes: Under O7 (a) and O6 (a), MAP-MAP means exceed MAP-IAP means in all bins, p = 0.02, 0.037,
+    0.0018 and 8.6e-06 from 1 to 5 s. The 4 to 5 s bin holds pairs whose correlogram still rises at
+    the 5 s edge (97 pairs within 0.15 s of it); leaving them out, it holds 111 MAP-MAP and 23 MAP-IAP
+    pairs and still gives p = 0.0004, so all four bins hold without them. Under O6 (b) the 2 to 3 s
+    bin misses (p = 0.074); under O7 (b) (8 to 13 MAP-IAP pairs per bin) only 3 to 4 s is significant
+    with O6 (a) (p = 0.014), and no bin from 1 to 5 s with O6 (b) (3 to 4 s, p = 0.066).
+    The criterion asks for one reading; the outcome rests on the first reading listed, the only one
+    that passes.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - Coactivity z-scores use the exact mean and SD of the permutation distribution (hypergeometric), the
+    limit of the paper's 5000 permutations (Methods, SWR coactivity); a standard choice.
+  - The O7 peak is the argmax within the window, so pairs whose correlogram rises to the edge are
+    pinned there; a variant leaves out pairs within 0.15 s (one smoothing sigma) of the edge.
+  assumed: true
+- claim: fig4s2c-spatial-proximity-control
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4s2c-spatial-proximity-control
+  notes: Panel B, MAP-MAP means exceed MAP-IAP in all four bins, but p < 0.05 only at 0.5 to 0.75 m (0.0019)
+    and 0.75 to 1 m (0.011); 3 and 4 MAP-IAP pairs below 0.5 m (p = 0.38, 0.54). Panel C, 7 MAP-IAP and
+    141 MAP-MAP pairs closer than 0.5 m (p = 0.28), no IAP-IAP pair. Neither panel holds.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - Coactivity z-scores use the exact mean and SD of the permutation distribution (hypergeometric), the
+    limit of the paper's 5000 permutations (Methods, SWR coactivity); a standard choice.
+  - Field peak from the 2 cm occupancy map over all task time.
+  assumed: true
+- claim: fig4s3-overlapping-pairs
+  outcome: partially_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4s3-overlapping-pairs
+  notes: With every immobility period (O1 (b) as written), MAP-IAP lower than MAP-MAP at entry (p =
+    9.9e-09) and exit (p = 3e-08), O6 (a); with the well-visit variant p = 2.6e-05 and 0.00028. Against
+    the 2 IAP-IAP pairs (medians -1.60 O6 a, -1.75 O6 b) MAP-IAP is higher, not lower (medians -0.31
+    to -0.06); under O6 (b) that comparison gives p = 0.027 and 0.028 (all periods) and 0.03 (visits),
+    in the wrong direction. Two of four
+    comparisons hold under every reading and definition.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - Coactivity z-scores use the exact mean and SD of the permutation distribution (hypergeometric), the
+    limit of the paper's 5000 permutations (Methods, SWR coactivity); a standard choice.
+  - A variant takes entries and exits from well visits, immobility periods of at least 0.5 s whose
+    mean position is within 15 cm of the nearest well (visit_mask in the notebook); it is not a reading
+    in the claims file, and its radius and minimum duration are the attempt's own choices. Every
+    immobility period, as O1 (b) is written, numbers 326 to 1977 a day, with a median length of 0.23 to
+    0.37 s, and their +-1.5 s windows cover 32 to 62% of task time (median 53%); the visit windows
+    cover 9 to 37% (median 25%). Whether O1 (b) misreads the paper's entries, which appear to be visits
+    to a well (Figure 1, supplement 1B and C, 'periods at wells'), is asked in questions/crcns-hc-13.yaml.
+  assumed: true
+- claim: fig4c-iap-swr-shorter
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4c-iap-swr-shorter
+  notes: Median durations IAP-SWR 52.7 ms, MAP-SWR 74.0 ms, MAP & IAP-SWR 79.3 ms; KS p = 7.9e-98, 8.2e-30
+    and 0.019. T1 54.7, 81.3, 100.0 ms; S2 50.0, 75.3, 76.7 ms.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  assumed: true
+- claim: fig4d-iap-swr-lower-power
+  outcome: partially_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4d-iap-swr-lower-power
+  notes: 150 to 250 Hz power, IAP-SWRs lower than MAP-SWRs (p = 2.2e-153) and MAP & IAP-SWRs (p = 4.2e-26);
+    MAP & IAP-SWRs not higher than MAP-SWRs (medians 0.794 and 0.882, p = 0.34). IAP-SWR 25 to 35 Hz power
+    mean 0.573 z (p = 3.8e-54). Two of the three orderings and the gamma increase hold.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The data set has no ground-referenced LFP (Methods, Spectrograms); the stored LFP is used. The
+    Methods (Recording) say CA1 LFP was recorded against a corpus callosum tetrode; the data set does not
+    say how the stored LFP is referenced.
+  - Mean and SD per frequency are estimated from windows every 100 ms, not 10 ms.
+  assumed: true
+- claim: fig4s5-cells-spikes-per-swr
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4s5-cells-spikes-per-swr
+  measured:
+  - 1.03
+  - 1.2
+  - 2.12
+  - 2.16
+  notes: Active cells per SWR, IAP 1.03 against MAP 1.20 (p = 1.6e-14); spikes per SWR 2.12 against 2.16
+    (p = 0.059). Three means are within tolerance; the MAP-SWR spike mean 2.16 is below 2.241. The criterion's
+    partial outcome needs both tests to hold, and the spike test does not.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  assumed: true
+- claim: fig4s67-matched-subsamples
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4s67-matched-subsamples
+  notes: For matching on cells and on spikes, under both weightings, the median subsample p of duration
+    and of power is below 0.0001 and the MAP-SWR median is higher in all 1000 subsamples (median differences
+    0.017 to 0.021 s and 0.60 to 0.70 z).
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  assumed: true
+- claim: fig4s8-interspersed
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4s8-interspersed
+  notes: Outside |lag| < 0.2 s, 18 of 360 bins (0.050) exceed +-2 z, at the criterion's 5% bound; z from
+    -1.30 to 3.79. The outcome rests on the bound being inclusive.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - MAP-SWR times jittered independently per event, uniform over +-1 s; correlograms within sessions.
+  assumed: true
+- claim: fig4e-iap-spike-earlier
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig4e-iap-spike-earlier
+  notes: 293 MAP & IAP-SWRs. All spikes, IAP median 31.8 ms against MAP 51.2 ms after start, p = 1e-15;
+    first spikes 20.1 against 42.9 ms, p = 7e-14. Duration-matched resampling (200 resamples, weights
+    to the overlap of the duration distributions), median p = 4e-07 and 9.4e-09, IAPs earlier in all.
+  deviations:
+  - Tested on the five foraging rats only; the six W-track rats the paper pools with them are not in hc-13,
+    and their data (CRCNS hc-6) were not used.
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - Duration matching by weighting spikes to the overlap of the two SWR-duration distributions (20 ms
+    bins); the paper gives no method.
+  assumed: true
+- claim: pfc-unit-selection
+  outcome: partially_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:pfc-unit-selection
+  measured:
+  - 732
+  - 94
+  notes: 732 PFC unit-days (707 with spikes), within tolerance of 712. 349 are active; 94 are selected
+    under both readings, below 100.8; only S2 and T1, the rats with IAPs, contribute. With CA1 cells selected
+    without the width rule in R1 and N2 (a variant), 113 units are selected, within tolerance. The criterion
+    has no partial outcome; one of the two counts holds.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  assumed: true
+- claim: fig5-pfc-modulated-fraction
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig5-pfc-modulated-fraction
+  measured:
+  - 0.33
+  - 31
+  notes: 31 of 94 selected units (0.330) are modulated during MAP- or IAP-SWRs (18 MAP-SWR, 14
+    IAP-SWR), against 0.63 (tolerance 0.063) and 70 units. 22 of 94 (0.234) are modulated by all SWRs
+    together. With a fixed 3 SD threshold (sensitivity check, not the paper's method) 28 of the same
+    94 (0.298) are modulated, so the low fraction does not come from the low threshold.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  - PETH +-0.5 s, 10 ms bins and shifts uniform over the window, the claims file's choice; the outcome
+    rests on it.
+  assumed: true
+- claim: fig5dg-pfc-groups
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig5dg-pfc-groups
+  measured:
+  - 2
+  - 12
+  - 17
+  - 0
+  notes: Groups 2 (IAP-SWR+), 12 (MAP-SWR+), 17 (inhibited), 0 (both excited) against 14, 20, 33, 3.
+    Both-excited is below its expectation of 3.9 (two-sided p = 0.027, one-sided 0.016), but IAP-SWR+
+    also differs from 7.8 (p = 0.013), where the criterion requires p >= 0.05. Centring the 1 s window
+    on SWR start or midpoint gives the same groups. With a fixed 3 SD threshold (sensitivity check)
+    the groups are 2, 8, 17 and 1 of 28 modulated, and IAP-SWR+ is again below expectation (p =
+    0.028). The binomial tests treat units as independent, as the paper's do.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  assumed: true
+- claim: fig5s1d-shuffle-control
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig5s1d-shuffle-control
+  notes: 31 modulated units. Median |MAP-SWR index - IAP-SWR index| 0.394 in the data; each unit's
+    mean over 100 identity shuffles has median 0.328 (rank-sum p = 0.36), over 100 duration-matched
+    draws 0.495 (p = 0.73). The matched part holds; the shuffle is not lower at p < 0.05.
+    Single-replicate tests vary (median p = 0.11; below 0.05 in 23 of 100; the first gives 0.043), so
+    the first round's single-replicate p = 0.17 was within that spread, and the averaged test decides.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - 100 identity permutations and 100 duration-matched draws per unit (seeded), averaged per unit; the paper does not
+    say how many. Single replicates are shown as a variant.
+  assumed: true
+- claim: pfc-regression-joint-swr
+  outcome: not_reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:pfc-regression-joint-swr
+  measured: 0.272
+  notes: Reading (a), 20 modulated units with all three SWR types, R2 = 0.272 (F p = 0.067); reading (b),
+    82 selected units with all three, R2 = 0.044 (p = 0.17); against 0.73 (tolerance 0.073).
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  assumed: true
+- claim: fig6c-similarity-index
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The criterion fixes well entry as the infrared beam break (Methods, PFC and CA1 spiking activity),
+    and hc-13 holds no beam-break or reward-well times: the task struct holds only the epoch type. Searched
+    every file''s fields (data check).'
+- claim: fig6e-coincidence-index
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig6e-coincidence-index
+  notes: Pairing within a PFC unit, IAP-SWR+ median 0.156 (22 values from only 2 units), MAP-SWR+
+    -1.708 (117 from 12), rank-sum p = 0.00058; inhibited -0.869. All combinations give 0.337 and
+    -1.604. The rank-sum treats values that share PFC units and CA1 cells as independent, as the
+    paper's test does, so p overstates the evidence; the IAP-SWR+ side rests on two units, from PFC
+    groups (fig5dg) that did not reproduce.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - The spike-width rule (< 0.4 ms, Methods, Cell selection) is applied to the stored widths; in R1 and
+    N2 these run about 0.2 ms longer than in the other rats, so R1 keeps no CA1 cell and N2 seven. All
+    IAPs come from T1 and S2.
+  assumed: true
+- claim: fig6s2-no-proximity-difference
+  outcome: reproduced
+  notebook: reproduce_yu_2017.ipynb
+  output: claim:fig6s2-no-proximity-difference
+  notes: Claim of absence, rank-sum at 0.05. Mean spike-position distance, within-group median 106.29
+    cm (14 pairs) against across-group 107.09 cm (28), p = 0.52; peak offset 1.50 against 1.85 s, p =
+    0.34.
+  deviations:
+  - 'Wells and well entries and exits follow O1 reading (b), the only one the data allow (no beam-break
+    times): wells are the peaks of immobile occupancy in the outer part of each quadrant of the maze,
+    pooled over an animal''s days, and entries and exits are the starts and ends of immobility periods.
+    The paper does not say how to find wells without the beam break; this is an assumption. In every animal
+    the four wells sit at the corners of the tracked area.'
+  - SWRs are detected under O5 reading (a), the envelope amplitude. Reading (b), the squared envelope,
+    puts the threshold below the mean on all 45 days, so events have no bound; it is shown in the data
+    check and not used. The band-pass filter (4th-order Butterworth, forward and back) is a standard choice;
+    the paper names none. Under reading (a) 13 to 20% of immobile samples exceed the threshold, about what the
+    rule passes on synthetic pure noise (13%); a fixed 3 SD threshold is run as a sensitivity check only.
+  - Mean distance over spike pairs estimated from up to 2000 spikes per cell (seeded); peak offset from
+    the raw 100 ms correlogram over +-10 s.
+  assumed: true
+findings:
+- kind: data_missing
+  statement: The data set holds no reward-well entry times (the infrared beam breaks the Methods use),
+    no well positions and no rewarded-well contingencies; the task struct holds only the epoch type. Well
+    visits must be inferred from position, and the claim that uses beam-break entries cannot be tested.
+- kind: data_missing
+  statement: Only the task sessions (epochs 2, 4 and 6) are included; the rest sessions in the sleep box
+    that the paper describes are not.
+- kind: metadata_insufficient
+  statement: Stored spike widths of R1 and N2 run about 0.2 ms longer than in T1, S2 and Q1 (median 0.50
+    to 0.57 ms against 0.25 to 0.34 ms, CA1 and PFC alike), so the paper's < 0.4 ms pyramidal-cell rule
+    removes every R1 and nearly every N2 CA1 unit. The Methods name two spike filters (600 to 6000 Hz
+    or 300 to 6000 Hz); the data set does not say which animal used which, or how width should be compared
+    across them.
+- kind: metadata_insufficient
+  statement: No corpus callosum reference channel and no statement of the LFP's reference are included;
+    the LFP is one channel per tetrode, presumably referenced at recording, so the ground-referenced LFP
+    the Methods use for spectrograms cannot be rebuilt.
+- kind: metadata_insufficient
+  statement: 11 unit-days (in all five rats) have an empty area field in both cellinfo and tetinfo, though they
+    have spikes, so it cannot be told whether they are CA1 or PFC units; they are left out.
+- kind: other
+  statement: Within a session, LFP start times differ across tetrodes by up to 45 ms in R1 and N2 (none
+    in T1, S2, Q1); users must align tetrodes by their starttime field.
+- kind: metadata_error
+  statement: The data descriptor's summary says 'The CRCNS.org hc-7 data set contains recordings', for
+    data set hc-13.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The SWR threshold (99.99th percentile of the mirrored noise
+    distribution of 'envelope power') lies at about 0 to 0.8 z of the envelope amplitude here, giving
+    about 2 SWRs per second of immobility, and below the mean for the squared envelope. Was the envelope
+    amplitude or its square used, over which times was the histogram taken, and how many awake SWRs per
+    day did the foraging rats give?
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were IAPs and MAPs selected in R1 and N2, whose stored
+    spike widths mostly exceed 0.4 ms? Without the width rule there the MAP count (250) and the PFC selection
+    (113) match the paper's 244 and 112.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Without beam-break times, which definition of a well visit
+    (radius, minimum duration) reproduces the entries and exits of Figures 1 and 2 and the 6.4 to 6.6
+    s interval of Figure 1, supplement 1D?
+verifications:
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed,
+    the helper module and the claims file, with the paper under paper/. Round-1 report in transcripts/crcns-hc-13/verifier-1-report.md.
+  results:
+  - claim: fig1-iap-map-counts
+    agrees: true
+    outcome: blocked
+    reason: The pooled count needs the W-track rats. hc-6 is on the archive (9 rats, about 23 GB), but
+      the paper does not say which six rats or days it used, and some come from Kay et al. 2016. The foraging
+      part is tested under fig1s4b and fails, so the pooled count could not be reached anyway.
+    response: 'blocked_by changed from not_runnable to data_missing, as the verifier gives it, with that
+      reason in the notes. The pooled test was not run (problem 2): the paper''s W-track rats and days
+      cannot be identified in hc-6.'
+  - claim: fig1s4b-foraging-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 14 IAPs / 180 MAPs under O2(a) and 17 / 177 under O2(b), against 33 and 244; neither count
+      is in tolerance. The no-width-rule variant gives 16 / 250 (MAP count in tolerance), but that is
+      not a reading the claims file allows.
+    response: No change of outcome. The 11 unit-days with an empty area field (problem 10) are now counted
+      in the data check.
+  - claim: fig1d-well-specificity
+    agrees: true
+    outcome: reproduced
+    reason: IAP median index 0.998 (n=14), above the 0.8 and 0.9 bounds. MAPs score 0.992 too, so the
+      index barely separates the two classes.
+    response: No change. The notes already give the MAP median.
+  - claim: fig1e-iap-lower-speed
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced as a foraging-only variant. IAP median speed 11.8 vs MAP 27.8 cm/s, p=2e-5. The
+      pooled test was not run.
+    response: No change of outcome. The header and summary now say that the with_inputs outcomes are those
+      of the foraging-only test (problem 2); the W-track rats were not processed because the paper's selection
+      of them cannot be identified.
+  - claim: fig1s4d-foraging-speed
+    agrees: true
+    outcome: reproduced
+    reason: p from 2e-5 to 1e-6, IAP lower, under all O2/O3 readings.
+    response: No change.
+  - claim: fig1f-iap-smaller-coverage
+    agrees: true
+    outcome: not_reproduced
+    reason: p=0.62 to 0.70 under both readings and both movement variants. Under the square-bin reading
+      the IAP median is not smaller (208 vs 203).
+    response: 'No change of outcome. Problem 9: an image of moving and immobile occupancy with the wells
+      and perimeter segments is added; 21 to 31% of moving frames lie near a diagonal only, so a linearization
+      with the diagonals is added (p = 0.47), and a 0.1 s minimum-occupancy variant (p = 0.41 and 0.67).
+      All stay null.'
+  - claim: fig1s1d-transition-interval
+    agrees: true
+    outcome: not_reproduced
+    reason: The peak is at 14.3 or 16.5 s (4.1 s for the 15 cm variant), outside 5.76 to 7.26 s. Only
+      O1(b) was possible.
+    response: No change of outcome. The well-visit definition used for Figure 2 now is also shown (14.1
+      s).
+  - claim: fig2c-continuous-transition
+    agrees: true
+    outcome: reproduced
+    reason: The lower notch is above 0 in 50 of 50 bins at both entry and exit. The criterion is nearly
+      trivial, and the windows probably cover most of task time (problem 3).
+    response: 'Problem 3: the coverage is now printed per day; windows around every immobility period
+      cover 32 to 62% of task time (median 53%). Entries and exits are now taken from well visits (immobility
+      periods of at least 0.5 s within 15 cm of a well, an assumption), covering 9 to 37% (median 25%).
+      Under visits 46 of 50 and 50 of 50 bins pass, so the outcome stands; both definitions are shown.
+      A bug that printed the criterion''s own side as ''the other side'' is fixed.'
+  - claim: fig2s1cd-theta-autocorrelation
+    agrees: true
+    outcome: reproduced
+    reason: During movement, MAP and IAP peaks fall at 0.115 to 0.125 s. Peak depth is larger moving than
+      still in all four cases (IAP depths are tiny, 0.0010 vs 0.0004).
+    response: Outcome changed to partially_reproduced. On the well visits adopted for problem 3, the IAP
+      depth at entry is not larger moving than still (0.00089 against 0.00093), while the other three
+      cases hold; with every immobility period all four hold, as before.
+  - claim: fig2s1ij-theta-behavior-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: '|r| <= 0.07 and p >= 0.41 for all four pair-type and window cases, under Pearson and Spearman.'
+    response: No change of outcome. Run on well visits and on every immobility period, and (problem 4)
+      with pairs whose 3.3 s peak is pinned at the window edge left out; no correlation reaches p < 0.05
+      (p >= 0.14).
+  - claim: fig2s2-fewer-coincident-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: MAP-IAP 0.0075 vs MAP-MAP 0.0076, p=0.7. There are only 2 IAP-IAP pairs.
+    response: No change.
+  - claim: fig3c-iap-swr-activation
+    agrees: true
+    outcome: partially_reproduced
+    reason: MAP not-in-field holds (p=9e-11). IAP not-in-field holds only under reading (b) (p=0.0044).
+      IAP in-field fails under both readings (7.32 to 6.99 Hz, p=0.63). The criterion needs all three.
+    response: 'No change of outcome. Problem 1 (threshold) answered with outputs: the data check now prints
+      the fraction of immobile time inside events (9 to 14%) and of immobile samples above the threshold
+      (13 to 20%), the rule on synthetic Rayleigh noise (13% pass), and a fixed 3 SD threshold as a sensitivity
+      check (0.18 to 0.34 events per second). The claims file''s reading is kept and a question about
+      it is added to questions/crcns-hc-13.yaml. Under 3 SD the in-field IAP comparison still fails.'
+  - claim: fig3s3-iap-same-well-coactivity
+    agrees: true
+    outcome: blocked
+    reason: 2 IAP pairs, none at the same well, so the groups cannot be formed.
+    response: No change.
+  - claim: fig4a-swr-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Fractions 0.720 and 0.238 are in tolerance; 0.042 is not (0.07 +- 0.007). Observed 'both'
+      is far below expected (293 vs 1482, p about 1e-265), and the same holds in T1 and S2 separately.
+    response: 'No change of outcome. Problem 7: a variant on the 12 days with at least one IAP and one
+      MAP is added (0.534, 0.396, 0.070; p = 2.5e-202). Problem 1 (threshold) answered with outputs: the
+      data check now prints the fraction of immobile time inside events (9 to 14%) and of immobile samples
+      above the threshold (13 to 20%), the rule on synthetic Rayleigh noise (13% pass), and a fixed 3
+      SD threshold as a sensitivity check (0.18 to 0.34 events per second). The claims file''s reading
+      is kept and a question about it is added to questions/crcns-hc-13.yaml.'
+  - claim: fig4b-coactivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: MAP-IAP is below MAP-MAP under all four O6/O7 readings (p from 2e-5 to 0.016). The IAP-IAP
+      comparison has n <= 1, so it cannot be tested, and that one pair is lower than MAP-IAP.
+    response: No change.
+  - claim: fig4s1b-offset-matched-coactivity
+    agrees: false
+    outcome: partially_reproduced
+    reason: All four 1 to 5 s bins pass only under O7(a)+O6(a). With O6(b), the 2 to 3 s bin fails (p=0.074).
+      With O7(b), only 1 of 4 bins passes. The (a) 4 to 5 s bin is likely inflated by peaks pinned at
+      the +-5 s edge (problem 4).
+    response: 'Outcome kept as reproduced; the disagreement is recorded. Problem 4: histograms of the
+      off5, off10 and off33 offsets are printed (162 pairs in the last 0.5 s of the 5 s window, 97 within
+      0.15 s of its edge). Leaving the pinned pairs out, the 4 to 5 s bin still passes (p = 0.0004, 111
+      and 23 pairs), so the four bins hold under O7(a)+O6(a) without them. The criterion takes a result
+      under any one of the readings it lists (O6, O7).'
+  - claim: fig4s2c-spatial-proximity-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Panel B is significant in only 2 of 4 bins (MAP-IAP n=3 and 4 in the near bins). Panel C,
+      Kruskal-Wallis p=0.28 and 0.22, with no IAP-IAP pairs.
+    response: No change.
+  - claim: fig4s3-overlapping-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: MAP-IAP is below MAP-MAP at entry and exit (p <= 3e-8). Against IAP-IAP (n=2), p=0.23 under
+      O6(a); under O6(b) p=0.027, but MAP-IAP is higher. So 2 of 4 comparisons pass.
+    response: 'No change of outcome. Problem 6: the direction is now printed for the IAP-IAP comparison
+      too (MAP-IAP not lower), and the conclusion says the O6(b) p = 0.027 goes the wrong way. Run on
+      well visits as well (problem 3): 2 of 4 again.'
+  - claim: fig4c-iap-swr-shorter
+    agrees: true
+    outcome: reproduced
+    reason: Medians 52.7 < 74.0 < 79.3 ms; all three KS tests p<0.05 (the weakest is 0.019). The order
+      also holds in S2 and T1 separately.
+    response: No change.
+  - claim: fig4d-iap-swr-lower-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: IAP-SWR power is below both other types (p<1e-25), and IAP-SWR 25 to 35 Hz power is above
+      0. MAP vs MAP & IAP fails, p=0.34, and the median for MAP & IAP is lower.
+    response: 'No change of outcome. Problem 10: the statement that the stored LFP is referenced to corpus
+      callosum is now attributed to the paper''s Methods, and the notebook says the data set does not
+      state the reference.'
+  - claim: fig4s5-cells-spikes-per-swr
+    agrees: true
+    outcome: not_reproduced
+    reason: The cells test holds (1.03 vs 1.20, p=1.6e-14). The spikes test fails (2.12 vs 2.16, p=0.059),
+      and the MAP spike mean 2.16 is outside 2.49 +- 0.249. The criterion's partial outcome needs both
+      tests to pass.
+    response: No change.
+  - claim: fig4s67-matched-subsamples
+    agrees: true
+    outcome: reproduced
+    reason: In all 8 matching, reading and measure combinations, the median p is about 0 and the MAP-SWR
+      median is higher in 100% of subsamples.
+    response: No change.
+  - claim: fig4s8-interspersed
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced at the bound. 18 of 360 bins (5.0%) have |z|>2, exactly at the <=5% limit; the
+      maximum z is 3.79.
+    response: No change; the notes say it rests on the bound being inclusive.
+  - claim: fig4e-iap-spike-earlier
+    agrees: true
+    outcome: reproduced
+    reason: IAP spikes are earlier under both readings (raw p <= 7e-14; duration-matched median p <= 4e-7;
+      earlier in 100% of resamples).
+    response: No change.
+  - claim: pfc-unit-selection
+    agrees: true
+    outcome: partially_reproduced
+    reason: 732 PFC unit-days is in tolerance of 712. 94 selected under both readings is below 112 +-
+      11.2. The no-width-rule variant gives 113.
+    response: No change.
+  - claim: fig5-pfc-modulated-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: 31 of 94 modulated (0.33) vs 0.63 +- 0.063.
+    response: 'No change of outcome. Problem 1 (threshold) answered with outputs: the data check now prints
+      the fraction of immobile time inside events (9 to 14%) and of immobile samples above the threshold
+      (13 to 20%), the rule on synthetic Rayleigh noise (13% pass), and a fixed 3 SD threshold as a sensitivity
+      check (0.18 to 0.34 events per second). The claims file''s reading is kept and a question about
+      it is added to questions/crcns-hc-13.yaml. Under 3 SD, 28 of 94 (0.298) are modulated.'
+  - claim: fig5dg-pfc-groups
+    agrees: true
+    outcome: not_reproduced
+    reason: Groups of 2 / 12 / 17 / 0 vs 14 / 20 / 33 / 3. IAP-SWR+ is significantly below its expectation
+      (p=0.013), where the paper reports n.s.
+    response: 'No change of outcome. Under 3 SD the groups are 2, 8, 17 and 1, and IAP-SWR+ is again below
+      expectation (p = 0.028). Problem 8: the conclusion notes the binomial tests treat units as independent,
+      as the paper''s do.'
+  - claim: fig5s1d-shuffle-control
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Shuffle 0.331 vs data 0.394, p=0.17, so not significantly lower. The matched set does not
+      differ (p=0.75). Problem 5: a single permutation and a single matched draw per unit; averaging over
+      many shuffles per unit could change the result.'
+    response: 'No change of outcome. Problem 5: 100 permutations and 100 matched draws per unit, averaged
+      per unit, give p = 0.36 (shuffle) and 0.73 (matched); single-replicate tests are shown (median p
+      = 0.11, below 0.05 in 23 of 100).'
+  - claim: pfc-regression-joint-swr
+    agrees: true
+    outcome: not_reproduced
+    reason: R2 = 0.272 (n=20, p=0.067) and 0.044 (n=82), vs 0.73.
+    response: No change.
+  - claim: fig6c-similarity-index
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only data.tar.gz with six file types per animal, and the task struct holds
+      only type. There are no beam-break times, and the claims file allows only O1(a) for Fig 6.
+    response: No change.
+  - claim: fig6e-coincidence-index
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced but fragile. IAP-SWR+ median +0.156, MAP-SWR+ -1.708, p=0.00058. But this rests
+      on 2 IAP-SWR+ PFC units, and the PFC groups themselves did not reproduce (fig5dg). Problem 8: overlapping
+      pairwise comparisons from 2 PFC units are treated as independent (the paper''s test too), so p=0.00058
+      overstates the evidence.'
+    response: No change of outcome. The conclusion and notes now say the p-value overstates the evidence
+      because the values share units, and that the groups come from fig5dg, which did not reproduce.
+  - claim: fig6s2-no-proximity-difference
+    agrees: true
+    outcome: reproduced
+    reason: p=0.52 for distance and 0.34 for offset. The test has low power (n=14 within-group and 28
+      across-group pairs, vs 39 and 169).
+    response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revision after round 1, the helper module, the claims file and the
+    attempt record, with the paper under paper/. Round-2 report in transcripts/crcns-hc-13/verifier-2-report.md.
+  results:
+  - claim: fig1-iap-map-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: 'No change. Text corrected where the report found it unsupported: the data check now says each day
+      has three task sessions except one day of T1 with two (35 over 12 days); the header no longer gives a size
+      for hc-6; the README gives the run time and peak memory printed by a new last code cell (776 and 1047 s in two runs, 6.2 GB); the
+      clock check says the IAP rate falls by about half or more, by two thirds in S2 (7.65 to 2.51 Hz).'
+  - claim: fig1s4b-foraging-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The no-width-rule variant is left unchanged, which is correct (round-1 point 11).
+    response: No change.
+  - claim: fig1d-well-specificity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig1e-iap-lower-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig1s4d-foraging-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig1f-iap-smaller-coverage
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig1s1d-transition-interval
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig2c-continuous-transition
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Reproduced, but the test is weak: the lower notch is also above zero on the side the criterion
+      does not test, in 94 to 100% of bins (cell 61); the conclusion says so. Well visits, not a reading in the
+      claims file, replaced O1 (b) as the main definition, and the shared O1 (b) deviation, which says entries and
+      exits are the starts and ends of immobility periods, contradicts the next deviation, which says they are those
+      of well visits.'
+    response: Every immobility period (O1 (b) as written) is now the main definition in the notebook, the notes
+      and the deviations, and well visits are a variant; the contradictory deviation is rewritten. The outcome is
+      the same under both.
+  - claim: fig2s1cd-theta-autocorrelation
+    agrees: false
+    outcome: reproduced
+    reason: Disagrees. The criterion takes entry and exit from O1; under O1 (b), which makes every immobility period
+      an entry or exit, all four depth comparisons hold (cell 64), so the outcome is reproduced. The partial outcome
+      rests on well visits, which the claims file has no reading for, the same kind of departure refused for the
+      no-width-rule variant in fig1s4b; the failing case is a near tie (0.00089 against 0.00093, 13 IAPs). The record
+      should keep the claims file's reading for the outcome and give the visit result as a variant. The visit definition
+      may well be closer to the paper (its 'periods at wells' are visits), in which case O1 (b) is a misreading
+      to report to the claims file, not to fix in the attempt; the paper's 0 s peak suggests the 0.5 s minimum excludes
+      some real visits. The record also contradicts itself on entries in the O1 (b) deviation.
+    response: Outcome kept as partially_reproduced, as round 2 may not change it; reproduced, the result under O1
+      (b) as written, is recorded under proposed for a third round. The notebook and record now put every immobility
+      period first and the visits as a variant, the contradictory deviation is rewritten, and the question whether
+      O1 (b) misreads the paper's entries, with the 0 s peak, is added to questions/crcns-hc-13.yaml.
+  - claim: fig2s1ij-theta-behavior-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Well visits, not a reading in the claims file, replaced O1 (b) as the main definition; only
+      fig2s1cd's outcome depends on this. The O1 (b) deviation contradicts the visit deviation.
+    response: Every immobility period is now the main definition and well visits a variant; the deviation is rewritten.
+      No change of outcome.
+  - claim: fig2s2-fewer-coincident-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig3c-iap-swr-activation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The 3 SD check leaves the outcome as it was, so the low threshold is not what drives the failure
+      (round-1 point 1 resolved).
+    response: No change.
+  - claim: fig3s3-iap-same-well-coactivity
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4a-swr-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The 3 SD check leaves the outcome as it was, and the 12-day variant matches the printed outputs
+      (round-1 points 1 and 7 resolved).
+    response: No change.
+  - claim: fig4b-coactivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4s1b-offset-matched-coactivity
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, changing the round-1 view. The criterion''s parent, fig4b, says ''under one reading of O6 and
+      O7'', as do the other multi-reading criteria, so passing under O7 (a) with O6 (a) is a fair reading. The edge
+      concern is settled by cell 82: with pinned pairs left out the 4 to 5 s bin still passes (111 MAP-MAP against
+      23 MAP-IAP pairs, p = 0.0004). It remains fragile, passing under only one of four reading combinations, with
+      8 to 13 MAP-IAP pairs per bin under O7 (b). Cell 83 and the notes say that with O7 (b) only the 3 to 4 s bin
+      is significant; that holds only under O6 (a) (p = 0.014); under O7 (b) with O6 (b) no bin from 1 to 5 s is
+      significant (3 to 4 s, p = 0.066).'
+    response: Cell 83 and the notes now give the O7 (b) result under each O6 reading (p = 0.014 under O6 (a); no
+      bin under O6 (b), 3 to 4 s p = 0.066). No change of outcome.
+  - claim: fig4s2c-spatial-proximity-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4s3-overlapping-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The medians (-0.31 to -0.06) and the wrong-direction p = 0.03 and 0.027 match the outputs. Well
+      visits, not a reading in the claims file, replaced O1 (b) as the main definition, and the O1 (b) deviation
+      contradicts the visit deviation.
+    response: Every immobility period is now the main definition and well visits a variant; the deviation is rewritten.
+      No change of outcome.
+  - claim: fig4c-iap-swr-shorter
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4d-iap-swr-lower-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4s5-cells-spikes-per-swr
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4s67-matched-subsamples
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4s8-interspersed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig4e-iap-spike-earlier
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The duration weighting is reasonable.
+    response: No change.
+  - claim: pfc-unit-selection
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig5-pfc-modulated-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The 3 SD check leaves the outcome as it was; the sensitivity run matches the outputs.
+    response: No change.
+  - claim: fig5dg-pfc-groups
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The 3 SD check leaves the outcome as it was; the sensitivity run matches the outputs.
+    response: No change.
+  - claim: fig5s1d-shuffle-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Averaging over 100 replicates per unit is reasonable, and 0.394 / 0.328 / 0.495, p = 0.36 and
+      0.73, below 0.05 in 23 of 100 single replicates, match the outputs (round-1 point 5 resolved).
+    response: No change.
+  - claim: pfc-regression-joint-swr
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig6c-similarity-index
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+  - claim: fig6e-coincidence-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The independence of the values is now stated (round-1 point 8 resolved).
+    response: No change.
+  - claim: fig6s2-no-proximity-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged since round 1, and the numbers checked match the printed outputs.
+    response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The change of outcome proposed after round 2 (fig2s1cd-theta-autocorrelation) and the analysis behind
+    it in the executed notebook (cells 58, 64 and 65), with the claims file and the attempt record. Round-3 report
+    in transcripts/crcns-hc-13/verifier-3-report.md.
+  results:
+  - claim: fig2s1cd-theta-autocorrelation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. O1 (b), every immobility period, is the claims file's reading as written, and under it moving
+      cells have a local maximum in the band and a greater depth than still cells in all four cases (cell 64).
+      The partial outcome came from the well-visit variant, which is not a reading in the claims file, so taking
+      the outcome from the claims file's reading undoes a deviation and is not a choice made to get the result.
+      The criterion has no partial clause. Cell 65 says the maxima lie between 0.105 and 0.125 s; cell 64 gives
+      0.115 to 0.125 s. The windows cover 32 to 62% of task time, so the test only weakly isolates transitions,
+      and if the claims file is revised the outcome should be tested again.
+    response: Outcome changed to reproduced and proposed removed. Cell 65 now gives 0.115 to 0.125 s and states
+      the window coverage and the small IAP depths; cell 65 and the notes say the outcome should be tested
+      again if O1 (b) is revised to well visits.
