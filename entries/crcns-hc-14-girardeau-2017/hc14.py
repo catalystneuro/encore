@@ -31,12 +31,24 @@ Where parameters come from:
 - The air puff location and direction of each session are taken from the head position at the
   air puff times in the run (puf.evt and .whl). This is a standard choice: only six sessions carry
   an `airpuffloc` file, and where they do, it is compared in the notebook.
-- The hand-scored sleep states are not in the data set. `substitute_nrem` stands in for NREM: periods
-  of at least NREM_MIN_S (30 s) inside the pre-sleep and post-sleep subsessions in which the head speed,
-  smoothed over NREM_SMOOTH_S (1 s), stays below NREM_SPEED (4 cm/s). This is an assumption of this
-  attempt, not the paper's method (the paper scored states by hand from spectrograms and an
-  accelerometer, Online Methods, Preprocessing). It cannot separate REM from NREM. The notebook checks
-  it against the authors' NREM firing rates (StatesFR) and NREM pair correlations (EVcontribs).
+- The hand-scored sleep states are not in the data set. `decode_states` stands in for them: the
+  session is cut into STATE_EPOCH_S (5 s) epochs, and each epoch is given the state of the authors'
+  StatesFR table (columns 5 to 8) under which the spike counts of all the session's units are most
+  likely (independent Poisson counts at the table's rates), after summing the log likelihoods over
+  STATE_SMOOTH (12 epochs, 60 s). NREM is column 6 and REM column 5, in immobile epochs (head speed,
+  from positions smoothed over 1 s, below NREM_SPEED, 4 cm/s, the paper's "immobility") of pre-sleep
+  and post-sleep. This is an assumption of this attempt, not the paper's method (the paper scored states
+  by hand from spectrograms and an accelerometer, Online Methods, Preprocessing): it rebuilds the
+  authors' labels from the rates their labels produced. The 60-s smoothing is a choice; 30 s is a
+  variant. The notebook checks the result against the authors' NREM and REM pair correlations
+  (EVcontribs), which the decoder does not use.
+- `substitute_nrem`, the substitute of the first revision, is kept as a variant: periods of at least
+  NREM_MIN_S (30 s) in pre-sleep and post-sleep in which the head speed, smoothed over NREM_SMOOTH_S
+  (1 s), stays below NREM_SPEED. Its speed comes from unsmoothed positions, whose pixel jitter makes
+  still periods look like movement, so it covers only part of the sleep.
+- Rat08's structures other than BLA are read from the text labels of the "All" sheet of
+  Rat08-Info/StructureMapping.ods (`rat08_structure_mapping`); CeC and CeM are the central nuclei,
+  mapped to the label CeCM that the other rats use, and "PIr" is read as Pir.
 - The speed computation (difference of the LED midpoint, centred, then a 5-sample moving mean)
   stands in for FMAToolbox LinearVelocity with smoothing 5, which the claims file names; it is a
   standard choice that the paper does not describe further.
@@ -70,6 +82,9 @@ SPEED_SMOOTH = 5
 NREM_SPEED = 4.0          # cm/s; substitute NREM (assumption, see substitute_nrem)
 NREM_SMOOTH_S = 1.0       # s
 NREM_MIN_S = 30.0         # s
+STATE_EPOCH_S = 5.0       # s; decoded states (assumption, see decode_states)
+STATE_SMOOTH = 12         # epochs (60 s); 6 is a variant
+STATE_COLS = ("rem", "nrem", "wake", "other")   # StatesFR columns 5 to 8, as read in the notebook
 
 
 # ---------------------------------------------------------------- streaming
@@ -127,9 +142,9 @@ def load_summary():
         out["Structures.batch"] = data.decode()
     for rat in (8, 9, 10, 11):
         for name, data in stream_tar(f"Rat{rat:02d}/Rat{rat:02d}-Info.tar.gz",
-                                     lambda n: "/Structures" in n):
+                                     lambda n: "/Structure" in n):
             key = f"Rat{rat:02d}/" + name.split("/")[-1]
-            out[key] = _mat(data) if name.endswith(".mat") else data.decode()
+            out[key] = _mat(data) if name.endswith(".mat") else data if name.endswith(".ods") else data.decode()
     return out
 
 
@@ -144,8 +159,9 @@ def structure_shanks(summary):
     """{(rat, session index, shank): label} from the deposited structure lists.
 
     Rat09 and Rat10: Structures/<label>.mat, rows (session index, shank). Rat11: Structures.txt,
-    blocks headed by a label with rows (session index, shank). Rat08: only BLA shanks, from
-    Batch-Files/Structures.batch (left shanks, right shanks per session, in session order).
+    blocks headed by a label with rows (session index, shank). Rat08: BLA shanks from
+    Batch-Files/Structures.batch (left shanks, right shanks per session, in session order), the other
+    labels from StructureMapping.ods (rat08_structure_mapping).
     Hippocampal shanks are not in these lists (Rat10 has Hpc.mat); see hpc_shanks.
     """
     lab = {}
@@ -168,6 +184,9 @@ def structure_shanks(summary):
         m = re.fullmatch(r"(\d+)\s+(\d+)", line)
         if m and label and label != "Rat11-Structures":
             lab[(11, int(m.group(1)), int(m.group(2)))] = label
+    for (sess, sh), label in rat08_structure_mapping(summary["Rat08/StructureMapping.ods"]).items():
+        if label != "BLA":                      # BLA comes from Structures.batch, compared in the notebook
+            lab[(8, sess, sh)] = label
     sess = 0
     for line in summary["Structures.batch"].splitlines():
         m = re.match(r"\S*Rat08-\d+\s+\[([^\]]*)\]\s*\[([^\]]*)\]", line)
@@ -178,6 +197,40 @@ def structure_shanks(summary):
             for sh in _matlab_range(grp):
                 lab[(8, sess, sh)] = "BLA"
     return lab
+
+
+def rat08_structure_mapping(ods, raw=False):
+    """{(session index, shank): label} from the "All" sheet of Rat08's StructureMapping.ods.
+
+    Rows 2 to 14 of the sheet hold, for each session, its index (1 to 13), the labels of shanks 5 to 12
+    (left), the date (dd/mm/yy) and the labels of shanks 13 to 20 (right); the header row above names
+    the shanks. CeC and CeM become CeCM and PIr becomes Pir unless raw; other labels are kept as written.
+    """
+    import xml.etree.ElementTree as ET
+    import zipfile
+    T = "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}"
+    X = "{urn:oasis:names:tc:opendocument:xmlns:text:1.0}"
+    root = ET.fromstring(zipfile.ZipFile(io.BytesIO(ods)).read("content.xml"))
+    sheet = next(t for t in root.iter(T + "table") if t.get(T + "name") == "All")
+    rows = []
+    for row in sheet.findall(T + "table-row"):
+        cells = []
+        for c in row:
+            n = min(int(c.get(T + "number-columns-repeated", "1")), 100)
+            cells += [" ".join("".join(p.itertext()) for p in c.iter(X + "p")).strip()] * n
+        rows.append(cells)
+        if len(rows) > 14:
+            break
+    out = {}
+    for cells in rows[1:14]:
+        j = next(i for i, v in enumerate(cells) if re.fullmatch(r"\d\d/\d\d/\d\d", v))
+        sess = int(cells[j - 9])
+        for k in range(8):
+            for sh, v in ((5 + k, cells[j - 8 + k]), (13 + k, cells[j + 1 + k])):
+                if not raw:
+                    v = {"CeC": "CeCM", "CeM": "CeCM", "PIr": "Pir"}.get(v, v)
+                out[(sess, sh)] = v
+    return out
 
 
 def _matlab_range(s):
@@ -269,8 +322,53 @@ def substitute_nrem(whl, subs, speed=NREM_SPEED, smooth_s=NREM_SMOOTH_S, min_s=N
     return out
 
 
+def smoothed_speed(whl, smooth_s=NREM_SMOOTH_S):
+    """Head speed (cm/s) from the LED midpoint smoothed over smooth_s (a moving mean that skips lost
+    samples), at WHL_FS; NaN where no sample is within the window."""
+    pos = position_cm(whl)
+    good = ~np.isnan(pos[:, 0])
+    k = np.ones(int(round(smooth_s * WHL_FS)) | 1)
+    cover = np.convolve(good.astype(float), k, mode="same")
+    with np.errstate(invalid="ignore", divide="ignore"):
+        ps = np.array([np.convolve(np.where(good, pos[:, i], 0), k, mode="same") / cover for i in range(2)]).T
+    return np.hypot(*np.gradient(ps, axis=0).T) * WHL_FS
+
+
+def decode_states(counts, rates, epoch=STATE_EPOCH_S, smooth=STATE_SMOOTH):
+    """Most likely StatesFR state of each epoch (see the module docstring).
+
+    counts: (units, epochs) spike counts; rates: (units, 4) rates in Hz of StatesFR columns 5 to 8.
+    Returns (labels, log likelihoods (epochs, 4) after smoothing over `smooth` epochs). Rates get a
+    floor of 0.01 Hz so that a silent state does not veto an epoch (a standard choice).
+    """
+    lam = (np.asarray(rates, float) + 0.01) * epoch
+    ll = counts.T @ np.log(lam) - lam.sum(0)
+    k = np.ones(smooth) / smooth
+    lls = np.array([np.convolve(ll[:, j], k, mode="same") for j in range(ll.shape[1])]).T
+    return lls.argmax(1), lls
+
+
+def state_intervals(labels, still, subs, state, epoch=STATE_EPOCH_S):
+    """{"pre": [...], "post": [...]} runs of epochs with labels == state and still, inside pre-sleep
+    and post-sleep (epoch i covers [i epoch, (i + 1) epoch))."""
+    out = {"pre": [], "post": []}
+    sel = (labels == state) & still
+    for _, name, s0, s1 in subs:
+        side = "pre" if name == "presleep" else "post" if name == "postsleep" else None
+        if not side:
+            continue
+        i0, i1 = int(np.ceil(s0 / epoch)), int(np.floor(s1 / epoch))
+        m = np.zeros(len(sel), bool)
+        m[i0:i1] = sel[i0:i1]
+        e = np.flatnonzero(np.diff(np.r_[0, m.astype(int), 0]))
+        out[side] += [(a * epoch, b * epoch) for a, b in zip(e[::2], e[1::2])]
+    for side in out:
+        out[side].sort()
+    return out
+
+
 def load_session(folder, keep_units=None, epochs_keep=("prerun", "run", "postrun"), extra_shanks=(),
-                 extra_epochs=()):
+                 extra_epochs=(), state_rates=None):
     """Stream one session's clu archive and reduce it.
 
     Returns a dict with: `subsessions` [(number, name, start, stop)] in s, from cat.evt; `puff` air puff times (s); `rewards`;
@@ -278,7 +376,10 @@ def load_session(folder, keep_units=None, epochs_keep=("prerun", "run", "postrun
     `airpuffloc` text or None; `units` list of (shank, clu, n spikes over the session); `spikes`
     {(shank, clu): times in s} for every unit, restricted to the subsessions named in `epochs_keep` (all when None); for the units on the
     shanks in `extra_shanks`, the subsessions in `extra_epochs` and the substitute NREM intervals are kept too.
-    `nrem` holds the substitute NREM intervals (substitute_nrem).
+    `nrem` and `rem` hold the decoded NREM and REM intervals (decode_states, from `state_rates`,
+    {(shank, clu): rates of StatesFR columns 5 to 8}), `nrem_30s` and `rem_30s` the same with 30-s
+    smoothing, `nrem_imm` the first revision's substitute (substitute_nrem); `states` holds the epoch
+    labels, the immobility of each epoch and the units used.
     """
     rat = folder[:5]
     path = f"{rat}/{folder}/{folder}_clu.tar.gz"
@@ -308,17 +409,43 @@ def load_session(folder, keep_units=None, epochs_keep=("prerun", "run", "postrun
     out["airpuffloc"] = files["airpuffloc"].decode() if "airpuffloc" in files else None
     keep = [(a, b) for _, name, a, b in out["subsessions"]
             if epochs_keep is None or name in epochs_keep]
-    out["nrem"] = substitute_nrem(out["whl"], out["subsessions"])
-    keep_x = keep + [(a, b) for _, name, a, b in out["subsessions"] if name in extra_epochs] \
-        + out["nrem"]["pre"] + out["nrem"]["post"]
+    out["nrem_imm"] = substitute_nrem(out["whl"], out["subsessions"])
+    shanks = sorted(int(k.split(".")[-1]) for k in files if re.search(r"\.clu\.\d+$", k))
+    parsed = {}
+    for sh in shanks:
+        clu = np.loadtxt(io.BytesIO(files.pop(f"{folder}.clu.{sh}")), dtype=np.int32)[1:]
+        res = np.loadtxt(io.BytesIO(files.pop(f"{folder}.res.{sh}")), dtype=np.int64)
+        parsed[sh] = (clu, res / SPIKE_FS)
+    # decoded states
+    T = out["whl"].shape[0] / WHL_FS
+    n_ep = int(T // STATE_EPOCH_S)
+    edges = np.arange(n_ep + 1) * STATE_EPOCH_S
+    v = smoothed_speed(out["whl"])
+    still = np.array([np.nanmedian(v[int(a * WHL_FS):int((a + STATE_EPOCH_S) * WHL_FS)]) < NREM_SPEED
+                      if np.isfinite(v[int(a * WHL_FS):int((a + STATE_EPOCH_S) * WHL_FS)]).any() else False
+                      for a in edges[:-1]])
+    used, cnt, rts = [], [], []
+    for sh, (clu, t) in parsed.items():
+        for c in np.unique(clu):
+            r = (state_rates or {}).get((sh, int(c)))
+            if r is not None and not np.isnan(r).any():
+                used.append((sh, int(c))); cnt.append(np.histogram(t[clu == c], edges)[0]); rts.append(r)
+    for sfx, sm in (("", STATE_SMOOTH), ("_30s", STATE_SMOOTH // 2)):
+        if used:
+            labels, _ = decode_states(np.array(cnt, float), np.array(rts), smooth=sm)
+        else:
+            labels = np.full(n_ep, -1)
+        out["nrem" + sfx] = state_intervals(labels, still, out["subsessions"], STATE_COLS.index("nrem"))
+        out["rem" + sfx] = state_intervals(labels, still, out["subsessions"], STATE_COLS.index("rem"))
+        if not sfx:
+            out["states"] = dict(labels=labels, still=still, units=used)
+    keep_x = keep + [(a, b) for _, name, a, b in out["subsessions"] if name in extra_epochs]
+    for k in ("nrem", "rem", "nrem_30s", "rem_30s", "nrem_imm"):
+        keep_x += out[k]["pre"] + out[k]["post"]
     extra_shanks = set(extra_shanks)
     units, spikes = [], {}
-    shanks = sorted(int(k.split(".")[-1]) for k in files if re.search(r"\.clu\.\d+$", k))
     for sh in shanks:
-        clu = np.loadtxt(io.BytesIO(files.pop(f"{folder}.clu.{sh}")), dtype=np.int32)
-        res = np.loadtxt(io.BytesIO(files.pop(f"{folder}.res.{sh}")), dtype=np.int64)
-        clu = clu[1:]
-        t = res / SPIKE_FS
+        clu, t = parsed.pop(sh)
         sel = in_intervals(t, keep)
         sel_x = in_intervals(t, keep_x)
         for c in np.unique(clu):
@@ -335,12 +462,15 @@ def load_session(folder, keep_units=None, epochs_keep=("prerun", "run", "postrun
     return out
 
 
-def load_sessions(folders, workers=3, extra_shanks=None, **kw):
+def load_sessions(folders, workers=3, extra_shanks=None, state_rates=None, **kw):
     """load_session over several folders in parallel processes, in the order given.
-    `extra_shanks` is {folder: set of shanks} for load_session's extra_shanks."""
+    `extra_shanks` is {folder: set of shanks} for load_session's extra_shanks, and `state_rates`
+    {folder: state rates} for its state_rates."""
     extra_shanks = extra_shanks or {}
+    state_rates = state_rates or {}
     with ProcessPoolExecutor(workers) as ex:
-        futs = [ex.submit(load_session, f, extra_shanks=extra_shanks.get(f, ()), **kw) for f in folders]
+        futs = [ex.submit(load_session, f, extra_shanks=extra_shanks.get(f, ()), state_rates=state_rates.get(f),
+                          **kw) for f in folders]
         return [f.result() for f in futs]
 
 
@@ -441,9 +571,15 @@ def ev_rev(pre, run, post):
 def _zbins(spikes, ivs, bin=BIN):
     """Counts in `bin`-s bins over each interval, concatenated, z-scored per cell (0 where flat),
     with the start time of each bin. One histogram per cell over all intervals; the bins that span the
-    gaps between intervals are dropped."""
+    gaps between intervals are dropped (intervals that touch are joined, so no bin is lost there)."""
+    merged = []
+    for a, b in sorted(ivs):                   # intervals that touch or overlap are joined first
+        if merged and a <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], b)
+        else:
+            merged.append([a, b])
     edges, keep = [], []
-    for a, b in sorted(ivs):
+    for a, b in merged:
         e = np.arange(a, b + bin / 2, bin)
         if len(e) < 2:
             continue
