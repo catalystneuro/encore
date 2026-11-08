@@ -10,7 +10,7 @@ behavior and pupil data of the paper are not in it.
 | Sessions and units link to the paper's code outputs | Partially reproduced (assumption) |
 | 4,152 units in ACAd, PL, ILA and ORBm | Reproduced |
 | 1,945 units fitted with the GLM | Reproduced (assumption) |
-| Light modulates mPFC units in Vglut2 and Esr1, not Npy mice; sound and air puff in all | Not reproduced (assumption) |
+| Light modulates mPFC units in Vglut2 and Esr1, not Npy mice; sound and air puff in all | Partially reproduced (assumption) |
 | Mean opto tuning score above controls in Vglut2 and Esr1 | Not reproduced (assumption) |
 | Counts of opto-tuned units per genotype | Partially reproduced (assumption) |
 | Narrow- and wide-spiking classes, both opto-tuned | Reproduced |
@@ -32,10 +32,11 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 Several outcomes rest on the period over which the GLM was fitted, which the paper does not state; the
-paper's code outputs match a fit over blocks 1 to 4. The attempt record, with the reasons, the
+paper's code outputs match a fit over blocks 1 to 4. Several counts of tuned units depend on the random
+shifts of the GLM, so the notebook shows them over ten seeds. The attempt record, with the reasons, the
 differences from the paper's method and the findings about the dataset, is
 [`attempts/000473-calvigioni-2023-01.yaml`](../../attempts/000473-calvigioni-2023-01.yaml).
 
-- `reproduce_calvigioni_2023.ipynb`: the analysis. It takes about 12 minutes, most of it the decoding and the GLM.
+- `reproduce_calvigioni_2023.ipynb`: the analysis. It takes about 13 minutes, most of it the decoding and the GLM.
 - `esr1npx.py`: streaming the files, the unit selection, the GLM tuning scores (closed-form Poisson fit with
   circular shifts) and trial-aligned rates. Other notebooks on this dandiset can import it.

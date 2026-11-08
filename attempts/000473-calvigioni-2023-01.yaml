@@ -20,6 +20,9 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/42440020076
 inputs:
+- what: The file list of BioStudies S-BSST1069 and its metadata.tsv.gz (Ephys_Category codes), read only to show
+    why fig2d-markers is blocked.
+  source: https://www.ebi.ac.uk/biostudies/studies/S-BSST1069 (accession S-BSST1069)
 - what: Session table (utilities/Aversion_session_description.tsv), the genotype of each session.
   source: https://github.com/PierreLeMerre/Esr1_NPX_code at commit 85187f3
 - what: Per-session GLM outputs (analysis/GLM_fitted/*_tmu.mat, *_tuning_scores.mat, *_tuned_bol.mat) and mean firing
@@ -46,10 +49,11 @@ outcomes:
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
 - claim: ed7a-unit-counts
   outcome: reproduced
   notebook: reproduce_calvigioni_2023.ipynb
@@ -81,45 +85,57 @@ outcomes:
   assumed: true
   notes: Reading (a), count per 100 ms bin above 0.2, over blocks 1 to 4, gives 1,995 (Ctl 492, Vglut2 743, Npy
     443, Esr1 317), all within 10%. Reading (b), 0.2 Hz, gives 3,758 and fails. Over the whole session reading (a)
-    gives 2,195 and fails for Ctl, Npy and Esr1.
+    gives 2,195 and fails for Ctl, Npy and Esr1. With the 'LFP saturation' series reading (a) gives 1,970 (Ctl 492,
+    Vglut2 737, Npy 425, Esr1 316), also within 10%.
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
     binned counts from files not in the repository; the same script holds a commented restriction to blocks 1 to
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
 - claim: fig4e-opto-modulation-genotypes
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_calvigioni_2023.ipynb
   output: claim:fig4e-opto-modulation-genotypes
   assumed: true
   notes: Opto-tuned fraction of GLM-fitted units, Ctl 49/492 (10.0%), Vglut2 369/743 (49.7%, Fisher p = 6.9e-52),
-    Esr1 110/317 (34.7%, p = 1.2e-17), Npy 64/443 (14.4%, p = 0.044). Npy is higher than Ctl at p < 0.05, which
-    the criterion excludes; the rest holds, with all four genotypes above chance for sound 1 (41 to 64% tuned) and
-    air puff (37 to 50%). Over the whole session Npy is below Ctl (6.7% against 21.4%) and the criterion would be
-    met; with the code's own tuned flags Npy (14.5%) does not differ from Ctl (11.0%, p = 0.128). The Npy excess
-    comes from two of four mice (33/201 and 26/94). Second reading, block-2 PSTH over 0.7 to 1.2 s, mean z Vglut2
-    1.81 and Esr1 1.75 (medians 0.38 and 0.42), Ctl -0.010 and Npy 0.0004 (medians -0.14 and -0.15, p = 3.7e-11
-    and 2.0e-6 against 0). The claim's statement that Npy units are not modulated by the light holds in the PSTH
-    reading, not in the GLM reading the criterion names.
+    Esr1 110/317 (34.7%, p = 1.2e-17), Npy 64/443 (14.4%, p = 0.044). All four genotypes exceed chance for sound
+    1 (41 to 64% tuned) and air puff (37 to 50%), binomial p below 1e-290 against 0.11% and below 1e-246 against
+    0.25%, above the false-positive rate measured for the tuned flags on null copies of the units (18 of 7,980 tests,
+    0.23%, 95% CI 0.13 to 0.36%; the excess over 0.11% comes from the extreme percentiles of 1,000 shifts, which the
+    paper's code uses too). These parts hold under every seed, period and saturation series shown. The part 'Npy does not'
+    fails on the criterion's test with seed 0 (p = 0.044), so the claim holds in part. That failure is fragile.
+    Over ten seeds of the shifts Npy is above Ctl at p < 0.05 in 5 (p 0.014 to 0.357); with Bonferroni for three
+    comparisons p = 0.132; over mice the Npy fractions (0.009 to 0.277, 4 mice) do not differ from Ctl (0.037 to
+    0.211, 5 mice, Mann-Whitney p = 0.905), while Vglut2 (p = 0.008) and Esr1 (p = 0.030) do. Two of four Npy mice
+    carry the excess (33/201 and 26/94). With the 'LFP saturation' series Npy is 15.5% against 10.4% (p = 0.022);
+    over the whole session Npy is below Ctl (6.7% against 21.4%); with the code's own tuned flags Npy (14.5%) does
+    not differ from Ctl (11.0%, p = 0.128). Second reading, block-2 PSTH over 0.7 to 1.2 s, mean z Vglut2 1.81
+    and Esr1 1.75 (medians 0.38 and 0.42), Ctl -0.010 and Npy 0.0004 (medians -0.14 and -0.15, p = 3.7e-11 and
+    2.0e-6 against 0), so in that reading p alone does not separate the genotypes. The outcome was not_reproduced
+    before round 1 of verification and is now partially_reproduced (see verifications).
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
     binned counts from files not in the repository; the same script holds a commented restriction to blocks 1 to
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The Poisson GLM is fitted by its closed form (exact for mutually exclusive 0/1 regressors with an intercept),
     with all circular shifts computed by FFT; in session 147463 light trains outside block 2 overlap other regressors
     in 288 bins, which are left out of that session's fit.
   - Fisher's exact test and the binomial test are the criterion's choices, not the paper's.
+  - The tuned flags depend on the random shifts; seed 0 decides the outcome as a standard choice, and nine more
+    seeds are shown, with the per-mouse test and a Bonferroni correction as variants.
 - claim: fig4g-opto-tuning-score
   outcome: not_reproduced
   notebook: reproduce_calvigioni_2023.ipynb
@@ -134,19 +150,22 @@ outcomes:
     Esr1 1.93, all within tolerance. Vglut2 exceeds Ctl (corrected p = 0.012), Npy does not (0.83), but Esr1 does
     not reach corrected p < 0.05 (p = 0.11) with 7 mice, as 3 of the 10 Esr1 mice have no units in the four subregions
     (the code's outputs also have none for them). The code's own tuning scores give Esr1 corrected p = 0.159 over
-    the same 7 mice. Reading (b) and the whole-session period put the means outside tolerance, with Esr1 not significant.
-    No genotype differs from Ctl for sound 1, sound 2 or air puff (corrected p 0.17 to 1). The paper's n of 10 Esr1
-    mice cannot be reached with these data.
+    the same 7 mice. Over ten seeds of the shifts the Esr1 corrected p is 0.072 to 0.11, and 0.072 with the 'LFP
+    saturation' series. Reading (b) and the whole-session period put the means outside tolerance, with Esr1 not
+    significant. No genotype differs from Ctl for sound 1, sound 2 or air puff (corrected p 0.17 to 1). Supplementary
+    Table 6 gives N = 10 Esr1 and N = 5 Npy mice and Esr1 corrected p = 0.045; the dandiset and the code's outputs
+    have units for only 7 Esr1 and 4 Npy mice, so the paper's n cannot be reached with these data.
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
     binned counts from files not in the repository; the same script holds a commented restriction to blocks 1 to
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The Poisson GLM is fitted by its closed form (exact for mutually exclusive 0/1 regressors with an intercept),
     with all circular shifts computed by FFT; in session 147463 light trains outside block 2 overlap other regressors
     in 288 bins, which are left out of that session's fit.
@@ -166,18 +185,21 @@ outcomes:
   assumed: true
   notes: Positive and negative opto-tuned units, Ctl 23 and 26, Vglut2 294 and 75, Npy 36 and 28, Esr1 90 and 20;
     5 of 8 within 10% (Ctl positive, Npy positive and Vglut2 negative outside). Vglut2 (369) and Esr1 (110) have
-    more tuned units than Ctl (49) and Npy (64). The whole-session period matches none of the eight; the code's
-    own flags match all eight.
+    more tuned units than Ctl (49) and Npy (64). The count within 10% depends on the seed of the shifts; over ten
+    seeds it is 4 (2 seeds), 5 (4), 6 (2) or 7 (2), so 4 of 10 seeds reach the six the criterion asks for, and
+    the ordering holds in all ten; the outcome is that of seed 0 and of 6 of 10 seeds. The 'LFP saturation' series
+    gives 4 of 8, the whole-session period none of the eight, and the code's own flags all eight.
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
     binned counts from files not in the repository; the same script holds a commented restriction to blocks 1 to
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The Poisson GLM is fitted by its closed form (exact for mutually exclusive 0/1 regressors with an intercept),
     with all circular shifts computed by FFT; in session 147463 light trains outside block 2 overlap other regressors
     in 288 bins, which are left out of that session's fit.
@@ -189,13 +211,14 @@ outcomes:
   - 606
   - 3484
   notes: FS flag 606 units and RS flag 3,484 among the 4,159 selected, both within tolerance (69 have neither flag).
-    All FS units have a peak-to-trough below 0.38 ms and all RS units above 0.44 ms. Opto-positive units, Vglut2
+    576 of the 606 FS units have a peak-to-trough below 0.38 ms and all RS units lie above 0.44 ms. Opto-positive units, Vglut2
     213 WS and 71 NS, Esr1 57 WS and 31 NS (Supplementary Table 7, 253 and 33, 77 and 13).
   deviations:
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
 - claim: ed8r-comodulated-units
   outcome: reproduced
   notebook: reproduce_calvigioni_2023.ipynb
@@ -235,10 +258,11 @@ outcomes:
     2.7% and 2.8%. Reading (b) finds at most 2 units in any genotype, so the result holds under reading (a) only.
     Block 4 (blue noise and air puff) gives 15 to 25% in all genotypes.
   deviations:
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The comparison with Ctl is the criterion's choice.
 - claim: ed9a-pca-divergent-block2
   outcome: reproduced
@@ -246,13 +270,15 @@ outcomes:
   output: claim:ed9a-pca-divergent-block2
   notes: Mean distance to the Ctl trajectory over 0.7 to 1.2 s (20 draws of 550 units), block 2 Vglut2 15.64, Esr1
     11.78, Npy 1.37; blocks 1 and 3 0.56 to 1.51 for all; block 4 Vglut2 8.61, Npy 8.41, Esr1 5.77. The condition
-    holds in 20 of 20 draws for both Vglut2 and Esr1. The block-4 distances are larger than the 'similar in block
-    4' of the statement suggests, for Npy as well.
+    holds in 20 of 20 draws for both Vglut2 and Esr1. The criterion does not test the statement's 'similar in
+    block 4', and on this measure it does not hold (block-4 distances 5.77 to 8.61, against 0.56 to 1.51 in blocks
+    1 and 3). Whether the criterion should test it is asked of a reader in questions/000473.yaml.
   deviations:
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - Units are z-scored over the four blocks and projected without centering, as Extended_Data_Fig9a_PCA.py does;
     the distance measure is the criterion's.
 - claim: fig4h-opto-clusters
@@ -263,18 +289,23 @@ outcomes:
   assumed: true
   notes: Clusters 1 and 2 (64 and 87 units) have opto as most common primary tuning (62% and 70%) and all their
     units come from Vglut2 (61, 74) and Esr1 (3, 13) mice. The quality control keeps all 1,995 fitted units, outside
-    the tolerance of 1,770 or 1,788 (+- 10%), so the expected count is not met. The 5-point gausswin of the code
-    is the same kernel as the Methods' Gaussian of sigma 0.8 bins and gives the same clusters.
+    the tolerance of 1,770 or 1,788 (+- 10%), so the expected count is not met. Under the code's rule (more than
+    200 bins above 0.5 Hz in the smoothed trial averages) the fewest active bins of any fitted unit is 454, and units
+    fitted at 2 Hz or more cannot fail it. Unsmoothed averages keep 1,995, z-scored rates (|z| > 0.5) 1,974 and
+    single trials 266; keeping 1,770 would need a cutoff of 1,308 active bins. The 5-point gausswin of the code
+    is the same kernel as the Methods' Gaussian of sigma 0.8 bins and gives the same clusters, so it is a check,
+    not a separate reading.
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
     binned counts from files not in the repository; the same script holds a commented restriction to blocks 1 to
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - Fitted units are this attempt's 1,995, not the code's 1,937.
 - claim: ed9bg-state-clusters
   outcome: reproduced
@@ -295,10 +326,11 @@ outcomes:
     (a), Vglut2 199.4, Esr1 26.4, Ctl 1.9, Npy 1.6), and (ii) the ranges of the four blocks on the 'state' mode
     do not overlap (0 of 6 pairs).
   deviations:
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The SVM is sklearn's LinearSVC with hinge loss and C = 1, the equivalent of fitclinear's default (lambda = 1/n);
     the 'sound' mode is trained on block-1 trials; the projection window is the code's -2 to 5 s.
 - claim: fig4k-decoding-pl
@@ -309,12 +341,16 @@ outcomes:
     0.852 (0.020) and Npy 0.851 (0.027); reading (b), mean over 5 to 150 units, 0.876 and 0.854 against 0.764 and
     0.769. Both exceed by more than the larger s.d.
   deviations:
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - Genotypes are taken from the code's session table, as the claims file says; the files label 216300 and 216301
     Vglut2-cre.
+  - As in the code, units are z-scored over all four blocks before the split and bins of one trial fall in both
+    training and test folds, so accuracies include temporal autocorrelation and slow drift; this applies to every
+    genotype.
 - claim: ed9no-decoding-other-regions
   outcome: not_reproduced
   notebook: reproduce_calvigioni_2023.ipynb
@@ -324,11 +360,15 @@ outcomes:
     1 vs 3 in ILA Esr1 0.916 against Ctl 0.821. Esr1 is the better genotype in 30 of the 49 differences under (a)
     and 28 of the 41 under (b).
   deviations:
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The paper names no test for this absence; the criterion's s.d. rule is used.
+  - As in the code, units are z-scored over all four blocks before the split and bins of one trial fall in both
+    training and test folds, so accuracies include temporal autocorrelation and slow drift; this applies to every
+    genotype.
 - claim: fig4jl-pl-esr1
   outcome: reproduced
   notebook: reproduce_calvigioni_2023.ipynb
@@ -336,25 +376,35 @@ outcomes:
   assumed: true
   notes: Esr1, PL ranks first on all three measures (opto-tuned fraction 0.413 against ILA 0.412 on 17 units, a
     near tie; state-mode shift -9.01 against -5.69 in ACAd; decoding gain over Ctl 0.104 against 0.099 in ORBm).
-    Vglut2, the opto-tuned fraction exceeds the Ctl maximum (0.115) in 4 of 4 subregions (0.39 to 0.61).
+    Vglut2, the opto-tuned fraction exceeds the Ctl maximum (0.115) in 4 of 4 subregions (0.39 to 0.61). The
+    evidence for PL is weak. On measure 1 PL is first in 51.7% of bootstrap draws over units and in 7 of 10 seeds;
+    on measure 3 the PL lead is smaller than the decoding s.d. (about 0.02); measure 2 referenced to Ctl still ranks
+    PL first (Esr1 minus Ctl -2.54 against -2.01 in ORBm), but the Ctl PL shift (-6.47) is close to the Esr1 one
+    (-9.01). The rule holds through measures 2 and 3 whichever subregion wins measure 1. ed9no-decoding-other-regions
+    finds Esr1 decoding as well in ACAd, ILA and ORBm, which does not fit a PL-specific effect.
   deviations:
   - The GLM period is not stated in the Methods. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (whole session) but reads
     binned counts from files not in the repository; the same script holds a commented restriction to blocks 1 to
     4 (stop 2 s before the first block-5 trial). The code's fitted units match that restriction (no tmu unit missed,
     18 of 25 sessions identical) and not the whole session (4 identical, 57 tmu units missed). The period from the
     session start to 2 s before block 5 is adopted as an assumption, and the whole session is shown as a variant.
-  - Spikes within 1 s of the files' 'spike saturation' periods are removed. The Methods say 'LFP saturation periods';
-    the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation' series
-    would remove 19.5 min of session 147463 including all of block 3. The code's series is used, as a standard reading
-    of the Methods' step; the LFP series is shown in the data check.
+  - Spikes within 1 s of the files' 'spike saturation' periods are removed, an assumption. The Methods say 'LFP saturation
+    periods'; the code (RemoveSaturationSpikes, +- 1 s) reads the 'spike saturation' series, and the 'LFP saturation'
+    series would remove 19.5 min of session 147463 including all of block 3. The code's series is used; the LFP series
+    is run as a variant through the GLM claims (fig4g-glm-units, fig4e, fig4g-opto-tuning-score, fig4g-tuned-unit-counts),
+    where it gives the same outcomes; it is not run for the other claims.
   - The state-mode measure uses the modes of fig4i reading (a) with the Methods windows, ranked by magnitude; the
     ranking rule is the criterion's.
 - claim: fig4f-pupil-persistent
   outcome: blocked
   blocked_by: data_missing
-  notes: The pupil tracking is not in the dandiset. One of 25 files (128514, an Npy mouse) holds processing/behavior
-    with an 'eye_area' trace, a blink trace and face motion; no file holds a pupil area. The source data of the
-    paper are not public as files read here, and no other archive holds the videos.
+  notebook: reproduce_calvigioni_2023.ipynb
+  output: claim:ed7g-eye-closing-airpuff
+  notes: The pupil tracking of the 25 mice is not in the dandiset. One of 25 files (128514, an Npy mouse) holds
+    processing/behavior with an 'eye_area' trace (described in the file as a smoothed pupil trace, pixel^2), a
+    blink trace and face motion at 50 Hz; no Ctl, Vglut2 or Esr1 file holds any of them. The source data of the
+    paper are not public as files read here, and no other archive holds the videos. The notebook describes the one
+    session per block (median pre-trial eye_area 43.7, 53.2, 51.0 and 49.8 in blocks 1 to 4), which tests nothing.
 - claim: fig4f-pupil-ctl-unchanged
   outcome: blocked
   blocked_by: data_missing
@@ -362,21 +412,34 @@ outcomes:
 - claim: ed7g-eye-closing-airpuff
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_calvigioni_2023.ipynb
+  output: claim:ed7g-eye-closing-airpuff
   notes: Eye-closing events need the eye tracking of all 25 mice; only session 128514 (Npy) holds an eye-area trace,
-    so no genotype comparison is possible.
+    so no genotype comparison is possible. In that one mouse the eye_area falls below half its pre-trial value within
+    0.5 s in 7 of 51 air-puff trials and 2 of 50 tone trials, a description only.
 - claim: ed1j-optotagged-tonic
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_calvigioni_2023.ipynb
+  output: claim:ed1j-optotagged-tonic
   notes: The LHA optotagging recordings in Vglut2-cre mice are not in the dandiset, which holds only the Neuropixels
     recordings of Fig. 4 and Extended Data Figs. 7 to 9; the paper deposits no other data than the Patch-seq set
-    in BioStudies S-BSST1069, which holds no electrophysiology. All 25 dandiset files are mPFC recordings.
+    in BioStudies S-BSST1069, which holds no electrophysiology. All 25 dandiset files are mPFC recordings, and none
+    of the 5,046 units outside ACAd, PL, ILA and ORBm carries an LHA, LHb or other LH label (most common AON, DP,
+    ORBvl, MOs, ACB).
 - claim: fig2d-markers
   outcome: blocked
   blocked_by: metadata_insufficient
+  notebook: reproduce_calvigioni_2023.ipynb
+  output: claim:fig2d-markers
   notes: The Patch-seq data are in BioStudies S-BSST1069 (counts.tsv.gz, tpm.tsv.gz, metadata.tsv.gz and a 40.7
-    GB PatchSeq.zip). metadata.tsv.gz gives each of 169 cells an Ephys_Category code from 1 to 6 with no names,
-    and no file listed in the study maps the codes to the six types (FA-Bk, Burst, RS-N, LS-N, LS-W, RS-W); the
-    zip was not opened, given its size. Without the mapping the claim's type-to-marker statements cannot be tested.
+    GB PatchSeq.zip of raw fastq.gz reads), listed in the notebook. metadata.tsv.gz gives each of 169 cells an
+    Ephys_Category code from 1 to 6 (12, 45, 38, 31, 28 and 9 cells, 6 without a code) with no names, and no file
+    listed in the study maps the codes to the six types (FA-Bk, Burst, RS-N, LS-N, LS-W, RS-W). If the codes followed
+    the paper's order of the types, FA-Bk (12) and LS-W (28) would match the counts of the Extended Data Fig. 3l
+    legend, but Burst + RS-N (83) and LS-N (31) would not match 77 and 35, so the counts do not settle a mapping.
+    The zip holds raw reads, not labels, and was not opened, given its size. Without the mapping the claim's
+    type-to-marker statements cannot be tested.
 - claim: fig1l-six-types
   outcome: blocked
   blocked_by: data_missing
@@ -443,6 +506,256 @@ outcomes:
   notes: The ex vivo recordings are not in the dandiset, which holds only the Neuropixels recordings of Fig. 4 and
     Extended Data Figs. 7 to 9, and the paper names no other public deposit for them (its only other deposit is
     the Patch-seq set S-BSST1069). The paper's source data files were not available to this attempt.
+verifications:
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed, the helper
+    module and the claims file, with the paper under paper/. The verifier had no attempt record.
+  results:
+  - claim: code-outputs-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 25 sessions match the session table. Unit indices are identical in only 18 of 25 sessions, below the
+      criterion's 22. Per-genotype fitted counts are 492/482, 743/738, 445/406 and 318/311, all within 10%. The
+      helper docstring said the code fits the whole session (GLM_restrict = 0) while the notebook fits blocks 1 to
+      4; that evidence is reasonable, but the documentation contradicts the analysis and should say which period
+      was used and why.
+    response: Kept. The helper docstring and the GLM section now state that blocks 1 to 4 is the main reading, an
+      assumption, because the code's fitted units match it, and that the whole session (GLM_restrict = 0) is a
+      variant.
+  - claim: ed7a-unit-counts
+    agrees: true
+    outcome: reproduced
+    reason: 4,159 units in total; Ctl 1,149, Vglut2 1,415, Npy 984, Esr1 611, all within tolerance. Selection never
+      checks a 'good' curation label, and the notebook does not show whether the units table holds only good
+      units; the counts match, so this is probably moot.
+    response: 'Kept. The data check now prints the units table columns: there is no curation label column in any file,
+      recorded as a finding.'
+  - claim: fig4g-glm-units
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) gives 1,995 / 492 / 743 / 443 / 317, all within 10%. Npy, at 443 against a limit of 446.6, is
+      near the edge. Under the whole session fig4g-glm-units fails. The verifier asked for the fitted counts with
+      the 'LFP saturation' series.
+    response: Kept. The 'LFP saturation' variant is now run and gives 1,970 (Ctl 492, Vglut2 737, Npy 425, Esr1 316), also
+      within 10%.
+  - claim: fig4e-opto-modulation-genotypes
+    agrees: false
+    outcome: partially_reproduced
+    reason: Vglut2 and Esr1 opto fractions exceed Ctl and sound 1 and air puff exceed chance in all four genotypes, but
+      the Npy opto fraction is also higher than Ctl at p = 0.044, which breaks 'Npy does not'. A two-sided unit-
+      level Fisher test pools units across mice (one Npy mouse contributes 33 of 201 units); without a per-mouse
+      view or a correction for three comparisons the result is fragile, and tuned flags from one seed could change
+      it. The real false-positive rate is about 0.1% for the negative tail plus 0.05 to 0.1% for the positive
+      tail, which does not matter at about 40%. In the second reading Ctl and Npy also give significant Wilcoxon p
+      with negative medians.
+    response: 'Changed from not_reproduced to partially_reproduced: the Vglut2, Esr1 and sensory parts hold under every
+      seed, period and saturation series, and only the Npy part fails, so the claim holds in part. Added the
+      Bonferroni p (Npy 0.132), per-mouse fractions with a Mann-Whitney test over mice (Npy p = 0.905), the Npy p
+      over ten seeds (below 0.05 in 5 of 10), the ''LFP saturation'' variant (Npy p = 0.022), and a measured
+      false-positive rate of the tuned flags on null copies (0.23%, 95% CI 0.13 to 0.36%), with the sensory
+      binomial tests against 0.25%. The notes state that the PSTH p-value does not separate the genotypes.'
+  - claim: ed7bd-latency-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'With the pre-event baseline, at both 3 s.d. and 2 s.d.: tone 4 of 4 subregions and air puff 3 of 4 within
+      20 ms.'
+    response: No change.
+  - claim: fig4g-opto-tuning-score
+    agrees: true
+    outcome: not_reproduced
+    reason: Reading (a) means are all within tolerance and Vglut2 passes (corrected p 0.012). Esr1 fails under every
+      reading (corrected p 0.11 / 0.30 / 0.40 / 0.30, and 0.159 on the code's own scores). The paper's n = 10 Esr1
+      mice cannot hold for the GLM data, as 3 Esr1 sessions have no PFC units in either the dandiset or the code's
+      outputs; the paper may have computed its p differently. This is a paper inconsistency, not a notebook error.
+    response: Kept. Added the Esr1 corrected p over ten seeds (0.072 to 0.11) and with the 'LFP saturation' series
+      (0.072). Supplementary Table 6 was re-read (N = 10 Esr1, N = 5 Npy, Esr1 p = 0.045) and recorded as a
+      paper_inconsistency finding.
+  - claim: fig4g-tuned-unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 8 counts are within 10%, and Vglut2 and Esr1 have more opto-tuned units than Ctl and Npy. The criterion
+      needs 6 of 8; Vglut2 negative missed by one unit (75 against a lower bound of 75.6). Tuned flags come from
+      one seed and the cutoffs are extreme order statistics, so other seeds could change the outcome; the notebook
+      should report the counts' spread over several seeds.
+    response: The notebook now repeats the tuned flags for ten seeds of the shifts and prints their spread. The
+      count within 10% is 4 in 2 seeds, 5 in 4, 6 in 2 and 7 in 2, so 4 of 10 seeds reach six of eight and 6 do
+      not, and the ordering holds in all ten; the outcome stays partially_reproduced. The 'LFP saturation' variant
+      gives 4 of 8.
+  - claim: ed8h-waveform-classes
+    agrees: true
+    outcome: reproduced
+    reason: FS 606 (564 +- 56.4) and RS 3,484 (3,418 +- 341.8). Both classes contain opto-tuned units in Vglut2 and
+      Esr1.
+    response: Kept. Corrected the conclusion, which said all FS units have a peak-to-trough below 0.38 ms; 576 of the 606
+      do.
+  - claim: ed8o-conditioned-units
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (a), Vglut2 0.146 and Esr1 0.136 against Ctl 0.018 with every other trial; 0.155 and 0.133
+      against 0.027 with the first 50 trials. Reading (b) gives about 0 in every genotype.
+    response: No change.
+  - claim: ed8r-comodulated-units
+    agrees: true
+    outcome: reproduced
+    reason: 'Vglut2: 53 observed against 25.65 expected by chance, p = 9e-7. Esr1: 21 against 10.94, p = 0.0038. The
+      code''s signed-maximum variant agrees.'
+    response: No change.
+  - claim: ed9a-pca-divergent-block2
+    agrees: true
+    outcome: reproduced
+    reason: 20 of 20 draws for both Esr1 and Vglut2. The statement says trajectories are 'similar ... in block 4', but
+      the criterion does not test this; block-4 distances to Ctl are 8.6 (Vglut2), 8.4 (Npy) and 5.8 (Esr1),
+      against 0.6 to 1.5 in blocks 1 and 3, so the data contradict that part of the statement. This is a gap in
+      the claims file.
+    response: Kept. Added a question for a reader in questions/000473.yaml on whether the criterion should test block 4;
+      the conclusion and notes say that part does not hold on this measure.
+  - claim: fig4h-opto-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Two opto clusters, each with 100% Vglut2 and Esr1 units. But 1,995 units were kept against an expected 1,770
+      (or 1,788) +- 177. The quality-control filter is applied to trial-averaged rates in Hz; one spike in 50
+      trials in a 10 ms bin is already 2 Hz, so no unit fitted at 2 Hz or more can fail it. The printout does not
+      mark the count as out of tolerance. The 'gausswin5' variant is the same as a Gaussian with sigma 0.8 bins,
+      so it is not a real variant.
+    response: Kept. The printout now marks the count as outside tolerance; a new cell prints the distribution of active
+      bins (fewest 454) and the kept count under unsmoothed (1,995), z-scored (1,974) and single-trial (266)
+      readings, and the cutoff that would keep 1,770 (1,308 bins). The gausswin check is described as the same
+      kernel. A methods_unavailable finding asks the authors how 1,770 was reached.
+  - claim: ed9bg-state-clusters
+    agrees: true
+    outcome: reproduced
+    reason: 13 clusters meet the rule with the Wilcoxon test, 9 with the rank-sum variant. Counting only monotonic
+      clusters with a significant pair still gives 9, at least the 5 required.
+    response: No change.
+  - claim: fig4i-activity-modes
+    agrees: true
+    outcome: reproduced
+    reason: Conditions (i) and (ii) hold under all three unit readings and both window sets.
+    response: No change.
+  - claim: fig4k-decoding-pl
+    agrees: true
+    outcome: reproduced
+    reason: 'In PL, Esr1 (0.957) and Vglut2 (0.937) exceed Ctl (0.852) and Npy (0.851) by more than the larger s.d.
+      under both readings. Decoding follows the code: z-scoring happens before the split, and 100 ms bins from the
+      same trial land in both training and test folds, so accuracy is inflated by temporal autocorrelation and
+      slow drift; this applies to every genotype and matches the paper''s method.'
+    response: Kept. The decoding section and the deviations now state this.
+  - claim: ed9no-decoding-other-regions
+    agrees: true
+    outcome: not_reproduced
+    reason: 49 differences beyond the larger s.d. under reading (a) and 41 under (b). Esr1 beats the other genotypes in
+      ACAd, ILA and ORBm by margins similar to PL.
+    response: No change in outcome; the decoding caveat is added to the deviations.
+  - claim: fig4jl-pl-esr1
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (fragile). For Esr1, PL ranks first on all three measures; for Vglut2, 4 of 4 subregions exceed
+      the Ctl maximum. The PL lead is 0.413 against 0.412 (ILA, 17 units) on measure 1 and 0.104 against 0.099 on
+      measure 3, both within the noise. Measure 2 is not referenced to Ctl, whose PL shift of -6.47 is similar to
+      Esr1's -9.01. Cell 48's result also contradicts the PL specificity. The outcome is weak evidence.
+    response: Kept, with the weakness stated. Added a bootstrap of measure 1 over units (PL first in 51.7% of draws),
+      measure 1 over ten seeds (PL first in 7), and measure 2 referenced to Ctl (PL still first, -2.54 against
+      -2.01); the rule holds through measures 2 and 3.
+  - claim: fig4f-pupil-persistent
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: only one of 25 assets, Npy 128514, has behavior data (PupilTracking/eye_area).
+      There is none for any Esr1, Vglut2 or Ctl mouse.'
+    response: Kept. The notebook now describes the one session's series per block.
+  - claim: fig4f-pupil-ctl-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Same as above; no Ctl session has pupil data.
+    response: Kept. The notebook now describes the one session's series per block.
+  - claim: ed7g-eye-closing-airpuff
+    agrees: true
+    outcome: blocked
+    reason: The only Blink and eye-area series is in 128514 (Npy). One mouse can be described but tests nothing in the
+      criterion. The verifier asked for a descriptive block 1 against block 4 eye-closing count for 128514.
+    response: 'Kept. Added the description: the eye_area falls below half its pre-trial value in 7 of 51 air-puff trials
+      and 2 of 50 block-1 tone trials.'
+  - claim: ed1j-optotagged-tonic
+    agrees: true
+    outcome: blocked
+    reason: The archive holds 25 ecephys+ogen mPFC sessions and no LHA optotagging session. The notebook never listed
+      non-PFC unit locations to confirm this; the verifier asked for the location labels of the 5,046 units
+      outside the four regions, especially any LHA units in Vglut2 sessions.
+    response: 'Kept. Added the listing: none of the 5,046 units carries an LHA, LHb or other LH label.'
+  - claim: fig2d-markers
+    agrees: true
+    outcome: blocked
+    reason: The data are in BioStudies S-BSST1069, not the dandiset. I could not check the notebook's 'metadata
+      insufficient' statement; a listing of its files and type labels would confirm or refute it.
+    response: Kept as blocked, metadata_insufficient. Added the file listing and the Ephys_Category counts (codes 1 to 6,
+      no names); the counts match the paper's per-type counts only in part, so they do not settle a mapping.
+  - claim: fig1l-six-types
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig2fh-topography
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig3f-esr1-rtpa
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig3f-telc-necessary
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig3i-aversive-behaviors
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig3jkl-npy-rearing
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig3mn-persistent-cpa
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: ed10-female-mild-aversive
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig5f-stress-index-female
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig5g-firing-shift
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
+  - claim: fig5kl-burst-female-intrinsic
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the asset list and description cover only the Neuropixels recordings. None of these patch-clamp,
+      anatomy or behavior data are in it.'
+    response: No change.
 findings:
 - kind: metadata_error
   statement: Sessions 216300 and 216301 are labelled Vglut2-cre in the files' subject genotype, while the paper's
@@ -501,3 +814,16 @@ findings:
 - kind: data_missing
   statement: The pupil and eye tracking of Fig. 4f and Extended Data Fig. 7g-j are not in the dandiset; one file
     (128514) holds an eye-area trace. The LHA optotagging recordings of Extended Data Fig. 1e-j are not in it either.
+- kind: paper_inconsistency
+  statement: Supplementary Table 6 reports N = 10 Esr1-cre and N = 5 Npy-cre mice for the tuning-score test (Esr1
+    corrected p = 0.045), but the code's own GLM outputs, like the dandiset, have units for only 7 Esr1-cre and 4
+    Npy-cre mice. The table also prints Bonferroni-corrected p values above 1.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: how did the clustering quality control (Methods, Hierarchical clustering)
+    reduce 1,945 units to 1,788 (Methods) or 1,770 (Results)? The code''s rule, more than 200 of 1,600 bins above
+    0.5 Hz in the smoothed trial averages, cannot drop a unit fitted with the GLM, whose mean rate is at least 2 Hz;
+    on the dandiset the fewest active bins of any fitted unit is 454.'
+- kind: metadata_insufficient
+  statement: The units table has no curation label column, so the Methods' selection of 'good' units cannot be checked
+    on the files. In session 128514 the series named eye_area is described as a smoothed pupil trace, so it is not
+    clear whether it measures the eye or the pupil.

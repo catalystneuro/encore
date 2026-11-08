@@ -7,18 +7,34 @@ version; nothing is written to disk.
 Where each parameter comes from:
 - REGIONS, MIN_FR, MAX_ISI, the saturation margin of 1 s: Methods, "In vivo electrophysiological
   data analysis" (units in ACAd, PL, ILA, ORBm, firing rate > 0.1 Hz, ISI violations < 1 %, spikes
-  within 1 s of saturation periods removed), as the claims file cites. The saturation periods are
-  the files' 'spike saturation' series, which the paper's code reads for this step; the 'LFP
-  saturation' series the Methods' wording points to is a variant (an assumption, see notebook).
+  within 1 s of LFP saturation periods removed), as the claims file cites. The files hold two
+  series, 'spike saturation' and 'LFP saturation'. clean_spikes uses the 'spike saturation' series
+  by default, an assumption: the paper's code reads it for this step (RemoveSaturationSpikes in
+  utilities/MS_suppl_functions.py), and the 'LFP saturation' series of session 147463 covers all of
+  its block 3 (1,171 s), which would leave that block without spikes. The notebook runs the 'LFP
+  saturation' series as a variant through the GLM claims.
 - Region by substring of the main channel's location, main channel 0-indexed, ISI violations as
   the units table's quality[:, 0] count over the spike count: Fig4g_GLM_tuning.m of
   Esr1_NPX_code at commit 85187f3 (claims file, code-outputs-link and ed7a-unit-counts).
 - GLM: 100 ms bins, regressors sound 1 and sound 2 (200 ms after onset), opto (500 ms after light
   onset), air puff (500 ms after onset), Poisson log link (Methods, "Generalized linear model");
-  predictor order [sound 1, opto, sound 2, air puff] and the whole session as the fitted period
-  (GLM_restrict = 0), the code. 1,000 circular shifts of the session at one random point each,
-  tuning score and the 99.9th / 0.01th percentile rule (Methods, "Tuning scores"); percentiles as
-  MATLAB's prctile computes them, as in Fig4g_Extended_Data_Fig8abfgjklm_GLM_Tuning_score.m.
+  predictor order [sound 1, opto, sound 2, air puff], the code. 1,000 circular shifts of the
+  session at one random point each, tuning score and the 99.9th / 0.01th percentile rule (Methods,
+  "Tuning scores"); percentiles as MATLAB's prctile computes them, as in
+  Fig4g_Extended_Data_Fig8abfgjklm_GLM_Tuning_score.m.
+- GLM period: the Methods do not state it. Fig4g_GLM_tuning.m sets GLM_restrict = 0 (the whole
+  session) but reads binned counts from files that are not in the repository, and holds a commented
+  restriction to blocks 1 to 4 (stop 2 s before the first block-5 trial). The code's own fitted units
+  (GLM_fitted/*_tmu.mat) match the blocks 1 to 4 period (18 of 25 sessions identical, no code unit
+  missed) and not the whole session (4 identical). run_glm(period="blocks1to4") is therefore the
+  main reading, an assumption; period="session" (GLM_restrict = 0) is run as a variant.
+- Random seed of the shifts: a standard choice (seed 0). Because the tuned flags compare the true
+  beta with extreme order statistics of 1,000 shifts (prctile at 0.01 % is the minimum, at 99.9 %
+  it lies between the 999th and 1,000th values), run_glm can repeat the flags for further seeds
+  (extra_seeds) from the same fit, so that the notebook shows their spread. It can also fit a null
+  copy of every unit (null_seed: the counts rotated by a random 10 to 90 % of the period before
+  fitting, which breaks their relation to the stimuli) to measure the false-positive rate of the
+  tuned flags.
 - With mutually exclusive 0/1 regressors and an intercept, the Poisson maximum-likelihood fit has a
   closed form: each beta is the log of the mean count in the regressor's bins over the mean count
   in the bins with no regressor. glm_betas uses it (exact, not an approximation), and the shifted
@@ -107,6 +123,7 @@ def load_session(asset, keep_spikes="pfc"):
         idx = f["units/spike_times_index"][:].astype(np.int64)
         start = np.concatenate([[0], idx[:-1]])
         q = f["units/quality"][:]
+        s["unit_columns"] = sorted(f["units"].keys())
         u = pd.DataFrame({
             "unit": np.arange(len(idx)),
             "id": f["units/id"][:],
@@ -136,7 +153,7 @@ def load_all(assets, workers=6, **kw):
 
 
 def remove_saturation(spikes, sat_start, sat_stop, margin=SAT_MARGIN):
-    """Drop spikes within `margin` s of an LFP saturation period."""
+    """Drop spikes within `margin` s of a saturation period."""
     keep = np.ones(len(spikes), bool)
     for a, b in zip(sat_start, sat_stop):
         keep &= ~((spikes >= a - margin) & (spikes <= b + margin))
@@ -233,10 +250,11 @@ def _betas_from_sums(sums, nreg, base_sum, nbase):
     return np.log(m) - np.log(mb), zero
 
 
-def glm_tuning(counts, X, n_shift=1000, rng=None):
+def glm_tuning(counts, X, n_shift=1000, rng=None, extra_rngs=()):
     """True betas, tuning scores and tuned flags (+1, -1, 0) for one unit's binned counts.
     Shifts: spk_cnt_circshift = [spk_cnt(T+1:end) spk_cnt(1:T)], T = round(rand * nbins), as in
-    Fig4g_GLM_tuning.m. Returns dict."""
+    Fig4g_GLM_tuning.m. extra_rngs: further generators, each drawing its own 1,000 shifts; their
+    scores and flags are returned as "extra" (list of (score, tuned)). Returns dict."""
     nb = len(counts)
     Xb = X.astype(bool)
     over = Xb.sum(0) > 1
@@ -253,19 +271,23 @@ def glm_tuning(counts, X, n_shift=1000, rng=None):
     fx = np.fft.rfft(base.astype(float))
     sums_all[4] = np.fft.irfft(np.conj(fx) * fy, nb)
     sums_all = np.rint(sums_all)
-    Ts = np.rint(rng.random(n_shift) * nb).astype(int) % nb
     true_b, true_zero = _betas_from_sums(sums_all[:4, 0], nreg, sums_all[4, 0], nbase)
-    sb, s_zero = _betas_from_sums(sums_all[:4, Ts], nreg[:, None], sums_all[4, Ts], nbase)
-    mu = sb.mean(1)
-    sd = sb.std(1, ddof=1)
-    score = (true_b - mu) / sd
-    tuned = np.zeros(4, int)
-    for k in range(4):
-        up = matlab_prctile(sb[k], 99.9)
-        lo = matlab_prctile(sb[k], 0.01)
-        tuned[k] = 1 if true_b[k] >= up else (-1 if true_b[k] <= lo else 0)
+
+    def flags(r):
+        Ts = np.rint(r.random(n_shift) * nb).astype(int) % nb
+        sb, s_zero = _betas_from_sums(sums_all[:4, Ts], nreg[:, None], sums_all[4, Ts], nbase)
+        score = (true_b - sb.mean(1)) / sb.std(1, ddof=1)
+        tuned = np.zeros(4, int)
+        for k in range(4):
+            up = matlab_prctile(sb[k], 99.9)
+            lo = matlab_prctile(sb[k], 0.01)
+            tuned[k] = 1 if true_b[k] >= up else (-1 if true_b[k] <= lo else 0)
+        return score, tuned, int(s_zero.sum())
+
+    score, tuned, zero_shift = flags(rng)
     return {"beta": true_b, "score": score, "tuned": tuned,
-            "zero_true": true_zero, "zero_shift": int(s_zero.sum())}
+            "zero_true": true_zero, "zero_shift": zero_shift,
+            "extra": [flags(r)[:2] for r in extra_rngs]}
 
 
 # ---------------------------------------------------------------- trial-aligned counts
@@ -336,17 +358,25 @@ def regressors_from_stim(s, t_stop, bin_sz=0.1):
     return X, ov, nb
 
 
-def run_glm(S, period="blocks1to4", clean=True, min_count=0.2, seed=0):
+def run_glm(S, period="blocks1to4", clean=True, min_count=0.2, seed=0, extra_seeds=(),
+            null_seed=None, spikes_key="clean"):
     """GLM tuning for every selected unit whose mean count per 100 ms bin exceeds min_count.
     period: "blocks1to4" (0 to glm_period_end) or "session" (0 to the last spike).
+    spikes_key: the dict of cleaned spikes in each session (clean=True), e.g. "clean" for the
+    'spike saturation' series or another key the caller filled with clean_spikes(s, "LFP").
+    extra_seeds: further seeds for the shifts; adds columns score_<p>_s<seed> and tuned_<p>_s<seed>.
+    null_seed: also fits each unit's counts rotated by a random 10 to 90 % of the period (a null with
+    no relation to the stimuli); adds columns null_tuned_<p>.
     Returns a DataFrame, one row per selected unit, with fitted flag, scores and tuned flags."""
     rows = []
     for s in S:
         rng = np.random.default_rng([seed, int(s["subject_id"])])
+        extra = [np.random.default_rng([k, int(s["subject_id"])]) for k in extra_seeds]
+        rng_null = np.random.default_rng([null_seed, int(s["subject_id"])]) if null_seed is not None else None
         u = s["units"]
         t_stop = glm_period_end(s) if period == "blocks1to4" else s["t_end"]
         X, ov, nb = regressors_from_stim(s, t_stop)
-        sp = s["clean"] if clean else s["spikes"]
+        sp = s[spikes_key] if clean else s["spikes"]
         for i in u.index[u["selected"]]:
             x = sp[int(i)]
             c = bin_counts(x[x < nb * 0.1], nb)
@@ -354,13 +384,21 @@ def run_glm(S, period="blocks1to4", clean=True, min_count=0.2, seed=0):
                    "region": u.at[i, "region"], "mean_count": c.mean(),
                    "fitted": c.mean() > min_count, "overlap_bins": ov}
             if row["fitted"]:
-                r = glm_tuning(c, X, rng=rng)
+                r = glm_tuning(c, X, rng=rng, extra_rngs=extra)
                 for k, p in enumerate(PREDICTORS):
                     row["beta_" + p] = r["beta"][k]
                     row["score_" + p] = r["score"][k]
                     row["tuned_" + p] = r["tuned"][k]
+                    for sd_, (sc, tu) in zip(extra_seeds, r["extra"]):
+                        row[f"score_{p}_s{sd_}"] = sc[k]
+                        row[f"tuned_{p}_s{sd_}"] = tu[k]
                 row["zero_true"] = int(r["zero_true"].sum())
                 row["zero_shift"] = r["zero_shift"]
+                if rng_null is not None:
+                    rot = int(rng_null.integers(int(0.1 * nb), int(0.9 * nb)))
+                    rn = glm_tuning(np.roll(c, rot), X, rng=rng_null)
+                    for k, p in enumerate(PREDICTORS):
+                        row["null_tuned_" + p] = rn["tuned"][k]
             rows.append(row)
     return pd.DataFrame(rows)
 
@@ -404,3 +442,18 @@ def window_rates(spikes, onsets, t0, t1):
     a = np.searchsorted(spikes, onsets + t0)
     b = np.searchsorted(spikes, onsets + t1)
     return (b - a) / (t1 - t0)
+
+
+def load_behavior(asset):
+    """The processing/behavior series of one file (only 128514 has them): a dict name ->
+    (timestamps, data), streamed."""
+    with h5py.File(remfile.File(asset_url(asset["asset_id"])), "r") as f:
+        beh = f["processing"].get("behavior")
+        out = {}
+        if beh is None:
+            return out
+        for k in beh.keys():
+            for kk in beh[k].keys():
+                g = beh[k][kk]
+                out[kk] = (g["timestamps"][:], g["data"][:])
+        return out
