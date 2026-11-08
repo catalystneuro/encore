@@ -30,12 +30,15 @@ SEP = the paper's Supplemental Experimental Procedures):
   tetrode in the corpus callosum) down-sampled to 150 Hz and filtered 6-12 Hz; theta periods at
   speed > 5 cm/s outside any SWR detected on any CA1 ripple tetrode at 3 SD (regardless of
   speed). A 3rd-order Butterworth band-pass applied forward and back and the Hilbert phase
-  (0 deg at the peak, 180 deg at the trough) are standard choices (claims file).
+  (0 deg at the peak, 180 deg at the trough) are standard choices (claims file). A spike's phase is
+  interpolated linearly on the unwrapped phase between the 150 Hz samples (standard choice).
 - Units (SEP, SWR Modulation): fast-spiking cells excluded (width < 0.3 ms and rate > 17 Hz in
   PFC, > 7 Hz in CA1); the width is tetinfo/cellinfo 'spikewidth' in 30 kHz samples, divided by
   30 (the data descriptor says ms for cellinfo; the values are samples, see the notebook). The
   rate is the cell's spike count over the duration of the day's W-track run epochs (a standard
   choice). A unit is a cell on one day, sessions pooled (reading a of the claims file).
+- Rate maps: the wtr2 runs of days 6 to 8 are on a different track, so each environment has bins of
+  its own. Replay (SEP, Replay analysis): see the constants and docstrings near the end.
 """
 
 from __future__ import annotations
@@ -104,6 +107,18 @@ def _str(s, f, default=""):
 def _num(s, f):
     v = _str(s, f, np.nan)
     return float(np.asarray(v, dtype=float).ravel()[0]) if np.size(v) else np.nan
+
+
+def _meta(s):
+    """Small fields of a struct (scalars and short strings), for the data check."""
+    out = {}
+    for f in s._fieldnames:
+        v = getattr(s, f)
+        if isinstance(v, np.ndarray) and v.dtype.kind == "U" and v.size:
+            out[f] = str(v.ravel()[0])
+        elif isinstance(v, np.ndarray) and v.dtype.kind in "iuf" and 0 < v.size <= 4:
+            out[f] = v.ravel().astype(float).tolist()
+    return out
 
 
 # ---------------------------------------------------------------- streaming
@@ -194,7 +209,8 @@ def swr_epoch(lfps, t0, fs, pos_t, pos_v, dorsal=None):
     z = np.mean([(e - e.mean()) / e.std() for e in envs], axis=0)
     sx, st, ex, _ = detect_events(z, fs)
     mean_ev = np.c_[sx, st, ex] / fs + t0
-    out = {"all_any": any_ev}
+    out = {"all_any": any_ev, "n_per_tet": [len(r) for r in rows],
+           "n_low_per_tet": [int(np.sum(np.interp(r[:, 1] / fs + t0, pos_t, pos_v) < SWR_MAX_SPEED)) for r in rows]}
     for key, ev in (("any", any_ev), ("dca1", dca1_ev), ("mean", mean_ev)):
         v = np.interp(ev[:, 1], pos_t, pos_v) if len(ev) else np.zeros(0)
         low = v < SWR_MAX_SPEED
@@ -259,7 +275,8 @@ def reduce_animal(animal, members=None, days=range(1, 9)):
             P = np.asarray(ps.data, float)
             ix = {f: i for i, f in enumerate(fields)}
             xc, yc, vc = (ix.get("x-sm", ix["x"]), ix.get("y-sm", ix["y"]), ix.get("vel-sm", ix["vel"]))
-            ep = {"pos": np.c_[P[:, 0], P[:, xc], P[:, yc], P[:, vc]].astype(np.float64)}
+            ep = {"pos": np.c_[P[:, 0], P[:, xc], P[:, yc], P[:, vc]].astype(np.float64),
+                  "pos_fields": fields, "pos_meta": _meta(ps)}
             # LFPs: ripple tetrodes and reference
             lfp, starts, fss = [], [], []
             for t in rip:
@@ -283,6 +300,7 @@ def reduce_animal(animal, members=None, days=range(1, 9)):
                 tk = _struct(_cells(_cells(_mat(members[f"{animal}task{d:02d}.mat"]))[d - 1])[e - 1])
                 lc = _cells(tk.linearcoord)
                 ep["linearcoord"] = [np.asarray(c, float)[:, :, 0] for c in lc]
+                ep["task_meta"] = _meta(tk)
             ep["start"], ep["end"] = ep["pos"][0, 0], ep["pos"][-1, 0]
             day["epochs"][e] = ep
         # units
@@ -453,14 +471,15 @@ def psth_timing(psth, centers, sign, search=(0.0, 0.2), sd_ref="baseline"):
 # ---------------------------------------------------------------- theta
 def theta_mask_times(day, e, t, min_len=0.0):
     """True where time t (s) of run epoch e is in a theta period: speed > 5 cm/s and outside every
-    SWR on any ripple tetrode (SEP). With min_len, only periods at least that long (s)."""
+    SWR on any ripple tetrode (SEP). With min_len, only periods at least that long (s). Also
+    returns the theta phase (deg) at t."""
     ep = day["epochs"][e]
     tt = ep["theta_t"]
     key = ("theta_mask", min_len)
     if key in ep:
         ok = ep[key]
         i = np.clip(np.round((t - tt[0]) * THETA_FS).astype(int), 0, len(tt) - 1)
-        return ok[i] & (t >= tt[0]) & (t <= tt[-1]), ep["theta_ph"][i]
+        return ok[i] & (t >= tt[0]) & (t <= tt[-1]), _phase_at(ep, t)
     v = np.interp(tt, ep["pos"][:, 0], ep["pos"][:, 3])
     ok = v > THETA_SPEED
     ev = ep["swr"]["all_any"]
@@ -477,9 +496,15 @@ def theta_mask_times(day, e, t, min_len=0.0):
             if (b - a) / THETA_FS >= min_len:
                 ok[a:b] = True
     ep[key] = ok
-    i = np.clip(np.round((t - tt[0]) * THETA_FS).astype(int), 0, len(tt) - 1)
-    inside = (t >= tt[0]) & (t <= tt[-1])
-    return ok[i] & inside, ep["theta_ph"][i]
+    return theta_mask_times(day, e, t, min_len)
+
+
+def _phase_at(ep, t):
+    """Theta phase (deg) at times t, interpolated linearly on the unwrapped phase between the
+    150 Hz samples (so that shifts smaller than a sample change the phase)."""
+    if "theta_unwrapped" not in ep:
+        ep["theta_unwrapped"] = np.unwrap(np.radians(ep["theta_ph"].astype(np.float64)))
+    return np.degrees(np.interp(t, ep["theta_t"], ep["theta_unwrapped"])) % 360
 
 
 def theta_spike_phases(day, unit, shift=0.0):
@@ -516,8 +541,10 @@ def vm_kappa(ph_deg):
     return brentq(f, 1e-9, 1e4) if f(1e4) > 0 else 1e4
 
 
-def hist_peak_phase(ph_deg, binw=20):
-    """Peak of the theta-phase histogram, 20 degree bins (bin is a standard choice)."""
+def hist_peak_phase(ph_deg, binw=15):
+    """Peak of the theta-phase histogram (bin centre). The paper gives no bin; 15 degrees divides
+    the 45-degree bins of the claims file's group histogram evenly, so each of those receives the
+    same number of possible peak values (a 20-degree bin does not)."""
     h, e = np.histogram(ph_deg % 360, np.arange(0, 360 + binw, binw))
     return e[np.argmax(h)] + binw / 2
 
@@ -668,37 +695,39 @@ def trajectory_labels(ep, radius=WELL_RADIUS):
     return lab, linpos, lengths
 
 
-def rate_maps(day, units, speed=MAP_SPEED):
+def rate_maps(day, units, speed=MAP_SPEED, epochs=None):
     """Occupancy-normalized linearized rate maps on the 4 trajectories (SEP, Spatial and
-    Behavioral Coding Properties), 2 cm bins, speed > 5 cm/s, pooled over the day's W-track runs.
-    Returns {unit key: list of 4 arrays}."""
-    occ, cnt = None, {k: None for k in units}
-    for e in day["runs"]:
-        ep = day["epochs"][e]
+    Behavioral Coding Properties), 2 cm bins, speed > 5 cm/s, pooled over the day's W-track runs
+    (or the given epochs). Runs in different environments (wtr1, wtr2: different tracks) get bins
+    of their own, laid end to end within each trajectory. Returns {unit key: list of 4 arrays}."""
+    occ, cnt = {}, {k: {} for k in units}
+    for e in (day["runs"] if epochs is None else epochs):
+        ep = day["epochs"][e]; env = day["task"][e][1]
         lab, lin, lengths = trajectory_labels(ep)
         t = ep["pos"][:, 0]; dt = np.median(np.diff(t))
         v = ep["pos"][:, 3]
-        nbins = [int(np.ceil(lengths[0] / MAP_BIN)), int(np.ceil(lengths[0] / MAP_BIN)),
-                 int(np.ceil(lengths[1] / MAP_BIN)), int(np.ceil(lengths[1] / MAP_BIN))]
-        if occ is None:
-            occ = [np.zeros(n) for n in nbins]
+        if env not in occ:
+            nbins = [int(np.ceil(lengths[j // 2] / MAP_BIN)) for j in range(4)]
+            occ[env] = [np.zeros(n) for n in nbins]
             for k in units:
-                cnt[k] = [np.zeros(n) for n in nbins]
+                cnt[k][env] = [np.zeros(n) for n in nbins]
+        o = occ[env]
         ok = (lab >= 0) & (v > speed if speed else True)
         b = np.floor(lin / MAP_BIN).astype(int)
         for j in range(4):
             m = ok & (lab == j)
-            occ[j] += np.bincount(np.minimum(b[m], len(occ[j]) - 1), minlength=len(occ[j])) * dt
+            o[j] += np.bincount(np.minimum(b[m], len(o[j]) - 1), minlength=len(o[j])) * dt
         for k, un in units.items():
             st = un["times"].get(e, np.zeros(0))
             st = st[(st >= t[0]) & (st <= t[-1])]
             i = np.clip(np.searchsorted(t, st), 0, len(t) - 1)
             for j in range(4):
                 m = ok[i] & (lab[i] == j)
-                cnt[k][j] += np.bincount(np.minimum(b[i][m], len(occ[j]) - 1), minlength=len(occ[j]))
+                cnt[k][env][j] += np.bincount(np.minimum(b[i][m], len(o[j]) - 1), minlength=len(o[j]))
     out = {}
     for k in units:
-        out[k] = [np.where(o > 0, c / np.where(o > 0, o, 1), np.nan) for c, o in zip(cnt[k], occ)]
+        out[k] = [np.concatenate([np.where(occ[env][j] > 0, cnt[k][env][j] / np.where(occ[env][j] > 0, occ[env][j], 1), np.nan)
+                                  for env in occ]) for j in range(4)]
     return out
 
 
@@ -804,3 +833,59 @@ def glm_cross(Xtr, ytr, Xte, yte, rng, nshuf=1000):
     e = np.mean(np.abs(pred - yte))
     es = np.array([np.mean(np.abs(rng.permutation(pred) - yte)) for _ in range(nshuf)])
     return dict(perf=(es.mean() - e) / es.mean(), p=np.mean(es <= e), converged=True)
+
+
+# ---------------------------------------------------------------- replay (SEP, Replay analysis)
+REPLAY_BIN = 0.015       # s, SEP
+REPLAY_MIN_CELLS = 4     # CA1 cells spiking in the SWR, SEP
+REPLAY_SHUFFLES = 500    # time-bin shuffles, SEP
+DECODE_BIN = 2           # map bins (2 cm) per decoding bin, so 4 cm; standard choice
+DECODE_SMOOTH = 1.0      # Gaussian SD of the place fields, in decoding bins; standard choice
+RATE_FLOOR = 0.1         # Hz added to every place field so that no bin has zero probability; standard choice
+LINE_HALF_WIDTH = 3      # decoding bins (+-12 cm) around the fitted line; standard choice (Davidson et al. 2009 use 15 cm)
+
+
+def side_profiles(maps):
+    """Per side (left, right) of the W-track, the linear rate profile from centre well to side well: the mean of
+    the outbound and inbound maps (trajectories 0/1 and 2/3), in DECODE_BIN bins, smoothed, with RATE_FLOOR."""
+    out = []
+    for a, b in ((maps[0], maps[1]), (maps[2], maps[3])):
+        ab = np.vstack([a, b]); ok = np.isfinite(ab)
+        m = np.where(ok, ab, 0.0).sum(0) / np.maximum(ok.sum(0), 1)   # bins never visited count as 0 Hz
+        n = len(m) // DECODE_BIN * DECODE_BIN
+        m = m[:n].reshape(-1, DECODE_BIN).mean(1)
+        out.append(gaussian_filter1d(m, DECODE_SMOOTH, mode="nearest") + RATE_FLOOR)
+    return out
+
+
+def decode(counts, fields):
+    """Bayesian decoding with a Poisson model and a flat prior (SEP; Karlsson & Frank 2009). counts: (cells,
+    time bins) spike counts in REPLAY_BIN bins; fields: (cells, positions) rates in Hz. Returns the posterior
+    (time bins, positions), each row summing to 1."""
+    lf = np.log(fields)
+    ll = counts.T @ lf - REPLAY_BIN * fields.sum(0)[None, :]
+    ll -= ll.max(1, keepdims=True)
+    p = np.exp(ll)
+    return p / p.sum(1, keepdims=True)
+
+
+def line_fit_p(post, rng, nshuf=REPLAY_SHUFFLES):
+    """Line-fit replay score (Karlsson & Frank 2009; Davidson et al. 2009): the largest mean, over time bins, of
+    the posterior within LINE_HALF_WIDTH of a line, over lines of constant speed; p is the fraction of time-bin
+    shuffles (SEP: shuffles of the time bins) scoring at least as high."""
+    nt, ns = post.shape
+    C = np.concatenate([np.zeros((nt, 1)), np.cumsum(post, 1)], 1)
+    slopes = np.linspace(-ns / 2, ns / 2, 41)
+    offs = np.arange(-ns, 2 * ns + 1)
+    tt = np.arange(nt)
+    ctr = offs[None, :, None] + slopes[:, None, None] * (tt - (nt - 1) / 2)[None, None, :]
+    lo = np.clip(np.round(ctr - LINE_HALF_WIDTH).astype(int), 0, ns).reshape(-1, nt)
+    hi = np.clip(np.round(ctr + LINE_HALF_WIDTH + 1).astype(int), 0, ns).reshape(-1, nt)
+    perms = np.vstack([np.arange(nt)] + [rng.permutation(nt) for _ in range(nshuf)])
+    sc = []
+    for k in range(0, len(perms), 100):
+        Cs = C[perms[k:k + 100]]                             # (shuffles, nt, ns + 1)
+        sc.append((np.take_along_axis(Cs, hi.T[None].repeat(len(Cs), 0), 2) -
+                   np.take_along_axis(Cs, lo.T[None].repeat(len(Cs), 0), 2)).mean(1).max(1))
+    sc = np.concatenate(sc)
+    return sc[0], float(np.mean(sc[1:] >= sc[0]))
