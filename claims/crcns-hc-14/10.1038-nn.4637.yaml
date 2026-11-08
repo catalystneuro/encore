@@ -191,9 +191,12 @@ claims:
     p: 1.21e-06
     corrected: Bonferroni
   criterion: Danger zone speed as in the opening comment; paired t-tests over sessions with both
-    values defined (BehavioralMeasures_Stats.m). The paper prints the uncorrected p and marks
-    significance after Bonferroni correction (Online Methods, Statistical analysis); four tests, so
-    the level is 0.05/4. Reproduced when all four tests are significant at that level with the
+    values defined (BehavioralMeasures_Stats.m). The text states only the post-run against pre-run
+    direction; the others are read from the signs of t, which the code computes as current minus
+    previous and pre-run minus post-run (ttest(current, previous), ttest(prerun, postrun)). The
+    paper prints the uncorrected p and marks significance after Bonferroni correction (Online
+    Methods, Statistical analysis) without saying over how many tests; the code applies none. The
+    four reported tests are used, so the level is 0.05/4. Reproduced when all four tests are significant at that level with the
     directions in the statement (current faster than previous in pre-run, slower in run and
     post-run; current slower in post-run than in pre-run); partially reproduced when three are.
 - id: fig1b-speed-ratio
@@ -326,7 +329,8 @@ claims:
   criterion: Rate per state as the spike count over the total duration of that scored state in the
     whole session, wake being all scored wake (StatesFiringRates.m; the Methods do not say). Ratio
     (state FR - wake FR)/(state FR + wake FR) (Online Methods, Analysis). Two-sided one-sample
-    Wilcoxon signed-rank test of the ratios against 0 (PlotStatesFR.m), over monosynaptically
+    Wilcoxon signed-rank test of the ratios against 0 (PlotStatesFR.m, which runs it on the REM
+    ratio; the NREM ratio is tested the same way), over monosynaptically
     identified BLA pyramidal cells of all 4 rats. Reproduced when both ratios are above 0 at p <
     0.05 and the median REM/wake ratio exceeds the median NREM/wake ratio; partially reproduced when
     both are above 0 and the REM ratio is not the larger.
@@ -360,7 +364,8 @@ claims:
     REM) and wakefulness
   criterion: Rates per state as in fig2c-bla-pyr-higher-in-sleep, monosynaptically identified BLA
     pyramidal cells as in the figure. The paper gives no measure of skew and plots the rates on a
-    log axis. The readings are (a) the sample skewness of the rates is positive and (b) the rates
+    log axis. The only skewness in the code (PlotStatesFR.m) is of the log REM/wake rate quotient,
+    not of the rates, so it does not settle this. The readings are (a) the sample skewness of the rates is positive and (b) the rates
     are closer to log-normal than normal (the log rates have smaller absolute skewness than the
     rates). Reproduced when both hold in all three states.
 - id: fig3c-hpc-bla-ev-nrem
@@ -472,7 +477,7 @@ claims:
     n: 17 sessions
   - about: NREM 40-60 min
     test: Wilcoxon signed rank test
-    statistic: z = -0.71
+    statistic: z = -0.71 (as printed; the same z as the REM test, and not consistent with p)
     p: 0.14458
     n: 17 sessions
   criterion: As fig3c-hpc-bla-ev-nrem, fig3c-hpc-bla-ev-rem-absent and fig3c-decay with all cells of
@@ -545,7 +550,8 @@ claims:
     n: 19 sessions in 3 rats
   criterion: A claim of absence. EV and REV for hippocampus-CeN pairs of all cell types (the legend
     says all cell pairs), two-sided signed-rank test of EV against REV in NREM and in REM.
-    Reproduced when both give p >= 0.05; not reproduced when either gives p < 0.05 with EV greater.
+    Reproduced when both give p >= 0.05; not reproduced when either gives p < 0.05. The median EV -
+    REV and the direction of each are reported.
 - id: figs4-intra-structure-nrem
   statement: Within the hippocampus and within the BLA, cell pairs reactivate during NREM sleep, with
     all cells and with pyramidal cells only.
@@ -956,7 +962,9 @@ claims:
     code for this test is not in the package, so the unit and the rate are open; the readings are
     (a) per cell, spikes over time on all laps of each direction in the run, and (b) per cell, the
     mean rate within +-40 cm of the air puff location on laps of each direction, as the firing
-    curves of AirpuffRewardMod_Structures.m are cut. Cells of the 25 sessions of Figure 6. The claim
+    curves of AirpuffRewardMod_Structures.m are cut. The paper gives no n, so the sessions are also
+    open; the cells of the sessions of Figure 6 (25, pyramidal cells) and Supplementary Figure 11b
+    (27, all cells) are used, and all sessions with BLA cells are shown as a variant. The claim
     of absence is judged on reading (a), which follows the sentence; (b) is shown as a variant.
     Reproduced when p >= 0.05 for pyramidal cells and for all cells; not reproduced when either
     gives p < 0.05.
@@ -1041,3 +1049,35 @@ claims:
     7c) are reported.
   depends_on:
   - fig7b-strong-pairs-correlated-changes
+checks:
+- date: '2026-11-08'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1b-dz-speed-posthoc, criterion. Said where the directions come from (the text states only post-run
+    against pre-run; the others are the signs of t, current minus previous in BehavioralMeasures_Stats.m)
+    and that the paper does not give the number of tests in its Bonferroni correction, so 0.05/4 is a
+    reading.
+  - fig2c-bla-pyr-higher-in-sleep, criterion. PlotStatesFR.m runs the signed-rank test only on the REM
+    ratio; said so.
+  - fig2c-skewed-rates, criterion. The code does compute a skewness, but of the log REM/wake rate
+    quotient; said that it does not settle the measure of skew of the rates.
+  - figs5a-hpc-bla-all-cells, statistics. Marked the 40-60 min z = -0.71 as printed, since it repeats the
+    REM z and does not fit p = 0.14458.
+  - fig3e-cen-no-reactivation, criterion. The outcome was undefined when a test gave p < 0.05 with EV below
+    REV; the absence is now judged on the paper's two-sided test alone, as the protocol asks, with the
+    direction reported.
+  - bla-rates-safe-airpuff-absent, criterion. The paper gives no n for this test, so the session set is
+    open too; named the sessions used and the variant.
+  - Checker. The five values it could not find (9.7e-09, 3.9469e-07, 8.85e-05, 7.75e-05, 6.45e-05) are in
+    the text as printed (9.70 x 10-9, 3.9469x10-07 and so on); the misses are print-format only.
+  - Code. Spot-checked the code readings at commit cdcec89 (rm_anova2 and paired t-tests, the 180-s REM
+    and more-than-5-cell thresholds, the 0.001/2 ripple-modulation threshold, the sign error in
+    ExplainedVariance_PooledCorr_Groups.m, the one-sided tests of ReplayInTime_LapTypes_Plot.m and
+    RippleRatePrePost_All.m); all match the file.
+  - Open. Supplementary Table 1 (cells per structure) is an image the text does not carry and the PDF
+    could not be rendered here, so the structure readings B1 and B2 rest on the Results totals.
+  - Open. Several decision rules where the paper gives no test (figs1c-habituation, fig2c-skewed-rates,
+    figs6b-ev-nine-groups, figs9-ev-independent-of-rate) are standard choices made by the claims writer
+    and named as such; the paper does not fix them.
