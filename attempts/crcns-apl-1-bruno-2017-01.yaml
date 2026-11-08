@@ -183,7 +183,13 @@ outcomes:
     17 periods just below 17.1. Over the four readings 14 to 19 kept, 13 to 17 returned, fractions 0.875
     to 0.941; the counts meet the criterion only under own/le80 (18 kept and 16 returned with the mean
     period, 19 and 17 with the median). With eight combinations run, a pass under one of them is weak
-    evidence. The code's rule, removing only periods that never return, keeps 17 to 21.
+    evidence. The code's rule, removing only the periods within two cycles of the end that never return,
+    keeps 17 to 21 over the readings; under the adopted reading it keeps 19 of which 18 return (0.947),
+    with either period, which meets both tolerances and matches the paper's 19. The criterion states
+    the Methods' rule ("We removed all such divergent periods whose divergent point fell within two oscillation
+    cycles of the end of the recording"), so the code's rule is reported, not judged. The criterion has
+    no partial outcome; partially reproduced is kept because the returned fraction holds and the two counts
+    miss their tolerances by 1.1 and 0.3.
   deviations:
   - Divergent periods follow the Methods' definition (runs of windows below 90% after coalescence that
     fall below 50%), computed directly; the code's loop in recurrence_point_results_Viz.m finds the same
@@ -231,9 +237,10 @@ outcomes:
   notes: Mean over responses of 2 pi / b times 0.01 s, 10.45 s under the adopted reading; the variant
     mean of per-point rotation periods 10.24 s. With count (ii) (the code's) 13.55 s (own/le80) and 12.22
     s (pooled/le80), outside tolerance. The per-response linear periods do not correlate with the recurrence
-    periods (Pearson r = -0.063, p = 0.74; -0.12 to 0.03 under the other readings), so consistency holds
-    only for the means (10.45 s against a median recurrence period of 12.73 s). The criterion judges the
-    mean and reports the correlation, so "consistent with" is reported, not judged.
+    periods (Pearson r = -0.063, p = 0.74; -0.12 to 0.03 under the other readings), and the means do not
+    agree within the claim's tolerance either (10.45 s against a median recurrence period of 12.73 s,
+    2.3 s apart where the tolerance is 1 s). The criterion judges the mean and reports the correlation,
+    so "consistent with" is reported, not judged; neither the correlation nor the means support it.
   deviations:
   - Assumed, the Methods' count rule (smallest number of PCs reaching 80%); the code's rule gives a mean
     period outside the tolerance. Question for the authors under findings.
@@ -286,15 +293,31 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_bruno_2017.ipynb
   output: claim:fig6d-decode-p10
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion is met only when the mean forecast R minus 2 s.e.m. is above 0 in each of the
+      nine responses, and it has no partial rule; the statement says "in all nine". Response 1 of preparation
+      4 fails under all four readings of width and count (mean R -0.060 to -0.124, bounds -0.127 to -0.204),
+      with histories up to 100 ms and with the code's windowing (mean R -0.102), so the failure does not
+      depend on a reading. Eight of nine is a failure of what the claim says, not a weaker effect, as the
+      verifier of round 2 found. The analysis is in the fig6d section of the notebook (the decoding table
+      under every reading, the plot of that response and the printout of diverging forecasts).
   notes: Methods' windowing, mean forecast R minus 2 s.e.m. above 0 in 8 of 9 responses under every reading
-    of width and count (adopted mean R 0.36 to 0.89). Response 1 of preparation 4 fails under all four
-    (mean R -0.060, -0.127, -0.060 and -0.119; bounds -0.128 to -0.206), with histories up to 100 ms,
-    and with the code's windowing (mean R -0.101). Its training fit is good (mean training R 0.94; 0.91
-    to 0.97 in all nine) but its forecasts are not, forecast R -0.59 to 0.27 in four windows plotted,
-    against 0.81 to 0.94 for response 2 of the same preparation. The decoding holds in eight of nine,
-    so the claim holds in part. Forecast windows, 40 per response with the Methods' windowing (360), 174
-    per response with the code's (1566); the paper's N = 173 is close to the code's count per response.
-    The failing response is the one the paper describes as apparently chaotic.
+    of width and count (adopted, mean R of the other eight 0.36 to 0.89). Response 1 of preparation 4
+    fails under all four (mean R -0.060, -0.119, -0.075 and -0.124 for own/min80, own/le80, pooled/min80
+    and pooled/le80; bounds -0.127 to -0.204), with histories up to 100 ms, and with the code's windowing
+    (mean R -0.102). Its training fit is good (mean training R 0.94; 0.91 to 0.97 in all nine) but its
+    forecasts are not, forecast R -0.59 to 0.27 in four windows plotted, against 0.82 to 0.93 for response
+    2 of the same preparation. The decoding holds in eight of nine. Forecast windows, 40 per response
+    with the Methods' windowing (360), 174 per response with the code's (1566); the paper's N = 173 is
+    close to the code's count per response. The failing response is the one the paper describes as apparently
+    chaotic. Forecasts diverge in some windows of the longer histories (195 to 277 of 5760 windows over
+    all histories with the Methods' windowing, 770 of 7830 with the code's, above 10 times the response's
+    largest P10 rate, up to about 1e13 spikes/s at the clip of the linear predictor); the selected histories
+    have none in any 80% run. A perturbation of the PCs by 1e-9 of their SD changes the mean MAE of preparation
+    4, bout 1 at 150 ms from 5.3e11 to 2.8e11 and leaves the 50 ms model nearly unchanged, so mean MAEs
+    with diverging windows, and the history selected from them, depend on rounding; the forecast R on
+    which the criterion rests is not affected here.
   deviations:
   - The Poisson GLM is fitted by a numpy IRLS in place of MATLAB's glmfit, at most 25 iterations with
     a relative deviance change of 1e-6 (a standard choice; the forecasts of one program agreed to three
@@ -312,12 +335,15 @@ outcomes:
   - 5
   notes: Reproduced under own/le80, where both parts hold. The nine 80% counts are 3 to 5 under own/le80
     and pooled/le80, and the 90% counts at least double them in each. Under own/le80 with the full history
-    grid for both, the 90% models are not better, mean MAE lower in 5 of 9 (two-sided Wilcoxon p = 0.91,
-    median difference -0.13) and mean R-squared higher in 4 of 9 (p = 0.50). Under pooled/le80 (four histories)
-    p = 0.65 and 0.91. Under the adopted reading (own/min80) the counts are 4 to 6 and one (6) is outside
-    2.7 to 5.5; there the 90% models are worse in MAE (p = 0.027, 7 of 9 worse, full grid; p = 0.039 with
-    four histories for both) and do not differ in R-squared (p = 0.13). No comparison finds the 90% models
-    better at p < 0.05.
+    grid for both, the 90% models are not better, mean MAE lower in 6 of 9 (two-sided Wilcoxon p = 0.50,
+    median difference -0.44) and mean R-squared higher in 4 of 9 (p = 0.50). Under pooled/le80 (four histories)
+    p = 0.73 and 0.82. Under the adopted reading (own/min80) the counts are 4 to 6 and one (6) is outside
+    2.7 to 5.5; there the 90% models are worse in MAE (p = 0.027, 7 of 9 worse, full grid; p = 0.020 with
+    four histories for both) and do not differ in R-squared (p = 0.16). No comparison finds the 90% models
+    better at p < 0.05. Over all histories 457 (own/le80) and 610 (own/min80) of 5760 windows of the 90%
+    models have diverging forecasts, so the mean MAEs and these p-values depend on rounding through the
+    history selected; the executed copy reviewed in round 2 gave p = 0.91 for MAE under own/le80, with
+    the same conclusion.
   deviations:
   - The 90% models use the Methods' full history grid under own/min80 and own/le80, and histories of 50,
     100, 150 and 200 ms under pooled/le80, to fit the time limit; the comparison is also shown with the
@@ -370,14 +396,20 @@ outcomes:
     one of the two absences holds and the other fails, and the claim holds in part. Under own/le80 one
     slope is significant with the recurrent points (total change, p = 0.036) and none with the code's
     points (lowest p 0.053); under pooled/min80 and pooled/le80, with participation from the pooled width,
-    no slope is significant (lowest p 0.085 and 0.069). The robust fits agree with the ordinary ones in
+    no slope is significant with the legend's exclusion (lowest p 0.085 and 0.069). With the code's exclusion
+    (pairs with normalised distance below 1), pooled/min80 has a significant total-change slope with the
+    recurrent points (p = 0.028 and 0.029, participation readings (a) and (b)) and pooled/le80 has none
+    (lowest p 0.069). The robust fits agree with the ordinary ones in
     significance except one (code points, adopted reading, reading (a), Hellinger, robust p = 0.063).
   deviations:
-  - Assumed, the adopted reading of width and count (own/min80); under the pooled readings the claim is
-    reproduced. Participation is computed under each reading's width and count. The test is the code's
+  - Assumed, the adopted reading of width and count (own/min80). Under the pooled readings the claim is
+    reproduced with the legend's exclusion; with the code's exclusion pooled/min80 has one significant
+    slope (total change, recurrent points). Participation is computed under each reading's width and count. The test is the code's
     linear regression slope, as the criterion says.
 - claim: fig7s2-no-invariant-core
   outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig7s2-no-invariant-core
   notes: With a port of the code's ensemble toolbox, every preparation has neurons typed oscillator in
     all three programs (16 to 84 per preparation, adopted width, seed 7). The top 10% of them by maximum
     participation (2 to 8 neurons) have a median maximum change between consecutive programs of 0.068
@@ -593,10 +625,7 @@ verifications:
     outcome: partially_reproduced
     reason: 'The mean linear-model period is 10.45 s (own/min80) and 10.12 s (pooled/min80), within 10
       plus or minus 1, but 13.55 s and 12.22 s under le80, the count under which fig2b holds. It is uncorrelated
-      with the recurrence periods (r = -0.06, p = 0.74), so consistent with is not supported. B.11: on
-      a toy orbit the mean-imaginary-part period came out about 2 times the true period, because real
-      maximum eigenvalues contribute b = 0; this is inherent to the criterion''s method, and in the real
-      data p_complex1 is high, so the effect is smaller.'
+      with the recurrence periods (r = -0.06, p = 0.74), so consistent with is not supported.'
     response: Outcome kept as reproduced, resting on the adopted reading, and the disagreement recorded.
       The criterion judges the mean against 10 s and says consistency is reported as the correlation,
       not judged; the notes and the conclusion say the correlation is absent and that consistency holds
@@ -714,3 +743,223 @@ verifications:
     response: Outcome kept. Added true quintiles, the share of the top fifth in its most common quadrant
       against the share of all neurons there (34% to 41% against 19% to 20% under true quintiles), and
       a note that the equal-width range test holds 1 or 2 neurons.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary,
+    the helper module, the attempt record and the claims file, with the paper. The verifier found no place
+    where the claims file misreads the paper and agreed with 29 of the 30 outcomes. It also noted that
+    the README gives about 36 minutes where the notebook printed 33.8 min (now about 40 minutes; this
+    revision's run printed 39.6 min).
+  results:
+  - claim: dataset-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig1d-slow-oscillation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. B.10 is resolved: the detrended spectrum was added.'
+    response: No change needed.
+  - claim: fig1e-decaying-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig2b-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. B.1 is resolved, disclosed in cells 21 and 22 and in the
+      Summary table. Cell 21 says the Methods'' printed width (median ISI / 12, or / sqrt(12)) gives 22
+      to 76 dimensions; cell 20 gives 21 (sqrt12/le80) to 76, and the record''s 21 to 76 is correct. Remaining:
+      no single reading of width and count makes fig2b, fig3h, fig4c, fig6s2 and fig7gh all hold, and
+      fig2b fails under the adopted reading; this is now disclosed, but every assumed outcome rests on
+      it.'
+    response: Corrected cell 21 to 21 to 76 dimensions (21 to 41 with median ISI / sqrt(12), 33 to 76
+      with / 12). The absence of a consistent reading stays disclosed in the header, the recurrence section
+      and the Summary; the adopted reading is kept, as the protocol puts the Methods' count first. Outcome
+      kept.
+  - claim: fig2ef-periodic-recurrence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig2e-single-dominant-orbit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig2s2-threshold-robust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3a-coalescence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. B.7 is resolved (windows now count at at least 90%), and the
+      coalescence densities asked for were added.
+    response: No change needed.
+  - claim: fig3c-same-manifold
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3s1a-common-axes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3d-initial-conditions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3f-pairwise-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3h-perturbations-return
+    agrees: true
+    outcome: partially_reproduced
+    reason: Accepts it. The criterion holds under own/le80 (18 kept and 16 returned; 19 and 17) and fails
+      under the adopted reading (16 and 15), and the record says so. The criterion's text gives no partial
+      outcome; strictly, under the adopted reading it gives not reproduced. Cell 53 and the notes say
+      the code's rule keeps 17 to 21, which is true but leaves out that under the adopted reading the
+      code's rule keeps 19 periods and 18 return (0.947, cell 52), which meets both tolerances and matches
+      the paper's 19.
+    response: Added to the conclusion and the notes that the code's rule under the adopted reading keeps
+      19 with 18 returned (0.947), meeting both tolerances, and that it is reported, not judged, because
+      the criterion states the Methods' rule ("We removed all such divergent periods whose divergent point
+      fell within two oscillation cycles of the end of the recording"). Added that the criterion has no
+      partial outcome and why partially reproduced is kept (the fraction holds, the counts miss by 1.1
+      and 0.3). Outcome kept, as the verifier accepts it.
+  - claim: fig3i-same-manifold-after
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. B.4 is resolved: the weak-evidence wording is now in fig3h
+      and fig3i.'
+    response: No change needed.
+  - claim: fig4bc-stable-spiral
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. The neighbour counts asked for were added.
+    response: No change needed.
+  - claim: fig4c-orbital-period
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees. The criterion judges only the mean, 10 plus or minus 1 s, and says consistency
+      is reported, not judged; under the adopted reading the mean is 10.45 s (cell 61). In round 1 it
+      judged consistency, which the criterion does not ask for. Cell 62 and the notes say consistency
+      holds only for the means (10.45 s against a median recurrence period of 12.73 s); the two differ
+      by 2.3 s, more than twice the tolerance of 1 s, so the means are not shown consistent either. The
+      record attached the round-1 B.11 toy-orbit note to fig4c as a reason, but B.11 was marked as not
+      affecting a conclusion; the round-1 reasons were the le80 failure and the missing correlation.
+    response: 'Corrected cell 62 and the notes: the means are 2.3 s apart where the tolerance is 1 s,
+      so neither the correlation nor the means support "consistent with", which is reported, not judged.
+      Removed the B.11 note from the round-1 reason for this claim. Outcome kept.'
+  - claim: fig4s1a-contracting-dimensions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig4s1b-rotation-dominant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig5b-period-changes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig5c-no-relation-contraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig6s1-no-p10-motorneurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig6d-decode-p10
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion requires mean forecast R minus 2 s.e.m. above 0 in each of the nine responses,
+      and it has no partial rule; the paper's statement is specifically in all nine. Cell 79 shows preparation
+      4, bout 1 failing under all four readings, with histories up to 100 ms, and with the code's windowing
+      (mean R -0.060 to -0.127), so the failure does not depend on the reading. Eight of nine is a failure
+      of exactly what the claim says, not a partial match. In cells 79 and 83 (not discussed anywhere)
+      the mean MAE for preparation 4, bout 1 reaches 7.6e6 with the code's windowing, which points to
+      exploding forecasts in some windows.
+    response: 'Agreed. In round 2 the outcome may not change, so the verified outcome, partially reproduced,
+      is kept and not reproduced is proposed under proposed, with the reason. The conclusion now says
+      so. Added a printout of the forecasts that diverge (above 10 times the largest P10 rate, up to the
+      clip at about 1e13): many windows of the longer histories, none in the selected 80% models, and
+      a perturbation test showing that a mean MAE with diverging windows depends on rounding (5.3e11 against
+      2.8e11 at 150 ms). In this run the code-windowing mean MAE of that response is 13.3 and its mean
+      R -0.102; the pass counts are unchanged.'
+  - claim: fig6s2-dimensions-p10
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Under own/le80 the counts are 3 to 5 and the 90% counts at least double them; the
+      90% models are not better (MAE p = 0.91, R-squared p = 0.50, full history grid for both, cell 83).
+      B.5 and B.6 are resolved. For preparation 4, bout 1 the mean MAE reaches 6.6e7 (90%, own/min80)
+      and 3.1e9 (90%, own/le80), which points to exploding forecasts in some windows; it does not change
+      the outcome, since the 90% models only look worse.
+    response: 'Added the count of diverging forecasts for the 90% models (457 and 610 of 5760 windows
+      over all histories under own/le80 and own/min80, one window in the selected models). The decoding
+      is sensitive to rounding through these windows, and the re-run gives different numbers from the
+      copy reviewed: under own/le80 MAE lower with 90% in 6 of 9, p = 0.50, R-squared p = 0.50; under
+      own/min80 MAE p = 0.027, R-squared p = 0.16; pooled/le80 p = 0.73 and 0.82. The conclusion and notes
+      now give these numbers and say so. No comparison finds the 90% models better, as before. Outcome
+      kept.'
+  - claim: fig7a-long-tailed-participation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig7f-strongly-variable-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: halving-participation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig7s1-rate-synchrony
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig7gh-robust-to-participation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees, as in round 1. The result is split by reading: one slope of two is significant under
+      own/min80, and under own/le80 with recurrent points, and none under either pooled reading (cell
+      100). The same strictness caveat as fig3h applies. The deviation says under the pooled readings
+      the claim is reproduced; that is true with the legend''s exclusion, the main reading, but with the
+      code''s exclusion pooled/min80 has a significant total-change slope with recurrent points (p = 0.028
+      and 0.029, cell 100), and this is not mentioned.'
+    response: 'Corrected the deviation, the notes and the conclusion: with the code''s exclusion pooled/min80
+      has a significant total-change slope with the recurrent points (p = 0.028 and 0.029), pooled/le80
+      none. Outcome kept.'
+  - claim: fig7s2-no-invariant-core
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 103 gives 0 or 1 of 10 preparations with a core, across both widths, both seeds
+      and both participation readings. The outcome rests on a port of random clustering that was not checked
+      against MATLAB, as the record says; it is stable across seeds and widths. The record's fig7s2 entry
+      has no notebook or output fields, although cell 103 is tagged claim:fig7s2-no-invariant-core.
+    response: Added the notebook and output fields. The port could not be checked against MATLAB output
+      here, as no MATLAB run is available; this stays stated in the deviation. Outcome kept.
+  - claim: fig8-caudolateral
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.

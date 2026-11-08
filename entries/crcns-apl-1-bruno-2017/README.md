@@ -28,7 +28,7 @@ them, and neuron positions on the photodiode array.
 | Period slows, speeds up or is unchanged | Reproduced |
 | No relation between period change and contraction | Reproduced |
 | No P10 motorneurons recorded | Reproduced |
-| P10 decoded in all nine responses | Partially reproduced |
+| P10 decoded in all nine responses | Partially reproduced (change to not reproduced proposed) |
 | 3 to 5 dimensions for the P10 recordings; 90% no better | Reproduced (under the code's count rule) |
 | Long-tailed, variable participation (three claims) | Reproduced |
 | Rate explains 50% of participation, 23% of its change | Reproduced |
@@ -46,7 +46,7 @@ notebook runs every reading, and its summary tabulates the outcome under each fo
 change; no single reading makes all of them hold. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/crcns-apl-1-bruno-2017-01.yaml`](../../attempts/crcns-apl-1-bruno-2017-01.yaml).
 
-- `reproduce_bruno_2017.ipynb`: the analysis, about 36 minutes on 4 CPUs (the recurrence analysis
+- `reproduce_bruno_2017.ipynb`: the analysis, about 40 minutes on 4 CPUs (the recurrence analysis
   under eight readings, the manifold comparisons with 100 shuffles, the P10 decoding under four
   readings, and the ensemble typing).
 - `apl.py`: streaming the files from the CRCNS bucket, spike-density functions, PCA, the

@@ -748,7 +748,8 @@ def decode_p10(pcs, p10_rate, stimbins, hist_steps, train_s=40.0, test_s=10.0, s
         yf = p10_rate[rf]
         with np.errstate(invalid="ignore"):
             out.append({"t": s0, "R": np.corrcoef(yf, fc)[0, 1], "MAE": np.median(np.abs(yf - fc)),
-                        "R_train": np.corrcoef(y, fit)[0, 1], "MAE_train": np.median(np.abs(y - fit))})
+                        "R_train": np.corrcoef(y, fit)[0, 1], "MAE_train": np.median(np.abs(y - fit)),
+                        "fc_max": float(fc.max())})
         s0 += step_s
     return out
 
@@ -776,7 +777,11 @@ def decode_program(args):
             o = decode_p10(pcs, rate, P.stimbins, h, step_s=0.2, train_frac=0.5)
         res[h] = o
     best = min(res, key=lambda h: np.nanmean([w["MAE"] for w in res[h]]))
+    # fc_max_by_history: the largest forecast of each window, to count forecasts that diverge
+    # (reported, not judged; the clip of the linear predictor at 30 caps them at about 1e13).
     return {"file": rec["file"], "prep": rec["prep"], "bout": rec["bout"], "d": d, "best": best,
+            "rate_max": float(rate.max()),
+            "fc_max_by_history": {h: np.array([w["fc_max"] for w in v]) for h, v in res.items()},
             "windows": res[best], "by_history": {h: (np.array([w["R"] for w in v]),
                                                       np.array([w["MAE"] for w in v]))
                                                   for h, v in res.items()}}
