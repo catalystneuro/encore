@@ -16,5 +16,6 @@ wild-type controls were not imaged. The notebook checks the subjects, the files 
 image scales, and shows the region coverage. It matches a sample of fields to the low-magnification
 overviews before them (26 of 66 placed, none at its stated scale, and no overview aligned to an
 atlas), and lists and shows the 561 region-labelled 200X Abeta42 images with the reasons they cannot
-be scored by the paper's criteria. The attempt record is
+be scored by the paper's criteria. Where the cochlear nucleus subfolders hold red-channel images
+(4 fields of mouse 0215), it compares them with the Abeta42 images of the same fields. The attempt record is
 [`attempts/002035-weible-2022-01.yaml`](../../attempts/002035-weible-2022-01.yaml).

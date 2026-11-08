@@ -158,7 +158,7 @@ outcomes:
     be read. Only 864 of 12394 images (7.0%) have a recorded region, all from named follow-up subfolders in
     24 of the 62 mice, and none of 20 sampled image headers and sidecars holds a stage position, section number
     or atlas coordinate (notebook, cell tagged coverage). The 200X Abeta42 subiculum images of the 5 p60 mice
-    and of the 11 younger mice were listed and shown (notebook, cells tagged labelled), but not scored. Their
+    and of the 8 younger mice (NN, 0324, 0334, 0294, 0214, 0219, 0241, 0248) were listed and shown (notebook, cells tagged labelled), but not scored. Their
     scale is not verified (554 of the 561 region-labelled 200X Abeta42 images are classed 200X by rule), an
     intensity count cannot tell cells from plaques or from autofluorescence, and the paper's identification
     by eye against wild-type sections cannot be repeated without those sections. Fields chosen within the subiculum
@@ -321,9 +321,15 @@ outcomes:
     holds a stage position, section number or atlas coordinate (notebook, cell tagged coverage). The 7 CN-labelled
     200X Abeta42 images of mouse 0136 and the 23 IC;VCN images of mouse 0215 were listed and shown (notebook,
     cells tagged labelled). The CN field of 0136 placed in its overview has at least twice the stated pixel
-    size and covers the whole ventral cochlear nucleus. Its bright puncta cannot be classed as cells, plaques
-    or autofluorescence by an intensity count, and there is no wild-type or red-channel reference for them.
-    They were not scored, so the claim was neither confirmed nor refuted on them.
+    size and covers the whole ventral cochlear nucleus. The 0136 CN subfolder holds Abeta42 and DAPI images
+    only, so its bright puncta have no red-channel reference, and an intensity count cannot class them as
+    cells, plaques or autofluorescence. The 0215 IC and VCN subfolder holds 6 red-channel images; 4 follow
+    an Abeta42 field (2 at 100X, 2 at 200X). In these 4 pairs the log images of the two channels correlate
+    at 0.987 to 0.995, and all 22 objects found in the Abeta42 images are also at least 7 scaled MADs above
+    background in the red image (notebook, cells tagged labelled). Whether these fields lie in the IC or the
+    VCN is not recorded, they are 4 fields and not the whole nucleus, and the paper's identification by eye
+    against wild-type sections cannot be repeated. The images were not scored, so the claim was neither
+    confirmed nor refuted on them.
 - claim: fig7b-prnc-cells
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -338,7 +344,9 @@ outcomes:
     200X Abeta42 images of the p14 mice BrTNR, LTN and NN were listed and shown (notebook, cells tagged labelled).
     Their fields placed in the overviews have 8 times (BrTNR, LTN) and 4 times (NN) the stated 0.3225 um pixel
     size against a 12.5X overview. With the overview between 12.5X and 50X (Methods, Imaging) the BrTNR and
-    LTN fields have at least 0.645 um per pixel, so a diameter over 40 um cannot be measured, and cells cannot
+    LTN fields have between 0.645 and 2.58 um per pixel, and possibly more, since 2.58 um is the largest size
+    tried. Pixels of that size would resolve a 40 um cell, but with the scale known only within a factor of
+    4 a diameter cannot be read in micrometres, so the >40 um condition cannot be tested; and cells cannot
     be told from autofluorescence without the wild-type reference. The p14 condition was not tested.
 - claim: fig7c-prnc-plaques
   outcome: blocked
@@ -408,8 +416,9 @@ findings:
     at 5.16 um the best field pixel size is 2 times the stated one for 17 of the 26, 4 times for 6 and 8 times
     for 3. With the overviews between 12.5X and 50X, as the paper says of its low-magnification images, 3 images
     classed 200X by rule (the cochlear nucleus field of mouse 0136, the PRNc fields of the p14 mice BrTNR and
-    LTN) have at least 0.645 um per pixel, twice the stated 0.3225 um; either the overview or the field class
-    is wrong for the others. The pixel sizes of the sidecars and OME headers cannot be relied on for measurements
+    LTN) have at least 0.645 um per pixel, twice the stated 0.3225 um; these three are best at 2.58 um, the
+    largest size tried, so their true ratio may be higher than 8. Either the overview or the field class is
+    wrong for the others. The pixel sizes of the sidecars and OME headers cannot be relied on for measurements
     in micrometres.'
 verifications:
 - date: '2026-11-08'
@@ -421,8 +430,9 @@ verifications:
     manifest, README, samples, scans and participants tables. It reported problems on cells 0, 3, 5 to 8: the
     block reason was asserted, not shown (problem 1), claim parts that region-labelled images could test were
     not looked at (2), coverage counted DAPI-only images (3), the position check sampled 20 images where samples.json
-    is stronger evidence (4), the rule-assigned 200X images were not checked (5), and the extra mouse was not
-    named (6). Responses on problems 3 to 6, which did not affect a conclusion: 3, a coverage table of 200X
+    is stronger evidence (4), the rule-assigned 200X images were not checked (5), and, on the mouse counts,
+    that they are reported correctly and that not naming the extra mouse does not matter since nothing is tested
+    (6). Responses on problems 3 to 6, which did not affect a conclusion: 3, a coverage table of 200X
     Abeta42 images per region and age was added; 4, samples.json is now printed and cited; 5, the placement
     test checks the scale of 10 rule-assigned main-pass fields and 36 region-labelled ones, and a metadata_error
     finding records that none placed is at its stated scale; 6, which mouse is the extra one cannot be told
@@ -628,3 +638,313 @@ verifications:
     outcome: blocked
     reason: It depends on fig1e, which is blocked.
     response: Agreed; no change to the outcome.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write the
+    notebook)
+  reviewed: 'Round 2. The full executed notebook with its conclusions and summary, the helper module, the
+    claims file and the attempt record at commit d44ace13b6; the paper under paper/. The verifier agreed with
+    all 33 outcomes and found the round-1 points resolved. It reported five sentences the outputs do not
+    support, none bearing on an outcome: the count of 11 younger subiculum mice, which is 8 (2.1); cell 13''s
+    statement that failed fields peak no higher than the null (2.2); the statement that the CN and VCN fields
+    lack a red-channel reference, which no output shows and which it marked as still open for fig6cd (2.3);
+    the fig7b reasoning from pixel size (2.4); and the unmentioned edge of the pixel-size grid (2.5). It also
+    noted that the round-1 reviewed text misdescribed its problem 6. Responses: all five corrected, with new
+    outputs for 2.2, 2.3 and 2.5; the stain listing for 2.3 showed red-channel images in the 0215 IC and VCN
+    subfolder, now compared with their Abeta42 fields; the round-1 reviewed text is corrected. No outcome
+    changed and none is proposed.'
+  results:
+  - claim: a1-first-in-pathway
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked. Cell 13 says the failed fields have peaks no higher than the null''s, but from the cell 11 table a
+      failed field''s peak height is at or below the null''s in only 16 of 40, and its correlation in 25 of 40;
+      several beat the null clearly (0329 run 11989, z 8.7 against 4.5, ncc 0.912 against 0.586). The first half
+      holds: 36 of the 40 failures are best at 0.3225 um.'
+    response: 'Cell 11 now prints these counts (36, 16 and 25 of 40), and cell 13 states them, with the 0329 example, in
+      place of the overstated sentence. The block does not rest on it. Outcome unchanged.'
+  - claim: fig1a-a1-onset-p21
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig1c-a1-cells-age
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig1d-a1-cells-layer-5a
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig1e-l5a-peak
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig1f-l5a-dapi-stable
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig1g-dapi-layers
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig2b-a1-plaques-age
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig2c-a1-plaques-layer
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig2d-a1-plaques-sex
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: wt-no-label
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (blocked as data_missing). No outcome rests on a stated assumption. The block is now shown, not
+      asserted: cell 7 shows the region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the
+      stated scale, and no overview is aligned to the atlas, and cell 7 prints that samples.json says individual
+      sections are not tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig3a-subiculum-onset
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The partly testable claims stay blocked: the claims file says any automated detection used in place
+      of counting by eye is a deviation, there is no wild-type reference to tell label from autofluorescence, and
+      554 of the 561 region-labelled images have their scale assigned by rule, with the placed fields 2 to 8 times
+      off their stated scale. The count of younger mice is wrong: cell 7''s 200X Abeta42 table gives 8 subiculum
+      mice before p60, and cell 15 lists the same 8 (NN, 0324, 0334, 0294, 0214, 0219, 0241, 0248); 11 includes the
+      three mice at p90 to p150. The outcome is not affected.'
+    response: 'Corrected the count to 8 and named the mice, in the notebook (part-by-part cell after the panels) and in the
+      outcome''s notes. Outcome unchanged.'
+  - claim: fig3bc-subiculum-cells-plaques-age
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig3d-subiculum-dapi-stable
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: subiculum-no-sex
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: mgb-cells-rare
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The partly testable claims stay blocked: the claims file says any automated detection used in place
+      of counting by eye is a deviation, there is no wild-type reference to tell label from autofluorescence, and
+      554 of the 561 region-labelled images have their scale assigned by rule, with the placed fields 2 to 8 times
+      off their stated scale.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: mgb-dapi-subregions
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig4b-mgb-plaques-age
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig4c-mgb-plaques-subregion
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: mgb-sex-trend
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: ic-cells-low
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: ic-cells-subregion
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig5b-ic-plaques-age
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig5c-ic-plaques-subregion
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: ic-no-sex
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig6b-soc-cells
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: soc-plaques-rare
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The partly testable claims stay blocked: the claims file says any automated detection used in place
+      of counting by eye is a deviation, there is no wild-type reference to tell label from autofluorescence, and
+      554 of the 561 region-labelled images have their scale assigned by rule, with the placed fields 2 to 8 times
+      off their stated scale.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: fig6cd-nll-cn-none
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The partly testable claims stay blocked: the claims file says any automated detection used in place
+      of counting by eye is a deviation, there is no wild-type reference to tell label from autofluorescence, and
+      554 of the 561 region-labelled images have their scale assigned by rule, with the placed fields 2 to 8 times
+      off their stated scale. It is the only claim whose outcome these images could have changed, since it is not
+      reproduced when any label is found, and the cell 16 panel of the 0136 CN field shows small bright puncta in
+      the ventral cochlear nucleus. Leaving them unscored is defensible, but it rests partly on the statement that
+      the CN and VCN fields lack a red-channel reference, which no output shows. One output listing the stains in
+      the two CN/VCN subfolders would settle it. The outcome stays blocked whichever way it goes, unless such a
+      reference exists.'
+    response: 'Added the output (cells tagged labelled, after the follow-up subfolder listing). It shows the statement was
+      half wrong: the 0136 CN subfolder holds Abeta42 and DAPI images only, but the 0215 IC and VCN subfolder holds
+      6 red-channel images, 4 of them taken just after an Abeta42 field (2 at 100X, 2 at 200X). The notebook now
+      shows these 4 pairs side by side, with the correlation of the two log images (0.987 to 0.995) and, for each of
+      the 22 objects found in the Abeta42 images, its peak in the red image: all 22 are at least 7 scaled MADs above
+      background in the red too. So these fields mostly show signal not specific to the Abeta42 channel. They still
+      do not test the claim: the subfolder does not say which fields are in the VCN and which in the IC, they are 4
+      fields and not the whole nucleus, their scale is not verified, and the paper''s identification by eye against
+      wild-type sections cannot be repeated. The outcome''s notes are corrected; the round-1 response above, which
+      said these fields lack a red-channel reference, is true only of 0136. Outcome unchanged, and no change is
+      proposed.'
+  - claim: fig7b-prnc-cells
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The partly testable claims stay blocked: the claims file says any automated detection used in place
+      of counting by eye is a deviation, there is no wild-type reference to tell label from autofluorescence, and
+      554 of the 561 region-labelled images have their scale assigned by rule, with the placed fields 2 to 8 times
+      off their stated scale. The reasoning that at least 0.645 um per pixel means a diameter over 40 um cannot be
+      measured does not follow: at 0.645 to 2.58 um per pixel a 40 um cell spans about 16 to 62 px, which is
+      resolvable. What prevents the measurement is that the true scale is known only within a factor of 4. Also, the
+      fields at 8 times are best at 2.58 um, the largest size tried, so their true ratio could be higher; the 0.645
+      um lower bound still holds. The outcome is not affected.'
+    response: 'Reworded in the notebook (part-by-part cell) and in the outcome''s notes: the pixels would resolve a 40 um
+      cell, but the scale is known only within a factor of 4, so a diameter cannot be read in micrometres. Cell 11
+      now lists the placed fields best at the largest size tried (4: the 0136 CN field, the BrTNR and LTN PRNc
+      fields, and one DAPI 100X field of 0241), and cell 13 and the metadata_error finding say their ratio may be
+      higher than 8. Outcome unchanged.'
+  - claim: fig7c-prnc-plaques
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: prnc-no-sex
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: cells-before-plaques
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
+  - claim: l5-pyramidal-fraction
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. No outcome rests on a stated assumption. The block is now shown, not asserted: cell 7 shows the
+      region coverage, cells 10 to 13 show that 26 of 66 fields are placed, none at the stated scale, and no
+      overview is aligned to the atlas, and cell 7 prints that samples.json says individual sections are not
+      tracked.'
+    response: 'Agreed; no change to the outcome.'
