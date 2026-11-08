@@ -1,0 +1,787 @@
+schema_version: 2
+id: 002034-thompson-2026-01
+dataset:
+  archive: dandi
+  id: '002034'
+  version: 0.261019.2146
+  doi: 10.48324/dandi.002034/0.261019.2146
+paper: doi:10.7554/elife.112525
+date: '2026-11-06'
+entry: 002034-thompson-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42192862980
+inputs:
+- what: The include lists of sessions and units (Code/include_lists/manuscript_session_include.csv and
+    manuscript_unit_include.csv), compared with the dandiset in the link claim; they hold exactly the
+    dandiset's sessions and units, so no selection from outside enters the analysis.
+  source: https://github.com/lwthompson2/Thompson2026_LCPupilAnalysis at commit cf3c0b70ccf17188f9094f130aa39aa0487ba7a6
+- what: The code's printed statistics on this dandiset (Code/Results/manuscript_stats_nwb.txt), used only
+    as reference values in the link claim.
+  source: https://github.com/lwthompson2/Thompson2026_LCPupilAnalysis at commit cf3c0b70ccf17188f9094f130aa39aa0487ba7a6
+outcomes:
+- claim: include-list-link
+  outcome: reproduced
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:include-list-link
+  notes: All 83 sessions and 105 units on the code's include lists are in the dandiset and every dandiset
+    unit is listed. The code's pipeline rewritten in Python and run on the dandiset matches 26 of 26 values
+    the code printed (3974 beep and 15770 fixation trial rows, the twelve Figure 2 tests, the four range
+    correlations, the eight LLR counts); the only visible difference is Ci row 1, p = 1.14e-5 against
+    the printed 1.18e-5. The code's twelve printed Figure 3 pooled coefficients are matched to its three
+    decimals (12 of 12) when firing rates are z-scored by within-session unit index across sessions, as
+    zscore_tables.m does; z-scored per unit, 2 of 12 match.
+  deviations:
+  - A link claim added by this attempt; it uses the code's printed output as reference values.
+- claim: data-units-sessions
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:data-units-sessions
+  measured:
+  - 42
+  - 32
+  - 63
+  - 51
+  notes: Oz 42 units in 32 sessions, Ci 63 units in 51 sessions, each with beep trials, spikes and pupil,
+    under the Methods' and the code's trial rules (7 to 109 beep trials per unit under the Methods' rule,
+    7 to 111 under the code's). The code's second removal of two units gives 61 units in 50 sessions
+    for Ci, the counts its printed output shows.
+  deviations:
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig2-row1-baseline-lc-pupil
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig2-row1-baseline-lc-pupil
+  notes: Median partial Spearman coefficient Oz 0.080 (T1 p = 5.5e-4, paper 8.6e-4), Ci 0.093 (p = 1.4e-5,
+    paper 9.85e-6); 12 and 17 units significantly positive, 3 and 4 negative. The code reading gives p
+    = 5.2e-4 and 1.1e-5; T2 and the code's removal of two units also give p < 0.001.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig2-row2-evoked-lc-pupil
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig2-row2-evoked-lc-pupil
+  notes: Median above zero and T1 p < 0.05 in both monkeys under E1 (Oz 0.118, p = 0.011; Ci 0.024, p
+    = 0.0028) and E2 (Oz 0.092, p = 0.020; Ci 0.053, p = 0.0026); paper 0.0135 and 0.0018. Code reading
+    p = 0.0135 and 0.0015. Under T2 with E2, Oz gives p = 0.13 (variant).
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig2-row3-pupil-evoked-vs-baseline
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig2-row3-pupil-evoked-vs-baseline
+  notes: Median per-session coefficient negative and T1 p < 1e-5 in both monkeys under E1 (Oz -0.33, p
+    = 7.9e-6; Ci -0.45, p = 2.0e-9) and E2 (Oz -0.37, p = 1.1e-6; Ci -0.37, p = 5.2e-9), over 32 and 51
+    sessions; the same with the code's 50 Ci sessions. Paper 1.16e-6 and 5.02e-9.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig2-row4-lc-evoked-vs-baseline
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig2-row4-lc-evoked-vs-baseline
+  notes: Median negative in both monkeys (Oz -0.38, T1 p = 1.2e-6; Ci -0.30, p = 1.5e-11; paper 5.88e-7
+    and 1.04e-11), under every reading.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig2-row5-baseline-lc-vs-evoked-pupil
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig2-row5-baseline-lc-vs-evoked-pupil
+  notes: T1 p >= 0.05 in both monkeys under E1 (Oz p = 0.80, median 0.007; Ci p = 0.94, median 0.010)
+    and E2 (Oz p = 0.99, median 0.023; Ci p = 0.95, median 0.012); paper 0.894 and 0.904. T2, the code's
+    evoked pupil and the code's removal all give p >= 0.18.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig2-row6-baseline-pupil-vs-evoked-lc
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig2-row6-baseline-pupil-vs-evoked-lc
+  notes: Oz T1 p = 0.97 (median 0.036), Ci p = 0.034 (median -0.022), the paper's pattern (0.915 and 0.008).
+    Code reading 0.915 and 0.0105. The Ci result is fragile. With the code's removal of two Ci units (a
+    variant) Ci gives p = 0.064 under the Methods' trials and 0.019 under the code reading, so the outcome
+    rests on the paper's 63 units, which the claims file takes. Leaving out beep trials whose 200 ms evoked
+    window runs past the end of the trial (variant) gives Ci p = 0.029 with 63 units and 0.046 with 61.
+    The code reading's 0.0105 rests in part on 85 beep rows its trial rule keeps and the Methods' rule
+    drops, whose beep falls 7 to 69 ms before the end of the trial, so that most of the 200 ms evoked
+    window lies past the end, where spikes are mostly not stored; their mean raw evoked rate is lower
+    (Ci 3.15 against 6.99 sp/s). Without the beep trials whose 200 ms window runs past the end, the code
+    reading gives Ci p = 0.028 (figs1 section).
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: cross-epoch-no-reliable-relation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:cross-epoch-no-reliable-relation
+  notes: Rows 1 and 2 hold in both monkeys, and neither row 5 nor row 6 is significant with one sign in
+    both monkeys, under E1, E2 and the code reading.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: range-baseline-pupil-evoked-lc
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:range-baseline-pupil-evoked-lc
+  notes: Spearman of the row 6 coefficient with the range of evoked rates, Oz rho = 0.04, p = 0.78; Ci
+    rho = 0.07, p = 0.60 (paper 0.02, 0.89 and 0.07, 0.589). Code reading 0.02, p = 0.89 and 0.05, p =
+    0.69.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The range is per unit, as in the code (claims file).
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: range-baseline-lc-evoked-pupil
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:range-baseline-lc-evoked-pupil
+  measured: -0.04
+  notes: Ci gives p >= 0.05 under E1 and E2 (rho = 0.01, p = 0.92; rho = 0.10, p = 0.42), but Oz shows
+    no correlation (E1 rho = -0.04, p = 0.80; E2 rho = -0.13, p = 0.40) against the paper's -0.33, p =
+    0.03. The code reading gives the paper's values (Oz rho = -0.33, p = 0.032; Ci 0.18, p = 0.16); neither
+    mixture does (code trials with E1, Oz rho = -0.12, p = 0.45; Methods trials with the code's evoked
+    pupil, rho = -0.20, p = 0.21). The range is a maximum minus a minimum, so it is set by extreme trials,
+    and the code's trial rule keeps trials the Methods' rule drops (beeps near or after the end of the
+    trial). The question of which window and trials the paper used is for its authors (findings). Leaving
+    out beep trials whose 200 ms evoked window runs past the end of the trial (variant) gives Oz rho = 0.01,
+    p = 0.94 (E1) and -0.10, p = 0.52 (E2).
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: figs1-raw-baselines-similar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:figs1-raw-baselines-similar
+  notes: With raw baselines 11 of 12 row and monkey cells match the Figure 2 pattern under E1 and under
+    E2 (T1); the cell that differs is row 6 in Ci (median -0.006, p = 0.14). The code reading matches
+    all 12. Under T2, E2 matches 10. Leaving out beep trials whose 200 ms evoked window runs past the end
+    of the trial (variant) also gives 11 of 12, with the same cell differing (p = 0.13). Row 6 does not
+    use the evoked pupil, and it fails under both mixtures (code trials with E1, p = 0.131; Methods trials
+    with the code's evoked pupil, p = 0.136), so the code's 12 of 12 comes from its trial set, not its
+    pupil window. The code's rule keeps 85 beep rows (20 Oz, 65 Ci) that the Methods' rule drops; on each
+    the beep falls 7 to 69 ms before the end of the trial, so most of the 200 ms evoked window lies past
+    the end, where spikes are mostly not stored, and their mean raw evoked rate is lower (Ci 3.15 against
+    6.99 sp/s, Oz 4.75 against 5.96). The code reading without beep trials whose 200 ms window runs past
+    the end gives row 6 Ci with raw baselines median -0.018, p = 0.12, not significant, so the code's
+    match on this cell (p = 0.023) rests on evoked rates that are likely biased low. Code-rule trials whose
+    beep falls after the end of the trial enter no table, since they have no evoked pupil.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: figs2-llr-pupil-baseline-evoked
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:figs2-llr-pupil-baseline-evoked
+  measured:
+  - 6
+  - 7
+  notes: Under E1 with the paper's sessions, 6 of 32 Oz sessions and 7 of 51 Ci sessions have LLR above
+    3.841, both within one of 7 and 6 and under half. Under E2, 5/32 (outside the tolerance) and 5/51.
+    The code reading gives 7/32 and 6/51 (6/50 with its removal). No session lacked enough trials to fit.
+    The counts depend on the trial set. Leaving out beep trials whose 200 ms evoked rate window runs past
+    the end of the trial, a variant aimed at the evoked rate, which this comparison does not use, gives
+    3/32 and 9/51 under E1 and 2/32 and 5/51 under E2.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Fits by ordinary least squares with Gaussian maximum likelihood, equal to fitlme without random effects
+    fit by ML (the code).
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: figs2-llr-lc-baseline-evoked
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:figs2-llr-lc-baseline-evoked
+  measured:
+  - 3
+  - 4
+  notes: 3 of 42 Oz units and 4 of 63 Ci units (4 of 61 with the code's removal) have LLR above 3.841,
+    each within one of the paper's 2 and 3. The code reading gives 2/42 and 3/63.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: figs2-llr-cross-epoch
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:figs2-llr-cross-epoch
+  measured:
+  - 5
+  - 6
+  - 2
+  - 6
+  notes: Evoked pupil on baseline LC, 5/42 (Oz) and 6/63 (Ci) under E1, 6/42 and 7/63 under E2, against
+    4/42 and 4/63; evoked LC on baseline pupil, 2/42 and 6/63 under both, against 2/42 and 5/63. No reading
+    the criterion names has all four within one, and Oz's 5/42 and 6/42 are above a tenth of the units,
+    so the partial rule does not apply. The code reading gives exactly 4/42, 4/63, 2/42 and 5/63. The
+    counts stay small, so the statement that a linear fit is favoured holds; the claim's counts do not
+    under the Methods' evoked pupil. The counts lie close to the cutoff. Under E1 a cutoff one higher would
+    give 4/42 and 3/63 for evoked pupil on baseline LC, and one lower 9/42 and 9/63. Leaving out beep trials
+    whose 200 ms evoked window runs past the end of the trial (variant) gives 6/42 and 5/63 under E1 and
+    8/42 and 7/63 under E2, the same outcome. The partial rule's bound of a tenth of the units is strict
+    next to the 5% false positive rate of the cutoff (2.1 of 42 and 3.2 of 63 expected by chance); it is
+    the claims file's and is applied as written.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig3-pooled-within-epoch
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig3-pooled-within-epoch
+  notes: All four within-epoch columns give p < 0.05 in the sign of the Figure 2 row in both monkeys under
+    E1 and E2 (8 of 8 cells), for example column 1 Oz rho = 0.090, Ci 0.063; column 3 Oz -0.38, Ci -0.39
+    under E1; also under every variant and the code's z-scoring. With raw baselines (variant) column 1
+    is not significant in Ci (rho = 0.005, p = 0.6). Pupil z-scored again per session (variant) and the
+    variant without beep trials whose 200 ms evoked window runs past the end of the trial also give 8 of
+    8.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Firing rates are z-scored per unit (the Figure 3 legend and the claims file); the code groups by within-session
+    unit index, shown as a variant.
+  - Assumption. Pupil is used as stored, taken as already z-scored per session (Methods, Pupillometry);
+    the data check is consistent with this but the files do not say so, and the pooled coefficients
+    mix sessions, so they rest on it. Pupil z-scored again per session (variant) changes them by at most
+    0.008. Asked of the paper's authors (findings).
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+- claim: fig3-pooled-cross-epoch-null
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_thompson_2026.ipynb
+  output: claim:fig3-pooled-cross-epoch-null
+  notes: No cross-epoch column is significant with one sign in both monkeys, in all units or in either
+    group, under any reading (0 of 60 cells). All units, column 6 Oz rho = -0.014, p = 0.62, Ci -0.019,
+    p = 0.32 (E1). Ci's negative group (4 units) shows evoked LC falling with baseline pupil (rho = -0.17,
+    p = 0.012), not seen in Oz's 3 units (p = 0.91). Neither unit the code removes as rows 43 and 65 is in
+    a row 1 group under any reading (row 1 p = 0.15 to 0.42), so groups formed after the code's removal
+    are the same and give the same result (0 cells significant with one sign in both monkeys), as does pupil
+    z-scored again per session.
+  deviations:
+  - Beep trials follow the Methods' rule (at least 100 ms of baseline, Methods, Pupillometry and Neuronal
+    Recordings) and need one evoked pupil window before 20 ms from the end of fixation (implied by the
+    Methods' window, stated here); fixation-only baseline rates end 20 ms before the end of the trial
+    (Methods, Neuronal Recordings). The code's rule (beep more than 400 ms after the start and 800 ms
+    before the end of the padded pupil record) and windows are a variant.
+  - The evoked pupil is read as the Methods describe it (50 ms windows in 10 ms steps from the beep to
+    20 ms before the end of fixation), as E1 and E2 (claims file); the code measures it over 0 to 800
+    ms after the beep with a centred 50 ms moving mean, shown as a variant.
+  - Assumption. Pupil is used as stored, taken as already z-scored per session (Methods, Pupillometry);
+    the data check is consistent with this but the files do not say so, and the pooled coefficients
+    mix sessions, so they rest on it. Pupil z-scored again per session (variant) gives the same result.
+    Asked of the paper's authors (findings).
+  - Groups are the units whose row 1 partial correlation has p < 0.05 (12 positive and 3 negative in Oz,
+    17 and 4 in Ci under the Methods' trials), taken from all units in place of the code's table after
+    its removal of two units; neither removed unit is in a group under any reading (printed).
+  - Assumption. The trial start is taken as fixation onset for every window, as the paper's code does;
+    the files hold no fixation marker and do not say what event the trial start marks, the beep falls
+    a median 2.2 s after it against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored
+    before it, so the start may precede fixation onset (data check). Asked of the paper's authors (findings).
+findings:
+- kind: code_mismatch
+  statement: The code's include list already lacks units 43 and 65 of the legacy numbering (its unit_id
+    runs 1 to 107 without them), and prepare_figure_analysis_tables.m (build_stats) then removes rows
+    43 and 65 of its own 105-row table again, which drops CiCM101019d unit 1 and Ci_LC_d14_6mm_SC_123107
+    unit 2. This is why the code's printed output has 61 Ci units and 50 Ci sessions for some analyses
+    against the paper's 63 and 51.
+- kind: code_mismatch
+  statement: zscore_tables.m z-scores firing rates per value of the within-session unit index (unit 1,
+    2 or 3) pooled across all sessions and both monkeys, not per unit as the Figure 3 legend says (z-scored
+    separately for each session/unit). Run here this way, the code's pipeline gives all 12 of the code's
+    printed Figure 3 pooled coefficients to their three decimals; z-scored per unit, 2 of 12. Per unit
+    the conclusions are the same.
+- kind: code_mismatch
+  statement: 'The code measures the evoked pupil over 0 to 800 ms after the beep with a centred 50 sample
+    moving mean, where the Methods give 50 ms windows in 10 ms steps from the beep to 20 ms before the
+    end of fixation; it keeps beep trials more than 400 ms after the trial start and 800 ms before the
+    end of the NaN-padded pupil record, where the Methods ask for 100 ms of baseline, so it keeps trials
+    whose beep falls near or after the end of the trial (those after the end have no evoked pupil and
+    enter no table, but 85 beep rows with the beep 7 to 69 ms before the end do); and it counts fixation-only
+    baseline spikes to the end of the trial, not 20 ms before it. Under the Methods'' measures two claims
+    do not reproduce (the Oz range effect of rho = -0.33 and the cross-epoch LLR counts) and a third only
+    in part, while the code reproduces the paper''s numbers. On those 85 rows most of the 200 ms evoked
+    rate window lies past the end of the trial, where spikes are mostly not stored, so their evoked rates
+    are likely biased low; without beep trials whose 200 ms window runs past the end, the code reading
+    no longer reproduces row 6 in Ci with raw baselines (p = 0.12, Supplemental Figure 1). Question for
+    the authors: which window and trial rule produced the reported numbers?'
+- kind: metadata_insufficient
+  statement: The pupil series (acquisition pupil_value_channel4, unit a.u.) is not described beyond its
+    source variable. Its values are consistent with the Methods' preprocessing having been applied before
+    deposit (per session mean near 0 and SD 0.80 to 0.99, the mean trace across trials within 0.19 of
+    0, smooth at 1 ms), but the file does not say so. The trial table's trial_time_index has no unit (milliseconds
+    by its range, 4 to 61 min per session), the files do not say what event the trial start marks, spike
+    times are given against artificial trial anchors 100 s apart (spike_time_policy), and every trial
+    is marked correct, so the files appear to hold correct trials only without saying so.
+- kind: other
+  statement: Beep times run from about 1.0 to 2.8 s after the trial start (5th to 95th percentile; 8.8%
+    of Oz and 4.4% of Ci beeps fall within 1 to 1.5 s), against the Methods' beep after 1 to 1.5 s of
+    fixation; 8 beeps fall before the trial start and 83 after its end. 26% of Oz and 7% of Ci fixation-only
+    trials last under 1 s (shortest 206 ms), against the Methods' fixation of 1 to 5 s. About 39% of spikes
+    are stored in the few seconds before a trial's start (median 0.8 s before it) and under 2% after its
+    end, with the rate falling from 4.4 sp/s in the last 200 ms of a trial to 0.85 sp/s in the 200 ms after
+    it, so on the beep trials with less than 200 ms between the beep and the end (75 of 914 Oz and 96 of
+    2161 Ci beep trials under the Methods' rule, more under the code's) the 0 to 200 ms evoked rate is
+    counted partly over a period without stored spikes.
+- kind: metadata_insufficient
+  statement: The session Cicero_022714_d18_402_FixnStim is named for stimulation, but no file has a stimulation
+    marker column, so whether any of its trials carried microstimulation cannot be told; the code's rule
+    for fixation-only trials (no beep and no stimulation marker) then keeps all of its non-beep trials.
+- kind: paper_inconsistency
+  statement: The Results name a Wilcoxon rank-sum test for the one-sample hypothesis that the median coefficient
+    is 0; the code runs the signed-rank test (signrank), whose p-values equal the printed ones. The Results
+    also relate the coefficients to the range in each session, while the code takes the range per unit.
+- kind: methods_unavailable
+  statement: 'Three choices that the outcomes here rest on are assumptions, asked of the paper''s authors.
+    First, which event does the trial start in the files mark? Every window is taken from it as fixation
+    onset, as the code does, but the files hold no fixation marker, the beep falls a median 2.2 s after
+    the start against the Methods'' 1 to 1.5 s of fixation, and 39% of spikes are stored before it. Second,
+    is the stored pupil trace already z-scored per session, with the mean trace subtracted and smoothed,
+    as the Methods describe? The values are consistent with it, and the pooled Figure 3 coefficients rest
+    on it. Third, which units and sessions did the paper use: its 63 units in 51 Ci sessions, or the
+    61 in 50 of the code''s output? Row 6 in Ci is fragile on this point.'
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the author-answers run (commit b5ae64132f), the executed notebook with the
+    conclusions and summary removed, the helper module and the claims file, with the paper under paper/.
+  results:
+  - claim: include-list-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 9: 83 sessions and 105 units on both sides, nothing unmatched in either direction. Cell
+      10: 26 of 26 values match the code''s printed output. Cell 10 rounds medians to 3 decimals before
+      applying the 0.0015 tolerance (row 6 Ci: -0.0375 is rounded to -0.038, against the code''s -0.037);
+      the true difference is still within tolerance.'
+    response: No change of outcome. The comparison now applies the tolerance to the unrounded median and
+      prints it to four figures; 26 of 26 still match (row 6 Ci -0.0375 against -0.037).
+  - claim: data-units-sessions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: Oz has 42 units in 32 sessions and Ci 63 in 51, all with beep trials, under both
+      the Methods and the code trial rules. Tolerance is 0.'
+    response: No change of outcome.
+  - claim: fig2-row1-baseline-lc-pupil
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 14 (M-E1 = M-E2): Oz median 0.0795, p_T1 = 5.5e-4 (paper 8.6e-4); Ci median 0.0926, p
+      = 1.4e-5 (paper 9.85e-6). The trial start is treated as fixation onset, and the data contradict this
+      (only 8.8% and 4.4% of beeps fall 1000 to 1500 ms after the start, median about 2.2 s); cell 4 states
+      the assumption but never resolves it. The code uses the same anchor and reproduces the paper, so no
+      outcome changes.'
+    response: No change of outcome. Added a data check of spikes outside the trials. Spikes are stored up
+      to a few seconds before each start (39% of spikes, median 0.8 s before), which does not identify
+      the event the start marks; the files hold no fixation marker, so the anchor stays the code's, and
+      the deviation now says the start may precede fixation onset.
+  - claim: fig2-row2-evoked-lc-pupil
+    agrees: true
+    outcome: reproduced
+    reason: 'E1: Oz 0.118, p = 0.011; Ci 0.024, p = 0.0028. E2: Oz 0.092, p = 0.020; Ci 0.053, p = 0.0026.
+      Both readings are positive and significant in both monkeys. Under the Methods rule the beep can be
+      as little as about 70 ms before the trial ends while spikes are counted over 0 to 200 ms after the
+      beep; the notebook never checks whether spikes are stored past stop_time or how many trials this
+      affects.'
+    response: No change of outcome. Added the check the verifier asked for. Spikes are mostly not stored
+      past the end of a trial (4.4 sp/s in its last 200 ms, 0.85 sp/s in the 200 ms after), and 75 of 914
+      Oz and 96 of 2161 Ci Methods-rule beep trials have less than 200 ms after the beep. Both the Methods'
+      rule and the code keep them, so the deciding reading does too; a variant without them (200 ms after
+      beep) is run for every analysis and gives Oz p = 0.0085 and 0.011, Ci p = 0.0022 and 0.0041 here.
+  - claim: fig2-row3-pupil-evoked-vs-baseline
+    agrees: true
+    outcome: reproduced
+    reason: 'E1: Oz -0.33, p = 7.9e-6; Ci (51 sessions) -0.45, p = 2.0e-9. E2: Oz -0.37, p = 1.1e-6; Ci
+      -0.37, p = 5.2e-9. The 50-session variant gives the same result.'
+    response: No change of outcome.
+  - claim: fig2-row4-lc-evoked-vs-baseline
+    agrees: true
+    outcome: reproduced
+    reason: Oz -0.382, p = 1.2e-6; Ci -0.297, p = 1.5e-11.
+    response: No change of outcome. The variant without beep trials whose 200 ms window runs past the end
+      of the trial gives the same (Oz p = 3.7e-7, Ci 1.9e-11).
+  - claim: fig2-row5-baseline-lc-vs-evoked-pupil
+    agrees: true
+    outcome: reproduced
+    reason: 'E1: p = 0.80 (Oz) and 0.94 (Ci). E2: p = 0.99 and 0.95. Medians are 0.007 to 0.023.'
+    response: No change of outcome.
+  - claim: fig2-row6-baseline-pupil-vs-evoked-lc
+    agrees: true
+    outcome: reproduced
+    reason: Oz p = 0.965. Ci median -0.022, p = 0.034, which matches the paper's pattern. This is fragile,
+      with the code's removal of two units Ci gives p = 0.064. The outcome rests on the claims file's choice
+      of the paper's denominator; that choice is correct, but the result is fragile and the notebook should
+      say so.
+    response: No change of outcome. The result cell and the notes now say the Ci result is fragile and rests
+      on the paper's 63 units; the variant without beep trials whose 200 ms window runs past the end of
+      the trial gives Ci p = 0.029 with 63 units and 0.046 with 61.
+  - claim: cross-epoch-no-reliable-relation
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17: rows 1 and 2 hold in both monkeys under E1 and E2. Rows 5 and 6 are never significant
+      with the same sign in both monkeys.'
+    response: No change of outcome.
+  - claim: range-baseline-pupil-evoked-lc
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19, Methods readings: Oz rho = 0.044, p = 0.78; Ci rho = 0.067, p = 0.60. Both p >= 0.05.'
+    response: No change of outcome.
+  - claim: range-baseline-lc-evoked-pupil
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 20, Oz: E1 rho = -0.04, p = 0.80; E2 rho = -0.13, p = 0.40. Both are non-significant, so
+      E1 and E2 agree and the claim is not blocked. Only the code''s 0 to 800 ms evoked pupil gives -0.332,
+      p = 0.032. Neither variant that mixes the Methods and code choices does. This is how the outcome comes
+      about, not a fault in the analysis.'
+    response: No change of outcome. The variant without beep trials whose 200 ms window runs past the end
+      of the trial gives Oz rho = 0.01, p = 0.94 (E1) and -0.10, p = 0.52 (E2).
+  - claim: figs1-raw-baselines-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 22: 11 of 12 cells match under both E1 and E2. Row 6 in Ci with raw baselines gives p =
+      0.136, not significant. The code''s reading matches 12 of 12.'
+    response: No change of outcome. The new variant also gives 11 of 12 with the same cell differing.
+  - claim: figs2-llr-pupil-baseline-evoked
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24, M-E1: Oz 6/32 (expected 7) and Ci 7/51 (expected 6), both within +/-1 and under half
+      the sessions. Under M-E2, Oz is 5/32, outside tolerance, but the criterion needs only one reading.'
+    response: No change of outcome. The notes now say the counts depend on the trial set; the variant
+      without beep trials whose 200 ms evoked rate window runs past the end of the trial, which this pupil
+      comparison does not need, gives 3/32 and 9/51 under E1.
+  - claim: figs2-llr-lc-baseline-evoked
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: Oz 3/42 (expected 2) and Ci 4/63 (expected 3), within +/-1 under every Methods reading.'
+    response: No change of outcome.
+  - claim: figs2-llr-cross-epoch
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 26: no Methods reading has all four counts within +/-1, because Ci evoked pupil on baseline
+      LC is 6 or 7 against 4. The partial rule (each count below a tenth of the units) also fails: Oz is
+      5/42 = 0.119 under E1 and 6/42 under E2. Only the code reading reproduces. The broader point, that
+      few relations are quadratic, still holds. The "below a tenth" partial threshold is strict relative
+      to the 5% false-positive rate that the 3.841 cutoff implies (5/42 fails it). Per-unit LLR values near
+      3.841 would show how sensitive the outcome is.'
+    response: No change of outcome. Added a table of every per-unit LLR within one of 3.841 under M-E1, M-E2
+      and the code reading, with the counts at cutoffs one lower and one higher (under E1, Oz 9 and 4, Ci
+      9 and 3 for evoked pupil on baseline LC), and the chance count at 5% (2.1 of 42, 3.2 of 63). The
+      partial rule is the claims file's and is applied as written; the remark is recorded in the notes.
+  - claim: fig3-pooled-within-epoch
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: 8 of 8 cells match in sign with p < 0.05 under E1 and E2, with either z-scoring grouping.
+      The conclusion that the stored trace is already z-scored supports the claim but does not prove it;
+      z-scoring again would barely change pooled Spearman correlations at these SDs.'
+    response: No change of outcome. Added a variant with pupil z-scored again per session; it changes the
+      pooled coefficients by at most 0.008 and gives 8 of 8.
+  - claim: fig3-pooled-cross-epoch-null
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: 0 of 60 cells are significant with the same sign in both monkeys. Only Ci''s negative
+      group in column 6 is significant (p = 0.012). The groups come from all 63 Ci units; the variant with
+      groups formed after the two-unit legacy removal was not run. No cell is near significance in both
+      monkeys, so the outcome is safe.'
+    response: No change of outcome. Added the units in legacy rows 43 and 65 with their row 1 coefficients
+      (p = 0.15 to 0.42, in no group under any reading) and the group results after the code's removal,
+      which are the same (0 cells significant with one sign in both monkeys); pupil z-scored again also
+      gives 0.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the author-revise-1 run (commit 96982cac93), with its conclusions
+    and summary, the helper module, the claims file, the attempt record and the README, with the paper
+    under paper/.
+  results:
+  - claim: include-list-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: 26 of 26 values match the code''s printed output. Cell 14, the record''s notes and
+      the second code_mismatch finding say the code''s printed Figure 3 values are matched "only when" firing
+      rates are z-scored by within-session unit index, but no cell compares against the code''s printed
+      Figure 3 values; nothing in the outputs supports either the match or the "only". Cell 0''s sentence
+      that the draft holds the same 83 assets with the same total size is not printed anywhere (minor).'
+    response: No change of outcome. Cell 13 now compares the code's twelve printed Figure 3 pooled coefficients
+      with this run's, under both groupings; 12 of 12 match to the code's three decimals when rates are
+      z-scored by within-session unit index, 2 of 12 when z-scored per unit. Cell 14, the notes and the
+      finding now state these counts. The sentence on the draft is removed from cell 0.
+  - claim: data-units-sessions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16: 42/32 and 63/51. The notes say "(7 to 109 beep trials per unit)" holds under both rules,
+      but cell 16 shows a maximum of 111 under the code''s rule (minor).'
+    response: No change of outcome. The notes now give 7 to 109 under the Methods' rule and 7 to 111 under
+      the code's. Marked assumed (trial start taken as fixation onset), as the verifier asked.
+  - claim: fig2-row1-baseline-lc-pupil
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rows 1 to 6 under M-E1 and M-E2. No outcome is marked assumed, yet every outcome rests
+      on taking the trial start as fixation onset; this is reasonable, as the files hold no fixation marker
+      and the code uses the same anchor, but cell 7 (39% of spikes stored before the trial start) makes it
+      less certain, and it should be flagged. What the trial start marks is still unknown (B1, C1 partly
+      resolved).'
+    response: No change of outcome. Marked assumed on this and every other outcome of the paper's claims;
+      the deviation now says it is an assumption and names the 39% of spikes stored before the start, and
+      a methods_unavailable finding asks the paper's authors what the trial start marks.
+  - claim: fig2-row2-evoked-lc-pupil
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rows 1 to 6 under M-E1 and M-E2. The trial-start assumption should be flagged with
+      assumed: true. Round-1 point B3 (spikes stored past the trial end) is resolved.'
+    response: No change of outcome. Marked assumed (trial start).
+  - claim: fig2-row3-pupil-evoked-vs-baseline
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rows 1 to 6 under M-E1 and M-E2. The trial-start assumption should be flagged with
+      assumed: true.'
+    response: No change of outcome. Marked assumed (trial start).
+  - claim: fig2-row4-lc-evoked-vs-baseline
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rows 1 to 6 under M-E1 and M-E2. The trial-start assumption should be flagged with
+      assumed: true.'
+    response: No change of outcome. Marked assumed (trial start).
+  - claim: fig2-row5-baseline-lc-vs-evoked-pupil
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rows 1 to 6 under M-E1 and M-E2. The trial-start assumption should be flagged with
+      assumed: true.'
+    response: No change of outcome. Marked assumed (trial start).
+  - claim: fig2-row6-baseline-pupil-vs-evoked-lc
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: rows 1 to 6 under M-E1 and M-E2; B6 resolved, the result is now said to be fragile.
+      Under the code reading, row 6 in Ci depends on the 85 rows (unit x trial) the code''s rule keeps and
+      the Methods'' window drops, where the beep falls within about 70 ms of the trial end or after it, so
+      the evoked rate is counted largely over a period with no stored spikes, and the code''s p of 0.0105
+      may rest on evoked rates that are biased low. Which units and sessions the paper used (63 Ci units
+      against the code''s 61) cannot be known from the archive, and the row 6 Ci outcome is fragile on
+      exactly this point.'
+    response: No change of outcome. Added a cell (figs1 section) that lists these 85 rows. On each, the
+      beep falls 7 to 69 ms before the end, and their mean raw evoked rate is lower (Ci 3.15 against 6.99
+      sp/s). The code reading without beep trials whose 200 ms window runs past the end gives Ci p = 0.028.
+      The code-rule trials with the beep after the end have no evoked pupil and enter no table. The notes
+      say this. The open choice of units is asked of the paper's authors in the methods_unavailable finding.
+      Marked assumed (trial start).
+  - claim: cross-epoch-no-reliable-relation
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: the cross-epoch rule holds under every reading. The trial-start assumption should be
+      flagged with assumed: true.'
+    response: No change of outcome. Marked assumed, and the trial-start deviation added.
+  - claim: range-baseline-pupil-evoked-lc
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 31 and 33: the range correlations. The trial-start assumption should be flagged with assumed:
+      true.'
+    response: No change of outcome. Marked assumed, and the trial-start deviation added.
+  - claim: range-baseline-lc-evoked-pupil
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cells 31 and 33: Oz row 5 gives -0.04 and -0.13, both non-significant. Neither mixture of the
+      two methods reproduces the paper; cell 34 says correctly that the result needs both the code''s trial
+      rule and its evoked pupil. The Summary (cell 52) wrongly says the three claims that do not reproduce
+      in full all turn on the evoked pupil.'
+    response: No change of outcome. The Summary now says that for this claim and the cross-epoch LLR counts
+      the result needs both the code's trial rule and its evoked pupil. Marked assumed, and the trial-start
+      deviation added.
+  - claim: figs1-raw-baselines-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 36: 11 of 12 under M-E1 and M-E2. The Summary''s attribution to the evoked pupil is wrong
+      for figs1: the failing cell is row 6 in Ci, which does not use the evoked pupil, and it still fails
+      with "Methods trials + code pupil" (p = 0.136) and with "code trials + E1" (p = 0.131), passing only
+      under the full code reading (p = 0.023), so the difference comes from the trial set. Cells 7, 10 and
+      36 together imply, without the notebook saying so, that the code''s 12 of 12 rests on the 85 rows
+      the code''s rule keeps and the Methods'' window drops, whose 0 to 200 ms evoked rates are counted
+      largely over a period with no stored spikes and may be biased low; this should be stated with the
+      outcome and the code_mismatch finding.'
+    response: No change of outcome. The Summary now gives the trial set, not the evoked pupil, as the source
+      of the difference for this claim. A new cell lists the 85 rows the code alone keeps (20 Oz and 65
+      Ci, beep 7 to 69 ms before the end, with lower mean raw evoked rates). The code reading without beep
+      trials whose 200 ms window runs past the end gives row 6 Ci with raw baselines p = 0.12, so the code
+      no longer matches this cell. The result cell, the notes and the code_mismatch finding say so. Marked
+      assumed, and the trial-start deviation added.
+  - claim: figs2-llr-pupil-baseline-evoked
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 39, 41 and 43: M-E1 gives 6/32 and 7/51 for pupil. The trial-start assumption should be
+      flagged with assumed: true.'
+    response: No change of outcome. Marked assumed, and the trial-start deviation added.
+  - claim: figs2-llr-lc-baseline-evoked
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 39, 41 and 43: M-E1 gives 3/42 and 4/63 for LC. The trial-start assumption should be flagged
+      with assumed: true.'
+    response: No change of outcome. Marked assumed, and the trial-start deviation added.
+  - claim: figs2-llr-cross-epoch
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cells 39, 41 and 43: for the cross-epoch fits, Oz is 5/42 (0.119) and 6/42, both above a tenth
+      of the units. Neither mixture of the two methods reproduces the paper, so the Summary''s attribution
+      to the evoked pupil alone is wrong.'
+    response: No change of outcome. The Summary now says the result needs both the code's trial rule and
+      its evoked pupil. Marked assumed, and the trial-start deviation added.
+  - claim: fig3-pooled-within-epoch
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 46 and 49: 8 of 8 within-epoch cells. The claim rests on taking the stored pupil as already
+      z-scored per session, which is reasonable (cell 50 shows z-scoring again changes the coefficients by
+      at most 0.008), but it should be marked assumed: true, as should the trial-start assumption.'
+    response: No change of outcome. Marked assumed; the pupil deviation now says it is an assumption, and
+      the methods_unavailable finding asks it of the paper's authors, with the trial-start deviation added.
+  - claim: fig3-pooled-cross-epoch-null
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 46 and 49: 0 of 84 cross-epoch cells. The stored pupil is taken as already z-scored per
+      session, and this and the trial-start assumption should be marked assumed: true. B4 is resolved (neither
+      removed unit is in a row 1 group).'
+    response: No change of outcome. Marked assumed; the pupil assumption is added as a deviation, and the
+      trial-start deviation too.
