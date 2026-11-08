@@ -28,11 +28,16 @@ Where the parameters come from:
   takes the stored `permTestResults` p-values, BH-corrects them over the nine whiskers at 0.05,
   and drops ROIs whose traces contain NaN; that is the claims file's variant.
 - The dF/F of the neuropil-subtraction analysis (Figure 5 S2) is rebuilt from processed_data.mat:
-  F = raw - r * neuropil, a 5-frame moving median (the stored dF/F matches a 5-frame median and
-  F0 the 5th percentile of the movie, not the 4 frames and 20th percentile of the Methods; this
-  is shown in the notebook), F0 the 5th percentile of each movie, then the same trial alignment.
+  the raw and neuropil traces are each filtered by a 5-frame moving median, then F = raw - r *
+  neuropil (the data descriptor: subtracted "after temporal filtering and before deltaF/F
+  calculation"), F0 the 5th percentile of each movie, then the same trial alignment. The stored
+  dF/F matches a 5-frame median and F0 the 5th percentile, not the 4 frames and 20th percentile
+  of the Methods, and the filter-first order for L4; both are shown in the notebook.
 - Barrel radius per field and barrel: `ROI_pos_barrel` divided by `ROI_pos_barrel_norm`, which
   the data set describes as positions "normalized to barrel radius for each individual barrel".
+- Blank trials are the stored `sponTrace` segments, cut like `traceByStim` (106 frames from 0.5 s
+  before onset). In one field (ScENR10b/20180105/f2) `sponTrace` holds 76-frame segments starting
+  0.5 s after onset; there the blank trials are cut from the stored dF/F at every Label 9 onset.
 - Seeds: each analysis passes its own `numpy.random.Generator`; the seed is a standard choice.
 """
 
@@ -47,6 +52,7 @@ import fsspec
 import numpy as np
 import scipy.io as sio
 from scipy.ndimage import median_filter
+from scipy.optimize import linear_sum_assignment
 
 DATASET = "ssc-10"
 VERSION = "unversioned"   # CRCNS data sets have no versions; the MD5 below pins the file read
@@ -82,14 +88,28 @@ def _segments(trace, frames, pre, total):
     return rows
 
 
-def _dff(raw, npil, r):
-    """dF/F as the stored data have it: 5-frame moving median, F0 the 5th percentile of the movie."""
-    f = raw - r * npil
-    filt = median_filter(f, size=(1, 5), mode="nearest")
-    filt[:, :2] = 0.0   # the pipeline's filter leaves the first and last two frames at zero
-    filt[:, -2:] = 0.0
-    f0 = np.percentile(filt, 5, axis=1, keepdims=True)
-    return (filt - f0) / f0
+def _filt(x):
+    """The pipeline's 5-frame moving median; it leaves the first and last two frames at zero."""
+    y = median_filter(x, size=(1, 5), mode="nearest")
+    y[:, :2] = 0.0
+    y[:, -2:] = 0.0
+    return y
+
+
+def _dff(raw, npil, r, order="filter_first"):
+    """dF/F as the stored data have it: 5-frame moving median, F0 the 5th percentile of the movie.
+
+    order 'filter_first' filters the ROI and neuropil traces and then subtracts r times the
+    neuropil, as the data descriptor says for L4 ("subtracted from ROI signal ... after temporal
+    filtering and before deltaF/F calculation"); 'subtract_first' subtracts and then filters, shown
+    in the notebook as the order that does not reproduce the stored L4 traces.
+    """
+    if order == "filter_first":
+        f = _filt(raw) - r * _filt(npil)
+    else:
+        f = _filt(raw - r * npil)
+    f0 = np.percentile(f, 5, axis=1, keepdims=True)
+    return (f - f0) / f0
 
 
 def reduce_field(info, red, settings, proc=None):
@@ -118,9 +138,13 @@ def reduce_field(info, red, settings, proc=None):
         post_only[w] = T[:, :, fe].mean(2)
         ev[w] = post_only[w] - T[:, :, pre].mean(2)
     S = np.stack([np.atleast_2d(spon[r]) for r in rois])
-    nan |= np.isnan(S).any(axis=(1, 2))
+    out["spon_len"], out["trace_len"] = S.shape[2], T.shape[2]
     out["ev"], out["ev_post"] = ev, post_only
-    out["bl"], out["bl_post"] = S[:, :, fe].mean(2) - S[:, :, pre].mean(2), S[:, :, fe].mean(2)
+    if S.shape[2] == T.shape[2]:
+        nan |= np.isnan(S).any(axis=(1, 2))
+        out["bl"], out["bl_post"] = S[:, :, fe].mean(2) - S[:, :, pre].mean(2), S[:, :, fe].mean(2)
+    # else: sponTrace is not cut like traceByStim (one field); the blank trials are cut from the
+    # stored dF/F at the Label 9 onsets below.
     out["has_nan"] = nan
     out["mean_trace_stim"] = np.nanmean(np.concatenate([np.stack([np.atleast_2d(tbs[r][w]) for r in rois]) for w in WHISKERS if w in tbs[rois[0]]], axis=1), axis=(0, 1))
     out["mean_trace_blank"] = np.nanmean(S, axis=(0, 1))
@@ -187,6 +211,14 @@ def reduce_field(info, red, settings, proc=None):
                 for i in range(R):
                     lvl[i].append(v[i])
     out["spont_level"] = np.array([np.median(v) if v else np.nan for v in lvl])
+    if "bl" not in out:
+        segs = []
+        for mv in movies:
+            D = np.stack([np.asarray(dff[mv][r], float) for r in rois])
+            segs += _segments(D.T, blank_onsets[mv], n_pre, T.shape[2])
+        B = np.stack([g.T for g in segs], axis=1)                          # R x trials x 106
+        out["has_nan"] = out["has_nan"] | np.isnan(B).any(axis=(1, 2))
+        out["bl"], out["bl_post"] = B[:, :, fe].mean(2) - B[:, :, pre].mean(2), B[:, :, fe].mean(2)
     out["onset_lags"] = lags
     out["onset_trace_stim"] = acc_s / max(ns, 1)
     out["onset_trace_blank"] = acc_b / max(nb, 1)
@@ -200,7 +232,10 @@ def reduce_field(info, red, settings, proc=None):
         # check: the stored dF/F against the rebuilt one at r = 0, first movie
         F = np.stack([np.asarray(raw[movies[0]][r], float) for r in rois])
         D0 = np.stack([np.asarray(dff[movies[0]][r], float) for r in rois])
-        out["dff_rebuild_maxdiff"] = float(np.nanmax(np.abs(_dff(F, 0 * F, 0.0) - D0)[:, 2:-2]))
+        N0 = np.stack([np.asarray(npl[movies[0]][r], float) for r in rois])
+        r_own = 0.3 if out["npSub"] else 0.0   # the field's own weight (Methods: r = 0.3 for L4)
+        out["dff_rebuild_maxdiff"] = float(np.nanmax(np.abs(_dff(F, N0, r_own) - D0)[:, 2:-2]))
+        out["dff_subtract_first_maxdiff"] = float(np.nanmax(np.abs(_dff(F, N0, r_own, "subtract_first") - D0)[:, 2:-2]))
         D20 = (median_filter(F, size=(1, 4), mode="nearest"))
         D20 = (D20 - np.percentile(D20, 20, axis=1, keepdims=True)) / np.percentile(D20, 20, axis=1, keepdims=True)
         out["dff_methods_maxdiff"] = float(np.nanmax(np.abs(D20 - D0)[:, 2:-2]))
@@ -233,11 +268,16 @@ def reduce_field(info, red, settings, proc=None):
                         bl_r[i].append(e[i])
             npres[rw] = dict(ev={w: np.array(ev_r[w]) for w in WHISKERS}, bl=np.array(bl_r))
         # sponTrace keeps fewer blank trials than Label 9 lists; keep the rebuilt blank trials that
-        # match a stored one (nearest over ROIs, at r = 0), so all weights use the stored set.
-        b0 = npres[0.0]["bl"]
-        dist = np.nansum((out["bl"].T[:, None, :] - b0.T[None, :, :]) ** 2, -1)
-        keep = dist.argmin(1)
-        out["np_blank_match_maxdiff"] = float(np.nanmax(np.abs(b0[:, keep] - out["bl"])))
+        # match the stored ones, at the field's own weight, one to one (an assignment minimising
+        # the summed squared difference over ROIs), so all weights use the stored set.
+        # ROIs whose rebuilt or stored traces are not finite (F0 of zero) are left out of the match.
+        b0 = npres[r_own]["bl"]
+        good = np.isfinite(b0).all(1) & np.isfinite(out["bl"]).all(1)
+        dist = (((out["bl"][good].T[:, None, :] - b0[good].T[None, :, :]) ** 2).sum(-1))
+        _, keep = linear_sum_assignment(dist)
+        out["np_blank_match_maxdiff"] = float(np.abs(b0[good][:, keep] - out["bl"][good]).max())
+        out["np_nonfinite_rois"] = int((~good).sum())
+        out["np_blank_n"] = (out["bl"].shape[1], b0.shape[1])
         for rw in NP_WEIGHTS:
             npres[rw]["bl"] = npres[rw]["bl"][:, keep]
         out["np"] = npres
@@ -393,12 +433,13 @@ def responsiveness(fields, rng):
         f["resp_stored"] = bh(np.where(np.isnan(f["p_stored"]), 1, f["p_stored"])).any(1) & ~f["has_nan"]
 
 
-def ebw_sets(f, rows, best, rng, n_perm=N_PERM):
+def ebw_sets(f, rows, best, rng, n_perm=N_PERM, tail="two"):
     """Equivalent best whiskers for ROIs `rows` of field f, whose best whisker index is `best`.
 
     Returns three R x 9 boolean arrays: E1 (two-sided permutation test of the difference in means
     against the BW, p >= 0.05 uncorrected), E2 (as E1, BH over the eight comparisons), and the
-    p-values themselves (NaN on the BW). Readings E1 and E2 of the claims file.
+    p-values themselves (NaN on the BW). Readings E1 and E2 of the claims file. tail 'greater'
+    tests BW > other whisker one-sided (an exploratory reading, not in the claims file).
     """
     P = np.full((len(rows), 9), np.nan)
     for b in range(9):
@@ -409,7 +450,7 @@ def ebw_sets(f, rows, best, rng, n_perm=N_PERM):
         for j in range(9):
             if j == b or f["ev"][WHISKERS[j]].shape[1] == 0:
                 continue
-            P[sel, j] = perm_diff_many(A, f["ev"][WHISKERS[j]][rows[sel]], rng, n_perm, tail="two")[1]
+            P[sel, j] = perm_diff_many(A, f["ev"][WHISKERS[j]][rows[sel]], rng, n_perm, tail=tail)[1]
     e1 = np.where(np.isnan(P), False, P >= 0.05)
     e1[np.arange(len(rows)), best] = True
     Pf = np.where(np.isnan(P), 1.0, P)
@@ -515,18 +556,20 @@ def pair_table(fields, resp="methods", barrels=None, np_weight=None):
 
 # ---------------------------------------------------------------- decoders
 
-def fit_logistic_1d(x, y, iters=25, ridge=1e-6):
+def fit_logistic_1d(x, y, iters=25, ridge=1e-6, mask=None):
     """Logistic regression of y (0/1) on scalar x, many fits at once: x, y are S x n.
 
-    Newton-Raphson on intercept and slope; returns (b0, b1), each of length S.
+    Newton-Raphson on intercept and slope; returns (b0, b1), each of length S. mask (S x n, 0/1)
+    keeps only the trials marked 1 in each fit.
     """
     S = x.shape[0]
+    m = np.ones_like(x, dtype=float) if mask is None else np.asarray(mask, float)
     b = np.zeros((S, 2))
     for _ in range(iters):
         eta = b[:, :1] + b[:, 1:] * x
         p = 1 / (1 + np.exp(-np.clip(eta, -30, 30)))
-        w = p * (1 - p)
-        g0 = (y - p).sum(1); g1 = ((y - p) * x).sum(1)
+        w = p * (1 - p) * m
+        g0 = ((y - p) * m).sum(1); g1 = ((y - p) * m * x).sum(1)
         h00 = w.sum(1) + ridge; h01 = (w * x).sum(1); h11 = (w * x * x).sum(1) + ridge
         det = h00 * h11 - h01 ** 2
         det = np.where(np.abs(det) < 1e-12, 1e-12, det)
@@ -569,13 +612,8 @@ def roi_probs(x, y, trains, tests):
     S, n = trains.shape
     X = np.broadcast_to(x, (S, n))
     Y = np.broadcast_to(y, (S, n)).astype(float)
-    # fit on training trials only: weight the others out by fitting on the masked copies
-    ntr = trains.sum(1)
-    order = np.argsort(~trains, axis=1, kind="stable")
-    k = ntr.min()
-    Xt = np.take_along_axis(X, order, 1)[:, :k]
-    Yt = np.take_along_axis(Y, order, 1)[:, :k]
-    b0, b1 = fit_logistic_1d(Xt, Yt)
+    # fit on the training trials of each split only (the others get zero weight)
+    b0, b1 = fit_logistic_1d(X, Y, mask=trains)
     P = 1 / (1 + np.exp(-np.clip(b0[:, None] + b1[:, None] * X, -30, 30)))
     correct = ((P > 0.5) == (Y > 0.5)) & tests
     return P, correct.sum(1) / tests.sum(1)
