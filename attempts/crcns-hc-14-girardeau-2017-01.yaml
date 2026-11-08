@@ -1,0 +1,531 @@
+schema_version: 2
+id: crcns-hc-14-girardeau-2017-01
+dataset:
+  archive: crcns
+  id: hc-14
+  version: unversioned
+  doi: 10.6080/K0MS3QXD
+paper: doi:10.1038/nn.4637
+date: '2026-11-08'
+entry: crcns-hc-14-girardeau-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42437266504
+outcomes:
+- claim: units-recorded
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:units-recorded
+  measured:
+  - 61
+  - 7415
+  - 2038
+  - 659
+  - 704
+  - 1260
+  notes: 61 sessions in sessionindexing.mat (65 in the bucket). The raw clu files give 7,415 units over the 61 sessions
+    (2,469, 1,294, 1,138, 2,514 per rat); the summary tables list 7,390 with the paper's split by rat, and differ
+    from the raw files only in Rat08-20130722 (28 units only in the raw files, 3 only in the tables). With the BLA
+    label (B1), 2,038 units in BLA (the paper's number; B2 gives 2,456), 1,260 on the hippocampal shanks, 659 in
+    CeCM and 704 in Pir. CeN and Pir are below tolerance because Rat08's CeN and Pir shanks are not in any text
+    list.
+  deviations:
+  - Rat08's CeN and Pir shanks are colour-coded in StructureMapping.ods only and were not read; Rat08 sessions 10
+    to 13 have no BLA shanks in Structures.batch.
+  - Hippocampal shanks are taken as the shanks of the hippocampal cells of the deposited pair table (1-4 in Rat08,
+    17-20 in Rat10 and Rat11); only Rat10 has an Hpc list.
+- claim: fig1b-dz-speed-anova
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1b-dz-speed-anova
+  assumed: true
+  notes: With all samples in the zone (the claims file's reading), 51 sessions, epoch F = 63.9 (p < 0.0001), zone
+    F = 3.16 (p = 0.081), interaction F = 17.1 (p < 0.0001). With the samples moving in the air puff direction,
+    zone F = 4.32 (p = 0.043) and all three effects are significant.
+  deviations: &id001
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm
+    of the median), and the direction the sign of the velocity over the second before them; only 6 sessions have
+    an airpuffloc file, which differs from this estimate by 0.3 to 18 cm. This is a standard choice (assumption)
+    not stated by the paper.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description
+    of ClassifyLaps.m, not the script itself.
+  - 51 sessions have all six speeds (paper 55); Rat09-20140328 has no tracked position at its air puffs, and each
+    rat's first behaviour session has no previous zone.
+- claim: fig1b-dz-speed-posthoc
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1b-dz-speed-posthoc
+  assumed: true
+  notes: All samples, at 0.05/4, pre-run current minus previous t = 3.31 (p = 0.0017), run t = -5.76 (p = 1e-6),
+    post-run t = -1.61 (p = 0.11, not significant), current pre-run minus post-run t = 4.27 (p = 8e-5). Direction-filtered,
+    post-run t = -2.33 (p = 0.024), still above 0.0125.
+  deviations: *id001
+- claim: fig1b-speed-ratio
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1b-speed-ratio
+  assumed: true
+  notes: 51 sessions; median ratio pre-run -0.085, run 0.165, post-run 0.049; one-way repeated measures ANOVA F
+    = 26.5 (p < 0.0001); paired t-tests pre-run minus run t = -6.71, pre-run minus post-run t = -3.62 (p = 0.0007),
+    run minus post-run t = 4.08 (p = 0.0002). The direction-filtered variant gives the same.
+  deviations: *id001
+- claim: figs1b-ratio-each-rat
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs1b-ratio-each-rat
+  assumed: true
+  notes: Per rat (12, 10, 14, 15 sessions), F = 9.31, 6.95, 15.03, 4.17 and p = 0.0012, 0.0058, 4.6e-5, 0.026; median
+    ratio lower in pre-run than in post-run in all four.
+  deviations: *id001
+- claim: fig1c-slower-in-dz-post-run
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1c-slower-in-dz-post-run
+  assumed: true
+  notes: 53 sessions; danger zone value (7 bins up to the air puff) median pre-run 62.4, run 19.1, post-run 41.0
+    cm/s; rank-sum post against pre z = -3.23, p = 0.0013 (signed-rank variant p = 6e-7). Mean curves span 26 to
+    82 cm/s over bins -30 to 20.
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm
+    of the median), and the direction the sign of the velocity over the second before them; only 6 sessions have
+    an airpuffloc file, which differs from this estimate by 0.3 to 18 cm. This is a standard choice (assumption)
+    not stated by the paper.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description
+    of ClassifyLaps.m, not the script itself.
+- claim: figs1c-habituation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs1c-habituation
+  notes: 55 sessions; pooled Spearman rho 0.696, 0.692, 0.687 (p < 1e-8) for all, air puff and left-to-right laps;
+    per rat rho 0.97, 0.91, 0.85, 0.69, all positive, under each lap count.
+  deviations:
+  - Training day is the session's rank among the rat's behaviour sessions; the time on the track is the run's duration.
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm
+    of the median), and the direction the sign of the velocity over the second before them; only 6 sessions have
+    an airpuffloc file, which differs from this estimate by 0.3 to 18 cm. This is a standard choice (assumption)
+    not stated by the paper.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description
+    of ClassifyLaps.m, not the script itself.
+- claim: airpuff-location-no-bias
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:airpuff-location-no-bias
+  assumed: true
+  notes: All samples, Pearson r between the normalized air puff position and the current danger zone speed, pre-run
+    r = -0.40 (p = 0.0028, n = 54), run r = -0.34 (p = 0.012, n = 55), post-run r = -0.09 (p = 0.50). Direction-filtered,
+    pre-run r = -0.20 (p = 0.14), run r = -0.30 (p = 0.026), post-run r = 0.02. The estimated locations, not the
+    authors', enter this test; the zone near the track ends may be cut short, which can make speed depend on position.
+  deviations: *id001
+- claim: fig2c-bla-pyr-higher-in-sleep
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig2c-bla-pyr-higher-in-sleep
+  measured:
+  - 675
+  - 175
+  - 1188
+  assumed: true
+  notes: BLA label (B1), SpikeParameters column 10 as the monosynaptic code; 675 pyramidal cells, 175 interneurons,
+    1,188 others, the paper's numbers. NREM/wake median 0.264 (70.5% positive), REM/wake median 0.364 (73.0%), both
+    p < 1e-15. Per rat the REM ratio is the larger in rats 8, 9 and 11, and equal in rat 10 (0.437 against 0.442).
+    With column 8 as REM, REM/wake median 0.085, smaller than NREM/wake (the claim would be partially reproduced).
+  deviations:
+  - Rates per state are the deposited StatesFR values, as the state intervals are not deposited. StatesFR columns
+    are undocumented. Column 7 is wake (the only column that can hold the track spikes), column 6 NREM (it matches
+    immobility-period rates), and column 5 is taken as REM (hippocampal interneurons fire more there than in NREM,
+    as in REM; column 8 does not show this). Column 8 as REM is shown as a variant.
+- claim: fig2c-bla-interneurons
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig2c-bla-interneurons
+  assumed: true
+  notes: 175 monosynaptic BLA interneurons; REM/wake median 0.020, p = 0.21 (the paper's p = 0.21); NREM/wake median
+    -0.071, p < 1e-6. With column 8 as REM, REM/wake median -0.079, p < 1e-6 (the REM part would fail). With B2,
+    REM/wake p = 0.019.
+  deviations:
+  - Rates per state are the deposited StatesFR values. StatesFR columns are undocumented. Column 7 is wake (the
+    only column that can hold the track spikes), column 6 NREM (it matches immobility-period rates), and column
+    5 is taken as REM (hippocampal interneurons fire more there than in NREM, as in REM; column 8 does not show
+    this). Column 8 as REM is shown as a variant.
+- claim: fig2c-skewed-rates
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig2c-skewed-rates
+  notes: 675 cells; skewness of rates NREM 3.39, REM 14.03, wake 7.35; of log10 rates -0.41, -0.58, 0.12 (one zero
+    rate left out of the log in NREM and REM). Column 8 gives 7.67 and -0.02, so the outcome does not depend on
+    the REM column.
+  deviations:
+  - Rates per state are the deposited StatesFR values. StatesFR columns are undocumented. Column 7 is wake (the
+    only column that can hold the track spikes), column 6 NREM (it matches immobility-period rates), and column
+    5 is taken as REM (hippocampal interneurons fire more there than in NREM, as in REM; column 8 does not show
+    this). Column 8 as REM is shown as a variant.
+- claim: fig3c-hpc-bla-ev-nrem
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3c-hpc-bla-ev-nrem
+  notes: 25 sessions (9, 9, 7 per rat; the paper's 25); EV > REV in 22; mean EV - REV 3.14 +- 0.73% (paper 3.13
+    +- 0.73%); signed-rank p = 4.5e-5. With at least 4 or 8 cells, p = 3.5e-5 and 2.1e-5.
+  deviations: &id002
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+  - The 180-s REM requirement cannot be checked; REM sessions are those with defined REM correlations.
+- claim: fig3c-hpc-bla-ev-rem-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3c-hpc-bla-ev-rem-absent
+  notes: 25 sessions (paper 23); mean EV - REV 0.06 +- 0.10%, median 0.001%; EV > REV in 13; signed-rank p = 0.73.
+  deviations: *id002
+- claim: fig3c-decay
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3c-decay
+  measured:
+  - 2.71
+  - 1.1
+  - 0.72
+  - 18
+  assumed: true
+  notes: Substitute NREM. 24 qualifying sessions, 18 with EV > REV in the first window (paper 19). Mean EV - REV
+    2.71 +- 0.65, 1.10 +- 0.39 and 0.72 +- 0.43% (paper 2.89, 1.72, 1.31); the second is outside the paper's s.e.m.
+    Signed-rank p = 7.6e-6, 0.017, 0.28; Kruskal-Wallis p = 0.074. At 2 cm/s, 2.39, 1.66, 0.29% (third window 4
+    sessions), Kruskal-Wallis p = 0.13. The weaker EV of the substitute (above) may account for the difference.
+  deviations:
+  - Sleep states are not deposited. NREM is replaced by a substitute of this attempt (hc14.substitute_nrem), periods
+    of at least 30 s in pre-sleep and post-sleep with head speed below 4 cm/s over 1 s. It reproduces the authors'
+    NREM firing rates (median r of log rates 0.99 per session) and tracks their per-session hippocampus-BLA EV -
+    REV (Spearman 0.86) but with smaller values (1.96 against 3.21%), and it cannot separate REM. Results at 2 cm/s
+    are shown.
+  - Pre-NREM is the substitute pre-NREM, the run whole, and the windows cumulative substitute post-NREM time.
+- claim: figs5a-hpc-bla-all-cells
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs5a-hpc-bla-all-cells
+  assumed: true
+  notes: All cell types; NREM (table) 27 sessions (paper 27), mean EV - REV 3.09%, p = 3.5e-5; REM (table) p = 0.37.
+    Substitute windows, 20 sessions with EV > REV in the first, p = 1.9e-6, 0.051 and 0.74 (mean 2.71, 0.80, 0.18%);
+    at 2 cm/s the second window gives p = 0.52. The second window misses 0.05, so one of the three parts does not
+    hold.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+  - The 180-s REM requirement cannot be checked; REM sessions are those with defined REM correlations.
+  - Sleep states are not deposited. NREM is replaced by a substitute of this attempt (hc14.substitute_nrem), periods
+    of at least 30 s in pre-sleep and post-sleep with head speed below 4 cm/s over 1 s. It reproduces the authors'
+    NREM firing rates (median r of log rates 0.99 per session) and tracks their per-session hippocampus-BLA EV -
+    REV (Spearman 0.86) but with smaller values (1.96 against 3.21%), and it cannot separate REM. Results at 2 cm/s
+    are shown.
+- claim: fig3d-pir-reactivation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim needs REM for hippocampus-piriform pairs; neither the sleep scoring nor REM correlations for
+    these pairs are deposited, and the substitute NREM cannot identify REM. The NREM half, on the substitute, gives
+    6 sessions (Rat10 only), median EV - REV 0.13%, p = 0.69, shown in the notebook's blocked-claims cell; Rat08's
+    piriform shanks are not in a text list (metadata_insufficient).
+- claim: fig3d-pir-weaker-than-bla
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3d-pir-weaker-than-bla
+  measured:
+  - 1.97
+  - 0.26
+  assumed: true
+  notes: Substitute NREM. Hippocampus-Pir 6 sessions (Rat10), mean EV - REV 0.26 +- 0.47%; hippocampus-BLA 24 sessions,
+    1.97 +- 0.55%; one-tailed rank-sum p = 0.079; with the 3 Pir sessions that also qualify for BLA, mean 0.83%,
+    p = 0.34. Both means are outside the paper's s.e.m. under both readings. Variants, table BLA (3.14%) against
+    substitute Pir p = 0.026; at 2 cm/s p = 0.016 (5 Pir sessions). Only one rat has enough labelled piriform cells.
+  deviations:
+  - Sleep states are not deposited. NREM is replaced by a substitute of this attempt (hc14.substitute_nrem), periods
+    of at least 30 s in pre-sleep and post-sleep with head speed below 4 cm/s over 1 s. It reproduces the authors'
+    NREM firing rates (median r of log rates 0.99 per session) and tracks their per-session hippocampus-BLA EV -
+    REV (Spearman 0.86) but with smaller values (1.96 against 3.21%), and it cannot separate REM. Results at 2 cm/s
+    are shown.
+  - Rat08's Pir shanks are not read, and Rat11 has no session with 6 pyramidal cells in both structures.
+- claim: fig3e-cen-no-reactivation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim of absence covers NREM and REM; REM cannot be scored from what is deposited. The NREM half, on
+    the substitute, gives 15 sessions (Rat10 and Rat11), median EV - REV -0.08%, p = 0.64.
+- claim: figs4-intra-structure-nrem
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs4-intra-structure-nrem
+  assumed: true
+  notes: Substitute NREM. Hippocampus all cells 38 sessions, p = 0.00032; pyramidal 37, p = 6.5e-5; BLA all cells
+    36, p = 0.0030; pyramidal 34, p = 0.00025 (paper 38, 38, 34, 32 sessions). EV > REV in 29, 30, 25, 25 sessions.
+  deviations:
+  - Sleep states are not deposited. NREM is replaced by a substitute of this attempt (hc14.substitute_nrem), periods
+    of at least 30 s in pre-sleep and post-sleep with head speed below 4 cm/s over 1 s. It reproduces the authors'
+    NREM firing rates (median r of log rates 0.99 per session) and tracks their per-session hippocampus-BLA EV -
+    REV (Spearman 0.86) but with smaller values (1.96 against 3.21%), and it cannot separate REM. Results at 2 cm/s
+    are shown.
+  - BLA is the B1 label; hippocampal shanks as in units-recorded.
+- claim: figs4-intra-structure-rem-absent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs REM within the hippocampus and the BLA; REM cannot be scored from what is deposited, and the pair
+    table has REM only for hippocampus-BLA pairs.
+- claim: fig4-bla-ripple-modulation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig4-bla-ripple-modulation
+  measured:
+  - 25.8
+  - 11.1
+  - 14.7
+  - 8.3
+  - 163
+  - 1232
+  notes: BLA label, cells of the 29 ripple sessions, code threshold (p < 0.0005 per direction); interneurons up
+    42/163 (25.8%), down 24/163 (14.7%); pyramidal up 137/1232 (11.1%), down 102/1232 (8.3%). The BLA cells of the
+    pair table give the same; B2 gives 28.9, 11.4, 13.9, 7.5% of 187 and 1,390. At p < 0.001 per direction (B1)
+    27.0, 12.2, 15.3, 9.9%.
+  deviations:
+  - Ripple modulation is the deposited PoissonRippleMod table (columns 5 and 6 read as the p-values of an increase
+    and a decrease; column 7's sign agrees in every cell), as the NREM baseline cannot be rebuilt. One pyramidal
+    cell has no p-value.
+- claim: figs5b-ripple-modulated-pairs-reactivate-more
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs5b-ripple-modulated-pairs-reactivate-more
+  measured:
+  - 6.08
+  - 1.81
+  - 7.16
+  - 1.67
+  notes: Pyramidal pairs, modulated 18 sessions mean 7.16 +- 2.20%, non-modulated 22 sessions 1.67 +- 0.59%, rank-sum
+    z = 2.88, p = 0.0040; all pairs, 19 sessions 6.08 +- 1.37% against 23 sessions 1.81 +- 0.48%, z = 2.82, p =
+    0.0048. Each set also has EV > REV (p < 0.001). The paper has 18 and 19 sessions for both sets.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+- claim: run-correlated-pairs
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:run-correlated-pairs
+  measured:
+  - 37660
+  - 6.69
+  - 3.34
+  - 595
+  notes: 37,660 pyramidal pairs (16,056, 3,836, 17,768 per rat); table p-values give 2,521 positive (6.69%), 1,258
+    negative (3.34%), 33,881 not significant; raw spikes give 2,521 and 1,259. Group counts (BLA cell by run correlation)
+    up 595/3,686/334, none 1,774/28,065/801, down 152/2,108/123 (positive/ns/negative); 22 pairs have no ripple-modulation
+    value.
+- claim: fig5a-up-positive-pairs-change-most
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig5a-up-positive-pairs-change-most
+  notes: 37,638 pairs; one-way ANOVA F = 29.08, p = 1.1e-45; group up/positive mean change 0.0039, next none/positive
+    0.0011; Tukey-Kramer p-adj < 0.001 against each of the other eight; Bonferroni p < 0.002 against each. All cell
+    pairs (variant), F = 32.7, up/positive largest, Tukey p-adj < 0.01 against all, Bonferroni fails against down/positive
+    (0.33).
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+- claim: figs6b-ev-nine-groups
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs6b-ev-nine-groups
+  notes: EV - REV per group, up/positive 14.68%, none/positive 2.42%, up/negative 1.17%, the others below 0.3% (down/negative
+    -4.13%).
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+  - Non-significant groups use p >= 0.01, as the claims file says (the deposited script's sign error is not followed).
+- claim: figs9-ev-independent-of-rate
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs9-ev-independent-of-rate
+  notes: Whole-session rate (the pair table's own FR), EV > REV in 8/8 octiles for the mean, BLA and hippocampal
+    rates; Spearman with octile rho = 0.38 (p = 0.35), 0.64 (p = 0.086), -0.14 (p = 0.74). With the run rate, 7,
+    7 and 6 of 8 octiles, rho = 1.00 (p = 0), 0.98 (p = 3e-5), 0.62 (p = 0.10). Reproduced under the first reading
+    only.
+  deviations:
+  - The paper does not say which rate; the two readings of the criterion are run, and they disagree.
+- claim: fig5b-top-contributors-gain-increase
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig5b-top-contributors-gain-increase
+  measured:
+  - 63
+  - 74
+  notes: Contributions computed in closed form equal the table's EV.minus (max difference 2e-16). 1,228 BLA cells
+    in quartiles of 307; upmodulated cells in the top quartile 63, gain over +-250 ms median 1.22 to 1.40, one-sided
+    p = 5e-5; in the other three 74, p = 0.99 (Q3 0.74, Q2 0.92, Q1 0.94). 1-ms gains, p = 8e-5 and 0.98.
+  deviations:
+  - Ripple gains are the deposited AllRippleCCGs pre-NREM and post-NREM gains (10-ms bins); how the table smoothed
+    them is not documented.
+- claim: fig6a-airpuff-trajectory-reactivation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig6a-airpuff-trajectory-reactivation
+  assumed: true
+  notes: Substitute NREM, 24 sessions (paper 25); median R over +-250 ms pre 0.005, post 0.016; post > pre in 17;
+    one-sided p = 0.012. At 2 cm/s, p = 0.095.
+  deviations: &id003
+  - Sleep states are not deposited. NREM is replaced by a substitute of this attempt (hc14.substitute_nrem), periods
+    of at least 30 s in pre-sleep and post-sleep with head speed below 4 cm/s over 1 s. It reproduces the authors'
+    NREM firing rates (median r of log rates 0.99 per session) and tracks their per-session hippocampus-BLA EV -
+    REV (Spearman 0.86) but with smaller values (1.96 against 3.21%), and it cannot separate REM. Results at 2 cm/s
+    are shown.
+  - Reactivation strength cells are the pair table's cells of each session (at least 6 of the type per structure);
+    ripple peaks from rip.evt within the substitute NREM; lap templates from the laps defined as in fig1b.
+- claim: fig6a-safe-trajectory-no-reactivation
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig6a-safe-trajectory-no-reactivation
+  assumed: true
+  notes: Substitute NREM, 24 sessions; median pre 0.010, post 0.013, median difference 0.007; post > pre in 14;
+    one-sided p = 0.048 (at 2 cm/s p = 0.037).
+  deviations: *id003
+- claim: fig6b-airpuff-greater-than-safe
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig6b-airpuff-greater-than-safe
+  assumed: true
+  notes: Substitute NREM, 24 sessions; median post - pre air puff 0.014, safe 0.007; one-sided p = 0.15 (peak bin
+    0.099; at 2 cm/s 0.81).
+  deviations: *id003
+- claim: figs11a-whole-run-reactivation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs11a-whole-run-reactivation
+  assumed: true
+  notes: Substitute NREM; pyramidal 24 sessions, post > pre in 19, p = 0.0007; all cells 26 sessions, 21, p = 0.0009.
+    At 2 cm/s, p = 0.011 and 0.0037.
+  deviations: *id003
+- claim: figs11b-all-cells-both-trajectories
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs11b-all-cells-both-trajectories
+  assumed: true
+  notes: Substitute NREM, all cells, 26 sessions; air puff p = 0.040, safe p = 0.026. At 2 cm/s, 0.016 and 0.18.
+  deviations: *id003
+- claim: figs11c-all-cells-difference-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs11c-all-cells-difference-absent
+  assumed: true
+  notes: Substitute NREM, all cells, 26 sessions; median (air puff - safe) 0.000, one-sided p = 0.43 (peak bin 0.37;
+    at 2 cm/s 0.44).
+  deviations: *id003
+- claim: bla-rates-safe-airpuff-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:bla-rates-safe-airpuff-absent
+  assumed: true
+  notes: Reading (a), pyramidal cells of the 25 sessions n = 1,096, median difference 0.0011 Hz, p = 0.97; all cells
+    of the 27 sessions n = 1,261, p = 0.68. Reading (b) p = 0.060 and 0.38. Over all behaviour sessions (variant),
+    pyramidal p = 0.013 (lower on air puff laps), all cells p = 0.079.
+  deviations:
+  - BLA is the B1 label; laps as in fig1b; the session sets are the pair-table sessions with at least 6 cells of
+    the type.
+- claim: ripple-rate-pre-post-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:ripple-rate-pre-post-absent
+  assumed: true
+  notes: Substitute NREM; 38 sessions (paper 41); median rate pre 0.463/s, post 0.453/s; two-sided p = 0.75, one-sided
+    0.63. At 2 cm/s, 37 sessions, p = 0.98.
+  deviations:
+  - Sleep states are not deposited. NREM is replaced by a substitute of this attempt (hc14.substitute_nrem), periods
+    of at least 30 s in pre-sleep and post-sleep with head speed below 4 cm/s over 1 s. It reproduces the authors'
+    NREM firing rates (median r of log rates 0.99 per session) and tracks their per-session hippocampus-BLA EV -
+    REV (Spearman 0.86) but with smaller values (1.96 against 3.21%), and it cannot separate REM. Results at 2 cm/s
+    are shown.
+  - Ripples are the deposited rip.evt peaks.
+- claim: fig7b-strong-pairs-correlated-changes
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig7b-strong-pairs-correlated-changes
+  notes: Reading (a), whole test epochs; top 2.5% (942 pairs, 867 defined in both test runs; paper 866) r = 0.275,
+    p = 1.9e-16; per rat r = 0.29, 0.31, 0.26. Reading (b), laps, 680 pairs, r = 0.084, p = 0.028.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+  - Test-run correlations are computed from the raw spikes; the NREM change from the pair table.
+- claim: fig7b-weak-pairs-not-correlated
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig7b-weak-pairs-not-correlated
+  notes: Reading (a) bottom 2.5%, 846 pairs (paper 845), r = 0.034, p = 0.33; reading (b) 632 pairs, r = 0.014,
+    p = 0.72.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+- claim: fig7c-quartiles
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig7c-quartiles
+  notes: Reading (a); top quartile 8,299 pairs r = 0.130, p = 8e-33; bottom quartile 8,305 pairs r = 0.014, p =
+    0.20; second r = 0.024 (p = 0.040), third r = 0.007 (p = 0.56), middle 95% r = 0.022 (p = 0.0002). Reading (b),
+    top quartile r = 0.025, p = 0.070.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited.
+    The run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58
+    to 0.98 in 12), the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited
+    pooled EV exactly.
+findings:
+- kind: data_missing
+  statement: The hand-scored sleep states (NREM, REM, wake intervals) are not deposited, nor the run intervals and
+    lap classifications the analyses used. NREM and REM can only be recovered for what the summary tables already
+    hold (hippocampus-BLA pair correlations, per-cell state rates); rescoring from the LFP would mean streaming
+    about 430 GB of tar.gz archives.
+- kind: metadata_insufficient
+  statement: The summary tables in AllRats-Variables.tar.gz (FinalType, StatesFR, SpikeParameters, PoissonRippleMod,
+    EVcontribs, AllRippleCCGs) are undocumented, as the data description says. Their columns could be identified
+    against the raw spikes, except which StatesFR column is REM (column 5 or 8).
+- kind: metadata_insufficient
+  statement: The structure of each shank and day comes in four formats, one per rat (Structures/*.mat for Rat09
+    and Rat10, Structures.txt for Rat11, Batch-Files/Structures.batch and a colour-coded StructureMapping.ods for
+    Rat08). Rat08's CeN and piriform shanks are coded only by cell colour, Rat08 sessions 10 to 13 list no BLA shanks,
+    and the hippocampal shanks are listed only for Rat10.
+- kind: metadata_error
+  statement: Rat08-20130722 has 152 sorted units in its clu files and 127 in the summary tables (28 only in the
+    clu files, 3 only in the tables); the other 60 sessions agree unit for unit.
+- kind: selection_undocumented
+  statement: The bucket holds 65 sessions; the paper's 61 are listed only in sessionindexing.mat. Rat11-20150309,
+    -0318, -0319 and -0324 are left out without a stated reason.
+- kind: metadata_insufficient
+  statement: Only 6 of the 55 behaviour sessions carry an airpuffloc file with the air puff location and direction;
+    for the others they must be inferred from the head position at the air puffs, which differs from the files by
+    0.3 to 18 cm where both exist.
+- kind: other
+  statement: The pair table's run correlations match correlations recomputed over the run subsession in 17 of 29
+    sessions (r > 0.999) and less well in 12 (r = 0.58 to 0.98), so the run interval the authors used is not the
+    run subsession in those sessions and is not deposited.
+- kind: methods_unavailable
+  statement: Question for the authors. Which StatesFR column is REM? This attempt took column 5 (hippocampal interneurons
+    fire more there than in NREM) over column 8; with column 8 the REM/wake ratios of BLA cells would be smaller
+    than the NREM/wake ratios, against Figure 2c.
+- kind: methods_unavailable
+  statement: Question for the authors. Was the air puff location of BehavioralMeasures.m taken from the airpuffloc
+    files, from the puff events, or from elsewhere, and where is it for the 49 sessions without an airpuffloc file?
+    This attempt used the median head position at the air puffs, and the location-bias test (airpuff-location-no-bias)
+    depends on it.
+- kind: other
+  statement: The session archives are tar.gz files without an index, and each clu archive (1 to 2.5 GB) is mostly
+    RawKK, .fet and .klg files; reading the sorted spikes of one session means decompressing the whole archive (99
+    GB over 65 sessions), and the LFP archives are 3 to 9 GB each.
