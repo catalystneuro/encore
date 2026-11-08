@@ -108,7 +108,8 @@ claims:
   quote: A dominant, slow ( ≤ 0.1 Hz) oscillation in neural firing ( Figure 1D ) is consistent with
     the periodic activity necessary to generate rhythmic locomotion
   expected:
-    quantity: frequency of the dominant peak of the mean post-stimulation spectrum
+    quantity: upper bound on the frequency of the dominant peak of the mean post-stimulation
+      spectrum (the paper gives a bound, at or below 0.1 Hz, not a point value)
     value: 0.1
     tolerance: 0.01
     unit: Hz
@@ -179,7 +180,7 @@ claims:
     fig2b-dimensions. The period of the dominant peak is (a) the mean of its recurrence times (the
     Methods and Figure 2F legend) or (b) their median (the code). Reproduced when, under a
     reading, more than half of the 30 dominant periods lie in 9 to 16.5 s and at least one does
-    not ("not all"). The SD and the readings of claim fig2b-dimensions are carried over; the
+    not ("not all"; the paper does not count "many", so more than half is a rule fixed here). The SD and the readings of claim fig2b-dimensions are carried over; the
     author reports each.
   depends_on:
   - fig2b-dimensions
@@ -244,12 +245,13 @@ claims:
     Are_sequential_attractors_the_same.m. All three programs of a preparation projected onto the
     PCA axes of program 1 (code; raw spike-density functions times the eigenvectors, not
     mean-centred), in the smallest number of program 1's PCs reaching 80%. Hausdorff distance
-    between the pair's point sets; control, the Hausdorff distance after shuffling the neurons of
-    one program, 100 shuffles, mean taken. The point sets are (a) the recurrent points (Methods)
-    or (b) all points of runs of 5 s windows with at least 90% recurrence, from the later of the
-    two programs' first such point (the code). Reproduced when, under a reading, at least 25 of
-    the 30 pairs have a distance below their control mean; the pairs that fail are named against
-    those of preparation 4.
+    between the pair's point sets; control, as the Methods, max{min d(A,B*), min d(B,A*)}, with
+    A* and B* the programs after shuffling the assignment of time series to neurons and projecting
+    onto the same axes, 100 shuffles, mean taken. The point sets are (a) the recurrent points
+    (Methods) or (b) all points of runs of 5 s windows with at least 90% recurrence, from the
+    later of the two programs' first such point (the code). Reproduced when, under a reading, at
+    least 26 of the 30 pairs (28 less its tolerance of 2.8) have a distance below their control
+    mean; the pairs that fail are named against those of preparation 4.
   depends_on:
   - fig3a-coalescence
 - id: fig3s1a-common-axes
@@ -259,8 +261,9 @@ claims:
   quote: "We obtain the same results: sequentially-evoked programs converge to the same manifold"
   criterion: As claim fig3c-same-manifold, with the axes from a PCA of the three programs'
     concatenated post-onset spike-density functions (Methods; Are_sequential_attractors_the_same_CommonAxes.m,
-    which keeps the PCs whose cumulative variance is at most 80%). Reproduced when at least 25 of
-    the 30 pairs have a distance below their control mean.
+    which keeps the PCs whose cumulative variance is at most 80%). The legend says the results
+    are the same as Figure 3C, where 28 of 30 pairs pass, so reproduced when at least 26 of the 30
+    pairs have a distance below their control mean, as claim fig3c-same-manifold.
   depends_on:
   - fig3c-same-manifold
 - id: fig3d-initial-conditions
@@ -298,7 +301,8 @@ claims:
     correlation of S(A) with the null model E_ij = s_i s_j / T (Methods). Open details, all run,
     the correlation is Spearman (the code that is plotted) or Pearson; the control for a pair is
     that of its first program, or the larger of its two programs' controls. Reproduced when, under
-    a reading, at least 25 of the 30 pairs have a data correlation above their control.
+    a reading, at least 26 of the 30 pairs (28 less its tolerance of 2.8) have a data correlation
+    above their control.
 - id: fig3h-perturbations-return
   statement: Of 19 spontaneous divergences from the trajectory, 17 (90%) returned to a recurrent
     state; the two that did not were consistent with the end of the evoked locomotion.
@@ -356,7 +360,8 @@ claims:
     100 neighbours. Stable spiral when a < -0.0001 and b > 0.0005, the edges of the grey bands
     drawn in Figure 4B by Figure_LinearDynamics.m. Reproduced when the mean over the 30 responses
     is a stable spiral and each of the 10 preparations has at least two of its three responses in
-    the stable spiral region; partially reproduced when the grand mean holds but fewer
+    the stable spiral region (the paper does not count responses per preparation; this rule is
+    fixed here); partially reproduced when the grand mean holds but fewer
     preparations do. The spread (SD over responses of a and b) is reported.
   depends_on:
   - fig2ef-periodic-recurrence
@@ -412,11 +417,6 @@ claims:
     Figure 5B
   quote: "We found that the population responses included all possible changes in periodic orbit:
     slowing, speeding up, and not changing ( Figure 5B )"
-  statistics:
-  - test: weighted Spearman's rank correlation, permutation test
-    p: 0.01
-    p_relation: "<"
-    n: 30 responses, 31 to 72 local estimates each
   expected:
   - quantity: fewest local estimates per response
     value: 31
@@ -466,7 +466,8 @@ claims:
     Reproduced when in each of the nine responses the mean forecast R minus 2 s.e.m. over its
     windows is above 0 (Figure 6D shows means plus or minus 2 s.e.m.; "accurately" is otherwise
     unquantified). The code's windowing (training on 50% of the series, 0.2 s steps, histories to
-    250 ms) is a variant. The paper's 173 forecast windows are reported against the count each
+    250 ms) is a variant, and so are histories up to 100 ms, as the Results say ("recent history
+    (up to 100 ms)"), against the Methods' 50 to 200 ms. The paper's 173 forecast windows are reported against the count each
     windowing gives, not judged.
   depends_on:
   - fig6s1-no-p10-motorneurons
@@ -479,8 +480,10 @@ claims:
   criterion: As the legend and P10_ID_motorneurons.m, for each neuron and each program with P10,
     spikes after 33 s, the proportion of its spikes followed by a P10 spike at delays 0 to 25 ms
     (1 ms steps) within plus or minus 2 ms, maximum over delays. The paper gives no cut-off for
-    "close to 1"; 0.9 is taken here. Reproduced when no neuron has a maximum of 0.9 or more in two
-    programs of its preparation; the largest values are reported.
+    "close to 1"; 0.9 is taken here. Reproduced when no neuron has a maximum of 0.9 or more in any
+    program (no neuron close to 1 at any delay) and hence none in two programs of its preparation
+    (no consistent locking); the largest values, and how many neurons reach 0.9 in one program
+    and in two, are reported.
 - id: fig6s2-dimensions-p10
   statement: The nine recordings with P10 activity need only 3 to 5 embedding dimensions for 80%
     variance, and at least double that for 90%; using the 90% dimensions does not improve the P10
@@ -640,3 +643,19 @@ claims:
     unresolved, is reported.
   depends_on:
   - fig7a-long-tailed-participation
+checks:
+- date: '2026-11-08'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig5b-period-changes, removed the statistics entry (permutation test, p < 0.01); in the Figure 5B legend p < 0.01 only marks which responses count as changing, a threshold used to count responses, not a result. The criterion keeps it.
+  - fig1d-slow-oscillation, the expected quantity now says 0.1 Hz is an upper bound (the paper's "≤ 0.1 Hz"), not a point value, so it agrees with the criterion.
+  - fig3c-same-manifold, the control described as "shuffling the neurons of one program" now follows the Methods, max{min d(A,B*), min d(B,A*)} with both programs shuffled in turn, as Are_sequential_attractors_the_same.m also does.
+  - fig3c-same-manifold and fig3f-pairwise-similarity, the count required went from 25 to 26 of 30, so the criterion matches the expected 28 with tolerance 2.8 (25 lies outside it).
+  - fig3s1a-common-axes, the count required went from 25 to 26 of 30, as the legend says the results are the same as Figure 3C.
+  - fig2ef-periodic-recurrence and fig4bc-stable-spiral, the criteria now say their counting rules ("more than half" for "many"; two of three responses per preparation) are fixed here, as the paper does not count them.
+  - fig6d-decode-p10, added histories up to 100 ms as a variant; the Results say "recent history (up to 100 ms)", the Methods 50 to 200 ms.
+  - fig6s1-no-p10-motorneurons, the criterion tested only consistent locking in two programs; the statement and legend also say no neuron comes close to 1 at any delay, so it now requires no neuron at 0.9 or more in any program.
+  - Open, fig2b-dimensions and fig6s2-dimensions-p10, the paper gives 4 to 8 dimensions for all 30 responses but 3 to 5 for the nine P10 recordings; the two cannot both hold for every response, which "generally" allows. Both claims stand as written.
+  - Open, the Gaussian SD; the extracted text reads median ISI / 12, and no PDF of the paper was supplied to check for a lost square root. The criteria name both readings and the code's.
