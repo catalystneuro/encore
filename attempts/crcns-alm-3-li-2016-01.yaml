@@ -1,0 +1,1034 @@
+schema_version: 2
+id: crcns-alm-3-li-2016-01
+dataset:
+  archive: crcns
+  id: alm-3
+  version: unversioned
+  doi: 10.6080/K0RB72JW
+paper: doi:10.1038/nature17643
+date: '2026-11-07'
+entry: crcns-alm-3-li-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42405983796
+outcomes:
+- claim: units-and-sessions
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:units-and-sessions
+  measured:
+  - 1012
+  - 20
+  - 38
+  - 890
+  - 89
+  - 12
+  notes: The 58 non-callosotomy sessions (20 unilateral, 38 bilateral) from 12 mice hold 1012 single units,
+    890 labelled pyramidal, all as the paper reports. 89 units are labelled FS and 33 carry no cell-type
+    label, against 72 FS and 50 intermediate in the paper. By the trough-to-peak width of the deposited
+    mean waveform (29 samples at 19.53 kHz, steps of 0.051 ms) there are 890 pyramidal, 98 FS and 24 intermediate
+    units, and 889, 104 and 19 after tenfold spline upsampling. 15 units labelled FS have a width of 0.358
+    ms, inside the excluded range. Five of six counts match exactly; the FS count is 24% above the paper's,
+    so neither the criterion's full nor its partial rule holds.
+  deviations:
+  - Cell classes are read from the data set's cellType labels, with the width of the deposited mean waveform
+    as a second reading; the paper's width measurement (interpolation, filtering) is not described beyond
+    trough to peak.
+- claim: ed1-selective-fraction
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed1-selective-fraction
+  measured:
+  - 633
+  - 176
+  - 336
+  - 493
+  notes: 'Correct control trials, lick-early trials excluded, 1.3 s response epoch (reading a of M3 and
+    M1, the code''s response window): 633 of 890 pyramidal neurons selective in some epoch, 176 in the
+    sample, 336 in the delay and 493 in the response epoch (paper 634, 176, 337, 493). The 1.5 s response
+    epoch also matches (635 and 490). With correct and error trials, the trials the deposited script selects,
+    the counts are 571, 152, 287 and 404; with lick-early trials included 596, 161, 315 and 433. The first
+    400 ms after the cue gives 411 response-selective neurons. 1 neuron could not be tested.'
+  deviations:
+  - Response epoch taken as the 1.3 s after the cue, from the deposited script (analysis_compile_all_data_unilateral.m,
+    significant selectivity); the 0.4 s and 1.5 s readings of M2 are shown. The authors' MATLAB scripts
+    deposited in the data set (alm-3/live/analyses_scripts/), which the data description says reproduce
+    the paper's figures, are used as the paper's analysis code for details the claims file and the Methods
+    leave open; the paper itself links no code.
+- claim: fig1d-late-delay-ipsilateral-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The recording sessions hold photoinhibition in the sample, early delay and middle delay windows
+    (types 1 to 3, ending 1.6, 0.8 and 0.3 s before the cue by the laser trace); none ends at the go cue.
+    The behaviour-only sessions of Fig. 1d are not in the data set; its FAQ says the published data cover
+    only the electrophysiology sessions. No other public copy was found.
+- claim: fig1d-earlier-photoinhibition-minimal
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig1d-earlier-photoinhibition-minimal
+  notes: 'Recording sessions of Experiment 1, 4 mice (paper 5, behaviour sessions). Performance pooled
+    per mouse: control 79.5%, early delay 74.5% (drop 5.0 points, paired t-test p = 0.23), middle delay
+    74.9% (drop 4.6, p = 0.22). Unpaired tests and per-session means give p from 0.18 to 0.41. No condition
+    reaches p < 0.05, and all p-values are above the paper''s 0.1. Sample photoinhibition +0.6 points
+    (p = 0.81). With four mice the test has little power; the drops are about five points.'
+  deviations:
+  - Tested on the recording sessions of Experiment 1 (4 mice, 0.5 s photoinhibition with 100 ms ramp),
+    as the behaviour-only sessions of Fig. 1d are not in the data set; the three sessions with the no-ramp
+    types -1 to -3 are left out, as the data set says not to analyse them.
+  - Performance is hits over hits and errors on performing trials, no-lick and lick-early trials excluded,
+    as the data set's Demo_get_performance.m computes it.
+- claim: ed3-recovery-interval
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour-only experiments (ED Fig. 3); the data set's FAQ says they are not included, and only
+    types 1 to 3 of ED Fig. 3a are in the recording sessions (see fig1d-earlier-photoinhibition-minimal).
+    The 1.3 s whole-delay photoinhibition and the other recovery intervals are absent. The part on 0.5
+    s photoinhibition ending 0.8 s and 1.6 s before the cue is tested on the recording sessions under
+    fig1d-earlier-photoinhibition-minimal (p = 0.23 and 0.81, no significant effect); the 1.3 s photoinhibition
+    and the condition ending at the cue are missing, so the claim stays blocked.
+- claim: ed2b-silencing
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed2b-silencing
+  measured: 0.916
+  notes: 'Window (a), onset to the start of the offset ramp; pyramidal neurons with mean rate of at least
+    1 spike/s. Reduction (1 minus mean normalized rate): Experiment 1 0.938, 0.931, 0.910; Experiment
+    2 ipsilateral 0.916 and bilateral 0.924; Experiment 3 ipsilateral 4 spots 0.962 and bilateral 1 spot
+    0.940; sessions with types 4, 5, 7 0.885 and 0.886. Experiment 2 ipsilateral by line 0.951 (PV x ReaChR,
+    216 neurons) and 0.845 (VGAT-ChR2, 106). Contralateral mean normalized rate 0.945 (Experiment 2),
+    1.152 (Experiment 3), 0.986 (types 4, 5, 7). With window (b), the whole period, the Experiment 3 contralateral
+    value is 1.222, outside 0.8 to 1.2, and the VGAT reduction 0.831. The callosotomy sessions, not part
+    of the claim, give 0.880 (ipsilateral) and 0.764 (bilateral). Without the four sessions in which photoinhibition
+    does not lower the rate, the VGAT reduction rises to 0.852 (Experiment 2 ipsilateral) and 0.975 (types
+    4, 5, 7). Neurons per condition: 180 (Experiment 1), 319 to 323 (Experiment 2), 56 (Experiment 3),
+    against the legend''s 117, 110, 109; 300, 294, 301; 52, 52, 102.'
+  deviations:
+  - Mouse lines are read from the gene modification in the data set's meta data files.
+  - Neurons need at least 3 photoinhibition and 5 control trials, a standard choice; the paper's n (300,
+    294, 301 in Experiment 2) are close to the 322, 319, 323 here.
+- claim: ed2d-spatial-extent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Measured in 4 untrained mice (ED Fig. 2d); the data set's 19 mice are the behaving electrophysiology
+    and callosotomy mice, and no recordings at varying distance from the light are included.
+- claim: ed2e-no-rebound
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed2e-no-rebound
+  notes: 'Experiment 2, lick right trials, ipsilateral photoinhibition, 306 pyramidal neurons above 1
+    spike/s. 0 to 400 ms after offset, photoinhibition minus control -0.14 spikes/s (paired t = -0.58,
+    p = 0.565); 400 to 800 ms +0.10 (p = 0.617): no rebound on average. In the first window 24 neurons
+    are significantly excited and 9 suppressed (p < 0.01), the opposite of the balance the criterion requires;
+    without the rate exclusion (408 neurons) 30 and 9; at p < 0.05, 36 and 21. By the sign of the change
+    125 neurons are higher and 177 lower than control (median -0.28 spikes/s), which fits the paper''s
+    "low level of sustained inhibition in a larger proportion". The criterion''s second condition fails
+    and it has no partial rule. Whether the count at p < 0.01 reads the paper correctly is asked of a
+    reader (questions/crcns-alm-3.yaml).'
+  deviations:
+  - The population test (paired t-test over neurons) is the criterion's standard choice.
+- claim: fig1f-rate-recovery
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig1f-rate-recovery
+  measured:
+  - 0.161
+  - 168
+  - 168
+  - 175
+  notes: 'The deposited script''s selection (pyramidal, mean rate above 1 spike/s, more than 8 control
+    and more than 3 photoinhibition trials of each type) gives 168, 168 and 175 neurons, as Fig. 1f. Fraction
+    with a significant change: reading (a), window starting at offset, 0.179, 0.196, 0.109 (mean 0.161);
+    reading (b), window centred 400 ms after offset, 0.131, 0.143, 0.091 (mean 0.122). Only the middle
+    delay condition is within 0.1 +- 0.01; all are below 0.2. Without the rate exclusion (224, 225, 241
+    neurons) reading (b) gives 0.121, 0.124, 0.087. The test flags 0 to 1.1% of neurons before onset.
+    The script''s own measure, the fraction 0.25 s before the cue, is 0.054, 0.125 and 0.383, the last
+    inside the middle-delay photoinhibition.'
+  deviations:
+  - Neuron selection from the deposited script (analysis_compile_all_data_unilateral.m, Fig. 1f section),
+    which fills M3's open inclusion rule. The authors' MATLAB scripts deposited in the data set (alm-3/live/analyses_scripts/),
+    which the data description says reproduce the paper's figures, are used as the paper's analysis code
+    for details the claims file and the Methods leave open; the paper itself links no code.
+- claim: fig1g-selectivity-recovery
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig1g-selectivity-recovery
+  measured:
+  - 347
+  - 420
+  - 236
+  - 72
+  notes: 'Every reading of M4 and of the selection is run (96): selection rule (the scripts'' sample or
+    delay epoch with |preference| > 1, or M3''s any epoch), screening trials (the code''s 5 per type,
+    10 per type, 10 in total), preference window (whole count or most selective epoch), trials of the
+    selectivity test, more than 2 or 3 trials per condition, 200 ms windows stamped at their centre or
+    400 ms at their end. Code reading: 347 ms (sample), 420 ms (early delay), 236 ms (middle delay), within
+    373 +- 260, 510 +- 218 and 327 +- 112 ms, at least 99% of resamples recovering in each condition. In all 96 readings every condition
+    recovers in at least 96% of resamples, and 34 put all three times within tolerance. No reading gives
+    the paper''s 55 neurons: 66 to 160 (72 under the code''s reading). Of 292 Experiment 1 pyramidal neurons,
+    99 are selective in the sample or delay epoch and 72 remain after the preference and trial filters;
+    selection by any epoch leaves 135 to 137. The times match, on a different neuron set, so the neuron
+    count, an expected value, fails.'
+  deviations:
+  - 'Screening, selection and the bootstrap recovery rule from the deposited script (analysis_compile_all_data_unilateral.m,
+    Fig. 1g section): 5 control trials of each type set the preference (the Methods'' subset of 10 trials),
+    the recovery time is searched from offset to 1 s after the cue. The authors'' MATLAB scripts deposited
+    in the data set (alm-3/live/analyses_scripts/), which the data description says reproduce the paper''s
+    figures, are used as the paper''s analysis code for details the claims file and the Methods leave
+    open; the paper itself links no code.'
+  - Every reading of M4 (screening 10 trials per type or in total; preference from the whole count or
+    the most selective epoch) and the selection of M3 (any epoch) are run alongside the code's; the most
+    selective epoch is the one where the screening trials differ most by mean difference over pooled standard
+    deviation, a standard choice.
+  - A recovery time counts as within tolerance only when at least half the bootstrap resamples recover
+    (the paper does not say how resamples that never recover were counted; see the methods_unavailable
+    finding).
+  - PSTHs are evaluated every 10 ms (the script uses 1 ms), so recovery times are resolved to 10 ms.
+- claim: ed4-return-to-trajectory
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed4-return-to-trajectory
+  measured:
+  - 55
+  notes: '55 Experiment 1 pyramidal neurons from 4 mice have a significantly lower rate in the last than
+    in the first 400 ms of the delay (paper 27 from 6 mice). The RMS windows start after photoinhibition
+    has ended and the end point is the control rate in the last 400 ms of the delay. For the 47 tested,
+    200 ms windows from 0.1 s after offset to 0.1 s before the cue: RMS to the time-matched control 0.462,
+    to the end point 0.429 after early-delay photoinhibition (paired p = 0.27), 0.500 against 0.494 with
+    the three conditions pooled (p = 0.74); 400 ms windows stamped at their end, from 0.4 s after offset
+    to the cue: 0.378 against 0.367 (p = 0.65) and 0.451 against 0.470 (p = 0.52). Experiment 2 (106 neurons,
+    7 mice): p = 0.92 and 0.43. Neurons with increasing rates: time-matched smaller when pooled (p = 0.041
+    and 0.049), not after early delay alone (p = 0.086 and 0.28). The round-1 result (time-matched larger,
+    p = 0.019) used windows that overlapped photoinhibition and a different end point; the two changed together,
+    so the effect of the window alone was not isolated.'
+  deviations:
+  - 'The start and end of the delay are read as its first and last 400 ms (criterion). RMS windows: 200
+    ms stamped at their centre from 0.1 s after offset to 0.1 s before the cue, or 400 ms stamped at their
+    end from 0.4 s after offset to the cue, so that none overlaps photoinhibition or the response epoch.'
+  - The paper's 6 mice cannot come from Experiment 1, which has 4 mice in the data set; Experiment 2 is
+    shown as a variant. Asked of a reader (questions/crcns-alm-3.yaml).
+- claim: ed5-photoactivation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The photoactivation data (Tlx_PL56-cre x Ai32 mice) are not in the data set; its FAQ says they
+    were not published and would be added. No other public copy was found.
+- claim: fig2b-bilateral-behaviour
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig2b-bilateral-behaviour
+  notes: 'Bilateral recording sessions, performance pooled per mouse: control 78.0%; unilateral 1 spot
+    69.3% (10 mice, paired p = 0.025, within 70.3 +- 7.0); unilateral 4 spots 75.6% (3 mice, p = 0.15;
+    paper 67.7%); bilateral 1 spot 65.8% (3 mice, p = 0.045; paper 58.0%); bilateral 4 spots 58.1% (7
+    mice, p = 0.0001; paper 51.4%). Bilateral 1 spot against unilateral 4 spots 65.8 against 75.6% (3
+    mice, p = 0.12). The order unilateral, bilateral 1 spot, bilateral 4 spots holds with each below control;
+    three values are outside tolerance and two tests not significant.'
+  deviations:
+  - Recording sessions only (0.8 s photoinhibition from delay onset, 10 mice); the paper's values come
+    from 13 mice including behaviour-only sessions with 0.8 and 1.3 s photoinhibition.
+- claim: ed6-bilateral-bias-inconsistent
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed6-bilateral-bias-inconsistent
+  notes: 16 sessions of fig3-cd-roc. 8 sessions are biased under bilateral photoinhibition (Fisher p <
+    0.05), 6 toward lick right and 2 toward lick left. The sign of the bias agrees with the nearer control
+    trajectory (reading b) in 7 of 8 (0.88) and with the side of the decision boundary (reading a) in
+    5 of 8 (0.62). With all units, 0.75 and 0.62. Over all 16 sessions the bias and the mean perturbed
+    projection correlate with Spearman r = 0.34 (p = 0.20).
+  deviations:
+  - The claim is reproduced under reading (b) of the criterion and not under reading (a). The criterion's
+    last sentence judges agreement with the side of the decision boundary, which is reading (a); whether
+    reading (b) may decide is asked of a reader (questions/crcns-alm-3.yaml).
+- claim: fig2-bilateral-recovery
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig2-bilateral-recovery
+  measured:
+  - 716
+  - 240
+  - 146
+  notes: 'Experiment 2 (types 4, 5, 6). Rates: ipsilateral 0.958 of control 600 ms after offset (0.963
+    without the rate exclusion) with 9.4% of neurons significantly changed (both readings recover); contralateral
+    0.901 during photoinhibition; bilateral 1.114 of control just before the cue (1.134 without the exclusion),
+    outside the criterion''s 10%. Selectivity, 64 readings of M4 and the selection: contralateral 240
+    ms under the code''s reading (146 neurons), within 192 +- 114; bilateral reaches 80% before the cue
+    in at most 1% of resamples in every reading. Ipsilateral: 25% of resamples recover under the code''s
+    reading (716 ms among them, 854 ms counting the others at the cue); 0% to 79% across readings. Six
+    readings, all with 10 screening trials drawn in total (M4 reading b), have at least half the resamples
+    recovering with both times within tolerance and bilateral not recovering; one (code rule, preference
+    from the most selective epoch) also has 146 neurons, within 143 +- 14.3 (ipsilateral 684 ms from 51%
+    of resamples, contralateral 229 ms). In every reading ipsilateral selectivity 0.2 s before the cue
+    is 28% to 60% below control, and 28% to 43% in those six readings, so where it reaches 80% it falls
+    back before the cue. The ordering holds under those six readings and the bilateral rate misses the criterion,
+    so the claim holds in part, on few readings. The criterion''s partial rule names a time outside tolerance;
+    here both times are within tolerance and the bilateral rate fails, so the partial outcome follows the
+    protocol''s general meaning (the effect holds only in part), not the criterion''s wording.'
+  deviations:
+  - Selection, screening (10 trials per type) and the recovery rule (searched from offset to the cue)
+    from the deposited script analysis_compile_all_data_bilateral.m, Fig. 2e section. The authors' MATLAB
+    scripts deposited in the data set (alm-3/live/analyses_scripts/), which the data description says
+    reproduce the paper's figures, are used as the paper's analysis code for details the claims file and
+    the Methods leave open; the paper itself links no code.
+  - Every reading of M4 and of the selection is run, as for fig1g-selectivity-recovery; a recovery time
+    counts only when at least half the resamples recover.
+- claim: ed7-unilateral-4-spots-bilateral-1-spot
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed7-unilateral-4-spots-bilateral-1-spot
+  measured:
+  - 530
+  - 119
+  - 32
+  notes: 'Experiment 3 sessions (types 7, 8, 9), 64 readings of M4 and the selection, 29 to 61 neurons
+    (paper 40; 32 under the code''s reading). Ipsilateral and contralateral 4-spot times within tolerance
+    in 40 readings (code reading 530 and 119 ms, against 490 +- 280 and 235 +- 156 ms). Bilateral 1-spot
+    selectivity reaches 80% of control before the cue in 36% to 99% of resamples (80% under the code''s
+    reading), where the paper reports no recovery; no reading has both the times within tolerance and
+    the bilateral selectivity unrecovered. Delta selectivity in the last 400 ms of the delay: bilateral
+    1 spot -0.55 against ipsilateral 4 spots -0.21 spikes/s (32 neurons, paired p = 0.53), -0.46 against
+    -0.11 with selection by any epoch (59 neurons, p = 0.27). With the bilateral 1-spot neurons of the
+    sessions with types 4, 5 and 7 pooled (54 to 121 neurons, a variant for a question to a reader), 32%
+    to 77% of resamples recover.'
+  deviations:
+  - Method of fig2-bilateral-recovery on the Experiment 3 sessions; the deposited scripts contain none
+    for Experiment 3.
+- claim: ed7e-size-and-roc
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed7e-size-and-roc
+  measured:
+  - 0.762
+  - 0.621
+  - 0.702
+  - 0.604
+  notes: '4 of the 6 Experiment 3 sessions pass the session rule. Mean-difference cd, pyramidal neurons,
+    code split: ROC 0.762 (control), 0.621 (ipsilateral 4 spots), 0.702 (contralateral 4 spots), within
+    tolerance, and 0.604 (bilateral 1 spot), outside 0.54 +- 0.054 and within the 0.08 variant. No reading
+    puts the bilateral value within 0.054 (0.598 to 0.642), and the criterion has no partial rule. Ipsilateral
+    4 spots 0.621 against Experiment 2 ipsilateral 1 spot 0.706, so recovery is less robust with larger
+    photoinhibition. With the bilateral 1-spot sessions holding types 4, 5 and 7 pooled (9 sessions),
+    the bilateral ROC is 0.570 to 0.602, within 0.054 in 4 of 6 readings; whether the paper pooled them
+    is asked of a reader.'
+  deviations:
+  - Four of the six Experiment 3 sessions pass the session rule, each with trials in every group (five
+    with all units); with 4 sessions the s.e.m. of the control ROC is 0.14.
+- claim: fig3-cd-roc
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3-cd-roc
+  measured:
+  - 16
+  - 0.731
+  - 0.713
+  - 0.742
+  - 0.592
+  notes: 'The session rule of the deposited script (pyramidal neurons stable at trial 50 and 50 before
+    the end, more than 5 neurons, at least 5 trials per group) gives the paper''s 16 sessions from 7 mice
+    (175 neurons). Leave-one-out split (M6 reading b), mean-difference cd, pyramidal neurons: ROC 0.731
+    +- 0.025 (control), 0.713 +- 0.023 (ipsilateral), 0.742 +- 0.033 (contralateral), 0.592 +- 0.033 (bilateral),
+    all within tolerance; windows centred in the epochs give 0.733, 0.712, 0.749, 0.593. Other readings
+    miss: the code''s split gives 0.719 and 0.706 for control and ipsilateral, just below tolerance; random
+    halves give a contralateral 0.684; all units give an ipsilateral 0.667 to 0.681. Control, ipsilateral
+    and contralateral exceed bilateral by more than 0.1 in the matching reading. With more than 5 trials
+    in every group (the Methods'' wording) 12 sessions remain and the ROC is 0.681, 0.692, 0.723, 0.554
+    (code split), the control value outside tolerance.'
+  deviations:
+  - cd is the mean difference of the Methods; the deposited script's linear discriminant is shown as a
+    variant with the code's split and random halves (not with leave-one-out).
+  - The reproduced outcome rests on one of the criterion's readings (leave-one-out, pyramidal neurons);
+    the control and ipsilateral values lie near the edge of their tolerance in all readings.
+  - The session rule keeps groups of 5 trials, as the deposited script does, which gives the paper's 16
+    sessions; M6's "> 5 trials per condition" gives 12 sessions and is shown as a reading.
+- claim: ed8-roc-during-photoinhibition
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed8-roc-during-photoinhibition
+  measured:
+  - 0.703
+  - 0.534
+  - 0.642
+  - 0.539
+  notes: 'Reading (b), projections averaged over the photoinhibition period, with all single units and
+    the code split: ROC 0.703 (control), 0.534 (ipsilateral), 0.642 (contralateral), 0.539 (bilateral),
+    all within tolerance (0.72 +- 0.02, 0.54 +- 0.03, 0.64 +- 0.03, 0.54 +- 0.01). 3 of 32 readings match.
+    With pyramidal neurons the bilateral value is 0.51 and outside its tolerance of 0.01; with window
+    (a) the ipsilateral values are 0.490 to 0.544 and the bilateral values 0.473 to 0.526, and no reading
+    matches.'
+  deviations:
+  - The matching reading uses all single units (M6 reading b) and the window average (reading b).
+- claim: ed9b-cd-stability
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed9b-cd-stability
+  measured: 0.59
+  notes: 'All correct control trials: Pearson correlation of w between the last 400 ms of the sample and
+    of the delay 0.590 +- 0.075 over 16 sessions (pyramidal), 0.622 +- 0.060 over 17 (all units); within
+    0.61 +- 0.05. With the correct training trials only, 0.520 and 0.570.'
+- claim: ed8a-mode-variance
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed8a-mode-variance
+  measured:
+  - 67.1
+  - 39.9
+  - 96.3
+  - 92.5
+  notes: 'Mean-difference cd (Methods), random halves of the control trials (M6 reading a), pyramidal
+    neurons, pre-sample baseline, squared-norm shares (the script''s): selectivity on cd 67.1% (paper
+    65.6 +- 5.1), variance on cd 39.9% (36.4 +- 6.3), both within tolerance; modes 1 to 5 variance 96.3%
+    (98.5 +- 0.5) and selectivity 92.5% (95.8 +- 1.2), outside. No reading puts all four within tolerance.
+    With the code''s split the cd selectivity share is 72.5% and with leave-one-out (all control trials)
+    74.7%, outside; RMS shares give cd values near 81% and 61%, outside, and mode 1 to 5 values near 98%
+    and 96%. With the script''s discriminant cd and its split, 66.1% and 36.6%. With modes 2 and 3 and
+    the mean responses from correct trials only (the criterion''s trials), pyramidal neurons, random halves:
+    72.8% and 42.7% on cd, 96.8% and 94.5% for modes 1 to 5; no reading puts all four within tolerance
+    either way.'
+  deviations:
+  - Modes, baseline (the window 3.4 to 3.0 s before the cue) and the squared-norm shares from the deposited
+    script (analysis_compile_all_data_bilateral_activityModes.m, ED Fig. 8 sections), with the mean-difference
+    cd of the Methods; the script's discriminant cd is a variant. The modes are fully Gram-Schmidt orthogonalized
+    (Methods); the script orthogonalizes the persistent modes against the singular vectors only. The shares
+    use only training trials, so leave-one-out amounts to using all control trials.
+- claim: fig3-cd-predicts-movement
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3-cd-predicts-movement
+  notes: 'Trials pooled over 16 sessions. Prediction accuracy from the side of the boundary: control 0.728
+    (412 trials, binomial p = 3.2e-21), ipsilateral 0.686 (p = 6.9e-12), contralateral 0.684 (p = 2.4e-12),
+    bilateral 0.671 (p = 1.3e-16); logistic slopes 0.145, 0.138, 0.105, 0.105, p below 2.5e-10. On error
+    trials alone accuracy is 0.53 to 0.67. After bilateral photoinhibition the fraction of lick right
+    responses is 0.33 in the most negative and 0.77 in the most positive projection bin.'
+- claim: fig3-other-modes
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3-other-modes
+  notes: 'Persistent mode (mode 2): control ROC 0.567, prediction accuracy 0.568 (binomial p = 0.003),
+    ipsilateral change -2.09 against a control s.e.m. band of 2.17. Ramping mode (mode 4): control ROC
+    0.577, accuracy 0.570 (p = 0.002), ipsilateral +0.51 and bilateral -0.48 against a band of 1.00. The
+    ROCs are within 0.5 +- 0.1 and the ramping mode is robust, but both modes predict the lick above chance
+    and the persistent mode''s ipsilateral change lies inside its band. With all units the ramping accuracy
+    is 0.529 (p = 0.12) and the persistent accuracy 0.547 (p = 0.026).'
+  deviations:
+  - Modes from ed8a-mode-variance with the mean-difference cd; the code's split and random halves are
+    run, the leave-one-out split is not (it needs all modes recomputed for every control trial). With
+    random halves both modes still predict the lick above chance (p = 1e-05 and 0.002).
+- claim: ed9f-reaction-time
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed9f-reaction-time
+  notes: 'The reaction time needs lick times. The data set has no lick events, and its lick trace shows
+    detectable licks in 42 of 90 sessions and in none of the 26 Experiment 2 sessions (trace range 0.0013
+    to 0.0019 against about 0.05 in sessions with licks; their only channels are lick_trace, aom_input_trace
+    and laser_power). Variants on other sessions with licks, not the claim''s sessions: 4 Experiment 3
+    population sessions, control r = -0.019 (p = 0.84), all conditions r = -0.153 (p = 0.001); 5 sessions
+    with types 4, 5, 7, r = 0.017 (p = 0.86) and 0.029 (p = 0.55); 15 callosotomy sessions, r = -0.025
+    (p = 0.66) and -0.025 (p = 0.38).'
+- claim: fig5b-callosotomy-behaviour
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig5b-callosotomy-behaviour
+  notes: Only sessions after the cut are in the data set (5 to 6 daily sessions per mouse), so the before-and-after
+    comparison and the interaction cannot be tested. After the cut, ipsilateral 1-spot photoinhibition
+    lowers performance from 74.6% to 59.1% (7 mice, paired p = 0.0033; per-session means 73.9% to 57.9%,
+    p = 0.0071), and 59.1% is within 58.0 +- 5.8%. Control-trial performance of the callosotomy mice and
+    of the control mice (different animals) is shown for context.
+  deviations:
+  - Judged on the after-cut test alone, as the criterion says when no sessions before the cut exist.
+- claim: fig5-callosotomy-recovery
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig5-callosotomy-recovery
+  measured:
+  - 297
+  - 125
+  - 16
+  notes: 'Callosotomy sessions (types 10, 11, 12), code reading, 125 neurons (paper 129). Ipsilateral
+    rate 1.053 of control just before the cue (1.081 at 600 ms after offset); ipsilateral selectivity
+    67% below control 0.2 s before the cue, reaching 80% in 0.3% of resamples. Contralateral 297 +- 251
+    ms, within 217 +- 228. Bilateral selectivity reaches 80% in 0 of 1000 resamples. The session rule
+    gives 16 callosotomy sessions (Fig. 5f: 16). Ipsilateral cd ROC 0.566 against the callosotomy control
+    0.718 (paired p = 0.006) and the Experiment 2 ipsilateral ROC 0.706 (p = 0.003). Across 64 readings
+    of M4 and the selection, ipsilateral selectivity reaches 80% in at most 9% of resamples and bilateral
+    in at most 0.2% (one or two of 1000 resamples in seven readings, none in the others), and 37 readings put the contralateral time within tolerance from at least half the resamples.'
+  deviations:
+  - Conditions as the data set labels them; selection and recovery rule from the deposited script analysis_compile_all_data_bilateralCCX.m.
+    The authors' MATLAB scripts deposited in the data set (alm-3/live/analyses_scripts/), which the data
+    description says reproduce the paper's figures, are used as the paper's analysis code for details
+    the claims file and the Methods leave open; the paper itself links no code.
+  - Reduced read as lower by a t-test over sessions at p < 0.05, a standard choice.
+- claim: ed10e-callosotomy-preparatory-activity
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed10e-callosotomy-preparatory-activity
+  measured:
+  - 259
+  - 519
+  notes: '519 units labelled pyramidal in the callosotomy sessions (paper 496); 521 by the width of the
+    mean waveform, with or without upsampling. Selective: 259 with correct and error trials (within 254
+    +- 25.4), 303 with correct trials. Fraction 0.499 against 0.642 in control mice under the same reading
+    (0.584 against 0.711 with correct trials), more than 10 points lower. Delay selectivity of selective
+    neurons rises from 1.08 spikes/s 1.5 s before the cue to 2.44 0.1 s before. The selective count and
+    the rising delay selectivity hold; the neuron count and the similarity of fractions fail, and the
+    criterion has no partial rule.'
+- claim: models-monolithic-fail
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:models-monolithic-fail
+  notes: 'Simulated: the simple integrator (three connectivity draws) ends 21% of its selectivity away
+    from the unperturbed output; the single-module attractor switches fixed point (deviation 1.02 to 1.09
+    of its selectivity) with either neuron silenced; the FORCE-trained networks (three draws, ramp learned
+    with RMS error near 0) end 25% to 87% away. All draws of all three exceed the 20% criterion. Not simulated:
+    the integrator with corrective feedback (ED Fig. 1g), whose weights the paper does not give, and the
+    tamed-chaos network (ED Fig. 1i), whose pruning threshold and retuning it does not give. The criterion
+    has no partial rule; the outcome is partial because two of the five models could not be tested. The
+    simple integrator''s deviation (0.212 against the threshold of 0.2) depends on the assumed rank-one matrix.'
+  deviations:
+  - The simple integrator's matrix is taken as 0.99 u u^T with random u, the FORCE target as a linear
+    ramp, with output feedback and an RLS update every 2 ms (standard choices; see models.py).
+  - Two of the five model classes could not be simulated for lack of parameters.
+  assumed: true
+- claim: fig6-modular-models-robust
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig6-modular-models-robust
+  notes: 'Modular attractor, noise drawn each step: recovery after unilateral silencing in 100% and 98%
+    of runs (lick right, lick left). After bilateral silencing, 80% and 83% of runs have not settled at
+    2 s (wrong side in 45% and 63%); run to 4 s every run settles, at the wrong fixed point in 47% and
+    55%, within 25% to 75%. With noise of the same intensity per unit time the unperturbed attractor already
+    ends at the wrong fixed point in 45% to 49% of runs, so that reading is not a working model. Modular
+    integrator with the printed matrix: after silencing module 1 its selectivity returns to 13.6 against
+    14.4 on lick right trials, but to -7.2 against -14.4 on lick left trials, as its recovery neuron is
+    driven only by right-preferring activity. The attractor part holds, the integrator part on one trial
+    type; the modular FORCE network was not simulated. The criterion has no partial rule and needs both
+    the attractor and the integrator to recover in at least 90% of runs; the integrator recovers in 50%,
+    so the claim is not reproduced (set in round 3, as the verifier agreed).'
+  deviations:
+  - Noise taken as variance 0.01 per integration step (1 ms), the reading under which the attractor holds
+    its choice; the per-unit-time reading is shown.
+  - The inter-module partner of each attractor neuron is taken to share its preference.
+  - Bilateral silencing of the attractor is also run to 4 s, not only to the criterion's 2 s, so that every
+    run settles at a fixed point; the wrong-fixed-point fractions at 4 s are used.
+  assumed: true
+findings:
+- kind: metadata_error
+  statement: The cell-type labels do not match the paper's classes. In the 58 non-callosotomy sessions
+    89 units are labelled FS and 33 have no label, where the paper reports 72 FS and 50 excluded units
+    of intermediate width (0.35 to 0.45 ms); 890 pyramidal agree. 15 units labelled FS have a trough-to-peak
+    width of 0.358 ms in their deposited mean waveform, and 24 unlabelled units are narrower than 0.35
+    ms.
+- kind: metadata_error
+  statement: The data description lists a depth field for each unit; the files have none (fields timeUnit,
+    eventTimes, eventTrials, waveforms, channel, cellType), and the waveform field is named waveforms.
+- kind: metadata_error
+  statement: Photostimulation type 9 is still described in the files and the data description as "Right
+    ALM (ipsilateral)"; the data set's FAQ says it is contralateral.
+- kind: data_missing
+  statement: The lick trace shows detectable licks in only 42 of 90 sessions with performing trials, and
+    in none of the 26 Experiment 2 sessions, where it is flat (range about 0.002 against 0.05 elsewhere).
+    The files hold no lick event times, so reaction times cannot be measured for the paper's population
+    analyses.
+- kind: data_missing
+  statement: The behaviour-only sessions (Fig. 1d, Fig. 2b, ED Fig. 3), the photoactivation recordings
+    (ED Fig. 5), the recordings in untrained mice (ED Fig. 2d), sessions before callosotomy (Fig. 5b)
+    and the simulations named in the data set's title are not in the data set. The FAQ says the photoactivation
+    data would be added.
+- kind: other
+  statement: In four sessions (ANM257636_20150404, ANM264411_20141224, ANM273657_20150325, ANM298738_20150727)
+    photoinhibition of the left ALM does not reduce pyramidal activity (rate after laser onset 0.71 to
+    2.18 times the rate before), where every other session drops to a median of 0.03. That spikes, laser
+    trace and trial table share a clock could not be shown for these sessions.
+- kind: metadata_insufficient
+  statement: Nothing in the files says which experiment a session belongs to. Six sessions from three
+    mice hold types 4, 5 and 7 (ipsilateral 1 spot, contralateral 1 spot, bilateral 1 spot), a combination
+    the Methods do not describe for either bilateral experiment, and the deposited scripts analyse neither
+    these nor the Experiment 3 sessions.
+- kind: code_mismatch
+  statement: The deposited analysis scripts differ from the Methods. The coding direction is a Fisher
+    discriminant averaged over time (func_discriminant.m), where the Methods define it as the mean difference
+    of the response vectors. The selectivity test uses correct and error trials although its comment says
+    correct trials; the paper's ED Fig. 1 counts (634, 176, 337, 493) are matched by correct trials (633,
+    176, 336, 493) and not by the script's trials (571, 152, 287, 404). The unilateral script screens
+    5 trials per type for the preference, the bilateral ones 10, where the Methods say 10 trials. The
+    population session rule of the scripts keeps groups of 5 trials, which gives the paper's 16 sessions,
+    where the Methods say more than 5 trials per condition (12 sessions).
+- kind: other
+  statement: Session ANM270340_20150618 has no performing trials (GoodTrials is 0 for all 322 trials).
+- kind: methods_unavailable
+  statement: 'Questions for the authors. (1) Fig. 6b: is the noise variance of 0.01 per integration step,
+    and what step was used? Per unit time the attractor does not hold its choice. (2) Fig. 6c: with the
+    printed matrix the recovery neuron restores only right-preferring activity, so lick left trials do
+    not recover; is the matrix complete? (3) ED Fig. 4: the 27 neurons come from 6 mice, but Experiment
+    1 has 4 mice in the data set; which sessions and photoinhibition conditions were used? (4) Fig. 2e:
+    how were bootstrap resamples that never reach 80% before the cue counted in the recovery time? In
+    this data set most ipsilateral resamples do not.'
+- kind: paper_inconsistency
+  statement: ED Fig. 2b, ED Fig. 4 and the Results give 6 mice for Experiment 1, but the 20 unilateral
+    sessions, the paper's count, come from 4 mice in the data set. The ED Fig. 2b neuron counts (117,
+    110, 109; 300, 294, 301; 52, 52, 102) differ from those here (180; 319 to 323; 56), and its 102 for
+    the Experiment 3 bilateral condition suggests that other bilateral 1-spot sessions were pooled.
+verifications:
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper modules and the claims file, with the paper. The verifier checked the archive listing and the
+    FAQ for the blocked claims and tested helper functions on synthetic inputs. Its report had no attempt
+    record and gave its own outcome for each claim; 22 of 29 agree with the record it was given.
+  results:
+  - claim: units-and-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: Units 1012, sessions 20 + 38, mice 12 and pyramidal 890 match exactly. FS is 89 by label,
+      98 by width and 104 upsampled, against 72; intermediate is 33 or 24 against 50. The criterion only
+      allows partial if class counts are within 10%, and they are not.
+    response: No change needed.
+  - claim: ed1-selective-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 'Correct trials, lick-early excluded: 633, 176, 336, 493 (1.3 s response) and 635, 176, 336,
+      490 (1.5 s, reading b). All four counts are within 10%.'
+    response: No change needed.
+  - claim: fig1d-late-delay-ipsilateral-bias
+    agrees: true
+    outcome: blocked
+    reason: No recorded condition ends at the cue (latest offset is -0.31 s). The FAQ and the archive
+      listing confirm that behaviour-only sessions are not deposited.
+    response: No change needed.
+  - claim: fig1d-earlier-photoinhibition-minimal
+    agrees: true
+    outcome: reproduced
+    reason: Early delay p = 0.23 and middle delay p = 0.22 (paired, pooled); every reading gives p >=
+      0.18. Performance drops 4.6 to 5.4 points over only 4 mice, and these are recording sessions, not
+      the paper's behaviour sessions. Power is low.
+    response: No change needed.
+  - claim: ed3-recovery-interval
+    agrees: true
+    outcome: blocked
+    reason: The part on 0.5 s photoinhibition ending 0.8 s and 1.6 s before the cue can be tested with
+      the recording sessions; cell 37 already has it (p = 0.23 and 0.81). The 1.3 s photoinhibition and
+      the condition ending at the cue are missing.
+    response: Notes now say which part is tested under fig1d-earlier-photoinhibition-minimal and why the
+      claim stays blocked.
+  - claim: ed2b-silencing
+    agrees: true
+    outcome: reproduced
+    reason: 'Window (a): ipsilateral and bilateral reductions are 0.885 to 0.962 in every experiment;
+      by line VGAT 0.845, PV 0.951; contralateral 0.945, 0.986 and 1.152. Under window (b) Exp 3 contralateral
+      is 1.222 and fails. Four sessions with no silencing are kept without investigation and probably
+      drive the low VGAT exp2b reduction (0.75) (B8).'
+    response: Added the result without the four non-silenced sessions (VGAT 0.852 and 0.975) and the neuron
+      counts against the legend. Outcome kept.
+  - claim: ed2d-spatial-extent
+    agrees: true
+    outcome: blocked
+    reason: There are no recordings from untrained mice in the archive listing.
+    response: No change needed.
+  - claim: ed2e-no-rebound
+    agrees: false
+    outcome: not_reproduced
+    reason: The population mean is not above control (p = 0.57 and 0.62), but in the first 400 ms 24 neurons
+      are significantly excited against 9 suppressed, and the criterion needs fewer excited than suppressed.
+      The criterion may misread "a low level of sustained inhibition" as per-neuron significance (B13
+      i).
+    response: Outcome changed to not_reproduced, as the criterion's second condition fails and it has
+      no partial rule. Added the counts at p < 0.05 and by sign of change (177 lower, 125 higher). The
+      reading is asked of a reader in questions/crcns-alm-3.yaml.
+  - claim: fig1f-rate-recovery
+    agrees: true
+    outcome: partially_reproduced
+    reason: Neuron counts are exactly 168, 168, 175. The fraction is 0.18, 0.20, 0.11 under reading (a)
+      and 0.13, 0.14, 0.09 under reading (b), means 0.161 and 0.122; neither is within 0.10 +- 0.01; all
+      are below 0.2.
+    response: No change needed.
+  - claim: fig1g-selectivity-recovery
+    agrees: false
+    outcome: partially_reproduced
+    reason: All three recovery times are within tolerance in all four 200 ms readings and nearly every
+      resample recovers, but the neuron count is 70 to 87 against 55 +- 5.5 in every reading, so this
+      is not the paper's neuron set. Selection uses sample or delay only with a |preference| > 1 filter
+      where M3 says any epoch (B3), and the other M4 readings were not run (B4).
+    response: Ran every reading of M4 and of the selection (96), with counts of neurons removed at each
+      step. Times are within tolerance in 34 readings; neuron counts are 66 to 160, never 55. Outcome
+      changed to partially_reproduced.
+  - claim: ed4-return-to-trajectory
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Decreasing neurons, early delay: RMS to time-matched control (0.526) larger than to the end
+      point (0.463), p = 0.019, the opposite direction; pooled p = 0.18; n = 55 against 27. The window
+      may be biased: 200 ms windows centred on each time include photoinhibition and the ramp in the first
+      100 ms, and the end point is -0.3 to -0.1 s, not the last 400 ms (B2).'
+    response: RMS windows now start after photoinhibition (200 ms centred from offset + 0.1 s; 400 ms
+      end-stamped from offset + 0.4 s) and the end point is the last 400 ms of the delay. The opposite-direction
+      result disappears (p = 0.27 to 0.74), and the claim is still not reproduced. Outcome kept.
+  - claim: ed5-photoactivation
+    agrees: true
+    outcome: blocked
+    reason: The FAQ says the photoactivation data were not published, and no such files are in the listing.
+    response: No change needed.
+  - claim: fig2b-bilateral-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: Ipsilateral 1 spot 69.3% is within tolerance; ipsilateral 4 spots 75.6%, bilateral 1 spot
+      65.8% and bilateral 4 spots 58.1% are outside. Ipsi 4 spots against control p = 0.15, bilateral
+      1 spot against ipsi 4 spots p = 0.12, with only 3 mice. The order holds.
+    response: No change needed.
+  - claim: ed6-bilateral-bias-inconsistent
+    agrees: true
+    outcome: reproduced
+    reason: 8 sessions are biased, 6 towards lick right and 2 towards lick left. The sign agrees with
+      the nearer control mean (reading b) in 0.88 with pyramidal neurons; 0.75 with all units and 0.62
+      under reading (a). This passes on one reading only, with n = 8.
+    response: No change needed; the deviation already says it rests on reading (b).
+  - claim: fig2-bilateral-recovery
+    agrees: false
+    outcome: not_reproduced
+    reason: Ipsilateral rate recovers (0.958, 9.4% changed), but ipsilateral selectivity reaches 80% before
+      the cue in only 1 to 30% of resamples, and the deficit at -0.2 s is 0.48 to 0.58 in every reading.
+      The rows flagged within tolerance come from 30% and 16% of resamples (B1). Contralateral and bilateral
+      selectivity agree with the paper. Bilateral rate is 1.114 at the cue, outside 10%.
+    response: 'Within tolerance now needs at least half the resamples to recover, and every reading of
+      M4 and of the selection is run (64). In 6 readings, all with 10 screening trials drawn in total,
+      ipsilateral selectivity recovers in 51% to 79% of resamples with both times within tolerance and
+      bilateral not recovering; one also has 146 neurons. Outcome kept as partially_reproduced: the criterion
+      takes one reading, under which the ordering holds, and the bilateral rate fails. The disagreement
+      is recorded; the deficit 0.2 s before the cue is still 28% to 60% in every reading.'
+  - claim: ed7-unilateral-4-spots-bilateral-1-spot
+    agrees: false
+    outcome: not_reproduced
+    reason: Bilateral 1 spot reaches 80% of control before the cue in 51 to 80% of resamples (335 to 557
+      ms), and the claim needs it not to. Neurons 32 or 29 against 40 +- 4. Bilateral delta selectivity
+      is larger than ipsi 4 spots, but p = 0.53.
+    response: 'Ran every reading (64): bilateral 1 spot recovers in 36% to 99% of resamples and no reading
+      meets the criterion. Outcome changed to not_reproduced. The pooling of other bilateral 1-spot sessions
+      is asked of a reader and shown as a variant.'
+  - claim: ed7e-size-and-roc
+    agrees: false
+    outcome: not_reproduced
+    reason: Bilateral 1-spot ROC is 0.598 to 0.642, above the 0.594 limit, in every reading; it passes
+      only with the 0.08 variant tolerance. Ipsi 4 spots (0.62) is below Exp 2 ipsi 1 spot (0.71). Only
+      4 or 5 sessions. The ED Fig. 2b n of 102 suggests the bilateral 1-spot sessions with types 4, 5,
+      7 were pooled (B13 ii).
+    response: Outcome changed to not_reproduced, as the criterion has no partial rule. Added the pooled
+      variant (0.570 to 0.602, within tolerance in 4 of 6 readings) and asked a reader whether the paper
+      pooled them.
+  - claim: fig3-cd-roc
+    agrees: true
+    outcome: reproduced
+    reason: '16 sessions. Pyramidal neurons, leave-one-out split: 0.731, 0.713, 0.742, 0.592, all within
+      tolerance but at the edges. Only 2 of 16 readings pass, a fragile pass (B10).'
+    response: No change of outcome. Added the reading with more than 5 trials per group (12 sessions,
+      control ROC 0.681), which the code's rule of 5 trials replaces (B7, which changes the session count).
+      The deviation states the fragility.
+  - claim: ed8-roc-during-photoinhibition
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (b), all units, code split: 0.703, 0.534, 0.642, 0.539, all within tolerance. Only
+      3 of 32 readings pass (B10).'
+    response: No change needed; the notes give the share of readings.
+  - claim: ed9b-cd-stability
+    agrees: true
+    outcome: reproduced
+    reason: 0.590 +- 0.075 (pyramidal) and 0.622 (all units), both within 0.61 +- 0.05.
+    response: No change needed.
+  - claim: ed8a-mode-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: The two cd values are within tolerance in several readings (e.g. 67.1 and 39.9). No reading
+      has modes 1 to 5 at >= 98.0 variance and >= 94.6 selectivity together. Modes 2, 3 and the mean responses
+      use correct and error trials where the claims file says correct trials (B6).
+    response: Added the reading with modes from correct trials only; no reading puts all four values within
+      tolerance. Outcome kept.
+  - claim: fig3-cd-predicts-movement
+    agrees: true
+    outcome: reproduced
+    reason: In all four conditions accuracy is 0.67 to 0.73, binomial p <= 7e-12 and logistic p <= 2.5e-10.
+    response: No change needed.
+  - claim: fig3-other-modes
+    agrees: true
+    outcome: not_reproduced
+    reason: The persistent and ramping modes predict control behaviour (binomial p = 0.003 and 0.002).
+      The ipsilateral persistent-mode shift (-2.09) lies inside the control s.e.m. band (2.17). No reading
+      meets every condition.
+    response: No change needed.
+  - claim: ed9f-reaction-time
+    agrees: true
+    outcome: blocked
+    reason: All 26 Exp 2 lick traces are noise-like (range 0.0018, against 0.05 in sessions that show
+      licks). The 4 exp3 population sessions and the exp2b sessions have lick traces that show licks,
+      so part could be tested (B9).
+    response: Printed the channels of the Experiment 2 sessions (lick_trace, aom_input_trace, laser_power
+      only) and ran the test on the Experiment 3 and types 4, 5, 7 sessions as variants (control r = -0.019
+      and 0.017, not significant). Kept blocked, as the claim is about the Experiment 2 sessions.
+  - claim: fig5b-callosotomy-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: After the cut, unilateral photoinhibition lowers performance with p = 0.0033, to 59.1%, within
+      58.0 +- 5.8. The before/after test and the interaction are blocked, as there are no sessions before
+      the cut.
+    response: No change needed.
+  - claim: fig5-callosotomy-recovery
+    agrees: true
+    outcome: reproduced
+    reason: Ipsilateral rate is back within 10% (1.05 to 1.08), ipsilateral selectivity does not recover
+      (0.3% of resamples), contralateral recovers in 297 ms, bilateral does not. Ipsilateral cd ROC 0.566
+      is reduced against both references. 125 neurons against 129; 16 sessions. The contralateral time
+      comes from 81% of resamples (B1).
+    response: Ran every reading (64); 37 meet all three selectivity conditions with the new rule. Outcome
+      kept.
+  - claim: ed10e-callosotomy-preparatory-activity
+    agrees: false
+    outcome: not_reproduced
+    reason: 519 callosotomy pyramidal neurons against 496 (tolerance 0). The selective fraction is 12.7
+      to 14.3 points below control mice, more than the 10 allowed. The selective count (259) is within
+      tolerance.
+    response: Printed the width-based counts for the callosotomy units (521, not 496). Outcome changed
+      to not_reproduced, as the criterion has no partial rule.
+  - claim: models-monolithic-fail
+    agrees: true
+    outcome: partially_reproduced
+    reason: The simple integrator (0.212, just over the 0.2 threshold), the monolithic attractor and the
+      FORCE network all fail to recover in 3 of 3 draws. The corrective-feedback integrator and the tamed-chaos
+      network were not simulated.
+    response: No change needed.
+  - claim: fig6-modular-models-robust
+    agrees: false
+    outcome: not_reproduced
+    reason: The modular integrator does not recover on left trials (-7.2 against -14.4); the printed matrix
+      causes this, and the Fig. 6c gating neurons do not appear in the 8 x 8 matrix. The attractor's step-noise
+      result passes, but the bilateral random fixed point check rests on states that have not settled
+      (B5).
+    response: 'Ran bilateral silencing to 4 s: every run settles, at the wrong fixed point in 47% and
+      55%, so the attractor part holds. Outcome kept as partially_reproduced, as the attractor holds and
+      the integrator holds on one trial type; the disagreement is recorded. The question on the matrix
+      stays in the methods_unavailable finding.'
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with the conclusions and the
+    summary, the helper modules, the README, the attempt record and the claims file, with the paper. The
+    verifier agreed with 28 of 29 outcomes and disagreed with fig6-modular-models-robust. Its general
+    points (README run time; MD5 sums copied from checksums.md5, not computed from the bytes read) were
+    answered by printing the notebook's run time and computing each file's MD5 from the bytes read and
+    comparing it with checksums.md5 (all 91 match).
+  results:
+  - claim: units-and-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed1-selective-fraction
+    agrees: true
+    outcome: reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig1d-late-delay-ipsilateral-bias
+    agrees: true
+    outcome: blocked
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig1d-earlier-photoinhibition-minimal
+    agrees: true
+    outcome: reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed3-recovery-interval
+    agrees: true
+    outcome: blocked
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed2b-silencing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 33 says the neuron counts (180, 319 to 323, 56 in Experiment 3) are above the
+      legend's 52, 52, 102, but 56 is below 102. Cell 31 says mouse lines come from the code's comments,
+      where the record and cell 5 say the meta data files, and cell 5 is what the code uses.
+    response: Corrected cell 33 (56 is above 52 and below 102) and cell 31 (mouse lines from the meta
+      data files).
+  - claim: ed2d-spatial-extent
+    agrees: true
+    outcome: blocked
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed2e-no-rebound
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Whether low-level inhibition means significance per neuron decides the outcome (B13
+      i); it is now asked of a reader.
+    response: No change; the question stays with a reader.
+  - claim: fig1f-rate-recovery
+    agrees: true
+    outcome: partially_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig1g-selectivity-recovery
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 24 and the notes say every resample recovers, but in cell 23 the code-reading
+      row has a censored mean of 424 ms against 420 ms for the early-delay condition, so a few resamples
+      do not recover; at least 99% is what the numbers support. The neuron count (72 under the code's
+      reading, 66 to 160 across readings, against 55) is still unexplained; it does not move the outcome.
+    response: Corrected to at least 99% of resamples; the notebook now prints the fractions to three decimals
+      for the code reading and the lowest over all readings. The neuron count remains unexplained; it
+      is in the outcome and the paper_inconsistency finding.
+  - claim: ed4-return-to-trajectory
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The notes say the round-1 result came from windows that overlapped photoinhibition,
+      but the window and the end point changed together, so the effect of the window alone was not isolated.
+    response: Reworded the notes to say that the window and the end point changed together and the effect
+      of the window alone was not isolated.
+  - claim: ed5-photoactivation
+    agrees: true
+    outcome: blocked
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig2b-bilateral-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed6-bilateral-bias-inconsistent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but it rests on reading (b). The last sentence of the criterion still says the side
+      of the decision boundary (reading a), which gives 0.62 and fails; only reading (b) gives 0.88, with
+      n = 8. The checker added reading (b) without updating that sentence, an inconsistency in the claims
+      file.
+    response: Claim not changed. Asked a reader which reading the criterion's last sentence means (questions/crcns-alm-3.yaml);
+      the deviation, the summary and the README say the outcome holds under reading (b) only.
+  - claim: fig2-bilateral-recovery
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now agrees with partially reproduced, with caveats. It rests on 6 of 64 readings, all with
+      the 10 screening trials drawn in total (M4 reading b). The criterion's partial rule (a time outside
+      tolerance) does not quite fit, as in those six readings both times are within tolerance and what
+      fails is the bilateral rate (1.114). In the same six readings ipsilateral selectivity 0.2 s before
+      the cue is still 28% to 54% below control, so it reaches 80% for a moment and then falls back.
+    response: 'Outcome kept. Added a printed line for the six readings: the ipsilateral deficit 0.2 s
+      before the cue is 28% to 43% there (28% to 60% over all readings); the notes and the result now
+      give it and say that where selectivity reaches 80% it falls back. The notes and the result now say
+      that the partial outcome follows the protocol''s general meaning, as the criterion''s partial rule
+      names a time outside tolerance.'
+  - claim: ed7-unilateral-4-spots-bilateral-1-spot
+    agrees: true
+    outcome: not_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed7e-size-and-roc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The deviation says three of the six Experiment 3 sessions, and one of them only in
+      part, carry the paper's ROC; no output supports this, and cell 63 shows four sessions passing, each
+      with trials in every group.
+    response: 'Replaced the deviation with what cell 63 shows: four of six sessions pass the session rule,
+      each with trials in every group (five with all units).'
+  - claim: fig3-cd-roc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; a fragile pass, on 2 of 16 readings.
+    response: No change; the deviation already states that the outcome rests on one reading.
+  - claim: ed8-roc-during-photoinhibition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; a fragile pass on 3 of 32 readings. Cell 61 and the notes say 3 of 24 readings match
+      where cell 60 prints 32 readings. The notes give 0.48 to 0.53 for the ipsilateral and bilateral
+      values with window (a); cell 60 shows ipsilateral 0.490 to 0.544 and bilateral 0.473 to 0.526.
+    response: Corrected to 3 of 32 readings in the result and the notes, and the window (a) ranges to
+      those printed.
+  - claim: ed9b-cd-stability
+    agrees: true
+    outcome: reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed8a-mode-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig3-cd-predicts-movement
+    agrees: true
+    outcome: reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig3-other-modes
+    agrees: true
+    outcome: not_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: ed9f-reaction-time
+    agrees: true
+    outcome: blocked
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig5b-callosotomy-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: fig5-callosotomy-recovery
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 82 and the notes say bilateral selectivity recovers in none of the resamples
+      across the 64 readings, but in seven readings of cell 44 ms_12 has a value, so at least one resample
+      recovered; the fraction is below 0.5%, not zero. The outcome does not change.
+    response: Corrected; the notebook now prints the largest bilateral fraction and the number of readings
+      with any resample recovering, and the result and notes give at most 0.2% (one or two of 1000 resamples
+      in seven readings).
+  - claim: ed10e-callosotomy-preparatory-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: The verifier agrees; the report gives no comment on this outcome beyond agreeing with it.
+    response: No change needed.
+  - claim: models-monolithic-fail
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The criterion has no partial rule, so partially reproduced only makes sense as partly
+      testable, since two of the five models were not simulated. The assumptions (rank-one matrix 0.99uu^T,
+      ramp target, RLS updates every 2 ms) are stated and reasonable, but the simple integrator's deviation
+      of 0.212 against the 0.2 threshold depends on the rank-one choice, so this assumption decides a
+      borderline result.
+    response: Outcome kept. The notes and the result now say the outcome is partial because two of five
+      models could not be tested, and that the simple integrator's 0.212 depends on the rank-one matrix.
+  - claim: fig6-modular-models-robust
+    agrees: false
+    outcome: not_reproduced
+    reason: The record says partially reproduced; it should be not reproduced. The criterion has no partial
+      rule. It needs the integrator to recover in at least 90% of runs, and on lick-left trials it does
+      not (cell 90, -7.2 against -14.4). For ed2e, ed7e and ed10e the record changed the outcome to not
+      reproduced as the criterion has no partial rule; the same rule applies here. An incomplete matrix
+      in the paper belongs in the methods_unavailable finding and does not make the outcome partial. Running
+      bilateral silencing to 4 s, not 2 s, is not listed as a deviation.
+    response: Agreed. The verified outcome is kept, as no outcome may change in round 2, and the change
+      to not_reproduced is proposed with its reason for a third round; the notebook's result for this
+      claim states it. Added the 4 s bilateral run as a deviation.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on fig6-modular-models-robust, and the analysis
+    behind it in the re-executed notebook (cells 89 to 91), models.py, the attempt record and the claims
+    file, with the paper. Nothing else was reviewed.
+  results:
+  - claim: fig6-modular-models-robust
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The numbers come from the simulation. In cell 90, models.run_integrator simulates the modular
+      integrator; its matrix (INTEGRATOR_W) matches the 8 x 8 matrix printed in the Methods row by row,
+      and tau, inputs, tonic input, linear synapses with positive rates and no noise also match. On lick-right
+      trials the selectivity returns to 13.619 against 14.401; on lick-left trials it reaches only -7.200
+      against -14.400. The integrator has no noise, so it recovers in 50% of runs where the criterion needs
+      90%. The failure follows from the printed matrix: the recovery neuron gets positive input from the
+      right-preferring neuron and negative input from the left-preferring one and cannot go below zero.
+      No choice behind the outcome was made to reach the result; the attractor choices affect only the
+      attractor part, which passes. The criterion says "for the attractor and integrator" and has no partial
+      rule, so one failing part makes the result not reproduced, the rule used for ed2e, ed7e and ed10e.
+      Whether the printed matrix lacks the gating neurons of Fig. 6c belongs in the methods_unavailable
+      finding and does not make the outcome partial.'
+    response: Outcome set to not_reproduced and the proposal removed. The claim's notes, the notebook's
+      result and summary and the README now give not reproduced.
