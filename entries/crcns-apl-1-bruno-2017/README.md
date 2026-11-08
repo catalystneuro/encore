@@ -28,7 +28,7 @@ them, and neuron positions on the photodiode array.
 | Period slows, speeds up or is unchanged | Reproduced |
 | No relation between period change and contraction | Reproduced |
 | No P10 motorneurons recorded | Reproduced |
-| P10 decoded in all nine responses | Partially reproduced (change to not reproduced proposed) |
+| P10 decoded in all nine responses | Not reproduced (8 of 9) |
 | 3 to 5 dimensions for the P10 recordings; 90% no better | Reproduced (under the code's count rule) |
 | Long-tailed, variable participation (three claims) | Reproduced |
 | Rate explains 50% of participation, 23% of its change | Reproduced |

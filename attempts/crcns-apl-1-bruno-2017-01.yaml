@@ -290,34 +290,29 @@ outcomes:
   notes: 1050 neuron-program values (1 neuron without spikes after 33 s); largest maximum locking 0.522;
     none at 0.9 or more, none in two programs; 2 values reach 0.5, none 0.7.
 - claim: fig6d-decode-p10
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_bruno_2017.ipynb
   output: claim:fig6d-decode-p10
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion is met only when the mean forecast R minus 2 s.e.m. is above 0 in each of the
-      nine responses, and it has no partial rule; the statement says "in all nine". Response 1 of preparation
-      4 fails under all four readings of width and count (mean R -0.060 to -0.124, bounds -0.127 to -0.204),
-      with histories up to 100 ms and with the code's windowing (mean R -0.102), so the failure does not
-      depend on a reading. Eight of nine is a failure of what the claim says, not a weaker effect, as the
-      verifier of round 2 found. The analysis is in the fig6d section of the notebook (the decoding table
-      under every reading, the plot of that response and the printout of diverging forecasts).
   notes: Methods' windowing, mean forecast R minus 2 s.e.m. above 0 in 8 of 9 responses under every reading
-    of width and count (adopted, mean R of the other eight 0.36 to 0.89). Response 1 of preparation 4
-    fails under all four (mean R -0.060, -0.119, -0.075 and -0.124 for own/min80, own/le80, pooled/min80
-    and pooled/le80; bounds -0.127 to -0.204), with histories up to 100 ms, and with the code's windowing
-    (mean R -0.102). Its training fit is good (mean training R 0.94; 0.91 to 0.97 in all nine) but its
-    forecasts are not, forecast R -0.59 to 0.27 in four windows plotted, against 0.82 to 0.93 for response
-    2 of the same preparation. The decoding holds in eight of nine. Forecast windows, 40 per response
-    with the Methods' windowing (360), 174 per response with the code's (1566); the paper's N = 173 is
-    close to the code's count per response. The failing response is the one the paper describes as apparently
-    chaotic. Forecasts diverge in some windows of the longer histories (195 to 277 of 5760 windows over
-    all histories with the Methods' windowing, 770 of 7830 with the code's, above 10 times the response's
-    largest P10 rate, up to about 1e13 spikes/s at the clip of the linear predictor); the selected histories
-    have none in any 80% run. A perturbation of the PCs by 1e-9 of their SD changes the mean MAE of preparation
-    4, bout 1 at 150 ms from 5.3e11 to 2.8e11 and leaves the 50 ms model nearly unchanged, so mean MAEs
-    with diverging windows, and the history selected from them, depend on rounding; the forecast R on
-    which the criterion rests is not affected here.
+    of width and count (adopted, mean R of the other eight 0.36 to 0.89); the criterion requires each
+    of the nine and has no partial rule. Response 1 of preparation 4 fails under all four (mean R -0.060,
+    -0.120, -0.080 and -0.123 for own/min80, own/le80, pooled/min80 and pooled/le80; bounds -0.127 to
+    -0.204), with histories up to 100 ms, and with the code's windowing (mean R -0.102, bound -0.131).
+    Its training fit is good (mean training R 0.94; 0.91 to 0.97 in all nine) but its forecasts are not,
+    forecast R -0.59 to 0.27 in four windows plotted, against 0.81 to 0.94 for response 2 of the same
+    preparation. Forecast windows, 40 per response with the Methods' windowing (360), 174 per response
+    with the code's (1566); the paper's N = 173 is close to the code's count per response. The failing
+    response is the one the paper describes as apparently chaotic. The decoding gives different numbers
+    in different executions, as forecasts diverge in some windows of the longer histories (in the executed
+    copy, 462 to 627 of 5760 windows over all histories with the Methods' windowing, 1614 of 7830 with
+    the code's, above 10 times the response's largest P10 rate, up to about 1e13 spikes/s at the clip
+    of the linear predictor; one window of the selected histories, under pooled/min80). The copy reviewed
+    in round 3 gave mean R -0.060, -0.127, -0.060 and -0.119 for that response and -0.101 with the code's
+    windowing; the pass counts were 8 of 9 under every reading in each execution. A perturbation of the
+    PCs by 1e-9 of their SD changes the mean MAE of preparation 4, bout 1 at 150 ms with the code's windowing
+    from 5.3e11 to 4.2e11 and leaves the 50 ms model nearly unchanged (13.27 and 13.32), so mean MAEs
+    with diverging windows, and the history selected from them, depend on rounding; the forecast R of
+    the selected models moves by up to 0.02 between executions.
   deviations:
   - The Poisson GLM is fitted by a numpy IRLS in place of MATLAB's glmfit, at most 25 iterations with
     a relative deviance change of 1e-6 (a standard choice; the forecasts of one program agreed to three
@@ -335,15 +330,15 @@ outcomes:
   - 5
   notes: Reproduced under own/le80, where both parts hold. The nine 80% counts are 3 to 5 under own/le80
     and pooled/le80, and the 90% counts at least double them in each. Under own/le80 with the full history
-    grid for both, the 90% models are not better, mean MAE lower in 6 of 9 (two-sided Wilcoxon p = 0.50,
-    median difference -0.44) and mean R-squared higher in 4 of 9 (p = 0.50). Under pooled/le80 (four histories)
-    p = 0.73 and 0.82. Under the adopted reading (own/min80) the counts are 4 to 6 and one (6) is outside
+    grid for both, the 90% models are not better, mean MAE lower in 5 of 9 (two-sided Wilcoxon p = 0.91,
+    median difference -0.13) and mean R-squared higher in 4 of 9 (p = 0.50). Under pooled/le80 (four histories)
+    p = 0.65 and 0.82. Under the adopted reading (own/min80) the counts are 4 to 6 and one (6) is outside
     2.7 to 5.5; there the 90% models are worse in MAE (p = 0.027, 7 of 9 worse, full grid; p = 0.020 with
-    four histories for both) and do not differ in R-squared (p = 0.16). No comparison finds the 90% models
-    better at p < 0.05. Over all histories 457 (own/le80) and 610 (own/min80) of 5760 windows of the 90%
-    models have diverging forecasts, so the mean MAEs and these p-values depend on rounding through the
-    history selected; the executed copy reviewed in round 2 gave p = 0.91 for MAE under own/le80, with
-    the same conclusion.
+    four histories for both) and do not differ in R-squared (p = 0.13). No comparison finds the 90% models
+    better at p < 0.05. Over all histories 1111 (own/le80) and 1166 (own/min80) of 5760 windows of the
+    90% models have diverging forecasts in the executed copy, so the mean MAEs and these p-values depend
+    on rounding through the history selected and differ between executions; earlier executions gave p
+    = 0.50 and 0.91 for MAE under own/le80, with the same conclusion.
   deviations:
   - The 90% models use the Methods' full history grid under own/min80 and own/le80, and histories of 50,
     100, 150 and 200 ms under pooled/le80, to fit the time limit; the comparison is also shown with the
@@ -963,3 +958,35 @@ verifications:
     outcome: blocked
     reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
     response: No change needed.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome of fig6d-decode-p10, the only one in the record, with
+    the analysis behind it in the full executed notebook of the second revision and the claims file. The
+    verifier found that the claims file does not misread the paper here. It also found that the numbers
+    of the record's reason and notes and of the fig6d conclusion do not match that notebook's outputs,
+    without changing the outcome.
+  results:
+  - claim: fig6d-decode-p10
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The test is that mean forecast R minus 2 s.e.m. must be above 0 in each of the nine responses,
+      and the criterion has no partial rule. Cell 79 shows that test failing. Under every reading of width
+      and count, only 8 of 9 responses pass. Preparation 4, bout 1 fails under all four: mean R is -0.060
+      (own/min80), -0.127 (own/le80), -0.060 (pooled/min80) and -0.119 (pooled/le80), with bounds -0.128
+      to -0.206. It also fails with histories up to 100 ms, and with the code''s windowing (mean R -0.101,
+      bound -0.130). The fixed choices hold the result up; the result does not rest on a choice made
+      to reach it, because the failure holds under every reading, history range and windowing that was
+      run. Cell 81 shows that perturbing the PCs leaves the mean R of this response unchanged (-0.1006
+      against -0.0991). The reason, the notes and cell 82 give numbers this notebook does not print (per-reading
+      mean R, the counts of diverging forecasts, the perturbation test, the mean MAE of 7.6e6 said not
+      to be run here, and the forecast R of response 2), so they seem to describe a different execution;
+      any statement about the diverging forecasts or about rounding should be redone from the printed
+      outputs.'
+    response: Outcome changed to not reproduced and the proposal removed. The notebook was re-run and the
+      fig6d conclusion and notes now give this execution's numbers, which differ again from the copy reviewed
+      (for example mean R -0.120 and -0.080 under own/le80 and pooled/min80, 462 to 627 diverging windows).
+      They state that the decoding is not exactly the same between executions, give the reviewed copy's
+      values for the failing response, and say that the pass count of 8 of 9 under every reading holds
+      in each execution. The fig6s2 conclusion and notes, which rest on the same decoding, were corrected
+      to this execution's numbers too.
