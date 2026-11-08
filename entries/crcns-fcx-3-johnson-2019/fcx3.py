@@ -17,30 +17,35 @@ Where the parameters come from:
   latencies of the paper's deposited scripts (power_compute.m, erp_compute.m, psi_compute.m); the
   notebook checks them against the trial table and the continuous data.
 - Power: Hanning-tapered windows of 3 cycles (3/f s), 2 to 40 Hz in 1-Hz steps, 10-ms steps
-  (Methods, Spectral Decomposition; power_compute.m). The derived epochs run from -1.5 to 3.0 s,
-  so every window of the analysis windows lies inside recorded data and no zero padding enters a
-  window. The baseline z-score of zbaseline.m (mean and SD of the means of r baseline points drawn
-  without replacement, r the number of correct trials) is computed in closed form, as the limit of
-  the code's 1000 draws (a standard choice, which cannot change a result: the z-score is the same
-  affine map for every trial at a channel and frequency, so the condition t-tests do not change).
-- ERP: 30-Hz low-pass FIR, zero padded to 7.5 s, baseline the pretrial temporal mean over trials
-  (Methods, Event-Related Potentials; erp_compute.m). The FIR order 3*fix(fs/30), applied forwards
-  and backwards, is FieldTrip's default for a 'fir' low-pass, which the script uses (standard
-  choice).
+  (Methods, Spectral Decomposition; power_compute.m). Main reading: the 900-ms segment alone,
+  embedded in zeros, every window computed (Methods: "Data segments were zero-padded to 7,500 ms";
+  claims file S1 reading (a)). Variant 'code': windows on the whole derived epoch (-1.5 to 3.0 s),
+  so that long windows take in the data around the segment, as power_compute.m does (cfg.toi over
+  the whole epoch, [0.3 1.2] s cut afterwards). The baseline z-score of zbaseline.m (mean and SD of
+  the means of r baseline points drawn without replacement, r the number of correct trials) is
+  computed in closed form, as the limit of the code's 1000 draws (a standard choice, which cannot
+  change a result: the z-score is the same affine map for every trial at a channel and frequency,
+  so the condition t-tests do not change).
+- ERP: the 200-ms baseline and 900-ms processing segments zero padded to 7.5 s and low-passed at
+  30 Hz, baseline the pretrial temporal mean over trials (Methods, Event-Related Potentials;
+  erp_compute.m for the mean over trials). The FIR order 3*fix(fs/30), applied forwards and
+  backwards, is FieldTrip's default for a 'fir' low-pass, which the script uses (standard choice).
+  Variants: per-trial baseline, the Results' 1-30 Hz band-pass, the whole epoch filtered
+  (erp_compute.m), and the 900-ms-delay trials only (see `erp_epochs`).
 - Cluster test: independent-samples t per point, threshold two-tailed 0.05, cluster mass the sum
   of t, 1000 shuffles of the condition labels, connectivity across time and frequency within a
   channel and across neighbouring channels at the same time and frequency (Methods, ERPs,
-  paragraph 2, and Spectral Decomposition, paragraph 3). Neighbours are not stated; the readings
-  are in `neighbours`.
+  paragraph 2, and Spectral Decomposition, paragraph 3). The deposited scripts hold no cluster
+  test, so neighbours and the alpha per tail are not stated anywhere; the readings are in
+  `neighbours`.
 - PSI: ERP subtracted (mean over all correct trials for the task-induced PSI, per condition for the
   time-resolved PSI: psi_compute.m and subtracterp.m), one Hanning-tapered FFT of each 900-ms
   segment padded to 7.5 s read at the bins nearest to the integer frequencies (task-induced,
-  psi_compute.m 'mtmfft'), or the 3-cycle windows at 10-ms steps (time-resolved, 'mtmconvol').
-  Bands 2 to 7 and 9 to 24 Hz (Methods, Task-Induced PSI). The surrogate null follows
-  psianalysis.m: the trial-mean normalised cross-spectrum with its frequencies shuffled, the slope
-  summed over all bins, 1000 shuffles, one shuffle for all pairs; z per pair is the mean over the
-  band's bins of the z against each bin's null (time-resolved: one null of 1000 shuffles per time
-  point, a standard choice that changes only the Monte Carlo noise of the null).
+  psi_compute.m 'mtmfft'), or the 3-cycle windows at 10-ms steps (time-resolved, 'mtmconvol', on
+  the zero-padded segment, with the whole-epoch windows of the code as a variant). Bands 2 to 7
+  and 9 to 24 Hz (Methods, Task-Induced PSI). The null shuffles the frequencies of one signal and
+  recomputes the same statistic (Methods), 1000 shuffles, one shuffle for all pairs and trials;
+  see `psi_z`.
 """
 
 from __future__ import annotations
@@ -96,6 +101,15 @@ def bucket_listing():
     rows = re.findall(r"<Key>(.*?)</Key><LastModified>(.*?)</LastModified><ETag>(.*?)</ETag>.*?<Size>(\d+)</Size>", x)
     return pd.DataFrame([(k, int(s), lm, e.replace("&quot;", "")) for k, lm, e, s in rows],
                         columns=["key", "size", "modified", "etag"])
+
+
+def script_files():
+    """The paper's MATLAB scripts deposited with the data (analysis_scripts.zip), read into memory:
+    {path inside analysis_scripts/: text}."""
+    import zipfile
+    z = zipfile.ZipFile(io.BytesIO(read_bytes("analysis_scripts.zip")))
+    return {n.split("analysis_scripts/")[-1]: z.read(n).decode(errors="replace")
+            for n in z.namelist() if n.endswith(".m")}
 
 
 def summary_file():
@@ -528,56 +542,112 @@ def _slope(c):
     return np.imag(np.conj(c[..., :-1]) * c[..., 1:]).sum(-1)
 
 
-def psi_measures(Fa, Fb, rng, n_perm=N_PERM, null_per_bin=True, deposited=False):
-    """PSI z per pair, A = PFC (positive: PFC leads), B = parietal.
+def _unit(x):
+    a = np.abs(x)
+    return x / np.where(a > 0, a, 1)
 
-    Fa, Fb: trials x pairs x f (x time) complex spectra, ERP already removed.
-    Returns {'a': z, 'b': z} for the readings of the claims file (header P1): (a) PSI from the
-    trial-averaged coherency (Nolte et al. 2008); (b) PSI per trial from the per-trial normalised
-    cross-spectrum, averaged over trials (psianalysis.m, with the conjugate the Methods' cross-
-    spectral density implies). The null shuffles the bins of the trial-mean normalised spectrum
-    (psianalysis.m): coherency for (a), the mean per-trial phasor for (b). With deposited=True also
-    'code': psianalysis.m as deposited, whose cross-spectrum lacks the conjugate, with PFC as its first
-    channel, and 'code_rev' the same with parietal as its first channel, sign reversed so that
-    positive still means PFC leads.
+
+def psi_z(A, B, ia, ib, rng, n_perm=N_PERM, code_null=False):
+    """PSI z per pair and time point, A = PFC (positive: PFC leads), B = parietal.
+
+    A: trials x nA x f x T, B: trials x nB x f x T complex spectra of the channels, ERP already
+    removed (T = 1 for the task-induced PSI). ia, ib: channel indices of each pair into A and B.
+    Returns {reading: z, pairs x T} for the readings of the claims file (header P1):
+
+    - 'a': PSI from the trial-averaged coherency C_f = <A conj(B)> / sqrt(<|A|^2><|B|^2>), the sum
+      over adjacent bins of Im(conj(C_f) C_{f+1}) (Nolte et al. 2008).
+    - 'b': PSI per trial from the per-trial normalised cross-spectrum A conj(B) / |A B| (the
+      structure of psianalysis.m, with the conjugate the Methods' cross-spectral density implies),
+      averaged over trials.
+
+    The null follows the Methods (Task-Induced PSI, paragraph 2): "we randomly shuffled the
+    frequencies in one signal and re-computed PSI 1,000 times". Each shuffle permutes the frequency
+    bins of the parietal signal B, the same permutation in every trial and pair (P1 null reading
+    (a)), and the same statistic is recomputed from the shuffled spectra, so that the null and the
+    observed value are the same measure; z = (observed - null mean) / null SD per pair and time
+    point. The paper's "at each ... frequency point" is met by the one band value of P1 band
+    reading (a); psianalysis.m repeats one null per bin, which only adds draws (a standard choice).
+
+    code_null=True adds 'b_code': reading (b) z-scored against the null of psianalysis.m, the slope
+    of the trial-mean normalised cross-spectrum with the bins of both factors shuffled
+    independently and summed over all nf pairs of bins. That null is not the observed statistic
+    (its spread shrinks with 1/sqrt(trials)); it is shown only to compare with the paper's code.
     """
-    # move frequency to the last axis
-    Fa = np.moveaxis(Fa, 2, -1)
-    Fb = np.moveaxis(Fb, 2, -1)
-    S_ab = (Fa * np.conj(Fb)).mean(0)
-    S_aa = (np.abs(Fa) ** 2).mean(0)
-    S_bb = (np.abs(Fb) ** 2).mean(0)
-    C = S_ab / np.sqrt(S_aa * S_bb)
-    ptr = Fa * np.conj(Fb)
-    ptr = ptr / np.abs(ptr)
-    pp = ptr.mean(0)
-    obs = {"a": _slope(C), "b": _slope(ptr).mean(0)}
-    ref = {"a": C, "b": pp}
-    if deposited:
-        for key, (X, Y) in {"code": (Fa, Fb), "code_rev": (Fb, Fa)}.items():
-            cs = X * Y
-            den = np.sqrt((X ** 2) * np.conj(Y ** 2))
-            ptr_c = cs / den
-            obs[key] = _slope(ptr_c).mean(0)
-            ref[key] = ptr_c.mean(0)
-    nf = Fa.shape[-1]
-    n_sets = nf if null_per_bin else 1
+    R, nA, nf, T = A.shape
+    nB = B.shape[1]
+    ia, ib = np.asarray(ia), np.asarray(ib)
     out = {}
+    # (b) per-trial phasors: slope_r = Im sum_f DA_f conj(DB_f), DA_f = conj(ua_f) ua_{f+1}
+    ua, ub = _unit(A).astype(np.complex64), _unit(B).astype(np.complex64)
+    DA = np.conj(ua[:, :, :-1]) * ua[:, :, 1:]
+    MA = DA.transpose(3, 1, 0, 2).reshape(T, nA, R * (nf - 1))
+
+    def stat_b(p):
+        DB = np.conj(ub[:, :, p[:-1]]) * ub[:, :, p[1:]]
+        MB = np.conj(DB).transpose(3, 0, 2, 1).reshape(T, R * (nf - 1), nB)
+        return (MA @ MB).imag[:, ia, ib].T / R
+
+    # (a) coherency: Y[p, t, f, g] = <A_f conj(B_g)> / sqrt(<|A_f|^2> <|B_g|^2>) for every pair of bins
+    Ar = A.transpose(3, 1, 2, 0).reshape(T, nA * nf, R)
+    Br = B.transpose(3, 0, 1, 2).reshape(T, R, nB * nf)
+    X = (Ar @ np.conj(Br) / R).reshape(T, nA, nf, nB, nf)
+    Na = np.sqrt((np.abs(A) ** 2).mean(0))  # nA x f x T
+    Nb = np.sqrt((np.abs(B) ** 2).mean(0))
+    Y = X[:, ia, :, ib, :]  # pairs x T x f x g
+    Y = Y / (Na[ia].transpose(0, 2, 1)[:, :, :, None] * Nb[ib].transpose(0, 2, 1)[:, :, None, :])
+    Y = Y.astype(np.complex64)
+    fidx = np.arange(nf)
+
+    def stat_a(p):
+        return _slope(Y[:, :, fidx, p])
+
+    ident = np.arange(nf)
+    obs = {"a": stat_a(ident), "b": stat_b(ident)}
+    s1 = {k: np.zeros(v.shape) for k, v in obs.items()}
+    s2 = {k: np.zeros(v.shape) for k, v in obs.items()}
+    for _ in range(n_perm):
+        p = rng.permutation(nf)
+        for k, f in (("a", stat_a), ("b", stat_b)):
+            v = f(p)
+            s1[k] += v
+            s2[k] += v * v
     for k in obs:
-        zs = []
-        for _ in range(n_sets):
-            s1 = np.zeros(obs[k].shape)
-            s2 = np.zeros(obs[k].shape)
-            for p in range(n_perm):
-                p1 = rng.permutation(nf)
-                p2 = rng.permutation(nf)
-                v = np.imag(np.conj(ref[k][..., p1]) * ref[k][..., p2]).sum(-1)
-                s1 += v
-                s2 += v * v
-            mean = s1 / n_perm
-            sd = np.sqrt((s2 - n_perm * mean ** 2) / (n_perm - 1))
-            zs.append((obs[k] - mean) / sd)
-        out[k] = np.mean(zs, axis=0) * (-1 if k == "code_rev" else 1)
+        mean = s1[k] / n_perm
+        sd = np.sqrt(np.maximum(s2[k] - n_perm * mean ** 2, 0) / (n_perm - 1))
+        out[k] = (obs[k] - mean) / sd
+    if code_null:
+        pp = (ua[:, ia] * np.conj(ub[:, ib])).mean(0).transpose(0, 2, 1)  # pairs x T x f
+        c1, c2 = np.zeros(obs["b"].shape), np.zeros(obs["b"].shape)
+        for _ in range(n_perm):
+            v = np.imag(np.conj(pp[..., rng.permutation(nf)]) * pp[..., rng.permutation(nf)]).sum(-1)
+            c1 += v
+            c2 += v * v
+        mean = c1 / n_perm
+        sd = np.sqrt(np.maximum(c2 - n_perm * mean ** 2, 0) / (n_perm - 1))
+        out["b_code"] = (obs["b"] - mean) / sd
+    return out
+
+
+def psi_deposited(Fa, Fb, rng, n_perm=N_PERM):
+    """psianalysis.m as deposited (task-induced): the 'cross-spectrum' is X*Y without the conjugate,
+    normalised by sqrt(X^2 conj(Y^2)), which equals +-exp(2i phase(Y)) and so depends on the second
+    channel only; z against the code's null (see psi_z, code_null). 'code': PFC first; 'code_rev':
+    parietal first, sign reversed. Not a reading of the paper: shown only for the code_mismatch
+    finding. Fa, Fb: trials x pairs x f."""
+    out = {}
+    nf = Fa.shape[-1]
+    for key, (X, Y) in {"code": (Fa, Fb), "code_rev": (Fb, Fa)}.items():
+        ptr = X * Y / np.sqrt((X ** 2) * np.conj(Y ** 2))
+        obs = _slope(ptr).mean(0)
+        pp = ptr.mean(0)
+        s1, s2 = np.zeros(obs.shape), np.zeros(obs.shape)
+        for _ in range(n_perm):
+            v = np.imag(np.conj(pp[..., rng.permutation(nf)]) * pp[..., rng.permutation(nf)]).sum(-1)
+            s1 += v
+            s2 += v * v
+        mean = s1 / n_perm
+        sd = np.sqrt((s2 - n_perm * mean ** 2) / (n_perm - 1))
+        out[key] = (obs - mean) / sd * (-1 if key == "code_rev" else 1)
     return out
 
 
@@ -589,7 +659,9 @@ def paired_lme(y1, y2, subject):
     With every pair holding both values, the REML estimate of the condition effect is the mean of
     the paired differences and its test the paired t-test over pairs (the subject and pair
     intercepts cancel in the differences); the F is reported with the residual degrees of freedom
-    2n - 2, as MATLAB's fitlme does. The notebook checks this against statsmodels' MixedLM.
+    2n - 2, as MATLAB's fitlme does. The notebook checks this against statsmodels' MixedLM. As in the
+    paper's degrees of freedom (F(1,2256) for 1129 pairs), pairs that share electrodes are treated as
+    independent, which inflates F; the notebook prints subject-level tests beside it.
     Returns (effect y2 - y1, F, p, n pairs).
     """
     d = np.asarray(y2) - np.asarray(y1)
@@ -742,6 +814,82 @@ def jitter_check(S, max_lag=0.4, n_shuffle=20):
     return out
 
 
+def bandpass_fir(x, fs, lo=1.0, hi=30.0, pad=PAD_S):
+    """FieldTrip-style FIR band-pass (order 3*fix(fs/lo), forwards and backwards) on the epoch
+    zero padded to pad s: the Results' "1-30 Hz bandpass" (Event-Related Potentials), a variant."""
+    order = 3 * int(fs // lo)
+    b = signal.firwin(order + 1, [lo / (fs / 2), hi / (fs / 2)], pass_zero=False)
+    n = x.shape[-1]
+    left = max(0, (int(round(pad * fs)) - n) // 2)
+    xp = np.zeros(x.shape[:-1] + (n + 2 * left,))
+    xp[..., left:left + n] = x
+    return signal.filtfilt(b, [1.0], xp, axis=-1, padtype=None)[..., left:left + n]
+
+
+def erp_epochs(pre, proc, sel, fs, config):
+    """Processing-interval ERPs (trials x ch x time) under one reading.
+
+    'methods': the 200-ms pretrial and 900-ms processing segments cut first, each zero padded to
+    7.5 s and low-passed at 30 Hz (Methods, Event-Related Potentials: "The correct-trial 200-ms
+    pretrial baseline and 900-ms post-cue processing data segments were zero-padded to 7,500 ms ...
+    and passed through a 30-Hz low-pass finite impulse response filter"); baseline the pretrial
+    temporal mean averaged over trials, one value per channel, as erp_compute.m computes it
+    (nanmean over trials of the per-trial temporal means). A constant per channel cannot change the
+    t-tests. 'per_trial_baseline': as 'methods', each trial corrected on its own pretrial mean (the
+    Methods' "post-cue processing - pretrial mean" allows it). 'bandpass': as 'methods' with the
+    Results' "1-30 Hz bandpass". 'code': the whole derived epoch filtered, then the windows cut
+    (erp_compute.m)."""
+    if config == "code":
+        base = lowpass_fir(pre["x"][sel].astype("float64"), fs)[:, :, win_index(pre["time"], BASE_WIN)]
+        erp = lowpass_fir(proc["x"][sel].astype("float64"), fs)[:, :, win_index(proc["time"], PROC_WIN)]
+    else:
+        filt = bandpass_fir if config == "bandpass" else lowpass_fir
+        base = filt(pre["x"][sel][:, :, win_index(pre["time"], BASE_WIN)].astype("float64"), fs)
+        erp = filt(proc["x"][sel][:, :, win_index(proc["time"], PROC_WIN)].astype("float64"), fs)
+    if config == "per_trial_baseline":
+        return erp - base.mean(axis=2)[:, :, None]
+    return erp - base.mean(axis=(0, 2))[None, :, None]
+
+
+def processing_tfr(proc, sel, fs, foi, config):
+    """3-cycle Hanning spectra of the processing interval at 10-ms steps: trials x ch x f x 91.
+
+    'methods': the 900-ms segment alone, embedded in zeros, every window computed (Methods,
+    Spectral Decomposition: "Data segments were zero-padded to 7,500 ms"; S1 reading (a), the
+    claims file's main reading). 'code': windows on the whole derived epoch, so that windows longer
+    than the segment take in the data around it (power_compute.m and psi_compute.m compute
+    ft_freqanalysis with cfg.toi over the whole epoch and cut [0.3 1.2] s afterwards), a variant:
+    where the Methods and the code differ the Methods come first (protocol, Reader step 2)."""
+    if config == "code":
+        tidx, _ = toi_index(proc["time"], PROC_WIN)
+        return tfr_fourier(proc["x"][sel], proc["time"], fs, foi, tidx)
+    w = win_index(proc["time"], PROC_WIN)
+    seg = proc["x"][sel][:, :, w]
+    tidx, _ = toi_index(proc["time"][w], PROC_WIN)
+    return tfr_fourier(seg, proc["time"][w], fs, foi, tidx)
+
+
+ERP_CONFIGS = ("methods", "per_trial_baseline", "bandpass", "code", "methods_900")
+POWER_CONFIGS = ("methods", "code", "methods_900")
+PSI_T_CONFIGS = ("methods", "code")
+
+
+def _power_clusters(pz, ccond, nb, sid, name, config, n_perm):
+    m = (ccond == 1) | (ccond == {"spatial": 2, "temporal": 3}[name])
+    rng = np.random.default_rng(seed("power", sid, name, config))
+    res, t_obs = cluster_test(pz[m], ccond[m] == 1, nb, rng, n_perm)
+    out = {}
+    for k, v in res.items():
+        out[k] = {}
+        for s in ("pos", "neg"):
+            out[k][s] = [{"mass": mm, "p": p,
+                          "elec_mask": mk.any(axis=(1, 2)),
+                          "tsum_by_elec": np.where(mk, t_obs, 0).sum(axis=(1, 2)),
+                          "t_masked": np.where(mk, t_obs, 0).astype("float32")} for mm, p, mk in v[s] if p < 0.05]
+            out[k][s + "_minp"] = min([p for _, p, _ in v[s]], default=1.0)
+    return {"clusters": out}
+
+
 def analyse_subject(S, chan, n_perm=N_PERM, do_time_resolved=True):
     """All per-subject measures used by the claims. chan: the subject's rows of channel_table()."""
     sid = S["subject"]
@@ -750,86 +898,102 @@ def analyse_subject(S, chan, n_perm=N_PERM, do_time_resolved=True):
     info = S["data_proc"]["trialinfo"]
     correct = info[:, 1] == 1
     cond = info[:, 3]
+    jit = info[:, 4]
     R = {"subject": sid, "fs": fs, "labels": labels, "n_trials": len(info),
          "n_correct": int(correct.sum()), "n_incorrect": int((~correct).sum()),
-         "n_correct_by_cond": {c: int((correct & (cond == c)).sum()) for c in (1, 2, 3)}}
+         "n_correct_by_cond": {c: int((correct & (cond == c)).sum()) for c in (1, 2, 3)},
+         "n_correct_900_by_cond": {c: int((correct & (cond == c) & (jit == 900)).sum()) for c in (1, 2, 3)}}
     refs = list(S["clock"]["channels"].reference) if "clock" in S else None
     nb = {k: neighbours(labels, S.get("grid"), k, refs) for k in NB_READINGS}
     R["neighbours"] = {k: len(v) for k, v in nb.items()}
     ccond = cond[correct]
+    j900 = jit[correct] == 900
     contrasts = {"spatial": 2, "temporal": 3}
-
-    # ERP: low-pass the whole epoch, baseline on the pretrial mean, processing window
     pre, proc = S["data_pre"], S["data_proc"]
-    base = lowpass_fir(pre["x"][correct].astype("float64"), fs)[:, :, win_index(pre["time"], BASE_WIN)]
-    erp = lowpass_fir(proc["x"][correct].astype("float64"), fs)[:, :, win_index(proc["time"], PROC_WIN)]
-    erp = erp - base.mean(axis=(0, 2))[None, :, None]
-    R["erp"] = {}
-    for name, c2 in contrasts.items():
-        m = (ccond == 1) | (ccond == c2)
-        rng = np.random.default_rng(seed("erp", sid, name))
-        res, _ = cluster_test(erp[m][:, :, None, :], ccond[m] == 1, nb, rng, n_perm)
-        R["erp"][name] = {k: {s: [(mm, p) for mm, p, _ in v[s]] for s in v} for k, v in res.items()}
-    del erp, base
 
-    # Power: 3-cycle Hanning windows, 10-ms steps
-    tidx, toi = toi_index(proc["time"], PROC_WIN)
-    Fp = tfr_fourier(proc["x"][correct], proc["time"], fs, FOI, tidx)
-    bidx, _ = toi_index(pre["time"], BASE_WIN)
-    Fb = tfr_fourier(pre["x"][correct], pre["time"], fs, FOI, bidx)
-    pw = np.abs(Fp) ** 2
+    # ERP under each reading; 'methods_900' is 'methods' on the trials with a 900-ms delay only
+    R["erp"] = {}
+    for config in ERP_CONFIGS:
+        base_cfg = "methods" if config == "methods_900" else config
+        erp = erp_epochs(pre, proc, correct, fs, base_cfg)
+        keep = j900 if config == "methods_900" else np.ones(len(ccond), bool)
+        R["erp"][config] = {}
+        for name, c2 in contrasts.items():
+            m = keep & ((ccond == 1) | (ccond == c2))
+            rng = np.random.default_rng(seed("erp", sid, name, config))
+            res, _ = cluster_test(erp[m][:, :, None, :], ccond[m] == 1, nb, rng, n_perm)
+            R["erp"][config][name] = {k: {s: [(mm, p) for mm, p, _ in v[s]] for s in v} for k, v in res.items()}
+        del erp
+
+    # Power: 3-cycle Hanning windows, 10-ms steps. The baseline z-score (zbaseline.m, closed form) is
+    # one affine map per channel and frequency, so it is applied for the record but cannot change a
+    # t-test; the baseline spectra are those of the 200-ms segment zero padded (Methods).
+    _, toi = toi_index(proc["time"], PROC_WIN)
+    R["power_toi"] = toi - toi[0]
+    wb = win_index(pre["time"], BASE_WIN)
+    bidx, _ = toi_index(pre["time"][wb], BASE_WIN)
+    Fb = tfr_fourier(pre["x"][correct][:, :, wb], pre["time"][wb], fs, FOI, bidx)
     bp = (np.abs(Fb) ** 2).transpose(1, 2, 0, 3).reshape(len(labels), len(FOI), -1)
+    del Fb
     r = int(correct.sum())
     N = bp.shape[-1]
     bmean = bp.mean(-1)
     bsd = bp.std(-1, ddof=1) * np.sqrt((N - r) / (N - 1)) / np.sqrt(r)
-    pz = (pw - bmean[None, :, :, None]) / bsd[None, :, :, None]
-    R["power_toi"] = toi - toi[0]
     R["power"] = {}
-    for name, c2 in contrasts.items():
-        m = (ccond == 1) | (ccond == c2)
-        rng = np.random.default_rng(seed("power", sid, name))
-        res, t_obs = cluster_test(pz[m], ccond[m] == 1, nb, rng, n_perm)
-        out = {}
-        for k, v in res.items():
-            out[k] = {}
-            for s in ("pos", "neg"):
-                out[k][s] = [{"mass": mm, "p": p,
-                              "elec_mask": mk.any(axis=(1, 2)),
-                              "tsum_by_elec": np.where(mk, t_obs, 0).sum(axis=(1, 2)),
-                              "t_masked": np.where(mk, t_obs, 0).astype("float32")} for mm, p, mk in v[s] if p < 0.05]
-                out[k][s + "_minp"] = min([p for _, p, _ in v[s]], default=1.0)
-        R["power"][name] = {"clusters": out, "t": t_obs.astype("float32")}
-    del pw, pz, Fb
+    Fp = {}
+    for config in ("methods", "code"):
+        Fp[config] = processing_tfr(proc, correct, fs, FOI, config)
+        pz = (np.abs(Fp[config]) ** 2 - bmean[None, :, :, None]) / bsd[None, :, :, None]
+        R["power"][config] = {name: _power_clusters(pz, ccond, nb, sid, name, config, n_perm) for name in contrasts}
+        if config == "methods":
+            R["power"]["methods_900"] = {name: _power_clusters(pz[j900], ccond[j900], nb, sid, name, "methods_900", n_perm)
+                                         for name in contrasts}
+        del pz
 
-    # PSI
+    # Task-induced PSI: one FFT of each 900-ms segment, ERP (mean over all correct trials) removed
     pairs = pairs_same_hemisphere(chan)
     R["pairs"] = [(labels[i], labels[j], chan.hemisphere[i]) for i, j in pairs]
-    ia = [i for i, _ in pairs]
-    ib = [j for _, j in pairs]
+    pfc = sorted({i for i, _ in pairs})
+    par = sorted({j for _, j in pairs})
+    ia = np.array([pfc.index(i) for i, _ in pairs])
+    ib = np.array([par.index(j) for _, j in pairs])
     enc = S["data_encmain"]
-    R["psi"] = {}
+    R["psi"], R["psi_surrogate"], R["psi_deposited"] = {}, {}, {}
     for band, (lo, hi) in BANDS.items():
         foi = np.arange(lo, hi + 1)
-        res = {}
+        res, sur, dep = {}, {}, {}
         for interval, (ep, win) in {"maintenance": (enc, MAIN_WIN), "processing": (proc, PROC_WIN)}.items():
             F, freqs = fft_segment(ep["x"][correct], ep["time"], fs, win, foi)
-            F = F - F.mean(0, keepdims=True)  # ERP (mean over all correct trials) removed
+            F = F - F.mean(0, keepdims=True)
+            A, B = F[:, pfc, :, None], F[:, par, :, None]
             rng = np.random.default_rng(seed("psi", sid, band, interval))
-            res[interval] = psi_measures(F[:, ia], F[:, ib], rng, deposited=True)
+            res[interval] = {k: v[:, 0] for k, v in psi_z(A, B, ia, ib, rng, code_null=True).items()}
+            rng = np.random.default_rng(seed("psi_deposited", sid, band, interval))
+            dep[interval] = psi_deposited(F[:, [pfc[i] for i in ia]], F[:, [par[j] for j in ib]], rng)
+            if interval == "processing":
+                # surrogate: parietal trials paired with other trials' PFC data (no trial-locked coupling)
+                rng = np.random.default_rng(seed("psi_surrogate", sid, band))
+                order = rng.permutation(A.shape[0])
+                sur = {k: v[:, 0] for k, v in psi_z(A, B[order], ia, ib, rng, code_null=True).items()}
+                sur["same_trial_fraction"] = float(np.mean(order == np.arange(len(order))))
         res["freqs"] = freqs
         R["psi"][band] = res
-    # time-resolved PSI per condition (ERP of the condition removed), mtmconvol
+        R["psi_surrogate"][band] = sur
+        R["psi_deposited"][band] = dep
+
+    # time-resolved PSI per condition (ERP of the condition removed), mtmconvol, under each spectra reading
     if do_time_resolved:
         R["psi_t"] = {}
-        for band, (lo, hi) in BANDS.items():
-            fsel = [list(FOI).index(f) for f in range(lo, hi + 1)]
-            R["psi_t"][band] = {}
-            for c in (1, 2, 3):
-                F = Fp[ccond == c][:, :, fsel, :]
-                F = F - F.mean(0, keepdims=True)
-                rng = np.random.default_rng(seed("psi_t", sid, band, c))
-                R["psi_t"][band][c] = psi_measures(F[:, ia], F[:, ib], rng, null_per_bin=False)
+        for config in PSI_T_CONFIGS:
+            R["psi_t"][config] = {}
+            for band, (lo, hi) in BANDS.items():
+                fsel = [list(FOI).index(f) for f in range(lo, hi + 1)]
+                R["psi_t"][config][band] = {}
+                for c in (1, 2, 3):
+                    F = Fp[config][ccond == c][:, :, fsel, :]
+                    F = F - F.mean(0, keepdims=True)
+                    rng = np.random.default_rng(seed("psi_t", sid, band, c, config))
+                    R["psi_t"][config][band][c] = psi_z(F[:, pfc], F[:, par], ia, ib, rng)
     del Fp
     return R
 

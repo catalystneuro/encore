@@ -11,15 +11,15 @@ preprocessed epochs and the paper's MATLAB scripts.
 | Trials kept per subject and condition | Reproduced |
 | Accuracy 0.63 to 0.98, no effect of condition | Reproduced |
 | Identity RT longer than spatial and temporal | Reproduced |
-| No ERP difference between conditions | Reproduced (assumption) |
+| No ERP difference between conditions | Not reproduced (assumption) |
 | Power, identity against spatial (Figure 2) | Partially reproduced |
 | Power, identity against temporal (Figure 3) | Partially reproduced |
 | Identity > effects in the subjects with lower identity accuracy | Reproduced |
 | Power effects at 2-7 and 9-24 Hz | Reproduced (assumption) |
 | Parietal-led maintenance (Figure 4) | Not reproduced |
-| Delta-theta shift with the test cue | Partially reproduced |
-| Alpha-beta shift, still parietal-led | Not reproduced |
-| 1008 and 984 directional pairs | Reproduced |
+| Delta-theta shift with the test cue | Not reproduced |
+| Alpha-beta shift, still parietal-led | Partially reproduced (assumption) |
+| 1008 and 984 directional pairs | Not reproduced |
 | Time-resolved delta-theta epochs (Figure 5A) | Not reproduced |
 | Identity PFC-led early, parietal-led late | Not reproduced |
 | Spatial and temporal PSI bidirectional | Not reproduced (assumption) |
@@ -28,13 +28,16 @@ preprocessed epochs and the paper's MATLAB scripts.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The phase slope index results depend on how PSI is computed, which the paper leaves open and the
-deposited code does not settle, as it omits the conjugate of the cross-spectrum. The data set lists
+The phase slope index is z-scored here against the null the Methods describe (the frequencies of
+one signal shuffled and PSI recomputed). With that null, few pairs are directional and none of the
+paper's large PSI effects appears. The deposited code omits the conjugate of the cross-spectrum and
+z-scores against a null that is not the statistic it tests, which marks about 90% of pairs as
+directional even when the trials of the two regions are shuffled. The data set lists
 187 analysed channels where the paper reports 192. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/crcns-fcx-3-johnson-2019-01.yaml`](../../attempts/crcns-fcx-3-johnson-2019-01.yaml).
 
-- `reproduce_johnson_2019.ipynb`: the analysis. It takes about 20 minutes, most of it streaming
-  the 11.8 GB of tar.gz files, one subject at a time, with a peak of about 7 GB of memory.
+- `reproduce_johnson_2019.ipynb`: the analysis. It takes about 35 minutes, about 20 of them streaming
+  the 11.8 GB of tar.gz files, one subject at a time.
 - `fcx3.py`: streaming the files, the clock and timing checks, the power, ERP and PSI measures and
   the cluster test. Other notebooks on this data set can import it.
