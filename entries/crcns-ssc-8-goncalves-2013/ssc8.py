@@ -33,9 +33,10 @@ Where the parameters come from:
 - Peaks of synchrony (Online Methods, "To calculate frequency..."): per frame the percent of
   cells active; 100 shuffles of each cell's trace keeping its mean; the 95th percentile of the
   100 shuffled peaks is the threshold; an event runs while the percent active is above it. The
-  readings of "active" (R-a, rate above 0; R-b, at least one estimated spike in the frame, rate
-  / FRAME_HZ >= 1) and of the shuffle (S-a, permutation of frames; S-b, circular shift) are the
-  claims file's. The seed is a standard choice.
+  readings of "active" (R-a, rate above 0; R-b, at least one estimated spike in the frame, which
+  is rate / FRAME_HZ >= 1 when the rates are in Hz, unit reading U-a, and rate >= 1 when they are
+  per frame, U-b, here named "R-b/U-b") and of the shuffle (S-a, permutation of frames; S-b,
+  circular shift) are the claims file's. The seed is a standard choice.
 """
 
 from __future__ import annotations
@@ -281,6 +282,8 @@ def _active(rates: np.ndarray, rule: str) -> np.ndarray:
         return rates > 0
     if rule == "R-b":
         return rates / FRAME_HZ >= 1.0
+    if rule == "R-b/U-b":
+        return rates >= 1.0
     raise ValueError(rule)
 
 

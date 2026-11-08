@@ -20,7 +20,8 @@ isoflurane imaging and 15.6 Hz imaging of the paper are not in it.
 | Firing rates do not differ between genotypes at any age | Reproduced |
 | Firing rates and WT correlation at P14-16 (Fig. 6, unanesthetized) | Reproduced |
 | Whole-cell recordings (seven claims) | Blocked: data missing |
-| EEG with imaging (six claims) | Blocked: data missing |
+| EEG with imaging (five claims) | Blocked: data missing |
+| Firing rate against correlation across the EEG subset's recordings (Suppl. Fig. 4a) | Blocked: metadata insufficient |
 | Imaging at 15.6 Hz | Blocked: data missing |
 | Isoflurane imaging (three claims) | Blocked: data missing |
 
