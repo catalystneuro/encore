@@ -11,7 +11,7 @@ during deflection of nine whiskers: 36 imaging fields in 25 mice.
 | L2/3 cell counts | Reproduced |
 | L4 cell counts | Not reproduced |
 | Receptive fields from GCaMP and spikes agree (Figure 1F) | Blocked: data missing |
-| EN strengthens the L2/3 point representation near the column | Reproduced, with the stored responsiveness p-values |
+| EN strengthens the L2/3 point representation near the column | Reproduced, with the stored responsiveness p-values and the blank-median z-score |
 | EN weakens L2/3 responses at the flanks | Partially reproduced |
 | 2D maps of the point representation | Reproduced |
 | EN weakens the L4 point representation | Not reproduced |
@@ -20,7 +20,7 @@ during deflection of nine whiskers: 36 imaging fields in 25 mice.
 | Barrel size unchanged | Partially reproduced |
 | Salt-and-pepper tuning in NH L2/3 | Partially reproduced (best whisker yes, equivalent best whiskers no) |
 | NH L2/3 in-column tuning (Discussion) | Partially reproduced |
-| NH L4 tuning against L2/3 | Partially reproduced |
+| NH L4 tuning against L2/3 | Partially reproduced (proposed: not reproduced) |
 | EN raises CW tuning in L2/3 | Not reproduced |
 | EN raises CW tuning in L4 | Reproduced |
 | Ranked receptive fields sharper in EN L2/3 | Reproduced |
@@ -34,7 +34,7 @@ during deflection of nine whiskers: 36 imaging fields in 25 mice.
 | L4 responses weaker in EN | Not reproduced |
 | Signal correlations and column boundaries | Partially reproduced |
 | Noise correlations and column boundaries | Partially reproduced |
-| Correlation gradient at the column edge | Partially reproduced (signal yes, noise no) |
+| Correlation gradient at the column edge | Partially reproduced (proposed: reproduced) |
 | Row and arc boundaries | Partially reproduced |
 | L4 within-column correlations | Partially reproduced |
 | Robustness to neuropil subtraction | Not reproduced |
@@ -48,8 +48,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/crcns-ssc-10-lemessurier-2019-01.yaml`](../../attempts/crcns-ssc-10-lemessurier-2019-01.yaml).
 
-- `reproduce_lemessurier_2019.ipynb`: the analysis. It takes about 25 minutes, ten of them
-  streaming the 4.7 GB tar file.
+- `reproduce_lemessurier_2019.ipynb`: the analysis. The last three runs took 14 to 24 minutes,
+  7 to 10 of them streaming the 4.7 GB tar file.
 - `ssc10.py`: streaming and reduction of each field to per-trial evoked responses, the
   responsiveness test, equivalent best whiskers, pair correlations and the decoders. Other
   notebooks on this data set can import it.

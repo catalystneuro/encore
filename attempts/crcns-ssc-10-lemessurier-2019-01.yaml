@@ -253,6 +253,13 @@ outcomes:
     not significant (p = 0.40) but the L4 value is 82.1%, outside tolerance. Every part holds except the eBW absence,
     which fails through the L2/3 eBW fraction (figs3-1-l23-salt-and-pepper); the criterion''s own partial clause, which
     needs the absence, is not met, so the outcome is the protocol''s partial (holds only in part).'
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion's partial clause needs both 0-75 um values within tolerance and both absence tests not significant,
+      and no reading meets it. Under E1 and E2 the eBW test is significant (p = 0.036 and 0.0051, Methods' test, C1-C3;
+      0.026 and 0.0055 with the stored p-values); under E3 it is not (p = 0.40) but the L4 eBW value is 82.1%, outside
+      73 +/- 7.3. figs2-1-column-frame and fig4ae-l4-weaker-responses, which fail their partial clauses in the same way,
+      are not reproduced. The round-2 verifier gives not reproduced and retracts its round-1 recommendation of partial.
   deviations:
   - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
     claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
@@ -478,7 +485,8 @@ outcomes:
   - 0.4684
   notes: 'Methods'' test: within-column 0.579 to 0.599 (p = 0.0001), across 0.463 to 0.390 (p = 0.0001); pairs under
     150 um within minus across +0.054 in NH and +0.141 in EN (p = 0.0001). Stored p-values give the same directions,
-    all p = 0.0001. All eight values are 0.035 to 0.078 below the paper''s.'
+    all p = 0.0001. With the Methods'' test all eight values are 0.035 to 0.078 below the paper''s; with the stored
+    p-values 0.047 to 0.096 below (NH across-column pairs under 150 um 0.515 against 0.611).'
   deviations:
   - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
     claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
@@ -510,6 +518,15 @@ outcomes:
     stored -0.061, p = 0.0013). The noise gradient is not: the difference is -0.0004 (p = 0.96; stored -0.0020, p = 0.81).
     The criterion''s comparison passes in both readings on these differences, but a permutation test (not in the criterion)
     cannot tell them from zero, so the noise half of the claim is not supported.'
+  proposed:
+    outcome: reproduced
+    reason: Every condition of the criterion holds in both responsiveness readings. EN is lower outside the column for
+      signal and noise (p <= 0.0016), the inside signal correlation is not lower (p = 0.39 and 0.19), and the EN minus
+      NH noise difference is more negative outside than inside (-0.0454 against -0.0450 with the Methods' test, -0.0430
+      against -0.0409 with the stored p-values). The round-1 reason for partial, that the Methods' reading failed by
+      0.0002, no longer holds after the re-run. The permutation test of the gradient (noise p = 0.96 and 0.81) is not in
+      the criterion and stays in the notes as a caveat; the criterion's comparison without a test is raised as a question
+      on the claims file.
   deviations:
   - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
     claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
@@ -551,7 +568,11 @@ outcomes:
   notebook: reproduce_lemessurier_2019.ipynb
   output: claim:figs5-2-neuropil-robustness
   notes: 'At r = 0, 0.3, 0.7: L2/3 fraction CW-tuned at 0-75 um lower in EN (E1: EN 83, 80, 74% against NH 92, 93, 81%);
-    L2/3 response EN higher, L4 fraction CW-tuned EN higher and L4 response EN lower at every weight. Across-column signal
+    L2/3 response EN higher, L4 fraction CW-tuned EN higher and L4 response EN lower at every weight, in direction,
+    which is what the criterion asks; none of these response differences is significant (L2/3 p = 0.30, 0.57, 0.93;
+    L4 p = 0.80, 0.44, 0.73). At r = 0 the rebuild has 815 EN and 460 NH responsive L2/3 ROIs, against 850 and 472
+    from the stored traces, because the 89 L2/3 ROIs with non-finite rebuilt traces get p = 1 and count as unresponsive
+    at every weight. Across-column signal
     correlation reduction significant at r = 0 and 0.3 (Tukey p < 0.001) and not at 0.7 (p = 0.084), as the paper says.
     Across-column noise reduction significant at all three; within-column noise reduction not significant at 0.7 (Tukey
     p = 0.996). Two parts fail: the L2/3 tuning direction, which follows from the eBW fractions, and the within-column
@@ -586,7 +607,9 @@ outcomes:
   output: claim:fig7c-population-decoder
   notes: 'With ensembles pooled as units, mean performance rises with size (closest column, normalisation a: NH 0.611
     to 0.674, EN 0.627 to 0.710) and EN exceeds NH with p < 0.001 at every size from 3 to 30, under all four combinations
-    of tested whisker and normalisation. With per-field means (11 fields per group) no size reaches p < 0.001 (p = 0.024
+    of tested whisker and normalisation. With the CWs of the members and normalisation (a) performance does not rise
+    steadily (NH 0.628 at 3 ROIs, 0.627 at 5; EN 0.674 at 10 and 0.671 at 30), so the rise holds under the other three
+    combinations. With per-field means (11 fields per group) no size reaches p < 0.001 (p = 0.024
     to 0.42); the pooled ensembles reuse the same ROIs within a field.'
   deviations:
   - Classifiers for ensembles use 50 random 80/20 splits per field and whisker (the Methods give no number for ensembles;
@@ -647,7 +670,7 @@ findings:
     and 72-74%, near the paper's values. Was that requirement part of the test?
 - kind: methods_unavailable
   statement: 'Question for the authors. Which responsiveness test gave the cells analysed: the Methods'' one-sided test
-    on means, or the stored two-sided test on medians? The cell counts match either, but the L2/3 point representation
+    on means, or the stored two-sided test on medians? The L2/3 cell counts match either, and no reading matches the L4 counts, but the L2/3 point representation
     (Figure 2A), the CW and surround responses (Figure 4B) and the CW response (Figure 4D) are significant only with
     the stored p-values.'
 - kind: methods_unavailable
@@ -914,3 +937,217 @@ verifications:
     reason: 'Cell 99: the pooled peak is at 0-77 µm, EN > NH at 0-77 and 77-154 µm, and NH > EN at 308–385 µm, under
       both ANOVA readings. The ANOVA treats about 125k overlapping ensembles as independent.'
     response: No change; the conclusion says the ANOVA p-values overstate the evidence.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, with its conclusions and summary, the helper module, the attempt
+    record, the README and the claims file, with the paper under paper/. Round 2.
+  results:
+  - claim: table1-mice-and-fields
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Not about this claim, cell 0 and the README run time say "about ten minutes" to stream
+      and "about half an hour" (README "about 25 minutes, ten of them streaming"); cell 2 prints 431 s and cell 135 prints
+      14.1 min.
+    response: No change of outcome. Cell 0 and the README now give the range of the last three runs, 7 to 10 minutes of
+      streaming and 14 to 24 minutes in all.
+  - claim: l23-cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: l4-cell-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The record finding on the responsiveness question says "The cell counts match either",
+      which is true for L2/3 only; no reading matches the L4 counts (cell 21).
+    response: No change of outcome. The finding now says the L2/3 counts match either test and no reading matches the L4
+      counts.
+  - claim: fig1f-gcamp-matches-spikes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2a-l23-point-representation-stronger
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome rests on the stored p-values, which agree with the Methods test on 85.9% of ROIs. This is
+      stated, but the outcome is fragile. The README row "Reproduced, with the stored responsiveness p-values" leaves out
+      the blank-median z: with the stored p and the blank-mean z only 3 of 6 values are within tolerance (cell 29).'
+    response: No change of outcome. The README row now names the blank-median z-score as well as the stored p-values.
+  - claim: fig2a-l23-flanks-suppressed
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2b-2d-point-representation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2c-l4-point-representation-weaker
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2c-l4-sharper-than-l23
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs2-1-column-frame
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs2-2-barrel-size-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Leave-one-mouse-out means were added (Drd3-Cre EN 153.5 to 157.1 um, still outside). The single miss (Drd3-Cre
+      EN) cannot be told apart from error in the radius proxy; this is stated.
+    response: No change.
+  - claim: figs3-1-l23-salt-and-pepper
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The eBW gap is unresolved and correctly raised as a question for the authors; it still decides the eBW
+      part.
+    response: No change.
+  - claim: discussion-l23-nh-in-column-tuning
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The eBW gap (problem 1) still decides this claim.
+    response: No change.
+  - claim: figs3-1-l4-nh-tuning
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion's own partial clause needs both 0-75 um values within tolerance and both absence tests non-significant.
+      Under E1 and E2 the eBW test is significant (p = 0.036 and 0.0051; cell 61). Under E3 the test is not significant, but
+      the L4 value is 82.1% against 73 +/- 7.3. So no reading meets the partial clause; figs2-1 and fig4ae fail their partial
+      clauses in the same way and are scored not reproduced. The verifier retracts its round-1 recommendation of partial.
+    response: Outcome kept as verified in round 1 (partially reproduced), as round 2 allows; the change to not reproduced
+      is recorded under proposed, with the analysis in the notebook below cell 61, for round 3. The Summary's statement that L4 values match now says so for E1 and E2 only (under E3 the NH L4 eBW value
+      is 82.1%, outside tolerance), as the verifier found.
+  - claim: fig3a-l23-enrichment-more-cw-tuned
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. In the exploratory reading that requires each eBW to be a responsive whisker, NH comes to about 73 to
+      75%, near the paper's 67%, but EN L2/3 is still not more CW-tuned (cell 55), so fig3a does not hinge on the eBW definition.
+    response: No change.
+  - claim: fig3c-l4-enrichment-more-cw-tuned
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4a-l23-ranked-rf-sharper
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4b-l23-cw-and-best-sw-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced only with the stored two-sided median p-values, which agree with the Methods test on 85.9%
+      of ROIs. This is stated, but the outcome is fragile.
+    response: No change.
+  - claim: fig4c-spontaneous-activity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome rests on the raw-level variant, as stated. The claims file's main reading (baseline-subtracted)
+      still looks like a misreading of the Figure 4C legend; it is raised in questions/crcns-ssc-10.yaml and the claim is
+      unchanged.
+    response: No change.
+  - claim: figs4-1-absolute-dff
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Robust slopes were added (cell 81).
+    response: No change.
+  - claim: figs4-2-barrel-vs-septal
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4d-l23-cw-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced only with the stored two-sided median p-values. This is stated, but the outcome is fragile.
+    response: No change.
+  - claim: fig4d-l23-across-row-sharpening
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4d-l23-within-row-broadening
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4ae-l4-weaker-responses
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5a-l23-signal-correlation-boundary
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 105 and the notes say "Every value is 0.035 to 0.078 below the paper's", which is true for the Methods
+      test only; with the stored p-values the gaps go up to 0.096 (NH across-column pairs under 150 um, 0.515 against 0.611;
+      cell 103).
+    response: No change of outcome. Cell 105 and the notes now give the gaps for each reading (0.035 to 0.078 with the Methods
+      test, 0.047 to 0.096 with the stored p-values).
+  - claim: fig5b-l23-noise-correlation-boundary
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5eh-l23-correlation-gradient-at-edge
+    agrees: false
+    outcome: reproduced
+    reason: 'After the re-run every condition of the criterion holds in both responsiveness readings (cell 110): EN is lower
+      outside for signal and noise (p <= 0.0016), signal inside is not lower (p = 0.39 and 0.19), and the EN - NH difference
+      is more negative outside, for noise -0.0454 against -0.0450 and -0.0430 against -0.0409. The round-1 reason, that the
+      Methods reading failed by 0.0002, is no longer true. The added permutation test (p = 0.96 and 0.81) is a fair caveat
+      for the notes, but it is not in the criterion, and the claims file decides the outcome. The criterion''s weakness, comparing
+      two differences without a test, should be reported against the claims file.'
+    response: Outcome kept as verified in round 1 (partially reproduced), as round 2 allows; the change to reproduced is recorded
+      under proposed, with the analysis in the notebook below cell 110, for round 3. The permutation test stays in the notes
+      as a caveat, and the criterion's comparison without a test is added as a question in questions/crcns-ssc-10.yaml.
+  - claim: figs5-1-row-and-arc-boundaries
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig6-l4-within-column-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs5-2-neuropil-robustness
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees; the L4 rebuild now matches the stored traces (problem 2 resolved). The notes and cell 121 are right on
+      the direction of the responses, which is all the criterion asks, but none of those differences is significant (L2/3
+      p = 0.30, 0.57, 0.93; L4 p = 0.80, 0.44, 0.73; cell 120). Not disclosed: at r = 0 the responsive L2/3 count drops from
+      850/472 to 815/460 (cell 119), because ssc10.py gives p = 1 to ROIs with non-finite rebuilt traces, 89 of them in L2/3
+      (cell 6), so they are dropped as unresponsive at every weight. This does not change the outcome. The eBW gap still decides
+      the L2/3 tuning direction.'
+    response: No change of outcome. Cell 121 and the notes now give the p-values of the response differences, the responsive
+      L2/3 counts at r = 0 and the reason for the drop (the 89 ROIs with non-finite rebuilt traces).
+  - claim: fig7b-single-roi-decoder
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; roi_probs no longer drops training trials (problem 9 resolved).
+    response: No change.
+  - claim: fig7c-population-decoder
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome rests on pooled ensembles as units, which the criterion allows. Per-field means give p = 0.024
+      to 0.42, 0/7 sizes passing; this is stated. Cell 130 says performance rises with ensemble size in both groups, which
+      is correct for closest-column/normalisation (a); under CWs/normalisation (a) it does not rise (cell 129), which is not
+      mentioned, though not needed for the outcome.
+    response: No change of outcome. Cell 130 and the notes now say that under the CWs of the members with normalisation (a)
+      performance does not rise steadily.
+  - claim: fig7d-clustered-ensemble-topography
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the ANOVA treats overlapping ensembles as independent, which is stated.
+    response: No change.
