@@ -233,8 +233,10 @@ claims:
   criterion: SWR modulation and its sign as in the opening comment (SEP, SWR Modulation), on the
     W-track PFC cells that pass the exclusions. Reproduced when the counts, or the fractions,
     fall within tolerance under one reading of the open details, and excited and inhibited
-    counts are similar (each within 10 percentage points of the other as a fraction of
-    modulated cells). The shuffle is random; the seed is a standard choice. Per-animal counts
+    counts are similar. The paper gives no test or threshold for "approximately equal"; the
+    threshold used, each within 10 percentage points of the other as a fraction of modulated
+    cells, is a choice not taken from the paper (the paper's own counts differ by 7 points on
+    the W-track and 5 points overall). The shuffle is random; the seed is a standard choice. Per-animal counts
     are reported against Table S2.
   depends_on:
   - tables1-cell-counts
@@ -306,8 +308,9 @@ claims:
     cells enter is read from the n (429, the SWR-modulated CA1 cells). The search window is not
     given; readings are (a) 0 to 200 ms, the modulation window, (b) 0 to 500 ms. Bin 10 ms is a
     standard choice. Rank-sum tests. Reproduced when CA1 is earlier than both PFC groups at p <
-    0.05 and excited and inhibited do not differ at p < 0.05, with the means judged by the
-    pooled-value rule.
+    0.05 and excited and inhibited do not differ at p < 0.01 (the paper's threshold for
+    comparisons between SWR-excited, SWR-inhibited and SWR-unmodulated cells, SEP Data
+    Analysis), with the means judged by the pooled-value rule.
   depends_on:
   - fig3-pfc-swr-modulation-fractions
   - ca1-swr-modulated
@@ -336,7 +339,8 @@ claims:
     or falls (inhibited) 1 SD away from the mean (SEP, Timing of SWR-response). The mean and SD
     are not specified; readings are (a) of the baseline -500 to -100 ms, (b) of the whole PSTH.
     Reproduced when, under one reading, both PFC groups are later than CA1 at p < 0.05 by
-    rank-sum and excited and inhibited do not differ at p < 0.05.
+    rank-sum and excited and inhibited do not differ at p < 0.01 (the paper's threshold for
+    comparisons between PFC SWR categories, SEP Data Analysis).
   depends_on:
   - fig3de-ca1-precedes-pfc-peak
 - id: fig3f-swr-cross-covariance-lag
@@ -360,8 +364,13 @@ claims:
     CA1 and PFC cells, adjusted for mean rates (SEP, Timing of SWR-response); the pairs are the
     393 and 320 of the SWR correlation analysis (same n). Positive lag means PFC after CA1.
     Bin size and smoothing are not given; 10 ms bins and the Gaussian of the theta
-    cross-covariance (SD 16.7 ms) are taken from the SEP as the nearest stated choice. Reproduced
-    when both extrema lie after 0 ms and within tolerance (pooled-value rule).
+    cross-covariance (SD 16.7 ms) are taken from the SEP as the nearest stated choice. The
+    window for the extremum is not given; -200 to +200 ms, the theta cross-covariance window
+    (SEP), is the nearest stated choice. The text reports the extremum of the mean
+    cross-covariance with a spread (13 +- 7 ms), so how the value and its spread were formed is
+    open; readings are (a) the extremum lag of the mean cross-covariance over pairs, (b) the mean
+    over pairs of each pair's extremum lag. Reproduced when, under one reading, both extrema lie
+    after 0 ms and within tolerance (pooled-value rule).
   depends_on:
   - fig6-swr-correlated-pairs
 - id: fig4-theta-locked-fraction
@@ -387,14 +396,16 @@ claims:
     Figure 4A
   quote: CA1 neurons preferred the falling phase of theta, while PFC neurons were most often phase
     locked to the trough of theta
-  criterion: Preferred phase per significantly locked cell is the von Mises mean of its spike
-    phases, theta from the corpus callosum reference tetrode (SEP). The phase convention is not
+  criterion: Preferred phase per significantly locked cell is the peak of its theta-phase
+    histogram (Figure 4A legend, "peak theta phase", "distribution of peak phases"), theta from
+    the corpus callosum reference tetrode (SEP); the histogram bin is not given, and the von
+    Mises mean of the spike phases is shown as a variant. The phase convention is not
     given; Hilbert phase with 0 degrees at the peak and 180 at the trough is the standard choice,
     and the inverted reference is a reading the author shows, since the polarity of the
     reference relative to the figure is not stated. Reproduced when, under one convention
     applied to both regions, the circular mean of CA1 preferred phases lies in the falling phase
-    (0 to 180 degrees) and the modal 45-degree bin of PFC preferred phases contains 180 degrees,
-    with the CA1 mean earlier than the PFC mean.
+    (0 to 180 degrees) and the modal 45-degree bin of PFC preferred phases contains 180 degrees
+    (the 45-degree bin is a standard choice), with the CA1 mean earlier than the PFC mean.
   depends_on:
   - fig4-theta-locked-fraction
 - id: fig4-swr-modulated-more-theta-locked
@@ -429,9 +440,11 @@ claims:
   - quantity: fraction theta locked, SWR-unmodulated
     value: 0.53
     tolerance: 0.053
-  criterion: Two-sample z tests for proportions. Reproduced when both modulated groups have a
-    higher fraction than unmodulated at p < 0.05 and excited and inhibited do not differ at p <
-    0.05, with fractions judged by the pooled-value rule. With about half the cells, the W-track
+  criterion: Two-sample z tests for proportions, at the paper's threshold for comparisons
+    between SWR-excited, SWR-inhibited and SWR-unmodulated cells, 0.01 (SEP, Data Analysis),
+    which the paper's own p = 0.01 for inhibited against unmodulated is taken to meet. Reproduced
+    when both modulated groups have a higher fraction than unmodulated at p <= 0.01 and excited
+    and inhibited do not differ at p < 0.01, with fractions judged by the pooled-value rule. With about half the cells, the W-track
     tests have less power; the effect sizes are reported either way.
   depends_on:
   - fig4-theta-locked-fraction
@@ -526,7 +539,8 @@ claims:
     are shown as a variant. The text calls the excited distribution narrower than both other
     groups, but reports p > 0.1 against inhibited; the statement follows the tests. Reproduced
     when excited against unmodulated is significant at p < 0.01 and the two other comparisons are
-    not.
+    not significant at p < 0.01 (the paper's threshold for these comparisons, SEP Data
+    Analysis).
   depends_on:
   - fig4-swr-modulated-more-theta-locked
 - id: theta-lag-past
@@ -586,8 +600,8 @@ claims:
     are (a) time at speed > 5 cm/s with no SWR, the paper's theta and behavior periods (SEP), (b)
     time at speed > 4 cm/s, the complement of the SWR speed criterion, (c) the mean rate over the
     whole run epoch. Rank-sum tests at p < 0.01. Reproduced when, under one reading, both
-    modulated groups exceed unmodulated at p < 0.01 and excited and inhibited do not differ;
-    means by the pooled-value rule.
+    modulated groups exceed unmodulated at p < 0.01 and excited and inhibited do not differ at p
+    < 0.01; means by the pooled-value rule.
   depends_on:
   - fig3-pfc-swr-modulation-fractions
 - id: fig5c-spatial-coverage
@@ -628,7 +642,7 @@ claims:
     tolerance: 0.02
   criterion: Coverage as in the opening comment (cells with peak > 3 Hz). Rank-sum tests at p <
     0.01. Reproduced when excited exceeds both other PFC groups at p < 0.01, inhibited and
-    unmodulated do not differ, and CA1 is below every PFC group at p < 0.01; means by the
+    unmodulated do not differ at p < 0.01, and CA1 is below every PFC group at p < 0.01; means by the
     pooled-value rule. The coverage of the W-track is the only kind the data set holds, so the
     linearization is the paper's own 4 trajectories.
   depends_on:
@@ -684,7 +698,9 @@ claims:
     and the rate in each speed bin. The shuffle for the median is not described; readings are (a)
     circularly shifting each cell's spike train relative to speed, (b) shuffling speed bins.
     Reproduced when, under one reading, excited exceeds inhibited at p < 0.01, the inhibited median
-    is below zero at p < 0.01, and unmodulated does not differ from either at p < 0.05.
+    is below zero at p < 0.01, and unmodulated does not differ from either at p < 0.01 (the
+    paper's threshold for these three-group comparisons, SEP Data Analysis; it reports p > 0.05,
+    and the result at 0.05 is shown as a variant).
   depends_on:
   - fig3-pfc-swr-modulation-fractions
 - id: fig5f-pre-swr-vs-movement
@@ -757,8 +773,9 @@ claims:
     opening comment. "Maximum zero lag cross-covariance" can be read as (a) the peak of the
     smoothed cross-covariance within -200 to +200 ms (SEP), (b) its value at zero lag. Whether
     pairs on the same tetrode enter is not stated; both are shown. Reproduced when, under one
-    reading, excited-inhibited pairs are lower than each other category at p < 0.001 by rank-sum;
-    pair counts by the pooled-value rule.
+    reading, excited-inhibited pairs are lower than each other category at p < 0.01 by rank-sum
+    (the paper's threshold, SEP Data Analysis; it reports p < 0.001); pair counts by the
+    pooled-value rule.
   depends_on:
   - fig3-pfc-swr-modulation-fractions
 - id: fig6-swr-correlated-pairs
@@ -787,7 +804,10 @@ claims:
     value: 0.14
     tolerance: 0.014
   criterion: Pairs of simultaneously recorded CA1 cells and SWR-modulated PFC cells with at least 5
-    SWRs in which both spike; SWR correlation and its readings as in the opening comment; pair
+    SWRs in which both spike. Which CA1 cells enter is open; readings are (a) the SWR-modulated
+    CA1 cells (the Figure 3F pairs, built from SWR-modulated CA1 and PFC cells, have the same n of
+    393 and 320), (b) all CA1 cells (the Results speak of "hippocampal and SWR-modulated PFC
+    neurons"). SWR correlation and its readings as in the opening comment; pair
     significant at p < 0.05. Shuffle by permuting the PFC rates across SWRs (the paper's "shuffling
     the rates across SWRs"). Reproduced when the fraction exceeds the shuffled fraction by a z test
     for proportions at p < 0.05 under one reading, with fractions by the pooled-value rule.
@@ -836,8 +856,10 @@ claims:
     value: 0.39
     tolerance: 0.039
   criterion: Pearson r between the peak theta cross-covariance and the SWR correlation, with the
-    test of the regression slope. The group comparison by the shuffle of the SEP (pairs pooled
-    and split at random into groups of the same sizes, 1000 times). Reproduced when r > 0 at p <
+    test of the regression slope. The group comparison is a 1000-shuffle test (Results); the SEP
+    describes the shuffle only for the spatial correlation comparison (pairs pooled and split at
+    random into groups of the same sizes, 1000 times), and the same procedure is assumed here.
+    Reproduced when r > 0 at p <
     0.05 in all pairs and in each group, and the groups do not differ at p < 0.05; r by the
     pooled-value rule.
   depends_on:
@@ -882,6 +904,10 @@ claims:
     test: two-way ANOVA
     p: 0.29
     n: 40 excited and 37 inhibited cells
+  - about: cell count group, in the two-way ANOVA
+    test: two-way ANOVA
+    p: 1.0e-7
+    p_relation: "<"
   criterion: Poisson GLM, log link, PFC 0-200 ms SWR spike count on the CA1 cells' counts; 90/10
     split repeated 5000 times; error is the mean absolute difference of predicted and actual
     counts; shuffled error from predictions shuffled across SWRs; performance is the fractional
@@ -889,7 +915,8 @@ claims:
     converge are dropped. Open, with readings - chance test as (a) a signed-rank test of the
     cells' performance against 0, (b) per cell, real error below shuffled in more than 95% of
     splits; ensemble size groups are shown only in the figure, so (a) tertiles of CA1 ensemble
-    size, (b) three groups of equal size width. Reproduced when performance is above chance,
+    size, (b) three groups of equal size width, (c) 1, 2-3 and more than 3 cells, the groups
+    printed on the ensemble-size axis of the reverse model in Figure S4C. Reproduced when performance is above chance,
     rises with ensemble size (ANOVA p < 0.05), modulated exceeds unmodulated (two-way ANOVA p <
     0.05) and excited and inhibited do not differ at p < 0.05, under one reading.
   depends_on:
@@ -917,8 +944,10 @@ claims:
   criterion: Behavior data are run-epoch time at speed > 5 cm/s with no SWR, in 200 ms bins (SEP,
     GLM), used to train the model; it is then applied to the SWR counts; and SWR-trained models to
     the behavior bins. Performance and readings as in fig6e-glm-swr-prediction. Reproduced when
-    theta-trained performance is above chance, modulated exceeds unmodulated at p < 0.05, and
-    theta-to-SWR exceeds SWR-to-theta performance.
+    theta-trained performance is above chance, rises with ensemble size (cell count group, p <
+    0.05), modulated exceeds unmodulated at p < 0.05 (two-way ANOVA), and theta-to-SWR exceeds
+    SWR-to-theta performance, tested as the paper does by the model type by cell count group
+    interaction in a two-way ANOVA at p < 0.05.
   depends_on:
   - fig6e-glm-swr-prediction
 - id: figs4c-pfc-predicts-ca1
@@ -941,8 +970,10 @@ claims:
     p: 0.7
     p_relation: ">"
   criterion: As in fig6e-glm-swr-prediction with CA1 cells as targets and PFC ensembles of each
-    category as predictors. Reproduced when modulated ensembles predict better than unmodulated at
-    p < 0.05, performance rises with ensemble size, and excited and inhibited do not differ.
+    category as predictors. Ensemble-size groups are 1, 2-3 and more than 3 PFC cells (Figure S4C
+    axis). Reproduced when modulated ensembles predict better than unmodulated at p < 0.05
+    (two-way ANOVA), performance rises with ensemble size (one-way ANOVA, p < 0.05), and excited
+    and inhibited do not differ at p < 0.05 (two-way ANOVA).
   depends_on:
   - fig6e-glm-swr-prediction
 - id: fig7c-spatial-correlation
@@ -1018,7 +1049,7 @@ claims:
     p: 0.18
     p_relation: ">"
   criterion: Only PFC cells whose coverage lies within the interquartile range of SWR-inhibited
-    coverage, in both groups (SEP, Figure S5). The legend's n of 203 for both groups suggests a
+    coverage, in both groups (Figure S5 legend). The legend's n of 203 for both groups suggests a
     subsample of equal size; readings are (a) all pairs within the range, (b) random subsamples
     of the larger group to the size of the smaller. Reproduced when both r > 0 at p < 0.05 and
     the shuffle finds no difference at p < 0.05.
@@ -1038,10 +1069,14 @@ claims:
     n: 17 SWR-modulated and 21 SWR-unmodulated neurons
   criterion: Bayesian decoding of CA1 spikes in 15 ms bins during SWRs with at least 4 active CA1
     cells, Poisson model, significance by 500 time-bin shuffles at p < 0.05; PFC cells with at
-    least 10 significant events; R per cell from the correlation of decoded spatial probability
-    and the PFC rate profile on the replayed trajectory (SEP, Replay analysis). How R is formed
-    across events (spike count against overlap, as Figure S6A orders the raster) is open;
-    readings are (a) Pearson of per-event PFC spike count with per-event overlap, (b) Spearman.
+    least 10 significant events (SEP, Replay analysis). R is the correlation of the decoded
+    spatial probability (summed across the SWR, Figure S6A legend) with the PFC cell's linear
+    rate profile on the replayed trajectory. The SEP calls R a value "for each neuron", while
+    Figure S6A gives an R per replay event and Figure S6B plots, per cell, the "Correlation
+    between R and SWR response"; the figures are followed, with R per event and, per cell, the
+    correlation across events of R with the PFC SWR response. Readings for that correlation are
+    (a) Pearson, (b) Spearman; the SWR response window is not given, and 0-200 ms, the paper's
+    SWR response window elsewhere, is the nearest stated choice.
     The replay score is not given; the line-fit score of the cited Karlsson and Frank (2009) is
     the standard choice. Reproduced when modulated exceeds unmodulated at p < 0.05 by rank-sum
     under one reading. The paper notes the small sample; few cells may qualify in the W-track data
@@ -1174,3 +1209,31 @@ claims:
     Combined for Both Tracks
   criterion: Needs the Y-track animals, which the data set does not hold by its description;
     recorded for coverage and expected to be untestable.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3-pfc-swr-modulation-fractions. The 10-point rule for "approximately equal" numbers of excited and inhibited cells is not in the paper; the criterion now says so and gives the paper's own differences.
+  - fig3de-ca1-precedes-pfc-peak. The absence of an excited-inhibited difference was judged at p < 0.05; the paper sets 0.01 for comparisons between SWR-excited, SWR-inhibited and SWR-unmodulated cells (SEP, Data Analysis), and a claim of absence is judged at the paper's threshold.
+  - fig3e-onset-later-in-pfc. Same change of the absence threshold to 0.01.
+  - fig3f-swr-cross-covariance-lag. Named as open the window for the extremum (nearest stated, -200 to +200 ms) and how the 13 +- 7 ms was formed, with two readings (extremum of the mean, mean of per-pair extrema).
+  - fig4a-preferred-phases. The preferred phase was the von Mises mean, which the paper does not use for it; Figure 4A defines it as the peak of each cell's phase histogram. The von Mises mean is now a variant, and the 45-degree bin is labelled a standard choice.
+  - fig4-swr-modulated-more-theta-locked. The criterion used p < 0.05; the paper's threshold for these three-group comparisons is 0.01, and its own inhibited-unmodulated p = 0.01 is counted significant, so the criterion now uses p <= 0.01 for the differences and p < 0.01 for the absence.
+  - fig4-preferred-phase-concentration. Made explicit that the two absent differences are judged at p < 0.01.
+  - fig5b-mean-rates. Added the missing threshold (p < 0.01) for the excited-inhibited absence.
+  - fig5c-spatial-coverage. Added the missing threshold (p < 0.01) for the inhibited-unmodulated absence.
+  - fig5e-speed-correlation. The absence of an unmodulated difference was judged at p < 0.05; changed to the paper's 0.01 for these comparisons, with 0.05 as a variant.
+  - fig5g-ensemble-cofiring. The criterion required p < 0.001, the reported level; changed to the paper's threshold of 0.01.
+  - fig6-swr-correlated-pairs. Which CA1 cells enter the 713 pairs was not stated; named as open, with readings SWR-modulated CA1 cells (as for Figure 3F, same n) and all CA1 cells.
+  - fig6c-theta-predicts-swr-correlation. The SEP describes its mixed-population shuffle only for the spatial correlation comparison; the criterion now says its use here is an assumption.
+  - fig6e-glm-swr-prediction. Added the reported main effect of cell count group in the two-way ANOVA (p < 10-7), and a reading (c) for the ensemble-size groups, 1, 2-3 and more than 3 cells, as printed on the Figure S4C axis.
+  - fig6e-theta-trained-glm. The criterion omitted the ensemble-size effect and judged the theta-to-SWR against SWR-to-theta comparison by a test the paper does not use; it now requires the cell count effect and uses the paper's model type by cell count interaction in a two-way ANOVA.
+  - figs4c-pfc-predicts-ca1. Added the ensemble-size groups printed on the Figure S4C axis (1, 2-3, more than 3 PFC cells) and the tests and thresholds for each part.
+  - figs5-matched-selectivity. The coverage-matching rule is from the Figure S5 legend, not the SEP; citation corrected.
+  - figs6-replay-content. The criterion took R as a per-cell value correlated with spike counts; Figure S6A gives R per replay event and Figure S6B correlates R with the SWR response per cell. The criterion now follows the figures and names the SEP's conflicting wording.
+  - Open. The checker reports four values not found (1e-11, and 1e-07 in fig3e, fig6e-glm-swr-prediction and fig6e-theta-trained-glm); the text prints the exponents with a replacement character ("10?11", "10?7"), and each was confirmed by reading.
+  - Open. The PDF could not be rendered in this run either, so the ensemble-size groups of Figure 6E remain unread and stay open with three readings.
+  - Open. Whether the paper's 0.01 threshold (SEP, Data Analysis) also covers comparisons that include CA1 or the GLM ANOVAs is not stated; the paper calls p = 0.02 significant for the GLM, so those criteria keep 0.05.
+  - Open. Table S1 sums do not agree exactly (Y-track CA1 48 + 113 + 1 = 162, printed 163; intermediate CA1 69 in Table S1, 70 in the SEP); the W-track numbers used as expected values are unaffected.
