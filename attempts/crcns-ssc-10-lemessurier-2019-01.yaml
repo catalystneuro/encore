@@ -240,7 +240,7 @@ outcomes:
   - The eBW test is not given by the paper or its code; the three readings of the claims file (E1, E2, E3) were run.
     E3 (medians) uses 1,000 shuffles per test, not 10,000, for time, and only with the Methods' responsiveness.
 - claim: figs3-1-l4-nh-tuning
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_lemessurier_2019.ipynb
   output: claim:figs3-1-l4-nh-tuning
   measured:
@@ -250,16 +250,11 @@ outcomes:
     both within tolerance; BW does not differ from L2/3 (54.2%, Fisher p = 0.32). By eBW L4 is lower than L2/3 in all
     three bins from 150 to 375 um under every reading (p < 1e-5); by BW in one or two. The eBW fraction at 0-75 um is
     lower than L2/3 (75.0% against 91.7%, p = 0.036; E2 p = 0.0051), against the claimed absence; under E3 the test is
-    not significant (p = 0.40) but the L4 value is 82.1%, outside tolerance. Every part holds except the eBW absence,
-    which fails through the L2/3 eBW fraction (figs3-1-l23-salt-and-pepper); the criterion''s own partial clause, which
-    needs the absence, is not met, so the outcome is the protocol''s partial (holds only in part).'
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion's partial clause needs both 0-75 um values within tolerance and both absence tests not significant,
-      and no reading meets it. Under E1 and E2 the eBW test is significant (p = 0.036 and 0.0051, Methods' test, C1-C3;
-      0.026 and 0.0055 with the stored p-values); under E3 it is not (p = 0.40) but the L4 eBW value is 82.1%, outside
-      73 +/- 7.3. figs2-1-column-frame and fig4ae-l4-weaker-responses, which fail their partial clauses in the same way,
-      are not reproduced. The round-2 verifier gives not reproduced and retracts its round-1 recommendation of partial.
+    not significant (p = 0.40) but the L4 value is 82.1%, outside tolerance. The criterion''s partial clause needs both
+    0-75 um values within tolerance and both absence tests not significant, and no reading meets it, so the claim is not
+    reproduced (changed from partially reproduced after round 3). Every other part holds; the eBW absence fails through
+    the NH L2/3 eBW fraction (89.6-96.5% against the paper''s 67%, figs3-1-l23-salt-and-pepper), which traces to the
+    unresolved eBW definition, so the failure may lie in the attempt and not in the paper.'
   deviations:
   - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
     claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
@@ -509,24 +504,18 @@ outcomes:
     claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
     BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
 - claim: fig5eh-l23-correlation-gradient-at-edge
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_lemessurier_2019.ipynb
   output: claim:fig5eh-l23-correlation-gradient-at-edge
   notes: 'Methods'' test: outside the column EN minus NH signal -0.091 and noise -0.045 (both p = 0.0001); inside signal
     -0.011 (p = 0.39) and noise -0.045. Stored p-values: outside -0.043 (p = 0.0016) and -0.043 (p = 0.0001), inside
-    +0.018 (p = 0.19) and -0.041. The signal gradient is steeper in EN (outside minus inside difference -0.080, p = 0.0002;
-    stored -0.061, p = 0.0013). The noise gradient is not: the difference is -0.0004 (p = 0.96; stored -0.0020, p = 0.81).
-    The criterion''s comparison passes in both readings on these differences, but a permutation test (not in the criterion)
-    cannot tell them from zero, so the noise half of the claim is not supported.'
-  proposed:
-    outcome: reproduced
-    reason: Every condition of the criterion holds in both responsiveness readings. EN is lower outside the column for
-      signal and noise (p <= 0.0016), the inside signal correlation is not lower (p = 0.39 and 0.19), and the EN minus
-      NH noise difference is more negative outside than inside (-0.0454 against -0.0450 with the Methods' test, -0.0430
-      against -0.0409 with the stored p-values). The round-1 reason for partial, that the Methods' reading failed by
-      0.0002, no longer holds after the re-run. The permutation test of the gradient (noise p = 0.96 and 0.81) is not in
-      the criterion and stays in the notes as a caveat; the criterion's comparison without a test is raised as a question
-      on the claims file.
+    +0.018 (p = 0.19) and -0.041. Every condition of the criterion holds in both readings, so the claim is reproduced
+    (changed from partially reproduced after round 3). The signal gradient is steeper in EN (outside minus inside difference
+    -0.080, p = 0.0002; stored -0.061, p = 0.0013). The noise gradient is not: the difference is -0.0004 (p = 0.96; stored
+    -0.0020, p = 0.81), and the noise reduction is about equal inside and outside. The criterion compares the two differences
+    without a test, so the noise half passes on differences that cannot be told from zero; in round 1 the Methods'' reading
+    failed by 0.0002 (-0.0459 against -0.0461). The paper''s contrast of a substantial reduction outside with a modest one
+    inside is reduced in the criterion to a sign comparison; this is raised as a question on the claims file.'
   deviations:
   - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
     claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
@@ -1151,3 +1140,41 @@ verifications:
     outcome: reproduced
     reason: Agrees; the ANOVA treats overlapping ensembles as independent, which is stated.
     response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The 2 proposed changes of outcome (figs3-1-l4-nh-tuning to not reproduced, fig5eh-l23-correlation-gradient-at-edge
+    to reproduced) and the analysis behind them in the executed notebook after the round-2 revision (cells 52, 54, 61,
+    62, 99 and 110), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/crcns-ssc-10/verifier-3-report.md.
+  results:
+  - claim: figs3-1-l4-nh-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 61. The claims file''s criterion allows partial only when both 0-75 um values are within tolerance and
+      neither Fisher test is significant. No reading in cell 61 meets that. With the Methods'' test on C1-C3, the eBW test
+      is significant under E1 (p = 0.036) and E2 (p = 0.0051). Under E3 it is not (p = 0.40), but L4 eBW is 82.1%, outside
+      73 +/- 7.3. With the stored p-values on C1-C3 the test is significant (0.026, 0.0055). The variant with all L4 ROIs
+      fails the same way. The BW parts and the three eBW distance bins hold in every reading, so only the eBW absence test
+      fails. No choice was tuned to this result. The same strict reading of the partial clause was used for figs2-1-column-frame
+      and fig4ae-l4-weaker-responses. The failure comes from the NH L2/3 eBW fraction being inflated to 89.6-96.5% against
+      the paper''s 67% (cells 54, 61). That traces to the unresolved eBW definition, so it may be a failure of the attempt
+      and not of the paper. The record''s notes and cell 62 say so.'
+    response: Outcome changed to not reproduced and the proposal removed. The notes keep that the failure may lie in the
+      eBW definition. The notebook's conclusions and Summary, the README and the attempt notes updated.
+  - claim: fig5eh-l23-correlation-gradient-at-edge
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 110. Each condition of the criterion holds in both responsiveness readings. EN is lower outside the column
+      for signal (-0.091, p = 0.0001; stored -0.043, p = 0.0016) and noise (-0.045, -0.043, both p = 0.0001). Inside the
+      column, signal is not lower (p = 0.39, 0.19). EN - NH is more negative outside than inside for signal and for noise
+      (-0.0454 vs -0.0450; -0.0430 vs -0.0409). The permutation test of the gradient is not part of the criterion (noise
+      p = 0.96, 0.81), so it cannot decide the outcome. Two caveats. First, the Methods''-test noise comparison changed
+      direction between runs (round 1 -0.0459 against -0.0461, failed); the stored-p reading is identical in both runs
+      and passes, so the outcome does not rest on the flip, but the noise half rests on differences of 0.0004 to 0.002
+      that cannot be told from zero. Second, a likely misreading in the claims file: the paper contrasts "substantially
+      reduced" outside with "only modestly reducing" noise correlation inside, and the criterion reduces that to a sign
+      comparison with no test or margin. Both points belong in the notes. Neither changes the outcome under the criterion
+      as written.'
+    response: Outcome changed to reproduced and the proposal removed. Both caveats are in the notes and the notebook's conclusion
+      (the round-1 flip, the differences that cannot be told from zero, and the sign comparison, already raised in questions/crcns-ssc-10.yaml).
+      The Summary, the README and the attempt notes updated.

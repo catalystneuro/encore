@@ -20,7 +20,7 @@ during deflection of nine whiskers: 36 imaging fields in 25 mice.
 | Barrel size unchanged | Partially reproduced |
 | Salt-and-pepper tuning in NH L2/3 | Partially reproduced (best whisker yes, equivalent best whiskers no) |
 | NH L2/3 in-column tuning (Discussion) | Partially reproduced |
-| NH L4 tuning against L2/3 | Partially reproduced (proposed: not reproduced) |
+| NH L4 tuning against L2/3 | Not reproduced (best whisker yes, equivalent best whiskers no) |
 | EN raises CW tuning in L2/3 | Not reproduced |
 | EN raises CW tuning in L4 | Reproduced |
 | Ranked receptive fields sharper in EN L2/3 | Reproduced |
@@ -34,7 +34,7 @@ during deflection of nine whiskers: 36 imaging fields in 25 mice.
 | L4 responses weaker in EN | Not reproduced |
 | Signal correlations and column boundaries | Partially reproduced |
 | Noise correlations and column boundaries | Partially reproduced |
-| Correlation gradient at the column edge | Partially reproduced (proposed: reproduced) |
+| Correlation gradient at the column edge | Reproduced (noise gradient not significant) |
 | Row and arc boundaries | Partially reproduced |
 | L4 within-column correlations | Partially reproduced |
 | Robustness to neuropil subtraction | Not reproduced |
