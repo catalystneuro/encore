@@ -1,0 +1,1595 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001845",
+  "label": "DANDI:001845"
+ },
+ "page": "datasets/dandi/001845/",
+ "generated": "2026-11-08T19:45:34+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 3,
+  "partially_reproduced": 4,
+  "not_reproduced": 12,
+  "blocked": 15
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001845-shukla-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001845",
+    "version": "0.260526.1807",
+    "doi": "10.48324/dandi.001845/0.260526.1807"
+   },
+   "key": "dandi:001845",
+   "label": "DANDI:001845",
+   "dataset_version": "0.260526.1807",
+   "paper": "10.1523/jneurosci.0143-26.2026",
+   "paper_title": "A Novel Cooperative Behavior Assay in Rats Reveals Distinct Social Coordination Strategies of Increasing Complexity and Social Reciprocity Deficits in a Model of Fragile X Syndrome",
+   "date": "2026-11-03",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41691843888"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001845-shukla-2026",
+   "entry_title": "Cooperative behaviour of WT and Fmr1 rat pairs (Shukla et al. 2026)",
+   "summary": "Few of the main findings held up cleanly in this data. Higher match rate and performance in WT pairs appeared under one reading of the repeated-measures ANOVA and not the other, which the paper does not specify. Lower WT choice entropy held only at 50% reward, while higher exploration efficiency, shorter arrival and departure lags and greater Fmr1 reliance on follower gaze did not reproduce. Equal leadership and rising follower gaze over a trial held. Mixed pairs, sensory deprivation and the cue and virtual-agent tasks are missing from the dataset.",
+   "description": "Tests the findings of Shukla, Rivera, Bladon and Jadhav (2026) on dandiset 001845, which holds the poke events, matches and DeepLabCut positions of 5 WT and 5 Fmr1 rat pairs in the cooperative W-maze task under 100% and 50% reward. It compares coordination, transitions, choice structure, timing at the wells, cross-correlation of arrivals, leadership, gaze and partner history between genotypes. The mixed pairs, visual-cue and virtual-agent tasks are not in the dandiset, and no session is labelled as sensory deprived.",
+   "notebooks": [
+    {
+     "path": "reproduce_shukla_2026.ipynb",
+     "title": "Reproducing Shukla et al. (2026) from dandiset 001845",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1e-match-rate-wt-higher",
+     "statement": "WT pairs reach significantly higher match (coordination) rates than Fmr1 pairs under both the 100% and the 50% reward contingency.",
+     "source": "Figure 1E and legend; Results, A spatial cooperation task for social coordination in rat pairs",
+     "quote": "WT pairs demonstrated significantly higher coordination rates than both Fmr1 pairs ( Fig. 1 E , I )",
+     "statistics": [
+      {
+       "about": "100% contingency, genotype effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 26.8338",
+       "p": 6.289e-07,
+       "n": "5 WT and 5 Fmr1 pairs, 21 sessions"
+      },
+      {
+       "about": "50% contingency, genotype effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,280) = 27.0576",
+       "p": 3.82e-07,
+       "n": "5 WT and 5 Fmr1 pairs, 35 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "WT pairs make more matches (1.31 against 0.86 per minute at 100%, 2.09 against 1.53 at 50%). Reading A (ordinary two-way ANOVA, df 1,168 and 1,280 as printed in the paper) finds the genotype effect in both contingencies under both rate readings (p 0.0004 or below at 100% per minute, below 0.0001 at 50%; per session 0.0015 and 0.0006). Reading B (mixed design, pair as subject, F(1,8)) does not (p 0.18 to 0.45). The claims file blocks a claim when the readings disagree. Question for the authors in the findings.",
+     "deviations": [
+      "The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates; both readings were run (claims file, opening comment) and they disagree.",
+      "Match rate units are not given; per minute of the session epoch and per session were both run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-transition-rate-wt-higher",
+     "statement": "Fmr1 rats make fewer task-related arm transitions than WT rats (they are slower in the task), under both contingencies.",
+     "source": "Figure 1F and legend; Results, A spatial cooperation task for social coordination in rat pairs",
+     "quote": "Fmr1 and mixed pairs were generally slower in the task, as reflected by a reduced number of task-related transitions ( Fig. 1 F , G ; Fig. S1 D )",
+     "statistics": [
+      {
+       "about": "100% contingency, genotype effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,378) = 11.7127",
+       "p": 0.0006886,
+       "n": "10 WT and 10 Fmr1 rats, 21 sessions"
+      },
+      {
+       "about": "50% contingency, genotype effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,630) = 38.3755",
+       "p": 1.054e-09,
+       "n": "10 WT and 10 Fmr1 rats, 35 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "WT rats make more transitions (1.98 against 1.49 per minute at 100%, 3.02 against 2.47 at 50%). Reading A finds the genotype effect in both contingencies and both rate readings (p below 0.0001 to 0.00055, df 1,378 and 1,630 as in the paper), also with raw sequences (p from below 0.00001 to 0.027); reading B with rat as subject does not (p 0.07 to 0.42).",
+     "deviations": [
+      "The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates; both readings were run (claims file, opening comment) and they disagree.",
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-match-transition-regression",
+     "statement": "In the 50% condition, match rate rises linearly with transition rate in both genotypes, with a steeper slope and a better fit in WT (beta 0.79, R2 0.74) than in Fmr1 (beta 0.64, R2 0.44).",
+     "source": "Figure 1G legend",
+     "quote": "Linear regression between cooperative match event rates and transition rates for 50% reward condition",
+     "statistics": [
+      {
+       "about": "WT",
+       "test": "linear regression",
+       "statistic": "beta = 0.79, R2 = 0.74",
+       "p": 3.696e-104,
+       "n": "35 sessions"
+      },
+      {
+       "about": "Fmr1",
+       "test": "linear regression",
+       "statistic": "beta = 0.64, R2 = 0.44",
+       "p": 1.907e-79
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Under reading (b), one point per rat and session with the pair's matches, per minute, WT slope 0.818 and R2 0.795, Fmr1 slope 0.649 and R2 0.684, both p below 0.0001; both slopes and the WT R2 are within tolerance, the Fmr1 R2 is not (tolerance 0.396 to 0.484). WT has the steeper slope and better fit, as claimed. Readings (a) and (c) give slopes 0.39 to 0.47. With the raw sequences the fits are much weaker (readings (a) and (b), slopes 0.027 to 0.068, R2 0.028 to 0.121), so the outcome rests on the cleaning. Measured values are reading (b), per minute.",
+     "deviations": [
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s.",
+      "The legend's n = 35 sessions does not fit its p-values; readings of the points (a), (b), (c) and of the rate units were all run as the criterion lists."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1h-above-chance-late",
+     "statement": "Both WT and Fmr1 pairs coordinate no better than chance early in training, and above chance late in training, by a permutation test that circularly shifts one rat's sequence of well visits.",
+     "source": "Figure 1H and legend; Results, A spatial cooperation task for social coordination in rat pairs",
+     "quote": "Both WT and Fmr1 rat pairs exhibited performance indistinguishable from chance during early training on both reward contingency tasks; however, by late training, their performance improved significantly, exceeding chance levels ( Fig. 1 H , I )",
+     "statistics": [
+      {
+       "about": "representative WT pair, late 50% session against null",
+       "test": "circular time-shift permutation test, 1,000 permutations",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "representative Fmr1 pair, late 50% session against null",
+       "test": "circular time-shift permutation test, 1,000 permutations",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Reading (a), first 100% session early and last analysed 50% session late. Shifting the first rat, 4 of 5 WT and 3 of 5 Fmr1 pairs are at chance early and above chance late; shifting the second, 5 of 5 WT and 3 of 5 Fmr1. FXM108-FXM109 (p 0.17 and 0.18) and XFN1-XFN3 (p 0.061 and 0.086) are not above chance in the last 50% session. Reading (b) gives at most 1 pair per genotype. Both shifted-rat readings give partial. The rebuilt matches agree with the dataset's counts overall (r = 0.994 over 560 sessions) but find more matches in first 100% sessions (12 against 3 for FXM101-FXM110, 7 against 1 for FXM201-FXM202). With the observed performance taken from the dataset's matches and the null from the rebuilt rule, reading (a) gives 5 of 5 WT and 4 of 5 Fmr1 pairs under both shifted-rat readings (XFN1-XFN3 still fails late, p 0.061 and 0.086), still partial. This variant does not test the early part, since in 5 of the 10 first 100% sessions the dataset holds 1 to 3 matches where the rebuilt rule, which also gives the null, finds 3 to 12, so p is 1.000 and the pair is at chance early by construction.",
+     "deviations": [
+      "The dataset's matches cannot be recomputed under a time shift; matches are rebuilt from the pokes (overlapping visits at corresponding wells with a hold tolerance chosen as the one that best fits the dataset's match counts, 6 s, and no match at the well of the previous match, a rule the dataset's matches follow). Observed and shifted performance both use the rebuilt rule.",
+      "Shifts are uniform over the session length (claims file, the standard choice).",
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1i-performance-wt-higher",
+     "statement": "Cooperative performance (matches relative to transitions, Eq. 1) is significantly lower in Fmr1 pairs than in WT pairs under both contingencies, so their impairment is not only due to slower transitions.",
+     "source": "Figure 1I and legend; Results, A spatial cooperation task for social coordination in rat pairs",
+     "quote": "Performance metrics for WT and Fmr1 \u2212/y pairs in 100% (left) and 50% (right) reward contingencies shows significant impairment in Fmr1 \u2212/y pairs compared with WT pairs",
+     "statistics": [
+      {
+       "about": "100% contingency, genotype effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 7.4888",
+       "p": 0.006876,
+       "n": "5 WT and 5 Fmr1 pairs, 21 sessions"
+      },
+      {
+       "about": "50% contingency, genotype effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,280) = 7.5354",
+       "p": 0.006441,
+       "n": "5 WT and 5 Fmr1 pairs, 35 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Performance is higher in WT pairs (53.9 against 46.4% at 100%, 64.2 against 58.5% at 50%). Reading A finds the genotype effect in both contingencies (p = 0.015 and 0.001); reading B does not (p = 0.40 and 0.43). With raw sequences reading A finds it at 100% only (p = 0.016; 50% p = 0.097) and reading B in neither (p = 0.41 and 0.69), so both ANOVA readings fail at 50% and agree, which would give not_reproduced. The blocked outcome rests on the crosstalk removal (deviation); the schema does not allow assumed on a blocked outcome.",
+     "deviations": [
+      "The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates; both readings were run (claims file, opening comment) and they disagree.",
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s.",
+      "Eq. 1 taken as 200 x matches over the pair's transitions (claims file)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1j-partner-location-predicts-choice",
+     "statement": "A multinomial logistic regression predicts a rat's next choice from its partner's current location above chance in both genotypes, and more accurately in WT than in Fmr1 rats, under both contingencies.",
+     "source": "Figure 1J and legend; Results, A spatial cooperation task for social coordination in rat pairs",
+     "quote": "This predictive relationship exceeded chance levels across all rat pairs. However, prediction accuracy was significantly higher in WT pairs compared with both Fmr1 and mixed-genotype pairs",
+     "statistics": [
+      {
+       "about": "100%, WT real against WT shuffled",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 100.0",
+       "p": 0.0002
+      },
+      {
+       "about": "100%, Fmr1 real against Fmr1 shuffled",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 100.0",
+       "p": 0.0002
+      },
+      {
+       "about": "100%, WT real against Fmr1 real",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 80.00",
+       "p": 0.0257
+      },
+      {
+       "about": "50%, WT real against WT shuffled",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 100.0",
+       "p": 0.0002
+      },
+      {
+       "about": "50%, Fmr1 real against Fmr1 shuffled",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 100.0",
+       "p": 0.0002
+      },
+      {
+       "about": "50%, WT real against Fmr1 real",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 80.00",
+       "p": 0.0257
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "No reading gives the claim. At 100% WT real accuracy does not exceed Fmr1 under any reading (Mann-Whitney p 0.12 to 0.27) and Fmr1 real accuracy does not exceed its shuffled accuracy under any reading (p 0.24 to 0.79). At 50% WT exceeds Fmr1 only under reading (b, p2) (U = 81, p = 0.021). WT real exceeds shuffled in 11 of 12 readings; at 50% Fmr1 does under readings (a) and (b) (p 0.007 to 0.031). Pooled accuracies at 100% (reading b) are 0.34 to 0.62 in Fmr1 and 0.40 to 0.71 in WT rats. Reading (a) reads positions; in the aligned sessions only (4 rats per genotype, pooled) no comparison is significant (p 0.20 to 0.89).",
+     "deviations": [
+      "The null uses the class a one-hot multinomial logistic regression predicts for each partner well, taken as the most frequent next well in the training folds, with stratified folds that assign each class's samples in turn; it predicts the same class as scikit-learn in 98% of real folds. Real accuracies use scikit-learn with StratifiedKFold(5) as in the Methods. This shortcut keeps 1,000 shuffles per rat and session within the time limit.",
+      "The moment the partner's location is read and the pooling of sessions are not given; readings (a), (b), (c) and p1, p2 were all run as the criterion lists. In the per-session reading p2, sessions with fewer than 5 samples in every class are dropped.",
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-mixed-pairs-impaired",
+     "statement": "Mixed WT-Fmr1 pairs also reach lower coordination rates and performance, make fewer transitions and have lower partner-based prediction accuracy than WT pairs.",
+     "source": "Results, A spatial cooperation task for social coordination in rat pairs; Figure S1A to S1D (not read)",
+     "quote": "WT pairs demonstrated significantly higher coordination rates than both Fmr1 pairs ( Fig. 1 E , I ) and mixed pairs ( Fig. S1 A ) under both 100% and 50% reward contingencies ... prediction accuracy was significantly higher in WT pairs compared with both Fmr1 and mixed-genotype pairs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no mixed WT-Fmr1 pair. Its 20 subjects form 10 pairs, each of one genotype (subject genotype field of every file), and no other dandiset of the lab with these sessions was found on the archive.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-opaque-barrier-lowers-performance",
+     "statement": "Replacing the transparent divider with an opaque one (with white noise) lowers the performance of WT and Fmr1 pairs compared with standard 50% sessions, with no genotype difference in this effect.",
+     "source": "Figure 2B and legend; Results, Cooperation deficits in Fmr1 rats are not due to sensory or learning deficits",
+     "quote": "Compared with the 50% reward condition, rats showed a significant reduction in performance in the SD sessions ( Fig. 2 B , C )",
+     "statistics": [
+      {
+       "about": "session-wise, condition effect",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,4) = 9.5069",
+       "p": 0.03681,
+       "n": "3 WT and 3 Fmr1 pairs"
+      },
+      {
+       "about": "session-wise, genotype x condition",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,4) = 0.0181",
+       "p": 0.89953
+      },
+      {
+       "about": "WT, transparent (last 9 sessions) against opaque",
+       "test": "Paired t test",
+       "statistic": "t = 12.074",
+       "p": 0.0068,
+       "n": "3 WT pairs"
+      },
+      {
+       "about": "Fmr1, transparent (last 9 sessions) against opaque",
+       "test": "Paired t test",
+       "statistic": "t = 5.227",
+       "p": 0.0347,
+       "n": "3 Fmr1 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "No session is labelled sensory deprived. All 1,766 files, the 1,120 analysed and the 646 later ones read for this check (416 at 50%, 230 at 100%), name only the 100% or 50% contingency in their description and hold the same task fields and event series, with no barrier or noise field. The later files include up to 53 further 50% sessions per pair and 100% sessions dated after the pair's first 50% session (17 for ER1-ER2, 2 to 5 for three other pairs). Some later 50% sessions have much lower performance than the pair's last analysed sessions (minimum 0.0 for FXM105-FXM107, 15.4 for FXM102-FXM103, 14.6 for XFN2-XFN4), which sensory-deprived sessions could explain, but nothing in the files marks them, so whether the sessions are in the dandiset cannot be decided.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-opaque-barrier-mixed-pairs",
+     "statement": "In mixed pairs the opaque barrier also lowers performance (condition effect with WT pairs), though the paired test within mixed pairs is not significant.",
+     "source": "Figure 2C and legend",
+     "quote": "Comparison of mean performance of rat pairs between standard and sensory-deprived conditions",
+     "statistics": [
+      {
+       "about": "session-wise, condition effect, WT and mixed pairs",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,6) = 7.8071",
+       "p": 0.03141,
+       "n": "3 WT and 5 mixed pairs"
+      },
+      {
+       "about": "mixed pairs, standard against sensory-deprived",
+       "test": "Paired t test",
+       "statistic": "t = 2.050",
+       "p": 0.0625,
+       "n": "5 mixed pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the mixed pairs, which are not in the dandiset; the sensory-deprived sessions are not labelled either (fig2b).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-visual-cue-learning-similar",
+     "statement": "Both WT and Fmr1 rats learn the visual cue-reward association task; performance rises over sessions at 100% reward, and there is no significant genotype effect or genotype x session interaction at 100% or 50%. The Results also say Fmr1 rats learned more slowly, which the reported interaction tests do not show.",
+     "source": "Figure 2E and legend; Results, Cooperation deficits in Fmr1 rats are not due to sensory or learning deficits",
+     "quote": "Both WT and Fmr1 rats learnt to approach the reward-associated arm based on the visual cue ( Fig. 2 E ), demonstrating intact visual cue-reward associative learning",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Linear mixed effects model",
+       "statistic": "F(1,7.7) = 0.825",
+       "p": 0.391,
+       "n": "4 WT and 4 Fmr1 rats"
+      },
+      {
+       "about": "100%, session",
+       "test": "Linear mixed effects model",
+       "statistic": "F(1,152.68) = 233.229",
+       "p": 1.5e-32
+      },
+      {
+       "about": "100%, genotype x session",
+       "test": "Linear mixed effects model",
+       "statistic": "F(1,152.68) = 1.524",
+       "p": 0.219
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Linear mixed effects model",
+       "statistic": "F(1,32.31) = 1.661",
+       "p": 0.207
+      },
+      {
+       "about": "50%, genotype x session",
+       "test": "Linear mixed effects model",
+       "statistic": "F(1,34.32) = 1.045",
+       "p": 0.314
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The visual-cue association task (single rats, LED cues) is not in the dandiset; every file is a cooperative pair session.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-cue-latency-wt-shorter",
+     "statement": "In the visual-cue task WT rats respond to the cue with shorter latency than Fmr1 rats over pooled responses (100%, 22.0 against 42.2 s; 50%, 14.0 against 28.4 s); in the session-wise mixed-effects models with rat as random intercept the genotype effect is not significant (p = 0.058 at 100%, 0.064 at 50%).",
+     "source": "Figure 2F and legend",
+     "quote": "WT rats respond to the visual LED cue with lower latency relative to Fmr1 \u2212/y rats under both 100% (left) and 50% (right) reward contingencies",
+     "statistics": [
+      {
+       "about": "100%",
+       "test": "Mann-Whitney U test",
+       "p": 6.9e-227,
+       "n": "2,371 Fmr1 and 4,554 WT responses"
+      },
+      {
+       "about": "50%",
+       "test": "Mann-Whitney U test",
+       "p": 1.3e-82,
+       "n": "862 Fmr1 and 1,359 WT responses"
+      },
+      {
+       "about": "100%, session-wise latency, genotype",
+       "test": "Linear mixed effects model",
+       "statistic": "F(1,6.18) = 5.386",
+       "p": 0.058
+      },
+      {
+       "about": "50%, session-wise latency, genotype",
+       "test": "Mixed effects model",
+       "statistic": "F(1,6.18) = 5.050",
+       "p": 0.064
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The visual-cue association task is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-triplets-by-contingency",
+     "statement": "Under 100% reward rats mostly alternate between two arms, while under 50% they explore all three arms through the optimal 1-2-3 or 1-3-2 triplets, especially WT rats.",
+     "source": "Figure 3B and 3C; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Parsing each session's transitions into nonoverlapping triplets revealed that rats in the 100% condition predominantly alternated between two adjacent arms, while those in the 50% condition engaged in comprehensive exploration of all three arms through either the 1-2-3 or 1-3-2 sequences, especially for WT pairs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Under both readings of optimal, the WT median optimal fraction at 50% exceeds its 100% value (o1 0.807 against 0.468; o2 0.269 against 0.171) and the Fmr1 median at 50% (0.807 against 0.687; 0.269 against 0.259). At 100% the WT median alternation fraction is 0.532 but the Fmr1 median is 0.369 (4 of 10 Fmr1 rats above 0.5), below 0.5 under both readings, so the part that rats predominantly alternate at 100% fails. The criterion requires all three parts and names no partial outcome.",
+     "deviations": [
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s.",
+      "Predominantly is read as more than half (claims file)."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-entropy-wt-lower",
+     "statement": "The entropy of WT rats' choice sequences is lower than that of Fmr1 rats, a genotype effect under both contingencies. The legend describes a larger decrease with learning in WT rats, but the genotype x session interaction is not significant at either contingency.",
+     "source": "Figure 3D and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Session-wise comparison of entropy of choice sequences of WT and Fmr1 \u2212/y rats during 100% (left) and 50% (right) reward contingencies, showing significantly higher decrease in entropy with learning for WT rats",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,378) = 9.0872",
+       "p": 0.002748,
+       "n": "10 WT and 10 Fmr1 rats"
+      },
+      {
+       "about": "100%, genotype x session (F value not printed)",
+       "test": "Two-way RM ANOVA",
+       "p": 0.565329
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,630) = 112.9572",
+       "p": 2e-16,
+       "p_relation": "<",
+       "n": "10 WT and 10 Fmr1 rats"
+      },
+      {
+       "about": "50%, genotype x session",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(34,630) = 1.2891",
+       "p": 0.12879
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "At 50% WT sample entropy is lower than Fmr1 under every reading (m = 2, 0.250 against 0.380, reading A p below 0.0001, reading B p = 0.035; m = 3, 0.240 against 0.365, A p below 0.0001, B p = 0.037). At 100% no reading finds a genotype effect (A p = 0.22 and 0.059, B p = 0.59 and 0.33). Genotype x session terms (reading A) are not significant (p 0.24 to 0.74), as the paper reports. Entropy falls over sessions in both genotypes (slopes -0.019 to -0.0025 per session). 9 (m = 2) and 27 (m = 3) of 1,120 rat sessions have undefined sample entropy and are dropped.",
+     "deviations": [
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s.",
+      "Sample entropy with Chebyshev distance and self-matches excluded (Richman and Moorman), m = 2 and 3, r = 0.2 SD (claims file)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-exploration-efficiency-wt-higher",
+     "statement": "WT rats have higher exploration efficiency (fraction of optimal choice triplets) than Fmr1 rats, strongly in the 50% condition and modestly in the 100% condition.",
+     "source": "Figure 3E and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Exploration efficiencies of WT and Fmr1 \u2212/y rats during 100% (left) and 50% (right) contingency sessions, showing significantly higher exploration efficiency for WT rats in the 50% condition",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,378) = 4.0001",
+       "p": 0.04621,
+       "n": "10 WT and 10 Fmr1 rats, 21 sessions"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,594) = 42.6457",
+       "p": 1.41e-10,
+       "n": "10 WT and 10 Fmr1 rats, 33 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "The criterion needs a WT-higher genotype effect at 50% under every reading. With only 1-2-3 and 1-3-2 counted as optimal (o2) there is no difference at 50% (0.273 against 0.262, reading A p = 0.50 and 0.76; reading B finds none either). With every triplet that visits all three wells counted (o1), WT efficiency is higher (0.773 against 0.692, 35 sessions) and reading A finds it (p below 0.0001), reading B does not (p = 0.086 and 0.10 for 35 and 33 sessions). At 100% no reading finds an effect (A p = 0.058 for o1, 0.34 for o2).",
+     "deviations": [
+      "The Methods list eight triplets and call only 1-2-3 and 1-3-2 optimal, while their rationale counts any visit to all three wells; both readings were run, and the claim fails under o2 with either ANOVA reading.",
+      "The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates; both readings were run (claims file, opening comment).",
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-virtual-agent-performance-similar",
+     "statement": "When foraging with a virtual agent under a 50% contingency, WT and Fmr1 rats perform alike.",
+     "source": "Figure 3G and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "In this task, both WT and Fmr1 rats achieved similar levels of task performance with comparable learning rates ( Fig. 3 G )",
+     "statistics": [
+      {
+       "about": "genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,56) = 0.0032",
+       "p": 0.9549,
+       "n": "4 WT and 5 Fmr1 rats, 8 sessions"
+      },
+      {
+       "about": "mean performance across genotypes",
+       "test": "Mann-Whitney U test",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The virtual-agent task (single rats) is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-virtual-agent-efficiency-similar",
+     "statement": "With a virtual agent, WT and Fmr1 rats have similar exploration efficiency; both adopt structured transition strategies.",
+     "source": "Figure 3H and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Notably, both genotypes independently demonstrated the capacity to adopt such structured transition strategies when interacting with the virtual agent ( Fig. 3 H )",
+     "statistics": [
+      {
+       "about": "genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,56) = 0.0771",
+       "p": 0.7823,
+       "n": "4 WT and 5 Fmr1 rats, 8 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The virtual-agent task is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2-jaccard-similarity",
+     "statement": "Within pairs, choice sequences are similar for both genotypes under 100% reward, but under 50% reward WT pairs have more similar choice sequences than Fmr1 pairs; in the sensory-deprived condition similarity falls in both genotypes alike.",
+     "source": "Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior; Figure S2 (not read)",
+     "quote": "Under the 100% reward condition, Jaccard similarity ( Fig. S2 A ; see Materials and Methods) between the choice sequences of paired rats was high for both genotypes ( Fig. S2 B,C ). In contrast, under the 50% probabilistic condition, WT pairs exhibited significantly higher similarity in their choice sequences compared with Fmr1 pairs ... similarity decreased comparably across genotypes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "At 50% WT similarity does not exceed Fmr1 under any of the nine readings. With transition sets and overlapping-triplet sets it is lower (0.750 against 0.893, U = 2, p = 0.032, transitions, all entries; 0.500 against 0.651, p = 0.032, overlapping triplets); with nonoverlapping triplets the difference is not significant (p 0.22 to 0.31). At 100% similarity is high in both genotypes for transitions (0.81 against 0.86) with no difference under any reading (p 0.22 to 1.0). The sensory-deprived part cannot be tested.",
+     "deviations": [
+      "The test is the claims file's stand-in (Mann-Whitney on 5 and 5 pair values); the paper's test is in the unread supplement.",
+      "Pokes within 0.5 s of a poke at another well by the same rat are dropped as sensor crosstalk before visits are formed; this is an assumption of the attempt (the paper describes no such step), made because wells 47 cm apart cannot be poked within 0.5 s.",
+      "Sessions used are the first 21 and first 35 of each contingency (Methods, Behavioral quantification), not all sessions."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-arrival-lag-wt-shorter",
+     "statement": "During match events WT pairs arrive at the wells with shorter lags between the two rats than Fmr1 pairs, under both contingencies; in WT pairs the lag falls over 100% training.",
+     "source": "Figure 4B and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "We observed that, under the 100% reward contingency, the mean arrival lag during match events progressively decreased in WT pairs, whereas it remained consistently elevated in Fmr1 pairs ( Fig. 4 B ). This difference persisted under the 50% reward contingency, with WT pairs exhibiting significantly shorter arrival lags than Fmr1 pairs",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 7.6763",
+       "p": 0.006225,
+       "n": "5 WT and 5 Fmr1 pairs"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,280) = 28.1429",
+       "p": 2.293e-07,
+       "n": "5 WT and 5 Fmr1 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Reading (a), by pokes, fails: WT lags are shorter at 100% (16.6 against 23.3 s, A p = 0.018, B p = 0.19) but not at 50% (12.1 against 13.5 s, A p = 0.43, B p = 0.73). Reading (b), by head position with 40 px in each video's own pixels, fails at 100% (15.4 against 6.3 s, A p = 0.39, B p = 0.46) and gives WT shorter at 50% (4.0 against 6.0 s, A p below 0.0001, B p = 0.021). Both readings fail, so they agree and the claim is not reproduced. The 100% WT mean of reading (b) comes from one session, FXM101-FXM110 session 15, with a mean lag of 803 s (largest 1,378 s) where its other sessions have 2 to 9 s, probably a tracking fault. With the four pair sessions that have a lag over 100 s removed, a threshold chosen after seeing that session, reading (b) passes (4.7 against 6.3 s at 100%, A p = 0.0026, B p = 0.015) and the readings would disagree; this gave the blocked outcome of rounds 1 and 2, changed after the third verification round. Reading (a) does not use head positions and fails at 50% whatever is done with that session. With the per-session median lag, which needs no removal, reading (b) still fails at 100% (13.7 against 4.5 s, A p = 0.39, B p = 0.42); the median by pokes gives WT shorter under reading A in both contingencies (p = 0.033 and below 0.0001) and not under reading B (p = 0.15 and 0.14). In the 189 pair sessions where head and pokes agree (2 pairs per genotype), reading (b) gives WT shorter at 50% (A p = 0.0033, B p = 0.34) and not at 100% (A p = 0.59), and reading (a) gives A p = 0.0009 at 50% and 0.47 at 100%. The WT lag falls over the 100% sessions by pokes (-1.0 s per session, p = 0.00015) and not by head position (p = 0.59). Head-position arrivals exist for 14,853 of 20,162 matches.",
+     "deviations": [
+      "Arrival lag is not defined in the Methods; the two readings of the claims file were run.",
+      "The head-position reading uses well centres taken as the median head position at the rat's pokes in that session.",
+      "The 40 px radius is taken in each video's own pixels, measured per file by regressing the processed head position (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108 and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant with the same result (100% A p = 0.37).",
+      "Reading (b) is also shown with the pair sessions that have a head-position lag over 100 s (4 of 560) removed, a threshold chosen after seeing FXM101-FXM110 session 15 (mean lag 803 s); such lags come from runs of tracked positions near a well lasting tens of minutes. The outcome uses every session, as the claims file measures the lag, with the per-session median as a reading that needs no removal."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-departure-lag-wt-shorter",
+     "statement": "After match events WT rats depart from the wells with shorter lags between partners than Fmr1 rats, under both contingencies.",
+     "source": "Figure 4C and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "A similar pattern emerged for mean departure lag following match events, with WT rats departing more promptly than Fmr1 rats ( Fig. 4 C )",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 17.0918",
+       "p": 5.612e-05,
+       "n": "5 WT and 5 Fmr1 pairs"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,264) = 21.1217",
+       "p": 6.686e-06,
+       "n": "5 WT and 5 Fmr1 pairs, 33 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Reading (a), by pokes, finds no genotype effect (A p = 0.17 at 100%, 0.64 and 0.71 at 50% for 33 and 35 sessions; B p = 0.56, 0.81, 0.85). Reading (b), by head position with every session, fails at 100% (15.2 against 11.1 s, A p = 0.67, B p = 0.84) and gives WT shorter at 50% under reading A (4.7 against 8.0 s, p below 0.0001) and not under reading B (p = 0.084 and 0.086). Both readings fail, so they agree and the claim is not reproduced. With the four pair sessions that have a lag over 100 s removed (fig4b), reading (b) gives WT shorter in both contingencies under reading A (4.1 against 9.3 s at 100%, p = 0.0007; 4.7 against 8.0 s at 50%, p below 0.0001), not under reading B (p = 0.19 and 0.084); this gave the blocked outcome of rounds 1 and 2, changed after the third verification round. With the per-session median lag, which needs no removal, reading (b) fails at 100% (A p = 0.69); the median by pokes gives WT shorter under reading A (p = 0.011 at 100%, 0.033 and 0.029 at 50%) and not under reading B (p = 0.25 to 0.37). In aligned sessions only, reading (b) gives 50% A p = 0.0004 and 100% A p = 0.60, and reading (a) 100% A p = 0.39 and 50% A p = 0.76.",
+     "deviations": [
+      "Departure lag is not defined in the Methods; the two readings of the claims file were run.",
+      "The 40 px radius is taken in each video's own pixels, measured per file by regressing the processed head position (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108 and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant.",
+      "Reading (b) is also shown with the pair sessions that have a head-position lag over 100 s removed, as in fig4b (a threshold chosen after seeing the outlier session); the outcome uses every session, with the per-session median as a reading that needs no removal."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-dwell-time",
+     "statement": "Fmr1 rats spend longer at reward wells per visit than WT rats (Results), though the legend's genotype effects are not significant (p = 0.25 at 100%, p = 0.063 at 50%).",
+     "source": "Figure 4D and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Additionally, Fmr1 rats exhibited longer dwell times at reward wells compared with WT rats ( Fig. 4 D )",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,378) = 1.3544",
+       "p": 0.2451,
+       "n": "10 WT and 10 Fmr1 rats"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,630) = 3.4673",
+       "p": 0.06306,
+       "n": "10 WT and 10 Fmr1 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "By pokes (a), Fmr1 means exceed WT means in both contingencies (33.4 against 30.1 s; 18.3 against 16.9 s) and the genotype effect of reading A is not significant (p = 0.21 and 0.35), as the legend reports. By head position (b), with 40 px in each video's own pixels, Fmr1 is higher at 100% (5.25 against 5.12 s, p = 0.62) and WT at 50% (5.54 against 5.37 s, p = 0.45), so the readings disagree at 50%. Reading (a) is adopted; in the aligned sessions reading (b) agrees with it (Fmr1 6.95 against 6.53 s and 6.62 against 6.56 s, A p = 0.15 and 0.97), and with 6.4 cm for every rat Fmr1 is higher in both (5.25 against 5.04 s; 5.35 against 5.34 s). The Results sentence of a longer Fmr1 dwell holds as a difference of means only. The criteria of fig4b and fig4c block a claim when the readings disagree, so neither reading is preferred there; this criterion has no such clause, so a reading is adopted. In fig4b and fig4c both readings fail with every session, so no preference is needed there.",
+     "deviations": [
+      "Dwell readings (a) first to last poke and (b) runs of head within 40 px of a well were both run.",
+      "The 40 px radius is taken in each video's own pixels, measured per file by regressing the processed head position (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108 and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant.",
+      "Where the readings disagree (reading (b) at 50%), reading (a) is adopted, an assumption: the pokes are the task's own record of a visit, and the head positions disagree with the pokes in 6 of 10 pairs (data check). Question for the authors in the findings."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4eg-cross-correlation-wt-higher",
+     "statement": "Cross-correlation of the two rats' well-arrival times has peaks above shuffled controls in both genotypes, but correlation is higher in WT pairs and only WT pairs show prominent peaks near zero lag (near-synchronous transitions).",
+     "source": "Figure 4E to 4G and legends; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Cross-correlation of arrival times at reward wells revealed significant peaks at multiple lags for both groups, exceeding shuffled controls ... Importantly, only WT rats showed prominent peaks near zero lag ... Fmr1 rats lacked this short-lag synchrony",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Linear mixed-effects model",
+       "statistic": "F(1,8524) = 18.3661",
+       "p": 1.843e-05
+      },
+      {
+       "about": "100%, genotype x lag",
+       "test": "Linear mixed-effects model",
+       "statistic": "F(40,8524) = 2.9710",
+       "p": 1.147e-09
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Linear mixed-effects model",
+       "statistic": "F(1,14094) = 94.3281",
+       "p": 2.2e-16,
+       "p_relation": "<"
+      },
+      {
+       "about": "50%, genotype x lag",
+       "test": "Linear mixed-effects model",
+       "statistic": "F(40,14094) = 4.7761",
+       "p": 2.2e-16,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "The criterion needs a WT-higher genotype effect in both contingencies. At 50% it is not significant under any reading (p 0.29 to 0.45; 0.35 with 6.4 cm for every rat); at 100% it is significant only when returns to the same well are not counted (p = 0.023 and 0.030). The rest holds: WT coefficients exceed Fmr1 in every reading and contingency and at lags -1 to +1 s (frame sampling, returns counted, 0.078 against 0.057 at 100%, 0.085 against 0.070 at 50%), and the genotype x lag interaction is significant in every reading over all sessions and both contingencies (p 0.0002 to 0.026 at 100%, below 0.0001 at 50%; in aligned sessions only p = 0.17 at 100%). At 100% the WT near-zero mean (0.078) is above the WT mean shuffled coefficient (0.066), the Fmr1 mean (0.057) close to its own (0.055). In aligned sessions only the genotype effect is not significant (p = 0.82 and 0.87).",
+     "deviations": [
+      "Mixed model by statsmodels MixedLM with sum coding and Wald tests (the paper's software is not stated); df 8,487 and 14,227 against the paper's 8,524 and 14,094.",
+      "Open details of the claims file (well centres, downsampling, returns after null, shuffle) were run as it lists them; the shuffle averages 20 circular shifts per session.",
+      "The 40 px radius is taken in each video's own pixels, measured per file by regressing the processed head position (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108 and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-peak-lag-distribution",
+     "statement": "The distribution of lags at peak cross-correlation differs between WT and Fmr1 pairs in the 50% condition but not in the 100% condition.",
+     "source": "Figure 4H and legend; Results, Development of structured spatial and temporal coordination strategies supports cooperative behavior",
+     "quote": "Correspondingly, the distribution of lags at peak correlation coefficients differed between WT and Fmr1 rats, particularly under the 50% condition ( Fig. 4 H )",
+     "statistics": [
+      {
+       "about": "100%",
+       "test": "KS test",
+       "p": 0.05,
+       "p_relation": ">"
+      },
+      {
+       "about": "50%",
+       "test": "KS test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Under the adopted reading (frame at each second, every change into a well an arrival, 40 px in each video's own pixels, lags -20 to +20 s) the distributions differ in neither contingency (KS p = 0.15 at 100%, 0.38 at 50%). With lags -20 to +20 s the 50% test is not below 0.01 under any reading (p 0.024 to 0.81), so the claim fails whichever reading is taken for the range of Figure 4G. Over all lags one reading gives the claimed pattern (frame sampling, returns not counted, p = 0.11 and 0.0026).",
+     "deviations": [
+      "Adopted as an assumption, downsampling by the frame at each second and counting every change into a well as an arrival, as the Methods text reads, with the -20 to +20 s range of Figure 4G; all eight readings are shown. Question for the authors in the findings.",
+      "The 40 px radius is taken in each video's own pixels, measured per file by regressing the processed head position (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108 and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4i-peak-correlation-wt-higher",
+     "statement": "Session-wise peak cross-correlation coefficients are higher in WT than in Fmr1 pairs under both contingencies.",
+     "source": "Figure 4I and legend",
+     "quote": "Session wise peak correlation coefficients for WT and Fmr1 \u2212/y rat pairs, showing greater temporal coordination for WT rat pairs",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 13.1922",
+       "p": 0.0003731,
+       "n": "5 WT and 5 Fmr1 pairs"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,280) = 18.7522",
+       "p": 2.075e-05,
+       "n": "5 WT and 5 Fmr1 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "WT peak coefficients are higher in every reading (0.143 against 0.122 at 100%, 0.148 against 0.136 at 50%, frame sampling, lags to 20 s). Reading A finds the genotype effect in both contingencies in all 8 readings (p 0.011 or below); reading B in 3 of 8 (returns not counted: frame sampling with lags to 20 s, p = 0.007 and 0.044, and all lags, p = 0.003 and 0.031; modal sampling with lags to 20 s, p = 0.010 and 0.044).",
+     "deviations": [
+      "The legends name a two-way RM ANOVA but their df fit an ordinary two-way ANOVA with sessions as replicates; both readings were run (claims file, opening comment) and they disagree.",
+      "The 40 px radius is taken in each video's own pixels, measured per file by regressing the processed head position (cm) on the raw DeepLabCut head position (pixels): 6.4 cm for most rats and 10 cm for FXM105, FXM107, FXM108 and FXM109 (the camera device says 0.0016 m per pixel in every file); FXM102 and FXM103 have no raw pose and take the device value, an assumption. The first round used 6.4 cm for every rat, shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-leading-near-half",
+     "statement": "Leadership is not fixed; on average rats of both genotypes lead about half of the match events, with no genotype difference in the mean probability of leading estimated by a state-space model.",
+     "source": "Figure 5C and 5D and legends; Results, Dynamic turn-taking in the initiation of coordinated responses",
+     "quote": "On average, both genotypes led approximately half of the match events under both 100% and 50% reward contingencies ( Fig. 5 D , E )",
+     "statistics": [
+      {
+       "about": "mean probability of leading, WT against Fmr1, each contingency",
+       "test": "Mann-Whitney U test",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "The genotype means of the state-space mean probability of leading are 0.500 in both genotypes and contingencies; Mann-Whitney U = 50, p = 1.0 in each. This follows by construction in same-genotype pairs; rat means range from 0.290 to 0.710 at 100% and 0.315 to 0.685 at 50%. 7 of 20,157 matches are ties and dropped.",
+     "deviations": [
+      "The initial state of the state-space model is fixed at 0 with b0 = 0 (claims file; Smith et al. 2004 estimate it)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-leading-difference-50",
+     "statement": "The within-pair difference in the proportion of leading events does not differ by genotype at 100%, but shows a small significant genotype effect at 50%, present at the start of training and gone later in training (Results).",
+     "source": "Figure 5E and legend; Results, Dynamic turn-taking in the initiation of coordinated responses",
+     "quote": "However, under the 50% reward condition, a small but significant genotype-specific difference emerged, with WT and Fmr1 rats differing significantly in their likelihood of assuming the leader role at the start of training ( Fig. 5 E )",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 1.6179",
+       "p": 0.2051,
+       "n": "5 WT and 5 Fmr1 pairs"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,264) = 4.1638",
+       "p": 0.04229,
+       "n": "5 WT and 5 Fmr1 pairs, 33 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "At 50% there is no genotype effect on the within-pair difference in leading under any reading (absolute difference, A p = 0.70 and 0.73, B p = 0.88 and 0.89; signed, A p = 0.061 and 0.070). At 100% there is none (A p = 0.49), as reported. The absolute difference is larger in WT pairs in the first five 50% sessions (0.397 against 0.253) and similar in the last five (0.271 against 0.290), the pattern the Results describe, without significance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-leadership-history",
+     "statement": "A rat's chance of leading on a given match event depends on whether it led on the preceding events.",
+     "source": "Results, Dynamic turn-taking in the initiation of coordinated responses; Figure S3C and S3D (not read)",
+     "quote": "Furthermore, the likelihood of a rat assuming the leader role on a given trial was modulated by its leadership status over the preceding trials",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Blocked by its criterion until the supplement is read. Shown only, at 100% P(lead | led) 0.473 against P(lead | followed) 0.527 (Wilcoxon p = 0.0012, 20 rats), at 50% 0.497 against 0.503 (p = 0.60); in a logistic regression the lead status two and three events back predicts leading (p below 1e-11).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-marl-partner-aware",
+     "statement": "In a multiagent reinforcement learning model of the task, partner-aware agents learn to coordinate far better than partner-unaware and random agents, reaching about 70% coordination efficiency after the switch to 50% reward.",
+     "source": "Figure 6C and legend; Results, Differential reliance on two hierarchical strategies for successful coordination",
+     "quote": "Partner-aware agent pairs achieved markedly higher performance than both partner-unaware and random agent pairs ( Fig. 6 C )",
+     "statistics": [
+      {
+       "about": "agent type",
+       "test": "Repeated-measures ANOVA",
+       "statistic": "F(2,198) = 225.34",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "partner-aware against partner-unaware and random",
+       "test": "post hoc Wilcoxon tests",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "agent type",
+       "test": "Friedman test",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "A simulation without published code. The learning rate, discount factor, timesteps per episode, number of runs, the state encoding and the definition of coordination efficiency (% of optimal matches) are not given, and the reported 70% depends on them, so any setting would be arbitrary. Not run. It uses no recorded data (claims file, data with_inputs).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-fmr1-more-asynchronous-matches",
+     "statement": "Under 50% reward, a larger proportion of Fmr1 pairs' matches occur in asynchronous trials (rats starting at different wells) than WT pairs' matches; at 100% there is no genotype difference.",
+     "source": "Figure 7A and 7B and legend; Results, Differential reliance on two hierarchical strategies for successful coordination",
+     "quote": "whereas Fmr1 pairs showed a higher proportion of matches occurring during asynchronous trials, particularly under the 50% reward condition ( Fig. 7 A , B )",
+     "statistics": [
+      {
+       "about": "100%, genotype",
+       "test": "Two-way RM ANOVA",
+       "statistic": "F(1,168) = 1.3859",
+       "p": 0.2407586,
+       "n": "5 WT and 5 Fmr1 pairs"
+      },
+      {
+       "about": "50%, genotype",
+       "test": "Mixed-effects linear model",
+       "statistic": "F(1,280) = 26.002",
+       "p": 6.292e-07,
+       "n": "5 WT and 5 Fmr1 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "At 50% a larger proportion of Fmr1 matches are asynchronous (0.363 against 0.192); the mixed model with a pair random intercept gives F(1,279) = 4.18, p = 0.041, and reading A p below 0.0001. At 100% Fmr1 is also higher (0.359 against 0.231) and reading A, the test the criterion names, finds the difference (F(1,158) = 14.2, p = 0.00024; reading B p = 0.11), so the absence part fails. The criterion requires both parts and names no partial outcome.",
+     "deviations": [
+      "A match is synchronous when the two rats' previous visits were at corresponding wells, asynchronous otherwise; an assumption from the Results' description of the trial types (no definition in the Methods).",
+      "Mixed model by statsmodels MixedLM with session categorical, sum coding, Wald test."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-trial-duration-vs-performance",
+     "statement": "Session mean trial duration is negatively correlated with cooperative performance in both genotypes (WT R = -0.51, Fmr1 R = -0.40).",
+     "source": "Figure 7C and legend; Results, Differential reliance on two hierarchical strategies for successful coordination",
+     "quote": "Next, we found that session-level mean trial duration was negatively correlated with cooperative performance, indicating that shorter, more efficient trials were associated with higher performance ( Fig. 7 C )",
+     "statistics": [
+      {
+       "about": "WT",
+       "test": "Pearson's correlation",
+       "statistic": "R = -0.51",
+       "p": 2.79e-29
+      },
+      {
+       "about": "Fmr1",
+       "test": "Pearson's correlation",
+       "statistic": "R = -0.40",
+       "p": 5.11e-08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Session mean trial duration and performance are negatively correlated in both genotypes under every reading (R -0.31 to -0.70, p below 0.0001). No reading puts both within tolerance. Asynchronous trials, one point per pair and session, R = -0.39 (WT) and -0.51 (Fmr1); per rat and session -0.31 and -0.42 (Fmr1 within tolerance); intervals between matches -0.69 and -0.64; between transitions -0.67 and -0.70. Measured values are the first reading (asynchronous trials, pair and session).",
+     "deviations": [
+      "The trial is not defined for this panel; the three readings of the claims file and both point readings were run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7e-gaze-final-quartile",
+     "statement": "Follower-only gaze toward the leader increases from the first to the later quartiles of a trial and is greatest just before departure; mutual gaze shows no quartile effect, and there is no genotype effect.",
+     "source": "Figure 7D and 7E and legend; Results, Differential reliance on two hierarchical strategies for successful coordination",
+     "quote": "A mixed-effects ANOVA revealed significant effects of quartile for follower-only gaze",
+     "statistics": [
+      {
+       "about": "quartile, follower-only gaze",
+       "test": "mixed-effects ANOVA",
+       "statistic": "F(3,54) = 11.77, partial eta squared = 0.40",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "quartile, mutual gaze",
+       "test": "mixed-effects ANOVA",
+       "statistic": "F(3,54) = 0.56",
+       "p": 0.05,
+       "p_relation": ">"
+      },
+      {
+       "about": "follower-only gaze, quartile 1 against quartiles 2, 3 and 4",
+       "test": "post hoc comparisons",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Follower-only gaze rises over the trial (Fmr1 0.085 to 0.139, WT 0.119 to 0.156) with a quartile effect F(3,54) = 19.3, p below 0.001 (Greenhouse-Geisser p = 0.00006; partial eta squared 0.52 against 0.40), highest in quartile 4 in both genotypes; Holm-corrected tests put quartile 1 below quartiles 2, 3 and 4 (p = 0.00007, 0.0006, 0.0006). Mutual gaze has no quartile effect (F(3,54) = 1.26, p = 0.30). Genotype and interactions are not significant (p = 0.22 and 0.58; mutual 0.78 and 0.95). 16,119 trials; 3,984 shorter than 0.5 s dropped. The head positions agree poorly with the pokes in 6 of 10 pairs (findings). In the aligned sessions only (2 pairs per genotype, 8 rats, 4,964 trials) the follower-only quartile effect holds (F(3,18) = 19.4, p = 0.00001; Holm p = 0.005, 0.001 and 0.005 for quartile 1 against 2, 3 and 4), but quartile 3 is highest in WT rats (0.147 against 0.140 in quartile 4) and mutual gaze has a quartile effect (F(3,18) = 10.1, p = 0.0004, Greenhouse-Geisser p = 0.007), so two parts of the criterion fail there. The criterion's reading is all analysed sessions; the outcome is kept on it and rests on the positions of the six pairs that disagree with the pokes.",
+     "deviations": [
+      "Asynchronous trials are built from poke visits (both rats at noncorresponding wells, the first to leave is the follower, the trial ends at its last poke); an assumption from the Methods' description, which gives no operational rule.",
+      "Gaze uses the dataset's processed neck, head and body positions (likelihood below 0.6 removed, interpolated, smoothed with sigma 0.15 s, as in the Methods).",
+      "Post hoc tests are paired t tests by pingouin."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7g-gaze-100-late",
+     "statement": "Under 100% reward, follower-only gaze becomes a stronger predictor of matching over training, driven by Fmr1 pairs; in the late block the Fmr1-minus-WT contrast is positive for follower-only gaze (0.34) and mutual gaze (0.60), while early and mid contrasts are not significant.",
+     "source": "Figure 7F and 7G and legends; Results, Differential reliance on two hierarchical strategies for successful coordination; Table S1 (not read)",
+     "quote": "Under the 100% reward condition, the models revealed that follower-only gaze became an increasingly strong predictor of successful cooperation across training ( Fig. 7 G , left; Table S1 ). Post hoc comparisons indicated that this effect was driven primarily by Fmr1 pairs",
+     "statistics": [
+      {
+       "about": "follower-only gaze, late, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.34 \u00b1 0.15",
+       "p": 0.02,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "mutual gaze, late, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.60 \u00b1 0.28",
+       "p": 0.03,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "follower-only gaze, early, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = -0.03 \u00b1 0.21",
+       "p": 0.89
+      },
+      {
+       "about": "follower-only gaze, mid, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.03 \u00b1 0.18",
+       "p": 0.87
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "At 100% the late Fmr1 minus WT contrast is negative for follower-only gaze (-0.565 as a fraction, p = 0.11; -0.127 z-scored, p = 0.14) and small for mutual gaze (0.194, p = 0.73; 0.031, p = 0.72). Early and mid follower-only contrasts are not significant (p 0.07 to 0.77). In the aligned sessions only the late contrasts are not significant either (follower-only -0.92, p = 0.097; mutual 1.79, p = 0.29). Measured values are thirds of 7 sessions, fractions.",
+     "deviations": [
+      "GLMM fitted by variational Bayes (statsmodels BinomialBayesMixedGLM), random intercepts for rat and session; glmmTMB is not in the environment. Each contrast is one coefficient, so no Tukey adjustment applies.",
+      "Asynchronous trials as in fig7e (assumption)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7h-gaze-50-fmr1-follower",
+     "statement": "Under 50% reward, Fmr1 pairs depend more than WT pairs on follower-only gaze in every training block (contrasts 0.38, 0.39 and 0.44), while mutual-gaze contrasts are not significant.",
+     "source": "Figure 7H and legend; Results, Differential reliance on two hierarchical strategies for successful coordination; Table S2 (not read)",
+     "quote": "Fmr1 pairs remained significantly more dependent on follower-only gaze, i.e., the follower monitoring the leader throughout, compared with WT pairs ( Fig. 7 H , left)",
+     "statistics": [
+      {
+       "about": "follower-only gaze, early, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.38 \u00b1 0.10",
+       "p": 4.28e-05,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "follower-only gaze, mid, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.39 \u00b1 0.09",
+       "p": 6.76e-06,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "follower-only gaze, late, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.44 \u00b1 0.10",
+       "p": 4.96e-06,
+       "corrected": "Tukey"
+      },
+      {
+       "about": "mutual gaze, late, Fmr1 - WT",
+       "test": "GLMM post hoc contrast",
+       "statistic": "estimate = 0.20 \u00b1 0.18",
+       "p": 0.28
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "At 50% the early follower-only contrast is positive and significant (0.477 and 0.495 as fractions, p = 0.016 and 0.017; 0.111 and 0.115 z-scored, p = 0.029 and 0.030), but the mid and late contrasts are negative under every reading (-0.06 to -0.43). The early mutual-gaze contrast is significant under the 11-12-12 blocks (p = 0.003). In the aligned sessions only no follower-only contrast is significant (p 0.17 to 0.96). Measured values are blocks of 12, 12 and 11 sessions, fractions.",
+     "deviations": [
+      "As fig7g."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-partner-history-cooperation",
+     "statement": "After a partner's cooperative choice, WT rats are more likely to cooperate under both contingencies, Fmr1 rats only under 100% reward.",
+     "source": "Figure 8B and legend; Results, Partner cooperation history shapes cooperative behavior",
+     "quote": "For the 100% reward contingency, both WT and Fmr1 rats were more likely to cooperate after their partner had just done so in the previous trial ( Fig. 8 B ). In contrast, for the 50% reward contingency, only WT rats adjusted their behavior based on recent partner choices",
+     "statistics": [
+      {
+       "about": "WT, 100%",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "WT, 50%",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "Fmr1, 100%",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "Fmr1, 50%",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Blocked because the criterion's test is decided by how follower trials are built from the arrivals, not by any coupling between the rats. With the Methods rule every group cooperates more after a partner's cooperation (WT 0.672 against 0.425 at 100%, 0.682 against 0.375 at 50%, p = 0.002; Fmr1 0.528 against 0.390, p = 0.014, and 0.528 against 0.369, p = 0.002), so the Fmr1 absence at 50% fails. On the null, one rat's visits circularly shifted in time (20 shifts per session), the same test gives the same pattern in every group (10 of 10 rats, p = 0.002; WT at 100% 0.482 against 0.319). The first round's rule has the opposite bias (null 0.176 against 0.506), which produced its reversed result. Against the null, the excess is significant in WT rats (+0.083 at 100%, +0.069 at 50%, p = 0.014 each) and not in Fmr1 rats (-0.006, p = 0.92; +0.034, p = 0.16); with the first round's rule the excess is significant at 100% in both genotypes (p = 0.002 and 0.020) and at 50% in neither, so the null-corrected readings disagree too. Restricted to trials in which cooperation is possible, no group has an excess over the null (p 0.70 to 1.0).",
+     "deviations": [
+      "Follower trials as the Methods describe them (\"one rat (the leader) enters an arm first; the other rat (the follower) then decides whether to choose the matching arm\", Partner behavior history analysis): a trial opens at the next arrival at a new well by either rat, which leads, and closes at the other rat's next arrival, which cooperates when its new well corresponds to the leader's current well. The operational rule is an assumption; the first round's rule (every arrival by a rat whose partner made the previous arrival) is shown as a variant.",
+      "A null from circular shifts of the second rat's visits within the session (the shift test of the Methods' Figure 1H) was added to check the test; it is not in the paper."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8d-fmr1-longer-delta-t",
+     "statement": "The time between the partner's most recent follower choice and the subject's current follower choice is longer in Fmr1 than in WT rats under both contingencies.",
+     "source": "Figure 8D and legend",
+     "quote": "Across both contingencies, Fmr1 \u2212/y rats showed significantly longer partner-referenced \u0394 t intervals than WT rats",
+     "statistics": [
+      {
+       "about": "100%",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 6,515,700",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "50%",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 4.25 \u00d7 10^6",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Blocked as fig8b-partner-history-cooperation, on which the claims file makes it depend. Shown: \u0394t is longer in Fmr1 rats in both contingencies with the Methods rule (medians 63.6 against 47.0 s at 100%, p = 1.0e-24; 44.6 against 33.0 s at 50%, p = 2.5e-79; U = 5,407,193 and 40,434,726) and with the first round's rule (16.3 against 11.4 s, p = 1.5e-77; 12.7 against 9.6 s, p = 4.9e-216). The difference is also present on the shifted null (95.7 against 80.4 s at 100%), so it reflects the slower arrivals of Fmr1 rats. The paper's U values (6,515,700 and 4.25 x 10^6) are not matched.",
+     "deviations": [
+      "Follower trials as the Methods describe them (\"one rat (the leader) enters an arm first; the other rat (the follower) then decides whether to choose the matching arm\", Partner behavior history analysis): a trial opens at the next arrival at a new well by either rat, which leads, and closes at the other rat's next arrival, which cooperates when its new well corresponds to the leader's current well. The operational rule is an assumption; the first round's rule (every arrival by a rat whose partner made the previous arrival) is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8e-glmm-partner-cooperation",
+     "statement": "In a GLMM of cooperation on each follower trial, the partner's previous cooperation has a larger effect in WT rats at 50% (beta 0.77) than in Fmr1 rats (beta 0.13), a significant genotype interaction (beta 0.64); at 100% both genotypes show an effect (WT 0.36, Fmr1 0.26).",
+     "source": "Figure 8E and legend; Results, Partner cooperation history shapes cooperative behavior",
+     "quote": "However, under the 50% contingency only WT rats adjusted their choices based on recent partner behavior, while Fmr1 rats did not ( Fig. 8 E )",
+     "statistics": [
+      {
+       "about": "WT, 100%, partner cooperation",
+       "test": "GLMM fixed effect",
+       "statistic": "beta = 0.36",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "WT, 50%, partner cooperation",
+       "test": "GLMM fixed effect",
+       "statistic": "beta = 0.77",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "Fmr1, 100%, partner cooperation",
+       "test": "GLMM fixed effect",
+       "statistic": "beta = 0.26",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "Fmr1, 50%, partner cooperation",
+       "test": "GLMM fixed effect",
+       "statistic": "beta = 0.13",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "genotype x partner cooperation, 50%",
+       "test": "GLMM fixed effect",
+       "statistic": "beta = 0.64",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "reproduce_shukla_2026.ipynb",
+     "notes": "Blocked as fig8b-partner-history-cooperation, on which it depends. Shown: with the Methods rule the partner's previous cooperation raises the log-odds of cooperating in both genotypes and contingencies under every reading (WT 0.51 to 0.89 at 100%, 0.82 to 1.44 at 50%; Fmr1 0.54 to 0.98 and 0.62 to 0.88; p below 0.0001 by variational Bayes), and the 50% WT minus Fmr1 term is 0.20 to 0.57 (p below 0.0001). By maximum likelihood with standard errors clustered by rat it is 0.18 (p = 0.34). The same model on the shifted null gives partner betas of 0.50 to 0.75 (p below 0.0001).",
+     "deviations": [
+      "GLMM fitted by variational Bayes (statsmodels BinomialBayesMixedGLM; pymer4 and R are not in the environment), with a maximum-likelihood logistic regression with rat-clustered standard errors as a check. The seconds reading of \u0394t is fitted in minutes.",
+      "Follower trials as the Methods describe them (\"one rat (the leader) enters an arm first; the other rat (the follower) then decides whether to choose the matching arm\", Partner behavior history analysis): a trial opens at the next arrival at a new well by either rat, which leads, and closes at the other rat's next arrival, which cooperates when its new well corresponds to the leader's current well. The operational rule is an assumption; the first round's rule (every arrival by a rat whose partner made the previous arrival) is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds only the cooperative sessions of the 5 WT and 5 Fmr1 pairs. The mixed WT-Fmr1 pairs, the visual-cue association task and the virtual-agent task are not in it, though the paper says all data underlying its results will be uploaded to this dandiset. Six of the paper's findings cannot be tested for this reason.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No session is labelled sensory deprived (opaque barrier and white noise). The paper interspersed such sessions among the 50% sessions; the 646 files after the analysed sessions carry the same descriptions and fields as the others, and some have much lower performance (as low as 0.0), so the sessions may be in the dandiset without a label. Two findings (Figure 2B, the sensory-deprived part of Figure S2) cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "About 4.8% of pokes (82,245 of 1,716,630 in the analysed sessions) fall within 0.5 s of a poke by the same rat at another well, physically impossible for wells 47 cm apart, and they come in bursts (up to 128,979 pokes and 2,447 transitions in one rat session; 140 of 1,120 rat sessions affected, most in pairs FXM102-FXM103, FXM105-FXM107 and FXM108-FXM109). Used as recorded they inflate transition counts and change the performance of Eq. 1.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The matched_poke events follow a rule the files do not describe. No match is at the well of the previous match (0 of 19,602 consecutive pairs), at 100% as at 50%, and matches cannot be recomputed from the poke events because only poke onsets are stored, not how long the nose is held.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Session numbers have gaps (FXM102 and FXM103 lack 100% session 18 and 50% session 61, FXM105 and FXM107 lack 100% sessions 9 and 15 and 50% session 10, XFN2 and XFN4 lack 50% session 81), and the files hold up to 56 sessions at 100% and 88 at 50% where the paper analyses the first 21 and 35. Which sessions the paper used, and why some are missing, is not stated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Session epochs last 10.7 to 57.2 min (median 21.7) against the paper's 20 to 30 min, and in 6.6% of rat sessions some pokes fall outside the session epoch.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's code repository (JadhavLab/Social_CoOp_Behavior) holds only a README naming version 0.260519.1308, an early partial upload with 1,007 of the 2,649 assets of the latest published version; no analysis code is published.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors. Was the two-way RM ANOVA fitted with sessions as replicates (the printed df, F(1,168) for 10 pairs over 21 sessions) or with pairs or rats as subjects? Under the latter most genotype effects in Figures 1, 3 and 4 are not significant here. What are the units of match and transition rates (Figure 1E to 1G)?",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors on event definitions the Methods leave open. How were matches recomputed for the circular-shift test of Figure 1H, which sessions are early and late there, and how were the arrival and departure times of Figure 4B and 4C, the downsampling and arrival rule of Figure 4E to 4I, the sample entropy parameters, the sets compared in the Jaccard analysis, and the moment the partner's location is read in Figure 1J defined? Were sessions with very long arrival lags excluded, and is dwell time measured from pokes or from head position?",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors on trial definitions. How were synchronous and asynchronous matches (Figure 7B), asynchronous gaze trials (Figure 7D to 7H) and follower trials (Figure 8) built from the events? Follower trials built from the sequence of arrivals give a partner-history effect on sessions in which one rat is shifted in time: positive with the rule the Methods describe (the first rat to arrive leads, the other's next arrival is its choice), negative when every arrival after the partner's is a follower trial. How did the paper's analysis separate the partner's influence from this dependence?",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors on the reinforcement learning model (Figure 6). What were the learning rate, discount factor, timesteps per episode, number of runs, state encoding and the definition of coordination efficiency? Without them the simulation cannot be repeated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors on session numbering. Were the sensory-deprived sessions given session numbers of the 50% contingency? Low-performance sessions sit between normal ones in the same pairs, also inside the first 35 50% sessions this attempt analyses (one at 10.0% among the last 9 analysed 50% sessions of FXM105-FXM107, whose median is 39.4%). If such sessions are among the first 35, they enter every 50% result for those pairs.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The camera device gives 0.0016 m per pixel in every file, but the processed positions of rats FXM105, FXM107, FXM108 and FXM109 were converted at 0.0025 m per pixel (regression of the processed head position on the raw DeepLabCut head position). Files of FXM102 and FXM103, and some files of other rats, hold no raw pose estimation.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In 6 of 10 pairs (ER1-ER2, FXM102-FXM103, FXM105-FXM107, FXM108-FXM109, XFN1-XFN3, XFN2-XFN4) the processed head position agrees poorly with the poke events: at the poke times only 39 to 62% of head positions (subject means) are within 20 cm of the median position at pokes on the poked well, against 99.9% or more in the other four pairs, and no shift of the poke times up to 30 s improves it. Measures built on positions (well occupancy, arrivals, gaze) are uncertain for these pairs.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run (executed notebook with the conclusions and summary removed, the helper module and the claims file); the verifier also queried the archive API for all assets and the metadata of all 1,766 NWB files and tested the helper functions on synthetic inputs.",
+     "agreed": 28,
+     "of": 35,
+     "disagreements": [
+      {
+       "claim": "fig2b-opaque-barrier-lowers-performance",
+       "outcome": "blocked",
+       "reason": "No file in the whole version mentions an SD session (checked all 1,766). Late, unopened sessions could hold SD sessions without a label, so the reason is missing metadata (metadata_insufficient), not data_missing as the notebook gives."
+      },
+      {
+       "claim": "fig3c-triplets-by-contingency",
+       "outcome": "not_reproduced",
+       "reason": "The median Fmr1 alternation fraction at 100% is 0.369, below 0.5, under both readings of optimal. The other two conditions hold."
+      },
+      {
+       "claim": "fig3e-exploration-efficiency-wt-higher",
+       "outcome": "not_reproduced",
+       "reason": "Under o2 there is no 50% effect under A or B (p >= 0.50). Under o1, A is significant and B is not (p = 0.10 and 0.086). At 100% the difference goes the wrong way under o1."
+      },
+      {
+       "claim": "fig4eg-cross-correlation-wt-higher",
+       "outcome": "not_reproduced",
+       "reason": "No reading gives a significant genotype effect in both contingencies. The 50% p is 0.30 to 0.35 throughout. The near-zero-lag WT mean does exceed Fmr1 in every reading. The WT minus Fmr1 difference in shuffled coefficients is about the same as in the observed coefficients, so a genotype gap in the normalised coefficient is not evidence of coordination."
+      },
+      {
+       "claim": "fig7b-fmr1-more-asynchronous-matches",
+       "outcome": "not_reproduced",
+       "reason": "The 50% part holds (A p < 1e-6, mixed model p = 0.041, Fmr1 higher). The 100% absence fails: A gives p = 0.0002 with Fmr1 higher."
+      },
+      {
+       "claim": "fig8b-partner-history-cooperation",
+       "outcome": "blocked",
+       "reason": "The follower-trial construction creates the opposite effect by itself: if the partner's last trial was cooperative, the focal rat's next move must leave that well and is counted as non-cooperative. The same rule on two independent random walkers gives P(coop | partner cooperated) = 0.20 against 0.39. The Methods describe a trial as one rat entering an arm first and the other then deciding, which this rule does not implement. The outputs neither support nor refute the claim."
+      },
+      {
+       "claim": "fig8e-glmm-partner-cooperation",
+       "outcome": "blocked",
+       "reason": "The partner betas come out strongly negative (about -1.0 to -1.4), which is the same artifact as fig8b. The variational Bayes p-values tend to be anti-conservative and cannot be checked against the paper's."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the author-revise-1 run (commit d3b752d0), the helper module, the entry README, the claims file, the attempt record and the round-1 report. Report in transcripts/001845/verifier-2-report.md. Two general points were also corrected, the Summary sentence on the clock check (it used every 7th session) and the run time in the README and cell 0 (the verifier's run printed 12.4 min).",
+     "agreed": 35,
+     "of": 35,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The 2 proposed changes of outcome (fig4b and fig4c, blocked to not reproduced) and the analysis behind them in the executed notebook after the round-2 revision (commit 6f0a378e, cells 40, 42 and 45), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/001845/verifier-3-report.md.",
+     "agreed": 2,
+     "of": 2,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001845-shukla-2026",
+   "type": "reproduction",
+   "title": "Cooperative behaviour of WT and Fmr1 rat pairs (Shukla et al. 2026)",
+   "description": "Tests the findings of Shukla, Rivera, Bladon and Jadhav (2026) on dandiset 001845, which holds the poke events, matches and DeepLabCut positions of 5 WT and 5 Fmr1 rat pairs in the cooperative W-maze task under 100% and 50% reward. It compares coordination, transitions, choice structure, timing at the wells, cross-correlation of arrivals, leadership, gaze and partner history between genotypes. The mixed pairs, visual-cue and virtual-agent tasks are not in the dandiset, and no session is labelled as sensory deprived.",
+   "datasets": [
+    "dandi:001845"
+   ],
+   "papers": [
+    "10.1523/jneurosci.0143-26.2026"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_shukla_2026.ipynb",
+     "title": "Reproducing Shukla et al. (2026) from dandiset 001845",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}
