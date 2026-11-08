@@ -61,7 +61,7 @@ import fsspec
 import numpy as np
 import pandas as pd
 import scipy.io as sio
-from scipy import stats
+from scipy import optimize, stats
 
 DATASET = "crcns:alm-1"
 DATASET_DOI = "10.6080/K0RF5RZT"
@@ -469,6 +469,37 @@ def latency_mode_stats(lat, half_width_ms=1.0, bin_ms=0.2):
     mode = e[np.argmax(h)] + bin_ms / 2
     near = lat[np.abs(lat - mode) <= half_width_ms]
     return near.mean(), near.std(ddof=1) if len(near) > 1 else np.nan, len(near), len(lat)
+
+
+def latency_peak_fit(lat, broad=False, max_ms=10.0):
+    """Maximum-likelihood fit to the first-spike latencies (0 to `max_ms`) of a Gaussian peak
+    plus a uniform background, with no window. With `broad`, a second Gaussian (s.d. 1 to 5 ms)
+    takes up a broad stimulus-locked hump, so the narrow peak's s.d. is the jitter. Returns the
+    peak's mean, s.d. and weight, and the number of latencies."""
+    x = lat[np.isfinite(lat)]
+    mode = latency_mode(x)
+
+    def comp(mu, sd):
+        return stats.norm.pdf(x, mu, sd) / (stats.norm.cdf(max_ms, mu, sd) - stats.norm.cdf(0, mu, sd))
+
+    def nll(p):
+        w = 1 / (1 + np.exp(-p[2]))
+        dens = w * comp(p[0], np.exp(p[1]))
+        if broad:
+            wb = (1 - w) / (1 + np.exp(-p[5]))
+            dens = dens + wb * comp(p[3], np.exp(p[4])) + (1 - w - wb) / max_ms
+        else:
+            dens = dens + (1 - w) / max_ms
+        return -np.sum(np.log(dens + 1e-300))
+
+    f0 = np.mean(np.abs(x - mode) <= 1)
+    p0 = [mode, np.log(0.2), np.log(f0 / (1 - f0 + 1e-3))]
+    bounds = [(mode - 1, mode + 1), (np.log(0.02), np.log(1.0 if broad else 3.0)), (-8, 8)]
+    if broad:
+        p0 += [mode, np.log(1.5), 0.0]
+        bounds += [(0, max_ms), (np.log(1.0), np.log(5.0)), (-8, 8)]
+    r = optimize.minimize(nll, p0, bounds=bounds, method="L-BFGS-B")
+    return r.x[0], np.exp(r.x[1]), 1 / (1 + np.exp(-r.x[2])), len(x)
 
 
 BIN_S = 0.01
