@@ -105,9 +105,11 @@ def render(path: Path, title: str, omit=("paper/",), home: str | None = None) ->
                        + ", ".join(f"`{t}`" for t in msg.get("tools", [])) + ".\n")
             continue
         if kind == "result":
+            cost = msg.get("total_cost_usd")
             out.append(f"## End of run\n\n{msg.get('num_turns')} turns, "
                        f"{round((msg.get('duration_ms') or 0) / 60000)} minutes, "
-                       f"result: {msg.get('subtype')}.\n")
+                       + (f"${cost:,.2f} at API prices, " if cost is not None else "")
+                       + f"result: {msg.get('subtype')}.\n")
             continue
         who = "Subagent" if subagent else ("Prompt" if kind == "user" else "Agent")
         content = msg.get("content")

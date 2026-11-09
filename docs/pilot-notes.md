@@ -6,7 +6,7 @@ the schemas and the design after the pilot (docs/design.md, "Phasing").
 ## 000582, Sargolini et al. 2006 (2026-10-13)
 
 Outcome: two claims reproduced, one partially. See
-[`attempts/000582-sargolini-2006-01.yaml`](../attempts/000582-sargolini-2006-01.yaml).
+[`attempts/sargolini-2006-01.yaml`](../attempts/sargolini-2006-01.yaml).
 
 ### What happened
 
@@ -79,7 +79,7 @@ watching.
 ## 000127, Chowdhury, Glaser & Miller 2020 (2026-10-13)
 
 Outcome: four claims reproduced, two partially, four blocked. See
-[`attempts/000127-chowdhury-2020-01.yaml`](../attempts/000127-chowdhury-2020-01.yaml).
+[`attempts/chowdhury-2020-01.yaml`](../attempts/chowdhury-2020-01.yaml).
 
 ### What happened
 
@@ -161,7 +161,7 @@ many tokens as the attempt.
 Outcome after verification: five claims reproduced, one partially, fourteen
 blocked. Before verification it was five reproduced, two partially, two not
 reproduced and eleven blocked. See
-[`attempts/000207-zheng-2022-01.yaml`](../attempts/000207-zheng-2022-01.yaml).
+[`attempts/zheng-2022-01.yaml`](../attempts/zheng-2022-01.yaml).
 
 This attempt was made by an agent given only the repository and
 [`protocol.md`](protocol.md), to test whether the protocol can be followed by
@@ -260,7 +260,7 @@ notebook takes about five minutes locally.
 
 Outcome: twelve claims reproduced, one not reproduced, seven blocked, the
 same before and after verification. See
-[`attempts/000147-guan-2022-01.yaml`](../attempts/000147-guan-2022-01.yaml).
+[`attempts/guan-2022-01.yaml`](../attempts/guan-2022-01.yaml).
 
 The agent was given the repository and protocol `pilot-2`, and told not to
 read these notes or other attempts. It ran as a subagent of a person's local
@@ -404,7 +404,7 @@ Point 9 (the notebook kernel) was a tool bug and is fixed.
 
 Outcome: seven claims reproduced, two partially, three not reproduced and
 twelve blocked. See
-[`attempts/001097-liu-2024-01.yaml`](../attempts/001097-liu-2024-01.yaml)
+[`attempts/liu-2024-01.yaml`](../attempts/liu-2024-01.yaml)
 and the transcripts in [`transcripts/001097/`](../transcripts/001097).
 
 Every run, the author's included, was made in the Agent run workflow. Ten of
@@ -522,7 +522,7 @@ fitting are left as they are; new attempts use `not_runnable`.
 
 Outcome: four claims reproduced, four partially, six not reproduced and
 twelve blocked, unchanged through both rounds. See
-[`attempts/000625-geiller-2020-01.yaml`](../attempts/000625-geiller-2020-01.yaml)
+[`attempts/geiller-2020-01.yaml`](../attempts/geiller-2020-01.yaml)
 and [`transcripts/000625/`](../transcripts/000625).
 
 The target was chosen to test `data_missing`, and did: the dandiset holds one
@@ -601,7 +601,7 @@ lists the repository under `inputs`. Its outcomes are unchanged.
 Outcome, on the dandiset alone: three claims reproduced, one partially and
 nine blocked. With outside data, counted apart: two reproduced, one
 partially and one blocked. No outcome changed through either round. See
-[`attempts/000035-scala-2021-01.yaml`](../attempts/000035-scala-2021-01.yaml)
+[`attempts/scala-2021-01.yaml`](../attempts/scala-2021-01.yaml)
 and [`transcripts/000035/`](../transcripts/000035).
 
 ### What the attempt showed about the dandiset
@@ -657,7 +657,7 @@ The notebook runs in about 2.5 minutes.
 Outcome, on the dandiset alone: two claims reproduced and ten blocked. With
 outside data, counted apart: five reproduced, one partially and two not
 reproduced. No outcome changed through either round. See
-[`attempts/001453-fouke-2025-01.yaml`](../attempts/001453-fouke-2025-01.yaml)
+[`attempts/fouke-2025-01.yaml`](../attempts/fouke-2025-01.yaml)
 and [`transcripts/001453/`](../transcripts/001453).
 
 The dandiset holds only the freely swimming tracking behind Figure 1 and
@@ -1179,7 +1179,7 @@ without saying which were used; and three synaptosome images give 488 nm
 for all channels in their OME metadata.
 
 `tools/entry.py all` stopped at its check in every run, on 8 errors in the
-earlier record `001933-chen-2026-01.yaml`, whose blocks with `data_missing`
+earlier record `chen-2026-01.yaml`, whose blocks with `data_missing`
 fail the pilot-7 rule; the record was left unchanged and the notebook run
 with `entry.py run`. The author's points on the protocol: the check applies
 the current claims file to every attempt of an entry, with no exemption by
@@ -4752,7 +4752,7 @@ the claims file, and report where it misreads the paper.
 ### 001754, Knierim et al. 2000, third attempt
 
 One claim reproduced, two partially, two not reproduced and five blocked on
-the dandiset. The attempt replaces the deprecated 001754-knierim-2000-02,
+the dandiset. The attempt replaces the deprecated knierim-2000-02,
 whose claims were written from the abstract and figure titles; the claims file
 was written again from the full text, so most criteria are new. It pins
 version 0.260728.1352, the most recent published version, as the draft, which
@@ -4963,7 +4963,7 @@ kind for disagreement between the paper and the data set's labels; and
 
 Five claims reproduced, nine partially, six not reproduced and thirteen
 blocked on the dandiset. The attempt replaces the deprecated
-000005-yu-2016-01, whose claims were written from the abstract and figure
+yu-2016-01, whose claims were written from the abstract and figure
 titles; the claims file was written again from the full text, with its
 supplement, so it has 33 claims where the earlier one had 8, and the eight
 kept ids have new criteria. It pins the same version, 0.220126.1853, the only
@@ -5083,7 +5083,7 @@ the claims file was rewritten, so kept ids compare different tests.
 
 Six claims reproduced, one partially, three not reproduced and twenty-two
 blocked on the dandiset. The attempt replaces the deprecated
-000061-girardeau-2017-01, whose claims were taken from the abstract alone; the
+girardeau-2017-01, whose claims were taken from the abstract alone; the
 claims file was written again from the full text, its supplement and the
 paper's code (buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package), so it
 has 32 claims where the earlier one had 6, and the six kept ids now use the
@@ -5185,7 +5185,7 @@ blocks claims whose all-cell tests could run.
 ### 000582, Sargolini et al. 2006, second attempt
 
 Five claims reproduced, one partially, three not reproduced and twelve blocked
-on the dandiset. The attempt replaces the deprecated 000582-sargolini-2006-01,
+on the dandiset. The attempt replaces the deprecated sargolini-2006-01,
 whose claims were written from the abstract alone; the claims file was written
 again from the full text and its Supporting Online Material (SOM), so it has 21
 claims where the earlier one had 3, and the three kept ids (`layer2-grid`,
