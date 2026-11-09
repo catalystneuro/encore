@@ -37,7 +37,7 @@ paper becomes the unit, and each paper names the datasets it is tested on.
   or cannot be loaded, is listed with `available: false` and why.
 - **Missing datasets do not stop an attempt.** It runs on what is there; its record lists the
   rest under `missing_datasets`, and each claim that needs one is blocked with
-  `blocked_by: missing-dataset`. The attempt is flagged on the site and in "waiting on you", so
+  `blocked_by: dataset_missing`. The attempt is flagged on the site and in "waiting on you", so
   the dataset can be found, converted or uploaded and a later attempt can add it.
 
 ## Layout

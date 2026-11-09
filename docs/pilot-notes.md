@@ -410,3 +410,14 @@ and 000673's verifier-2 run failed when its LFP notebook took 42 minutes. The
 limit is now 60 minutes a notebook (`tools/entry.py --max-minutes`), with CI's
 run job raised to 240 minutes to fit an entry's notebooks. The aim stays
 under ten minutes, and the author's time budget is unchanged.
+
+## Protocol pilot-14 (2026-11-09): papers first, and every dataset a paper rests on
+
+Records were filed by dataset, so a paper whose data are split across dandisets
+(Semenov 2026 on 7, Churchland 2010 on 4) was tested once per dandiset, each
+time with its own claims, and a paper that reuses a dataset had nowhere to go.
+Records are now filed by paper (docs/paper-first.md): one claims file for the
+paper, claims naming their datasets only when there are several, and one
+attempt that uses as many of the paper's datasets as can be loaded. A dataset
+it could not use is listed under `missing_datasets`, and the claims that need
+it are blocked with `dataset_missing`, so that a later attempt can add it.
