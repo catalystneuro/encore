@@ -27,8 +27,9 @@ paper becomes the unit, and each paper names the datasets it is tested on.
 
 ## One attempt, every dataset the paper relies on
 
-- A paper's claims are extracted once, for the paper, and each claim names the datasets it
-  rests on. An attempt tests the paper against as many of those datasets as can be found and
+- A paper's claims are extracted once, for the paper. Most papers rely on one dataset, and then
+  claims name none: they rest on it. Only when the paper lists more than one does each claim
+  carry `datasets:`, naming the ones it rests on. An attempt tests the paper against as many of those datasets as can be found and
   loaded: Semenov 2026's next attempt loads all 7 dandisets.
 - The paper's datasets are listed in `papers/datasets/<paper key>.yaml`: each with archive, id,
   relation (primary or reuses) and how it was found (archive metadata, the paper's data
