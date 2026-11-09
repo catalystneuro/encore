@@ -68,6 +68,21 @@ def crossref(doi: str) -> dict:
             time.sleep(int(err.headers.get("Retry-After") or 0) or 5 * 2 ** attempt)
 
 
+def datacite(doi: str) -> dict:
+    """A DataCite record (arXiv, Zenodo, figshare DOIs) in the shape crossref() gives: author, issued, title."""
+    req = urllib.request.Request(f"https://api.datacite.org/dois/{doi}",
+                                 headers={"User-Agent": "encore-paper-keys/1 (https://encorescience.org)"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            a = json.load(r)["data"]["attributes"]
+    except Exception as exc:  # noqa: BLE001
+        raise SystemExit(f"{doi}: neither Crossref nor DataCite has it ({exc})")
+    creators = a.get("creators") or [{}]
+    return {"author": [{"family": creators[0].get("familyName") or creators[0].get("name", "anon").split(",")[0]}],
+            "issued": {"date-parts": [[a.get("publicationYear")]]},
+            "title": [t.get("title", "") for t in a.get("titles") or []][:1]}
+
+
 def papers_with_records() -> dict[str, dict]:
     """Every paper some record names: its DOI → the surname, year and title found, and when its
     first record was made (to decide which of two clashing papers keeps the plain key)."""
@@ -115,9 +130,12 @@ def base_key(doi: str, p: dict) -> tuple[str, str]:
         try:
             msg = crossref(doi)
         except Exception as exc:  # noqa: BLE001 - reported, not fatal
-            if key is None:
+            # A DOI Crossref does not hold (arXiv's and Zenodo's are DataCite's) is looked up there below.
+            if key is None and not (isinstance(exc, urllib.error.HTTPError) and exc.code == 404):
                 raise SystemExit(f"{doi}: no surname and year in its records, and Crossref failed: {exc}")
             msg = {}
+        if key is None and not msg:
+            msg = datacite(doi)
         if key is None:
             author = (msg.get("author") or [{}])[0]
             surname = author.get("family") or author.get("name") or "anon"
