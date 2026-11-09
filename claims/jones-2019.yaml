@@ -1,0 +1,1565 @@
+# Claims for Jones, Gillespie, Yoon, Frank & Huang (2019), Cell Reports 29, 2123-2133, "Early
+# Hippocampal Sharp-Wave Ripple Deficits Predict Later Learning and Memory Impairments in an
+# Alzheimer's Disease Mouse Model", doi:10.1016/j.celrep.2019.10.056, on CRCNS data set hc-26
+# (doi:10.6080/K0D798NB).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record with its supplemental information, as text extracted from the
+# PDF under paper/ (main text, STAR Methods, Figures S1 to S4 with legends, Tables S1, S3 and S4),
+# and Table S2 (mmc2.xlsx, three sheets), appended to the same text. The PDF was opened only to
+# read numbers printed inside figure panels (R and p of the scatter plots, Figures 2, 3, 4 and S1,
+# and the directions in Figures S3 and S4); these are marked "read from the panel". The data set's
+# description (paper/hc-26.data-description.txt) was read only to know what it holds.
+#
+# Code read: https://github.com/emilyasterjones/SWR-predictions, commit ca056a8 (2023-05-06),
+# linked from the Key Resources Table and Data and Code Availability. MATLAB in the Frank lab
+# filter framework (needs NeuroQuery, Trodes, Chronux; the framework functions get2dstate,
+# createfilter, extracteventsnew's caller are not all in the repository). Preprocessing/ (ripple
+# filtering ej_rippledayprocess.m, detection ag_extractripples.m, positions pos_trodes.m), SWR
+# abundance/ (runcalcriprates.m, calcriprates2.m, getvalidrips.m), SG Power/ (runRTS.m,
+# RTspecgram3.m, plotRTSstats.m), MUA/ (runRTMUA.m, RTMUA.m; the plotting part refers to fields
+# RTMUA.m does not produce), Dentate Spikes/, loocv.m (leave-one-out check), fit_train_to_test.m
+# (screen model applied to replication data), rainbow_plots.m, and pull_apa_metrics.py (APA
+# distance per movement bout). The behavioral metrics other than distance per bout were taken from
+# Ethovision, Tracker and Excel, which are not code.
+#
+# Data the paper used. Female apoE3-KI (E3) and apoE4-KI (E4) mice, two cohorts (Table S1).
+# Screen cohort (Cohort 1): recordings at 12-18 months, 13 E3 and 16 E4 (CA3 SG power 11 and 13);
+# MWM at 13-19 months, 20 E3 and 19 E4. Replication cohort (Cohort 2): recordings at 5-8 months
+# (13 E3, 17 E4; CA3 12 and 16), 9-11 months (12, 17; CA3 11, 16) and 13-17 months (9, 15; CA3 9,
+# 14); MWM at 6-9 months (13, 13); open field, elevated plus maze and MWM at 14-18 months (12, 15);
+# APA and hot plate at 15-20 months (12, 13). Some behavior-only mice were added to Cohort 2.
+# Each recording time point is 5 daily 60 min home-cage sessions, LFP from a 32-site probe in right
+# dorsal hippocampus (CA1, CA3, DG), with 30 Hz position tracking; MUA in Cohort 1 only. Behavior
+# results are in the data set's Behavior Excel file with MWM and APA tracking. The correlations use
+# the E4 mice that have both measures: screen n = 16 (SWR abundance) and 13 (CA3); replication MWM
+# n = 11 and 10; APA n = 10 and 9; Figure 4 n = 11 (MWM) and 10 (APA).
+#
+# Methods fixed for all claims, with their sources.
+# (A) SWR detection and abundance. Methods (Analysis of Neural Data): LFP 0.1-300 Hz at 1 kHz
+# (as deposited); equiripple band-pass 150-250 Hz (the code's agripplefilter.mat; 125-250 Hz is
+# agripplefilter3.mat); detection on the CA1 site closest to the centre of stratum pyramidale (the
+# code takes the chinfo site with area ca1 and layer containing "pyr 1"); an SWR is the envelope
+# exceeding 5 SD above baseline for at least 15 ms. The code smooths the envelope with a 4 ms
+# Gaussian and takes baseline and SD as the mean and SD of that envelope over the whole session
+# (ag_extractripples.m); the Methods do not say, so the code settles it. The code detects events
+# above 3 SD for 15 ms and keeps those whose peak reaches 5 SD (runcalcriprates.m, bins [5 50]);
+# the Methods read as above 5 SD for 15 ms. The Methods reading is the main one, the code's the
+# variant. The code also drops events within 0.4 s of the session's start or end and events that
+# coincide with events on 16 or more channels (getvalidrips.m); the Methods are silent, so these
+# follow the code. Immobility (Methods; code runcalcriprates.m) is Gaussian-smoothed velocity
+# (the deposited pos.vel, 500 ms Gaussian) below 1 cm/s, counted only after it has lasted 30 s.
+# Sessions with less than 10 min of such immobility are excluded (Methods). Abundance is SWRs per
+# second of immobility in each session, averaged over the mouse's sessions (Methods, last
+# paragraph; code calcriprates2.m and runcalcriprates.m figopt 1).
+# (B) SWR-associated SG power. Methods: multitaper SWR-triggered spectrogram per site, 100 ms
+# window, z-scored; the mean z-scored power over 30-50 Hz in the window 0-100 ms after detection,
+# averaged over SWRs and over sites in the region; CA3 is its stratum pyramidale and radiatum
+# sites, CA1-sr the stratum radiatum sites, DG the hilus and granule cell sites with confirmed
+# dentate spikes. The code (runRTS.m, RTspecgram3.m, plotRTSstats.m) settles: 3 tapers (time-
+# bandwidth 3), non-overlapping 100 ms windows from -0.4 to 0.4 s around the threshold crossing,
+# the window centred at 50 ms; z-score per frequency against the mean and SD of the same
+# spectrogram of the immobile LFP of the session. Two code choices differ from the Methods and are
+# variants: the code triggers on all events above 3 SD (minstd 3), where the Methods and Table S2
+# (the main CA3 values equal its 5 SD column) use the 5 SD SWRs; and the code's frequency bins 4
+# to 7 of a 7.8 Hz grid (31.3, 39.1, 46.9, 54.7 Hz) include 54.7 Hz, where the Methods' 30-50 Hz
+# holds 31.3, 39.1 and 46.9 Hz. Open, could change values: the Methods analyse per session and
+# average over sessions, the code pools the SWRs of all sessions per site; both are to be run.
+# (C) MWM metrics (Methods, Analysis of Behavioral Data): escape latency is the mean of the 4
+# daily trials; slope over days 1 to k is the slope of a first-degree polynomial fitted to the
+# daily means; overnight change ("Night 1 Learning") is latency on day 2 trial 1 minus day 1
+# trial 4 (Figure S1C); probe area under the distance-to-platform curve over the first 5 s, by the
+# trapezoid method; percent time in target quadrant and target crossings as exported.
+# (D) APA metrics on training days 1-4 after the habituation day (Methods, Behavior): entrances,
+# latency to first entrance, path length, percent time in the quadrant opposite the shock zone,
+# and distance from the shock zone per movement bout (pull_apa_metrics.py: 1 s steps, a bout is
+# movement of 2 cm/s or more; "Avg Travel Away from SZ (cm)").
+# (E) Performance scores (Quantification and Statistical Analysis): z-score each metric, invert
+# the sign where higher is worse (latencies, slopes, overnight change, probe area under the curve,
+# entrances, distance per bout), average. MWM learning score: slope days 1-2 and 1-3, latency day
+# 3, overnight change days 1-2; MWM memory precision: percent time in target quadrant probes 1
+# and 2, crossings probe 1, area under the curve probes 1 and 2; APA learning: latency to first
+# entrance, path length, percent time opposite, day 2; APA memory precision: entrances day 2,
+# distance per bout days 2 and 3. Open, could change the scores: the population of the z-score
+# ("Z scored across the population"): (i) the E4 mice in the correlation, (ii) all mice of the
+# cohort of both genotypes; both are to be run.
+# (F) Tests (Quantification and Statistical Analysis; figure legends): correlations are Pearson
+# (Spearman where stated), reported as F(1, n-2) of the regression, two-sided, alpha 0.05. In the
+# replication cohort p is adjusted with Holm-Sidak. The family is not stated; the printed adjusted
+# p are reproduced, from the printed F, by step-down Sidak without enforced monotonicity (as
+# Prism prints it) within the planned metrics of one SWR property: the 4 MWM learning metrics for
+# SWR abundance, the 5 MWM probe metrics for CA3 SG power, and the 5 APA day 2 metrics for each
+# property. The criteria use that family.
+# (G) Predicted scores (Figures 2N, 2R, 3F, 3I, 4I, 4L): a linear regression of the screen
+# cohort's score on its z-scored SWR property, applied to the replication cohort's z-scored
+# property, correlated (Pearson) with the actual score. The printed F and percent of variance are
+# those of this Pearson correlation (for example 0.56 = 11.4/(11.4+9)); they do not depend on the
+# regression coefficients. fit_train_to_test.m also computes an out-of-sample F against the test
+# mean; that is shown as a variant.
+schema_version: 2
+paper: doi:10.1016/j.celrep.2019.10.056
+claims:
+- id: fig1e-swr-abundance-genotype
+  statement: In the aged screen cohort, apoE4-KI mice have lower SWR abundance than apoE3-KI mice.
+  source: Results, Aged ApoE4-KI Mice Show SWR Deficits, paragraph 1; Figure 1E
+  quote: apoE4-KI mice had reduced SWR abundance and associated SG power in CA1, CA3, and DG (Figures 1E
+    and 1F)
+  statistics:
+  - test: unpaired t test
+    statistic: t(27) = 8.42
+    p: 0.0001
+    p_relation: "<"
+    n: 13 apoE3-KI and 16 apoE4-KI mice, aged 12-18 months
+  criterion: SWR abundance by method (A) per mouse of Cohort 1; a two-tailed unpaired t test of E3
+    against E4. Reproduced when E4 is lower with p < 0.0001; partially reproduced when E4 is lower
+    with p < 0.05.
+- id: fig1f-sg-power-genotype
+  statement: In the aged screen cohort, SWR-associated SG power is lower in apoE4-KI than in apoE3-KI
+    mice in CA1 stratum radiatum, CA3 and the dentate gyrus.
+  source: Results, Aged ApoE4-KI Mice Show SWR Deficits, paragraph 1; Figure 1F
+  quote: apoE4-KI mice had reduced SWR abundance and associated SG power in CA1, CA3, and DG
+  statistics:
+  - about: CA1 stratum radiatum
+    test: unpaired t test
+    statistic: t(27) = 5.17
+    p: 0.0001
+    p_relation: "<"
+    n: 13 apoE3-KI and 16 apoE4-KI mice
+  - about: CA3
+    test: unpaired t test
+    statistic: t(22) = 4.91
+    p: 0.0001
+    p_relation: "<"
+    n: 11 apoE3-KI and 13 apoE4-KI mice
+  - about: dentate gyrus
+    test: Mann-Whitney
+    statistic: U = 45
+    p: 0.0087
+    n: 13 apoE3-KI and 16 apoE4-KI mice
+  criterion: SG power by method (B) for each region, per mouse of Cohort 1; the tests as in the
+    legend (unpaired t tests for CA1-sr and CA3, Mann-Whitney for DG). Reproduced when E4 is lower
+    with p < 0.05 in all three regions under one of the readings of method (B); partially
+    reproduced for two regions.
+- id: figs1a-mua-during-swrs
+  statement: Multi-unit activity in CA1 stratum pyramidale rises from before to during SWRs in both
+    genotypes, with no genotype difference before or during SWRs.
+  source: Results, Aged ApoE4-KI Mice Show SWR Deficits, paragraph 1; Figure S1A
+  quote: We also observed an increase in multi-unit activity in CA1 stratum pyramidale (Figure S1A) during
+    SWRs, which was not different between genotypes
+  statistics:
+  - about: before against during, apoE3-KI
+    test: paired t test
+    statistic: t(12) = 5.54
+    p: 0.0001
+    n: 13 apoE3-KI mice
+  - about: before against during, apoE4-KI
+    test: paired t test
+    statistic: t(15) = 4.56
+    p: 0.0004
+    n: 16 apoE4-KI mice
+  - about: genotype, before SWRs
+    test: t test
+    statistic: t(27) = 0.78
+    p: 0.21
+  - about: genotype, during SWRs
+    test: t test
+    statistic: t(27) = 0.67
+    p: 0.94
+  criterion: Cohort 1 MUA spike times (above 75 uV, 600-6000 Hz, corpus callosum reference, as
+    deposited) on the SWR detection site; rate during SWRs in 0-100 ms after detection (Figure S1A
+    legend; RTMUA.m bin 5). The baseline "400 ms before SWR detection" is open; readings (a) the
+    whole 400 ms before detection, (b) the 100 ms bin from -400 to -300 ms (RTMUA.m bins). Per
+    mouse, the mean over SWRs and sessions. Reproduced when the paired t test gives p < 0.05 in
+    each genotype with the rate higher during, and unpaired t tests between genotypes give p >=
+    0.05 both before and during. The absence part is judged on the t tests alone.
+- id: fig1g-mwm-impaired
+  statement: Aged apoE4-KI mice of the screen cohort learn the hidden platform location more slowly
+    on the MWM than apoE3-KI mice, with higher escape latencies, significant on hidden days 1, 3
+    and 5.
+  source: Results, Aged ApoE4-KI Mice Show SWR Deficits, paragraph 1; Figure 1G
+  quote: as well as impaired MWM learning (Figure 1G)
+  statistics:
+  - about: genotype effect
+    test: two-way repeated-measures ANOVA of aligned rank transformed data
+    statistic: F(1,37) = 13.08
+    p: 0.0009
+    n: 20 apoE3-KI and 19 apoE4-KI mice, aged 13-19 months
+  - about: hidden day 1
+    test: post hoc Mann-Whitney U test
+    statistic: U = 95
+    p: 0.033
+    corrected: Sidak
+  - about: hidden day 3
+    test: post hoc Mann-Whitney U test
+    statistic: U = 95
+    p: 0.034
+    corrected: Sidak
+  - about: hidden day 5
+    test: post hoc Mann-Whitney U test
+    statistic: U = 92
+    p: 0.026
+    corrected: Sidak
+  criterion: Daily mean escape latency (method C) of all Cohort 1 mice with MWM data; aligned rank
+    transform (ARTool, Wobbrock et al. 2011) and a two-way repeated-measures ANOVA on genotype and
+    day; post hoc Mann-Whitney U tests per day with Sidak adjustment over the 5 days. Reproduced
+    when the genotype effect has p < 0.05 with E4 slower and the post hoc tests are significant on
+    days 1, 3 and 5; partially reproduced when the genotype effect holds and one or two of those
+    days are not significant.
+- id: screen-88-comparisons
+  statement: In the screen cohort, 9 of 88 comparisons of 22 MWM metrics against 4 SWR properties
+    are significant at alpha 0.05 in apoE4-KI mice, more than chance by a binomial test.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 1; Table S2
+    (sheet ApoE4-KI)
+  quote: We began with a screen assessing the predictability of 22 behavioral metrics by 4 SWR properties
+    for a total of 88 comparisons, 9 of which were significant with a = 0.05; far more than would
+    be predicted by chance (p < 0.00032, binomial test
+  statistics:
+  - test: binomial test
+    p: 0.00032
+    p_relation: "<"
+    n: 88 comparisons
+  expected:
+  - quantity: significant comparisons of 88
+    value: 9
+    tolerance: 1
+  criterion: The 22 metrics of Table S2 (slopes days 1-2 to 1-5, latency days 1-5, nights 1-4,
+    and percent time, crossings and area under the curve for probes 1-3, by method C) against SWR
+    abundance and CA3, CA1-sr and DG SG power (methods A and B), Pearson, in the E4 mice of Cohort
+    1. Reproduced when the count is within tolerance and a one-sided binomial test of the count
+    against 0.05 gives p < 0.05. The same test reproduces the paper's p for Tables S3 and S4 (8 of
+    40 gives 0.00071, 5 of 30 gives 0.016), but 9 of 88 gives 0.032, not below 0.00032; the
+    printed bound is noted as a likely misprint and is not required. The count tolerance of 1 is
+    used because a count cannot be widened by 10%.
+- id: fig2b-swr-slope-days-1-2
+  statement: In aged apoE4-KI mice of the screen cohort, higher SWR abundance predicts a steeper
+    (more negative) slope of the escape latency curve over hidden days 1-2.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 2; Figure 2B
+  quote: In aged apoE4-KI mice, SWR abundance (events/second) predicted the slope of the escape latency
+    curve over the first 2 or first 3 hidden days (Figures 2B and S1B)
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,14) = 6.41
+    p: 0.024
+    n: 16 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.56
+    tolerance: 0.056
+  criterion: Rule for all correlations of the screen cohort, used by the claims that point here.
+    SWR property by method A or B, behavior metric by method C or D, Pearson correlation across the
+    E4 mice of Cohort 1 with both, two-sided. Reproduced when R has the paper's sign with p < 0.05
+    and R is within tolerance; partially reproduced when sign and p hold but R is outside
+    tolerance; not reproduced otherwise. R from Table S2.
+- id: figs1b-swr-slope-days-1-3
+  statement: In aged apoE4-KI mice of the screen cohort, SWR abundance predicts the slope of the
+    escape latency curve over hidden days 1-3.
+  source: Figure S1B; Table S2
+  quote: SWR abundance predicts slope of escape latency over hidden days 1–3 (F(1,14) = 10.91), n = 16
+    mice
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,14) = 10.91
+    p: 0.0052
+    n: 16 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.66
+    tolerance: 0.066
+  criterion: As fig2b-swr-slope-days-1-2, slope over days 1-3.
+- id: fig2c-swr-latency-day-3
+  statement: In aged apoE4-KI mice of the screen cohort, higher SWR abundance predicts lower escape
+    latency on hidden day 3.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 2; Figure 2C
+  quote: SWR abundance also predicted escape latency on hidden day 3 (Figure 2C), a measure of approach
+    efficacy
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,14) = 4.77
+    p: 0.046
+    n: 16 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.5
+    tolerance: 0.05
+  criterion: As fig2b-swr-slope-days-1-2, mean latency on hidden day 3.
+- id: fig2d-swr-overnight
+  statement: In aged apoE4-KI mice of the screen cohort, higher SWR abundance predicts more overnight
+    improvement (a more negative change in escape latency from day 1 trial 4 to day 2 trial 1).
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 2; Figure 2D
+  quote: SWR abundance predicted the extent of behavioral improvement over the first night (Figure 2D),
+    where high SWR abundance predicted improved performance overnight while lower SWR abundance predicted
+    worse performance
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,14) = 9.76
+    p: 0.0075
+    n: 16 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.64
+    tolerance: 0.064
+  criterion: As fig2b-swr-slope-days-1-2, overnight change by method C.
+- id: fig2e-learning-score
+  statement: In aged apoE4-KI mice of the screen cohort, z-scored SWR abundance accounts for 51% of
+    the variance of the MWM learning performance score.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 3; Figure 2E
+  quote: SWR abundance (also Z scored) accounted for 51% of the variance of the learning performance
+    score
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,14) = 14.3
+    p: 0.002
+    n: 16 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.51
+    tolerance: 0.051
+  - quantity: Pearson R (read from the panel)
+    value: 0.711
+    tolerance: 0.071
+  depends_on:
+  - fig2b-swr-slope-days-1-2
+  - figs1b-swr-slope-days-1-3
+  - fig2c-swr-latency-day-3
+  - fig2d-swr-overnight
+  criterion: MWM learning score by method E under both z-score readings, against SWR abundance
+    z-scored over the same mice; Pearson. Reproduced when R is positive with p < 0.05 and R squared
+    is within tolerance under one reading. The p (0.002) is read from the panel.
+- id: screen-features-independent
+  statement: In aged apoE4-KI mice of the screen cohort, SWR abundance and SWR-associated CA3 SG power
+    are not correlated, and measures of early learning speed and of probe memory are not correlated.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 4
+  quote: SWR abundance and associated SG power in CA3 were not correlated, and, similarly, measures of
+    early learning speed and of probe memory were not correlated
+  criterion: A claim of absence; the paper names no test, and its correlations are Pearson at alpha
+    0.05 (Quantification and Statistical Analysis). Pearson between SWR abundance and CA3 SG power
+    across the 13 E4 mice of Cohort 1 with CA3 sites; and between the MWM learning score and the
+    MWM memory precision score (method E). Reproduced when neither has p < 0.05; not reproduced
+    when either does; R is reported. The 20 correlations between the four learning metrics and the
+    five probe metrics are shown as a variant.
+- id: fig2f-ca3-probe1-quadrant
+  statement: In aged apoE4-KI mice of the screen cohort, higher SWR-associated CA3 SG power predicts
+    more time in the target quadrant on probe 1.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 4; Figure 2F
+  quote: SWR-associated SG power in CA3 predicted the percent time spent exploring the quadrant that previously
+    contained the platform on probes 1 and 2 (Figures 2F and S1D
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,11) = 15.75
+    p: 0.0022
+    n: 13 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: 0.77
+    tolerance: 0.077
+  criterion: As fig2b-swr-slope-days-1-2, CA3 SG power (method B) against percent time in target
+    quadrant, probe 1, in the 13 E4 mice with CA3 sites.
+- id: figs1d-ca3-probe2-quadrant
+  statement: In aged apoE4-KI mice of the screen cohort, CA3 SG power during SWRs predicts percent time
+    in the target quadrant on probe 2.
+  source: Figure S1D; Table S2
+  quote: CA3 SG power during SWRs predicts percent time spent in quadrant that previously contained the
+    platform on probe 2 (F(1,11) = 5.34), n = 13 mice
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,11) = 5.34
+    p: 0.041
+    n: 13 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: 0.57
+    tolerance: 0.057
+  criterion: As fig2f-ca3-probe1-quadrant, probe 2.
+- id: fig2g-ca3-probe1-crossings
+  statement: In aged apoE4-KI mice of the screen cohort, CA3 SG power during SWRs predicts the number
+    of target crossings on probe 1.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 4; Figure 2G
+  quote: CA3 SG power during SWRs predicted the number of target crossings on probe 1 (Figure 2G)
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,11) = 17.3
+    p: 0.0016
+    n: 13 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: 0.78
+    tolerance: 0.078
+  criterion: As fig2f-ca3-probe1-quadrant, target crossings on probe 1.
+- id: fig2h-ca3-probe1-auc
+  statement: In aged apoE4-KI mice of the screen cohort, higher CA3 SG power during SWRs predicts a
+    smaller area under the distance-to-platform curve in the first 5 s of probe 1.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 4; Figure 2H
+  quote: CA3 SG power during SWRs predicted this metric for probes 1 and 2 (Figures 2H and S1F
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,11) = 6.55
+    p: 0.027
+    n: 13 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.61
+    tolerance: 0.061
+  criterion: As fig2f-ca3-probe1-quadrant, area under the curve on probe 1 by method C.
+- id: figs1f-ca3-probe2-auc
+  statement: In aged apoE4-KI mice of the screen cohort, CA3 SG power during SWRs predicts the area
+    under the distance-to-platform curve in the first 5 s of probe 2.
+  source: Figure S1F; Table S2
+  quote: CA3 SG power during SWRs predicts area under the curve of the distance to the prior platform location
+    during the first 5 seconds of probe 2 (F(1,11) = 6.01), n = 13 mice
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,11) = 6.01
+    p: 0.032
+    n: 13 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.59
+    tolerance: 0.059
+  criterion: As fig2f-ca3-probe1-quadrant, area under the curve on probe 2.
+- id: fig2i-memory-precision-score
+  statement: In aged apoE4-KI mice of the screen cohort, z-scored CA3 SG power during SWRs accounts
+    for 77% of the variance in the MWM memory precision performance score.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 4; Figure 2I
+  quote: CA3 SG power during SWRs accounted for 77% of the variance in the memory precision score
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,11) = 27.3
+    p: 0.0003
+    n: 13 apoE4-KI mice
+  expected:
+  - quantity: Pearson R (read from the panel)
+    value: 0.844
+    tolerance: 0.084
+  - quantity: variance explained (R squared), as the text states
+    value: 0.77
+    tolerance: 0.077
+  depends_on:
+  - fig2f-ca3-probe1-quadrant
+  - figs1d-ca3-probe2-quadrant
+  - fig2g-ca3-probe1-crossings
+  - fig2h-ca3-probe1-auc
+  - figs1f-ca3-probe2-auc
+  criterion: MWM memory precision score by method E under both z-score readings against z-scored
+    CA3 SG power; Pearson. The printed R (0.844) and F (27.3, n = 13) both give R squared 0.71, not
+    77%. Reproduced when R is positive with p < 0.05 and R is within its tolerance under one
+    reading; the R squared is reported and compared with both 0.71 and 0.77.
+- id: rep-mwm-swr-slope-days-1-2
+  statement: In the replication cohort (apoE4-KI, recorded at 13-17 months, MWM at 14-18 months), SWR
+    abundance again predicts the slope of escape latency over hidden days 1-2.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 5; Figure 2K
+  quote: In this replication cohort, studied 2 years—thus several generations of mice—later, we found
+    that all relationships identified in the screen cohort remained significant (Figures 2J–2R and S1G–
+    S1I
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 7.51
+    p: 0.067
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R (read from the panel)
+    value: -0.675
+    tolerance: 0.068
+  criterion: Rule for all replication correlations, used by the claims that point here. As
+    fig2b-swr-slope-days-1-2, in the E4 mice of Cohort 2 recorded at 13-17 months, with the
+    behavior at 14-18 months (MWM) or 15-20 months (APA). The paper calls every replication
+    relationship significant, though some adjusted p exceed 0.05, so significance is read on the
+    unadjusted p. Reproduced when R has the paper's sign with unadjusted p < 0.05 and R within
+    tolerance; partially reproduced when sign and p hold and R is outside tolerance. The
+    Holm-Sidak adjusted p, in the family of method F, is reported against the printed value.
+- id: rep-mwm-swr-latency-day-3
+  statement: In the replication cohort, SWR abundance predicts escape latency on hidden day 3.
+  source: Figure 2L
+  quote: SWR abundance predicts (K) slope of escape latency over hidden days 1–2 (F(1,9) = 7.51, adjusted
+    p = 0.067), (L) average escape latency on hidden day 3 (F(1,9) = 5.45, adjusted p = 0.044)
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 5.45
+    p: 0.044
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R (read from the panel)
+    value: -0.614
+    tolerance: 0.061
+  criterion: As rep-mwm-swr-slope-days-1-2.
+- id: rep-mwm-swr-overnight
+  statement: In the replication cohort, SWR abundance predicts the overnight change in escape latency
+    between hidden days 1 and 2.
+  source: Figure 2M
+  quote: (M) change in escape latency between the last trial of hidden day 1 and the first trial of hidden
+    day 2 (F(1,9) = 6.66, adjusted p = 0.059); n = 11 mice
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 6.66
+    p: 0.059
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R implied by F(1,9) = 6.66
+    value: -0.652
+    tolerance: 0.065
+  criterion: As rep-mwm-swr-slope-days-1-2. The panel prints R = -0.425 with p = 0.030; F(1,9) =
+    6.66 and p = 0.030 imply R = -0.652, so the panel's R is taken as a misprint and the implied R
+    is expected.
+- id: rep-mwm-swr-slope-days-1-3
+  statement: In the replication cohort, SWR abundance predicts the slope of escape latency over hidden
+    days 1-3.
+  source: Figure S1G
+  quote: In a replication experiment in a separate cohort of animals, SWR abundance predicts slope of escape
+    latency over hidden days 1–3 (F(1,9) = 13.39, adjusted p = 0.021), n = 11 mice
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 13.39
+    p: 0.021
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R implied by F(1,9) = 13.39
+    value: -0.773
+    tolerance: 0.077
+  criterion: As rep-mwm-swr-slope-days-1-2. The panel prints R = -0.598 with p = 0.005; the F and
+    the adjusted p imply R = -0.773 (p = 0.005), so the implied R is expected.
+- id: fig2n-rep-learning-score
+  statement: In the replication cohort, the learning performance score predicted from SWR abundance by
+    the screen cohort's model captures 56% of the variance of the actual score.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 6; Figure 2N
+  quote: These predictions were remarkably accurate, capturing 56% of the variance in the actual learning
+    performance score and 79% of the variance in the actual memory precision performance score
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 11.4
+    p: 0.008
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.56
+    tolerance: 0.056
+  depends_on:
+  - fig2e-learning-score
+  criterion: Method G with the MWM learning score (method E, both z-score readings, each cohort
+    z-scored within itself) and SWR abundance. Reproduced when the correlation of predicted and
+    actual scores is positive with p < 0.05 and R squared is within tolerance under one reading.
+    The p (0.008) is read from the panel. The out-of-sample F of fit_train_to_test.m is shown.
+- id: rep-mwm-ca3-probe1-quadrant
+  statement: In the replication cohort, CA3 SG power during SWRs predicts percent time in the target
+    quadrant on probe 1.
+  source: Figure 2O
+  quote: CA3 SG power during SWRs predicts (O) percent time spent in quadrant that previously contained
+    the platform (F(1,8) = 32.64, adjusted p = 0.002)
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 32.64
+    p: 0.002
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R (read from the panel)
+    value: 0.896
+    tolerance: 0.09
+  criterion: As rep-mwm-swr-slope-days-1-2, CA3 SG power in the 10 E4 mice with CA3 sites.
+- id: rep-mwm-ca3-probe1-crossings
+  statement: In the replication cohort, CA3 SG power during SWRs predicts target crossings on probe 1.
+  source: Figure 2P
+  quote: (P) number of times crossing the previous platform location (F(1,8) = 13.48, adjusted p = 0.025
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 13.48
+    p: 0.025
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R (read from the panel)
+    value: 0.792
+    tolerance: 0.079
+  criterion: As rep-mwm-ca3-probe1-quadrant.
+- id: rep-mwm-ca3-probe1-auc
+  statement: In the replication cohort, CA3 SG power during SWRs predicts the area under the distance
+    curve in the first 5 s of probe 1.
+  source: Figure 2Q
+  quote: (Q) area under the curve of the distance to the prior platform location during the first 5 s of
+    probe (F(1,8) = 7.61, adjusted p = 0.049); n = 10 mice
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 7.61
+    p: 0.049
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R (read from the panel)
+    value: -0.698
+    tolerance: 0.07
+  criterion: As rep-mwm-ca3-probe1-quadrant.
+- id: rep-mwm-ca3-probe2
+  statement: In the replication cohort, CA3 SG power during SWRs predicts percent time in the target
+    quadrant and the area under the distance curve on probe 2.
+  source: Figure S1H and S1I
+  quote: CA3 SG power during SWRs predicts (H) percent time spent in quadrant that previously contained
+    the platform (F(1,8) = 6.02, adjusted p = 0.04) and (I) area under the curve of the distance to the
+    prior platform location during the first 5 seconds of probe 2 (F(1,8) = 8.27, adjusted p = 0.06
+  statistics:
+  - about: percent time in target quadrant, probe 2
+    test: Pearson correlation
+    statistic: F(1,8) = 6.02
+    p: 0.04
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  - about: area under the curve, probe 2
+    test: Pearson correlation
+    statistic: F(1,8) = 8.27
+    p: 0.06
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, percent time in target quadrant, probe 2 (read from the panel)
+    value: 0.655
+    tolerance: 0.066
+  - quantity: Pearson R, area under the curve, probe 2 (read from the panel)
+    value: -0.713
+    tolerance: 0.071
+  criterion: As rep-mwm-ca3-probe1-quadrant, for each metric; reproduced when both hold, partially
+    reproduced when one does.
+- id: fig2r-rep-memory-score
+  statement: In the replication cohort, the memory precision score predicted from CA3 SG power by the
+    screen cohort's model captures 79% of the variance of the actual score.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 6; Figure 2R
+  quote: capturing 56% of the variance in the actual learning performance score and 79% of the variance
+    in the actual memory precision performance score (Figures 2N and 2R)
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 30.1
+    p: 0.0006
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.79
+    tolerance: 0.079
+  depends_on:
+  - fig2i-memory-precision-score
+  criterion: As fig2n-rep-learning-score, with the MWM memory precision score and CA3 SG power. The
+    p (0.0006) is read from the panel.
+- id: rep-all-replicated
+  statement: All the predictive relationships found in the screen cohort remain significant in the
+    replication cohort, more than chance would give.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 5
+  quote: we found that all relationships identified in the screen cohort remained significant (Figures
+    2J–2R and S1G–S1I), far more than would be predicted by chance (p = 0, binomial test
+  statistics:
+  - test: binomial test
+    p: 0
+    n: 9 relationships
+  depends_on:
+  - rep-mwm-swr-slope-days-1-2
+  - rep-mwm-swr-latency-day-3
+  - rep-mwm-swr-overnight
+  - rep-mwm-swr-slope-days-1-3
+  - rep-mwm-ca3-probe1-quadrant
+  - rep-mwm-ca3-probe1-crossings
+  - rep-mwm-ca3-probe1-auc
+  - rep-mwm-ca3-probe2
+  criterion: Reproduced when all 9 relationships reproduce (each with unadjusted p < 0.05 and the
+    paper's sign) and a one-sided binomial test of 9 of 9 against 0.05 gives p < 0.001; partially
+    reproduced when 7 or 8 do.
+- id: cohort-swr-differences
+  statement: The two cohorts differ in mean SWR abundance (0.12 against 0.20 Hz) and in mean SWR
+    baseline (16.2 against 11.5 uV), though the predictive relationships hold in both.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 5
+  quote: These predictive relationships were consistent across the two cohorts despite differences in
+    the mean values of SWR abundance (m = 0.12 Hz versus 0.20 Hz; unpaired t test, t(29) = 4.75, p <
+    0.0001) and in mean values of SWR baseline (m = 16.2 mV versus 11.5 mV; unpaired t test, t(25)
+    = 5.41, p < 0.0001
+  statistics:
+  - about: SWR abundance
+    test: unpaired t test
+    statistic: t(29) = 4.75
+    p: 0.0001
+    p_relation: "<"
+  - about: SWR baseline
+    test: unpaired t test
+    statistic: t(25) = 5.41
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: mean SWR abundance, first value
+    value: 0.12
+    tolerance: 0.012
+    unit: Hz
+  - quantity: mean SWR abundance, second value
+    value: 0.2
+    tolerance: 0.02
+    unit: Hz
+  - quantity: mean SWR baseline, first value
+    value: 16.2
+    tolerance: 1.62
+    unit: uV
+  - quantity: mean SWR baseline, second value
+    value: 11.5
+    tolerance: 1.15
+    unit: uV
+  criterion: The text does not say which cohort is which or which mice; t(29) fits the 16 screen
+    and 15 replication (13-17 months) E4 mice. The order is read as screen then replication (the
+    order of the text; the screen E4 mean is near 0.12 Hz in Figure 1E); the reverse is reported.
+    The baseline is the session mean of the smoothed ripple envelope (ag_extractripples.m, as in
+    Figure S4C), averaged over sessions; the 27 mice of t(25) are not identified, and readings are
+    (a) E4 mice of both cohorts with a baseline, (b) all mice of both cohorts in the comparison.
+    Reproduced when, under one reading, the means are within tolerance and both t tests give p <
+    0.0001; partially reproduced when the direction holds with p < 0.05. Units of the deposited
+    int16 LFP are the author's to establish.
+- id: robust-single-point
+  statement: None of the paper's significant correlations is driven by a single data point; each stays
+    significant when any one point is removed.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 7; Quantification
+    and Statistical Analysis
+  quote: All significant correlations reported in this paper were confirmed to be not driven by a single
+    data point by measuring the significance of each relationship after removing each data point
+  criterion: As loocv.m, for every correlation claim reproduced here, the Pearson p after removing
+    each mouse in turn. Reproduced when every leave-one-out p is below 0.05 for every reproduced
+    correlation; partially reproduced when at most one removal per correlation raises p above
+    0.05; the number of failing removals is reported.
+- id: robust-detection-parameters
+  statement: In aged apoE4-KI mice of the screen cohort, the predictive relationships hold whether SWRs
+    are detected at 150-250 or 125-250 Hz and at a 3 or 5 SD threshold.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 7; Table S2
+    (sheet ApoE4-KI SWR Freq. and Thresh.)
+  quote: All relationships remained significant regardless of the frequency band (150–250 Hz versus 125–250
+    Hz) or threshold (3 SD versus 5 SD) used for SWR detection (Table S2
+  criterion: The 4 SWR abundance and 5 CA3 SG relationships of Table S2's third sheet, each with
+    ripple band 150-250 or 125-250 Hz (agripplefilter.mat, agripplefilter3.mat) and threshold 3 or
+    5 SD (method A), 36 correlations, Pearson. Reproduced when all 36 have the sign of Table S2 with
+    p < 0.05; partially reproduced when at least 32 do.
+- id: age-no-correlation
+  statement: Age within the cohort does not significantly correlate with SWR properties or MWM
+    performance.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 7
+  quote: as age within this cohort did not significantly correlated with SWR properties or MWM performance
+  criterion: A claim of absence, Pearson at alpha 0.05 (the paper's test for correlations). "This
+    cohort" is open; readings (a) the screen cohort, whose age range is 12-18 months, (b) the
+    replication cohort at 13-17 months. In the E4 mice, age at recording (task metadata) against
+    SWR abundance and CA3 SG power, and against the MWM metrics that enter the learning and memory
+    precision scores. Reproduced under a reading when none has p < 0.05; not reproduced when any
+    does; R and p are reported for both readings.
+- id: figs2-nonspatial-no-difference
+  statement: In the replication cohort there are no genotype differences in open field, elevated plus
+    maze, hot plate or visible-platform MWM performance.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 7; Figure S2
+  quote: there were no genotype differences in anxiety or exploratory drive as measured by open field and
+    elevated plus maze tests, in pain response as measured by a hot plate test, or in visual acuity as
+    measured by MWM trials with the platform marked (Figure S2
+  statistics:
+  - about: percent time in centre of open field
+    test: unpaired t test
+    statistic: t(25) = 1.19
+    p: 0.24
+  - about: open field movements, total
+    test: unpaired t test
+    statistic: t(25) = 0.54
+    p: 0.6
+  - about: percent time in open arm
+    test: unpaired t test
+    statistic: t(25) = 0.84
+    p: 0.41
+  - about: elevated plus maze distance, open arms
+    test: Mann-Whitney
+    statistic: U = 72.5
+    p: 0.41
+  - about: hot plate latency
+    test: Mann-Whitney
+    statistic: U = 66
+    p: 0.54
+    n: 12 apoE3-KI and 13 apoE4-KI mice
+  - about: visible trial escape latency
+    test: unpaired t test
+    statistic: t(25) = 1.26
+    p: 0.22
+    n: 12 apoE3-KI and 15 apoE4-KI mice
+  criterion: A claim of absence, on the tests of the Figure S2 legend, from the Behavior Excel file
+    (Cohort 2) - unpaired t tests for open field time in centre, fine, ambulatory and total
+    movements, open arm time, closed arm and total distance and visible-trial latency, and
+    Mann-Whitney for open arm distance and hot plate latency. Reproduced when none of the 10 tests
+    has p < 0.05; not reproduced when any does; each difference is reported.
+- id: nonspatial-not-correlated
+  statement: None of the non-spatial behaviors correlates significantly with spatial task performance or
+    with SWR properties.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 7
+  quote: Moreover, none of these non-spatial behaviors significantly correlated with spatial task performance
+    or with SWR properties at a = 0.05
+  depends_on:
+  - figs2-nonspatial-no-difference
+  criterion: A claim of absence at alpha 0.05 with Pearson correlations (the paper's test), in the E4
+    mice of Cohort 2. The spatial measures are not named; the reading is the four performance
+    scores (MWM and APA learning and memory precision, method E), and SWR abundance and CA3 SG power
+    at 13-17 months, against the 10 non-spatial measures of Figure S2. Reproduced when none has p <
+    0.05; not reproduced otherwise; the number significant is reported against the number expected
+    by chance.
+- id: ca1-dg-not-predictive
+  statement: SWR-associated SG power in CA1 stratum radiatum and in the dentate gyrus does not
+    consistently and significantly predict memory performance in apoE4-KI mice.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 8; Table S2
+  quote: SWR-associated SG power in CA1 and in DG did not consistently and significantly predict memory
+    performance (Table S2
+  criterion: A claim of absence on the paper's test, Pearson at alpha 0.05, for the 22 MWM metrics
+    of Table S2 against CA1-sr and DG SG power (method B) in the E4 mice of Cohort 1 (n = 16).
+    Table S2 shows none of the 44 significant. Reproduced when none has p < 0.05; not reproduced
+    when any does; R and p are reported.
+- id: e3-relationships
+  statement: In apoE3-KI mice, SWR abundance predicts escape latency on hidden day 2 in both cohorts,
+    while it does not predict day 3 latency, whose relationship holds in apoE4-KI mice; apoE3-KI
+    SWR abundance does not overlap that of apoE4-KI mice.
+  source: Results, SWR Deficits Predict Spatial Approach Task Impairments, paragraph 9; Figure S1J
+    to S1L; Table S2 (sheet ApoE3-KI)
+  quote: The one relationship that did replicate across both apoE3-KI cohorts was that SWR abundance predicted
+    escape latency on the second day (Figures S1K and S1L
+  statistics:
+  - about: screen cohort, day 2 latency
+    test: Pearson correlation
+    statistic: F(1,11) = 6.19
+    p: 0.03
+    n: 13 apoE3-KI mice
+  - about: replication cohort, day 2 latency
+    test: Pearson correlation
+    statistic: F(1,7) = 8.79
+    p: 0.021
+    n: 9 apoE3-KI mice
+  - about: screen cohort, day 3 latency, apoE3-KI
+    test: Pearson correlation
+    p: 0.78
+    n: 13 apoE3-KI mice
+  expected:
+  - quantity: Pearson R, screen apoE3-KI, day 2 latency
+    value: -0.6
+    tolerance: 0.06
+  - quantity: Pearson R, replication apoE3-KI, day 2 latency (read from the panel)
+    value: -0.746
+    tolerance: 0.075
+  criterion: As fig2b-swr-slope-days-1-2 and rep-mwm-swr-slope-days-1-2, in the E3 mice (13 at
+    12-18 months, 9 at 13-17 months), day 2 mean latency. The day 3 correlation in screen E3 mice
+    is a claim of absence, reproduced when p >= 0.05 (Table S2 R = -0.08, p = 0.78; the legend's
+    F(1,11) = 0.80 does not fit R = -0.08 and is not used). Non-overlap is the E3 minimum above the
+    E4 maximum of screen SWR abundance (Figure S1J); reported. Reproduced when both day 2
+    correlations hold and day 3 shows no correlation; partially reproduced when one day 2
+    correlation holds.
+- id: fig3b-apa-entrances-day1
+  statement: Aged apoE4-KI mice make more entrances into the APA shock zone than apoE3-KI mice on
+    training day 1.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 1; Figure 3B
+  quote: apoE4-KI mice task acquisition was significantly impaired on day 1 ... mice had greater number
+    of entrances into the shock zone (Figure 3B
+  statistics:
+  - test: unpaired t test with Sidak's multiple-comparison adjustment
+    statistic: t(23) = 3.43
+    p: 0.009
+    corrected: Sidak
+    n: 12 apoE3-KI and 13 apoE4-KI mice, aged 15-20 months
+  criterion: Entrances per training day (Behavior Excel, Cohort 2); unpaired t tests per day with
+    Sidak adjustment over the 4 days (Figure 3B legend). Reproduced when E4 is higher on day 1 with
+    adjusted p < 0.05; partially reproduced when only unadjusted p < 0.05.
+- id: figs3-apa-day1-and-probe
+  statement: On APA day 1 apoE4-KI mice travel less, spend less time opposite the shock zone and move
+    further from it per bout, and on the probe they receive more pseudoshocks per entrance than
+    apoE3-KI mice.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 1; Figure S3A to
+    S3D
+  quote: traveled less distance (Figure S3A), spent less time in the quadrant opposite the shock zone (Figure
+    S3B), and moved further from the shock zone in bouts of movement (Figure S3C). Performance on the probe
+    trial, in which ... the shock was inactivated, was also impaired (Figure S3D
+  statistics:
+  - about: path length, day 1
+    test: unpaired t test
+    statistic: t(23) = 4.64
+    p: 0.0004
+  - about: percent time opposite, day 1
+    test: unpaired t test
+    statistic: t(23) = 2.27
+    p: 0.033
+  - about: distance per bout, day 1
+    test: Mann Whitney
+    statistic: U = 30
+    p: 0.008
+  - about: pseudoshocks per entrance, probe
+    test: unpaired t test
+    statistic: t(18) = 2.76
+    p: 0.013
+  criterion: The four metrics (method D; pseudoshocks per entrance from the Excel file, mice without
+    a probe entrance excluded) with the tests of the legend. Directions from the panels - E4 lower
+    path length and time opposite, higher distance per bout and pseudoshocks per entrance.
+    Reproduced when all four hold with p < 0.05; partially reproduced when two or three do.
+- id: apa-40-comparisons
+  statement: Of 40 comparisons of 5 APA metrics over 4 days against 2 SWR properties, 8 are significant
+    at alpha 0.05, more than chance, most of them on day 2.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 2; Table S3
+  quote: In total, we compared 5 behavioral metrics over 4 days against 2 SWR properties for a total of
+    40 comparisons, 8 of which were significant with a = 0.05; far more than would be predicted by chance
+    (p < 0.00071, binomial test
+  statistics:
+  - test: binomial test
+    p: 0.00071
+    p_relation: "<"
+    n: 40 comparisons
+  expected:
+  - quantity: significant comparisons of 40
+    value: 8
+    tolerance: 1
+  criterion: Table S3's 40 Pearson correlations in E4 mice of Cohort 2, SWR abundance and CA3 SG
+    power at 13-17 months against the five APA metrics (method D) on days 1-4. Reproduced when the
+    count is within tolerance, a one-sided binomial test against 0.05 gives p < 0.05, and day 2 has
+    more significant comparisons than any other day. Tolerance of 1 as for screen-88-comparisons.
+- id: apa-day2-variance
+  statement: Variance across mice of shock zone entrances is higher on APA day 2 than day 1 (15.76
+    against 33.82).
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 2
+  quote: found that day 2 variances were higher (mean entrances day 1 s2 = 15.76 versus day 2 s2 = 33.82
+  expected:
+  - quantity: variance of entrances, day 1
+    value: 15.76
+    tolerance: 1.58
+  - quantity: variance of entrances, day 2
+    value: 33.82
+    tolerance: 3.38
+  criterion: Sample variance of entrances across mice. Which mice is open; readings (a) the 13 E4
+    mice (the analysis is of E4 variability), (b) the 10 E4 mice of the correlations, (c) all 25
+    mice. Reproduced when, under one reading, both values are within tolerance; partially
+    reproduced when day 2 variance is higher but the values are outside tolerance.
+- id: figs3fg-day2-predicts-later
+  statement: In apoE4-KI mice, entrances on APA day 2 predict entrances on days 3 and 4, and the top
+    50% of day 2 performers keep learning on days 3 and 4 while the bottom 50% do not.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 2; Figure S3F and
+    S3G
+  quote: day 2 performance predicted day 3 and 4 performance, and apoE4-KI mice separated out into two
+    distinct performance populations on day 2 such that the top 50% of performers on day 2 continued to
+    learn on days 3 and 4 and that the bottom 50% did not
+  statistics:
+  - about: day 2 against day 3 entrances
+    test: Pearson correlation
+    statistic: F(1,11) = 49.27
+    p: 0.0001
+    p_relation: "<"
+    n: 13 apoE4-KI mice
+  - about: day 2 against day 4 entrances
+    test: Pearson correlation
+    statistic: F(1,11) = 16.32
+    p: 0.002
+    n: 13 apoE4-KI mice
+  - about: top against bottom half, day 1
+    test: unpaired t test with Sidak adjustment
+    statistic: t(44) = 1.66
+    p: 0.36
+  - about: top against bottom half, day 3
+    test: unpaired t test with Sidak adjustment
+    statistic: t(44) = 6.06
+    p: 0.0001
+    p_relation: "<"
+  - about: top against bottom half, day 4
+    test: unpaired t test with Sidak adjustment
+    statistic: t(44) = 5.28
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: Pearson R, day 2 against day 3 (read from the panel)
+    value: 0.904
+    tolerance: 0.09
+  - quantity: Pearson R, day 2 against day 4 (read from the panel)
+    value: 0.773
+    tolerance: 0.077
+  criterion: The 13 E4 mice of the APA (Cohort 2). Pearson of day 2 entrances against days 3 and 4.
+    Split by day 2 entrances into 7 top and 6 bottom mice; the tests on days 1, 3 and 4 with Sidak
+    adjustment over the 3 days. The df 44 is that of a pooled error over days; readings (a) unpaired
+    t tests per day (11 df), (b) post hoc tests of a two-way ANOVA of group and day (44 df, as the
+    printed df). Reproduced when both correlations are positive with p < 0.05, R within tolerance,
+    and the groups differ on days 3 and 4 (p < 0.05) but not on day 1, under one reading.
+- id: fig3c-swr-latency-first-entrance
+  statement: In the replication cohort, SWR abundance measured 2 months before APA predicts latency to
+    first shock zone entrance on day 2.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 3; Figure 3C
+  quote: SWR abundance measured 2 months before task training predicted the latency to first entrance on
+    day 2
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 5.81
+    p: 0.043
+    n: 10 apoE4-KI mice
+  - test: Pearson correlation
+    statistic: F(1,8) = 5.81
+    p: 0.12
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: 0.65
+    tolerance: 0.065
+  criterion: As rep-mwm-swr-slope-days-1-2, latency to first entrance on day 2; R from Table S3.
+- id: fig3de-swr-path-and-quadrant
+  statement: In the replication cohort, SWR abundance predicts path length and percent time in the
+    quadrant opposite the shock zone on APA day 2.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 3; Figure 3D and
+    3E
+  quote: SWR abundance also predicted path length and percent time in the quadrant opposite the target on
+    day 2 (Figures 3D and 3E
+  statistics:
+  - about: path length
+    test: Pearson correlation
+    statistic: F(1,8) = 16.42
+    p: 0.018
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  - about: percent time opposite
+    test: Pearson correlation
+    statistic: F(1,8) = 7.33
+    p: 0.1
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, path length
+    value: 0.82
+    tolerance: 0.082
+  - quantity: Pearson R, percent time opposite
+    value: 0.69
+    tolerance: 0.069
+  criterion: As rep-mwm-swr-slope-days-1-2, for each metric; R from Table S3. Reproduced when both
+    hold, partially when one does.
+- id: fig3f-apa-learning-score
+  statement: The APA learning performance score predicted from SWR abundance by the screen cohort's
+    model accounts for 75% of the variance in the actual score.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 3; Figure 3F
+  quote: The relationship between the predicted and actual learning performance scores was very strong,
+    with the predicted score accounting for 75% of the variance in the actual score
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 23.7
+    p: 0.001
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.75
+    tolerance: 0.075
+  depends_on:
+  - fig2e-learning-score
+  criterion: As fig2n-rep-learning-score, with the APA learning score. The metrics are open; the text
+    says the metrics of Figures 3D and 3E (path length and percent time opposite), the Methods add
+    latency to first entrance; both readings are run, each under both z-score readings. The p
+    (0.001) is read from the panel.
+- id: fig3g-ca3-entrances
+  statement: In the replication cohort, higher CA3 SG power during SWRs predicts fewer shock zone
+    entrances on APA day 2, and also on days 3 and 4.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 4; Figure 3G;
+    Table S3
+  quote: This SWR property predicted the number of shock zone entrances—a metric that requires precise memory
+    of shock zone boundaries—on day 2 (Figure 3G) as well as on days 3 and 4
+  statistics:
+  - about: day 2
+    test: Pearson correlation
+    statistic: F(1,7) = 32.53
+    p: 0.003
+    corrected: Holm-Sidak
+    n: 9 apoE4-KI mice
+  - about: day 3
+    test: Pearson correlation
+    statistic: F 9.49
+    p: 0.02
+    n: 9 apoE4-KI mice
+  - about: day 4
+    test: Pearson correlation
+    statistic: F 7.48
+    p: 0.03
+    n: 9 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, day 2
+    value: -0.91
+    tolerance: 0.091
+  - quantity: Pearson R, day 3
+    value: -0.76
+    tolerance: 0.076
+  - quantity: Pearson R, day 4
+    value: -0.72
+    tolerance: 0.072
+  criterion: As rep-mwm-swr-slope-days-1-2, CA3 SG power in the 9 E4 mice with CA3 sites, entrances
+    on days 2, 3 and 4; R from Table S3. Reproduced when all three hold; partially reproduced when
+    day 2 holds and one of days 3 and 4 does.
+- id: fig3h-ca3-distance-per-bout
+  statement: In the replication cohort, mice with lower CA3 SG power during SWRs move further from the
+    shock zone per movement bout on APA days 2 and 3.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 4; Figure 3H and
+    S3H
+  quote: CA3 SG power during SWRs further predicted the distance mice traveled away from the shock zone
+    during bouts of movement on days 2 and 3 (Figures 3H and S3H
+  statistics:
+  - about: day 2
+    test: Pearson correlation
+    statistic: F(1,7) = 9.04
+    p: 0.077
+    corrected: Holm-Sidak
+    n: 9 apoE4-KI mice
+  - about: day 3
+    test: Pearson correlation
+    statistic: F(1,7) = 6.74
+    p: 0.036
+    n: 9 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, day 2
+    value: -0.75
+    tolerance: 0.075
+  - quantity: Pearson R, day 3
+    value: -0.7
+    tolerance: 0.07
+  criterion: As fig3g-ca3-entrances, distance per bout (method D, pull_apa_metrics.py) on days 2
+    and 3; reproduced when both hold, partially when one does.
+- id: fig3i-apa-memory-score
+  statement: The APA memory precision score predicted from CA3 SG power by the screen cohort's model
+    accounts for 73% of the variance in the actual score.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 5; Figure 3I
+  quote: Predicted score accounted for 73% of the variance in the actual score (Figure 3I
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,7) = 19.2
+    p: 0.003
+    n: 9 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.73
+    tolerance: 0.073
+  depends_on:
+  - fig2i-memory-precision-score
+  criterion: As fig2n-rep-learning-score, with the APA memory precision score (entrances day 2,
+    distance per bout days 2 and 3; text and Methods agree) and CA3 SG power. The p (0.003) is
+    read from the panel.
+- id: figs3ij-mwm-predicts-apa
+  statement: In apoE4-KI mice, MWM performance scores predict the corresponding APA scores, learning
+    against learning and memory precision against memory precision.
+  source: Results, SWR Deficits Predict Spatial Avoidance Task Impairments, paragraph 5; Figure S3I and
+    S3J
+  quote: We further noted that the performance scores of the MWM task predicted the performance scores
+    of the APA task (Figures S3I and S3J
+  statistics:
+  - about: learning scores
+    test: Pearson correlation
+    statistic: F(1,8) = 6.34
+    p: 0.035
+    n: 10 apoE4-KI mice
+  - about: memory precision scores
+    test: Pearson correlation
+    statistic: F(1,7) = 11.1
+    p: 0.012
+    n: 9 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, learning scores (read from the panel)
+    value: 0.665
+    tolerance: 0.067
+  - quantity: Pearson R, memory precision scores (read from the panel)
+    value: 0.783
+    tolerance: 0.078
+  criterion: Scores by method E (both z-score readings; the APA learning score under both metric
+    readings of fig3f-apa-learning-score), MWM at 14-18 months against APA, in the E4 mice of the
+    correlations (10 and 9, as the legend gives). Reproduced when both are positive with p < 0.05
+    and R within tolerance under one reading; partially when one holds.
+- id: figs4ab-young-deficits
+  statement: In the replication cohort, apoE4-KI mice have lower SWR abundance and lower CA3 SG power
+    during SWRs than apoE3-KI mice already at 5-8 months and at every age tested.
+  source: Results, SWR Deficits at Younger Ages, paragraph 1; Figure S4A and S4B
+  quote: Young apoE4-KI mice already had reduced SWR abundance and associated SG power in CA3 when compared
+    to young apoE3-KI mice (Figures S4A and S4B
+  statistics:
+  - about: SWR abundance, genotype effect
+    test: two-way mixed-effects analysis of aligned rank transformed data
+    statistic: F(1,28) = 43.99
+    p: 0.0001
+    p_relation: "<"
+  - about: SWR abundance, 5-8 months
+    test: post-hoc Mann-Whitney U test
+    statistic: U = 43
+    p: 0.012
+    corrected: Sidak
+    n: 13 apoE3-KI and 17 apoE4-KI mice
+  - about: SWR abundance, 9-11 months
+    test: post-hoc Mann-Whitney U test
+    statistic: U = 26
+    p: 0.0012
+    corrected: Sidak
+  - about: SWR abundance, 13-17 months
+    test: post-hoc Mann-Whitney U test
+    statistic: U = 5
+    p: 0.0001
+    p_relation: "<"
+    corrected: Sidak
+  - about: CA3 SG power, genotype effect
+    test: two-way mixed-effects analysis of aligned rank transformed data
+    statistic: F(1,26) = 12.86
+    p: 0.0014
+  - about: CA3 SG power, 5-8 months
+    test: post-hoc Mann-Whitney U test
+    statistic: U = 31
+    p: 0.0054
+    corrected: Sidak
+    n: 12 apoE3-KI and 16 apoE4-KI mice
+  - about: CA3 SG power, 9-11 months
+    test: post-hoc Mann-Whitney U test
+    statistic: U = 35
+    p: 0.024
+    corrected: Sidak
+  - about: CA3 SG power, 13-17 months
+    test: post-hoc Mann-Whitney U test
+    statistic: U = 31
+    p: 0.0456
+    corrected: Sidak
+  criterion: SWR abundance and CA3 SG power (methods A and B) per mouse and age in Cohort 2; aligned
+    rank transform and a two-way mixed-effects model of genotype and age (mice as random effects),
+    post hoc Mann-Whitney U tests per age with Sidak adjustment over the 3 ages. Reproduced when
+    both genotype effects have p < 0.05 with E4 lower and E4 is lower at 5-8 months for both
+    measures (adjusted p < 0.05); partially reproduced when the genotype effects hold but a 5-8
+    month comparison does not.
+- id: figs4ab-aging-increase
+  statement: Over aging, SWR abundance increases in apoE3-KI mice, and CA3 SG power during SWRs
+    increases in both genotypes.
+  source: Results, SWR Deficits at Younger Ages, paragraph 1; Figure S4A and S4B
+  quote: Interestingly, SWR abundance increased in apoE3-KI mice over aging ... Increases in CA3 SG power
+    during SWRs were seen in both groups over aging (Figure S4B
+  statistics:
+  - about: SWR abundance, apoE3-KI, 5-8 against 13-17 months
+    test: unpaired t test with Sidak adjustment
+    statistic: t(19) = 2.926
+    p: 0.028
+  - about: CA3 SG power, apoE3-KI
+    test: unpaired t test with Sidak adjustment
+    statistic: t(18) = 3.14
+    p: 0.017
+  - about: CA3 SG power, apoE4-KI
+    test: unpaired t test with Sidak adjustment
+    statistic: t(28) = 5.66
+    p: 0.0001
+    p_relation: "<"
+  criterion: Per genotype, 5-8 against 13-17 months, unpaired t tests with Sidak adjustment (Figure
+    S4 legend, "all comparisons unpaired t tests with Sidak adjustment"; the family is not stated,
+    readings (a) the age pairs of one genotype and measure, 3 tests, (b) no more than the pairs
+    printed). Reproduced when all three increases have adjusted p < 0.05 under one reading;
+    partially when two do.
+- id: figs4cd-baseline-sd-swr-band
+  statement: Baseline in the SWR frequency band falls over aging in both genotypes, and its SD falls in
+    apoE4-KI but not apoE3-KI mice.
+  source: Results, SWR Deficits at Younger Ages, paragraph 1; Figure S4C and S4D
+  quote: although there was also a decrease in SWR baseline power (Figure S4C) that, along with a preserved
+    SD of SWR power (Figure S4D), could have contributed to this increase
+  statistics:
+  - about: baseline, apoE3-KI, 5-8 against 13-17 months
+    test: unpaired t test with Sidak adjustment
+    statistic: t(19) = 4.60
+    p: 0.0006
+  - about: baseline, apoE4-KI, 5-8 against 13-17 months
+    test: unpaired t test with Sidak adjustment
+    statistic: t(30) = 7.25
+    p: 0.0001
+    p_relation: "<"
+  - about: SD, apoE4-KI, 5-8 against 13-17 months
+    test: unpaired t test with Sidak adjustment
+    statistic: t(30) = 4.34
+    p: 0.0004
+  - about: SD, apoE3-KI, 5-8 against 13-17 months
+    test: unpaired t test with Sidak adjustment
+    statistic: t(19) = 0.25
+    p: 0.99
+  criterion: Baseline and SD are the mean and SD of the smoothed ripple envelope of each session on
+    the detection site (ag_extractripples.m; runcalcriprates.m figopt 2), averaged over sessions.
+    Tests as figs4ab-aging-increase. Reproduced when baseline falls (adjusted p < 0.05) in both
+    genotypes, SD falls in E4, and the E3 SD test gives p >= 0.05 (absence on the paper's test);
+    partially when two of the three decreases hold.
+- id: figs4ef-ca3-sg-baseline-stable
+  statement: Baseline and SD in the SG band in CA3 do not change over aging in either genotype.
+  source: Results, SWR Deficits at Younger Ages, paragraph 1; Figure S4E and S4F
+  quote: Increases in CA3 SG power during SWRs were seen in both groups over aging (Figure S4B) without
+    concomitant changes in baseline or SD (Figures S4E and S4F
+  statistics:
+  - about: baseline, apoE3-KI
+    test: unpaired t test with Sidak adjustment
+    statistic: t(18) = 0.18
+    p: 1.0
+  - about: baseline, apoE4-KI
+    test: Mann Whitney test with Sidak adjustment
+    statistic: U = 88
+    p: 0.7
+  - about: SD, apoE3-KI
+    test: unpaired t test with Sidak adjustment
+    statistic: t(18) = 0.50
+    p: 0.95
+  - about: SD, apoE4-KI
+    test: Mann Whitney U test with Sidak adjustment
+    statistic: U = 98
+    p: 0.93
+  criterion: A claim of absence on the legend's tests (t tests for E3, Mann-Whitney for E4, 5-8
+    against 13-17 months, Sidak adjusted). Baseline and SD are the mean and SD over windows of the
+    immobile-time spectrogram used for z-scoring (RTspecgram3.m meanPprobe and stdPprobe), averaged
+    over the SG bins and CA3 sites and over sessions (plotRTSstats.m figopt 4, with the bins of
+    method B). Reproduced when none of the four tests gives p < 0.05; not reproduced when any does.
+- id: figs4g-young-no-deficit
+  statement: Young (6-9 month) apoE4-KI mice show no MWM learning deficit.
+  source: Results, SWR Deficits at Younger Ages, paragraph 2; Figure S4G
+  quote: young apoE4-KI mice showed no detectable learning deficits (Figure S4G
+  criterion: A claim of absence. The legend names no test; the paper's test for the same curve in
+    aged mice is a two-way repeated-measures ANOVA of aligned rank transformed daily latencies
+    (Figure 1G legend), used here on the 13 E3 and 13 E4 mice of Cohort 2 at 6-9 months.
+    Reproduced when the genotype effect has p >= 0.05; not reproduced when p < 0.05; the effect is
+    reported.
+- id: table-s4-young-no-prediction
+  statement: SWR abundance and CA3 SG power at 5-8 months do not predict MWM behavior tested 1 month
+    later.
+  source: Results, SWR Deficits at Younger Ages, paragraph 2; Table S4 (6-9 mo MWM rows)
+  quote: SWR abundance and associated CA3 SG power measured at 5–8 months did not predict behavior tested
+    1 month later (Table S4
+  criterion: A claim of absence on the paper's test, Pearson at alpha 0.05, for the 9 MWM metrics of
+    Table S4 at 6-9 months against SWR abundance (n = 13) and CA3 SG power (n = 12) at 5-8 months
+    in E4 mice. Reproduced when none of the 18 has p < 0.05; not reproduced when any does.
+- id: fig4bc-swr-not-stable
+  statement: SWR abundance is not significantly correlated across ages within mice, in either genotype.
+  source: Results, SWR Deficits at Younger Ages, paragraph 3; Figure 4B and 4C
+  quote: We found that while SWR abundance was not significantly correlated across ages in either apoE3-KI
+    or apoE4-KI mice (Figures 4B and 4C
+  statistics:
+  - about: apoE3-KI, 9-11 against 5-8 months
+    test: Pearson correlation
+    statistic: F(1,10) = 2.12
+    p: 0.18
+    n: 12 apoE3-KI mice
+  - about: apoE3-KI, 9-11 against 13-17 months
+    test: Pearson correlation
+    statistic: F(1,7) = 0.82
+    p: 0.4
+    n: 9 apoE3-KI mice
+  - about: apoE4-KI, 9-11 against 5-8 months
+    test: Spearman correlation
+    p: 0.49
+    n: 17 apoE4-KI mice
+  - about: apoE4-KI, 9-11 against 13-17 months
+    test: Spearman correlation
+    p: 0.66
+    n: 15 apoE4-KI mice
+  criterion: A claim of absence on the paper's tests (Pearson for E3, Spearman for E4), SWR abundance
+    at 9-11 months against 5-8 and against 13-17 months, the same mice. Reproduced when none of the
+    four gives p < 0.05; not reproduced when any does. The p values are read from the panels.
+- id: fig4de-ca3-sg-stable
+  statement: CA3 SG power during SWRs at 9-11 months correlates with that at 5-8 and at 13-17 months in
+    the same mice, in both genotypes.
+  source: Results, SWR Deficits at Younger Ages, paragraph 3; Figure 4D and 4E
+  quote: CA3 SG power during SWRs was significantly correlated across ages in both genotypes (Figures 4D
+    and 4E
+  statistics:
+  - about: apoE3-KI, 5-8 months
+    test: Pearson correlation
+    statistic: F(1,9) = 13.54
+    p: 0.005
+    n: 11 apoE3-KI mice
+  - about: apoE3-KI, 13-17 months
+    test: Pearson correlation
+    statistic: F(1,7) = 48.52
+    p: 0.0002
+    n: 9 apoE3-KI mice
+  - about: apoE4-KI, 5-8 months
+    test: Pearson correlation
+    statistic: F(1,14) = 8.71
+    p: 0.011
+    n: 16 apoE4-KI mice
+  - about: apoE4-KI, 13-17 months
+    test: Pearson correlation
+    statistic: F(1,12) = 15.71
+    p: 0.002
+    n: 14 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, apoE3-KI, 9-11 against 5-8 months (read from the panel)
+    value: 0.775
+    tolerance: 0.078
+  - quantity: Pearson R, apoE3-KI, 9-11 against 13-17 months (read from the panel)
+    value: 0.935
+    tolerance: 0.094
+  - quantity: Pearson R, apoE4-KI, 9-11 against 5-8 months (read from the panel)
+    value: 0.619
+    tolerance: 0.062
+  - quantity: Pearson R, apoE4-KI, 9-11 against 13-17 months (read from the panel)
+    value: 0.753
+    tolerance: 0.075
+  criterion: CA3 SG power (method B) per mouse and age, Pearson. Reproduced when all four are
+    positive with p < 0.05 and R within tolerance; partially when all four are positive with p <
+    0.05 but some R are outside tolerance, or when three hold.
+- id: ca3-sg-5-8-vs-13-17
+  statement: CA3 SG power at 5-8 months does not significantly predict CA3 SG power at 13-17 months,
+    indicating slow individual changes.
+  source: Results, SWR Deficits at Younger Ages, paragraph 3
+  quote: CA3 SG power at 5–8 months did not significantly predict CA3 SG power at 13–17 months, however
+    (e.g., for apoE3-KI mice, R = 0.2, F(1,12) = 0.5, p = 0.49
+  statistics:
+  - about: apoE3-KI, as printed
+    test: Pearson correlation
+    statistic: R = 0.2, F(1,12) = 0.5
+    p: 0.49
+  criterion: A claim of absence, Pearson at alpha 0.05. F(1,12) needs 14 mice, but only 9 E3 mice
+    have CA3 power at 13-17 months; readings (a) E3 mice (9), (b) E4 mice (14, which fits the df).
+    Judged on the E3 test as printed; reproduced when its p >= 0.05, not reproduced otherwise. The
+    E4 test is shown as a variant, with R and p of both.
+- id: fig4g-young-ca3-slope-days-1-2
+  statement: CA3 SG power during SWRs at 5-8 months predicts the slope of escape latency over hidden
+    days 1-2 on the MWM at 14-18 months in apoE4-KI mice.
+  source: Results, SWR Deficits at Younger Ages, paragraph 4; Figure 4G; Table S4
+  quote: CA3 SG power during SWRs measured at 5–8 months predicted escape latency on the third hidden day
+    and the slope of the escape latency curve for the first 2 or first 3 days on the MWM task at 14–18 months
+    (Figures 4G, 4H, S4H; Table S4
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 5.82
+    p: 0.039
+    n: 11 apoE4-KI mice
+  - test: Pearson correlation
+    statistic: F(1,9) = 5.82
+    p: 0.077
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.63
+    tolerance: 0.063
+  criterion: As rep-mwm-swr-slope-days-1-2, with CA3 SG power at 5-8 months and MWM at 14-18 months
+    in the 11 E4 mice with both; R from Table S4.
+- id: fig4h-young-ca3-latency-day-3
+  statement: CA3 SG power during SWRs at 5-8 months predicts escape latency on hidden day 3 at 14-18
+    months in apoE4-KI mice.
+  source: Figure 4H; Table S4
+  quote: (H) average escape latency on hidden day 3 (F(1,9) = 11.08, adjusted p = 0.035) on MWM task at
+    14–18 months
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 11.08
+    p: 0.035
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.74
+    tolerance: 0.074
+  criterion: As fig4g-young-ca3-slope-days-1-2.
+- id: figs4h-young-ca3-slope-days-1-3
+  statement: CA3 SG power during SWRs at 5-8 months predicts the slope of escape latency over hidden
+    days 1-3 at 14-18 months in apoE4-KI mice.
+  source: Figure S4H; Table S4
+  quote: CA3 SG power during SWRs measured at 5–8 months predicts slope of escape latency over hidden days
+    1–3 (F(1,9) = 10.89 on MWM task at 14–18 months
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,9) = 10.89
+    p: 0.027
+    corrected: Holm-Sidak
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: Pearson R
+    value: -0.74
+    tolerance: 0.074
+  criterion: As fig4g-young-ca3-slope-days-1-2.
+- id: fig4i-young-mwm-learning-score
+  statement: The MWM learning score at 14-18 months predicted from CA3 SG power at 5-8 months by the
+    screen cohort's model accounts for 50% of the variance in the actual score.
+  source: Results, SWR Deficits at Younger Ages, paragraph 5; Figure 4I
+  quote: the relationship derived from the screen cohort effectively predicted behavioral deficits, accounting
+    for 50% and 71% of the variance in the actual learning performance score with CA3 SG power during
+    SWRs measured 10–11 months previously
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 8.9
+    p: 0.015
+    n: 11 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.5
+    tolerance: 0.05
+  depends_on:
+  - fig2e-learning-score
+  criterion: As fig2n-rep-learning-score, with the MWM learning score at 14-18 months and CA3 SG
+    power at 5-8 months z-scored, through the model of Figure 2E. The printed F(1,8) does not fit n
+    = 11; F = 8.9 with 9 df gives R squared 0.50, as stated. The p (0.015) is read from the panel.
+- id: fig4jk-young-ca3-apa
+  statement: CA3 SG power during SWRs at 5-8 months predicts latency to first shock zone entrance and
+    path length on APA day 2 at 15-20 months in apoE4-KI mice.
+  source: Results, SWR Deficits at Younger Ages, paragraph 4; Figure 4J and 4K; Table S4
+  quote: CA3 SG power during SWRs also predicts (J) latency to first shock zone entrance (F(1,8) = 13.21,
+    adjusted p = 0.033) and (K) total path length (F(1,8) = 6.74, adjusted p = 0.12) on APA task at 15–20
+    months
+  statistics:
+  - about: latency to first entrance
+    test: Pearson correlation
+    statistic: F(1,8) = 13.21
+    p: 0.033
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  - about: path length
+    test: Pearson correlation
+    statistic: F(1,8) = 6.74
+    p: 0.12
+    corrected: Holm-Sidak
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: Pearson R, latency to first entrance
+    value: 0.79
+    tolerance: 0.079
+  - quantity: Pearson R, path length
+    value: 0.68
+    tolerance: 0.068
+  criterion: As fig4g-young-ca3-slope-days-1-2, APA day 2 in the 10 E4 mice; R from Table S4. The
+    Results text says "the number of entries into the shock zone and path length", but Figure 4J
+    and Table S4 give latency to first entrance (entrances R = -0.09, p = 0.80); the figure and
+    table are followed. Reproduced when both hold, partially when one does.
+- id: fig4l-young-apa-learning-score
+  statement: The APA learning score at 15-20 months predicted from CA3 SG power at 5-8 months by the
+    screen cohort's model accounts for 71% of the variance in the actual score.
+  source: Results, SWR Deficits at Younger Ages, paragraph 5; Figure 4L
+  quote: and all 3 APA metrics into an APA learning performance score (Figure 4L
+  statistics:
+  - test: Pearson correlation
+    statistic: F(1,8) = 19.7
+    p: 0.002
+    n: 10 apoE4-KI mice
+  expected:
+  - quantity: variance explained (R squared)
+    value: 0.71
+    tolerance: 0.071
+  depends_on:
+  - fig2e-learning-score
+  criterion: As fig4i-young-mwm-learning-score, with the APA learning score of the 3 day 2 metrics
+    (latency to first entrance, path length, percent time opposite; text and Methods agree here).
+    The p (0.002) is read from the panel.
+- id: table-s4-30-comparisons
+  statement: Of 30 comparisons of 15 later behavioral metrics against the two SWR properties at 5-8
+    months, 5 are significant at alpha 0.05, more than chance.
+  source: Results, SWR Deficits at Younger Ages, paragraph 4; Table S4
+  quote: in total, we compared 15 behavioral metrics against 2 SWR properties for a total of 30 comparisons,
+    5 of which were significant with a = 0.05; far more than would be predicted by chance (p < 0.016,
+    binomial test
+  statistics:
+  - test: binomial test
+    p: 0.016
+    p_relation: "<"
+    n: 30 comparisons
+  expected:
+  - quantity: significant comparisons of 30
+    value: 5
+    tolerance: 1
+  criterion: The 9 MWM metrics at 14-18 months and 6 APA metrics at 15-20 months of Table S4 against
+    SWR abundance and CA3 SG power at 5-8 months, Pearson, E4 mice. Reproduced when the count is
+    within tolerance and a one-sided binomial test against 0.05 gives p < 0.05. Tolerance of 1 as
+    for screen-88-comparisons.
+- id: figs4i-young-ca3-predicts-later-swr
+  statement: In apoE4-KI but not apoE3-KI mice, CA3 SG power during SWRs at 5-8 months predicts SWR
+    abundance at 13-17 months in the same mouse.
+  source: Results, SWR Deficits at Younger Ages, paragraph 6; Figure S4I
+  quote: CA3 SG power during SWRs in young apoE4-KI mice strongly predicted SWR abundance 8 months later
+    (Figure S4I). This was not true for young apoE3-KI mice
+  statistics:
+  - about: apoE4-KI
+    test: Pearson correlation
+    statistic: F(1,13) = 27.19
+    p: 0.0002
+    n: 15 apoE4-KI mice
+  - about: apoE3-KI
+    test: Pearson correlation
+    statistic: F(1,7) = 2.52
+    p: 0.16
+    n: 9 apoE3-KI mice
+  expected:
+  - quantity: Pearson R, apoE4-KI (read from the panel)
+    value: 0.823
+    tolerance: 0.082
+  criterion: CA3 SG power (method B) at 5-8 months against SWR abundance (method A) at 13-17 months,
+    Pearson, per genotype. Reproduced when the E4 correlation is positive with p < 0.05 and R within
+    tolerance and the E3 correlation has p >= 0.05 (absence on the paper's test); partially
+    reproduced when the E4 part holds and the E3 correlation is significant.

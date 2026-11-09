@@ -1,14 +1,32 @@
-I stopped without writing any claims, because Table S2 of the supplement is missing. No `claims/jones-2019.yaml` was created.
+I wrote `claims/jones-2019.yaml`. The quote checker passes it: 65 claims, 65 quotes, 110 statistical values, 0 problems. Nothing was committed.
 
-**Text read:** `paper/10.1016-j.celrep.2019.10.056.txt` is the version of record with its supplemental information: main text, STAR Methods, Figures S1 to S4, and Tables S1, S3 and S4. The text and the PDF both have 28 pages, and Table S2 is in neither. The supplement goes straight from Table S1 (page 26) to Table S3 (page 27). Since S2 is the only table skipped, it was most likely published as a separate file, probably a spreadsheet, at https://doi.org/10.1016/j.celrep.2019.10.056.
+**Text read:** the version of record, with its supplement (Figures S1 to S4, Tables S1, S3 and S4) and Table S2 from the xlsx. I opened the PDF only to read R and p values printed inside figure panels, and the directions in Figures S3 and S4. Those values are marked "read from the panel". I also read the paper's code, emilyasterjones/SWR-predictions at commit ca056a8. Nothing a claim needed was missing.
 
-**Why it is needed:** the Results cite Table S2 four times, and these findings rest on it:
-- **The screen itself:** "88 comparisons, 9 of which were significant with a = 0.05 ... (p < 0.00032, binomial test; see Table S2)". This screen is how the paper picked the metrics that make up the MWM learning and memory precision scores.
-- **Robustness:** "All relationships remained significant regardless of the frequency band (150–250 Hz versus 125–250 Hz) or threshold (3 SD versus 5 SD) used for SWR detection (Table S2)."
-- **Negative result:** "SWR-associated SG power in CA1 and in DG did not consistently and significantly predict memory performance (Table S2)."
-- **apoE3-KI mice:** "some predictive relationships ... in the screen cohort of aged apoE3-KI mice (Table S2), the majority did not replicate".
-- **Missing numbers:** the R and p values for the MWM correlations in both cohorts (Figure 2B to 2R) are not printed in the legends, which give only F. They would be in Table S2, and the expected values for the Figure 2 claims depend on them. The text extraction also left no R values from the Figure 2 artwork.
+**Counts:** all 65 claims have quotes, so none needed an `inferred` note. 56 have statistics and every claim has a criterion. 12 are claims of absence, each judged on the paper's own test.
 
-**Not done:** no claims, quotes, statistics or criteria were written, no open details were named, and the quote checker was not run. I did not read the linked code (github.com/emilyasterjones/SWR-predictions) or look at the dataset.
+**Details the paper leaves open, and the readings named:**
+- **Ripple threshold:** the Methods say above 5 SD for 15 ms. The code detects above 3 SD for 15 ms and keeps events peaking at 5 SD. The Methods are the main reading and the code is the variant.
+- **Slow gamma (SG) power:**
+  - The code triggers on all events above 3 SD; the Methods and Table S2 use the 5 SD events.
+  - The code's frequency bins include 54.7 Hz; the Methods' 30 to 50 Hz does not.
+  - The Methods average per session and then over sessions; the code pools all events.
+- **Z-score population for the performance scores:** either the apoE4-KI mice in the correlation, or all mice of the cohort.
+- **Metrics in the APA learning score (Fig 3F):** two metrics in the text, three in the Methods.
+- **MUA baseline:** either the whole 400 ms before detection, or the bin from -400 to -300 ms.
+- **Cohort comparison (0.12 vs 0.20 Hz, 16.2 vs 11.5 µV):** the text doesn't say which cohort is which, or which mice the baseline t(25) covers.
+- **Day 1 vs day 2 variance in APA shock-zone entrances:** which mice are included.
+- **"This cohort" in the age claim:** the screen or the replication cohort.
+- **Fig S3G test:** the df of 44 suggests ANOVA post hoc tests, but separate t tests per day are also possible.
+- **Holm-Sidak families:** these are not stated. I found the family that reproduces every printed adjusted p from the printed F values (one per SWR property's planned metrics) and fixed that in the file.
+- **Significance in the replication cohort:** read on unadjusted p. The paper calls every replication significant, but several adjusted p are above 0.05.
 
-**To continue:** add Table S2 under `paper/` and rerun the reader.
+**Inconsistencies in the paper, recorded in the criteria:**
+- The 9-of-88 binomial test prints p < 0.00032, but the test that reproduces the other two binomial values gives 0.032.
+- Fig 2I says 77% of variance, but its R and F both give 71%.
+- The panel R values in Fig 2M and S1G don't fit their F and p, so I used the R implied by F.
+- Fig 4I prints F(1,8) for n = 11.
+- The Fig S1J legend gives F = 0.80 where Table S2 implies about 0.08.
+- In the text "R = 0.2, F(1,12)" for apoE3-KI mice, F(1,12) needs 14 mice but only 9 have the measure.
+- The Results say young CA3 SG power predicts "entries" into the shock zone, but Figure 4J and Table S4 show latency to first entrance; I followed the figure.
+
+Untracked dotfiles such as `.bashrc` and `.mcp.json`, plus `scripts/`, have appeared in the repo root. I didn't create them and left them alone.
