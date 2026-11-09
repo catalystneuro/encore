@@ -94,7 +94,7 @@ done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" 
 # The names the chain's runs were committed under: its own, and for a paper, its datasets' folder names, under which
 # an attempt that began before the cutover to paper-first records committed its runs.
 names(){ { echo "$d"; [ -z "$is_paper" ] || git show "origin/main:papers/datasets/$d.yaml" 2>/dev/null \
-  | python -c "import sys,yaml; sys.path.insert(0,'$here/../'); import datasets; [print(datasets.folder(datasets.key_of(x['archive'], str(x['id'])))) for x in (yaml.safe_load(sys.stdin) or {}).get('datasets') or []]" 2>/dev/null; } \
+  | python -c "import sys,yaml; sys.path.insert(0,'$REGISTRY_ROOT/tools'); import datasets; [print(datasets.folder(datasets.key_of(x['archive'], str(x['id'])))) for x in (yaml.safe_load(sys.stdin) or {}).get('datasets') or []]" 2>/dev/null; } \
   | paste -sd '|' -; }
 is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
