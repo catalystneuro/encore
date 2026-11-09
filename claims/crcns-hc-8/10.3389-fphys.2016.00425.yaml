@@ -37,7 +37,7 @@
 # Data the paper used. Dissociated hippocampal cultures from embryonic day 18 Sprague-Dawley rat
 # embryos, about 200,000 cells plated per culture on Multichannel Systems 60-electrode arrays
 # (200 um spacing, 30 um electrodes), recorded without stimulation from DIV 6 to 35; 435 recordings
-# from 28 cultures (Figure 2B), first 59 min of each, 20 kHz; spikes sorted with wave_Clus (5 SD
+# (Methods 2.2; 28 cultures per the data set's description), first 59 min of each, 20 kHz; spikes sorted with wave_Clus (5 SD
 # negative threshold, no dead time, checked by hand); 39,529 neurons in total, most recordings about
 # 100 neurons, firing rates about 0.05 to 20 Hz. Some recordings were excluded for too few
 # avalanches (red squares of Figure 2B; the threshold is not stated). Measured variables: spike
@@ -64,7 +64,8 @@
 # all recordings; the number excluded is reported. (3) The multiple comparisons correction of
 # Figures 10 and 11 cites both Benjamini and Hochberg (1995) and Benjamini and Yekutieli (2001);
 # readings (a) Benjamini-Hochberg, (b) Benjamini-Yekutieli, over the comparisons of one panel, at
-# 0.05. (4) Which randomizations appear in Figures 10 and 11: the Methods list jitter 1, 10 and 100
+# 0.05. The family is not stated either; one panel is used, and all comparisons of the figure are
+# shown as a variant. (4) Which randomizations appear in Figures 10 and 11: the Methods list jitter 1, 10 and 100
 # bins, wrap, Poisson, swap and shuffling; the criteria use all seven and report each. (5) The
 # susceptibility: Eq. 14 is var(A(t)/N); readings (a) Eq. 14 as printed, (b) N var(A(t)/N), the
 # Williams-Garcia et al. (2014) form, which fits the 0 to 5 range of the Figure S8 axis; both over
@@ -132,7 +133,7 @@ claims:
     placed at random times, as Methods 2.5, paragraph 4, last sentence. Complexity depends only on
     the distribution of states (Methods 2.9), so it is preserved exactly when the same states are
     kept; reproduced when the complexity differs from the original by less than 5% (the residue of
-    the random subset draws) and the size distribution of the permuted data is no longer accepted as
+    the random subset draws; 5% is a choice the paper does not make) and the size distribution of the permuted data is no longer accepted as
     the original power law (plparams p below 0.2 or exponent outside the original's error).
 - id: fig6-cb-distribution-curvature
   statement: In the cortical branching model, low transmission probabilities give size and duration
@@ -222,7 +223,7 @@ claims:
     of at least 4 with at least 20 avalanches (Methods 2.8, avgshapes cutoffs 4 and 20), absolute
     curvature (common detail 6), extrapolated by sub-sampling as Figure S1C. Reproduced when the
     mean curvature at p_trans 0.2 exceeds that at 0.3 and the curvature has no interior maximum
-    within 0.02 of 0.25 and 0.265.
+    within 0.02 of 0.25 and 0.265 (0.02 is a choice the paper does not make).
 - id: fig7d-cb-branching-ratio-near-1
   statement: The cortical branching model's branching ratio is closest to 1 near the same
     transmission probability at which complexity and susceptibility peak.
@@ -248,14 +249,16 @@ claims:
   - quantity: total number of neurons
     value: 39529
     tolerance: 0
-  - quantity: modal number of neurons per recording
+  - quantity: typical number of neurons per recording
     value: 100
     tolerance: 10
   criterion: Counts of recordings and of sorted units are exact properties of the deposited data, so
-    the tolerance is zero. "Most recordings ... approximately 100" is read as the median number of
-    neurons per recording within 10% of 100. Firing rate as spike count over the first 59 min
+    the tolerance is zero. "Most recordings ... approximately 100" is read as (a) the median number
+    of neurons per recording, (b) the mode of a histogram with Terrell-Scott bins; reproduced when one
+    is within 10% of 100. Firing rate as spike count over the first 59 min
     (Methods 2.2); the range holds when the 5th and 95th percentiles over neurons lie within 0.045 to
-    22 Hz (the range widened by 10% of each bound). Firing rates span "multiple orders of magnitude"
+    22 Hz (the range widened by 10% of each bound; the percentiles are a choice the paper does not
+    make, and the minimum and maximum are reported). Firing rates span "multiple orders of magnitude"
     (Figure 2A legend) is reported.
 - id: fig2d-network-isi
   statement: Most recordings have a mean network-wide interspike interval of around 7 ms, though some
@@ -303,7 +306,27 @@ claims:
     readings as fig7ab-cb-complexity-susceptibility-peak. "Errors" read as the SD across recordings
     (the legend quotes mean and SD). Reproduced when the mean over recordings of the extrapolated
     tau and alpha are each below the full-system means and their SDs are smaller, and each mean of
-    1/sigma nu z changes by less than 10% between the two analyses.
+    1/sigma nu z changes by less than 10% between the two analyses ("little change" read as 10%, a
+    choice the paper does not make).
+- id: fig8-exponents-match-literature
+  statement: The culture critical exponents from the sub-sampling method agree better with previously
+    reported values for neural avalanches (Mazzoni et al. 2007, Pasquale et al. 2008, Friedman et al.
+    2012) than those from the search algorithm on the full system.
+  source: Results 3.3, paragraph 2; Figure 8
+  quote: The exponents found using the sub-sampling method agreed best with previously reported
+    values for the critical exponents in neural avalanches
+  data: with_inputs
+  where: The reference values are not printed in this paper; they are those reported in Mazzoni et
+    al. (2007), Pasquale et al. (2008) and Friedman et al. (2012), as cited at Results 3.3,
+    paragraph 2.
+  depends_on:
+  - fig8-subsampling-exponents
+  criterion: With the means over recordings of fig8-subsampling-exponents, and for each exponent
+    (tau, alpha, 1/sigma nu z) the values the three cited papers report. Which value of each cited
+    paper is meant, and how agreement is measured, are not stated; read as the absolute difference of
+    the mean from each cited value. Reproduced when, for tau and alpha, the sub-sampling mean is
+    closer than the full-system mean to the cited values for most of the cited papers that report
+    that exponent; 1/sigma nu z is reported.
 - id: fig8-sigmanuz-methods-agree
   statement: The values of 1/sigma nu z from the size given duration fits and from the shape
     collapse agree within error.
@@ -338,7 +361,7 @@ claims:
   criterion: As eq4-exponent-relation on the full-system exponents of the randomized data
     (fig10-randomization-markers lists the methods). Reproduced when the relation holds as defined
     there for at least one randomization method and that method's mean tau or alpha differs from the
-    real data's by more than one SD. The data are "not shown", so the methods it covers are open;
+    real data's by more than one SD ("different" read as one SD, a choice the paper does not make). The data are "not shown", so the methods it covers are open;
     every method is reported.
 - id: fig9-branching-ratio
   statement: With the sub-sampling-corrected method, most culture recordings have branching ratios
@@ -364,7 +387,8 @@ claims:
     The Figure 10 legend gives the test, a rank sum test of real against each randomization across
     recordings with false discovery rate control (common detail 3). Reproduced when, under one
     correction reading, every randomization other than spike swapping gives a lower median and a
-    corrected p below 0.05, and Poisson randomization is among the two largest median decreases.
+    corrected p below 0.05, and Poisson randomization is among the two largest median decreases
+    (a reading of "most under the strongest forms", which the paper does not quantify).
     The swap comparison is judged in fig12a-swap-preserves-complexity.
 - id: fig10b-susceptibility-randomization
   statement: Culture susceptibility decreases under randomization, most under the strongest forms such
@@ -376,7 +400,8 @@ claims:
     fig10a-complexity-randomization. Swapping and shuffling preserve A(t) and leave chi unchanged
     (Figure 10 legend), so the claim is judged over the jitters, wrap and Poisson. Reproduced when,
     under one reading of details 3 and 5, each of these gives a lower median with corrected p below
-    0.05 and Poisson is among the two largest median decreases.
+    0.05 and Poisson is among the two largest median decreases (read as in
+    fig10a-complexity-randomization).
 - id: fig10c-curvature-randomization
   statement: The culture shape collapse curvature decreases under randomization, so the collapsed
     avalanches become flatter.
@@ -412,7 +437,9 @@ claims:
     the ranges in decades). Test as fig10a-complexity-randomization, over the jitters, wrap and
     Poisson (the fits are unchanged under swapping and shuffling, Figure 11 legend). Reproduced when,
     for both size and duration, Poisson gives a lower median with corrected p below 0.05 and 10-bin
-    jitter gives a higher median than the real data; the jitter's significance is reported.
+    jitter gives a higher median than the real data; the jitter's significance is reported. The
+    Figure 11A,C legend says the ranges decreased under every randomization except 10-bin jitter;
+    the direction and corrected p of 1-bin and 100-bin jitter and wrap are reported.
 - id: figs9-complexity-fit-range-correlation
   statement: Across culture recordings, complexity is positively correlated with the size fit range
     (0.296) and the duration fit range (0.197).
@@ -440,9 +467,9 @@ claims:
     distribution of avalanche sizes or durations
   criterion: Full-system tau and alpha per recording from plparams after the cuts (as
     fig8-subsampling-exponents). Test as fig10a-complexity-randomization, over the jitters, wrap and
-    Poisson. Reproduced when, under one correction reading, for both tau and alpha at least four of
-    the five give a higher median with corrected p below 0.05; partially reproduced for two or
-    three.
+    Poisson. Reproduced when, under one correction reading, for both tau and alpha each of the five
+    gives a higher median with corrected p below 0.05 (the Figure 11B,D legends name no exception);
+    partially reproduced when only some do.
 - id: fig12a-swap-preserves-complexity
   statement: Culture complexity does not change substantially under spike swapping, and real and
     swapped complexity are strongly correlated with most recordings near the equality line.
@@ -472,3 +499,25 @@ claims:
     complexity in more than half of the recordings, the rank sum test of Figure 10A gives a
     corrected p below 0.05, and the correlation is strong as read in
     fig12a-swap-preserves-complexity.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header. The 28 cultures were attributed to Figure 2B, which the header says could not be read; the number comes from the data set's description, and the paper gives only the 435 recordings (Methods 2.2).
+  - Header, common detail 3. The family of the false discovery rate correction is not stated in the Figure 10 and 11 legends; named as open, with one panel used and the whole figure as a variant.
+  - culture-counts. The expected quantity said modal number of neurons while the criterion judged the median; both are now readings of "most recordings ... approximately 100", as in fig2d-network-isi. Marked the 5th and 95th percentiles of the firing rate range as a choice the paper does not make, with the minimum and maximum reported.
+  - fig5f-network-state-poisson-keeps-complexity. Marked the 5% bound for "preserved" as a choice the paper does not make.
+  - fig7c-cb-curvature-no-peak. Marked the 0.02 window around the critical point as a choice the paper does not make.
+  - fig8-subsampling-exponents. Marked the 10% bound for "little change" in 1/sigma nu z as a choice the paper does not make.
+  - eq4-relation-randomized. Marked the one SD bound for "different exponent values" as a choice the paper does not make.
+  - fig10a-complexity-randomization and fig10b-susceptibility-randomization. Marked "Poisson among the two largest decreases" as a reading of "most under the strongest forms", which the paper does not quantify.
+  - fig11ac-fit-range-randomization. The Figure 11A,C legend says the ranges decreased under every randomization except 10-bin jitter, wider than the Results; the other randomizations are now reported.
+  - fig11bd-exponents-randomization. The criterion accepted four of five randomizations, a threshold the paper does not give; the Figure 11B,D legends say the exponents increased under randomization with no exception, so all five are now required, partial when only some.
+  - Added fig8-exponents-match-literature. The paper's main findings (Introduction, result 2; Discussion 4.1) include that the exponents agree with previous studies, and Results 3.3 says the sub-sampled exponents agree best with the cited values; no claim covered it. The reference values are in the cited papers, so the claim is data with_inputs.
+  - Open. Figure 8 means and SDs, the Figure 10 and 11 significance stars and the Figure 2B exclusions are printed only in the figures, and no PDF of the main article was supplied; claims on them are judged on directions.
+  - Open. Methods 2.4 prints p_trans increments of 0.05, which cannot place a peak at 0.265; the grid readings (0.005, 0.01) stand as written in fig7ab-cb-complexity-susceptibility-peak.
+  - Open. The threshold for excluding recordings with too few avalanches is not stated (common detail 2).
+  - Open. The Figure 7 legend says complexity and susceptibility peak near 0.25, the Results near 0.265; the tolerance of 0.0265 around 0.265 nearly reaches 0.25, so the claim follows the Results.
+  - Open. The construction of network states for complexity in the Bethe lattice small avalanches (fig5d-bethe-small-avalanches) and the number of runs are not given in the paper; the criterion follows bethelattice.m as the claims file reads it, which this check could not reread.
