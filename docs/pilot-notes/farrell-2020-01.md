@@ -1,0 +1,135 @@
+# crcns-ear-1, Farrell et al. 2020
+
+Twenty-two claims reproduced (13 on an assumption), seven partially (four on an
+assumption), 11 not reproduced (nine on an assumption) and one blocked, for
+missing data; the six claims that need values from other papers or a protein
+model the paper does not deposit (`with_inputs`) are counted apart and blocked,
+five as `other` and one for missing data, and the link claim `cohort`,
+reproduced, is counted apart too. The first verification round agreed with 45
+of the 48 outcomes as they stood and the second with all 48; nothing was
+proposed after the second, so there was no third round. CRCNS does not version
+data sets, so the version is recorded as unversioned with the data set's DOI
+(10.6080/K0571975); the author pinned `ear-1/live/data_and_scripts.zip` by its
+MD5, the copy the file list names, and did not read the copy under `old/ver1`.
+The paper, Farrell, Skidmore, Rajasekharan and Brownell, "A novel theoretical
+framework reveals more than one voltage-sensing pathway in the lateral membrane
+of outer hair cells" in the Journal of General Physiology (152(7)), records the
+voltage-dependent capacitance of 89 outer hair cells from guinea pigs of a
+pigmented and an albino colony by whole-cell voltage clamp, some with XE991 in
+the bath, relates the prestin sensor's V0.5 to the charge density dVmin (QTm
+over the lateral wall capacitance CLW) and infers two configurational states of
+the sensor and the energies of two pathways; the data set is one zip of 120
+members holding the 89 cells as MATLAB and HDF5 files, analysis scripts and an
+ontology. The claims were written from the version of record (PMC7335013)
+flattened from Europe PMC XML, which lost every displayed equation (Eqs. 1 to 9,
+rebuilt from the prose and checked against the paper's numbers) and the
+contents of Tables S1 to S4, and without code, as the paper links none; the
+claims check made 19 corrections, among them the signs of the rebuilt Eq. 7 and
+a tolerance widened from 0.002 to 0.010 V for `table2-xe991-v05-shift`. The
+cohort, Tables 1 to 3, the V0.5 and charge density fits of Figs. 1 to 4 and S4,
+the capacitance asymmetry and the specific capacitance could be tested; the
+prestin sequencing, the protein model and the claims resting on rat, mouse,
+hearing-loss and temperature correction values from other papers could not.
+Every outcome that uses CLW, dVmin or C_Leq rests on the stereocilia bundle
+capacitance rule of Corbitt et al. (2012), listed under `inputs`, and several
+on a dVmin limit (reading y-1) that leaves out bins and groups whose mean dVmin
+is not in (0, 0.4] V, taken from the Fig. S4 legend and the Discussion.
+Reproduced are, among others, `nlw-capacitance` (root 5.104 pF, within 4.82 +/-
+0.482 pF; 5.44 pF with no bundle capacitance), `alpha-pigmented-vs-albino`
+(9.00 and 7.81 V-1, p = 0.00008), `table2-albino` (p = 0.0697, the paper's
+value), `fig3a-eq3a-fit` (Vd 0.0311 V and slope -0.4245, with bin edges from
+the smallest CLW), `fig3a-xe991-fit` (Vd 0.0505 V, under the dVmin limit) and
+`table3-pathway-energies` (all six values within tolerance). Partial are, among
+others, `table1-pigmented-xe991` (5 basal and 12 apical cells where the table
+has 4 and 11), `table1-pigmented-no-xe991` (p = 0.0010, not < 0.0001),
+`fig2b-v05-vs-clw` (albino adjusted R2 0.175, outside 0.2 +/- 0.02),
+`figs4-fine-bins` (the XE991 R2 0.605 against 0.737 +/- 0.074),
+`low-chloride-similar` (two of three cells) and `two-hyperpolarized-states`,
+kept partial as a judgement since under y-1 no tier of its criterion fits. Not
+reproduced are, among others, `fig1-two-state-bounds` (86.0% of cells in the
+band, short of 90%), `fig2b-no-phenotype-difference` (the slopes differ, p =
+0.039), `v05-gradient-length` (0.46 um/mV against 0.63 to 0.77),
+`xe991-voltage-clamp` (a ratio of medians of 1.52, not twofold),
+`capacitance-asymmetry` (basal share of CLW 36.1% against 21 +/- 2.1%),
+`fig4a-vh-rises-vd-constant` (Vh rises 2.67-fold, below 2.7), `mean-slope-half`
+(-0.407 against -0.48 +/- 0.048, though -0.432 under the bin edges that
+reproduce Fig. 3a) and `fig4d-cleq-two-limits` (lower limit 0.6496 aF, outside
+0.584 +/- 0.065 by 0.0006 aF). The author's first run had 19 reproduced, 9
+partially, 13 not reproduced and 7 blocked, taking CLW as CL - 4.82 pF as the
+claims file did. The author asked a reader whether CLW should take a per-cell
+non-lateral-wall capacitance, as the Fig. S1 legend implies 5.89 pF; the reader
+amended the shared method to CNLW = CSB + root per cell, and in the
+author-answers run, with the Corbitt rule on the stored cell area, the counts
+became 22, 10, 9 and 7, with `nlw-capacitance`, `fig1-charge-not-linear`,
+`fig3a-eq3a-fit` and `fig3a-high-density-deviation` reproduced and
+`fig1-two-state-bounds` not reproduced. Round 1 disagreed on
+`xe991-voltage-clamp`, `capacitance-asymmetry` and `fig4a-vh-rises-vd-constant`
+(not reproduced, as none of their criteria has a partial tier), and found that
+one XE991 bin of two cells (file 57, CLW 0.475 pF) decided several outcomes,
+that the bins of Fig. 3b were not shown, that an end-to-end length gradient was
+not run and that the CLn readings were chosen to match the paper's numbers; in
+reply the dVmin limit was adopted for every fit and grouping, which made
+`fig3a-xe991-fit` and `table3-pathway-energies` reproduced,
+`low-chloride-similar` partial and `fig4d-cleq-two-limits` not reproduced, the
+three disputed claims became not reproduced, the positive Fig. 3b slope was
+traced to one cell (file 18, dC -5.0 pF), and the end-to-end gradient was run
+(0.95 to 1.43 um/mV, also outside) and asked of a reader in
+`questions/crcns-ear-1.yaml` after the answer run, so it is unanswered. Round 2
+agreed with all 48 outcomes, noted that the dVmin limit is not in the claims
+file and decides four outcomes while its cell-level form would fail
+`fig3a-eq3a-fit` (Vd 0.0299 V), and found text the outputs did not support,
+among them "17 against 15 or 16 pigmented XE991 cells" and an upper C_Leq limit
+said to include one single-cell group where two of its three groups are single
+cells; in reply the text was corrected and the cells behind each limit were
+printed, and no outcome changed. The author's run went from 11:49 to 12:19 UTC;
+the notebook ran in 32 s at first, 38 s after the author-answers run and 44 s
+after round 1. Two steps failed during the author's run and were fixed: ramp
+detection broke on file 52, which holds at +0.06 V, and the first handover
+failed because a test venv was still active. The untracked dotfiles in the
+repository root and an empty `.claude/` folder in the entry were left alone.
+
+The data set stores CL, QTm, V0.5 and alphaB per cell but not the lateral wall
+capacitance CLW, the stereocilia bundle capacitance CSB or the non-lateral-wall
+capacitance CNLW of Eq. 8a, so the paper's CLW and charge density cannot be
+taken from it; with the Corbitt et al. (2012) rule, CLW reproduces the Fig. S1
+legend (18.30 against 18.56 pF), but the XE991 fits, the band of Fig. 1 and the
+lower C_Leq limit turn on the CLW of the smallest cells, which the rule makes
+as small as 0.48 pF. The linear capacitance at negative voltages, CLn, and the
+rule for when it could be estimated are not stored, nor are the linear-region
+indices the MATLAB files keep as indposit_ramplin. The cells behind the paper's
+tables are not marked: the data set gives 27 pigmented cells without XE991 with
+144 mM chloride (paper 28), 17 pigmented XE991 cells split 5 and 12 by region
+(Table 1 row a, 4 and 11), 69 Fig. 2 cells (legend 70) and 46 cells for Fig. 3b
+by the rule used (legend 44). In every HDF5 file with DC steps (19 cells),
+`I_mean` has shape (N, 2) but stores its values in MATLAB column order, so read
+as given the means and SDs are interleaved. File sensory_cell_#52.h5 holds the
+membrane at +0.06 V before and after the ramp where the stimulus description
+says -0.06 V. `cell_surface_area` follows 2 pi r l for 34 cells and 2 pi r LW +
+2 pi r^2 for 50 without saying so, and the cell length is stored for 35 cells
+and the lateral wall length for 83, with nothing saying which the paper used.
+The MATLAB field `toxins` labels 15 of the 20 XE991 cells `XE991` and 5 `yes`,
+the HDF5 files store 60 uM for all 20 while the Methods give 30 to 60 uM, and
+the HDF5 maturity `juvenile` (10 males) was read as prepubertal from the MATLAB
+files. The `original cell number` is not unique, 13 numbers being used by two
+cells each, while the paper names cells by it (Fig. S1, cell 99). The largest
+conductance at V0.5 among XE991 cells is 8.5 nS from the DC steps and 7.0 nS
+from the admittance, about 25 times the 335 pS the paper reports. Questions are
+put to the paper's authors: how CLn was taken and what counted as reaching the
+hyperpolarized plateau, so that 62 cells qualify; whether the per-cell CSB of
+Eq. 8 followed the Corbitt et al. (2012) rule and which area it used; and
+whether bins or groups with a large charge density were left out of the Fig. 3a
+fits and the Fig. 4 groups, as the Fig. S4 fit leaves out dVmin of 0.4 V and
+above.
+
+The author's points on the protocol: no `blocked_by` fits values that are
+public in published papers but not supplied to the run, so `other` was used
+with the reason given; several criteria have no partial tier and
+`two-hyperpolarized-states` fits none of its tiers, so the closest tier was
+picked and said so in the notes; the same-clock check assumes trial tables, so
+for these voltage ramps the capacitance peak was checked against the stored
+V0.5 (79 of 89 within one ramp step); `docs/archives.md` does not say which of
+two copies of a CRCNS data set to pin, so the live copy was chosen with the
+reason in the header; and the protocol does not say whether analysis scripts
+deposited inside a data set count as the paper's code, so they were cited only
+to explain how the stored values were computed and no method was taken from
+them.

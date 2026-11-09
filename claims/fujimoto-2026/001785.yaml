@@ -162,6 +162,49 @@ dataset:
   id: "001785"
 paper: doi:10.1038/s41593-026-02301-4
 claims:
+- id: link-fc-voxels
+  kind: link
+  statement: The dandiset's seed connectivity maps can be linked, voxel by voxel, to the target ROI
+    voxels listed in the paper's source data, and the dandiset's values at those voxels agree with
+    the normalized z the source data give.
+  source: Data and Code availability; DANDI:001773 version 0.260416.1939,
+    source_data/dbs_FC25norm_mkNT_concatenated_all_data_a.xlsx and
+    dbs_FC25norm_mkD_concatenated_all_data_a.xlsx
+  data: with_inputs
+  criterion: Added by the author (protocol, Author, step 4). Records are matched by position, the
+    source data's x, y, z (mm) placed on the grid of the map of the same monkey and session. The link
+    holds (reproduced) when every listed voxel falls on a grid centre inside the map and the map's
+    value equals the source data's fc to within 1e-4 at at least 99% of them, for N, T and D in both
+    sessions; partially reproduced when this holds for some maps; not reproduced for none.
+- id: link-fa-voxels
+  kind: link
+  statement: The tract and CB subregion voxels of the paper's FA source data can be located in the
+    dandiset's FA maps.
+  source: Data and Code availability; DANDI:001773 version 0.260416.1939,
+    source_data/dbs_FA_wholetract_data_a.xlsx, dbs_FA_CB_subpart_data_a.xlsx,
+    dbs_FA_wholetract_mkD_data_a.xlsx and dbs_FA_CB_subpart_mkD_data_a.xlsx
+  data: with_labels
+  criterion: Added by the author (protocol, Author, step 4). The source data list FA values without
+    positions, so records are matched by value, each value looked up in the FA map of its monkey and
+    session (equal as float32, or the nearest value within 1e-6). The link holds (reproduced) when at
+    least 99% of the values of every sheet are found; partially reproduced when at least 90% are; not
+    reproduced otherwise. Values found in more than one voxel are counted and reported.
+- id: link-if-counts
+  kind: link
+  statement: CC1 and DAPI counts computed from the dandiset's immunofluorescence images agree, field by
+    field, with the counts of the paper's source data.
+  source: Data and Code availability; DANDI:001773 version 0.260416.1939,
+    source_data/CC1_MCC_CB_data_a.xlsx, CC1_dACC_CB_data_a.xlsx, CC1_UF-FMoverlap_data_a.xlsx and
+    CC1_mkD_MCC_CB_data_a.xlsx
+  data: with_inputs
+  criterion: Added by the author (protocol, Author, step 4), after the counts were first computed.
+    Fields are matched by section, hemisphere and field number in the file names. Counting as in [IF]
+    of the header, run under each reading (threshold IsoData or Otsu, smallest object 10 or 50
+    pixels). The link holds in a region when, under at least one reading, the per-field counts
+    correlate with the paper's at r of at least 0.7 for both CC1 and DAPI and the median ratio of
+    counts is within 0.8 to 1.25. Reproduced when it holds in all four regions (MCC-CB of N and T,
+    dACC-CB, UF-FM overlap, MCC-CB of D), partially reproduced in one to three, not reproduced in
+    none. Unmatched images and rows are reported.
 - id: ed1-behavior-increase
   statement: In monkeys N and T, time spent moving and foraging in the home cage increased after 6
     weeks of SCC-DBS (one-way ANOVA, movement F(1,236) = 34.61, foraging F(1,236) = 17.35).
@@ -235,6 +278,9 @@ claims:
   - quantity: control-side FM voxels
     value: 133
     tolerance: 13.3
+  depends_on:
+  - link-fa-voxels
+  data: with_labels
   criterion: FA as in [FA] of the header, model and post hoc as in [FA-ANOVA]
     (Fig2A_dbs_FA_wholetract_analysisscript_a.m). Reproduced when the PrePost x side interaction
     has p < 0.05 and the Tukey-Kramer pre-post comparison in the stimulated CB has p < 0.05 with
@@ -248,7 +294,9 @@ claims:
   quote: No consistent changes were apparent in either the stimulated UF or the FM ... or in the same
     tracts within the control hemisphere
   depends_on:
+  - link-fa-voxels
   - fig2a-cb-fa-increase
+  data: with_labels
   criterion: A claim of absence, judged on the paper's test, the Tukey-Kramer post hoc of
     [FA-ANOVA] at p < 0.05. Reproduced when none of the five pre-post comparisons (stimulated UF,
     stimulated FM, control CB, control UF, control FM) has p < 0.05; not reproduced when any does.
@@ -260,7 +308,9 @@ claims:
     Data Fig. 2
   quote: Importantly, both monkeys exhibited changes in the same direction
   depends_on:
+  - link-fa-voxels
   - fig2a-cb-fa-increase
+  data: with_labels
   criterion: The paper shows this with per-monkey maps and symbols, without a test. Per monkey, the
     mean over the stimulated CB voxels of post FA minus the mean of pre FA ([FA]). Reproduced when
     it is positive in both N and T.
@@ -293,6 +343,7 @@ claims:
     tolerance: 36.1
   data: with_inputs
   depends_on:
+  - link-fa-voxels
   - fig2a-cb-fa-increase
   criterion: FA as in [FA], subregions as in [CB-PARTS], model and post hoc as in [FA-ANOVA]
     (Fig2B_dbs_FA_CB_part_analysisscript_a.m). Reproduced, under every reading of [CB-PARTS] and
@@ -502,6 +553,8 @@ claims:
     temporal gyrus (STG), hippocampus (HIP), amygdala (AMY) and dorsolateral prefrontal cortex
     (DLPFC), as well as negative connectivity to the insula and somatosensory cortex
   data: with_inputs
+  depends_on:
+  - link-fc-voxels
   criterion: Seed maps as in [EPI] and [SEED], pre-DBS sessions of N and T. The paper shows maps
     without an ROI test. Per target ROI, the mean normalized z over its voxels pooled across the
     two animals. Readings, ROIs (a) in the stimulated hemisphere, (b) in both hemispheres pooled.
@@ -567,6 +620,8 @@ claims:
     value: 766
     tolerance: 76.6
   data: with_inputs
+  depends_on:
+  - link-fc-voxels
   criterion: Seed maps as in [EPI] and [SEED], model and post hoc as in [SEED-ANOVA]
     (Fig5BCandE9_dbs_FC_25norm_mkNT_analysisscript_a.m). Reproduced when, under every reading of
     [SEED] (header), the PrePost x side interaction has p < 0.05 and each of the seven ROIs in the
@@ -593,6 +648,7 @@ claims:
     n: 692 voxels
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5b-scc-decreases
   criterion: As in fig5b-scc-decreases. Reproduced when both ROIs in the stimulated hemisphere have
     Tukey-Kramer p < 0.05 with post above pre; partially reproduced when one does.
@@ -604,6 +660,7 @@ claims:
   quote: These reductions in functional connectivity from SCC were consistent across both monkeys
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5b-scc-decreases
   criterion: Shown in per-monkey maps without a test. Per monkey, the mean over the ROI's voxels of
     post minus pre normalized z ([SEED]), stimulated hemisphere, for the seven ROIs of
@@ -632,6 +689,7 @@ claims:
     corrected: Tukey-Kramer
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5b-scc-decreases
   criterion: As in fig5b-scc-decreases, the control-hemisphere pre-post comparisons. Supplementary
     Table 9 has 11 of 17 control-side ROIs at p < 0.05 (PCC, vmFC, STG, anterior-dorsal insula,
@@ -685,6 +743,7 @@ claims:
     tolerance: 110.2
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5b-scc-decreases
   criterion: Networks and model as in [SEED-ANOVA]. Reproduced when the interaction has p < 0.05
     and the stimulated-side DMN, LIM and CEN each have Tukey-Kramer p < 0.05 with post below pre;
@@ -709,6 +768,7 @@ claims:
     corrected: Tukey-Kramer
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5c-network-decreases
   criterion: As in fig5c-network-decreases. The direction comes from the Discussion ("an increase
     in connectivity between the SCC and the SMN"). Reproduced when the stimulated-side SMN has
@@ -734,6 +794,7 @@ claims:
     n: 101 voxels
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5b-scc-decreases
   criterion: A claim of absence, judged on the paper's test, the Tukey-Kramer post hoc of
     [SEED-ANOVA] (ROI model) at p < 0.05, stimulated hemisphere. Reproduced when motor cortex and
@@ -756,6 +817,7 @@ claims:
     corrected: Tukey-Kramer
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5c-network-decreases
   criterion: A claim of absence, judged on the paper's test, the Tukey-Kramer post hoc of
     [SEED-ANOVA] at p < 0.05, stimulated hemisphere. Reproduced when VIS (network model) and V1
@@ -781,6 +843,7 @@ claims:
     corrected: Tukey-Kramer
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5b-scc-decreases
   - fig5c-network-decreases
   criterion: Model as in [SEED-ANOVA]. Reproduced when the stimulated-side SAN pre-post comparison
@@ -811,6 +874,9 @@ claims:
   - quantity: control-side CB voxels (monkey D)
     value: 148
     tolerance: 14.8
+  depends_on:
+  - link-fa-voxels
+  data: with_labels
   criterion: FA as in [FA], model as in [FA-ANOVA] for monkey D
     (Fig6A_dbs_FA_wholetract_mkD_analysisscript_a.m). Reproduced when the sham-side CB pre-post
     comparison has Tukey-Kramer p < 0.05 with post below pre, and none of the other five pre-post
@@ -837,6 +903,7 @@ claims:
     n: 58 voxels pre and 58 post
   data: with_inputs
   depends_on:
+  - link-fa-voxels
   - fig6a-sham-cb-fa-decrease
   criterion: FA as in [FA], subregions as in [CB-PARTS], model as in [FA-ANOVA] for monkey D
     (Fig6B_dbs_FA_CB_part_mkD_analysisscript_a.m). Reproduced when the interaction has p < 0.05
@@ -902,6 +969,8 @@ claims:
     corrected: Tukey-Kramer
     n: 51 voxels
   data: with_inputs
+  depends_on:
+  - link-fc-voxels
   criterion: Seed maps as in [SEED] for monkey D (seed in the implanted hemisphere), model as in
     [SEED-ANOVA] for D (Fig6DandE10D_dbs_FC_25norm_mkD_analysisscript_a.m), on the four hubs of
     Extended Data Fig. 10d (vmFC, PCC, anterior-dorsal insula, dACC). Reproduced when PCC and
@@ -946,6 +1015,7 @@ claims:
     tolerance: 40.4
   data: with_inputs
   depends_on:
+  - link-fc-voxels
   - fig5c-network-decreases
   criterion: A claim of absence, judged on the paper's test, the Tukey-Kramer post hoc of
     [SEED-ANOVA] for D at p < 0.05. The paper lists significant changes in control-side DMN and
