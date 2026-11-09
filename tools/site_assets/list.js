@@ -131,8 +131,11 @@
     },
   }[cfg.kind];
 
+  // Each facet is a section the reader can open and close (an accordion): the first three start open, and any with a
+  // value chosen; what the reader opens or closes is kept while the list redraws.
+  const OPEN_FIRST = 3;
   function renderFacets() {
-    const html = cfg.facets.map((f) => {
+    const html = cfg.facets.map((f, idx) => {
       const counts = new Map();
       rows.forEach((r) => { if (matches(r, f.key)) values(r, f.key).forEach((v) => counts.set(v, (counts.get(v) || 0) + 1)); });
       const chosen = state.f[f.key] || new Set();
@@ -150,7 +153,10 @@
       }).join('');
       const more = entries.length > limit && !f._open
         ? `<button type="button" class="showmore" data-more="${esc(f.key)}">Show all ${entries.length}</button>` : '';
-      return `<fieldset class="facet"><legend>${esc(f.label)}</legend>${items}${more}</fieldset>`;
+      const open = f._shown !== undefined ? f._shown : idx < OPEN_FIRST || chosen.size > 0;
+      const picked = chosen.size ? ` <span class="picked">${chosen.size}</span>` : '';
+      return `<details class="facet" data-facet-box="${esc(f.key)}"${open ? ' open' : ''}><summary>${esc(f.label)}${picked}</summary>`
+        + `<div class="facet-values">${items}${more}</div></details>`;
     }).join('');
     $('facet-list').innerHTML = html;
   }
@@ -211,6 +217,11 @@
     box.checked ? set.add(box.value) : set.delete(box.value);
     state.page = 1; update(true);
   });
+  // 'toggle' does not bubble: listen in the capture phase, and remember the reader's choice for the next redraw.
+  $('facet-list').addEventListener('toggle', (ev) => {
+    const box = ev.target.closest && ev.target.closest('[data-facet-box]');
+    if (box) cfg.facets.find((f) => f.key === box.dataset.facetBox)._shown = box.open;
+  }, true);
   $('facet-list').addEventListener('click', (ev) => {
     const more = ev.target.closest('[data-more]');
     if (!more) return;
