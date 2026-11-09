@@ -1,0 +1,47 @@
+**Verifier report, round 1: Moaddab, Wright & McDannald 2020 on CRCNS pag-2**
+
+The claims file has 20 claims. The notebook tests 18 and treats 2 as blocked. In the notes below, "NF" is the Methods normalization (the notebook's main reading) and "NFc" is the authors' cube normalization, the mean of `fire.z.ms250` (run only as a variant). "(d, one)" means the cube's trial-wise Z with empty-poke trials set to 1.
+
+### A. Outcomes
+
+| Claim | My outcome | Reason |
+|---|---|---|
+| fig1bc-adversity-slows-weight-gain | blocked (data_missing) | I checked the archive myself: `filelist.txt` lists only data.zip, the description docx/pdf and checksums.md5. The notebook's zip listing (cell 1) has the 354 unit files, the cube, the script and 3 wav files. The description lists no body weights. |
+| fig1ef-acquisition-equivalent-final | blocked (data_missing) | Same: there are no pre-surgery sessions. All 182 sessions in the zip are recording sessions with units. |
+| fig2b-baseline-poke-equivalent | reproduced | t(18) = 1.19, p = 0.248 against the paper's 1.24 / 0.23 (cell 10). Both readings are the same by construction, since every session has 32 trials. |
+| fig2c-recording-discrimination | reproduced | Cue F(2,36) = 179.5–194.5, p ≤ 1.9e-19. Group × cue p = 0.84–0.90. All four paired tests have p ≤ 0.0091 with danger > uncertainty > safety, under all six readings (cell 12). |
+| fig2d-cue-responsive-counts | reproduced | Reading (b) on the cube's stored rates gives exactly 32/49/48/84 and totals of 151/203 (cell 14). Reading (c) on exact rates is also within tolerance. |
+| fig2d-higher-proportion-responsive | reproduced | Reading (b), cube rates: 80/151 = 0.530 and 133/203 = 0.655, χ² = 5.68, p = 0.017. That is the paper's χ² exactly (cell 16). |
+| fig2ef-baseline-firing | reproduced | Group t tests p ≥ 0.26 for every type. Type ANOVA p = 0.0018 / 0.0013. Cue-excited neurons have the lowest mean, 13.9 Hz (cell 18). |
+| fig4ab-excited-temporal-pattern | partially_reproduced | Group × cue × bin F(110,8690) = 1.30, p = 0.019 (NFc 1.40, p = 0.004), much weaker than the paper's F = 3.32. The bregma model was not run (no per-rat level found), so only the first part holds (cell 22). |
+| fig4c-excited-inflated-onset | reproduced | Group F(1,79) = 5.19, p = 0.025, EAA higher. Safety t = −3.46, p = 0.0009. All four paired tests p < 0.025 with D > U > S (cell 24). NFc gives F = 4.96, the paper's exact value. |
+| fig4de-inhibited-temporal-pattern | partially_reproduced | F(110,14300) = 1.54, p = 2.4e-4 (NFc 1.72, p = 4.4e-6, close to the paper's 1.69, 9e-6). The bregma part was not run. The descriptive pattern roughly matches (cell 26). |
+| fig4f-inhibited-danger-decrease | reproduced | Group F(1,130) = 9.15, p = 0.003, EAA lower. Danger t = 2.58, p = 0.011 < 0.0167 (cell 28). NFc reproduces the paper's 10.81 / 2.69 / 2.39 to the second decimal. |
+| fig4f-inhibited-danger-uncertainty-discrimination | reproduced | EAA t(83) = −3.21, p = 0.0019 (danger lower). Control t(47) = −1.29, p = 0.20. Passes under both divisors (cell 30). |
+| fig5abc-excited-reduced-threat-probability | partially_reproduced | Under the authors' own combination (d, one): threat-probability t = 2.12, p = 0.037, but the interaction is p = 0.055 (cell 34). Only the hybrid (d, zero) passes everything (interaction p = 0.031). None of the claims-file readings a–c does better than partial. |
+| fig5d-threat-tuning-curve | reproduced (fragile) | (d, drop) and (d, one): both peaks at 0.5, assignment p ≈ 3e-26, group p = 0.046 / 0.045, interaction p ≥ 0.16 (cell 37). Under the claims-file readings a–c the group effect fails (p 0.07–0.24), so this rests on accepting reading d (see B2). |
+| figs4-peak-assignment-same-pattern | reproduced | Under (d, one) and (d, drop), significance and sign are unchanged at 0.5 for both tests (cell 39). The result flips under b drop/one and d zero, where p values sit near 0.05. |
+| fig5efg-inhibited-fear-output | reproduced | (d, one): three-way F(9,1170) = 2.15, p = 0.023. Fear-output t = 2.34, p = 0.021, EAA more negative. Threat-probability p = 0.41. All of these are near the paper's values. Readings a and c also pass (cell 41). |
+| fig6-excited-firing-threat-decoupled | reproduced (only under NFc firing) | NFc with (d, one) betas: Control danger R² = 0.566, uncertainty R² = 0.218, Z = 3.83 / 3.07, one-tailed p = 6e-5 / 0.0011, safety null, all parts pass (cell 45). Under NF, the claims file's normalization, only the danger part holds in all 12 readings, which would be partial. |
+| figs5-excited-firing-fear-output-unrelated | reproduced | No correlation or one-tailed comparison reaches p < 0.05 in any reading, nor under NFc (cell 47). |
+| fig7-inhibited-firing-fear-output | not_reproduced | Control uncertainty firing correlates strongly with the fear-output beta in every reading: r = 0.56–0.73, p ≤ 4e-5 under NF; r = 0.70 under NFc. The paper reports R² = 0.04, p = 0.16. No reading passes the uncertainty part, so partial is excluded (cell 49). |
+| figs6-inhibited-firing-threat-probability | reproduced | Every reading has a significant cue in each group (danger r ≈ 0.7–0.85). Comparisons: all p ≥ 0.05 under a, b, c, (d, one) and NFc. Only d zero/drop give a one-tailed p of 0.036/0.038 (cell 51). |
+
+### B. Problems
+
+1. **[affects a conclusion]** Normalization (cells 19/20, 43–51). The notebook's main analysis uses NF and runs NFc only as a variant. NFc reproduces the paper almost digit for digit (Fig. 4C F = 4.96; Fig. 4F 10.81 / 2.69 / 2.39 / 3.14 / 1.40; Fig. 6 R² 0.566 / 0.218, Z 3.83 / 3.07). So NFc is evidently what the authors computed. The Methods wording ("Z score normalized across all trial types") also allows the SD to be taken over trial-level bins. The fig6 outcome flips between partial and reproduced on this choice. NFc was run for the correlations only with (d, one) betas, and it should have been a full reading. The claims file's opening comment lists only NF for population firing, which leaves this reading out (a gap in the claims file, not a misreading of the text).
+2. **[affects a conclusion]** Choice of reading (cell 31). The notebook runs 12 regression readings and says it "takes the outcome under (d, one)". The claims criterion instead says "under one reading" of a, b, c × zero/drop. Reading d and the empty-poke value 1 are not in the claims file. Their justification is the script's lines 2161–2170, which I could not check; fig6's match to the paper supports d/one. The two rules disagree on fig5abc ((d, zero) reproduced, (d, one) partial) and on fig5d (a–c not reproduced, d reproduced). Taking any of 12 readings with p values near 0.05 (0.045, 0.046, 0.037, 0.031) inflates false positives. The rule should be stated once and applied to every claim.
+3. **[affects a conclusion]** Bregma (cells 21, 25). The notebook says no per-rat bregma level exists, but it searched only the cube fields and the data description. It did not search `vlpagAnalysis.m`, which holds the group lists and probably the bregma factor the paper used. The second half of fig4ab and fig4de may be testable.
+4. **[affects a conclusion]** Neuron counts in the regression tests. The paper's degrees of freedom imply 68 (fig5abc) and 80 (fig5d) cue-excited neurons, against the 81 used here. The notebook does not look for the exclusion rule, for example neurons whose sessions have empty-poke trials. The fig5abc interaction (p = 0.055 against the paper's p = 0.01) may depend on it.
+5. **[does not affect a conclusion]** The notebook finds 182 sessions (74 Control, 108 EAA) where the paper states 179 (72, 107). This is unexplained. Session-level behaviour results are robust to it.
+6. **[does not affect a conclusion]** Selection on the cube's integer-truncated rates (cell 14). It matches the counts exactly, but rates under 1 Hz become 0 (775 trials). This is a data artifact the authors used; exact rates give 54/87 inhibited under reading (b). It is disclosed.
+7. **[does not affect a conclusion]** The fig4ab F is much smaller than the paper's (1.30–1.40 against 3.32), even though p < 0.05.
+8. **[does not affect a conclusion]** The two fig2b readings are identical by construction, so one of them is redundant.
+9. **Helper checks.** `mixed_anova` matches classical split-plot F for group×A×B, group×A, the group effect and the balanced A effect on synthetic data, all to 1e-12. `fisher_r_to_z` is correct. Windows (`_bins`: anova 56 bins, first1 80–84, last5 100–120) and the s1 cue columns 20–29 are correct.
+
+### C. What I could not check, and what would have let me
+
+- **The script's contents** (the regression on `fire.z.s1` and `cer.cue`, the empty = 1 handling, group lists, any bregma or exclusion list). Printing the relevant `vlpagAnalysis.m` lines (2161–2170, 99–122, 136–147, 225–236) and a grep for "bregma" would settle this.
+- **The source of the reduced degrees of freedom** (68 and 80 cue-excited neurons, 129 inhibited). An output counting cue-excited and cue-inhibited neurons by sessions with empty-poke trials, NaN betas, or the script's exclusion criteria would show it.
+- **NFc as a full reading.** Fig5abc, fig5d, fig7 and figs6 rerun with NFc firing across all regression readings would show whether fig7's Control uncertainty correlation persists everywhere.
+- **The blocked claims.** I relied on the notebook's zip listing for data.zip's internal contents and did not download anything. The archive's own file list confirms there is nothing outside data.zip.
