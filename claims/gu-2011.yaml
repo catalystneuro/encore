@@ -1,0 +1,960 @@
+# Claims for Gu, Liu, Fetsch, Yang, Fok, Sunkara, DeAngelis & Angelaki (2011), Neuron 71:750-761,
+# "Perceptual Learning Reduces Interneuronal Correlations in Macaque Visual Cortex", on CRCNS data
+# set stc-1 (doi:10.6080/K07P8WKF).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-06,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record, as supplied under paper/ (PyMuPDF text of the journal PDF),
+# with its Results, Discussion, Experimental Procedures and the legends of Figures 1 to 8, and
+# the Supplemental Information PDF (legends of Figures S1 to S8). The article says the
+# Supplemental Information "includes Experimental Procedures and eight figures"; the supplement
+# as supplied, whose own contents page lists only the eight figures, holds no further
+# procedures, so the Experimental Procedures of the article are taken as the whole Methods.
+# The PDF could not be rendered here; the extracted text prints degree signs, minus signs and
+# "approximately" as a replacement character, and quotes avoid those places. The paper links no
+# analysis code, so none was read.
+#
+# Data the paper used. Eight male rhesus monkeys (Macaca mulatta): three "naive" animals trained
+# only to fixate, and five "trained" animals extensively trained in a vestibular and visual
+# heading discrimination task (left or right of straight ahead) before recording. Pairs of
+# single units recorded simultaneously in area MSTd while the animals fixated passively and
+# experienced headings of 0, +-22.5, +-45, +-90, +-135 and 180 degrees relative to straight
+# ahead, in the horizontal and/or vertical plane, in two interleaved conditions: vestibular
+# (motion platform, Gaussian velocity profile, 2 s, peak acceleration about 1 m/s2) and visual
+# (optic flow, 3D star cloud). Each stimulus typically repeated five times, at least three for
+# inclusion. Spike counts in the middle 1 s of the 2 s stimulus. 179 pairs from 270 neurons:
+# 57 pairs on electrodes in separate guide tubes (0.8 to 25 mm apart), 55 pairs on electrodes
+# in one guide tube, 67 pairs from single-electrode recordings sorted offline (distance set to
+# 50 um). The main analyses use the 127 pairs separated by less than 1 mm: 89 in trained and
+# 38 in naive animals; per animal 35, 26, 18, 8 and 2 pairs (trained) and 22, 11 and 5
+# (naive). 41 pairs in trained animals were also recorded during the discrimination task.
+# Measured variables per pair: noise correlation (per condition and pooled), signal
+# correlation per condition, preferred headings, interneuronal distance, and the spike times
+# behind the time courses of Figures 2C and 3. Figure 4, Figure S4 and Figures 8A and 8B use a
+# larger database of single-electrode recordings from earlier studies (Gu et al. 2006, 2007,
+# 2008a, 2010; visual n = 992, vestibular n = 556 tuned neurons; choice probabilities n = 311).
+# Figure 2A uses behavioral thresholds over training (Fetsch et al. 2009; Gu et al. 2007,
+# 2008a). Figure S8 uses eye position records. Figures 6, 7A and 7C are simulations built on
+# the regression of noise on signal correlation fitted here.
+#
+# By its title and description, CRCNS stc-1 holds derived data (MATLAB files) from MSTd and
+# VIP; its experiment 3 is described as 127 MSTd pairs with signal and noise correlations for
+# the vestibular and visual conditions and the preferred headings of each pair, and lists this
+# paper. Experiments 1 and 2 (single neurons) and the VIP pairs are described as coming from
+# other papers. Whether the dataset holds spike times, distances, training group labels,
+# pooled noise correlations or tuning curves is for the author to find.
+#
+# Method details fixed by the Experimental Procedures: spike counts in the middle 1 s of the
+# stimulus; per heading, responses z-scored (minus the mean, divided by the SD); points with
+# z-scores larger than 3 removed; z-scores pooled across headings, then across the visual and
+# vestibular conditions, and rnoise is the Pearson correlation of the pooled z-scores. Signal
+# correlation is the Pearson correlation of the two tuning curves (mean firing rate in the
+# middle 1 s per heading), per condition. Time courses in 500 ms windows stepped by 50 ms (31
+# windows). Permutation tests on the sum of squared differences between group time courses,
+# 10,000 permutations, p the proportion of permuted values above the observed one. Fano factor
+# from a type II regression of log variance on log mean with the slope fixed at 1, as
+# 10^intercept, values below 0.1 set to 0.1 (Figure S3). Population thresholds from Fisher
+# information (equations 2 to 5), with the covariance Q = r sqrt(f_i f_j) and r given by the
+# regression on the two signal correlations.
+#
+# Details the paper leaves open that bear on several claims, each with the readings named in
+# the claims that use it: (1) whether the reported rnoise values include the renormalization
+# in blocks of 20 trials described in the Methods (readings: without it, with it); (2) whether
+# the outlier rule removes z > 3 or |z| > 3, and whether a trial removed for one neuron is
+# removed for both (readings: |z| > 3 removing the trial for both neurons, z > 3 removing it
+# for both); (3) the form of the t tests (two-sample, two-sided Student or Welch).
+schema_version: 2
+dataset:
+  archive: crcns
+  id: stc-1
+  doi: 10.6080/K07P8WKF
+paper: doi:10.1016/j.neuron.2011.06.015
+claims:
+- id: training-group-link
+  kind: link
+  statement: The monkeys of the data set's 127 MSTd pairs can be assigned to the paper's naive and
+    trained groups, and the assignment agrees with what the data set and the paper both describe.
+  source: Figure S2B legend; Experimental Procedures, Experimental Protocol and Task, paragraph 2
+  quote: 4 subjects (with n= 35, 26, 18, and 8 pairs) were trained in the heading discrimination
+    task (red curves) and 3 animals (with n= 22, 11 and 5 pairs) were naïve (blue curves). Data
+    from one trained animal with only two pairs of neurons is not shown.
+  data: with_labels
+  criterion: Added by the author (protocol, Author, step 1.4); the data set names each pair's
+    monkey in its file_id but not its training group. Monkeys are matched to groups by their
+    number of pairs, against the per-animal counts of the Figure S2B legend (trained 35, 26, 18,
+    8 and 2; naive 22, 11 and 5). Reproduced when every monkey's count matches exactly one count
+    of the legend, the group sizes come to 89 trained and 38 naive pairs, the group neuron counts
+    agree with the 146 trained and 64 naive neurons of the Figure 3 legend, and the monkeys whose
+    behavioural thresholds the data set holds (experiment 2, heading discrimination) fall in the
+    trained group. Not reproduced when the counts cannot be matched one to one.
+- id: fig2b-trained-lower-noise-correlation
+  statement: Mean noise correlation among MSTd pairs (separated by less than 1 mm) is
+    significantly smaller in trained animals (0.023 +- 0.017 SEM, n = 89) than in naive animals
+    (0.116 +- 0.031, n = 38).
+  source: Results, Comparison of Noise Correlations in Trained and Naive Animals, paragraph 2;
+    Figure 2B
+  quote: The mean noise correlation in the trained group (0.023 ± 0.017 SEM, n = 89) was
+    significantly smaller than that for naive animals (0.116 ± 0.031, n = 38, p = 0.006, t test)
+  statistics:
+  - test: t test
+    p: 0.006
+    n: 89 trained and 38 naive pairs
+  expected:
+  - quantity: mean rnoise, trained animals
+    value: 0.023
+    tolerance: 0.017
+  - quantity: mean rnoise, naive animals
+    value: 0.116
+    tolerance: 0.031
+  - quantity: number of pairs, trained
+    value: 89
+    tolerance: 0
+  - quantity: number of pairs, naive
+    value: 38
+    tolerance: 0
+  depends_on:
+  - training-group-link
+  criterion: rnoise per pair as in the Experimental Procedures (Noise and Signal Correlations),
+    pooled across headings and across the visual and vestibular conditions, for the 127 pairs
+    under 1 mm. Tolerances on the means are the reported SEMs. The paper names only "t test";
+    the readings are a two-sided two-sample Student t test and a Welch t test. Whether the
+    reported values include the renormalization in blocks of 20 trials is open; both readings
+    are run. Reproduced when, under one reading, the trained mean is below the naive mean with
+    p < 0.05 and both means are within tolerance; partially reproduced when the difference is
+    significant but a mean falls outside tolerance.
+- id: fig2c-timecourse-naive-higher
+  statement: Noise correlation is greater in naive than in trained animals throughout the time
+    course of the response, computed in 500 ms windows stepped by 50 ms (p = 0.002, permutation
+    test).
+  source: Results, Comparison of Noise Correlations in Trained and Naive Animals, paragraph 3;
+    Figure 2C
+  quote: rnoise was significantly greater in naive than trained animals throughout the time
+    course of the neural response (p = 0.002, permutation test, see Experimental Procedures)
+  statistics:
+  - test: permutation test
+    p: 0.002
+    n: 89 trained and 38 naive pairs
+  criterion: Needs spike times. rnoise per pair and window as for the main measure, in 500 ms
+    windows moved in 50 ms steps (31 windows), averaged per group; the permutation test of the
+    Experimental Procedures (sum of squared differences of the two group time courses, pairs
+    drawn at random from the pooled groups into groups of the original sizes, 10,000
+    permutations, p the proportion of permuted values above the observed one). Where the 31
+    windows sit relative to stimulus onset is not stated; the reading is windows starting at
+    stimulus onset and ending at its 2 s end (0-500 ms to 1500-2000 ms), which gives exactly
+    31. Reproduced when p < 0.05 and the naive mean is above the trained mean in every window;
+    partially reproduced when p < 0.05 and the naive mean is higher in most windows.
+- id: figs2a-difference-decreases
+  statement: The difference in rnoise between naive and trained animals is largest at the
+    beginning of the trial and decreases with time (Spearman R = -0.9, p << 0.001).
+  source: Results, Comparison of Noise Correlations in Trained and Naive Animals, paragraph 3;
+    Figure S2A
+  quote: The difference in rnoise between naive and trained animals was largest at the
+    beginning of the trial and gradually decreased with time
+  statistics:
+  - test: Spearman rank correlation
+    statistic: R = -0.9
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: Spearman R between window time and the naive minus trained rnoise difference
+    value: -0.9
+    tolerance: 0.09
+  depends_on:
+  - fig2c-timecourse-naive-higher
+  criterion: The 31 window differences (naive mean minus trained mean) of fig2c, correlated
+    with window time by Spearman rank correlation. Reproduced when R is within tolerance and p <
+    0.001; partially reproduced when R is negative with p < 0.05.
+- id: figs2b-individual-animals
+  statement: The greater noise correlation in naive animals holds for individual animals; four
+    trained animals (35, 26, 18 and 8 pairs) and three naive animals (22, 11 and 5 pairs) are
+    shown, and the difference is consistent across animals within each group.
+  source: Results, Comparison of Noise Correlations in Trained and Naive Animals, paragraph 3;
+    Figure S2B; Discussion, paragraph 1
+  quote: Importantly, these observations held true when correlations were examined for
+    individual animals
+  expected:
+  - quantity: pairs per trained animal shown (descending)
+    value: 35
+    tolerance: 0
+  - quantity: pairs per naive animal shown (descending)
+    value: 22
+    tolerance: 0
+  depends_on:
+  - training-group-link
+  criterion: The paper shows per-animal time courses and gives no test, so the comparison is a
+    reading of the figure and the Discussion sentence that the difference "was highly
+    significant and consistent across animals within each group". Per animal, the mean rnoise
+    of its pairs (pooled measure, middle 1 s). Pair counts per animal are checked against 35,
+    26, 18, 8 (and 2, not shown) trained and 22, 11, 5 naive. Reproduced when every naive
+    animal's mean exceeds every trained animal's mean among the seven animals shown; partially
+    reproduced when every naive animal's mean exceeds the trained group mean. Time courses per
+    animal are shown when spike times are available.
+- id: fig1-example-pair
+  statement: For the example pair of Figure 1, signal correlation is 0.83 (visual) and 0.79
+    (vestibular), and noise correlation is 0.29 (visual, p = 0.04) and 0.14 (vestibular, p =
+    0.3).
+  source: Results, paragraphs 1 and 2; Figure 1B to 1E
+  quote: For this example pair of neurons, rsignal = 0.83 and 0.79 for the visual and
+    vestibular conditions, respectively ... rnoise = 0.29, p = 0.04, Figure 1D ... R = 0.14, p =
+    0.3, Figure 1E
+  statistics:
+  - about: rnoise of the example pair, visual
+    test: Pearson correlation
+    statistic: rnoise = 0.29
+    p: 0.04
+  - about: rnoise of the example pair, vestibular
+    test: Pearson correlation
+    statistic: R = 0.14
+    p: 0.3
+  expected:
+  - quantity: rsignal, visual
+    value: 0.83
+    tolerance: 0.083
+  - quantity: rsignal, vestibular
+    value: 0.79
+    tolerance: 0.079
+  - quantity: rnoise, visual
+    value: 0.29
+    tolerance: 0.029
+  - quantity: rnoise, vestibular
+    value: 0.14
+    tolerance: 0.014
+  criterion: The paper does not identify the pair. Reproduced when one pair in the data has all
+    four values within tolerance; not reproduced when none does.
+- id: fig1f-modality-correlated
+  statement: Noise correlations computed from visual and vestibular responses are correlated
+    across pairs (R = 0.38, p << 0.001, Spearman rank correlation, 179 pairs).
+  source: Results, Noise Correlations in Area MSTd, paragraph 2; Figure 1F
+  quote: Noise correlations computed from visual and vestibular responses were significantly
+    correlated across 179 pairs of neurons (R = 0.38, p << 0.001, Spearman rank correlation)
+  statistics:
+  - test: Spearman rank correlation
+    statistic: R = 0.38
+    p: 0.001
+    p_relation: "<"
+    n: 179 pairs
+  expected:
+    quantity: Spearman R, visual against vestibular rnoise
+    value: 0.38
+    tolerance: 0.038
+  criterion: Per-condition rnoise (z-scores pooled across headings within one condition). The
+    paper's sample is all 179 pairs; the 127 pairs under 1 mm are the other reading, used when
+    only those are available, and the outcome then notes the smaller sample. Reproduced when R
+    is within tolerance and p < 0.001; partially reproduced when R > 0 with p < 0.05.
+- id: fig1f-modality-means-equal
+  statement: Mean noise correlation does not differ between the vestibular (0.035 +- 0.014 SEM)
+    and visual (0.039 +- 0.015) conditions (p > 0.8, paired t test).
+  source: Results, Noise Correlations in Area MSTd, paragraph 2; Figure 1F
+  quote: their means were not significantly different (vestibular ... 0.035 ± 0.014 SEM, visual
+    ... 0.039 ± 0.015, p > 0.8, paired t test)
+  statistics:
+  - test: paired t test
+    p: 0.8
+    p_relation: ">"
+    n: 179 pairs
+  expected:
+  - quantity: mean rnoise, vestibular
+    value: 0.035
+    tolerance: 0.014
+  - quantity: mean rnoise, visual
+    value: 0.039
+    tolerance: 0.015
+  criterion: A claim of absence, judged on the paper's test, a paired t test at p < 0.05 on the
+    per-condition rnoise of the 179 pairs (the 127 pairs under 1 mm when only those are
+    available, noted). Reproduced when the test finds no difference; the means and the
+    difference are reported either way.
+- id: figs1-distance
+  statement: Noise correlations depend on distance; mean rnoise is above zero for pairs under
+    0.05 mm (0.042 +- 0.021, p = 0.049, n = 67) and 0.05 to 1 mm (0.062 +- 0.024, p = 0.011, n =
+    60), but not for pairs over 1 mm (0 +- 0.15, p = 0.9, n = 52).
+  source: Results, Noise Correlations in Area MSTd, paragraph 3; Figure S1
+  quote: Average noise correlations were significantly greater than zero for the first two
+    groups (<0.05 mm ... 0.042 ± 0.021 SEM, p = 0.049, t test; 0.05-1 mm ... 0.062 ± 0.024, p =
+    0.011), but not for the group of distant pairs (>1 mm ... 0 ± 0.15, p = 0.9)
+  statistics:
+  - about: pairs under 0.05 mm against zero
+    test: t test
+    p: 0.049
+    n: 67 pairs
+  - about: pairs 0.05 to 1 mm against zero
+    test: t test
+    p: 0.011
+    n: 60 pairs
+  - about: pairs over 1 mm against zero
+    test: t test
+    p: 0.9
+    n: 52 pairs
+  expected:
+  - quantity: mean rnoise, under 0.05 mm
+    value: 0.042
+    tolerance: 0.021
+  - quantity: mean rnoise, 0.05 to 1 mm
+    value: 0.062
+    tolerance: 0.024
+  - quantity: mean rnoise, over 1 mm
+    value: 0
+    tolerance: 0.15
+  criterion: Pooled rnoise, groups by estimated distance as in the Experimental Procedures
+    (single-electrode pairs set to 50 um, in the first group). One-sample t tests against zero
+    (two-sided). Reproduced when the first two means are within tolerance and above zero at p <
+    0.05 and the third is not different from zero at p < 0.05; partially reproduced when two of
+    the three groups match. Not testable if distances or the pairs over 1 mm are absent.
+- id: methods-single-vs-multiple-electrodes
+  statement: Noise correlations do not differ significantly between pairs recorded on one
+    electrode (0.042 +- 0.02) and on different electrodes (0.033 +- 0.015), p > 0.7, t test.
+  source: Experimental Procedures, Electrophysiological Recordings, paragraph 2
+  quote: noise correlations were slightly greater for pairs of neurons recorded from a single
+    electrode (0.042 ± 0.02) than for pairs recorded from different electrodes (0.033 ±
+    0.015), this difference was modest and not significant (p > 0.7, t test)
+  statistics:
+  - test: t test
+    p: 0.7
+    p_relation: ">"
+    n: 67 single-electrode pairs and 112 multiple-electrode pairs
+  expected:
+  - quantity: mean rnoise, single electrode
+    value: 0.042
+    tolerance: 0.02
+  - quantity: mean rnoise, different electrodes
+    value: 0.033
+    tolerance: 0.015
+  criterion: A claim of absence, judged on a two-sample t test at p < 0.05 on pooled rnoise
+    over all 179 pairs (the sample is not stated; all pairs is the reading, and the pairs under
+    1 mm a variant). Reproduced when the test finds no difference; the means are reported
+    either way.
+- id: fig2a-behavioral-learning
+  statement: Heading discrimination thresholds of the five trained monkeys were high (over 10
+    degrees) early in training and decreased gradually to a plateau of 1 to 3 degrees.
+  source: Results, Comparison of Noise Correlations in Trained and Naive Animals, paragraph 1;
+    Figure 2A
+  quote: These monkeys' heading discrimination thresholds (corresponding to 84% correct) were
+    high ... at early stages of training, and gradually decreased to a plateau of only a few
+    degrees
+  expected:
+    quantity: plateau vestibular threshold
+    value: 2.1
+    tolerance: 1.2
+    unit: degrees
+  criterion: The range 1 to 3 degrees widened by 10% of each bound gives 0.9 to 3.3 degrees.
+    Reproduced when each animal's threshold falls from above 10 degrees early in training to a
+    plateau inside 0.9 to 3.3 degrees, the plateau read as the asymptote of an exponential fit
+    to threshold against session, as in the legend. Needs the training histories, which the
+    paper takes from earlier studies.
+- id: fig3-mean-response-unchanged
+  statement: The time course of the population average response to the preferred heading does
+    not differ between trained (n = 146 neurons) and naive (n = 64) animals (p = 0.8,
+    permutation test).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 1; Figures 3A and 3C
+  quote: the time course of the populationaverage response to the preferred heading was
+    indistinguishable between trained and naive animals (p = 0.8, permutation test
+  statistics:
+  - test: permutation test
+    p: 0.8
+    n: 146 trained and 64 naive neurons
+  criterion: A claim of absence, judged on the paper's permutation test (Experimental
+    Procedures, Permutation Test) at p < 0.05, on the mean firing rate at each cell's preferred
+    heading in the 31 windows, for the neurons of the 127 pairs. Needs spike times. Whether
+    the test was run per condition or on both together is open; the readings are a test per
+    condition (visual and vestibular, as in Figures 3A and 3C) and one test on both
+    concatenated. Reproduced when no reading's test finds a difference.
+- id: fig3-fano-unchanged
+  statement: Training has no significant effect on the time course of the Fano factor (p = 0.5,
+    permutation test).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 1; Figures 3B and 3D; Figure S3
+  quote: There was also no significant effect (p = 0.5, permutation test) of training on the
+    time course of the Fano factor
+  statistics:
+  - test: permutation test
+    p: 0.5
+  criterion: A claim of absence, judged on the paper's permutation test at p < 0.05. Fano
+    factor per window and group as 10^intercept of a type II regression of log variance on log
+    mean spike count with slope fixed at 1, values below 0.1 set to 0.1 (Experimental
+    Procedures, Fano Factor; Figure S3). Which mean and variance enter the fit (per neuron and
+    heading, or per neuron at the preferred heading) is open; per neuron and heading is the
+    reading, as in the scatter plots of Figure S3. Per condition and on both conditions, as for
+    fig3-mean-response-unchanged. Needs spike times. Reproduced when no reading's test finds a
+    difference.
+- id: fig4-tuning-width-visual
+  statement: Median visual tuning width does not differ between naive (124.5 degrees) and
+    trained (126 degrees) animals (p = 0.21, Wilcoxon rank-sum test).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 2; Figure 4A
+  quote: There was no significant difference in median tuning width for the visual condition
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.21
+    n: 992 visually tuned neurons
+  expected:
+  - quantity: median visual tuning width, naive
+    value: 124.5
+    tolerance: 12.45
+    unit: degrees
+  - quantity: median visual tuning width, trained
+    value: 126
+    tolerance: 12.6
+    unit: degrees
+  criterion: A claim of absence, judged on a Wilcoxon rank-sum test at p < 0.05 on full width
+    at half maximum, for neurons with significant heading tuning in the horizontal plane
+    (one-way ANOVA p < 0.05, Results) in the single-electrode database (visual 466 naive and 526
+    trained, vestibular 216 naive and 340 trained, Figure S4 legend). How width is measured from the sampled tuning curve
+    (interpolation) is not stated; linear interpolation of the tuning curve over the circle is
+    the reading. Reproduced when the test finds no difference and both medians are within
+    tolerance.
+- id: fig4-tuning-width-vestibular
+  statement: Median vestibular tuning width is slightly larger in trained (131 degrees) than in
+    naive (121 degrees) animals (p = 0.045).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 2; Figure 4E
+  quote: The difference in median tuning width was significant for the vestibular condition
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.045
+    n: 556 vestibularly tuned neurons
+  expected:
+  - quantity: median vestibular tuning width, naive
+    value: 121
+    tolerance: 12.1
+    unit: degrees
+  - quantity: median vestibular tuning width, trained
+    value: 131
+    tolerance: 13.1
+    unit: degrees
+  depends_on:
+  - fig4-tuning-width-visual
+  criterion: Measure and selection as in fig4-tuning-width-visual. Reproduced when the trained
+    median is larger with p < 0.05 and both medians are within tolerance.
+- id: fig4-amplitude-unchanged
+  statement: Training has no significant effect on tuning curve amplitude, visual (naive 35.4
+    against trained 31.8 spikes/s, p = 0.24) or vestibular (17.4 against 17.2 spikes/s, p =
+    0.36).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 2; Figures 4B and 4F
+  quote: training did not have any significant effect on the distribution of tuning curve
+    amplitudes in either the visual condition (naive ... 35.4 spks/s versus trained ... 31.8
+    spks/s, p = 0.24, Wilcoxon rank-sum test) or the vestibular condition (naive ... 17.4 spks/s
+    versus trained ... 17.2 spks/s, p = 0.36)
+  statistics:
+  - about: visual
+    test: Wilcoxon rank-sum test
+    p: 0.24
+  - about: vestibular
+    test: Wilcoxon rank-sum test
+    p: 0.36
+  expected:
+  - quantity: median visual amplitude, naive
+    value: 35.4
+    tolerance: 3.54
+    unit: spikes/s
+  - quantity: median visual amplitude, trained
+    value: 31.8
+    tolerance: 3.18
+    unit: spikes/s
+  - quantity: median vestibular amplitude, naive
+    value: 17.4
+    tolerance: 1.74
+    unit: spikes/s
+  - quantity: median vestibular amplitude, trained
+    value: 17.2
+    tolerance: 1.72
+    unit: spikes/s
+  criterion: A claim of absence, judged on Wilcoxon rank-sum tests at p < 0.05 per condition, on
+    amplitude as peak minus trough of the mean tuning curve (Figure 4 legend), same neurons as
+    fig4-tuning-width-visual. The values are read as medians, as for tuning width; means are
+    shown as a variant. Reproduced when neither test finds a difference.
+- id: fig4dh-lateral-more-sensitive
+  statement: Neurons preferring lateral headings are more sensitive to heading variation around
+    straight ahead than neurons preferring fore-aft headings (p << 0.001, factorial ANOVA).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 3; Figures 4C, 4D, 4G and 4H
+  quote: lateral neurons were significantly more sensitive than fore-aft neurons for heading
+    discrimination around straight ahead (p << 0.001, Factorial ANOVA, Figures 4D and 4H)
+  statistics:
+  - test: factorial ANOVA, main effect of preference group
+    p: 0.001
+    p_relation: "<"
+    n: 992 visual and 556 vestibular neurons
+  criterion: Neuronal threshold per neuron from Fisher information on the interpolated tuning
+    curve at straight ahead (equations 2 and 3 for one neuron), with variance equal to the mean
+    as equation 4 gives for i = j; how tuning curves are interpolated is not stated (readings,
+    cubic spline and linear interpolation). Fore-aft is a preference within 45 degrees of 0 or
+    180, lateral within 45 degrees of -90 or 90 (Results). How the preferred heading is
+    computed is not stated in this paper; the readings are the vector sum of the tuning curve
+    and the peak of the interpolated curve. A factorial ANOVA on threshold with preference
+    group and training group; whether it was run per condition (Figures 4D and 4H) or once with
+    condition as a third factor is not stated, and both are run; whether thresholds were log
+    transformed is open (raw and log are both run). Reproduced when lateral neurons have lower
+    thresholds with p < 0.001 under one reading (in both conditions for the per-condition
+    reading).
+- id: fig4dh-training-no-sensitivity-change
+  statement: Neuronal sensitivity does not differ between naive and trained animals for either
+    fore-aft or lateral neurons (p > 0.5, factorial ANOVA), with no interaction (p > 0.3).
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 3; Figures 4D and 4H
+  quote: neuronal sensitivity was not significantly different between naive and trained animals
+    (p > 0.5, factorial ANOVA) for either group of neurons, with no significant interaction
+    effect (p > 0.3)
+  statistics:
+  - about: main effect of training
+    test: factorial ANOVA
+    p: 0.5
+    p_relation: ">"
+  - about: interaction of training and preference group
+    test: factorial ANOVA
+    p: 0.3
+    p_relation: ">"
+  depends_on:
+  - fig4dh-lateral-more-sensitive
+  criterion: A claim of absence, judged on the factorial ANOVA of fig4dh-lateral-more-sensitive
+    at p < 0.05 for the training effect and the interaction, per condition. Reproduced when
+    neither is significant in either condition; the group means are reported either way.
+- id: figs4-population-sensitivity-any-reference
+  statement: Population sensitivity computed from the single-electrode database does not differ
+    between naive and trained animals at any reference heading; the bootstrap 95% confidence
+    bands largely overlap.
+  source: Results, Effects of Training on Tuning Curves, Variability, and Sensitivity of Single
+    Neurons, paragraph 3; Figure S4
+  quote: Confidence intervals are largely overlapping between naïve (blue) and trained (pink)
+    animals
+  criterion: As in the Figure S4 legend, population threshold from equation 2 with independent
+    Poisson neurons, 95% bands by bootstrap, per condition and group (visual 466 naive, 526
+    trained; vestibular 216 naive, 340 trained). The legend's "100 neurons were resampled with
+    replacement" allows two readings, both run; populations of 100 neurons drawn with
+    replacement (1,000 iterations, a standard choice), and the whole group resampled with
+    replacement 100 times. The reference headings sampled are not stated; every 22.5 degrees
+    is a standard choice. Reproduced when the
+    naive and trained bands overlap at every reference heading in both conditions; partially
+    reproduced when they overlap at most.
+- id: fig5-noise-signal-positive
+  statement: Noise correlation increases with signal correlation in both conditions (vestibular
+    p = 0.0001, visual p = 0.0004, ANCOVA).
+  source: Results, Training Effects on the Noise-Signal Correlation Structure, paragraph 1;
+    Figures 5A and 5B
+  quote: There was a significant positive correlation between rnoise and rsignal in both
+    stimulus conditions (vestibular ... p = 0.0001; visual ... p = 0.0004, ANCOVA)
+  statistics:
+  - about: vestibular rsignal
+    test: ANCOVA
+    p: 0.0001
+    n: 89 trained and 38 naive pairs
+  - about: visual rsignal
+    test: ANCOVA
+    p: 0.0004
+    n: 89 trained and 38 naive pairs
+  depends_on:
+  - training-group-link
+  criterion: Per condition, an ANCOVA of rnoise on rsignal (continuous) and training group
+    (categorical) with their interaction, over the 127 pairs. Which rnoise enters is open; the
+    readings are the rnoise pooled across conditions (the measure the Results adopt before
+    Figure 5) and the rnoise of the same condition as rsignal. Reproduced when, under one
+    reading, the rsignal slope is positive with p < 0.05 in both conditions.
+- id: fig5-slope-unchanged
+  statement: Training does not change the slope of the relation between noise and signal
+    correlation (vestibular p = 0.9, visual p = 0.9, ANCOVA interaction).
+  source: Results, Training Effects on the Noise-Signal Correlation Structure, paragraph 2;
+    Figure 5C
+  quote: the slope of the relationship between rnoise and rsignal (Figures 5A and 5B) was not
+    significantly affected by training (vestibular ... p = 0.9; visual ... p = 0.9, ANCOVA
+    interaction effect)
+  statistics:
+  - about: vestibular
+    test: ANCOVA interaction effect
+    p: 0.9
+  - about: visual
+    test: ANCOVA interaction effect
+    p: 0.9
+  depends_on:
+  - training-group-link
+  - fig5-noise-signal-positive
+  criterion: A claim of absence, judged on the interaction term of the ANCOVA of
+    fig5-noise-signal-positive at p < 0.05 in each condition, with the paper's pooled rnoise
+    as the measure; the same-condition rnoise is shown as a variant. Reproduced when neither
+    interaction is significant; the slopes and their 95% confidence intervals per group are
+    reported either way.
+- id: fig5-intercept-lower-trained
+  statement: Training lowers noise correlation uniformly across signal correlations, a main
+    effect of training (vestibular p = 0.02, visual p = 0.008, ANCOVA) with non-overlapping 95%
+    confidence intervals of the intercepts.
+  source: Results, Training Effects on the Noise-Signal Correlation Structure, paragraph 2;
+    Figure 5D
+  quote: training had a significant main effect on rnoise (vestibular ... p = 0.02; visual; p =
+    0.008 ANCOVA), and the 95% confidence intervals around the regression intercepts were
+    non-overlapping for naive and trained animals
+  statistics:
+  - about: vestibular
+    test: ANCOVA main effect of training
+    p: 0.02
+  - about: visual
+    test: ANCOVA main effect of training
+    p: 0.008
+  depends_on:
+  - training-group-link
+  - fig5-noise-signal-positive
+  criterion: The training main effect of the ANCOVA of fig5-noise-signal-positive, and the 95%
+    confidence intervals of the per-group regression intercepts. Readings for rnoise as in that
+    claim. Reproduced when, under one reading, the naive intercept is higher with p < 0.05 in
+    both conditions and the intervals do not overlap; partially reproduced when the main
+    effect holds but the intervals overlap.
+- id: fig5-regression-coefficients
+  statement: The plane fitted to noise and the two signal correlations is rnoise = 0.12
+    rsignal,vestibular + 0.091 rsignal,visual + 0.072 in naive animals, with the same slopes and
+    an intercept of 0.005 in trained animals.
+  source: Results, Computation of Covariance Matrix, paragraph 2; Experimental Procedures,
+    Population Coding, equation 5
+  inferred: Read from the equations of the Results, whose multiplication sign the extracted
+    text prints as "3"; no sentence states the values in words.
+  expected:
+  - quantity: slope on vestibular rsignal
+    value: 0.12
+    tolerance: 0.012
+  - quantity: slope on visual rsignal
+    value: 0.091
+    tolerance: 0.0091
+  - quantity: intercept, naive
+    value: 0.072
+    tolerance: 0.0072
+  - quantity: intercept, trained
+    value: 0.005
+    tolerance: 0.0005
+  depends_on:
+  - training-group-link
+  - fig5-slope-unchanged
+  criterion: A plane fitted by type II regression (minimizing orthogonal distance, as in the
+    Experimental Procedures) of pooled rnoise on vestibular and visual rsignal. How slopes come
+    to be common to both groups is not stated; the readings are (a) one orthogonal fit to all
+    127 pairs with a separate intercept per group (rnoise centred per group before fitting the
+    slopes) and (b) the fit to all pairs for the slopes, with each group's intercept as its
+    mean of rnoise minus the slope terms, and (c) the slopes of an orthogonal fit to the naive
+    pairs, used for both groups as the Results describe structure (1), with the trained
+    intercept fitted with those slopes fixed. Ordinary least squares is shown as a variant. The
+    tolerance of 10% on the trained intercept of 0.005 is tighter than any estimate can be;
+    it is kept as the protocol default, and the 95% interval of the fitted intercept is
+    reported beside it. Reproduced when, under one reading, all four values are within
+    tolerance; partially reproduced when the slopes match and the naive intercept exceeds the
+    trained one.
+- id: fig6a-population-thresholds
+  statement: In simulated populations, correlated noise as measured in naive animals raises the
+    population threshold about 5-fold over independent noise at 2000 neurons, while the uniform
+    reduction in trained animals has little effect on the threshold compared with naive.
+  source: Results, Effect of Training on Population Coding Efficiency, paragraphs 1 and 2;
+    Figure 6A
+  quote: For a simulated population of 2000 neurons, the predicted heading discrimination
+    threshold was ... larger compared with the case of independent noise. Surprisingly, the
+    uniform reduction in rnoise that we observed in trained animals (Figure 5) had little effect
+    on predicted discrimination thresholds, as compared with naive animals
+  expected:
+    quantity: threshold ratio, naive structure against independent noise, 2000 neurons
+    value: 5
+    tolerance: 0.5
+  depends_on:
+  - fig5-regression-coefficients
+  criterion: Simulation from equations 2 to 5 with wrapped-Gaussian tuning (bandwidth 135
+    degrees), preferences uniform on the circle, congruent visual and vestibular tuning (so
+    the two signal correlations are equal), reference heading 0, and the paper's coefficients
+    (the coefficients fitted in fig5-regression-coefficients shown as a variant). Not stated are
+    the tuning amplitude and baseline, the counting window, the headings over which rsignal is
+    computed, and how bandwidth enters the wrapped Gaussian. The readings are amplitude 30
+    spikes/s on baseline 10 spikes/s over 1 s (a standard choice, not from the paper; Figure 4
+    reports median amplitudes of 17 to 35 spikes/s and no baseline), rsignal over the 8 headings 45 degrees apart and
+    over a continuous circle, and bandwidth as full width at half height. The factor of about
+    5 is read from the extracted text, whose "approximately" sign is garbled. Reproduced
+    when, under one reading, the ratio is within tolerance and the trained threshold at 2000
+    neurons is within 10% of the naive one; partially reproduced when correlated noise raises
+    the naive threshold well above independent and trained and naive are within 10%, with the
+    ratio outside tolerance.
+- id: fig6b-slope-not-intercept
+  statement: Population thresholds (256 neurons) are very sensitive to the slope of the relation
+    between noise and signal correlation and only weakly sensitive to its intercept; a uniform
+    increase in rnoise lowers the threshold slightly.
+  source: Results, Effect of Training on Population Coding Efficiency, paragraph 2; Figure 6B
+  quote: predicted thresholds were very sensitive to changes in the slope of the relationship
+    between rnoise and rsignal. In contrast, changes in the intercept of the rnoise versus
+    rsignal relationship had weak effects on predicted thresholds
+  depends_on:
+  - fig6a-population-thresholds
+  criterion: The simulation of fig6a with 256 neurons, over a grid of slopes and intercepts
+    for which rnoise stays within -1 and 1. The grid range is shown only in Figure 6B, whose
+    axes could not be read from the text; slope 0 to 0.4 and intercept 0 to 0.2, which contain
+    the measured naive and trained parameters, are a choice, not from the paper. Reproduced when, under the fig6a readings, the
+    threshold changes more over the slope range than over an intercept range of the same
+    width, and threshold decreases as the intercept rises at the measured slopes.
+- id: fig7a-pair-sign-of-effect
+  statement: For a single pair of neurons, reducing noise correlation lowers the discrimination
+    threshold when signal correlation is positive and raises it when signal correlation is
+    negative.
+  source: Results, Effect of Training on Population Coding Efficiency, paragraph 3; Figure 7A;
+    Figure S7A
+  quote: reducing the noise correlation between this pair of neurons results in a lower
+    population threshold (red curve below blue curve) when the pair of neurons has positive
+    rsignal. In contrast, reducing noise correlation increases the predicted threshold for
+    negative rsignal
+  depends_on:
+  - fig6a-population-thresholds
+  criterion: Two-neuron simulation of equations 2 to 5 with the naive and trained coefficients,
+    one neuron preferring -90 degrees and the other's preference swept from -90 to 90, tuning as
+    in fig6a. Reproduced when the trained threshold is below the naive one for every pair with
+    positive rsignal and above it for every pair with negative rsignal.
+- id: fig7b-msdt-pairs
+  statement: Decoding real MSTd pairs, the ratio of thresholds with rnoise = 0.1 and rnoise = 0
+    rises above 1 for pairs with positive signal correlation and falls below 1 for negative
+    signal correlation (R = 0.49, p << 0.001, Spearman).
+  source: Results, Effect of Training on Population Coding Efficiency, paragraph 3; Figure 7B
+  quote: pairs of neurons with positive rsignal yield discrimination thresholds that increase
+    with rnoise, whereas pairs with negative rsignal have discrimination thresholds that
+    decrease with rnoise (R = 0.49, p << 0.001, Spearman rank correlation)
+  statistics:
+  - test: Spearman rank correlation
+    statistic: R = 0.49
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: Spearman R, threshold ratio against rsignal
+    value: 0.49
+    tolerance: 0.049
+  criterion: Needs each pair's tuning curves. Per pair, threshold from equations 2 to 4 at
+    straight ahead with r = 0.1 and r = 0, from the pair's interpolated tuning curves; the ratio
+    correlated with rsignal by Spearman rank correlation. Open are which condition (readings,
+    visual and vestibular separately, and both pooled as two points per pair), which pairs
+    (the 127 under 1 mm, or all 179), and the interpolation (cubic spline, linear). Reproduced
+    when, under one reading, R is within tolerance and p < 0.001; partially reproduced when R >
+    0 with p < 0.05.
+- id: fig7c-narrow-preferences
+  statement: In a 256-neuron population, narrowing heading preferences to give more pairs with
+    positive signal correlation (49%, 75%, 94%) makes the weaker noise correlations of trained
+    animals improve coding, but at best the trained threshold is about 8% lower than the naive.
+  source: Results, Effect of Training on Population Coding Efficiency, paragraph 4; Figure 7C;
+    Figure S7B
+  quote: At best, however, the predicted population discrimination threshold for trained
+    animals is ... lower than for naive animals
+  expected:
+  - quantity: best reduction of trained threshold against naive
+    value: 8
+    tolerance: 0.8
+    unit: percent
+  - quantity: positive rsignal, preferences in [-180, 180]
+    value: 49
+    tolerance: 4.9
+    unit: percent
+  - quantity: positive rsignal, preferences in [0, 180]
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  - quantity: positive rsignal, preferences in [30, 150]
+    value: 94
+    tolerance: 9.4
+    unit: percent
+  depends_on:
+  - fig6a-population-thresholds
+  criterion: The simulation of fig6a with 256 neurons and preferences uniform in [-180, 180],
+    [0, 180] and [30, 150] degrees (Figure 7C legend), and narrower ranges around 90 as the
+    figure's axis runs. The value of 8% and the percentages are read from the extracted text.
+    Reproduced when, under one fig6a reading, the trained-over-naive improvement grows as the
+    range narrows, its maximum is within tolerance, and the three proportions are within
+    tolerance.
+- id: fig8ab-choice-probability-lateral
+  statement: Neurons preferring fore-aft headings have smaller choice probabilities than
+    neurons preferring lateral headings (p = 0.019, t test), and choice probability does not
+    differ between neurons preferring leftward and rightward headings (p = 0.11).
+  source: Results, Possible rsignal Distributions in Area MSTd, paragraphs 2 and 3; Figures 8A
+    and 8B
+  quote: neurons with a preference for fore-aft movement show significantly smaller choice
+    probabilities (p = 0.019, t test, Figures 8A and 8B) ... there was no significant difference
+    in average choice probability between neurons preferring leftward and rightward headings
+    (p = 0.11, t test)
+  statistics:
+  - about: fore-aft against lateral
+    test: t test
+    p: 0.019
+    n: 311 single-electrode recordings, vestibular and visual pooled
+  - about: leftward against rightward
+    test: t test
+    p: 0.11
+  criterion: Choice probabilities from the single-electrode database (n = 311, vestibular and
+    visual pooled), groups by preferred heading as in Figure 4 (fore-aft within 45 degrees of 0
+    or 180, lateral within 45 degrees of -90 or 90; the preferred heading by the readings of
+    fig4dh-lateral-more-sensitive). Two-sample t tests. Reproduced when fore-aft
+    choice probabilities are smaller with p < 0.05 and the leftward and rightward means do not
+    differ at p < 0.05.
+- id: fig8cd-noise-not-preference
+  statement: Noise correlation does not depend significantly on heading preference (p = 0.2,
+    t test); lateral neurons have slightly smaller noise correlations than fore-aft neurons.
+  source: Results, Possible rsignal Distributions in Area MSTd, paragraph 3; Figures 8C and 8D
+  quote: there was no significant ... dependence of noise correlation on the heading
+    preferences of MSTd neurons (p = 0.2, t test)
+  statistics:
+  - test: t test
+    p: 0.2
+    n: 328 fixation and 55 discrimination-task points, each pair plotted at both neurons'
+      preferences
+  depends_on:
+  - training-group-link
+  criterion: A claim of absence, judged on a t test at p < 0.05 of the noise correlation of
+    lateral against fore-aft neurons, each pair entered twice, at each neuron's preferred
+    heading (Figure 8C legend), groups as in Figure 4. The Results speak of trained animals,
+    but the legend's 328 fixation points (164 pairs entered twice) exceed the 89 trained pairs
+    under 1 mm (178 points), so the sample is not settled. The readings are the trained pairs
+    under 1 mm, all trained pairs, and all 179 pairs, each with visual and with vestibular
+    preference, with and without the 55 discrimination-task points. The test is run under
+    each; the outcome is judged under the reading whose point count comes closest to 328 and
+    55, and the others are shown. Reproduced when that test finds no difference; the group
+    means are reported either way.
+- id: figs5-congruency
+  statement: Noise correlation differs between naive and trained animals (p = 0.008) but is not
+    affected by the congruency of the two units (p > 0.5), with no interaction (p > 0.5),
+    two-way ANOVA; an ANCOVA finds no effect of congruency on the relation to signal
+    correlation.
+  source: Results, Training Effects on the Noise-Signal Correlation Structure, paragraph 3;
+    Figure S5
+  quote: While the average noise correlation was significantly different between 'naïve' (blue
+    bars) and 'trained' (red bars) animals (p=0.008, main effect of training, two-way ANOVA), it
+    was not significantly affected by the congruency of the two units in each pair (p>0.5, main
+    effect of congruency, two-way ANOVA)
+  statistics:
+  - about: main effect of training
+    test: two-way ANOVA
+    p: 0.008
+  - about: main effect of congruency
+    test: two-way ANOVA
+    p: 0.5
+    p_relation: ">"
+  - about: interaction
+    test: two-way ANOVA
+    p: 0.5
+    p_relation: ">"
+  - about: congruency in the ANCOVA with rsignal
+    test: ANCOVA
+    p: 0.6
+    p_relation: ">"
+  - about: interaction of congruency with rsignal in the ANCOVA
+    test: ANCOVA
+    p: 0.7
+    p_relation: ">"
+  - about: interaction of congruency with training group in the ANCOVA
+    test: ANCOVA
+    p: 0.8
+    p_relation: ">"
+  criterion: Congruency index per neuron as the Pearson correlation of its visual and
+    vestibular tuning curves; pairs CC, OO or CO by the signs (Figure S5 legend). Two-way ANOVA
+    of pooled rnoise on training group and pair type, over the 127 pairs. Then, as in the
+    legend, an ANCOVA of rnoise with rsignal as covariate and pair type and training group as
+    factors; which rsignal enters (visual, vestibular) is not stated, and both are run. Needs
+    tuning curves. Reproduced when the ANOVA training effect has p < 0.05 and none of the
+    ANOVA congruency effect, the ANOVA interaction and the three ANCOVA congruency terms has p
+    < 0.05 (claims of absence, judged on these tests).
+- id: figs6-task-independent
+  statement: For 41 pairs recorded in both tasks, noise correlations during fixation and
+    during heading discrimination are correlated (R = 0.47, p = 0.002) and their means do not
+    differ (p = 0.26, paired t test).
+  source: Results, Computation of Covariance Matrix, paragraph 2; Figure S6
+  quote: Noise correlations were significantly correlated across task conditions (R=0.47,
+    p=0.002, Spearman rank correlation) and the mean values were not significantly different
+    (p=0.26, paired t-test, n=41)
+  statistics:
+  - about: correlation across tasks
+    test: Spearman rank correlation
+    statistic: R = 0.47
+    p: 0.002
+    n: 41 pairs
+  - about: means
+    test: paired t-test
+    p: 0.26
+    n: 41 pairs
+  expected:
+    quantity: Spearman R, fixation against discrimination rnoise
+    value: 0.47
+    tolerance: 0.047
+  criterion: Needs rnoise from the discrimination task, computed alike (the headings of that
+    task differ; z-scoring per heading as in the Methods). The Results give p = 0.3 for the
+    same comparison. The difference of means is a claim of absence, judged on a paired t test
+    at p < 0.05. Reproduced when R is within tolerance with p < 0.05 and the paired test finds
+    no difference.
+- id: figs8c-renormalization
+  statement: Renormalizing responses in blocks of 20 trials has no significant effect on noise
+    correlations (R = 0.9 before against after), and the effect does not differ between naive
+    and trained animals (interaction p = 0.7, group p = 0.9, ANCOVA).
+  source: Experimental Procedures, Noise and Signal Correlations, paragraph 2; Figure S8C
+  quote: This additional normalization had no significant effect on rnoise (p > 0.3, paired t
+    test; R = 0.9, p < < 0.001, Spearman rank correlation, n = 127, Figure S8). More
+    importantly, the effect of renormalization on noise correlations was similar in naive and
+    trained animals (p = 0.7, interaction effect, p = 0.9, group effect, ANCOVA, Figure S8)
+  statistics:
+  - about: before against after, means
+    test: paired t test
+    p: 0.3
+    p_relation: ">"
+    n: 127 pairs
+  - about: before against after, correlation
+    test: Spearman rank correlation
+    statistic: R = 0.9
+    p: 0.001
+    p_relation: "<"
+    n: 127 pairs
+  - about: interaction
+    test: ANCOVA
+    p: 0.7
+  - about: group effect
+    test: ANCOVA
+    p: 0.9
+  expected:
+    quantity: Spearman R, rnoise before against after renormalization
+    value: 0.9
+    tolerance: 0.09
+  criterion: Needs trial-ordered responses. Renormalization of the z-scores in consecutive
+    blocks of 20 trials (Zohary et al. 1994b); whether blocks run over all trials of the
+    session or within each condition is open, and both are run. The Figure S8C legend gives p
+    = 0.5 for the paired test. The ANCOVA is read as rnoise after renormalization on rnoise
+    before (covariate) and training group. The absence parts are judged on the paired t test
+    and the ANCOVA terms at p < 0.05. Reproduced when R is within tolerance and none of the
+    three tests finds an effect.
+- id: figs8ab-eye-movements
+  statement: Naive animals fixate as accurately as trained animals and make fewer microsaccades
+    (p << 0.001, t test).
+  source: Discussion, Possible Explanations for the Effect of Training on Correlated Noise,
+    paragraph 2; Figures S8A and S8B
+  quote: we found that naive animals fixate as accurately as trained animals (Figure S8A).
+    Indeed, naive monkeys as a group made significantly fewer microsaccades than trained
+    animals (Figure S8B)
+  statistics:
+  - test: t-test
+    p: 0.001
+    p_relation: "<"
+  criterion: Needs eye position records. Deviation from initial fixation position, averaged
+    over trials per animal in the middle 1 s; microsaccades as eye velocity peaks above 10
+    deg/s after smoothing with a 5 ms Gaussian (Figure S8 legend). The unit of the t test
+    (trials or time bins per animal) is not stated; the readings are per trial and per animal.
+    Reproduced when naive animals have fewer microsaccades with p < 0.05 under one reading and
+    the mean deviation of naive animals lies within the range of the trained animals.
+- id: discussion-stimulus-reduces-correlation
+  statement: Noise correlations decrease in the presence of the stimulus compared with
+    prestimulus baseline activity.
+  source: Discussion, Properties of Noise Correlations in MSTd, paragraph 2
+  quote: we observed that noise correlations decrease in the presence of a stimulus as compared
+    with prestimulus baseline activity
+  criterion: The paper shows no figure or test. Needs spike times. rnoise as for the main
+    measure in a prestimulus window against the middle 1 s of the stimulus; the prestimulus
+    window is not stated, and the reading is the fixation period before motion onset (100 to
+    200 ms, Experimental Procedures), with 500 ms before onset as a variant. The paper names no
+    test; a paired t test over pairs is a standard choice, not the paper's. Reproduced when
+    the mean prestimulus rnoise exceeds the stimulus rnoise by that test at p < 0.05.
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1-example-pair, added the two per-pair Pearson tests (p = 0.04 and 0.3) under statistics, which the statement reports and the file had left out.
+  - fig2a-behavioral-learning, expected value 2 with tolerance 1.3 gave 0.7 to 3.3 degrees, not the 0.9 to 3.3 the criterion and the protocol rule for a range give; set to 2.1 with tolerance 1.2.
+  - fig4-tuning-width-visual, selection now says tuning in the horizontal plane (Results) and gives the group sizes of the Figure S4 legend.
+  - fig4dh-lateral-more-sensitive, Poisson variance is now taken from equation 4 (Q_ii = f_i) in place of Gu et al. 2010, which is not this paper; added as open how the preferred heading is computed and whether the ANOVA was per condition or with condition as a factor, each with readings.
+  - fig8ab-choice-probability-lateral, preferred heading readings referred to fig4dh-lateral-more-sensitive.
+  - figs4-population-sensitivity-any-reference, the legend's 100 resampled neurons allows two bootstrap readings (populations of 100 neurons, or 100 resamples of the whole group); both are now named.
+  - fig5-regression-coefficients, added reading (c), slopes from the naive fit used for both groups, as the Results describe the naive structure.
+  - fig6a-population-thresholds, tuning amplitude and baseline marked as a choice not from the paper.
+  - fig6b-slope-not-intercept, the grid range was said to be read from Figure 6B, which the text does not show and no reader could render; marked as a choice.
+  - fig8cd-noise-not-preference, the reading of 89 trained pairs under 1 mm (178 points) does not match the legend's 328 fixation points; readings widened to all trained pairs and all 179 pairs, with and without the 55 task points, judged under the reading whose counts come closest.
+  - figs5-congruency, the statement's ANCOVA part had no criterion; added the ANCOVA of the Figure S5 legend and its two other terms (p > 0.7, p > 0.8) under statistics.
+  - discussion-stimulus-reduces-correlation, said that the paired t test is a standard choice, since the paper names no test.
+  - Open, fig5-regression-coefficients keeps the protocol's 10% tolerance on the trained intercept of 0.005 (0.0005), which no estimate from 89 pairs can meet; the claim will likely rest on its partial criterion.
+  - Open, the PDF could not be rendered in this run either, so figure-only details (Figure 6B axes, the garbled approximately signs before 5-fold and 8%) were not checked against the figures.
+  - Open, Figure 2A, Figure 4, Figure S4 and Figures 8A and 8B use single-electrode data and training histories from the authors' earlier studies; whether stc-1 holds them is for the author.
