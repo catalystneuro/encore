@@ -630,3 +630,19 @@ def test_the_journal_filter_names_at_most_the_top_journals(built):
     rows = json.loads((out / "data" / "datasets.json").read_text())
     named = {r["journal"] for r in rows} - {"Preprint", "Other journals", "Not recorded"}
     assert len(named) <= site.TOP_JOURNALS and all(r["journal"] for r in rows)
+
+
+def test_each_attempted_paper_has_a_page_listed_under_results(built):
+    import json
+    _, site = built
+    papers = json.loads((site / "data" / "papers.json").read_text())
+    attempted = [p for p in papers if p["status"] == "attempted"]
+    assert attempted and all((site / p["page"] / "index.html").is_file() for p in attempted)
+    page = (site / "papers" / "tingley-2021" / "index.html").read_text()
+    assert "A metabolic function of the hippocampal sharp wave-ripple" in page and "tingley-2021-01" in page
+    assert 'href="../../datasets/dandi/000233/#claim-' in page
+    # A paper on several datasets lists them all; the Results menu leads to Papers and Datasets.
+    semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
+    assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
+    nav = (site / "index.html").read_text()
+    assert 'class="menu"' in nav and 'href="papers/"' in nav and 'href="datasets/"' in nav
